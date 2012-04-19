@@ -42,7 +42,10 @@
             derivation-input-sub-derivations
 
             fixed-output-derivation?
-            derivation-hash))
+            derivation-hash
+
+            read-derivation
+            write-derivation))
 
 ;;;
 ;;; Nix derivations, as implemented in Nix's `derivations.cc'.
