@@ -22,7 +22,10 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
-  #:use-module (rnrs bytevectors))
+  #:use-module (rnrs bytevectors)
+  #:use-module (rnrs io ports)
+  #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 popen))
 
 (test-begin "utils")
 
@@ -42,6 +45,22 @@
           "mzxw6yq"
           "mzxw6ytb"
           "mzxw6ytboi")))
+
+;; The following tests requires `nix-hash' in $PATH.
+(test-skip (if (false-if-exception (system* "nix-hash" "--version"))
+               0
+               1))
+
+(test-assert "sha256 & bytevector->nix-base32-string"
+  (let ((file (search-path %load-path "tests/test.drv")))
+    (equal? (bytevector->nix-base32-string
+             (sha256 (call-with-input-file file get-bytevector-all)))
+            (let* ((c (format #f "nix-hash --type sha256 --base32 --flat \"~a\""
+                              file))
+                   (p (open-input-pipe c))
+                   (l (read-line p)))
+              (close-pipe p)
+              l))))
 
 (test-end)
 
