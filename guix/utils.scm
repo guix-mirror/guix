@@ -17,15 +17,24 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix utils)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-60)
   #:use-module (rnrs bytevectors)
+  #:use-module (ice-9 format)
   #:use-module ((chop hash)
                 #:select (bytevector-hash
                           hash-method/sha256))
   #:export (bytevector-quintet-length
             bytevector->base32-string
             bytevector->nix-base32-string
+            bytevector->base16-string
             sha256))
+
+
+;;;
+;;; Base 32.
+;;;
 
 (define bytevector-quintet-ref
   (let* ((ref  bytevector-u8-ref)
@@ -151,6 +160,35 @@ the previous application or INIT."
 (define bytevector->nix-base32-string
   (make-bytevector->base32-string bytevector-quintet-fold-right
                                   %nix-base32-chars))
+
+
+;;;
+;;; Base 16.
+;;;
+
+(define (bytevector->base16-string bv)
+  "Return the hexadecimal representation of BV's contents."
+  (define len
+    (bytevector-length bv))
+
+  (let-syntax ((base16-chars (lambda (s)
+                               (syntax-case s ()
+                                 (_
+                                  (let ((v (list->vector
+                                            (unfold (cut > <> 255)
+                                                    (lambda (n)
+                                                      (format #f "~2,'0x" n))
+                                                    1+
+                                                    0))))
+                                    v))))))
+    (define chars base16-chars)
+    (let loop ((i 0)
+               (r '()))
+      (if (= i len)
+          (string-concatenate-reverse r)
+          (loop (+ 1 i)
+                (cons (vector-ref chars (bytevector-u8-ref bv i)) r))))))
+
 
 ;;;
 ;;; Hash.
