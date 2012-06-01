@@ -24,6 +24,10 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
+  #:use-module (guix store)
+  #:use-module ((chop hash)
+                #:select (bytevector-hash
+                          hash-method/sha256))
   #:export (derivation?
             derivation-outputs
             derivation-inputs
@@ -184,32 +188,11 @@ that form."
      (display ")" port))))
 
 (define (sha256 bv)
-  "Return the SHA256 of BV as an string of hexadecimal digits."
-  ;; XXX: Poor programmer's implementation that uses Coreutils.
-  (let ((in  (pipe))
-        (out (pipe))
-        (pid (primitive-fork)))
-    (if (= 0 pid)
-        (begin                                      ; child
-          (close (cdr in))
-          (close (car out))
-          (close 0)
-          (close 1)
-          (dup2 (fileno (car in)) 0)
-          (dup2 (fileno (cdr out)) 1)
-          (execlp "sha256sum" "sha256sum"))
-        (begin                                      ; parent
-          (close (car in))
-          (close (cdr out))
-          (put-bytevector (cdr in) bv)
-          (close (cdr in))                        ; EOF
-          (let ((line (car (string-tokenize (read-line (car out))))))
-            (close (car out))
-            (and (and=> (status:exit-val (cdr (waitpid pid)))
-                        zero?)
-                 line))))))
+  "Return the SHA256 of BV as a bytevector."
+  (bytevector-hash hash-method/sha256 bv))
 
 (define (derivation-hash drv)      ; `hashDerivationModulo' in derivations.cc
+  "Return the hash of DRV, modulo its fixed-output inputs, as a bytevector."
   (match drv
     (($ <derivation> ((_ . ($ <derivation-output> path
                               (? symbol? hash-algo) (? string? hash)))))
