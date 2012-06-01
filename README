@@ -1,0 +1,9 @@
+Guix is Nix[0] from Guile[1]!
+
+Concretely, it allows Nix package management to be done entirely in
+Scheme. The goal is to investigate whether Scheme, and in particular
+the ability to define EDSLs, would allow it to fulfill the role of the
+Nix language.
+
+[0] http://nixos.org/nix/
+[1] http://gnu.org/software/guile/
