@@ -25,9 +25,6 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (guix store)
-  #:use-module ((chop hash)
-                #:select (bytevector-hash
-                          hash-method/sha256))
   #:export (derivation?
             derivation-outputs
             derivation-inputs
@@ -187,9 +184,6 @@ that form."
                       env-vars))
      (display ")" port))))
 
-(define (sha256 bv)
-  "Return the SHA256 of BV as a bytevector."
-  (bytevector-hash hash-method/sha256 bv))
 
 (define (derivation-hash drv)      ; `hashDerivationModulo' in derivations.cc
   "Return the hash of DRV, modulo its fixed-output inputs, as a bytevector."

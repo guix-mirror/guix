@@ -19,9 +19,13 @@
 (define-module (guix utils)
   #:use-module (srfi srfi-60)
   #:use-module (rnrs bytevectors)
+  #:use-module ((chop hash)
+                #:select (bytevector-hash
+                          hash-method/sha256))
   #:export (bytevector-quintet-length
             bytevector->base32-string
-            bytevector->nix-base32-string))
+            bytevector->nix-base32-string
+            sha256))
 
 (define bytevector-quintet-ref
   (let* ((ref  bytevector-u8-ref)
@@ -98,3 +102,12 @@ the previous application or INIT."
 
 (define bytevector->nix-base32-string
   (make-bytevector->base32-string %nix-base32-chars))
+
+;;;
+;;; Hash.
+;;;
+
+(define (sha256 bv)
+  "Return the SHA256 of BV as a bytevector."
+  (bytevector-hash hash-method/sha256 bv))
+
