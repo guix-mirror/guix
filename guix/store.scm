@@ -22,12 +22,19 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:export (nix-server?
             nix-server-major-version
             nix-server-minor-version
             nix-server-socket
+
+            &nix-error nix-error?
+            &nix-protocol-error nix-protocol-error?
+            nix-protocol-error-message
+            nix-protocol-error-status
 
             open-connection
             set-build-options
@@ -218,6 +225,14 @@
   (major  nix-server-major-version)
   (minor  nix-server-minor-version))
 
+(define-condition-type &nix-error &error
+  nix-error?)
+
+(define-condition-type &nix-protocol-error &nix-error
+  nix-protocol-error?
+  (message nix-protocol-error-message)
+  (status  nix-protocol-error-status))
+
 (define* (open-connection #:optional (file %default-socket-path))
   (let ((s (with-fluids ((%default-port-encoding #f))
              ;; This trick allows use of the `scm_c_read' optimization.
@@ -265,13 +280,15 @@
                  (status (if (>= (nix-server-minor-version server) 8)
                              (read-int p)
                              1)))
-             (format (current-error-port) "error: ~a (status: ~a)~%"
-                     error status)
-             error))
+             (raise (condition (&nix-protocol-error
+                                (message error)
+                                (status  status))))))
           ((= k %stderr-last)
            #t)
           (else
-           (error "invalid standard error code" k)))))
+           (raise (condition (&nix-protocol-error
+                              (message "invalid error code")
+                              (status   k))))))))
 
 (define* (set-build-options server
                             #:key keep-failed? keep-going? try-fallback?
