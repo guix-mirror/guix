@@ -19,9 +19,13 @@
 
 (define-module (test-derivations)
   #:use-module (guix derivations)
+  #:use-module (guix store)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports))
+
+(define %store
+  (false-if-exception (open-connection)))
 
 (test-begin "derivations")
 
@@ -32,6 +36,15 @@
          (d2 (read-derivation (open-bytevector-input-port b2))))
     (and (equal? b1 b2)
          (equal? d1 d2))))
+
+(test-skip (if %store 0 1))
+
+(test-assert "derivation with no inputs"
+  (let ((builder (add-text-to-store %store "my-builder.sh"
+                                    "#!/bin/sh\necho hello, world\n"
+                                    '())))
+    (store-path? (derivation %store "foo" "x86_64-linux" builder
+                             '() '(("HOME" . "/homeless")) '()))))
 
 (test-end)
 

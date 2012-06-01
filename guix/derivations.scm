@@ -25,6 +25,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (guix store)
+  #:use-module (guix utils)
   #:export (derivation?
             derivation-outputs
             derivation-inputs
@@ -46,7 +47,8 @@
             derivation-hash
 
             read-derivation
-            write-derivation))
+            write-derivation
+            derivation))
 
 ;;;
 ;;; Nix derivations, as implemented in Nix's `derivations.cc'.
@@ -174,7 +176,7 @@ that form."
                                 (list->string (map object->string sub-drvs)))))
                       inputs))
      (display "," port)
-     (write-list sources)
+     (write-list (map object->string sources))
      (format port ",~s,~s," system builder)
      (write-list (map object->string args))
      (display "," port)
@@ -184,6 +186,19 @@ that form."
                       env-vars))
      (display ")" port))))
 
+(define (compressed-hash bv size)                 ; `compressHash'
+  "Given the hash stored in BV, return a compressed version thereof that fits
+in SIZE bytes."
+  (define new (make-bytevector size 0))
+  (define old-size (bytevector-length bv))
+  (let loop ((i 0))
+    (if (= i old-size)
+        new
+        (let* ((j (modulo i size))
+               (o (bytevector-u8-ref new j)))
+          (bytevector-u8-set! new j
+                              (logxor o (bytevector-u8-ref bv i)))
+          (loop (+ 1 i))))))
 
 (define (derivation-hash drv)      ; `hashDerivationModulo' in derivations.cc
   "Return the hash of DRV, modulo its fixed-output inputs, as a bytevector."
@@ -196,13 +211,14 @@ that form."
        (string-append "fixed:out:" hash-algo ":" hash ":" path))))
     (($ <derivation> outputs inputs sources
         system builder args env-vars)
-     ;; A regular derivation: replace that path of each input with that
-     ;; inputs hash; return the hash of serialization of the resulting
+     ;; A regular derivation: replace the path of each input with that
+     ;; input's hash; return the hash of serialization of the resulting
      ;; derivation.
      (let* ((inputs (map (match-lambda
                           (($ <derivation-input> path sub-drvs)
                            (let ((hash (call-with-input-file path
-                                         (compose derivation-hash
+                                         (compose bytevector->base16-string
+                                                  derivation-hash
                                                   read-derivation))))
                              (make-derivation-input hash sub-drvs))))
                          inputs))
@@ -212,6 +228,101 @@ that form."
         (string->utf8 (call-with-output-string
                        (cut write-derivation drv <>))))))))
 
-(define (instantiate server derivation)
-  #f
-  )
+(define (store-path type hash name)               ; makeStorePath
+  "Return the store path for NAME/HASH/TYPE."
+  (let* ((s (string-append type ":sha256:"
+                           (bytevector->base16-string hash) ":"
+                           (%store-prefix) ":" name))
+         (h (sha256 (string->utf8 s)))
+         (c (compressed-hash h 20)))
+    (string-append (%store-prefix) "/"
+                   (bytevector->nix-base32-string c) "-"
+                   name)))
+
+(define (output-path output hash name)            ; makeOutputPath
+  "Return an output path for OUTPUT (the name of the output as a string) of
+the derivation called NAME with hash HASH."
+  (store-path (string-append "output:" output) hash
+              (if (string=? output "out")
+                  name
+                  (string-append name "-" output))))
+
+(define* (derivation store name system builder args env-vars inputs
+                     #:key (outputs '("out")) hash hash-algo hash-mode)
+  "Build a derivation with the given arguments.  Return the resulting
+<derivation> object and its store path.  When HASH, HASH-ALGO, and HASH-MODE
+are given, a fixed-output derivation is created---i.e., one whose result is
+known in advance, such as a file download."
+  (define (add-output-paths drv)
+    ;; Return DRV with an actual store path for each of its output and the
+    ;; corresponding environment variable.
+    (match drv
+      (($ <derivation> outputs inputs sources
+          system builder args env-vars)
+       (let* ((drv-hash (derivation-hash drv))
+              (outputs  (map (match-lambda
+                                ((output-name . ($ <derivation-output>
+                                                   _ algo hash))
+                                 (let ((path (output-path output-name
+                                                          drv-hash name)))
+                                   (cons output-name
+                                         (make-derivation-output path algo
+                                                                 hash)))))
+                               outputs)))
+         (make-derivation outputs inputs sources system builder args
+                          (map (match-lambda
+                                ((name . value)
+                                 (cons name
+                                       (or (and=> (assoc-ref outputs name)
+                                                  derivation-output-path)
+                                           value))))
+                               env-vars))))))
+
+  (define (env-vars-with-empty-outputs)
+    ;; Return a variant of ENV-VARS where each OUTPUTS is associated with an
+    ;; empty string, even outputs that do not appear in ENV-VARS.
+    (let ((e (map (match-lambda
+                   ((name . val)
+                    (if (member name outputs)
+                        (cons name "")
+                        (cons name val))))
+                  env-vars)))
+      (fold-right (lambda (output-name env-vars)
+                    (if (assoc output-name env-vars)
+                        env-vars
+                        (alist-cons output-name "" env-vars)))
+                  '()
+                  outputs)))
+
+  (let* ((outputs    (map (lambda (name)
+                            ;; Return outputs with an empty path.
+                            (cons name
+                                  (make-derivation-output "" hash-algo hash)))
+                          outputs))
+         (inputs     (map (match-lambda
+                           (((? store-path? input) . sub-drvs)
+                            (make-derivation-input input sub-drvs))
+                           ((input . _)
+                            (let ((path (add-to-store store
+                                                      (basename input)
+                                                      (hash-algo sha256) #t #t
+                                                      input)))
+                              (make-derivation-input path '()))))
+                          inputs))
+         (env-vars   (env-vars-with-empty-outputs))
+         (drv-masked (make-derivation outputs
+                                      (filter (compose derivation-path?
+                                                       derivation-input-path)
+                                              inputs)
+                                      (filter-map (lambda (i)
+                                                    (let ((p (derivation-input-path i)))
+                                                      (and (not (derivation-path? p))
+                                                           p)))
+                                                  inputs)
+                                      system builder args env-vars))
+         (drv        (add-output-paths drv-masked)))
+    (add-text-to-store store (string-append name ".drv")
+                       (call-with-output-string
+                        (cut write-derivation drv <>))
+                       (map derivation-input-path
+                            inputs))))

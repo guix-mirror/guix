@@ -24,6 +24,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:use-module (srfi srfi-39)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:export (nix-server?
@@ -36,11 +37,17 @@
             nix-protocol-error-message
             nix-protocol-error-status
 
+            hash-algo
+
             open-connection
             set-build-options
             add-text-to-store
             add-to-store
-            build-derivations))
+            build-derivations
+
+            %store-prefix
+            store-path?
+            derivation-path?))
 
 (define %protocol-version #x109)
 
@@ -352,3 +359,24 @@
 (define-operation (build-derivations (string-list derivations))
   "Build DERIVATIONS; return #t on success."
   boolean)
+
+
+;;;
+;;; Store paths.
+;;;
+
+(define %store-prefix
+  ;; Absolute path to the Nix store.
+  (make-parameter "/nix/store"))
+
+(define store-path?
+  (let ((store-path-rx
+         (delay (make-regexp
+                 (string-append "^.*" (%store-prefix) "/[^-]{32}-(.+)$")))))
+    (lambda (path)
+      "Return #t if PATH is a store path."
+      (not (not (regexp-exec (force store-path-rx) path))))))
+
+(define (derivation-path? path)
+  "Return #t if PATH is a derivation path."
+  (and (store-path? path) (string-suffix? ".drv" path)))
