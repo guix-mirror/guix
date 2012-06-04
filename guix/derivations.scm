@@ -250,7 +250,7 @@ the derivation called NAME with hash HASH."
 (define* (derivation store name system builder args env-vars inputs
                      #:key (outputs '("out")) hash hash-algo hash-mode)
   "Build a derivation with the given arguments.  Return the resulting
-<derivation> object and its store path.  When HASH, HASH-ALGO, and HASH-MODE
+store path and <derivation> object.  When HASH, HASH-ALGO, and HASH-MODE
 are given, a fixed-output derivation is created---i.e., one whose result is
 known in advance, such as a file download."
   (define (add-output-paths drv)
@@ -321,8 +321,9 @@ known in advance, such as a file download."
                                                   inputs)
                                       system builder args env-vars))
          (drv        (add-output-paths drv-masked)))
-    (add-text-to-store store (string-append name ".drv")
-                       (call-with-output-string
-                        (cut write-derivation drv <>))
-                       (map derivation-input-path
-                            inputs))))
+    (values (add-text-to-store store (string-append name ".drv")
+                               (call-with-output-string
+                                (cut write-derivation drv <>))
+                               (map derivation-input-path
+                                    inputs))
+            drv)))

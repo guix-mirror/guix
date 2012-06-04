@@ -20,9 +20,11 @@
 (define-module (test-derivations)
   #:use-module (guix derivations)
   #:use-module (guix store)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
-  #:use-module (rnrs io ports))
+  #:use-module (rnrs io ports)
+  #:use-module (ice-9 rdelim))
 
 (define %store
   (false-if-exception (open-connection)))
@@ -37,7 +39,7 @@
     (and (equal? b1 b2)
          (equal? d1 d2))))
 
-(test-skip (if %store 0 1))
+(test-skip (if %store 0 2))
 
 (test-assert "derivation with no inputs"
   (let ((builder (add-text-to-store %store "my-builder.sh"
@@ -45,6 +47,24 @@
                                     '())))
     (store-path? (derivation %store "foo" "x86_64-linux" builder
                              '() '(("HOME" . "/homeless")) '()))))
+
+(test-assert "build derivation with 1 source"
+  (let*-values (((builder)
+                 (add-text-to-store %store "my-builder.sh"
+                                    "#!/bin/sh\necho hello, world > \"$out\"\n"
+                                    '()))
+                ((drv-path drv)
+                 (derivation %store "foo" "x86_64-linux"
+                             "/bin/sh" `(,builder)
+                             '(("HOME" . "/homeless"))
+                             `((,builder))))
+                ((succeeded?)
+                 (build-derivations %store (list drv-path))))
+    (and succeeded?
+         (let ((path (derivation-output-path
+                      (assoc-ref (derivation-outputs drv) "out"))))
+           (string=? (call-with-input-file path read-line)
+                     "hello, world")))))
 
 (test-end)
 
