@@ -24,7 +24,7 @@
  (chicken
   (require-extension syntax-case))
  (guile
-  (use-modules (ice-9 syncase) (srfi srfi-9)
+  (use-modules (srfi srfi-9)
 	       ;;(srfi srfi-34) (srfi srfi-35) - not in Guile 1.6.7
 	       (srfi srfi-39)))
  (sisc
