@@ -32,7 +32,8 @@
 (test-begin "derivations")
 
 (test-assert "parse & export"
-  (let* ((b1 (call-with-input-file "test.drv" get-bytevector-all))
+  (let* ((f  (search-path %load-path "tests/test.drv"))
+         (b1 (call-with-input-file f get-bytevector-all))
          (d1 (read-derivation (open-bytevector-input-port b1)))
          (b2 (call-with-bytevector-output-port (cut write-derivation d1 <>)))
          (d2 (read-derivation (open-bytevector-input-port b2))))
