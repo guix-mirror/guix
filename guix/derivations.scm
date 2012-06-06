@@ -290,8 +290,8 @@ known in advance, such as a file download."
       (fold-right (lambda (output-name env-vars)
                     (if (assoc output-name env-vars)
                         env-vars
-                        (alist-cons output-name "" env-vars)))
-                  '()
+                        (append env-vars `((,output-name . "")))))
+                  e
                   outputs)))
 
   (let* ((outputs    (map (lambda (name)
