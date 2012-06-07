@@ -19,9 +19,12 @@
 (define-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-39)
   #:use-module (srfi srfi-60)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 format)
+  #:autoload   (ice-9 popen)  (open-pipe*)
+  #:autoload   (ice-9 rdelim) (read-line)
   #:use-module ((chop hash)
                 #:select (bytevector-hash
                           hash-method/sha256))
@@ -29,7 +32,12 @@
             bytevector->base32-string
             bytevector->nix-base32-string
             bytevector->base16-string
-            sha256))
+            sha256
+
+            %nixpkgs-directory
+            nixpkgs-derivation
+
+            memoize))
 
 
 ;;;
@@ -198,3 +206,39 @@ the previous application or INIT."
   "Return the SHA256 of BV as a bytevector."
   (bytevector-hash hash-method/sha256 bv))
 
+
+
+;;;
+;;; Nixpkgs.
+;;;
+
+(define %nixpkgs-directory
+  (make-parameter (getenv "NIXPKGS")))
+
+(define (nixpkgs-derivation attribute)
+  "Return the derivation path of ATTRIBUTE in Nixpkgs."
+  (let* ((p (open-pipe* OPEN_READ "nix-instantiate" "-A"
+                        attribute (%nixpkgs-directory)))
+         (l (read-line p))
+         (s (close-pipe p)))
+    (and (zero? (status:exit-val s))
+         (not (eof-object? l))
+         l)))
+
+
+;;;
+;;; Miscellaneous.
+;;;
+
+(define (memoize proc)
+  "Return a memoizing version of PROC."
+  (let ((cache (make-hash-table)))
+    (lambda args
+      (let ((results (hash-ref cache args)))
+        (if results
+            (apply values results)
+            (let ((results (call-with-values (lambda ()
+                                               (apply proc args))
+                             list)))
+              (hash-set! cache args results)
+              (apply values results)))))))

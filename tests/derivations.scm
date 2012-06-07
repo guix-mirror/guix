@@ -20,6 +20,7 @@
 (define-module (test-derivations)
   #:use-module (guix derivations)
   #:use-module (guix store)
+  #:use-module (guix utils)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
@@ -40,7 +41,7 @@
     (and (equal? b1 b2)
          (equal? d1 d2))))
 
-(test-skip (if %store 0 2))
+(test-skip (if %store 0 3))
 
 (test-assert "derivation with no inputs"
   (let ((builder (add-text-to-store %store "my-builder.sh"
@@ -52,7 +53,7 @@
 (test-assert "build derivation with 1 source"
   (let*-values (((builder)
                  (add-text-to-store %store "my-builder.sh"
-                                    "#!/bin/sh\necho hello, world > \"$out\"\n"
+                                    "echo hello, world > \"$out\"\n"
                                     '()))
                 ((drv-path drv)
                  (derivation %store "foo" "x86_64-linux"
@@ -66,6 +67,32 @@
                       (assoc-ref (derivation-outputs drv) "out"))))
            (string=? (call-with-input-file path read-line)
                      "hello, world")))))
+
+
+(define %coreutils
+  (false-if-exception (nixpkgs-derivation "coreutils")))
+
+(test-skip (if %coreutils 0 1))
+
+(test-assert "build derivation with coreutils"
+  (let* ((builder
+          (add-text-to-store %store "build-with-coreutils.sh"
+                             "echo $PATH ; mkdir --version ; mkdir $out ; touch $out/good"
+                             '()))
+         (drv-path
+          (derivation %store "foo" "x86_64-linux"
+                      "/bin/sh" `(,builder)
+                      `(("PATH" .
+                         ,(string-append
+                           (derivation-path->output-path %coreutils)
+                           "/bin")))
+                      `((,builder)
+                        (,%coreutils))))
+         (succeeded?
+          (build-derivations %store (list drv-path))))
+    (and succeeded?
+         (let ((p (derivation-path->output-path drv-path)))
+           (file-exists? (string-append p "/good"))))))
 
 (test-end)
 

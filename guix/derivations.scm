@@ -48,6 +48,7 @@
 
             read-derivation
             write-derivation
+            derivation-path->output-path
             derivation))
 
 ;;;
@@ -186,6 +187,18 @@ that form."
                       env-vars))
      (display ")" port))))
 
+(define* (derivation-path->output-path path #:optional (output "out"))
+  "Read the derivation from PATH (`/nix/store/xxx.drv'), and return the store
+path of its output OUTPUT."
+  (let* ((drv     (call-with-input-file path read-derivation))
+         (outputs (derivation-outputs drv)))
+    (and=> (assoc-ref outputs output) derivation-output-path)))
+
+
+;;;
+;;; Derivation primitive.
+;;;
+
 (define (compressed-hash bv size)                 ; `compressHash'
   "Given the hash stored in BV, return a compressed version thereof that fits
 in SIZE bytes."
@@ -200,33 +213,41 @@ in SIZE bytes."
                               (logxor o (bytevector-u8-ref bv i)))
           (loop (+ 1 i))))))
 
-(define (derivation-hash drv)      ; `hashDerivationModulo' in derivations.cc
-  "Return the hash of DRV, modulo its fixed-output inputs, as a bytevector."
-  (match drv
-    (($ <derivation> ((_ . ($ <derivation-output> path
-                              (? symbol? hash-algo) (? string? hash)))))
-     ;; A fixed-output derivation.
-     (sha256
-      (string->utf8
-       (string-append "fixed:out:" hash-algo ":" hash ":" path))))
-    (($ <derivation> outputs inputs sources
-        system builder args env-vars)
-     ;; A regular derivation: replace the path of each input with that
-     ;; input's hash; return the hash of serialization of the resulting
-     ;; derivation.
-     (let* ((inputs (map (match-lambda
-                          (($ <derivation-input> path sub-drvs)
-                           (let ((hash (call-with-input-file path
-                                         (compose bytevector->base16-string
-                                                  derivation-hash
-                                                  read-derivation))))
-                             (make-derivation-input hash sub-drvs))))
-                         inputs))
-            (drv     (make-derivation outputs inputs sources
-                                      system builder args env-vars)))
+(define derivation-hash            ; `hashDerivationModulo' in derivations.cc
+  (memoize
+   (lambda (drv)
+    "Return the hash of DRV, modulo its fixed-output inputs, as a bytevector."
+    (match drv
+      (($ <derivation> ((_ . ($ <derivation-output> path
+                                (? symbol? hash-algo) (? string? hash)))))
+       ;; A fixed-output derivation.
        (sha256
-        (string->utf8 (call-with-output-string
-                       (cut write-derivation drv <>))))))))
+        (string->utf8
+         (string-append "fixed:out:" (symbol->string hash-algo)
+                        ":" hash ":" path))))
+      (($ <derivation> outputs inputs sources
+          system builder args env-vars)
+       ;; A regular derivation: replace the path of each input with that
+       ;; input's hash; return the hash of serialization of the resulting
+       ;; derivation.  Note: inputs are sorted as in the order of their hex
+       ;; hash representation because that's what the C++ `std::map' code
+       ;; does.
+       (let* ((inputs (sort (map (match-lambda
+                                  (($ <derivation-input> path sub-drvs)
+                                   (let ((hash (call-with-input-file path
+                                                 (compose bytevector->base16-string
+                                                          derivation-hash
+                                                          read-derivation))))
+                                     (make-derivation-input hash sub-drvs))))
+                                 inputs)
+                            (lambda (i1 i2)
+                              (string<? (derivation-input-path i1)
+                                        (derivation-input-path i2)))))
+              (drv    (make-derivation outputs inputs sources
+                                       system builder args env-vars)))
+         (sha256
+          (string->utf8 (call-with-output-string
+                         (cut write-derivation drv <>))))))))))
 
 (define (store-path type hash name)               ; makeStorePath
   "Return the store path for NAME/HASH/TYPE."
@@ -300,7 +321,9 @@ known in advance, such as a file download."
                                   (make-derivation-output "" hash-algo hash)))
                           outputs))
          (inputs     (map (match-lambda
-                           (((? store-path? input) . sub-drvs)
+                           (((? store-path? input))
+                            (make-derivation-input input '("out")))
+                           (((? store-path? input) sub-drvs ...)
                             (make-derivation-input input sub-drvs))
                            ((input . _)
                             (let ((path (add-to-store store
@@ -321,6 +344,7 @@ known in advance, such as a file download."
                                                   inputs)
                                       system builder args env-vars))
          (drv        (add-output-paths drv-masked)))
+
     (values (add-text-to-store store (string-append name ".drv")
                                (call-with-output-string
                                 (cut write-derivation drv <>))
