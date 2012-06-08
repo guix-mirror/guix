@@ -49,7 +49,10 @@
             read-derivation
             write-derivation
             derivation-path->output-path
-            derivation))
+            derivation
+
+            %guile-for-build
+            build-expression->derivation))
 
 ;;;
 ;;; Nix derivations, as implemented in Nix's `derivations.cc'.
@@ -282,14 +285,14 @@ known in advance, such as a file download."
           system builder args env-vars)
        (let* ((drv-hash (derivation-hash drv))
               (outputs  (map (match-lambda
-                                ((output-name . ($ <derivation-output>
-                                                   _ algo hash))
-                                 (let ((path (output-path output-name
-                                                          drv-hash name)))
-                                   (cons output-name
-                                         (make-derivation-output path algo
-                                                                 hash)))))
-                               outputs)))
+                              ((output-name . ($ <derivation-output>
+                                                 _ algo hash))
+                               (let ((path (output-path output-name
+                                                        drv-hash name)))
+                                 (cons output-name
+                                       (make-derivation-output path algo
+                                                               hash)))))
+                             outputs)))
          (make-derivation outputs inputs sources system builder args
                           (map (match-lambda
                                 ((name . value)
@@ -351,3 +354,42 @@ known in advance, such as a file download."
                                (map derivation-input-path
                                     inputs))
             drv)))
+
+
+;;;
+;;; Guile-based builders.
+;;;
+
+(define %guile-for-build
+  ;; The derivation of the Guile to be used within the build environment,
+  ;; when using `build-expression->derivation'.
+  (make-parameter (false-if-exception (nixpkgs-derivation "guile"))))
+
+(define* (build-expression->derivation store name system exp inputs
+                                       #:key hash hash-algo)
+  "Return a derivation that executes Scheme expression EXP as a builder for
+derivation NAME.  INPUTS must be a list of string/derivation-path pairs.  EXP
+is evaluated in an environment where %OUTPUT is bound to the output path, and
+where %BUILD-INPUTS is bound to an alist of string/output-path pairs made
+from INPUTS."
+  (define guile
+    (string-append (derivation-path->output-path (%guile-for-build))
+                   "/bin/guile"))
+
+  (let* ((prologue `(begin
+                      (define %output (getenv "out"))
+                      (define %build-inputs
+                        ',(map (match-lambda
+                                ((name . drv)
+                                 (cons name
+                                       (derivation-path->output-path drv))))
+                               inputs))) )
+         (builder  (add-text-to-store store
+                                      (string-append name "-guile-builder")
+                                      (string-append (object->string prologue)
+                                                     (object->string exp))
+                                      (map cdr inputs))))
+    (derivation store name system guile `("--no-auto-compile" ,builder)
+                '(("HOME" . "/homeless"))
+                `((,(%guile-for-build))
+                  (,builder)))))

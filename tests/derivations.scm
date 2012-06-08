@@ -94,6 +94,38 @@
          (let ((p (derivation-path->output-path drv-path)))
            (file-exists? (string-append p "/good"))))))
 
+(test-skip (if (%guile-for-build) 0 2))
+
+(test-assert "build-expression->derivation without inputs"
+  (let* ((builder    '(begin
+                        (mkdir %output)
+                        (call-with-output-file (string-append %output "/test")
+                          (lambda (p)
+                            (display '(hello guix) p)))))
+         (drv-path   (build-expression->derivation %store "goo" "x86_64-linux"
+                                                   builder '()))
+         (succeeded? (build-derivations %store (list drv-path))))
+    (and succeeded?
+         (let ((p (derivation-path->output-path drv-path)))
+           (equal? '(hello guix)
+                   (call-with-input-file (string-append p "/test") read))))))
+
+(test-assert "build-expression->derivation with one input"
+  (let* ((builder    '(call-with-output-file %output
+                        (lambda (p)
+                          (let ((cu (assoc-ref %build-inputs "cu")))
+                            (close 1)
+                            (dup2 (port->fdes p) 1)
+                            (execl (string-append cu "/bin/uname")
+                                   "uname" "-a")))))
+         (drv-path   (build-expression->derivation %store "uname" "x86_64-linux"
+                                                   builder
+                                                   `(("cu" . ,%coreutils))))
+         (succeeded? (build-derivations %store (list drv-path))))
+    (and succeeded?
+         (let ((p (derivation-path->output-path drv-path)))
+           (string-contains (call-with-input-file p read-line) "GNU")))))
+
 (test-end)
 
 
