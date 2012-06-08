@@ -1,3 +1,5 @@
+-*- mode: org -*-
+
 Guix is Nix[0] from Guile[1]!
 
 Concretely, it allows Nix package management to be done entirely in
@@ -7,3 +9,38 @@ Nix language.
 
 [0] http://nixos.org/nix/
 [1] http://gnu.org/software/guile/
+
+
+* Hacking
+
+Guix currently depends on the following packages:
+
+  - GNU Guile 2.0.x, http://gnu.org/software/guile/
+  - Nix, http://nixos.org/nix/
+  - libchop, http://nongnu.org/libchop/
+
+For bootstrapping purposes, it is useful to reuse packages from Nixpkgs.
+For this to work, you need to have a checkout of the Nixpkgs repository,
+with the `NIXPKGS' environment variable pointing to it.
+
+  - Nixpkgs, http://nixos.org/nixpkgs/
+
+* How It Works
+
+Guix does the high-level preparation of a /derivation/.  A derivation is
+the promise of a build; it is stored as a text file under
+=/nix/store/xxx.drv=.  The (guix derivations) module provides the
+`derivation' primitive, as well as higher-level wrappers such as
+`build-expression->derivation'.
+
+Guix does remote procedure calls (RPCs) to the Nix daemon (the
+=nix-worker --daemon= command), which in turn performs builds and
+accesses to the Nix store on its behalf.  The RPCs are implemented in
+the (guix store) module.
+
+* Contact
+
+The repository is at <https://gitorious.org/guix/>.
+
+Please email <ludo@gnu.org> or <nix-dev@lists.science.uu.nl>, or
+join #guile or #nixos on irc.freenode.net or `civodul'. 
