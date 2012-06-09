@@ -141,6 +141,29 @@
          (let ((p (derivation-path->output-path drv-path)))
            (string-contains (call-with-input-file p read-line) "GNU")))))
 
+(test-skip (if (false-if-exception (getaddrinfo "ftp.gnu.org" "http"))
+               0
+               1))
+
+(test-assert "build-expression->derivation for fixed-output derivation"
+  (let* ((url         "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")
+         (builder     `(begin
+                         (use-modules (web client) (web uri)
+                                      (rnrs io ports))
+                         (let ((bv (http-get (string->uri ,url)
+                                             #:decode-body? #f)))
+                           (call-with-output-file %output
+                             (lambda (p)
+                               (put-bytevector p bv))))))
+         (drv-path    (build-expression->derivation
+                       %store "hello-2.8.tar.gz" "x86_64-linux" builder '()
+                       #:hash (nix-base32-string->bytevector
+                               "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6")
+                       #:hash-algo 'sha256))
+         (succeeded?  (build-derivations %store (list drv-path))))
+    (and succeeded?
+         (file-exists? (derivation-path->output-path drv-path)))))
+
 (test-end)
 
 

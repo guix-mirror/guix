@@ -396,4 +396,5 @@ from INPUTS."
     (derivation store name system guile `("--no-auto-compile" ,builder)
                 '(("HOME" . "/homeless"))
                 `((,(%guile-for-build))
-                  (,builder)))))
+                  (,builder))
+                #:hash hash #:hash-algo hash-algo)))
