@@ -46,6 +46,22 @@
           "mzxw6ytb"
           "mzxw6ytboi")))
 
+(test-assert "base32-string->bytevector"
+  (every (lambda (bv)
+           (equal? (base32-string->bytevector
+                    (bytevector->base32-string bv))
+                   bv))
+         ;; Examples from RFC 4648.
+         (map string->utf8 '("" "f" "fo" "foo" "foob" "fooba" "foobar"))))
+
+(test-assert "nix-base32-string->bytevector"
+  (every (lambda (bv)
+           (equal? (nix-base32-string->bytevector
+                    (bytevector->nix-base32-string bv))
+                   bv))
+         ;; Examples from RFC 4648.
+         (map string->utf8 '("" "f" "fo" "foo" "foob" "fooba" "foobar"))))
+
 ;; The following tests requires `nix-hash' in $PATH.
 (test-skip (if (false-if-exception (system* "nix-hash" "--version"))
                0

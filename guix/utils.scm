@@ -22,6 +22,7 @@
   #:use-module (srfi srfi-39)
   #:use-module (srfi srfi-60)
   #:use-module (rnrs bytevectors)
+  #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
   #:autoload   (ice-9 popen)  (open-pipe*)
   #:autoload   (ice-9 rdelim) (read-line)
@@ -32,6 +33,8 @@
             bytevector->base32-string
             bytevector->nix-base32-string
             bytevector->base16-string
+            base32-string->bytevector
+            nix-base32-string->bytevector
             sha256
 
             %nixpkgs-directory
@@ -168,6 +171,133 @@ the previous application or INIT."
 (define bytevector->nix-base32-string
   (make-bytevector->base32-string bytevector-quintet-fold-right
                                   %nix-base32-chars))
+
+
+(define bytevector-quintet-set!
+  (let* ((setq! (lambda (bv offset start stop value)
+                  (let ((v (bytevector-u8-ref bv offset))
+                        (w (arithmetic-shift value start))
+                        (m (bitwise-xor (1- (expt 2 stop))
+                                        (1- (expt 2 start)))))
+                    (bytevector-u8-set! bv offset
+                                        (bitwise-merge m w v)))))
+         (set0! (lambda (bv offset value)
+                  (setq! bv offset 3 8 value)))
+         (set1! (lambda (bv offset value)
+                  (setq! bv offset 0 3 (bit-field value 2 5))
+                  (or (= (+ 1 offset) (bytevector-length bv))
+                      (setq! bv (+ 1 offset) 6 8 (bit-field value 0 2)))))
+         (set2! (lambda (bv offset value)
+                  (setq! bv offset 1 6 value)))
+         (set3! (lambda (bv offset value)
+                  (setq! bv offset 0 1 (bit-field value 4 5))
+                  (or (= (+ 1 offset) (bytevector-length bv))
+                      (setq! bv (+ 1 offset) 4 8 (bit-field value 0 4)))))
+         (set4! (lambda (bv offset value)
+                  (setq! bv offset 0 4 (bit-field value 1 5))
+                  (or (= (+ 1 offset) (bytevector-length bv))
+                      (setq! bv (+ 1 offset) 7 8  (bit-field value 0 1)))))
+         (set5! (lambda (bv offset value)
+                  (setq! bv offset 2 7 value)))
+         (set6! (lambda (bv offset value)
+                  (setq! bv offset 0 2 (bit-field value 3 5))
+                  (or (= (+ 1 offset) (bytevector-length bv))
+                      (setq! bv (+ 1 offset) 5 8 (bit-field value 0 3)))))
+         (set7! (lambda (bv offset value)
+                  (setq! bv offset 0 5 value)))
+         (sets  (vector set0! set1! set2! set3! set4! set5! set6! set7!)))
+    (lambda (bv index value)
+      "Set the INDEXth quintet of BV to VALUE."
+      (let ((p (vector-ref sets (modulo index 8))))
+        (p bv (quotient (* index 5) 8) (logand value #x1f))))))
+
+(define bytevector-quintet-set-right!
+  (let* ((setq! (lambda (bv offset start stop value)
+                  (let ((v (bytevector-u8-ref bv offset))
+                        (w (arithmetic-shift value start))
+                        (m (bitwise-xor (1- (expt 2 stop))
+                                        (1- (expt 2 start)))))
+                    (bytevector-u8-set! bv offset
+                                        (bitwise-merge m w v)))))
+         (set0! (lambda (bv offset value)
+                  (setq! bv offset 0 5 value)))
+         (set1! (lambda (bv offset value)
+                  (setq! bv offset 5 8 (bit-field value 0 3))
+                  (or (= (+ 1 offset) (bytevector-length bv))
+                      (setq! bv (+ 1 offset) 0 2 (bit-field value 3 5)))))
+         (set2! (lambda (bv offset value)
+                  (setq! bv offset 2 7 value)))
+         (set3! (lambda (bv offset value)
+                  (setq! bv offset 7 8 (bit-field value 0 1))
+                  (or (= (+ 1 offset) (bytevector-length bv))
+                      (setq! bv (+ 1 offset) 0 4 (bit-field value 1 5)))))
+         (set4! (lambda (bv offset value)
+                  (setq! bv offset 4 8 (bit-field value 0 4))
+                  (or (= (+ 1 offset) (bytevector-length bv))
+                      (setq! bv (+ 1 offset) 0 1 (bit-field value 4 5)))))
+         (set5! (lambda (bv offset value)
+                  (setq! bv offset 1 6 value)))
+         (set6! (lambda (bv offset value)
+                  (setq! bv offset 6 8 (bit-field value 0 2))
+                  (or (= (+ 1 offset) (bytevector-length bv))
+                      (setq! bv (+ 1 offset) 0 3 (bit-field value 2 5)))))
+         (set7! (lambda (bv offset value)
+                  (setq! bv offset 3 8 value)))
+         (sets  (vector set0! set1! set2! set3! set4! set5! set6! set7!)))
+    (lambda (bv index value)
+      "Set the INDEXth quintet of BV to VALUE, assuming quintets start from
+the least-significant bits."
+      (let ((p (vector-ref sets (modulo index 8))))
+        (p bv (quotient (* index 5) 8) (logand value #x1f))))))
+
+(define (base32-string-unfold f s)
+  "Given procedure F which, when applied to a character, returns the
+corresponding quintet, return the bytevector corresponding to string S."
+  (define len (string-length s))
+
+  (let ((bv (make-bytevector (quotient (* len 5) 8))))
+    (string-fold (lambda (chr index)
+                   (bytevector-quintet-set! bv index (f chr))
+                   (+ 1 index))
+                 0
+                 s)
+    bv))
+
+(define (base32-string-unfold-right f s)
+  "Given procedure F which, when applied to a character, returns the
+corresponding quintet, return the bytevector corresponding to string S,
+starting from the right of S."
+  (define len (string-length s))
+
+  (let ((bv (make-bytevector (quotient (* len 5) 8))))
+    (string-fold-right (lambda (chr index)
+                         (bytevector-quintet-set-right! bv index (f chr))
+                         (+ 1 index))
+                       0
+                       s)
+    bv))
+
+(define (make-base32-string->bytevector base32-string-unfold base32-chars)
+  (let ((char->value (let loop ((i 0)
+                                (v vlist-null))
+                       (if (= i (vector-length base32-chars))
+                           v
+                           (loop (+ 1 i)
+                                 (vhash-consv (vector-ref base32-chars i)
+                                              i v))))))
+    (lambda (s)
+      "Return the binary representation of base32 string S as a bytevector."
+      (base32-string-unfold (lambda (chr)
+                              (or (and=> (vhash-assv chr char->value) cdr)
+                                  (error "invalid base32 character" chr)))
+                            s))))
+
+(define base32-string->bytevector
+  (make-base32-string->bytevector base32-string-unfold %rfc4648-base32-chars))
+
+(define nix-base32-string->bytevector
+  (make-base32-string->bytevector base32-string-unfold-right %nix-base32-chars))
+
 
 
 ;;;
