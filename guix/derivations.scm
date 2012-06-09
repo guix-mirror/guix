@@ -308,19 +308,22 @@ known in advance, such as a file download."
 
   (define (env-vars-with-empty-outputs)
     ;; Return a variant of ENV-VARS where each OUTPUTS is associated with an
-    ;; empty string, even outputs that do not appear in ENV-VARS.
+    ;; empty string, even outputs that do not appear in ENV-VARS.  Note: the
+    ;; result is sorted alphabetically, as with C++ `std::map'.
     (let ((e (map (match-lambda
                    ((name . val)
                     (if (member name outputs)
                         (cons name "")
                         (cons name val))))
                   env-vars)))
-      (fold-right (lambda (output-name env-vars)
+      (sort (fold (lambda (output-name env-vars)
                     (if (assoc output-name env-vars)
                         env-vars
                         (append env-vars `((,output-name . "")))))
                   e
-                  outputs)))
+                  outputs)
+            (lambda (e1 e2)
+              (string<? (car e1) (car e2))))))
 
   (let* ((outputs    (map (lambda (name)
                             ;; Return outputs with an empty path.

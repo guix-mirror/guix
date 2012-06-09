@@ -59,7 +59,9 @@
                 ((drv-path drv)
                  (derivation %store "foo" "x86_64-linux"
                              "/bin/sh" `(,builder)
-                             '(("HOME" . "/homeless"))
+                             '(("HOME" . "/homeless")
+                               ("zzz"  . "Z!")
+                               ("AAA"  . "A!"))
                              `((,builder))))
                 ((succeeded?)
                  (build-derivations %store (list drv-path))))
