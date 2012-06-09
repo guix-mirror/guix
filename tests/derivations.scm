@@ -25,6 +25,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
+  #:use-module (rnrs bytevectors)
   #:use-module (ice-9 rdelim))
 
 (define %store
@@ -67,6 +68,20 @@
                       (assoc-ref (derivation-outputs drv) "out"))))
            (string=? (call-with-input-file path read-line)
                      "hello, world")))))
+
+(test-assert "fixed-output derivation"
+  (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
+                                        "echo -n hello > $out" '()))
+         (hash       (sha256 (string->utf8 "hello")))
+         (drv-path   (derivation %store "fixed" "x86_64-linux"
+                                 "/bin/sh" `(,builder)
+                                 '() `((,builder))
+                                 #:hash hash #:hash-algo 'sha256))
+         (succeeded? (build-derivations %store (list drv-path))))
+    (and succeeded?
+         (let ((p (derivation-path->output-path drv-path)))
+           (equal? (string->utf8 "hello")
+                   (call-with-input-file p get-bytevector-all))))))
 
 
 (define %coreutils

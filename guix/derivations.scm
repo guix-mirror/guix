@@ -74,7 +74,7 @@
   derivation-output?
   (path       derivation-output-path)             ; store path
   (hash-algo  derivation-output-hash-algo)        ; symbol | #f
-  (hash       derivation-output-hash))            ; symbol | #f
+  (hash       derivation-output-hash))            ; bytevector | #f
 
 (define-record-type <derivation-input>
   (make-derivation-input path sub-derivations)
@@ -112,7 +112,8 @@ download with a fixed hash (aka. `fetchurl')."
                                  result))
                     ((name path hash-algo hash)
                      ;; fixed-output
-                     (let ((algo (string->symbol hash-algo)))
+                     (let ((algo (string->symbol hash-algo))
+                           (hash (base16-string->bytevector hash)))
                        (alist-cons name
                                    (make-derivation-output path algo hash)
                                    result)))))
@@ -170,8 +171,10 @@ that form."
      (write-list (map (match-lambda
                        ((name . ($ <derivation-output> path hash-algo hash))
                         (format #f "(~s,~s,~s,~s)"
-                                name path (or hash-algo "")
-                                (or hash ""))))
+                                name path
+                                (or (and=> hash-algo symbol->string) "")
+                                (or (and=> hash bytevector->base16-string)
+                                    ""))))
                       outputs))
      (display "," port)
      (write-list (map (match-lambda
@@ -222,12 +225,13 @@ in SIZE bytes."
     "Return the hash of DRV, modulo its fixed-output inputs, as a bytevector."
     (match drv
       (($ <derivation> ((_ . ($ <derivation-output> path
-                                (? symbol? hash-algo) (? string? hash)))))
+                                (? symbol? hash-algo) (? bytevector? hash)))))
        ;; A fixed-output derivation.
        (sha256
         (string->utf8
          (string-append "fixed:out:" (symbol->string hash-algo)
-                        ":" hash ":" path))))
+                        ":" (bytevector->base16-string hash)
+                        ":" path))))
       (($ <derivation> outputs inputs sources
           system builder args env-vars)
        ;; A regular derivation: replace the path of each input with that
