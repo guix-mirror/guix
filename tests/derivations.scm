@@ -145,6 +145,26 @@
            (equal? '(hello guix)
                    (call-with-input-file (string-append p "/test") read))))))
 
+(test-assert "build-expression->derivation with two outputs"
+  (let* ((builder    '(begin
+                        (call-with-output-file (assoc-ref %outputs "out")
+                          (lambda (p)
+                            (display '(hello) p)))
+                        (call-with-output-file (assoc-ref %outputs "second")
+                          (lambda (p)
+                            (display '(world) p)))))
+         (drv-path   (build-expression->derivation %store "double"
+                                                   "x86_64-linux"
+                                                   builder '()
+                                                   #:outputs '("out"
+                                                               "second")))
+         (succeeded? (build-derivations %store (list drv-path))))
+    (and succeeded?
+         (let ((one (derivation-path->output-path drv-path))
+               (two (derivation-path->output-path drv-path "second")))
+           (and (equal? '(hello) (call-with-input-file one read))
+                (equal? '(world) (call-with-input-file two read)))))))
+
 (test-assert "build-expression->derivation with one input"
   (let* ((builder    '(call-with-output-file %output
                         (lambda (p)

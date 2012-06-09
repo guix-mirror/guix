@@ -373,18 +373,24 @@ known in advance, such as a file download."
   (make-parameter (false-if-exception (nixpkgs-derivation "guile"))))
 
 (define* (build-expression->derivation store name system exp inputs
-                                       #:key hash hash-algo)
+                                       #:key (outputs '("out"))
+                                       hash hash-algo)
   "Return a derivation that executes Scheme expression EXP as a builder for
 derivation NAME.  INPUTS must be a list of string/derivation-path pairs.  EXP
-is evaluated in an environment where %OUTPUT is bound to the output path, and
-where %BUILD-INPUTS is bound to an alist of string/output-path pairs made
-from INPUTS."
+is evaluated in an environment where %OUTPUT is bound to the main output
+path, %OUTPUTS is bound to a list of output/path pairs, and where
+%BUILD-INPUTS is bound to an alist of string/output-path pairs made from
+INPUTS."
   (define guile
     (string-append (derivation-path->output-path (%guile-for-build))
                    "/bin/guile"))
 
   (let* ((prologue `(begin
                       (define %output (getenv "out"))
+                      (define %outputs
+                        (map (lambda (o)
+                               (cons o (getenv o)))
+                             ',outputs))
                       (define %build-inputs
                         ',(map (match-lambda
                                 ((name . drv)
@@ -400,4 +406,5 @@ from INPUTS."
                 '(("HOME" . "/homeless"))
                 `((,(%guile-for-build))
                   (,builder))
-                #:hash hash #:hash-algo hash-algo)))
+                #:hash hash #:hash-algo hash-algo
+                #:outputs outputs)))
