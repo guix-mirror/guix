@@ -62,6 +62,13 @@
          ;; Examples from RFC 4648.
          (map string->utf8 '("" "f" "fo" "foo" "foob" "fooba" "foobar"))))
 
+(test-assert "bytevector->base16-string->bytevector"
+  (every (lambda (bv)
+           (equal? (base16-string->bytevector
+                    (bytevector->base16-string bv))
+                   bv))
+         (map string->utf8 '("" "f" "fo" "foo" "foob" "fooba" "foobar"))))
+
 ;; The following tests requires `nix-hash' in $PATH.
 (test-skip (if (false-if-exception (system* "nix-hash" "--version"))
                0

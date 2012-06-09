@@ -35,6 +35,7 @@
             bytevector->base16-string
             base32-string->bytevector
             nix-base32-string->bytevector
+            base16-string->bytevector
             sha256
 
             %nixpkgs-directory
@@ -326,6 +327,33 @@ starting from the right of S."
           (string-concatenate-reverse r)
           (loop (+ 1 i)
                 (cons (vector-ref chars (bytevector-u8-ref bv i)) r))))))
+
+(define base16-string->bytevector
+  (let ((chars->value (fold (lambda (i r)
+                              (vhash-consv (string-ref (number->string i 16)
+                                                       0)
+                                           i r))
+                            vlist-null
+                            (iota 16))))
+    (lambda (s)
+      "Return the bytevector whose hexadecimal representation is string S."
+      (define bv
+        (make-bytevector (quotient (string-length s) 2) 0))
+
+      (string-fold (lambda (chr i)
+                     (let ((j (quotient i 2))
+                           (v (and=> (vhash-assv chr chars->value) cdr)))
+                       (if v
+                           (if (zero? (logand i 1))
+                               (bytevector-u8-set! bv j
+                                                   (arithmetic-shift v 4))
+                               (let ((w (bytevector-u8-ref bv j)))
+                                 (bytevector-u8-set! bv j (logior v w))))
+                           (error "invalid hexadecimal character" chr)))
+                     (+ i 1))
+                   0
+                   s)
+      bv)))
 
 
 ;;;
