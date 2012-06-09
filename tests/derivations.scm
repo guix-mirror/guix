@@ -85,6 +85,24 @@
            (equal? (string->utf8 "hello")
                    (call-with-input-file p get-bytevector-all))))))
 
+(test-assert "multiple-output derivation"
+  (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
+                                        "echo one > $out ; echo two > $second"
+                                        '()))
+         (drv-path   (derivation %store "fixed" "x86_64-linux"
+                                 "/bin/sh" `(,builder)
+                                 '(("HOME" . "/homeless")
+                                   ("zzz"  . "Z!")
+                                   ("AAA"  . "A!"))
+                                 `((,builder))
+                                 #:outputs '("out" "second")))
+         (succeeded? (build-derivations %store (list drv-path))))
+    (and succeeded?
+         (let ((one (derivation-path->output-path drv-path "out"))
+               (two (derivation-path->output-path drv-path "second")))
+           (and (eq? 'one (call-with-input-file one read))
+                (eq? 'two (call-with-input-file two read)))))))
+
 
 (define %coreutils
   (false-if-exception (nixpkgs-derivation "coreutils")))
