@@ -28,6 +28,10 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 rdelim))
 
+(define %current-system
+  ;; System type as expected by Nix, usually ARCHITECTURE-KERNEL.
+  "x86_64-linux")
+
 (define %store
   (false-if-exception (open-connection)))
 
@@ -48,7 +52,7 @@
   (let ((builder (add-text-to-store %store "my-builder.sh"
                                     "#!/bin/sh\necho hello, world\n"
                                     '())))
-    (store-path? (derivation %store "foo" "x86_64-linux" builder
+    (store-path? (derivation %store "foo" %current-system builder
                              '() '(("HOME" . "/homeless")) '()))))
 
 (test-assert "build derivation with 1 source"
@@ -57,7 +61,7 @@
                                     "echo hello, world > \"$out\"\n"
                                     '()))
                 ((drv-path drv)
-                 (derivation %store "foo" "x86_64-linux"
+                 (derivation %store "foo" %current-system
                              "/bin/sh" `(,builder)
                              '(("HOME" . "/homeless")
                                ("zzz"  . "Z!")
@@ -75,7 +79,7 @@
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
                                         "echo -n hello > $out" '()))
          (hash       (sha256 (string->utf8 "hello")))
-         (drv-path   (derivation %store "fixed" "x86_64-linux"
+         (drv-path   (derivation %store "fixed" %current-system
                                  "/bin/sh" `(,builder)
                                  '() `((,builder))
                                  #:hash hash #:hash-algo 'sha256))
@@ -89,7 +93,7 @@
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
                                         "echo one > $out ; echo two > $second"
                                         '()))
-         (drv-path   (derivation %store "fixed" "x86_64-linux"
+         (drv-path   (derivation %store "fixed" %current-system
                                  "/bin/sh" `(,builder)
                                  '(("HOME" . "/homeless")
                                    ("zzz"  . "Z!")
@@ -115,7 +119,7 @@
                              "echo $PATH ; mkdir --version ; mkdir $out ; touch $out/good"
                              '()))
          (drv-path
-          (derivation %store "foo" "x86_64-linux"
+          (derivation %store "foo" %current-system
                       "/bin/sh" `(,builder)
                       `(("PATH" .
                          ,(string-append
@@ -137,7 +141,7 @@
                         (call-with-output-file (string-append %output "/test")
                           (lambda (p)
                             (display '(hello guix) p)))))
-         (drv-path   (build-expression->derivation %store "goo" "x86_64-linux"
+         (drv-path   (build-expression->derivation %store "goo" %current-system
                                                    builder '()))
          (succeeded? (build-derivations %store (list drv-path))))
     (and succeeded?
@@ -154,7 +158,7 @@
                           (lambda (p)
                             (display '(world) p)))))
          (drv-path   (build-expression->derivation %store "double"
-                                                   "x86_64-linux"
+                                                   %current-system
                                                    builder '()
                                                    #:outputs '("out"
                                                                "second")))
@@ -173,7 +177,7 @@
                             (dup2 (port->fdes p) 1)
                             (execl (string-append cu "/bin/uname")
                                    "uname" "-a")))))
-         (drv-path   (build-expression->derivation %store "uname" "x86_64-linux"
+         (drv-path   (build-expression->derivation %store "uname" %current-system
                                                    builder
                                                    `(("cu" . ,%coreutils))))
          (succeeded? (build-derivations %store (list drv-path))))
@@ -196,7 +200,7 @@
                              (lambda (p)
                                (put-bytevector p bv))))))
          (drv-path    (build-expression->derivation
-                       %store "hello-2.8.tar.gz" "x86_64-linux" builder '()
+                       %store "hello-2.8.tar.gz" %current-system builder '()
                        #:hash (nix-base32-string->bytevector
                                "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6")
                        #:hash-algo 'sha256))
