@@ -21,12 +21,14 @@
   #:use-module (guix derivations)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
-  #:use-module (ice-9 rdelim))
+  #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 ftw))
 
 (define %current-system
   ;; System type as expected by Nix, usually ARCHITECTURE-KERNEL.
@@ -34,6 +36,24 @@
 
 (define %store
   (false-if-exception (open-connection)))
+
+(define (directory-contents dir)
+  "Return an alist representing the contents of DIR."
+  (define prefix-len (string-length dir))
+  (sort (file-system-fold (const #t)                   ; enter?
+                          (lambda (path stat result)   ; leaf
+                            (alist-cons (string-drop path prefix-len)
+                                        (call-with-input-file path
+                                          get-bytevector-all)
+                                        result))
+                          (lambda (path stat result) result)      ; down
+                          (lambda (path stat result) result)      ; up
+                          (lambda (path stat result) result)      ; skip
+                          (lambda (path stat errno result) result) ; error
+                          '()
+                          dir)
+        (lambda (e1 e2)
+          (string<? (car e1) (car e2)))))
 
 (test-begin "derivations")
 
@@ -46,7 +66,14 @@
     (and (equal? b1 b2)
          (equal? d1 d2))))
 
-(test-skip (if %store 0 3))
+(test-skip (if %store 0 4))
+
+(test-assert "add-to-store, recursive"
+  (let* ((dir (dirname (search-path %load-path "language/tree-il/spec.scm")))
+         (drv (add-to-store %store "dir-tree-test" #t #t "sha256" dir)))
+    (and (eq? 'directory (stat:type (stat drv)))
+         (equal? (directory-contents dir)
+                 (directory-contents drv)))))
 
 (test-assert "derivation with no inputs"
   (let ((builder (add-text-to-store %store "my-builder.sh"

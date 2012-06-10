@@ -27,6 +27,7 @@
   #:use-module (srfi srfi-39)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 ftw)
   #:export (nix-server?
             nix-server-major-version
             nix-server-minor-version
@@ -178,25 +179,38 @@
 (define (write-file f p)
   (define %archive-version-1 "nix-archive-1")
 
-  (let ((s (lstat f)))
-    (write-string %archive-version-1 p)
-    (write-string "(" p)
-    (case (stat:type s)
-      ((regular)
-       (write-string "type" p)
-       (write-string "regular" p)
-       (if (not (zero? (logand (stat:mode s) #o100)))
-           (begin
-             (write-string "executable" p)
-             (write-string "" p)))
-       (write-contents f p)
-       (write-string ")" p))
-      ((directory)
-       (write-string "type" p)
-       (write-string "directory" p)
-       (error "ENOSYS"))
-      (else
-       (error "ENOSYS")))))
+  (write-string %archive-version-1 p)
+
+  (let dump ((f f))
+    (let ((s (lstat f)))
+      (write-string "(" p)
+      (case (stat:type s)
+        ((regular)
+         (write-string "type" p)
+         (write-string "regular" p)
+         (if (not (zero? (logand (stat:mode s) #o100)))
+             (begin
+               (write-string "executable" p)
+               (write-string "" p)))
+         (write-contents f p))
+        ((directory)
+         (write-string "type" p)
+         (write-string "directory" p)
+         (let ((entries (remove (cut member <> '("." ".."))
+                                (scandir f))))
+           (for-each (lambda (e)
+                       (let ((f (string-append f "/" e)))
+                         (write-string "entry" p)
+                         (write-string "(" p)
+                         (write-string "name" p)
+                         (write-string e p)
+                         (write-string "node" p)
+                         (dump f)
+                         (write-string ")" p)))
+                     entries)))
+        (else
+         (error "ENOSYS")))
+      (write-string ")" p))))
 
 (define-syntax write-arg
   (syntax-rules (integer boolean file string string-list)
@@ -349,9 +363,9 @@
   store-path)
 
 (define-operation (add-to-store (string basename)
-                                (integer algo)
-                                (boolean sha256-and-recursive?)
+                                (boolean fixed?)  ; obsolete, must be #t
                                 (boolean recursive?)
+                                (string hash-algo)
                                 (file file-name))
   "Add the contents of FILE-NAME under BASENAME to the store."
   store-path)
