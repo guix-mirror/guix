@@ -24,11 +24,13 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 rdelim)
-  #:use-module (ice-9 ftw))
+  #:use-module (ice-9 ftw)
+  #:use-module (ice-9 match))
 
 (define %store
   (false-if-exception (open-connection)))
@@ -156,7 +158,7 @@
          (let ((p (derivation-path->output-path drv-path)))
            (file-exists? (string-append p "/good"))))))
 
-(test-skip (if (%guile-for-build) 0 2))
+(test-skip (if (%guile-for-build) 0 4))
 
 (test-assert "build-expression->derivation without inputs"
   (let* ((builder    '(begin
@@ -207,6 +209,22 @@
     (and succeeded?
          (let ((p (derivation-path->output-path drv-path)))
            (string-contains (call-with-input-file p read-line) "GNU")))))
+
+(test-assert "imported-files"
+  (let* ((files    `(("x"     . ,(search-path %load-path "ice-9/q.scm"))
+                     ("a/b/c" . ,(search-path %load-path
+                                              "guix/derivations.scm"))
+                     ("p/q"   . ,(search-path %load-path "guix.scm"))))
+         (drv-path (imported-files %store files)))
+    (and (build-derivations %store (list drv-path))
+         (let ((dir (derivation-path->output-path drv-path)))
+           (every (match-lambda
+                   ((path . source)
+                    (equal? (call-with-input-file (string-append dir "/" path)
+                              get-bytevector-all)
+                            (call-with-input-file source
+                              get-bytevector-all))))
+                  files)))))
 
 (test-skip (if (false-if-exception (getaddrinfo "ftp.gnu.org" "http"))
                0

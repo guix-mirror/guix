@@ -52,7 +52,8 @@
             derivation
 
             %guile-for-build
-            build-expression->derivation))
+            build-expression->derivation
+            imported-files))
 
 ;;;
 ;;; Nix derivations, as implemented in Nix's `derivations.cc'.
@@ -372,6 +373,51 @@ known in advance, such as a file download."
   ;; when using `build-expression->derivation'.
   (make-parameter (false-if-exception (nixpkgs-derivation "guile"))))
 
+(define* (imported-files store files
+                         #:key (name "file-import") (system (%current-system)))
+  "Return a derivation that imports FILES into STORE.  FILES must be a list
+of (FINAL-PATH . FILE-NAME) pairs; each FILE-NAME is read from the file
+system, imported, and appears under FINAL-PATH in the resulting store path."
+  (define (parent-dirs file-name)
+    ;; Return the list of parent dirs of FILE-NAME, in the order in which an
+    ;; `mkdir -p' implementation would make them.
+    (let ((not-slash (char-set-complement (char-set #\/))))
+      (reverse
+       (fold (lambda (dir result)
+               (match result
+                 (()
+                  (list dir))
+                 ((prev _ ...)
+                  (cons (string-append prev "/" dir)
+                        result))))
+             '()
+             (remove (cut string=? <> ".")
+                     (string-tokenize (dirname file-name) not-slash))))))
+
+  (let* ((files   (map (match-lambda
+                        ((final-path . file-name)
+                         (cons final-path
+                               (add-to-store store (basename final-path) #t #f
+                                             "sha256" file-name))))
+                       files))
+         (builder
+          `(begin
+             (mkdir %output) (chdir %output)
+             ,@(append-map (match-lambda
+                            ((final-path . store-path)
+                             (append (match (parent-dirs final-path)
+                                       (() '())
+                                       ((head ... tail)
+                                        (append (map (lambda (d)
+                                                       `(false-if-exception
+                                                         (mkdir ,d)))
+                                                     head)
+                                                `((mkdir ,tail)))))
+                                     `((symlink ,store-path ,final-path)))))
+                           files))))
+    (build-expression->derivation store name (%current-system)
+                                  builder files)))
+
 (define* (build-expression->derivation store name system exp inputs
                                        #:key (outputs '("out"))
                                        hash hash-algo)
@@ -395,7 +441,9 @@ INPUTS."
                         ',(map (match-lambda
                                 ((name . drv)
                                  (cons name
-                                       (derivation-path->output-path drv))))
+                                       (if (derivation-path? drv)
+                                           (derivation-path->output-path drv)
+                                           drv))))
                                inputs))) )
          (builder  (add-text-to-store store
                                       (string-append name "-guile-builder")
