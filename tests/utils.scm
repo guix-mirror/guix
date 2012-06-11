@@ -20,6 +20,7 @@
 (define-module (test-utils)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs bytevectors)
@@ -84,6 +85,18 @@
                    (l (read-line p)))
               (close-pipe p)
               l))))
+
+(test-assert "gnu-triplet->nix-system"
+  (let ((samples '(("i586-gnu0.3" "i686-gnu")
+                   ("x86_64-unknown-linux-gnu" "x86_64-linux")
+                   ("i386-pc-linux-gnu" "i686-linux")
+                   ("x86_64-unknown-freebsd8.2" "x86_64-freebsd")
+                   ("x86_64-apple-darwin10.8.0" "x86_64-darwin")
+                   ("i686-pc-cygwin" "i686-cygwin"))))
+    (let-values (((gnu nix) (unzip2 samples)))
+      (every (lambda (gnu nix)
+               (equal? nix (gnu-triplet->nix-system gnu)))
+             gnu nix))))
 
 (test-end)
 

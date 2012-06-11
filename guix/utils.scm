@@ -26,6 +26,7 @@
   #:use-module (ice-9 format)
   #:autoload   (ice-9 popen)  (open-pipe*)
   #:autoload   (ice-9 rdelim) (read-line)
+  #:use-module (ice-9 regex)
   #:use-module ((chop hash)
                 #:select (bytevector-hash
                           hash-method/sha256))
@@ -41,7 +42,9 @@
             %nixpkgs-directory
             nixpkgs-derivation
 
-            memoize))
+            memoize
+            gnu-triplet->nix-system
+            %current-system))
 
 
 ;;;
@@ -400,3 +403,29 @@ starting from the right of S."
                              list)))
               (hash-set! cache args results)
               (apply values results)))))))
+
+(define (gnu-triplet->nix-system triplet)
+  "Return the Nix system type corresponding to TRIPLET, a GNU triplet as
+returned by `config.guess'."
+  (let ((triplet (cond ((string-match "^i[345]86-(.*)$" triplet)
+                        =>
+                        (lambda (m)
+                          (string-append "i686-" (match:substring m 1))))
+                       (else triplet))))
+    (cond ((string-match "^([^-]+)-([^-]+-)?linux-gnu.*" triplet)
+           =>
+           (lambda (m)
+             ;; Nix omits `-gnu' for GNU/Linux.
+             (string-append (match:substring m 1) "-linux")))
+          ((string-match "^([^-]+)-([^-]+-)?([[:alpha:]]+)([0-9]+\\.?)*$" triplet)
+           =>
+           (lambda (m)
+             ;; Nix strip the version number from names such as `gnu0.3',
+             ;; `darwin10.2.0', etc., and always strips the vendor part.
+             (string-append (match:substring m 1) "-"
+                            (match:substring m 3))))
+          (else triplet))))
+
+(define %current-system
+  ;; System type as expected by Nix, usually ARCHITECTURE-KERNEL.
+  (make-parameter (gnu-triplet->nix-system %host-type)))
