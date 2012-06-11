@@ -418,9 +418,27 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
     (build-expression->derivation store name (%current-system)
                                   builder files)))
 
+(define* (imported-modules store modules
+                           #:key (name "module-import")
+                           (system (%current-system)))
+  "Return a derivation that contains the source files of MODULES, a list of
+module names such as `(ice-9 q)'.  All of MODULES must be in the current
+search path."
+  ;; TODO: Determine the closure of MODULES, build the `.go' files,
+  ;; canonicalize the source files through read/write, etc.
+  (let ((files (map (lambda (m)
+                      (let ((f (string-append
+                                (string-join (map symbol->string m) "/")
+                                ".scm")))
+                        (cons f (search-path %load-path f))))
+                    modules)))
+    (imported-files store files #:name name #:system system)))
+
+
 (define* (build-expression->derivation store name system exp inputs
                                        #:key (outputs '("out"))
-                                       hash hash-algo)
+                                       hash hash-algo
+                                       (modules '()))
   "Return a derivation that executes Scheme expression EXP as a builder for
 derivation NAME.  INPUTS must be a list of string/derivation-path pairs.  EXP
 is evaluated in an environment where %OUTPUT is bound to the main output
@@ -449,10 +467,19 @@ INPUTS."
                                       (string-append name "-guile-builder")
                                       (string-append (object->string prologue)
                                                      (object->string exp))
-                                      (map cdr inputs))))
-    (derivation store name system guile `("--no-auto-compile" ,builder)
+                                      (map cdr inputs)))
+         (mod-drv  (if (null? modules)
+                       #f
+                       (imported-modules store modules)))
+         (mod-dir  (and mod-drv
+                        (derivation-path->output-path mod-drv))))
+    (derivation store name system guile
+                `("--no-auto-compile"
+                  ,@(if mod-dir `("-L" ,mod-dir) '())
+                  ,builder)
                 '(("HOME" . "/homeless"))
                 `((,(%guile-for-build))
-                  (,builder))
+                  (,builder)
+                  ,@(if mod-drv `((,mod-drv)) '()))
                 #:hash hash #:hash-algo hash-algo
                 #:outputs outputs)))
