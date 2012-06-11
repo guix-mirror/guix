@@ -214,14 +214,15 @@
 
 (test-assert "build-expression->derivation for fixed-output derivation"
   (let* ((url         "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")
-         (builder     `(begin
-                         (use-modules (web client) (web uri)
-                                      (rnrs io ports))
-                         (let ((bv (http-get (string->uri ,url)
-                                             #:decode-body? #f)))
-                           (call-with-output-file %output
-                             (lambda (p)
-                               (put-bytevector p bv))))))
+         (builder
+          `(begin
+             (use-modules (web client) (web uri)
+                          (rnrs io ports) (srfi srfi-11))
+             (let-values (((resp bv)
+                           (http-get (string->uri ,url) #:decode-body? #f)))
+               (call-with-output-file %output
+                 (lambda (p)
+                   (put-bytevector p bv))))))
          (drv-path    (build-expression->derivation
                        %store "hello-2.8.tar.gz" (%current-system) builder '()
                        #:hash (nix-base32-string->bytevector
