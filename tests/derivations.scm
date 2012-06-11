@@ -66,6 +66,13 @@
 
 (test-skip (if %store 0 4))
 
+(test-assert "add-to-store, flat"
+  (let* ((file (search-path %load-path "language/tree-il/spec.scm"))
+         (drv  (add-to-store %store "flat-test" #t #f "sha256" file)))
+    (and (eq? 'regular (stat:type (stat drv)))
+         (equal? (call-with-input-file file get-bytevector-all)
+                 (call-with-input-file drv get-bytevector-all)))))
+
 (test-assert "add-to-store, recursive"
   (let* ((dir (dirname (search-path %load-path "language/tree-il/spec.scm")))
          (drv (add-to-store %store "dir-tree-test" #t #t "sha256" dir)))
