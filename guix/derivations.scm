@@ -412,7 +412,8 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
                                                        `(false-if-exception
                                                          (mkdir ,d)))
                                                      head)
-                                                `((mkdir ,tail)))))
+                                                `((or (file-exists? ,tail)
+                                                      (mkdir ,tail))))))
                                      `((symlink ,store-path ,final-path)))))
                            files))))
     (build-expression->derivation store name (%current-system)

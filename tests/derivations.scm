@@ -221,7 +221,8 @@
   (let* ((files    `(("x"     . ,(search-path %load-path "ice-9/q.scm"))
                      ("a/b/c" . ,(search-path %load-path
                                               "guix/derivations.scm"))
-                     ("p/q"   . ,(search-path %load-path "guix.scm"))))
+                     ("p/q"   . ,(search-path %load-path "guix.scm"))
+                     ("p/z"   . ,(search-path %load-path "guix/store.scm"))))
          (drv-path (imported-files %store files)))
     (and (build-derivations %store (list drv-path))
          (let ((dir (derivation-path->output-path drv-path)))
