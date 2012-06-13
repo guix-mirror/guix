@@ -4,3 +4,11 @@
 *.go
 tmp
 *.log
+/build-aux
+/configure
+Makefile.in
+Makefile
+/autom4te.cache
+config.cache
+/aclocal.m4
+/config.status
