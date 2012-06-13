@@ -32,7 +32,7 @@
 
 (define %standard-inputs
   (map (lambda (name)
-         (cons name (nixpkgs-derivation name)))
+         (list name (nixpkgs-derivation name)))
        '("gnutar" "gzip" "bzip2" "xz"
          "coreutils" "gnused" "gnugrep" "bash"
          "gcc" "binutils" "gnumake" "glibc")))
@@ -54,8 +54,9 @@ input derivation INPUTS, using the usual procedure of the GNU Build System."
 
   (build-expression->derivation store name system
                                 builder
-                                (alist-cons "source" source
-                                            (append inputs %standard-inputs))
+                                `(("source" ,source)
+                                  ,@inputs
+                                  ,@%standard-inputs)
                                 #:outputs outputs
                                 #:modules '((guix build gnu-build-system)
                                             (guix build utils))))

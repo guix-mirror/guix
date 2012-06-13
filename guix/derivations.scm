@@ -397,7 +397,7 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
 
   (let* ((files   (map (match-lambda
                         ((final-path . file-name)
-                         (cons final-path
+                         (list final-path
                                (add-to-store store (basename final-path) #t #f
                                              "sha256" file-name))))
                        files))
@@ -405,7 +405,7 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
           `(begin
              (mkdir %output) (chdir %output)
              ,@(append-map (match-lambda
-                            ((final-path . store-path)
+                            ((final-path store-path)
                              (append (match (parent-dirs final-path)
                                        (() '())
                                        ((head ... tail)
@@ -442,11 +442,11 @@ search path."
                                        hash hash-algo
                                        (modules '()))
   "Return a derivation that executes Scheme expression EXP as a builder for
-derivation NAME.  INPUTS must be a list of string/derivation-path pairs.  EXP
-is evaluated in an environment where %OUTPUT is bound to the main output
-path, %OUTPUTS is bound to a list of output/path pairs, and where
-%BUILD-INPUTS is bound to an alist of string/output-path pairs made from
-INPUTS."
+derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV) tuples;
+when SUB-DRV is omitted, \"out\" is assumed.  EXP is evaluated in an
+environment where %OUTPUT is bound to the main output path, %OUTPUTS is bound
+to a list of output/path pairs, and where %BUILD-INPUTS is bound to an alist
+of string/output-path pairs made from INPUTS."
   (define guile
     (string-append (derivation-path->output-path (%guile-for-build))
                    "/bin/guile"))
@@ -459,17 +459,21 @@ INPUTS."
                              ',outputs))
                       (define %build-inputs
                         ',(map (match-lambda
-                                ((name . drv)
-                                 (cons name
-                                       (if (derivation-path? drv)
-                                           (derivation-path->output-path drv)
-                                           drv))))
-                               inputs))) )
+                                ((name drv . rest)
+                                 (let ((sub (match rest
+                                              (() "out")
+                                              ((x) x))))
+                                   (cons name
+                                         (if (derivation-path? drv)
+                                             (derivation-path->output-path drv
+                                                                           sub)
+                                             drv)))))
+                               inputs))))
          (builder  (add-text-to-store store
                                       (string-append name "-guile-builder")
                                       (string-append (object->string prologue)
                                                      (object->string exp))
-                                      (map cdr inputs)))
+                                      (map second inputs)))
          (mod-drv  (if (null? modules)
                        #f
                        (imported-modules store modules)))
@@ -482,7 +486,7 @@ INPUTS."
                 '(("HOME" . "/homeless"))
                 `((,(%guile-for-build))
                   (,builder)
-                  ,@(map (compose list cdr) inputs)
+                  ,@(map cdr inputs)
                   ,@(if mod-drv `((,mod-drv)) '()))
                 #:hash hash #:hash-algo hash-algo
                 #:outputs outputs)))

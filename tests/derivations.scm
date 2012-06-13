@@ -211,7 +211,7 @@
                                    "uname" "-a")))))
          (drv-path   (build-expression->derivation %store "uname" (%current-system)
                                                    builder
-                                                   `(("cu" . ,%coreutils))))
+                                                   `(("cu" ,%coreutils))))
          (succeeded? (build-derivations %store (list drv-path))))
     (and succeeded?
          (let ((p (derivation-path->output-path drv-path)))

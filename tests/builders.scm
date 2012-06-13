@@ -47,7 +47,7 @@
                     "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))
          (tarball  (http-fetch %store url 'sha256 hash))
          (build    (gnu-build %store "hello-2.8" tarball
-                              `(("gawk" . ,(nixpkgs-derivation "gawk"))))))
+                              `(("gawk" ,(nixpkgs-derivation "gawk"))))))
     (and (build-derivations %store (list (pk 'hello-drv build)))
          (file-exists? (string-append (derivation-path->output-path build)
                                       "/bin/hello")))))
