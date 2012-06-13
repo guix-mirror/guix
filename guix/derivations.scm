@@ -482,6 +482,7 @@ INPUTS."
                 '(("HOME" . "/homeless"))
                 `((,(%guile-for-build))
                   (,builder)
+                  ,@(map (compose list cdr) inputs)
                   ,@(if mod-drv `((,mod-drv)) '()))
                 #:hash hash #:hash-algo hash-algo
                 #:outputs outputs)))

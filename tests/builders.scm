@@ -19,6 +19,7 @@
 
 (define-module (test-builders)
   #:use-module (guix http)
+  #:use-module (guix gnu-build-system)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix derivations)
@@ -39,6 +40,17 @@
          (drv-path (http-fetch %store url 'sha256 hash)))
     (and (build-derivations %store (list drv-path))
          (file-exists? (derivation-path->output-path drv-path)))))
+
+(test-assert "gnu-build"
+  (let* ((url      "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")
+         (hash     (nix-base32-string->bytevector
+                    "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))
+         (tarball  (http-fetch %store url 'sha256 hash))
+         (build    (gnu-build %store "hello-2.8" tarball
+                              `(("gawk" . ,(nixpkgs-derivation "gawk"))))))
+    (and (build-derivations %store (list (pk 'hello-drv build)))
+         (file-exists? (string-append (derivation-path->output-path build)
+                                      "/bin/hello")))))
 
 (test-end "builders")
 
