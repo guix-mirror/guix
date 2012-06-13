@@ -240,19 +240,20 @@ in SIZE bytes."
        ;; derivation.  Note: inputs are sorted as in the order of their hex
        ;; hash representation because that's what the C++ `std::map' code
        ;; does.
-       (let* ((inputs (sort (map (match-lambda
-                                  (($ <derivation-input> path sub-drvs)
-                                   (let ((hash (call-with-input-file path
-                                                 (compose bytevector->base16-string
-                                                          derivation-hash
-                                                          read-derivation))))
-                                     (make-derivation-input hash sub-drvs))))
-                                 inputs)
-                            (lambda (i1 i2)
-                              (string<? (derivation-input-path i1)
-                                        (derivation-input-path i2)))))
-              (drv    (make-derivation outputs inputs sources
-                                       system builder args env-vars)))
+       (let* ((inputs  (sort (map (match-lambda
+                                   (($ <derivation-input> path sub-drvs)
+                                    (let ((hash (call-with-input-file path
+                                                  (compose bytevector->base16-string
+                                                           derivation-hash
+                                                           read-derivation))))
+                                      (make-derivation-input hash sub-drvs))))
+                                  inputs)
+                             (lambda (i1 i2)
+                               (string<? (derivation-input-path i1)
+                                         (derivation-input-path i2)))))
+              (sources (sort sources string<?))
+              (drv     (make-derivation outputs inputs sources
+                                        system builder args env-vars)))
          (sha256
           (string->utf8 (call-with-output-string
                          (cut write-derivation drv <>))))))))))
