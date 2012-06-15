@@ -17,7 +17,6 @@
 # along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 MODULES =					\
-  guix.scm					\
   guix/derivations.scm				\
   guix/gnu-build-system.scm			\
   guix/http.scm					\
@@ -25,7 +24,8 @@ MODULES =					\
   guix/utils.scm				\
   guix/build/gnu-build-system.scm		\
   guix/build/http.scm				\
-  guix/build/utils.scm
+  guix/build/utils.scm				\
+  guix.scm
 
 GOBJECTS = $(MODULES:%.scm=%.go)
 
