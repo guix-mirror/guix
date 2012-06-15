@@ -48,7 +48,8 @@ CLEANFILES = $(GOBJECTS) *.log
 	$(MKDIR_P) `dirname "$@"`
 	GUILE_AUTO_COMPILE=0							\
 	GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
-	$(GUILD) compile -Wformat -Wunbound-variable -Warity-mismatch		\
+	$(GUILD) compile -L "$(top_srcdir)"					\
+	  -Wformat -Wunbound-variable -Warity-mismatch				\
 	  -o "$@" "$<"
 
 SUFFIXES = .go
