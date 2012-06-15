@@ -50,6 +50,7 @@ CLEANFILES = $(GOBJECTS) *.log
 	GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
 	$(GUILD) compile -L "$(top_srcdir)"					\
 	  -Wformat -Wunbound-variable -Warity-mismatch				\
+	  --target="$(host)"							\
 	  -o "$@" "$<"
 
 SUFFIXES = .go

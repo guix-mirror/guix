@@ -14,6 +14,8 @@ AC_CONFIG_MACRO_DIR([m4])
 guilemoduledir="${datarootdir}/guile/site/2.0"
 AC_SUBST([guilemoduledir])
 
+AC_CANONICAL_HOST
+
 PKG_CHECK_MODULES([GUILE], [guile-2.0])
 AC_PATH_PROG([GUILE], [guile])
 AC_PATH_PROG([GUILD], [guild])
