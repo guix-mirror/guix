@@ -33,7 +33,7 @@
 (define %standard-inputs
   (map (lambda (name)
          (list name (nixpkgs-derivation name)))
-       '("gnutar" "gzip" "bzip2" "xz"
+       '("gnutar" "gzip" "bzip2" "xz" "diffutils" "patch"
          "coreutils" "gnused" "gnugrep" "bash"
          "gcc" "binutils" "gnumake" "glibc")))
 
