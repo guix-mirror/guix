@@ -46,6 +46,8 @@
             add-to-store
             build-derivations
 
+            current-build-output-port
+
             %store-prefix
             store-path?
             derivation-path?))
@@ -274,7 +276,15 @@
                       (process-stderr s)
                       s))))))))
 
+(define current-build-output-port
+  ;; The port where build output is sent.
+  (make-parameter (current-error-port)))
+
 (define (process-stderr server)
+  "Read standard output and standard error from SERVER, writing it to
+CURRENT-BUILD-OUTPUT-PORT.  Return #t when SERVER is done sending data, and
+#f otherwise; in the latter case, the caller should call `process-stderr'
+again until #t is returned or an error is raised."
   (define p
     (nix-server-socket server))
 
@@ -287,15 +297,16 @@
 
   (let ((k (read-int p)))
     (cond ((= k %stderr-write)
-           (read-string p))
+           (read-string p)
+           #f)
           ((= k %stderr-read)
            (let ((len (read-int p)))
              (read-string p)                      ; FIXME: what to do?
-             ))
+             #f))
           ((= k %stderr-next)
            (let ((s (read-string p)))
-             (display s (current-error-port))
-             s))
+             (display s (current-build-output-port))
+             #f))
           ((= k %stderr-error)
            (let ((error  (read-string p))
                  (status (if (>= (nix-server-minor-version server) 8)
@@ -305,6 +316,7 @@
                                 (message error)
                                 (status  status))))))
           ((= k %stderr-last)
+           ;; The daemon is done (see `stopWork' in `nix-worker.cc'.)
            #t)
           (else
            (raise (condition (&nix-protocol-error
@@ -343,7 +355,8 @@
         (send use-build-hook?))
     (if (>= (nix-server-minor-version server) 4)
         (send build-verbosity log-type print-build-trace))
-    (process-stderr server)))
+    (let loop ((done? (process-stderr server)))
+      (or done? (process-stderr server)))))
 
 (define-syntax define-operation
   (syntax-rules ()
@@ -354,7 +367,9 @@
          (write-int (operation-id name) s)
          (write-arg type arg s)
          ...
-         (process-stderr server)
+         ;; Loop until the server is done sending error output.
+         (let loop ((done? (process-stderr server)))
+           (or done? (loop (process-stderr server))))
          (read-arg return s))))))
 
 (define-operation (add-text-to-store (string name) (string text)
@@ -371,7 +386,8 @@
   store-path)
 
 (define-operation (build-derivations (string-list derivations))
-  "Build DERIVATIONS; return #t on success."
+  "Build DERIVATIONS, and return when the worker is done building them.
+Return #t on success."
   boolean)
 
 
