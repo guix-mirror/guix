@@ -23,10 +23,9 @@
 
 (define (directory-exists? dir)
   "Return #t if DIR exists and is a directory."
-  (pk 'dir-exists? dir
-      (let ((s (pk 'stat dir (stat dir #f))))
-     (and s
-          (eq? 'directory (stat:type s))))))
+  (let ((s (stat dir #f)))
+    (and s
+         (eq? 'directory (stat:type s)))))
 
 (define (search-path-as-list sub-directories input-dirs)
   "Return the list of directories among SUB-DIRECTORIES that exist in
