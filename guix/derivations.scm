@@ -446,7 +446,9 @@ derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV) tuples;
 when SUB-DRV is omitted, \"out\" is assumed.  EXP is evaluated in an
 environment where %OUTPUT is bound to the main output path, %OUTPUTS is bound
 to a list of output/path pairs, and where %BUILD-INPUTS is bound to an alist
-of string/output-path pairs made from INPUTS."
+of string/output-path pairs made from INPUTS.  The builder terminates by
+passing the result of EXP to `exit'; thus, when EXP returns #f, the build is
+considered to have failed."
   (define guile
     (string-append (derivation-path->output-path (%guile-for-build))
                    "/bin/guile"))
@@ -472,7 +474,8 @@ of string/output-path pairs made from INPUTS."
          (builder  (add-text-to-store store
                                       (string-append name "-guile-builder")
                                       (string-append (object->string prologue)
-                                                     (object->string exp))
+                                                     (object->string
+                                                      `(exit ,exp)))
                                       (map second inputs)))
          (mod-drv  (if (null? modules)
                        #f

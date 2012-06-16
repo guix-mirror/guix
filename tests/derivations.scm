@@ -29,6 +29,7 @@
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match))
 
@@ -181,6 +182,20 @@
            (equal? '(hello guix)
                    (call-with-input-file (string-append p "/test") read))))))
 
+(test-assert "build-expression->derivation with expression returning #f"
+  (let* ((builder  '(begin
+                      (mkdir %output)
+                      #f))                        ; fail!
+         (drv-path (build-expression->derivation %store "fail" (%current-system)
+                                                 builder '())))
+    (guard (c ((nix-protocol-error? c)
+               ;; Note that the output path may exist at this point, but it
+               ;; is invalid.
+               (not (not (string-match "build .* failed"
+                                       (nix-protocol-error-message c))))))
+      (build-derivations %store (list drv-path))
+      #f)))
+
 (test-assert "build-expression->derivation with two outputs"
   (let* ((builder    '(begin
                         (call-with-output-file (assoc-ref %outputs "out")
@@ -265,4 +280,5 @@
 
 ;;; Local Variables:
 ;;; eval: (put 'test-assert 'scheme-indent-function 1)
+;;; eval: (put 'guard 'scheme-indent-function 1)
 ;;; End:
