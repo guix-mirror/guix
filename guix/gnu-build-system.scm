@@ -39,18 +39,21 @@
 
 (define* (gnu-build store name source inputs
                     #:key (outputs '("out")) (configure-flags '())
+                    (make-flags '()) (phases '%standard-phases)
                     (system (%current-system)))
   "Return a derivation called NAME that builds from tarball SOURCE, with
 input derivation INPUTS, using the usual procedure of the GNU Build System."
   (define builder
     `(begin
        (use-modules (guix build gnu-build-system))
-       (gnu-build ,(if (derivation-path? source)
-                       (derivation-path->output-path source)
-                       source)
-                  %outputs
-                  %build-inputs
-                  #:configure-flags ',configure-flags)))
+       (gnu-build #:source ,(if (derivation-path? source)
+                                (derivation-path->output-path source)
+                                source)
+                  #:outputs %outputs
+                  #:inputs %build-inputs
+                  #:phases ,phases
+                  #:configure-flags ',configure-flags
+                  #:make-flags ',make-flags)))
 
   (build-expression->derivation store name system
                                 builder

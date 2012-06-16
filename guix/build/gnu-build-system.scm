@@ -19,7 +19,10 @@
 (define-module (guix build gnu-build-system)
   #:use-module (guix build utils)
   #:use-module (ice-9 ftw)
-  #:export (gnu-build))
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
+  #:export (%standard-phases
+            gnu-build))
 
 ;; Commentary:
 ;;
@@ -43,37 +46,59 @@
                     #f
                     dir))
 
-(define (unpack source)
-  (system* "tar" "xvf" source)
-  (chdir (first-subdirectory ".")))
-
-(define (configure outputs flags)
-  (let ((prefix     (assoc-ref outputs "out"))
-        (libdir     (assoc-ref outputs "lib"))
-        (includedir (assoc-ref outputs "include")))
-   (apply system* "./configure"
-          "--enable-fast-install"
-          (string-append "--prefix=" prefix)
-          `(,@(if libdir
-                  (list (string-append "--libdir=" libdir))
-                  '())
-            ,@(if includedir
-                  (list (string-append "--includedir=" includedir))
-                  '())
-            ,@flags))))
-
-(define* (gnu-build source outputs inputs
-                    #:key (configure-flags '()))
-  "Build from SOURCE to OUTPUTS, using INPUTS."
+(define* (set-paths #:key inputs #:allow-other-keys)
   (let ((inputs (map cdr inputs)))
     (set-path-environment-variable "PATH" '("bin") inputs)
     (set-path-environment-variable "CPATH" '("include") inputs)
-    (set-path-environment-variable "LIBRARY_PATH" '("lib" "lib64") inputs))
-  (pk (getenv "PATH"))
-  (pk 'inputs inputs)
-  (system* "ls" "/nix/store")
-  (unpack source)
-  (configure outputs configure-flags)
-  (system* "make")
-  (system* "make" "check")
-  (system* "make" "install"))
+    (set-path-environment-variable "LIBRARY_PATH" '("lib" "lib64") inputs)))
+
+(define* (unpack #:key source #:allow-other-keys)
+  (and (zero? (system* "tar" "xvf" source))
+       (chdir (first-subdirectory "."))))
+
+(define* (configure #:key outputs (configure-flags '()) #:allow-other-keys)
+  (let ((prefix     (assoc-ref outputs "out"))
+        (libdir     (assoc-ref outputs "lib"))
+        (includedir (assoc-ref outputs "include")))
+    (zero? (apply system* "./configure"
+                  "--enable-fast-install"
+                  (string-append "--prefix=" prefix)
+                  `(,@(if libdir
+                          (list (string-append "--libdir=" libdir))
+                          '())
+                    ,@(if includedir
+                          (list (string-append "--includedir=" includedir))
+                          '())
+                    ,@configure-flags)))))
+
+(define* (build #:key (make-flags '()) #:allow-other-keys)
+  (zero? (apply system* "make" make-flags)))
+
+(define* (check #:key (make-flags '()) #:allow-other-keys)
+  (zero? (apply system* "make" "check" make-flags)))
+
+(define* (install #:key (make-flags '()) #:allow-other-keys)
+  (zero? (apply system* "make" "install" make-flags)))
+
+(define %standard-phases
+  ;; Standard build phases, as a list of symbol/procedure pairs.
+  (let-syntax ((phases (syntax-rules ()
+                         ((_ p ...) `((p . ,p) ...)))))
+    (phases set-paths unpack configure build check install)))
+
+
+(define* (gnu-build #:key (source #f) (outputs #f) (inputs #f)
+                    (phases %standard-phases)
+                    #:allow-other-keys
+                    #:rest args)
+  "Build from SOURCE to OUTPUTS, using INPUTS, and by running all of PHASES
+in order.  Return #t if all the PHASES succeeded, #f otherwise."
+  (setvbuf (current-output-port) _IOLBF)
+
+  ;; The trick is to #:allow-other-keys everywhere, so that each procedure in
+  ;; PHASES can pick the keyword arguments it's interested in.
+  (every (match-lambda
+          ((name . proc)
+           (format #t "starting phase `~a'~%" name)
+           (apply proc args)))
+         phases))
