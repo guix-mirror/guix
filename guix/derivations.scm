@@ -453,7 +453,19 @@ considered to have failed."
     (string-append (derivation-path->output-path (%guile-for-build))
                    "/bin/guile"))
 
+  (define module-form?
+    (match-lambda
+      (((or 'define-module 'use-modules) _ ...) #t)
+      (_ #f)))
+
   (let* ((prologue `(begin
+                      ,@(match exp
+                          ((_ ...)
+                           ;; Module forms must appear at the top-level so
+                           ;; that any macros they export can be expanded.
+                           (filter module-form? exp))
+                          (_ `(,exp)))
+
                       (define %output (getenv "out"))
                       (define %outputs
                         (map (lambda (o)
@@ -473,9 +485,14 @@ considered to have failed."
                                inputs))))
          (builder  (add-text-to-store store
                                       (string-append name "-guile-builder")
-                                      (string-append (object->string prologue)
-                                                     (object->string
-                                                      `(exit ,exp)))
+                                      (string-append
+                                       (object->string prologue)
+                                       (object->string
+                                        `(exit
+                                          ,(match exp
+                                             ((_ ...)
+                                              (remove module-form? exp))
+                                             (_ `(,exp))))))
                                       (map second inputs)))
          (mod-drv  (if (null? modules)
                        #f
