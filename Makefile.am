@@ -18,7 +18,8 @@
 
 MODULES =					\
   guix/derivations.scm				\
-  guix/gnu-build-system.scm			\
+  guix/build-system.scm				\
+  guix/build-system/gnu.scm			\
   guix/http.scm					\
   guix/store.scm				\
   guix/utils.scm				\

@@ -19,7 +19,8 @@
 
 (define-module (test-builders)
   #:use-module (guix http)
-  #:use-module (guix gnu-build-system)
+  #:use-module (guix build-system)
+  #:use-module (guix build-system gnu)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix derivations)
@@ -40,6 +41,10 @@
          (drv-path (http-fetch %store url 'sha256 hash)))
     (and (build-derivations %store (list drv-path))
          (file-exists? (derivation-path->output-path drv-path)))))
+
+(test-assert "gnu-build-system"
+  (and (build-system? gnu-build-system)
+       (eq? gnu-build (build-system-builder gnu-build-system))))
 
 (test-assert "gnu-build"
   (let* ((url      "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")

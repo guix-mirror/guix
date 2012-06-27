@@ -16,12 +16,14 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix gnu-build-system)
+(define-module (guix build-system gnu)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix derivations)
+  #:use-module (guix build-system)
   #:use-module (srfi srfi-1)
-  #:export (gnu-build))
+  #:export (gnu-build
+            gnu-build-system))
 
 ;; Commentary:
 ;;
@@ -63,3 +65,9 @@ input derivation INPUTS, using the usual procedure of the GNU Build System."
                                 #:outputs outputs
                                 #:modules '((guix build gnu-build-system)
                                             (guix build utils))))
+
+(define gnu-build-system
+  (build-system (name 'gnu)
+                (description
+                 "The GNU Build System—i.e., ./configure && make && make install")
+                (build gnu-build)))             ; TODO: add `gnu-cross-build'
