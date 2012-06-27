@@ -28,7 +28,8 @@
 ;;; Code:
 
 (define* (http-fetch store url hash-algo hash
-                     #:key name (system (%current-system)))
+                     #:optional name
+                     #:key (system (%current-system)))
   "Return the path of a fixed-output derivation in STORE that fetches URL,
 which is expected to have hash HASH of type HASH-ALGO (a symbol).  By
 default, the file name is the base name of URL; optionally, NAME can specify

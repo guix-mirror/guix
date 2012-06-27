@@ -26,7 +26,9 @@ MODULES =					\
   guix/build/gnu-build-system.scm		\
   guix/build/http.scm				\
   guix/build/utils.scm				\
-  guix.scm
+  guix/packages.scm				\
+  guix.scm					\
+  distro/base.scm
 
 GOBJECTS = $(MODULES:%.scm=%.go)
 
@@ -36,13 +38,15 @@ nobase_nodist_guilemodule_DATA = $(GOBJECTS)
 TESTS =						\
   tests/builders.scm				\
   tests/derivations.scm				\
-  tests/utils.scm
+  tests/utils.scm				\
+  tests/packages.scm
 
 TESTS_ENVIRONMENT =							\
   NIXPKGS="$(NIXPKGS)"							\
   GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
   $(GUILE) -L "$(top_srcdir)"
 
+EXTRA_DIST = $(TESTS)
 CLEANFILES = $(GOBJECTS) *.log
 
 .scm.go:
