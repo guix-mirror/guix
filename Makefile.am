@@ -47,6 +47,7 @@ CLEANFILES = $(GOBJECTS) *.log
 
 .scm.go:
 	$(MKDIR_P) `dirname "$@"`
+	NIXPKGS="$(NIXPKGS)"							\
 	GUILE_AUTO_COMPILE=0							\
 	GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
 	$(GUILD) compile -L "$(top_srcdir)"					\
