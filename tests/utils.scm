@@ -26,7 +26,8 @@
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 rdelim)
-  #:use-module (ice-9 popen))
+  #:use-module (ice-9 popen)
+  #:use-module (ice-9 match))
 
 (test-begin "utils")
 
@@ -97,6 +98,19 @@
       (every (lambda (gnu nix)
                (equal? nix (gnu-triplet->nix-system gnu)))
              gnu nix))))
+
+(test-assert "define-record-type*"
+  (begin
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar)
+      (baz foo-baz (default (+ 40 2))))
+    (and (match (foo (bar 1) (baz 2))
+           (($ <foo> 1 2) #t))
+         (match (foo (baz 2) (bar 1))
+           (($ <foo> 1 2) #t))
+         (match (foo (bar 1))
+           (($ <foo> 1 42) #t)))))
 
 (test-end)
 

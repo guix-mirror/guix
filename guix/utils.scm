@@ -18,6 +18,7 @@
 
 (define-module (guix utils)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-39)
   #:use-module (srfi srfi-60)
@@ -27,6 +28,7 @@
   #:autoload   (ice-9 popen)  (open-pipe*)
   #:autoload   (ice-9 rdelim) (read-line)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 match)
   #:use-module ((chop hash)
                 #:select (bytevector-hash
                           hash-method/sha256))
@@ -42,6 +44,7 @@
             %nixpkgs-directory
             nixpkgs-derivation
 
+            define-record-type*
             memoize
             gnu-triplet->nix-system
             %current-system))
@@ -390,6 +393,66 @@ starting from the right of S."
 ;;;
 ;;; Miscellaneous.
 ;;;
+
+(define-syntax define-record-type*
+  (lambda (s)
+    "Define the given record type such that an additional \"syntactic
+constructor\" is defined, which allows instances to be constructed with named
+field initializers, à la SRFI-35, as well as default values."
+    (define (make-syntactic-constructor name ctor fields defaults)
+      "Make the syntactic constructor NAME that calls CTOR, and expects all
+of FIELDS to be initialized.  DEFAULTS is the list of FIELD/DEFAULT-VALUE
+tuples."
+      (with-syntax ((name     name)
+                    (ctor     ctor)
+                    (expected fields)
+                    (defaults defaults))
+        #'(define-syntax name
+            (lambda (s)
+              (syntax-case s expected
+                ((_ (field value) (... ...))
+                 (let ((fields   (map syntax->datum #'(field (... ...))))
+                       (inits    (map (match-lambda
+                                       ((f v)
+                                        (list (syntax->datum f) v)))
+                                      #'((field value) (... ...))))
+                       (dflt      (map (match-lambda
+                                        ((f v)
+                                         (list (syntax->datum f) v)))
+                                       #'defaults)))
+
+                   (define (field-value f)
+                     (match (assoc f inits)
+                       ((_ v) v)
+                       (#f (car (assoc-ref dflt f)))))
+
+                   (if (lset= eq? (append fields (map car dflt))
+                              'expected)
+                       #`(ctor #,@(map field-value 'expected))
+                       (error "missing or extraneous field initializers"
+                              (lset-difference eq? fields 'expected))))))))))
+
+    (define (field-default-value s)
+      (syntax-case s (default)
+        ((field (default val) _ ...)
+         (list #'field #'val))
+        ((field _ options ...)
+         (field-default-value #'(field options ...)))
+        (_ #f)))
+
+    (syntax-case s ()
+      ((_ type syntactic-ctor ctor pred
+          (field get options ...) ...)
+       #`(begin
+           (define-record-type type
+             (ctor field ...)
+             pred
+             (field get) ...)
+           #,(make-syntactic-constructor #'syntactic-ctor #'ctor
+                                         #'(field ...)
+                                         (filter-map field-default-value
+                                                     #'((field options ...)
+                                                        ...))))))))
 
 (define (memoize proc)
   "Return a memoizing version of PROC."
