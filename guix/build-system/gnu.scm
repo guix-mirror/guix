@@ -40,8 +40,8 @@
          "gcc" "binutils" "gnumake" "glibc")))
 
 (define* (gnu-build store name source inputs
-                    #:key (outputs '("out")) (configure-flags '())
-                    (make-flags '()) (phases '%standard-phases)
+                    #:key (outputs '("out")) (configure-flags ''())
+                    (make-flags ''()) (phases '%standard-phases)
                     (system (%current-system)))
   "Return a derivation called NAME that builds from tarball SOURCE, with
 input derivation INPUTS, using the usual procedure of the GNU Build System."
@@ -54,8 +54,8 @@ input derivation INPUTS, using the usual procedure of the GNU Build System."
                   #:outputs %outputs
                   #:inputs %build-inputs
                   #:phases ,phases
-                  #:configure-flags ',configure-flags
-                  #:make-flags ',make-flags)))
+                  #:configure-flags ,configure-flags
+                  #:make-flags ,make-flags)))
 
   (build-expression->derivation store name system
                                 builder
