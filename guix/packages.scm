@@ -122,8 +122,10 @@ etc."
   (description package-description)       ; one-line description
   (long-description package-long-description)     ; one or two paragraphs
   (license package-license (default '()))
+  (home-page package-home-page)
   (platforms package-platforms (default '()))
   (maintainers package-maintainers (default '()))
+
   (location package-location
             (default (and=> (current-source-location)
                             source-properties->location))))

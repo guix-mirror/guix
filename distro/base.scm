@@ -46,4 +46,5 @@
    (inputs `(("gawk" ,(nixpkgs-derivation "gawk"))))
    (description "GNU Hello")
    (long-description "Yeah...")
+   (home-page "http://www.gnu.org/software/hello/")
    (license "GPLv3+")))
