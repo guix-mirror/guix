@@ -38,6 +38,7 @@
           (list name (nixpkgs-derivation name)))
         '("gnutar" "gzip" "bzip2" "xz" "diffutils" "patch"
           "coreutils" "gnused" "gnugrep" "bash"
+          "gawk"                                  ; used by `config.status'
           "gcc" "binutils" "gnumake" "glibc"))))
 
 (define* (gnu-build store name source inputs
