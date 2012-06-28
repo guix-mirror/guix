@@ -107,7 +107,8 @@ etc."
   (version package-version)               ; string
   (source package-source)                 ; <package-source> instance
   (build-system package-build-system)     ; build system
-  (arguments package-arguments)           ; arguments for the build method
+  (arguments package-arguments            ; arguments for the build method
+             (default '()))
   (inputs package-inputs                  ; input packages or derivations
           (default '()))
   (native-inputs package-native-inputs    ; native input packages/derivations

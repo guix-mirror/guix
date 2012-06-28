@@ -28,6 +28,60 @@
 ;;;
 ;;; Code:
 
+(define-public libsigsegv
+  (package
+   (name "libsigsegv")
+   (version "2.10")
+   (source (source
+            (method http-fetch)
+            (uri "http://ftp.gnu.org/gnu/libsigsegv/libsigsegv-2.10.tar.gz")
+            (sha256
+             (nix-base32-string->bytevector  ; TODO: make conversion implicit
+              "16hrs8k3nmc7a8jam5j1fpspd6sdpkamskvsdpcw6m29vnis8q44"))))
+   (build-system gnu-build-system)
+   (home-page "http://www.gnu.org/software/libsigsegv/")
+   (description "GNU libsigsegv, a library to handle page faults in user mode")
+   (long-description
+"GNU libsigsegv is a library for handling page faults in user mode. A page
+fault occurs when a program tries to access to a region of memory that is
+currently not available. Catching and handling a page fault is a useful
+technique for implementing pageable virtual memory, memory-mapped access to
+persistent databases, generational garbage collectors, stack overflow
+handlers, distributed shared memory, and more.")
+   (license "GPLv2+")))
+
+(define-public gawk
+  (package
+   (name "gawk")
+   (version "4.0.0")
+   (source (source
+            (method http-fetch)
+            (uri "http://ftp.gnu.org/gnu/gawk/gawk-4.0.0.tar.bz2")
+            (sha256
+             (nix-base32-string->bytevector
+              "0sss7rhpvizi2a88h6giv0i7w5h07s2fxkw3s6n1hqvcnhrfgbb0"))))
+   (build-system gnu-build-system)
+   (arguments '(#:configure-flags
+                `(,(string-append "--with-libsigsegv-prefix="
+                                  (assoc-ref %build-inputs "libsigsegv"))))
+              ;; TODO: disable tests on Cygwin
+              )
+   (inputs `(("libsigsegv" ,libsigsegv)))
+   (home-page "http://www.gnu.org/software/gawk/")
+   (description "GNU implementation of the Awk programming language")
+   (long-description
+    "Many computer users need to manipulate text files: extract and then
+operate on data from parts of certain lines while discarding the rest, make
+changes in various text files wherever certain patterns appear, and so on.
+To write a program to do these things in a language such as C or Pascal is a
+time-consuming inconvenience that may take many lines of code.  The job is
+easy with awk, especially the GNU implementation: Gawk.
+
+The awk utility interprets a special-purpose programming language that makes
+it possible to handle many data-reformatting jobs with just a few lines of
+code.")
+   (license "GPLv3+")))
+
 (define-public hello
   (package
    (name "hello")
@@ -43,7 +97,7 @@
                 `("--disable-dependency-tracking"
                   ,(string-append "--with-gawk="  ; for illustration purposes
                                  (assoc-ref %build-inputs "gawk")))))
-   (inputs `(("gawk" ,(nixpkgs-derivation "gawk"))))
+   (inputs `(("gawk" ,gawk)))
    (description "GNU Hello")
    (long-description "Yeah...")
    (home-page "http://www.gnu.org/software/hello/")
