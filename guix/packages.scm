@@ -21,7 +21,14 @@
   #:use-module (guix store)
   #:use-module (guix build-system)
   #:use-module (ice-9 match)
-  #:export (source
+  #:use-module (srfi srfi-9)
+  #:export (location
+            location?
+            location-file
+            location-line
+            location-column
+
+            source
             package-source?
             package-source-uri
             package-source-method
@@ -44,6 +51,7 @@
             package-license
             package-platforms
             package-maintainers
+            package-location
 
             package-source-derivation
             package-derivation
@@ -56,6 +64,32 @@
 ;;;
 ;;; Code:
 
+;; A source location.
+(define-record-type <location>
+  (make-location file line column)
+  location?
+  (file          location-file)                   ; file name
+  (line          location-line)                   ; 1-indexed line
+  (column        location-column))                ; 0-indexed column
+
+(define location
+  (memoize
+   (lambda (file line column)
+     "Return the <location> object for the given FILE, LINE, and COLUMN."
+     (and line column file
+          (make-location file line column)))))
+
+(define (source-properties->location loc)
+  "Return a location object based on the info in LOC, an alist as returned
+by Guile's `source-properties', `frame-source', `current-source-location',
+etc."
+  (let ((file (assq-ref loc 'filename))
+        (line (assq-ref loc 'line))
+        (col  (assq-ref loc 'column)))
+    (location file (and line (+ line 1)) col)))
+
+
+;; The source of a package, such as a tarball URL and fetcher.
 (define-record-type* <package-source>
   source make-package-source
   package-source?
@@ -65,6 +99,7 @@
   (file-name package-source-file-name                ; optional file name
              (default #f)))
 
+;; A package.
 (define-record-type* <package>
   package make-package
   package?
@@ -88,7 +123,10 @@
   (long-description package-long-description)     ; one or two paragraphs
   (license package-license (default '()))
   (platforms package-platforms (default '()))
-  (maintainers package-maintainers (default '())))
+  (maintainers package-maintainers (default '()))
+  (location package-location
+            (default (and=> (current-source-location)
+                            source-properties->location))))
 
 (define (package-source-derivation store source)
   "Return the derivation path for SOURCE, a package source."

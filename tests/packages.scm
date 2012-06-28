@@ -36,6 +36,8 @@
 
 (test-assert "GNU Hello"
   (and (package? hello)
+       (or (location? (package-location hello))
+           (not (package-location hello)))
        (let* ((drv (package-derivation %store hello))
               (out (derivation-path->output-path drv)))
          (and (build-derivations %store (list drv))
