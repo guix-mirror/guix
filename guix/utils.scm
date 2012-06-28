@@ -23,15 +23,13 @@
   #:use-module (srfi srfi-39)
   #:use-module (srfi srfi-60)
   #:use-module (rnrs bytevectors)
+  #:use-module ((rnrs io ports) #:select (put-bytevector))
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
   #:autoload   (ice-9 popen)  (open-pipe*)
   #:autoload   (ice-9 rdelim) (read-line)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
-  #:use-module ((chop hash)
-                #:select (bytevector-hash
-                          hash-method/sha256))
   #:export (bytevector-quintet-length
             bytevector->base32-string
             bytevector->nix-base32-string
@@ -49,6 +47,22 @@
             memoize
             gnu-triplet->nix-system
             %current-system))
+
+
+;;;
+;;; Compile-time computations.
+;;;
+
+(define-syntax compile-time-value
+  (syntax-rules ()
+    "Evaluate the given expression at compile time.  The expression must
+evaluate to a simple datum."
+    ((_ exp)
+     (let-syntax ((v (lambda (s)
+                       (let ((val exp))
+                         (syntax-case s ()
+                           (_ #`'#,(datum->syntax s val)))))))
+       v))))
 
 
 ;;;
@@ -369,24 +383,40 @@ starting from the right of S."
 
 (define (sha256 bv)
   "Return the SHA256 of BV as a bytevector."
-  (bytevector-hash hash-method/sha256 bv))
+  (if (compile-time-value
+       (false-if-exception (resolve-interface '(chop hash))))
+      (let ((bytevector-hash    (@ (chop hash) bytevector-hash))
+            (hash-method/sha256 (@ (chop hash) hash-method/sha256)))
+        (bytevector-hash hash-method/sha256 bv))
+      ;; XXX: Slow, poor programmer's implementation that uses Coreutils.
+      (let ((in  (pipe))
+            (out (pipe))
+            (pid (primitive-fork)))
+        (if (= 0 pid)
+            (begin                                      ; child
+              (close (cdr in))
+              (close (car out))
+              (close 0)
+              (close 1)
+              (dup2 (fileno (car in)) 0)
+              (dup2 (fileno (cdr out)) 1)
+              (execlp "sha256sum" "sha256sum"))
+            (begin                                      ; parent
+              (close (car in))
+              (close (cdr out))
+              (put-bytevector (cdr in) bv)
+              (close (cdr in))                        ; EOF
+              (let ((line (car (string-tokenize (read-line (car out))))))
+                (close (car out))
+                (and (and=> (status:exit-val (cdr (waitpid pid)))
+                            zero?)
+                     (base16-string->bytevector line))))))))
 
 
 
 ;;;
 ;;; Nixpkgs.
 ;;;
-
-(define-syntax compile-time-value
-  (syntax-rules ()
-    "Evaluate the given expression at compile time.  The expression must
-evaluate to a simple datum."
-    ((_ exp)
-     (let-syntax ((v (lambda (s)
-                       (let ((val exp))
-                         (syntax-case s ()
-                           (_ #`'#,(datum->syntax s val)))))))
-       v))))
 
 (define %nixpkgs-directory
   (make-parameter
