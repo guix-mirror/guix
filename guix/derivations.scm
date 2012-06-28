@@ -343,7 +343,7 @@ known in advance, such as a file download."
                                                       (hash-algo sha256) #t #t
                                                       input)))
                               (make-derivation-input path '()))))
-                          inputs))
+                          (delete-duplicates inputs)))
          (env-vars   (env-vars-with-empty-outputs))
          (drv-masked (make-derivation outputs
                                       (filter (compose derivation-path?
