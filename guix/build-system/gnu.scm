@@ -33,11 +33,12 @@
 ;; Code:
 
 (define %standard-inputs
-  (map (lambda (name)
-         (list name (nixpkgs-derivation name)))
-       '("gnutar" "gzip" "bzip2" "xz" "diffutils" "patch"
-         "coreutils" "gnused" "gnugrep" "bash"
-         "gcc" "binutils" "gnumake" "glibc")))
+  (compile-time-value
+   (map (lambda (name)
+          (list name (nixpkgs-derivation name)))
+        '("gnutar" "gzip" "bzip2" "xz" "diffutils" "patch"
+          "coreutils" "gnused" "gnugrep" "bash"
+          "gcc" "binutils" "gnumake" "glibc"))))
 
 (define* (gnu-build store name source inputs
                     #:key (outputs '("out")) (configure-flags ''())

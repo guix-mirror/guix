@@ -45,6 +45,7 @@
             nixpkgs-derivation
 
             define-record-type*
+            compile-time-value
             memoize
             gnu-triplet->nix-system
             %current-system))
@@ -376,8 +377,21 @@ starting from the right of S."
 ;;; Nixpkgs.
 ;;;
 
+(define-syntax compile-time-value
+  (syntax-rules ()
+    "Evaluate the given expression at compile time.  The expression must
+evaluate to a simple datum."
+    ((_ exp)
+     (let-syntax ((v (lambda (s)
+                       (let ((val exp))
+                         (syntax-case s ()
+                           (_ #`'#,(datum->syntax s val)))))))
+       v))))
+
 (define %nixpkgs-directory
-  (make-parameter (getenv "NIXPKGS")))
+  (make-parameter
+   ;; Capture the build-time value of $NIXPKGS.
+   (compile-time-value (getenv "NIXPKGS"))))
 
 (define (nixpkgs-derivation attribute)
   "Return the derivation path of ATTRIBUTE in Nixpkgs."
