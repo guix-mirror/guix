@@ -46,7 +46,7 @@ TESTS_ENVIRONMENT =							\
   GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
   $(GUILE) -L "$(top_srcdir)"
 
-EXTRA_DIST = $(TESTS)
+EXTRA_DIST = build-aux/config.rpath $(TESTS)
 CLEANFILES = $(GOBJECTS) *.log
 
 .scm.go:
@@ -68,3 +68,7 @@ SUFFIXES = .go
 # for details.
 guix_install_go_files = install-nobase_nodist_guilemoduleDATA
 $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
+
+SUBDIRS = po
+
+ACLOCAL_AMFLAGS = -I m4

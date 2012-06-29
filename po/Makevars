@@ -1,0 +1,18 @@
+# Makefile variables for PO directory in any package using GNU gettext.
+
+DOMAIN = $(PACKAGE)
+
+subdir = po
+top_builddir = ..
+
+# These options get passed to xgettext.
+XGETTEXT_OPTIONS =					\
+  --language=Scheme					\
+  --keyword=_ --keyword=N_				\
+  --keyword=description --keyword=long-description
+
+COPYRIGHT_HOLDER = Ludovic Courtès
+
+MSGID_BUGS_ADDRESS = ludo@gnu.org
+
+EXTRA_LOCALE_CATEGORIES =

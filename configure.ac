@@ -11,6 +11,8 @@ AM_INIT_AUTOMAKE([1.11 foreign silent-rules subdir-objects \
 AC_CONFIG_SRCDIR([guix.scm])
 AC_CONFIG_MACRO_DIR([m4])
 
+AM_GNU_GETTEXT([external])
+
 guilemoduledir="${datarootdir}/guile/site/2.0"
 AC_SUBST([guilemoduledir])
 
@@ -51,6 +53,6 @@ else
    AC_MSG_WARN([Please use `--with-nixpkgs'.])
 fi
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile po/Makefile.in])
 
 AC_OUTPUT
