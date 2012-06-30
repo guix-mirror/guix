@@ -71,6 +71,7 @@
   (let* ((file (search-path %load-path "language/tree-il/spec.scm"))
          (drv  (add-to-store %store "flat-test" #t #f "sha256" file)))
     (and (eq? 'regular (stat:type (stat drv)))
+         (valid-path? %store drv)
          (equal? (call-with-input-file file get-bytevector-all)
                  (call-with-input-file drv get-bytevector-all)))))
 
@@ -78,15 +79,18 @@
   (let* ((dir (dirname (search-path %load-path "language/tree-il/spec.scm")))
          (drv (add-to-store %store "dir-tree-test" #t #t "sha256" dir)))
     (and (eq? 'directory (stat:type (stat drv)))
+         (valid-path? %store drv)
          (equal? (directory-contents dir)
                  (directory-contents drv)))))
 
 (test-assert "derivation with no inputs"
-  (let ((builder (add-text-to-store %store "my-builder.sh"
-                                    "#!/bin/sh\necho hello, world\n"
-                                    '())))
-    (store-path? (derivation %store "foo" (%current-system) builder
-                             '() '(("HOME" . "/homeless")) '()))))
+  (let* ((builder  (add-text-to-store %store "my-builder.sh"
+                                      "#!/bin/sh\necho hello, world\n"
+                                      '()))
+         (drv-path (derivation %store "foo" (%current-system) builder
+                               '() '(("HOME" . "/homeless")) '())))
+    (and (store-path? drv-path)
+         (valid-path? %store drv-path))))
 
 (test-assert "build derivation with 1 source"
   (let*-values (((builder)
@@ -105,8 +109,9 @@
     (and succeeded?
          (let ((path (derivation-output-path
                       (assoc-ref (derivation-outputs drv) "out"))))
-           (string=? (call-with-input-file path read-line)
-                     "hello, world")))))
+           (and (valid-path? %store path)
+                (string=? (call-with-input-file path read-line)
+                          "hello, world"))))))
 
 (test-assert "fixed-output derivation"
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
@@ -164,7 +169,8 @@
           (build-derivations %store (list drv-path))))
     (and succeeded?
          (let ((p (derivation-path->output-path drv-path)))
-           (file-exists? (string-append p "/good"))))))
+           (and (valid-path? %store p)
+                (file-exists? (string-append p "/good")))))))
 
 (test-skip (if (%guile-for-build) 0 4))
 
@@ -187,12 +193,14 @@
                       (mkdir %output)
                       #f))                        ; fail!
          (drv-path (build-expression->derivation %store "fail" (%current-system)
-                                                 builder '())))
+                                                 builder '()))
+         (out-path (derivation-path->output-path drv-path)))
     (guard (c ((nix-protocol-error? c)
                ;; Note that the output path may exist at this point, but it
                ;; is invalid.
-               (not (not (string-match "build .* failed"
-                                       (nix-protocol-error-message c))))))
+               (and (string-match "build .* failed"
+                                  (nix-protocol-error-message c))
+                    (not (valid-path? %store out-path)))))
       (build-derivations %store (list drv-path))
       #f)))
 

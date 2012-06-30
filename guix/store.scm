@@ -42,6 +42,7 @@
 
             open-connection
             set-build-options
+            valid-path?
             add-text-to-store
             add-to-store
             build-derivations
@@ -373,6 +374,10 @@ again until #t is returned or an error is raised."
          (let loop ((done? (process-stderr server)))
            (or done? (loop (process-stderr server))))
          (read-arg return s))))))
+
+(define-operation (valid-path? (string path))
+  "Return #t when PATH is a valid store path."
+  boolean)
 
 (define-operation (add-text-to-store (string name) (string text)
                                      (string-list references))

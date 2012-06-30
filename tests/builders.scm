@@ -38,9 +38,11 @@
   (let* ((url      "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")
          (hash     (nix-base32-string->bytevector
                     "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))
-         (drv-path (http-fetch %store url 'sha256 hash)))
+         (drv-path (http-fetch %store url 'sha256 hash))
+         (out-path (derivation-path->output-path drv-path)))
     (and (build-derivations %store (list drv-path))
-         (file-exists? (derivation-path->output-path drv-path)))))
+         (file-exists? out-path)
+         (valid-path? %store out-path))))
 
 (test-assert "gnu-build-system"
   (and (build-system? gnu-build-system)
@@ -52,10 +54,11 @@
                     "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))
          (tarball  (http-fetch %store url 'sha256 hash))
          (build    (gnu-build %store "hello-2.8" tarball
-                              `(("gawk" ,(nixpkgs-derivation "gawk"))))))
+                              `(("gawk" ,(nixpkgs-derivation "gawk")))))
+         (out      (derivation-path->output-path build)))
     (and (build-derivations %store (list (pk 'hello-drv build)))
-         (file-exists? (string-append (derivation-path->output-path build)
-                                      "/bin/hello")))))
+         (valid-path? %store out)
+         (file-exists? (string-append out "/bin/hello")))))
 
 (test-end "builders")
 
