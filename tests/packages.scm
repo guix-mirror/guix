@@ -22,8 +22,11 @@
   #:use-module (guix utils)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (distro)
   #:use-module (distro base)
-  #:use-module (srfi srfi-64))
+  #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-64)
+  #:use-module (ice-9 match))
 
 ;; Test the high-level packaging layer.
 
@@ -42,6 +45,16 @@
               (out (derivation-path->output-path drv)))
          (and (build-derivations %store (list drv))
               (file-exists? (string-append out "/bin/hello"))))))
+
+(test-assert "find-packages-by-name"
+  (match (find-packages-by-name "hello")
+    (((? (cut eq? hello <>))) #t)
+    (wrong (pk 'find-packages-by-name wrong #f))))
+
+(test-assert "find-packages-by-name with version"
+  (match (find-packages-by-name "hello" (package-version hello))
+    (((? (cut eq? hello <>))) #t)
+    (wrong (pk 'find-packages-by-name wrong #f))))
 
 (test-end "packages")
 

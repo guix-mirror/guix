@@ -28,6 +28,7 @@ MODULES =					\
   guix/build/utils.scm				\
   guix/packages.scm				\
   guix.scm					\
+  distro.scm					\
   distro/base.scm
 
 GOBJECTS = $(MODULES:%.scm=%.go)
