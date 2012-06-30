@@ -26,19 +26,24 @@
   #:use-module (ice-9 rdelim)
   #:use-module (guix store)
   #:use-module (guix utils)
-  #:export (derivation?
+  #:export (<derivation>
+            derivation?
             derivation-outputs
             derivation-inputs
             derivation-sources
             derivation-system
             derivation-builder-arguments
             derivation-builder-environment-vars
+            derivation-prerequisites
+            derivation-prerequisites-to-build
 
+            <derivation-output>
             derivation-output?
             derivation-output-path
             derivation-output-hash-algo
             derivation-output-hash
 
+            <derivation-input>
             derivation-input?
             derivation-input-path
             derivation-input-sub-derivations
@@ -91,6 +96,42 @@ download with a fixed hash (aka. `fetchurl')."
         (($ <derivation-output> _ (? symbol?) (? string?))))
      #t)
     (_ #f)))
+
+(define (derivation-prerequisites drv)
+  "Return the list of derivation-inputs required to build DRV, recursively."
+  (let loop ((drv    drv)
+             (result '()))
+    (let ((inputs (remove (cut member <> result)  ; XXX: quadratic
+                          (derivation-inputs drv))))
+      (fold loop
+            (append inputs result)
+            (map (lambda (i)
+                   (call-with-input-file (derivation-input-path i)
+                     read-derivation))
+                 inputs)))))
+
+(define (derivation-prerequisites-to-build store drv)
+  "Return the list of derivation-inputs required to build DRV and not already
+available in STORE, recursively."
+  (define input-built?
+    (match-lambda
+     (($ <derivation-input> path sub-drvs)
+      (let ((out (map (cut derivation-path->output-path path <>)
+                      sub-drvs)))
+        (any (cut valid-path? store <>) out)))))
+
+  (let loop ((drv    drv)
+             (result '()))
+    (let ((inputs (remove (lambda (i)
+                            (or (member i result) ; XXX: quadratic
+                                (input-built? i)))
+                          (derivation-inputs drv))))
+      (fold loop
+            (append inputs result)
+            (map (lambda (i)
+                   (call-with-input-file (derivation-input-path i)
+                     read-derivation))
+                 inputs)))))
 
 (define (read-derivation drv-port)
   "Read the derivation from DRV-PORT and return the corresponding

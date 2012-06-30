@@ -172,7 +172,16 @@
            (and (valid-path? %store p)
                 (file-exists? (string-append p "/good")))))))
 
-(test-skip (if (%guile-for-build) 0 4))
+(test-skip (if (%guile-for-build) 0 6))
+
+(test-assert "build-expression->derivation and derivation-prerequisites"
+  (let-values (((drv-path drv)
+                (build-expression->derivation %store "fail" (%current-system)
+                                              #f '())))
+    (any (match-lambda
+          (($ <derivation-input> path)
+           (string=? path (%guile-for-build))))
+         (derivation-prerequisites drv))))
 
 (test-assert "build-expression->derivation without inputs"
   (let* ((builder    '(begin
@@ -187,6 +196,14 @@
          (let ((p (derivation-path->output-path drv-path)))
            (equal? '(hello guix)
                    (call-with-input-file (string-append p "/test") read))))))
+
+(test-assert "build-expression->derivation and derivation-prerequisites-to-build"
+  (let-values (((drv-path drv)
+                (build-expression->derivation %store "fail" (%current-system)
+                                              #f '())))
+    ;; The only direct dependency is (%guile-for-build) and it's already
+    ;; built.
+    (null? (derivation-prerequisites-to-build %store drv))))
 
 (test-assert "build-expression->derivation with expression returning #f"
   (let* ((builder  '(begin
