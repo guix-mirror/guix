@@ -1,0 +1,179 @@
+#!/bin/sh
+# aside from this initial boilerplate, this is actually -*- scheme -*- code
+
+GUILE_LOAD_COMPILED_PATH="@guilemoduledir@:$GUILE_LOAD_COMPILED_PATH"
+export GUILE_LOAD_COMPILED_PATH
+
+main='(module-ref (resolve-interface '\''(guix-build)) '\'guix-build')'
+exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
+         -c "(apply $main (cdr (command-line)))" "$@"
+!#
+;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
+;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;;
+;;; This file is part of Guix.
+;;;
+;;; Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (guix-build)
+  #:use-module (guix store)
+  #:use-module (guix derivations)
+  #:use-module (guix packages)
+  #:use-module (ice-9 format)
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-37)
+  #:autoload   (distro) (find-packages-by-name)
+  #:export (guix-build))
+
+(define _ (cut gettext <> "guix"))
+(define N_ (cut ngettext <> <> <> "guix"))
+
+(define %store
+  (open-connection))
+
+(define (derivations-from-package-expressions exp)
+  "Eval EXP and return the corresponding derivation path."
+  (let ((p (eval exp (current-module))))
+    (if (package? p)
+        (package-derivation %store p)
+        (begin
+          (format (current-error-port)
+                  (_ "expression `~s' does not evaluate to a package")
+                  exp)
+          (exit 1)))))
+
+
+;;;
+;;; Command-line options.
+;;;
+
+(define %default-options
+  ;; Alist of default option values.
+  '())
+
+(define (show-version)
+  (display "guix-build (@PACKAGE_NAME@) @PACKAGE_VERSION@\n"))
+
+(define (show-help)
+  (display (_ "Usage: guix-build [OPTION]... PACKAGE-OR-DERIVATION...
+Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
+  (display (_ "
+  -e, --expression=EXPR  build the package EXPR evaluates to"))
+  (display (_ "
+  -K, --keep-failed      keep build tree of failed builds"))
+  (display (_ "
+  -n, --dry-run          do not build the derivations"))
+  (newline)
+  (display (_ "
+  -h, --help             display this help and exit"))
+  (display (_ "
+  -V, --version          display version information and exit"))
+  (newline)
+  (format #t (_ "
+Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
+
+(define %options
+  ;; Specifications of the command-line options.
+  (list (option '(#\h "help") #f #f
+                (lambda args
+                  (show-help)
+                  (exit 0)))
+        (option '(#\V "version") #f #f
+                (lambda args
+                  (show-version)
+                  (exit 0)))
+
+        (option '(#\e "expression") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'expression
+                              (call-with-input-string arg read)
+                              result)))
+        (option '(#\K "keep-failed") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'keep-failed? #t result)))
+        (option '(#\n "dry-run") #f #F
+                (lambda (opt name arg result)
+                  (alist-cons 'dry-run? #t result)))))
+
+
+;;;
+;;; Entry point.
+;;;
+
+(define (guix-build . args)
+  (let-syntax ((leave (syntax-rules ()
+                        ((_ fmt args ...)
+                         (begin
+                           (format (current-error-port) fmt args ...)
+                           (exit 1))))))
+   (define (parse-options)
+     ;; Return the alist of option values.
+     (args-fold args %options
+                (lambda (opt name arg result)
+                  (leave (_ "~A: unrecognized option") opt))
+                (lambda (arg result)
+                  (alist-cons 'argument arg result))
+                %default-options))
+
+   (setlocale LC_ALL "")
+   (textdomain "guix")
+
+   (let* ((opts (parse-options))
+          (drv  (filter-map (match-lambda
+                             (('expression . exp)
+                              (derivations-from-package-expressions exp))
+                             (('argument . (? derivation-path? drv))
+                              drv)
+                             (('argument . (? string? x))
+                              (match (find-packages-by-name x)
+                                ((p _ ...)
+                                 (package-derivation %store p))
+                                (_
+                                 (leave (_ "~A: unknown package") x))))
+                             (_ #f))
+                            opts))
+          (req  (append-map (lambda (drv-path)
+                              (let ((d (call-with-input-file drv-path
+                                         read-derivation)))
+                                (derivation-prerequisites-to-build %store d)))
+                            drv))
+          (req* (delete-duplicates
+                 (append (remove (compose (cut valid-path? %store <>)
+                                          derivation-path->output-path)
+                                 drv)
+                         (map derivation-input-path req)))))
+     (if (assoc-ref opts 'dry-run?)
+         (format (current-error-port)
+                 (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
+                     "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
+                     (length req*))
+                 (null? req*) req*)
+         (format (current-error-port)
+                 (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
+                     "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
+                     (length req*))
+                 (null? req*) req*))
+
+     ;; TODO: Add more options.
+     (set-build-options %store
+                        #:keep-failed? (assoc-ref opts 'keep-failed?))
+
+     (or (assoc-ref opts 'dry-run?)
+         (and (build-derivations %store drv)
+              (for-each (lambda (d)
+                          (display (derivation-path->output-path d))
+                          (newline))
+                        drv))))))

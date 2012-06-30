@@ -53,6 +53,10 @@ else
    AC_MSG_WARN([Please use `--with-nixpkgs'.])
 fi
 
-AC_CONFIG_FILES([Makefile po/Makefile.in])
+AC_CONFIG_FILES([Makefile
+                 po/Makefile.in
+		 guix-build])
+
+AC_CONFIG_COMMANDS([commands-exec], [chmod +x guix-build])
 
 AC_OUTPUT

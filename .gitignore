@@ -34,3 +34,4 @@ config.cache
 /po/remove-potcdate.sin
 /po/stamp-po
 /po/guix.pot
+/guix-build
