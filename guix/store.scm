@@ -331,30 +331,32 @@ again until #t is returned or an error is raised."
                             (use-build-hook? #t)
                             (build-verbosity 0)
                             (log-type 0)
-                            (print-build-trace #t))
+                            (print-build-trace #t)
+                            (build-cores 1)
+                            (use-substitutes? #t))
   ;; Must be called after `open-connection'.
 
   (define socket
     (nix-server-socket server))
 
   (let-syntax ((send (syntax-rules ()
-                       ((_ option ...)
-                        (for-each (lambda (i)
-                                    (cond ((boolean? i)
-                                           (write-int (if i 1 0) socket))
-                                          ((integer? i)
-                                           (write-int i socket))
-                                          (else
-                                           (error "invalid build option"
-                                                  i))))
-                                  (list option ...))))))
-    (send (operation-id set-options)
-          keep-failed? keep-going? try-fallback? verbosity
-          max-build-jobs max-silent-time)
+                       ((_ (type option) ...)
+                        (begin
+                          (write-arg type option socket)
+                          ...)))))
+    (write-int (operation-id set-options) socket)
+    (send (boolean keep-failed?) (boolean keep-going?)
+          (boolean try-fallback?) (integer verbosity)
+          (integer max-build-jobs) (integer max-silent-time))
     (if (>= (nix-server-minor-version server) 2)
-        (send use-build-hook?))
+        (send (boolean use-build-hook?)))
     (if (>= (nix-server-minor-version server) 4)
-        (send build-verbosity log-type print-build-trace))
+        (send (integer build-verbosity) (integer log-type)
+              (boolean print-build-trace)))
+    (if (>= (nix-server-minor-version server) 6)
+        (send (integer build-cores)))
+    (if (>= (nix-server-minor-version server) 10)
+        (send (boolean use-substitutes?)))
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))
 
