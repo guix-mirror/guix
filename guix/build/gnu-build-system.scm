@@ -60,6 +60,7 @@
   (let ((prefix     (assoc-ref outputs "out"))
         (libdir     (assoc-ref outputs "lib"))
         (includedir (assoc-ref outputs "include")))
+    (format #t "configure flags: ~s~%" configure-flags)
     (zero? (apply system* "./configure"
                   "--enable-fast-install"
                   (string-append "--prefix=" prefix)
