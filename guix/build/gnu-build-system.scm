@@ -64,10 +64,11 @@
                   "--enable-fast-install"
                   (string-append "--prefix=" prefix)
                   `(,@(if libdir
-                          (list (string-append "--libdir=" libdir))
+                          (list (string-append "--libdir=" libdir "/lib"))
                           '())
                     ,@(if includedir
-                          (list (string-append "--includedir=" includedir))
+                          (list (string-append "--includedir="
+                                               includedir "/include"))
                           '())
                     ,@configure-flags)))))
 
