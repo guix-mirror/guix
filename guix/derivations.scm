@@ -206,6 +206,9 @@ that form."
   (define (write-list lst)
     (display (list->string lst) port))
 
+  ;; Note: lists are sorted alphabetically, to conform with the behavior of
+  ;; C++ `std::map' in Nix itself.
+
   (match drv
     (($ <derivation> outputs inputs sources
         system builder args env-vars)
@@ -217,22 +220,30 @@ that form."
                                 (or (and=> hash-algo symbol->string) "")
                                 (or (and=> hash bytevector->base16-string)
                                     ""))))
-                      outputs))
+                      (sort outputs
+                            (lambda (o1 o2)
+                              (string<? (car o1) (car o2))))))
      (display "," port)
      (write-list (map (match-lambda
                        (($ <derivation-input> path sub-drvs)
                         (format #f "(~s,~a)" path
-                                (list->string (map object->string sub-drvs)))))
-                      inputs))
+                                (list->string (map object->string
+                                                   (sort sub-drvs string<?))))))
+                      (sort inputs
+                            (lambda (i1 i2)
+                              (string<? (derivation-input-path i1)
+                                        (derivation-input-path i2))))))
      (display "," port)
-     (write-list (map object->string sources))
+     (write-list (map object->string (sort sources string<?)))
      (format port ",~s,~s," system builder)
      (write-list (map object->string args))
      (display "," port)
      (write-list (map (match-lambda
                        ((name . value)
                         (format #f "(~s,~s)" name value)))
-                      env-vars))
+                      (sort env-vars
+                            (lambda (e1 e2)
+                              (string<? (car e1) (car e2))))))
      (display ")" port))))
 
 (define* (derivation-path->output-path path #:optional (output "out"))
@@ -278,26 +289,17 @@ in SIZE bytes."
           system builder args env-vars)
        ;; A regular derivation: replace the path of each input with that
        ;; input's hash; return the hash of serialization of the resulting
-       ;; derivation.  Note: inputs are sorted as in the order of their hex
-       ;; hash representation because that's what the C++ `std::map' code
-       ;; does.
-       (let* ((inputs  (sort (map (match-lambda
-                                   (($ <derivation-input> path sub-drvs)
-                                    (let ((hash (call-with-input-file path
-                                                  (compose bytevector->base16-string
-                                                           derivation-hash
-                                                           read-derivation))))
-                                      (make-derivation-input hash sub-drvs))))
-                                  inputs)
-                             (lambda (i1 i2)
-                               (string<? (derivation-input-path i1)
-                                         (derivation-input-path i2)))))
-              (sources (sort sources string<?))
-              (outputs (sort outputs
-                             (lambda (o1 o2)
-                               (string<? (car o1) (car o2)))))
-              (drv     (make-derivation outputs inputs sources
-                                        system builder args env-vars)))
+       ;; derivation.
+       (let* ((inputs (map (match-lambda
+                            (($ <derivation-input> path sub-drvs)
+                             (let ((hash (call-with-input-file path
+                                           (compose bytevector->base16-string
+                                                    derivation-hash
+                                                    read-derivation))))
+                               (make-derivation-input hash sub-drvs))))
+                           inputs))
+              (drv    (make-derivation outputs inputs sources
+                                       system builder args env-vars)))
          (sha256
           (string->utf8 (call-with-output-string
                          (cut write-derivation drv <>))))))))))
@@ -354,22 +356,19 @@ known in advance, such as a file download."
 
   (define (env-vars-with-empty-outputs)
     ;; Return a variant of ENV-VARS where each OUTPUTS is associated with an
-    ;; empty string, even outputs that do not appear in ENV-VARS.  Note: the
-    ;; result is sorted alphabetically, as with C++ `std::map'.
+    ;; empty string, even outputs that do not appear in ENV-VARS.
     (let ((e (map (match-lambda
                    ((name . val)
                     (if (member name outputs)
                         (cons name "")
                         (cons name val))))
                   env-vars)))
-      (sort (fold (lambda (output-name env-vars)
-                    (if (assoc output-name env-vars)
-                        env-vars
-                        (append env-vars `((,output-name . "")))))
-                  e
-                  outputs)
-            (lambda (e1 e2)
-              (string<? (car e1) (car e2))))))
+      (fold (lambda (output-name env-vars)
+              (if (assoc output-name env-vars)
+                  env-vars
+                  (append env-vars `((,output-name . "")))))
+            e
+            outputs)))
 
   (let* ((outputs    (map (lambda (name)
                             ;; Return outputs with an empty path.
