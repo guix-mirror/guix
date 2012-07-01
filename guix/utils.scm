@@ -30,6 +30,7 @@
   #:autoload   (ice-9 rdelim) (read-line)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:autoload   (system foreign) (pointer->procedure)
   #:export (bytevector-quintet-length
             bytevector->base32-string
@@ -493,11 +494,23 @@ tuples."
                        ((_ v) v)
                        (#f (car (assoc-ref dflt f)))))
 
-                   (if (lset= eq? (append fields (map car dflt))
-                              'expected)
-                       #`(ctor #,@(map field-value 'expected))
-                       (error "missing or extraneous field initializers"
-                              (lset-difference eq? fields 'expected))))))))))
+                   (let-syntax ((error*
+                                 (syntax-rules ()
+                                   ((_ fmt args (... ...))
+                                    (syntax-violation 'name
+                                                      (format #f fmt args
+                                                              (... ...))
+                                                      s)))))
+                     (let ((fields (append fields (map car dflt))))
+                       (cond ((lset= eq? fields 'expected)
+                              #`(ctor #,@(map field-value 'expected)))
+                             ((pair? (lset-difference eq? fields 'expected))
+                              (error* "extraneous field initializers ~a"
+                                      (lset-difference eq? fields 'expected)))
+                             (else
+                              (error* "missing field initializers ~a"
+                                      (lset-difference eq? 'expected
+                                                       fields)))))))))))))
 
     (define (field-default-value s)
       (syntax-case s (default)
