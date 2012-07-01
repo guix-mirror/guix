@@ -15,15 +15,15 @@ Nix language.
 
 Guix currently depends on the following packages:
 
-  - GNU Guile 2.0.x, http://gnu.org/software/guile/
-  - Nix, http://nixos.org/nix/
-  - libchop, http://nongnu.org/libchop/
+  - [[http://gnu.org/software/guile/][GNU Guile 2.0.x]]
+  - [[http://nixos.org/nix/][Nix]]
+  - [[http://gnupg.org/][GNU libgcrypt]], or [[http://nongnu.org/libchop/][libchop]]
 
 For bootstrapping purposes, it is useful to reuse packages from Nixpkgs.
 For this to work, you need to have a checkout of the Nixpkgs repository,
 with the `NIXPKGS' environment variable pointing to it.
 
-  - Nixpkgs, http://nixos.org/nixpkgs/
+  - [[http://nixos.org/nixpkgs/][Nixpkgs]]
 
 * How It Works
 
