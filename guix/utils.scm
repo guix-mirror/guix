@@ -479,20 +479,18 @@ tuples."
             (lambda (s)
               (syntax-case s expected
                 ((_ (field value) (... ...))
-                 (let ((fields   (map syntax->datum #'(field (... ...))))
-                       (inits    (map (match-lambda
-                                       ((f v)
-                                        (list (syntax->datum f) v)))
-                                      #'((field value) (... ...))))
-                       (dflt      (map (match-lambda
-                                        ((f v)
-                                         (list (syntax->datum f) v)))
-                                       #'defaults)))
+                 (let ((fields (map syntax->datum #'(field (... ...))))
+                       (dflt   (map (match-lambda
+                                     ((f v)
+                                      (list (syntax->datum f) v)))
+                                    #'defaults)))
 
-                   (define (field-value f)
-                     (match (assoc f inits)
-                       ((_ v) v)
-                       (#f (car (assoc-ref dflt f)))))
+                    (define (field-value f)
+                      (or (and=> (find (lambda (x)
+                                         (eq? f (car (syntax->datum x))))
+                                       #'((field value) (... ...)))
+                                 car)
+                          (car (assoc-ref dflt (syntax->datum f)))))
 
                    (let-syntax ((error*
                                  (syntax-rules ()
@@ -503,7 +501,8 @@ tuples."
                                                       s)))))
                      (let ((fields (append fields (map car dflt))))
                        (cond ((lset= eq? fields 'expected)
-                              #`(ctor #,@(map field-value 'expected)))
+                              #`(letrec* ((field value) (... ...))
+                                  (ctor #,@(map field-value 'expected))))
                              ((pair? (lset-difference eq? fields 'expected))
                               (error* "extraneous field initializers ~a"
                                       (lset-difference eq? fields 'expected)))

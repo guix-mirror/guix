@@ -112,6 +112,22 @@
          (match (foo (bar 1))
            (($ <foo> 1 42) #t)))))
 
+(test-assert "define-record-type* with letrec* behavior"
+  ;; Make sure field initializers can refer to each other as if they were in
+  ;; a `letrec*'.
+  (begin
+    (define-record-type* <bar> bar make-bar
+      foo?
+      (x bar-x)
+      (y bar-y (default (+ 40 2)))
+      (z bar-z))
+    (and (match (bar (x 1) (y (+ x 1)) (z (* y 2)))
+           (($ <bar> 1 2 4) #t))
+         (match (bar (x 7) (z (* x 3)))
+           (($ <bar> 7 42 21)))
+         (match (bar (z 21) (x (/ z 3)))
+           (($ <bar> 7 42 21))))))
+
 (test-end)
 
 
