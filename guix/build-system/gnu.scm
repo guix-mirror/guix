@@ -44,12 +44,14 @@
 (define* (gnu-build store name source inputs
                     #:key (outputs '("out")) (configure-flags ''())
                     (make-flags ''()) (phases '%standard-phases)
-                    (system (%current-system)))
+                    (system (%current-system))
+                    (modules '((guix build gnu-build-system)
+                               (guix build utils))))
   "Return a derivation called NAME that builds from tarball SOURCE, with
 input derivation INPUTS, using the usual procedure of the GNU Build System."
   (define builder
     `(begin
-       (use-modules (guix build gnu-build-system))
+       (use-modules ,@modules)
        (gnu-build #:source ,(if (derivation-path? source)
                                 (derivation-path->output-path source)
                                 source)
@@ -65,8 +67,7 @@ input derivation INPUTS, using the usual procedure of the GNU Build System."
                                   ,@inputs
                                   ,@%standard-inputs)
                                 #:outputs outputs
-                                #:modules '((guix build gnu-build-system)
-                                            (guix build utils))))
+                                #:modules modules))
 
 (define gnu-build-system
   (build-system (name 'gnu)
