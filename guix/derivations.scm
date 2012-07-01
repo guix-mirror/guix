@@ -293,6 +293,9 @@ in SIZE bytes."
                                (string<? (derivation-input-path i1)
                                          (derivation-input-path i2)))))
               (sources (sort sources string<?))
+              (outputs (sort outputs
+                             (lambda (o1 o2)
+                               (string<? (car o1) (car o2)))))
               (drv     (make-derivation outputs inputs sources
                                         system builder args env-vars)))
          (sha256

@@ -145,6 +145,24 @@
            (and (eq? 'one (call-with-input-file one read))
                 (eq? 'two (call-with-input-file two read)))))))
 
+(test-assert "multiple-output derivation, non-alphabetic order"
+  ;; Here, the outputs are not listed in alphabetic order.  Yet, the store
+  ;; path computation must reorder them first.
+  (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
+                                        "echo one > $out ; echo two > $AAA"
+                                        '()))
+         (drv-path   (derivation %store "fixed" (%current-system)
+                                 "/bin/sh" `(,builder)
+                                 '()
+                                 `((,builder))
+                                 #:outputs '("out" "AAA")))
+         (succeeded? (build-derivations %store (list drv-path))))
+    (and succeeded?
+         (let ((one (derivation-path->output-path drv-path "out"))
+               (two (derivation-path->output-path drv-path "AAA")))
+           (and (eq? 'one (call-with-input-file one read))
+                (eq? 'two (call-with-input-file two read)))))))
+
 
 (define %coreutils
   (false-if-exception (nixpkgs-derivation "coreutils")))
