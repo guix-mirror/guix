@@ -206,6 +206,29 @@ that form."
   (define (write-list lst)
     (display (list->string lst) port))
 
+  (define (coalesce-duplicate-inputs inputs)
+    ;; Return a list of inputs, such that when INPUTS contains the same DRV
+    ;; twice, they are coalesced, with their sub-derivations merged.  This is
+    ;; needed because Nix itself keeps only one of them.
+    (fold (lambda (input result)
+            (match input
+              (($ <derivation-input> path sub-drvs)
+               ;; XXX: quadratic
+               (match (find (match-lambda
+                             (($ <derivation-input> p s)
+                              (string=? p path)))
+                            result)
+                 (#f
+                  (cons input result))
+                 ((and dup ($ <derivation-input> _ sub-drvs2))
+                  ;; Merge DUP with INPUT.
+                  (let ((sub-drvs (delete-duplicates
+                                   (append sub-drvs sub-drvs2))))
+                    (cons (make-derivation-input path sub-drvs)
+                          (delq dup result))))))))
+          '()
+          inputs))
+
   ;; Note: lists are sorted alphabetically, to conform with the behavior of
   ;; C++ `std::map' in Nix itself.
 
@@ -229,7 +252,7 @@ that form."
                         (format #f "(~s,~a)" path
                                 (list->string (map object->string
                                                    (sort sub-drvs string<?))))))
-                      (sort inputs
+                      (sort (coalesce-duplicate-inputs inputs)
                             (lambda (i1 i2)
                               (string<? (derivation-input-path i1)
                                         (derivation-input-path i2))))))
@@ -400,6 +423,8 @@ known in advance, such as a file download."
                                       system builder args env-vars))
          (drv        (add-output-paths drv-masked)))
 
+    ;; (write-derivation drv-masked (current-error-port))
+    ;; (newline (current-error-port))
     (values (add-text-to-store store (string-append name ".drv")
                                (call-with-output-string
                                 (cut write-derivation drv <>))

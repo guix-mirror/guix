@@ -163,6 +163,38 @@
            (and (eq? 'one (call-with-input-file one read))
                 (eq? 'two (call-with-input-file two read)))))))
 
+(test-assert "user of multiple-output derivation"
+  ;; Check whether specifying several inputs coming from the same
+  ;; multiple-output derivation works.
+  (let* ((builder1   (add-text-to-store %store "my-mo-builder.sh"
+                                        "echo one > $out ; echo two > $two"
+                                        '()))
+         (mdrv       (derivation %store "multiple-output" (%current-system)
+                                 "/bin/sh" `(,builder1)
+                                 '()
+                                 `((,builder1))
+                                 #:outputs '("out" "two")))
+         (builder2   (add-text-to-store %store "my-mo-user-builder.sh"
+                                        "read x < $one;
+                                         read y < $two;
+                                         echo \"($x $y)\" > $out"
+                                        '()))
+         (udrv       (derivation %store "multiple-output-user"
+                                 (%current-system)
+                                 "/bin/sh" `(,builder2)
+                                 `(("one" . ,(derivation-path->output-path
+                                              mdrv "out"))
+                                   ("two" . ,(derivation-path->output-path
+                                              mdrv "two")))
+                                 `((,builder2)
+                                   ;; two occurrences of MDRV:
+                                   (,mdrv)
+                                   (,mdrv "two")))))
+    (and (build-derivations %store (list (pk 'udrv udrv)))
+         (let ((p (derivation-path->output-path udrv)))
+           (and (valid-path? %store p)
+                (equal? '(one two) (call-with-input-file p read)))))))
+
 
 (define %coreutils
   (false-if-exception (nixpkgs-derivation "coreutils")))
