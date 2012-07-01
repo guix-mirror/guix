@@ -131,6 +131,9 @@ representation."
                      (default '()))
   (native-inputs package-native-inputs    ; native input packages/derivations
                  (default '()))
+  (self-native-input? package-self-native-input?  ; whether to use itself as
+                                                  ; a native input when cross-
+                      (default #f))               ; compiling
 
   (outputs package-outputs                ; list of strings
            (default '("out")))
@@ -163,7 +166,8 @@ representation."
   "Return the derivation of PACKAGE for SYSTEM."
   (match package
     (($ <package> name version source (= build-system-builder builder)
-        args inputs native-inputs propagated-inputs outputs)
+        args inputs propagated-inputs native-inputs self-native-input?
+        outputs)
      ;; TODO: For `search-paths', add a builder prologue that calls
      ;; `set-path-environment-variable'.
      (let ((inputs (map (match-lambda
