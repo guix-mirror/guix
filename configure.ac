@@ -12,6 +12,7 @@ AC_CONFIG_SRCDIR([guix.scm])
 AC_CONFIG_MACRO_DIR([m4])
 
 AM_GNU_GETTEXT([external])
+AM_GNU_GETTEXT_VERSION([0.18.1])
 
 guilemoduledir="${datarootdir}/guile/site/2.0"
 AC_SUBST([guilemoduledir])
