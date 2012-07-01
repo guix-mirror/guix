@@ -29,12 +29,12 @@
             location-line
             location-column
 
-            source
-            package-source?
-            package-source-uri
-            package-source-method
-            package-source-sha256
-            package-source-file-name
+            origin
+            origin?
+            origin-uri
+            origin-method
+            origin-sha256
+            origin-file-name
             base32
 
             package
@@ -93,15 +93,15 @@ etc."
     (location file (and line (+ line 1)) col)))
 
 
-;; The source of a package, such as a tarball URL and fetcher.
-(define-record-type* <package-source>
-  source make-package-source
-  package-source?
-  (uri       package-source-uri)                     ; string
-  (method    package-source-method)                  ; symbol
-  (sha256    package-source-sha256)                  ; bytevector
-  (file-name package-source-file-name                ; optional file name
-             (default #f)))
+;; The source of a package, such as a tarball URL and fetcher---called
+;; "origin" to avoid name clash with `package-source', `source', etc.
+(define-record-type* <origin>
+  origin make-origin
+  origin?
+  (uri       origin-uri)                          ; string
+  (method    origin-method)                       ; symbol
+  (sha256    origin-sha256)                       ; bytevector
+  (file-name origin-file-name (default #f)))      ; optional file name
 
 (define-syntax base32
   (lambda (s)
@@ -120,7 +120,7 @@ representation."
   package?
   (name   package-name)                   ; string
   (version package-version)               ; string
-  (source package-source)                 ; <package-source> instance
+  (source package-source)                 ; <origin> instance
   (build-system package-build-system)     ; build system
   (arguments package-arguments            ; arguments for the build method
              (default '()))
@@ -155,7 +155,7 @@ representation."
 (define (package-source-derivation store source)
   "Return the derivation path for SOURCE, a package source."
   (match source
-    (($ <package-source> uri method sha256 name)
+    (($ <origin> uri method sha256 name)
      (method store uri 'sha256 sha256 name))))
 
 (define* (package-derivation store package

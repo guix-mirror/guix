@@ -32,9 +32,11 @@
   (package
    (name "libsigsegv")
    (version "2.10")
-   (source (source
+   (source (origin
             (method http-fetch)
-            (uri "http://ftp.gnu.org/gnu/libsigsegv/libsigsegv-2.10.tar.gz")
+            (uri (string-append
+                  "http://ftp.gnu.org/gnu/libsigsegv/libsigsegv-"
+                  version ".tar.gz"))
             (sha256
              (base32 "16hrs8k3nmc7a8jam5j1fpspd6sdpkamskvsdpcw6m29vnis8q44"))))
    (build-system gnu-build-system)
@@ -54,9 +56,10 @@ handlers, distributed shared memory, and more.")
   (package
    (name "gawk")
    (version "4.0.0")
-   (source (source
+   (source (origin
             (method http-fetch)
-            (uri "http://ftp.gnu.org/gnu/gawk/gawk-4.0.0.tar.bz2")
+            (uri (string-append "http://ftp.gnu.org/gnu/gawk/gawk-" version
+                                ".tar.bz2"))
             (sha256
              (base32 "0sss7rhpvizi2a88h6giv0i7w5h07s2fxkw3s6n1hqvcnhrfgbb0"))))
    (build-system gnu-build-system)
@@ -88,9 +91,10 @@ code.")
   (package
    (name "hello")
    (version "2.8")
-   (source (source
+   (source (origin
             (method http-fetch)
-            (uri "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")
+            (uri (string-append "http://ftp.gnu.org/gnu/hello/hello-" version
+                                ".tar.gz"))
             (sha256
              (base32 "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))))
    (build-system gnu-build-system)
