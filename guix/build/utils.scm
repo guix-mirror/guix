@@ -18,14 +18,44 @@
 
 (define-module (guix build utils)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
+  #:use-module (ice-9 rdelim)
   #:export (directory-exists?
-            set-path-environment-variable))
+            with-directory-excursion
+            set-path-environment-variable
+            alist-cons-before
+            alist-cons-after
+            alist-replace
+            substitute))
+
+
+;;;
+;;; Directories.
+;;;
 
 (define (directory-exists? dir)
   "Return #t if DIR exists and is a directory."
   (let ((s (stat dir #f)))
     (and s
          (eq? 'directory (stat:type s)))))
+
+(define-syntax-rule (with-directory-excursion dir body ...)
+  "Run BODY with DIR as the process's current directory."
+  (let ((init (getcwd)))
+   (dynamic-wind
+     (lambda ()
+       (chdir dir))
+     (lambda ()
+       body ...)
+     (lambda ()
+       (chdir init)))))
+
+
+;;;
+;;; Search paths.
+;;;
 
 (define (search-path-as-list sub-directories input-dirs)
   "Return the list of directories among SUB-DIRECTORIES that exist in
@@ -62,3 +92,89 @@ SEPARATOR-separated path accordingly.  Example:
           (list->search-path-as-string (search-path-as-list sub-directories
                                                             input-dirs)
                                        separator)))
+
+
+;;;
+;;; Phases.
+;;;
+;;; In (guix build gnu-build-system), there are separate phases (configure,
+;;; build, test, install).  They are represented as a list of name/procedure
+;;; pairs.  The following procedures make it easy to change the list of
+;;; phases.
+;;;
+
+(define* (alist-cons-before reference key value alist
+                            #:optional (key=? equal?))
+  "Insert the KEY/VALUE pair before the first occurrence of a pair whose key
+is REFERENCE in ALIST.  Use KEY=? to compare keys."
+  (let-values (((before after)
+                (break (match-lambda
+                        ((k . _)
+                         (key=? k reference)))
+                       alist)))
+    (append before (alist-cons key value after))))
+
+(define* (alist-cons-after reference key value alist
+                           #:optional (key=? equal?))
+  "Insert the KEY/VALUE pair after the first occurrence of a pair whose key
+is REFERENCE in ALIST.  Use KEY=? to compare keys."
+  (let-values (((before after)
+                (break (match-lambda
+                        ((k . _)
+                         (key=? k reference)))
+                       alist)))
+    (match after
+      ((reference after ...)
+       (append before (cons* reference `(,key . ,value) after)))
+      (()
+       (append before `((,key . ,value)))))))
+
+(define* (alist-replace key value alist #:optional (key=? equal?))
+  "Replace the first pair in ALIST whose car is KEY with the KEY/VALUE pair.
+An error is raised when no such pair exists."
+  (let-values (((before after)
+                (break (match-lambda
+                        ((k . _)
+                         (key=? k key)))
+                       alist)))
+    (match after
+      ((_ after ...)
+       (append before (alist-cons key value after))))))
+
+
+;;;
+;;; Text substitution (aka. sed).
+;;;
+
+(define (substitute file pattern match-proc)
+  "For each line of FILE that matches PATTERN, a regexp, call (MATCH-PROC
+MATCH OUTPUT-PORT)."
+  (let* ((regexp   (if (regexp? pattern)
+                       pattern
+                       (make-regexp pattern regexp/extended)))
+         (template (string-append file ".XXXXXX"))
+         (out      (mkstemp! template)))
+    (with-throw-handler #t
+      (lambda ()
+        (call-with-input-file file
+          (lambda (in)
+            (let loop ((line (read-line in)))
+              (if (eof-object? line)
+                  #t
+                  (begin
+                    (cond ((regexp-exec regexp line)
+                           =>
+                           (lambda (m)
+                             (match-proc m out)))
+                          (else
+                           (display line out)
+                           (newline out)))
+                    (loop (read-line in)))))))
+        (rename-file template file))
+      (lambda (key . args)
+        (false-if-exception (delete-file template))))))
+
+;;; Local Variables:
+;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)
+;;; eval: (put 'with-throw-handler 'scheme-indent-function 1)
+;;; End:

@@ -42,6 +42,7 @@ TESTS =						\
   tests/builders.scm				\
   tests/derivations.scm				\
   tests/utils.scm				\
+  tests/build-utils.scm				\
   tests/packages.scm
 
 TESTS_ENVIRONMENT =							\
