@@ -39,6 +39,7 @@
              (nix-base32-string->bytevector  ; TODO: make conversion implicit
               "16hrs8k3nmc7a8jam5j1fpspd6sdpkamskvsdpcw6m29vnis8q44"))))
    (build-system gnu-build-system)
+   (outputs '("out" "lib"))                   ; separate libdir from the rest
    (home-page "http://www.gnu.org/software/libsigsegv/")
    (description "GNU libsigsegv, a library to handle page faults in user mode")
    (long-description
@@ -61,12 +62,11 @@ handlers, distributed shared memory, and more.")
              (nix-base32-string->bytevector
               "0sss7rhpvizi2a88h6giv0i7w5h07s2fxkw3s6n1hqvcnhrfgbb0"))))
    (build-system gnu-build-system)
-   (arguments '(#:configure-flags
-                `(,(string-append "--with-libsigsegv-prefix="
-                                  (assoc-ref %build-inputs "libsigsegv"))))
+   (arguments '()
               ;; TODO: disable tests on Cygwin
               )
-   (inputs `(("libsigsegv" ,libsigsegv)))
+   (inputs `(("libsigsegv" ,libsigsegv)             ; headers
+             ("libsigsegv/lib" ,libsigsegv "lib"))) ; library
    (home-page "http://www.gnu.org/software/gawk/")
    (description "GNU implementation of the Awk programming language")
    (long-description
