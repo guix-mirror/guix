@@ -19,12 +19,12 @@
 bin_SCRIPTS = guix-build
 
 MODULES =					\
+  guix/utils.scm				\
   guix/derivations.scm				\
   guix/build-system.scm				\
   guix/build-system/gnu.scm			\
   guix/http.scm					\
   guix/store.scm				\
-  guix/utils.scm				\
   guix/build/gnu-build-system.scm		\
   guix/build/http.scm				\
   guix/build/utils.scm				\
