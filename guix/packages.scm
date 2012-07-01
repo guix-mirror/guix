@@ -171,7 +171,9 @@ etc."
               (package-source-derivation store source)
               inputs
               #:outputs outputs #:system system
-              args)))))
+              (if (procedure? args)
+                  (args system)
+                  args))))))
 
 (define* (package-cross-derivation store package)
   ;; TODO

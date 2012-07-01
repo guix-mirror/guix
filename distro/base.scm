@@ -62,9 +62,13 @@ handlers, distributed shared memory, and more.")
              (nix-base32-string->bytevector
               "0sss7rhpvizi2a88h6giv0i7w5h07s2fxkw3s6n1hqvcnhrfgbb0"))))
    (build-system gnu-build-system)
-   (arguments '()
-              ;; TODO: disable tests on Cygwin
-              )
+   (arguments (case-lambda
+                ((system)
+                 (if (string=? system "i686-cygwin")
+                     '(#:tests? #f)      ; work around test failure on Cygwin
+                     '()))
+                ((system cross-system)
+                 '())))
    (inputs `(("libsigsegv" ,libsigsegv)             ; headers
              ("libsigsegv/lib" ,libsigsegv "lib"))) ; library
    (home-page "http://www.gnu.org/software/gawk/")
