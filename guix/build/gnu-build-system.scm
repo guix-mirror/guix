@@ -57,27 +57,35 @@
        (chdir (first-subdirectory "."))))
 
 (define* (configure #:key outputs (configure-flags '()) #:allow-other-keys)
-  (let ((prefix     (assoc-ref outputs "out"))
-        (libdir     (assoc-ref outputs "lib"))
-        (includedir (assoc-ref outputs "include")))
-    (format #t "configure flags: ~s~%" configure-flags)
-    (zero? (apply system* "./configure"
-                  "--enable-fast-install"
-                  (string-append "--prefix=" prefix)
-                  `(,@(if libdir
-                          (list (string-append "--libdir=" libdir "/lib"))
-                          '())
-                    ,@(if includedir
-                          (list (string-append "--includedir="
-                                               includedir "/include"))
-                          '())
-                    ,@configure-flags)))))
+  (let* ((prefix     (assoc-ref outputs "out"))
+         (libdir     (assoc-ref outputs "lib"))
+         (includedir (assoc-ref outputs "include"))
+         (flags      `(,(string-append "--prefix=" prefix)
+                       "--enable-fast-install"    ; when using Libtool
+
+                       ;; Produce multiple outputs when specific output names
+                       ;; are recognized.
+                       ,@(if libdir
+                              (list (string-append "--libdir=" libdir "/lib"))
+                              '())
+                       ,@(if includedir
+                             (list (string-append "--includedir="
+                                                  includedir "/include"))
+                             '())
+                       ,@configure-flags)))
+    (format #t "configure flags: ~s~%" flags)
+    (zero? (apply system* "./configure" flags))))
 
 (define* (build #:key (make-flags '()) #:allow-other-keys)
   (zero? (apply system* "make" make-flags)))
 
-(define* (check #:key (make-flags '()) #:allow-other-keys)
-  (zero? (apply system* "make" "check" make-flags)))
+(define* (check #:key (make-flags '()) (tests? #t) (test-target "check")
+                #:allow-other-keys)
+  (if tests?
+      (zero? (apply system* "make" test-target make-flags))
+      (begin
+        (format #t "test suite not run~%")
+        #t)))
 
 (define* (install #:key (make-flags '()) #:allow-other-keys)
   (zero? (apply system* "make" "install" make-flags)))
