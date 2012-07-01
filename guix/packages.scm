@@ -179,7 +179,13 @@ representation."
                                 sub-drv))
                          (((? string? name)
                            (and (? string?) (? derivation-path?) drv))
-                          (list name drv)))
+                          (list name drv))
+                         (((? string? name)
+                           (and (? string?) (? (negate store-path?))
+                                (? file-exists? file)))
+                          (list name
+                                (add-to-store store (basename file)
+                                              #t #f "sha256" file))))
                         (concatenate (list native-inputs inputs
                                            propagated-inputs)))))
        (apply builder
