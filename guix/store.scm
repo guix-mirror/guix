@@ -53,7 +53,7 @@
             store-path?
             derivation-path?))
 
-(define %protocol-version #x109)
+(define %protocol-version #x10b)
 
 (define %worker-magic-1 #x6e697863)
 (define %worker-magic-2 #x6478696f)
@@ -257,7 +257,8 @@
   (message nix-protocol-error-message)
   (status  nix-protocol-error-status))
 
-(define* (open-connection #:optional (file %default-socket-path))
+(define* (open-connection #:optional (file %default-socket-path)
+                          #:key (reserve-space? #t))
   (let ((s (with-fluids ((%default-port-encoding #f))
              ;; This trick allows use of the `scm_c_read' optimization.
              (socket PF_UNIX SOCK_STREAM 0)))
@@ -271,6 +272,8 @@
                         (protocol-major v))
                   (begin
                     (write-int %protocol-version s)
+                    (if (>= (protocol-minor v) 11)
+                        (write-int (if reserve-space? 1 0) s))
                     (let ((s (%make-nix-server s
                                                (protocol-major v)
                                                (protocol-minor v))))
