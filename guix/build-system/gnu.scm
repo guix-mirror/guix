@@ -43,7 +43,9 @@
 
 (define* (gnu-build store name source inputs
                     #:key (outputs '("out")) (configure-flags ''())
-                    (make-flags ''()) (phases '%standard-phases)
+                    (make-flags ''())
+                    (patches ''()) (patch-flags ''("--batch" "-p1"))
+                    (phases '%standard-phases)
                     (system (%current-system))
                     (modules '((guix build gnu-build-system)
                                (guix build utils))))
@@ -57,6 +59,8 @@ input derivation INPUTS, using the usual procedure of the GNU Build System."
                                 source)
                   #:outputs %outputs
                   #:inputs %build-inputs
+                  #:patches ,patches
+                  #:patch-flags ,patch-flags
                   #:phases ,phases
                   #:configure-flags ,configure-flags
                   #:make-flags ,make-flags)))

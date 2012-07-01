@@ -56,6 +56,14 @@
   (and (zero? (system* "tar" "xvf" source))
        (chdir (first-subdirectory "."))))
 
+(define* (patch #:key (patches '()) (patch-flags '("--batch" "-p1"))
+                #:allow-other-keys)
+  (every (lambda (p)
+           (format #t "applying patch `~a'~%" p)
+           (zero? (apply system* "patch"
+                         (append patch-flags (list p)))))
+         patches))
+
 (define* (configure #:key outputs (configure-flags '()) #:allow-other-keys)
   (let* ((prefix     (assoc-ref outputs "out"))
          (libdir     (assoc-ref outputs "lib"))
@@ -94,7 +102,7 @@
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
-    (phases set-paths unpack configure build check install)))
+    (phases set-paths unpack patch configure build check install)))
 
 
 (define* (gnu-build #:key (source #f) (outputs #f) (inputs #f)
