@@ -21,6 +21,7 @@
   #:use-module (guix store)
   #:use-module (guix build-system)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:export (location
             location?
@@ -44,6 +45,7 @@
             package-arguments
             package-inputs
             package-native-inputs
+            package-propagated-inputs
             package-outputs
             package-search-paths
             package-description
@@ -51,6 +53,7 @@
             package-license
             package-platforms
             package-maintainers
+            package-properties
             package-location
 
             package-source-derivation
@@ -109,10 +112,14 @@ etc."
   (build-system package-build-system)     ; build system
   (arguments package-arguments            ; arguments for the build method
              (default '()))
+
   (inputs package-inputs                  ; input packages or derivations
           (default '()))
+  (propagated-inputs package-propagated-inputs    ; same, but propagated
+                     (default '()))
   (native-inputs package-native-inputs    ; native input packages/derivations
                  (default '()))
+
   (outputs package-outputs                ; list of strings
            (default '("out")))
   (search-paths package-search-paths      ; list of (ENV-VAR (DIRS ...))
@@ -126,6 +133,8 @@ etc."
   (home-page package-home-page)
   (platforms package-platforms (default '()))
   (maintainers package-maintainers (default '()))
+
+  (properties package-properties (default '()))   ; alist for anything else
 
   (location package-location
             (default (and=> (current-source-location)
@@ -142,7 +151,7 @@ etc."
   "Return the derivation of PACKAGE for SYSTEM."
   (match package
     (($ <package> name version source (= build-system-builder builder)
-        args inputs native-inputs outputs)
+        args inputs native-inputs propagated-inputs outputs)
      ;; TODO: For `search-paths', add a builder prologue that calls
      ;; `set-path-environment-variable'.
      (let ((inputs (map (match-lambda
@@ -155,7 +164,8 @@ etc."
                          (((? string? name)
                            (and (? string?) (? derivation-path?) drv))
                           (list name drv)))
-                        (append native-inputs inputs))))
+                        (concatenate (list native-inputs inputs
+                                           propagated-inputs)))))
        (apply builder
               store (string-append name "-" version)
               (package-source-derivation store source)
