@@ -36,8 +36,7 @@
             (method http-fetch)
             (uri "http://ftp.gnu.org/gnu/libsigsegv/libsigsegv-2.10.tar.gz")
             (sha256
-             (nix-base32-string->bytevector  ; TODO: make conversion implicit
-              "16hrs8k3nmc7a8jam5j1fpspd6sdpkamskvsdpcw6m29vnis8q44"))))
+             (base32 "16hrs8k3nmc7a8jam5j1fpspd6sdpkamskvsdpcw6m29vnis8q44"))))
    (build-system gnu-build-system)
    (outputs '("out" "lib"))                   ; separate libdir from the rest
    (home-page "http://www.gnu.org/software/libsigsegv/")
@@ -59,8 +58,7 @@ handlers, distributed shared memory, and more.")
             (method http-fetch)
             (uri "http://ftp.gnu.org/gnu/gawk/gawk-4.0.0.tar.bz2")
             (sha256
-             (nix-base32-string->bytevector
-              "0sss7rhpvizi2a88h6giv0i7w5h07s2fxkw3s6n1hqvcnhrfgbb0"))))
+             (base32 "0sss7rhpvizi2a88h6giv0i7w5h07s2fxkw3s6n1hqvcnhrfgbb0"))))
    (build-system gnu-build-system)
    (arguments (case-lambda
                 ((system)
@@ -94,8 +92,7 @@ code.")
             (method http-fetch)
             (uri "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")
             (sha256
-             (nix-base32-string->bytevector  ; TODO: make conversion implicit
-              "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))))
+             (base32 "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))))
    (build-system gnu-build-system)
    (arguments '(#:configure-flags
                 `("--disable-dependency-tracking"

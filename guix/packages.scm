@@ -35,6 +35,7 @@
             package-source-method
             package-source-sha256
             package-source-file-name
+            base32
 
             package
             package?
@@ -101,6 +102,17 @@ etc."
   (sha256    package-source-sha256)                  ; bytevector
   (file-name package-source-file-name                ; optional file name
              (default #f)))
+
+(define-syntax base32
+  (lambda (s)
+    "Return the bytevector corresponding to the given Nix-base32
+representation."
+    (syntax-case s ()
+      ((_ str)
+       (string? (syntax->datum #'str))
+       (with-syntax ((bv (nix-base32-string->bytevector
+                          (syntax->datum #'str))))
+         #''bv)))))
 
 ;; A package.
 (define-record-type* <package>
