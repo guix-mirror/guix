@@ -50,7 +50,10 @@
   (let ((inputs (map cdr inputs)))
     (set-path-environment-variable "PATH" '("bin") inputs)
     (set-path-environment-variable "CPATH" '("include") inputs)
-    (set-path-environment-variable "LIBRARY_PATH" '("lib" "lib64") inputs)))
+    (set-path-environment-variable "LIBRARY_PATH" '("lib" "lib64") inputs)
+
+    ;; Dump the environment variables as a shell script, for handy debugging.
+    (system "export > environment-variables")))
 
 (define* (unpack #:key source #:allow-other-keys)
   (and (zero? (system* "tar" "xvf" source))
