@@ -107,3 +107,59 @@ code.")
    (long-description "Yeah...")
    (home-page "http://www.gnu.org/software/hello/")
    (license "GPLv3+")))
+
+(define-public guile-1.8
+  (package
+   (name "guile")
+   (version "1.8.8")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/guile/guile-" version
+                                ".tar.gz"))
+            (sha256
+             (base32
+              "0l200a0v7h8bh0cwz6v7hc13ds39cgqsmfrks55b1rbj5vniyiy3"))))
+   (build-system gnu-build-system)
+   (arguments '(#:modules ((guix build gnu-build-system)
+                           (guix build utils)
+                           (ice-9 regex))
+                #:configure-flags '("--disable-error-on-warning")
+                #:patches (list (assoc-ref %build-inputs "patch/snarf"))
+
+                ;; Insert a phase before `configure' to patch things up.
+                #:phases (alist-cons-before
+                           'configure
+                           'patch-loader-search-path
+                           (lambda* (#:key outputs #:allow-other-keys)
+                             ;; Add a call to `lt_dladdsearchdir' so that
+                             ;; `libguile-readline.so' & co. are in the
+                             ;; loader's search path.
+                             (substitute "libguile/dynl.c"
+                                         "lt_dlinit.*$"
+                                         (lambda (m p)
+                                           (format p
+                                                   "  ~a~%  //lt_dladdsearchdir(\"~a/lib\");~%"
+                                                   (match:substring m 0)
+                                                   (assoc-ref outputs "out")))))
+                           %standard-phases)))
+   (inputs `(("patch/snarf"
+              ,(search-path %load-path "distro/guile-1.8-cpp-4.5.patch"))
+             ("gawk" ,gawk)
+             ("readline" ,(nixpkgs-derivation "readline"))
+             ("gmp" ,(nixpkgs-derivation "gmp"))
+             ("libtool" ,(nixpkgs-derivation "libtool"))))
+
+   ;; When cross-compiling, a native version of Guile itself is needed.
+   (self-native-input? #t)
+
+   (description "GNU Guile 1.8, an embeddable Scheme interpreter")
+   (long-description
+"GNU Guile 1.8 is an interpreter for the Scheme programming language,
+packaged as a library that can be embedded into programs to make them
+extensible.  It supports many SRFIs.")
+   (home-page "http://www.gnu.org/software/guile/")
+   (license "LGPLv2+")))
+
+;;; Local Variables:
+;;; eval: (put 'lambda* 'scheme-indent-function 1)
+;;; End:

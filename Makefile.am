@@ -35,7 +35,10 @@ MODULES =					\
 
 GOBJECTS = $(MODULES:%.scm=%.go)
 
-nobase_dist_guilemodule_DATA = $(MODULES)
+nobase_dist_guilemodule_DATA =			\
+  $(MODULES)					\
+  distro/guile-1.8-cpp-4.5.patch
+
 nobase_nodist_guilemodule_DATA = $(GOBJECTS)
 
 TESTS =						\
@@ -51,6 +54,7 @@ TESTS_ENVIRONMENT =							\
   $(GUILE) --no-auto-compile -L "$(top_srcdir)"
 
 EXTRA_DIST = build-aux/config.rpath $(TESTS)
+
 CLEANFILES = $(GOBJECTS) *.log
 
 .scm.go:
