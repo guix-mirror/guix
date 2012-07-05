@@ -170,6 +170,7 @@ MATCH OUTPUT-PORT)."
                            (display line out)
                            (newline out)))
                     (loop (read-line in)))))))
+        (close out)
         (rename-file template file))
       (lambda (key . args)
         (false-if-exception (delete-file template))))))
