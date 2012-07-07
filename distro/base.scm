@@ -132,11 +132,11 @@ code.")
                              ;; `libguile-readline.so' & co. are in the
                              ;; loader's search path.
                              (substitute* "libguile/dynl.c"
-                                          ("lt_dlinit.*$" match)
-                                          (format #f
-                                                  "  ~a~%  lt_dladdsearchdir(\"~a/lib\");~%"
-                                                  match
-                                                  (assoc-ref outputs "out"))))
+                                          (("lt_dlinit.*$" match)
+                                           (format #f
+                                                   "  ~a~%  lt_dladdsearchdir(\"~a/lib\");~%"
+                                                   match
+                                                   (assoc-ref outputs "out")))))
                            %standard-phases)))
    (inputs `(("patch/snarf"
               ,(search-path %load-path "distro/guile-1.8-cpp-4.5.patch"))

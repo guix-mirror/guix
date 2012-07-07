@@ -147,12 +147,17 @@ An error is raised when no such pair exists."
 ;;; Text substitution (aka. sed).
 ;;;
 
-(define (substitute file pattern match-proc)
-  "For each line of FILE that matches PATTERN, a regexp, call (MATCH-PROC
-MATCH OUTPUT-PORT)."
-  (let* ((regexp   (if (regexp? pattern)
-                       pattern
-                       (make-regexp pattern regexp/extended)))
+(define (substitute file pattern+procs)
+  "PATTERN+PROCS is a list of regexp/two-argument procedure.  For each line
+of FILE, and for each PATTERN that it matches, call the corresponding PROC
+as (PROC MATCH OUTPUT-PORT)."
+  (let* ((rx+proc  (map (match-lambda
+                         (((? regexp? pattern) . proc)
+                          (cons pattern proc))
+                         ((pattern . proc)
+                          (cons (make-regexp pattern regexp/extended)
+                                proc)))
+                        pattern+procs))
          (template (string-append file ".XXXXXX"))
          (out      (mkstemp! template)))
     (with-throw-handler #t
@@ -163,13 +168,16 @@ MATCH OUTPUT-PORT)."
               (if (eof-object? line)
                   #t
                   (begin
-                    (cond ((regexp-exec regexp line)
-                           =>
-                           (lambda (m)
-                             (match-proc m out)))
-                          (else
-                           (display line out)
-                           (newline out)))
+                    (for-each (match-lambda
+                               ((regexp . proc)
+                                (cond ((regexp-exec regexp line)
+                                       =>
+                                       (lambda (m)
+                                         (proc m out)))
+                                      (else
+                                       (display line out)
+                                       (newline out)))))
+                              rx+proc)
                     (loop (read-line in)))))))
         (close out)
         (rename-file template file))
@@ -190,27 +198,32 @@ MATCH OUTPUT-PORT)."
     ((let-matches index match () body ...)
      (begin body ...))))
 
-(define-syntax-rule (substitute* file (regexp whole-match match ...)
-                                 body ...)
+(define-syntax-rule (substitute* file
+                                 ((regexp match-var ...) body ...)
+                                 ...)
   "Substitute REGEXP in FILE by the string returned by BODY.  BODY is
 evaluated with each MATCH-VAR bound to the corresponding positional regexp
 sub-expression.  For example:
 
-  (substitute* file (\"foo([a-z]+)bar(.*)$\" all letters end)
-    (string-append \"baz\" letters end))
+  (substitute* file
+               ((\"hello\")
+                \"good morning\\n\")
+               ((\"foo([a-z]+)bar(.*)$\" all letters end)
+                (string-append \"baz\" letter end)))
 
-Here, anytime a line of FILE matches the regexp, ALL is bound to the complete
-match, LETTERS is bound to the first sub-expression, and END is bound to the
-last one.  Alternatively, given that `all' is not used, one can write:
+Here, anytime a line of FILE contains \"hello\", it is replaced by \"good
+morning\".  Anytime a line of FILE matches the second regexp, ALL is bound to
+the complete match, LETTERS is bound to the first sub-expression, and END is
+bound to the last one.
 
-  (substitute* file (\"foo([a-z]+)bar(.*)$\" _ letters end)
-    (string-append \"baz\" letter end))
-
-"
-  (substitute file regexp
-              (lambda (m p)
-                (let-matches 0 m (whole-match match ...)
-                             (display (begin body ...) p)))))
+When one of the MATCH-VAR is `_', no variable is bound to the corresponding
+match substring."
+  (substitute file
+              (list (cons regexp
+                          (lambda (m p)
+                            (let-matches 0 m (match-var ...)
+                                         (display (begin body ...) p))))
+                    ...)))
 
 
 ;;; Local Variables:
