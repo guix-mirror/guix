@@ -159,7 +159,8 @@ as (PROC MATCH OUTPUT-PORT)."
                                 proc)))
                         pattern+procs))
          (template (string-append file ".XXXXXX"))
-         (out      (mkstemp! template)))
+         (out      (mkstemp! template))
+         (mode     (stat:mode (stat file))))
     (with-throw-handler #t
       (lambda ()
         (call-with-input-file file
@@ -168,18 +169,20 @@ as (PROC MATCH OUTPUT-PORT)."
               (if (eof-object? line)
                   #t
                   (begin
-                    (for-each (match-lambda
-                               ((regexp . proc)
-                                (cond ((regexp-exec regexp line)
-                                       =>
-                                       (lambda (m)
-                                         (proc m out)))
-                                      (else
-                                       (display line out)
-                                       (newline out)))))
-                              rx+proc)
+                    (or (any (match-lambda
+                              ((regexp . proc)
+                               (and=> (regexp-exec regexp line)
+                                      (lambda (m)
+                                        (proc m out)
+                                        #t))))
+                             rx+proc)
+                        (begin
+                          (display line out)
+                          (newline out)
+                          #t))
                     (loop (read-line in)))))))
         (close out)
+        (chmod template mode)
         (rename-file template file))
       (lambda (key . args)
         (false-if-exception (delete-file template))))))
