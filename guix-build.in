@@ -64,6 +64,12 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   ;; Alist of default option values.
   '())
 
+(define-syntax-rule (leave fmt args ...)
+  "Format FMT and ARGS to the error port and exit."
+  (begin
+    (format (current-error-port) fmt args ...)
+    (exit 1)))
+
 (define (show-version)
   (display "guix-build (@PACKAGE_NAME@) @PACKAGE_VERSION@\n"))
 
@@ -76,6 +82,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   -K, --keep-failed      keep build tree of failed builds"))
   (display (_ "
   -n, --dry-run          do not build the derivations"))
+  (display (_ "
+  -c, --cores=N          allow the use of up to N CPU cores for the build"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -104,6 +112,12 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
         (option '(#\K "keep-failed") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'keep-failed? #t result)))
+        (option '(#\c "cores") #t #f
+                (lambda (opt name arg result)
+                  (let ((c (false-if-exception (string->number arg))))
+                    (if c
+                        (alist-cons 'cores c result)
+                        (leave (_ "~a: not a number~%") arg)))))
         (option '(#\n "dry-run") #f #F
                 (lambda (opt name arg result)
                   (alist-cons 'dry-run? #t result)))))
@@ -114,74 +128,70 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
 ;;;
 
 (define (guix-build . args)
-  (let-syntax ((leave (syntax-rules ()
-                        ((_ fmt args ...)
-                         (begin
-                           (format (current-error-port) fmt args ...)
-                           (exit 1))))))
-   (define (parse-options)
-     ;; Return the alist of option values.
-     (args-fold args %options
-                (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option") opt))
-                (lambda (arg result)
-                  (alist-cons 'argument arg result))
-                %default-options))
+  (define (parse-options)
+    ;; Return the alist of option values.
+    (args-fold args %options
+               (lambda (opt name arg result)
+                 (leave (_ "~A: unrecognized option~%") opt))
+               (lambda (arg result)
+                 (alist-cons 'argument arg result))
+               %default-options))
 
-   (setlocale LC_ALL "")
-   (textdomain "guix")
-   (setvbuf (current-output-port) _IOLBF)
-   (setvbuf (current-error-port) _IOLBF)
+  (setlocale LC_ALL "")
+  (textdomain "guix")
+  (setvbuf (current-output-port) _IOLBF)
+  (setvbuf (current-error-port) _IOLBF)
 
-   (let* ((opts (parse-options))
-          (drv  (filter-map (match-lambda
-                             (('expression . exp)
-                              (derivations-from-package-expressions exp))
-                             (('argument . (? derivation-path? drv))
-                              drv)
-                             (('argument . (? string? x))
-                              (match (find-packages-by-name x)
-                                ((p _ ...)
-                                 (package-derivation %store p))
-                                (_
-                                 (leave (_ "~A: unknown package") x))))
-                             (_ #f))
-                            opts))
-          (req  (append-map (lambda (drv-path)
-                              (let ((d (call-with-input-file drv-path
-                                         read-derivation)))
-                                (derivation-prerequisites-to-build %store d)))
-                            drv))
-          (req* (delete-duplicates
-                 (append (remove (compose (cut valid-path? %store <>)
-                                          derivation-path->output-path)
-                                 drv)
-                         (map derivation-input-path req)))))
-     (if (assoc-ref opts 'dry-run?)
-         (format (current-error-port)
-                 (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
-                     "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
-                     (length req*))
-                 (null? req*) req*)
-         (format (current-error-port)
-                 (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
-                     "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
-                     (length req*))
-                 (null? req*) req*))
+  (let* ((opts (parse-options))
+         (drv  (filter-map (match-lambda
+                            (('expression . exp)
+                             (derivations-from-package-expressions exp))
+                            (('argument . (? derivation-path? drv))
+                             drv)
+                            (('argument . (? string? x))
+                             (match (find-packages-by-name x)
+                               ((p _ ...)
+                                (package-derivation %store p))
+                               (_
+                                (leave (_ "~A: unknown package~%") x))))
+                            (_ #f))
+                           opts))
+         (req  (append-map (lambda (drv-path)
+                             (let ((d (call-with-input-file drv-path
+                                        read-derivation)))
+                               (derivation-prerequisites-to-build %store d)))
+                           drv))
+         (req* (delete-duplicates
+                (append (remove (compose (cut valid-path? %store <>)
+                                         derivation-path->output-path)
+                                drv)
+                        (map derivation-input-path req)))))
+    (if (assoc-ref opts 'dry-run?)
+        (format (current-error-port)
+                (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
+                    "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
+                    (length req*))
+                (null? req*) req*)
+        (format (current-error-port)
+                (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
+                    "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
+                    (length req*))
+                (null? req*) req*))
 
-     ;; TODO: Add more options.
-     (set-build-options %store
-                        #:keep-failed? (assoc-ref opts 'keep-failed?))
+    ;; TODO: Add more options.
+    (set-build-options %store
+                       #:keep-failed? (assoc-ref opts 'keep-failed?)
+                       #:build-cores (or (assoc-ref opts 'cores) 1))
 
-     (or (assoc-ref opts 'dry-run?)
-         (and (build-derivations %store drv)
-              (for-each (lambda (d)
-                          (let ((drv (call-with-input-file d
-                                       read-derivation)))
-                            (format #t "~{~a~%~}"
-                                    (map (match-lambda
-                                          ((out-name . out)
-                                           (derivation-path->output-path
-                                            d out-name)))
-                                         (derivation-outputs drv)))))
-                        drv))))))
+    (or (assoc-ref opts 'dry-run?)
+        (and (build-derivations %store drv)
+             (for-each (lambda (d)
+                         (let ((drv (call-with-input-file d
+                                      read-derivation)))
+                           (format #t "~{~a~%~}"
+                                   (map (match-lambda
+                                         ((out-name . out)
+                                          (derivation-path->output-path
+                                           d out-name)))
+                                        (derivation-outputs drv)))))
+                       drv)))))
