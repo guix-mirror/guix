@@ -87,13 +87,23 @@
     (format #t "configure flags: ~s~%" flags)
     (zero? (apply system* "./configure" flags))))
 
-(define* (build #:key (make-flags '()) #:allow-other-keys)
-  (zero? (apply system* "make" make-flags)))
+(define* (build #:key (make-flags '()) (parallel-build? #t)
+                #:allow-other-keys)
+  (zero? (apply system* "make"
+                `(,@(if parallel-build?
+                        `("-j" ,(getenv "NIX_BUILD_CORES"))
+                        '())
+                  ,@make-flags))))
 
 (define* (check #:key (make-flags '()) (tests? #t) (test-target "check")
+                (parallel-tests? #t)
                 #:allow-other-keys)
   (if tests?
-      (zero? (apply system* "make" test-target make-flags))
+      (zero? (apply system* "make" test-target
+                    `(,@(if parallel-tests?
+                            `("-j" ,(getenv "NIX_BUILD_CORES"))
+                            '())
+                      ,@make-flags)))
       (begin
         (format #t "test suite not run~%")
         #t)))

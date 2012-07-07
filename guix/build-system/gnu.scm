@@ -45,6 +45,7 @@
                     #:key (outputs '("out")) (configure-flags ''())
                     (make-flags ''())
                     (patches ''()) (patch-flags ''("--batch" "-p1"))
+                    (parallel-build? #t) (parallel-tests? #t)
                     (phases '%standard-phases)
                     (system (%current-system))
                     (modules '((guix build gnu-build-system)
@@ -63,7 +64,9 @@ input derivation INPUTS, using the usual procedure of the GNU Build System."
                   #:patch-flags ,patch-flags
                   #:phases ,phases
                   #:configure-flags ,configure-flags
-                  #:make-flags ,make-flags)))
+                  #:make-flags ,make-flags
+                  #:parallel-build? ,parallel-build?
+                  #:parallel-tests? ,parallel-tests?)))
 
   (build-expression->derivation store name system
                                 builder
