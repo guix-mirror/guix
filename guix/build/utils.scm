@@ -28,7 +28,8 @@
             alist-cons-before
             alist-cons-after
             alist-replace
-            substitute))
+            substitute
+            substitute*))
 
 
 ;;;
@@ -174,6 +175,43 @@ MATCH OUTPUT-PORT)."
         (rename-file template file))
       (lambda (key . args)
         (false-if-exception (delete-file template))))))
+
+
+(define-syntax let-matches
+  ;; Helper macro for `substitute*'.
+  (syntax-rules (_)
+    ((let-matches index match (_ vars ...) body ...)
+     (let-matches (+ 1 index) match (vars ...)
+                  body ...))
+    ((let-matches index match (var vars ...) body ...)
+     (let ((var (match:substring match index)))
+       (let-matches (+ 1 index) match (vars ...)
+                    body ...)))
+    ((let-matches index match () body ...)
+     (begin body ...))))
+
+(define-syntax-rule (substitute* file (regexp whole-match match ...)
+                                 body ...)
+  "Substitute REGEXP in FILE by the string returned by BODY.  BODY is
+evaluated with each MATCH-VAR bound to the corresponding positional regexp
+sub-expression.  For example:
+
+  (substitute* file (\"foo([a-z]+)bar(.*)$\" all letters end)
+    (string-append \"baz\" letters end))
+
+Here, anytime a line of FILE matches the regexp, ALL is bound to the complete
+match, LETTERS is bound to the first sub-expression, and END is bound to the
+last one.  Alternatively, given that `all' is not used, one can write:
+
+  (substitute* file (\"foo([a-z]+)bar(.*)$\" _ letters end)
+    (string-append \"baz\" letter end))
+
+"
+  (substitute file regexp
+              (lambda (m p)
+                (let-matches 0 m (whole-match match ...)
+                             (display (begin body ...) p)))))
+
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)

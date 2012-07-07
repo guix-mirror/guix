@@ -120,10 +120,7 @@ code.")
              (base32
               "0l200a0v7h8bh0cwz6v7hc13ds39cgqsmfrks55b1rbj5vniyiy3"))))
    (build-system gnu-build-system)
-   (arguments '(#:modules ((guix build gnu-build-system)
-                           (guix build utils)
-                           (ice-9 regex))
-                #:configure-flags '("--disable-error-on-warning")
+   (arguments '(#:configure-flags '("--disable-error-on-warning")
                 #:patches (list (assoc-ref %build-inputs "patch/snarf"))
 
                 ;; Insert a phase before `configure' to patch things up.
@@ -134,13 +131,12 @@ code.")
                              ;; Add a call to `lt_dladdsearchdir' so that
                              ;; `libguile-readline.so' & co. are in the
                              ;; loader's search path.
-                             (substitute "libguile/dynl.c"
-                                         "lt_dlinit.*$"
-                                         (lambda (m p)
-                                           (format p
-                                                   "  ~a~%  //lt_dladdsearchdir(\"~a/lib\");~%"
-                                                   (match:substring m 0)
-                                                   (assoc-ref outputs "out")))))
+                             (substitute* "libguile/dynl.c"
+                                          ("lt_dlinit.*$" match)
+                                          (format #f
+                                                  "  ~a~%  lt_dladdsearchdir(\"~a/lib\");~%"
+                                                  match
+                                                  (assoc-ref outputs "out"))))
                            %standard-phases)))
    (inputs `(("patch/snarf"
               ,(search-path %load-path "distro/guile-1.8-cpp-4.5.patch"))
