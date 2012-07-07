@@ -156,6 +156,43 @@ extensible.  It supports many SRFIs.")
    (home-page "http://www.gnu.org/software/guile/")
    (license "LGPLv2+")))
 
+(define-public guile-2.0
+  (package
+   (name "guile")
+   (version "2.0.6")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/guile/guile-" version
+                                ".tar.xz"))
+            (sha256
+             (base32
+              "000ng5qsq3cl1k35jvzvhwxj92wx4q87745n2fppkd4irh58vv5l"))))
+   (build-system gnu-build-system)
+   (native-inputs `(("xz" ,(nixpkgs-derivation "xz"))
+                    ("pkgconfig" ,(nixpkgs-derivation "pkgconfig"))))
+   (inputs `(("libunistring" ,(nixpkgs-derivation "libunistring"))
+             ("libffi" ,(nixpkgs-derivation "libffi"))
+             ("libtool" ,(nixpkgs-derivation "libtool"))
+             ("readline" ,(nixpkgs-derivation "readline"))))
+
+   ;; The headers and/or `guile-2.0.pc' refer to these packages, so they must
+   ;; be propagated.
+   (propagated-inputs `(("bdw-gc" ,(nixpkgs-derivation "boehmgc"))
+                        ("gmp" ,(nixpkgs-derivation "gmp"))))
+
+   (self-native-input? #t)
+
+   (description "GNU Guile 2.0, an embeddable Scheme implementation")
+   (long-description
+"GNU Guile is an implementation of the Scheme programming language, with
+support for many SRFIs, packaged for use in a wide variety of environments.
+In addition to implementing the R5RS Scheme standard and a large subset of
+R6RS, Guile includes a module system, full access to POSIX system calls,
+networking support, multiple threads, dynamic linking, a foreign function
+call interface, and powerful string processing.")
+   (home-page "http://www.gnu.org/software/guile/")
+   (license "LGPLv3+")))
+
 (define-public lout
   ;; This one is a bit tricky, because it doesn't follow the GNU Build System
   ;; rules.  Instead, it has a makefile that has to be patched to set the
