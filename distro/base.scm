@@ -141,9 +141,12 @@ code.")
    (inputs `(("patch/snarf"
               ,(search-path %load-path "distro/guile-1.8-cpp-4.5.patch"))
              ("gawk" ,gawk)
-             ("readline" ,(nixpkgs-derivation "readline"))
-             ("gmp" ,(nixpkgs-derivation "gmp"))
-             ("libtool" ,(nixpkgs-derivation "libtool"))))
+             ("readline" ,(nixpkgs-derivation "readline"))))
+
+   ;; Since `guile-1.8.pc' has "Libs: ... -lgmp -lltdl", these must be
+   ;; propagated.
+   (propagated-inputs `(("gmp" ,(nixpkgs-derivation "gmp"))
+                        ("libtool" ,(nixpkgs-derivation "libtool"))))
 
    ;; When cross-compiling, a native version of Guile itself is needed.
    (self-native-input? #t)
