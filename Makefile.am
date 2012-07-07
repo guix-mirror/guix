@@ -48,9 +48,12 @@ TESTS =						\
   tests/build-utils.scm				\
   tests/packages.scm
 
-TESTS_ENVIRONMENT =							\
-  NIXPKGS="$(NIXPKGS)"							\
-  GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
+TESTS_ENVIRONMENT =								\
+  NIXPKGS="$(NIXPKGS)";								\
+  GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH";	\
+  export NIXPKGS GUILE_LOAD_COMPILED_PATH;
+
+LOG_COMPILER =					\
   $(GUILE) --no-auto-compile -L "$(top_srcdir)"
 
 EXTRA_DIST = build-aux/config.rpath $(TESTS)

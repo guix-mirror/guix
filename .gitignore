@@ -35,3 +35,4 @@ config.cache
 /po/stamp-po
 /po/guix.pot
 /guix-build
+/tests/*.trs
