@@ -67,9 +67,9 @@ handlers, distributed shared memory, and more.")
                 ((system)
                  (if (string=? system "i686-cygwin")
                      '(#:tests? #f)      ; work around test failure on Cygwin
-                     '()))
+                     '(#:parallel-tests? #f))) ; test suite fails in parallel
                 ((system cross-system)
-                 '())))
+                 '(#:parallel-tests? #f))))
    (inputs `(("libsigsegv" ,libsigsegv)             ; headers
              ("libsigsegv/lib" ,libsigsegv "lib"))) ; library
    (home-page "http://www.gnu.org/software/gawk/")
