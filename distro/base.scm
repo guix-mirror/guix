@@ -173,15 +173,21 @@ extensible.  It supports many SRFIs.")
    (build-system gnu-build-system)
    (native-inputs `(("xz" ,(nixpkgs-derivation "xz"))
                     ("pkgconfig" ,(nixpkgs-derivation "pkgconfig"))))
-   (inputs `(("libunistring" ,(nixpkgs-derivation "libunistring"))
-             ("libffi" ,(nixpkgs-derivation "libffi"))
-             ("libtool" ,(nixpkgs-derivation "libtool"))
+   (inputs `(("libffi" ,(nixpkgs-derivation "libffi"))
              ("readline" ,(nixpkgs-derivation "readline"))))
 
-   ;; The headers and/or `guile-2.0.pc' refer to these packages, so they must
-   ;; be propagated.
-   (propagated-inputs `(("bdw-gc" ,(nixpkgs-derivation "boehmgc"))
-                        ("gmp" ,(nixpkgs-derivation "gmp"))))
+   (propagated-inputs
+    `( ;; These ones aren't normally needed here, but since `libguile-2.0.la'
+       ;; reads `-lltdl -lunistring', adding them here will add the needed
+       ;; `-L' flags.  As for why the `.la' file lacks the `-L' flags, see
+       ;; <http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/18903>.
+      ("libunistring" ,(nixpkgs-derivation "libunistring"))
+      ("libtool" ,(nixpkgs-derivation "libtool"))
+
+      ;; The headers and/or `guile-2.0.pc' refer to these packages, so they
+      ;; must be propagated.
+      ("bdw-gc" ,(nixpkgs-derivation "boehmgc"))
+      ("gmp" ,(nixpkgs-derivation "gmp"))))
 
    (self-native-input? #t)
 
