@@ -202,6 +202,49 @@ call interface, and powerful string processing.")
    (home-page "http://www.gnu.org/software/guile/")
    (license "LGPLv3+")))
 
+(define (guile-reader guile)
+  "Build Guile-Reader against GUILE, a package of some version of Guile 1.8
+or 2.0."
+  (package
+   (name (string-append "guile-reader-for-guile-" (package-version guile)))
+   (version "0.6")
+   (source  (origin
+             (method http-fetch)
+             (uri (string-append
+                   "http://download-mirror.savannah.gnu.org/releases/guile-reader/guile-reader-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1svlyk5pm4fsdp2g7n6qffdl6fdggxnlicj0jn9s4lxd63gzxy1n"))))
+   (build-system gnu-build-system)
+   (native-inputs `(("pkgconfig" ,(nixpkgs-derivation "pkgconfig"))
+                    ("gperf" ,(nixpkgs-derivation "gperf"))))
+   (inputs `(("guile" ,guile)))
+   (description "Guile-Reader, a simple framework for building readers for
+GNU Guile")
+   (long-description
+"Guile-Reader is a simple framework for building readers for GNU Guile.
+
+The idea is to make it easy to build procedures that extend Guile’s read
+procedure. Readers supporting various syntax variants can easily be written,
+possibly by re-using existing “token readers” of a standard Scheme
+readers. For example, it is used to implement Skribilo’s R5RS-derived
+document syntax.
+
+Guile-Reader’s approach is similar to Common Lisp’s “read table”, but
+hopefully more powerful and flexible (for instance, one may instantiate as
+many readers as needed).")
+   (home-page "http://www.nongnu.org/guile-reader/")
+   (license "GPLv3+")))
+
+(define-public guile-reader/guile-1.8
+  ;; Guile-Reader built against Guile 1.8.
+  (guile-reader guile-1.8))
+
+(define-public guile-reader/guile-2.0
+  ;; Guile-Reader built against Guile 2.0.
+  (guile-reader guile-2.0))
+
 (define-public lout
   ;; This one is a bit tricky, because it doesn't follow the GNU Build System
   ;; rules.  Instead, it has a makefile that has to be patched to set the
