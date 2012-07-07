@@ -52,6 +52,12 @@
     (set-path-environment-variable "CPATH" '("include") inputs)
     (set-path-environment-variable "LIBRARY_PATH" '("lib" "lib64") inputs)
 
+    ;; FIXME: Eventually move this to the `search-paths' field of the
+    ;; `pkg-config' package.
+    (set-path-environment-variable "PKG_CONFIG_PATH"
+                                   '("lib/pkgconfig" "lib64/pkgconfig")
+                                   inputs)
+
     ;; Dump the environment variables as a shell script, for handy debugging.
     (system "export > environment-variables")))
 
