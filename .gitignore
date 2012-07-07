@@ -36,3 +36,5 @@ config.cache
 /po/guix.pot
 /guix-build
 /tests/*.trs
+/INSTALL
+/m4/*

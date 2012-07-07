@@ -5,7 +5,7 @@ AC_PREREQ(2.68)
 AC_INIT([Guix], [0.0], [guile-user@gnu.org])
 AC_CONFIG_AUX_DIR([build-aux])
 
-AM_INIT_AUTOMAKE([1.11 foreign silent-rules subdir-objects \
+AM_INIT_AUTOMAKE([1.11 gnu silent-rules subdir-objects \
  color-tests parallel-tests])
 
 AC_CONFIG_SRCDIR([guix.scm])
