@@ -550,7 +550,11 @@ considered to have failed."
                                              (derivation-path->output-path drv
                                                                            sub)
                                              drv)))))
-                               inputs))))
+                               inputs))
+
+                      ;; Guile sets it, but remove it to avoid conflicts when
+                      ;; building Guile-using packages.
+                      (unsetenv "LD_LIBRARY_PATH")))
          (builder  (add-text-to-store store
                                       (string-append name "-guile-builder")
                                       (string-append
