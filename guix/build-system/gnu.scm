@@ -38,6 +38,7 @@
           (list name (nixpkgs-derivation name)))
         '("gnutar" "gzip" "bzip2" "xz" "diffutils" "patch"
           "coreutils" "gnused" "gnugrep" "bash"
+          "findutils"                             ; used by `libtool'
           "gawk"                                  ; used by `config.status'
           "gcc" "binutils" "gnumake" "glibc"))))
 
