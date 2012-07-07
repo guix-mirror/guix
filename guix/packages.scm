@@ -57,6 +57,7 @@
             package-properties
             package-location
 
+            package-transitive-inputs
             package-source-derivation
             package-derivation
             package-cross-derivation))
@@ -161,6 +162,27 @@ representation."
     (($ <origin> uri method sha256 name)
      (method store uri 'sha256 sha256 name))))
 
+(define (package-transitive-inputs package)
+  "Return the transitive inputs of PACKAGE---i.e., its direct inputs along
+with their propagated inputs, recursively."
+  (let loop ((inputs (concatenate (list (package-native-inputs package)
+                                        (package-inputs package)
+                                        (package-propagated-inputs package))))
+             (result '()))
+    (match inputs
+      (()
+       (delete-duplicates (reverse result)))      ; XXX: efficiency
+      (((and i (name (? package? p) sub ...)) rest ...)
+       (let ((t (map (match-lambda
+                      ((dep-name derivation ...)
+                       (cons (string-append name "/" dep-name)
+                             derivation)))
+                     (package-propagated-inputs p))))
+         (loop (append t rest)
+               (append t (cons i result)))))
+      ((input rest ...)
+       (loop rest (cons input result))))))
+
 (define* (package-derivation store package
                              #:optional (system (%current-system)))
   "Return the derivation of PACKAGE for SYSTEM."
@@ -186,8 +208,7 @@ representation."
                           (list name
                                 (add-to-store store (basename file)
                                               #t #f "sha256" file))))
-                        (concatenate (list native-inputs inputs
-                                           propagated-inputs)))))
+                        (package-transitive-inputs package))))
        (apply builder
               store (string-append name "-" version)
               (package-source-derivation store source)

@@ -22,6 +22,7 @@
   #:use-module (guix utils)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix build-system gnu)
   #:use-module (distro)
   #:use-module (distro base)
   #:use-module (srfi srfi-26)
@@ -34,6 +35,32 @@
   (false-if-exception (open-connection)))
 
 (test-begin "packages")
+
+(define-syntax-rule (dummy-package name* extra-fields ...)
+  (package (name name*) (version "0") (source #f)
+           (build-system gnu-build-system)
+           (description #f) (long-description #f)
+           (home-page #f)
+           extra-fields ...))
+
+(test-assert "package-transitive-inputs"
+  (let* ((a (dummy-package "a"))
+         (b (dummy-package "b"
+              (propagated-inputs `(("a" ,a)))))
+         (c (dummy-package "c"
+              (inputs `(("a" ,a)))))
+         (d (dummy-package "d"
+              (propagated-inputs `(("x" "something.drv")))))
+         (e (dummy-package "e"
+              (inputs `(("b" ,b) ("c" ,c) ("d" ,d))))))
+    (and (null? (package-transitive-inputs a))
+         (equal? `(("a" ,a)) (package-transitive-inputs b))
+         (equal? `(("a" ,a)) (package-transitive-inputs c))
+         (equal? (package-propagated-inputs d)
+                 (package-transitive-inputs d))
+         (equal? `(("b" ,b) ("b/a" ,a) ("c" ,c)
+                   ("d" ,d) ("d/x" "something.drv"))
+                 (pk 'x (package-transitive-inputs e))))))
 
 (test-skip (if (not %store) 1 0))
 
@@ -63,4 +90,5 @@
 
 ;;; Local Variables:
 ;;; eval: (put 'test-assert 'scheme-indent-function 1)
+;;; eval: (put 'dummy-package 'scheme-indent-function 1)
 ;;; End:
