@@ -43,6 +43,7 @@
 
             %nixpkgs-directory
             nixpkgs-derivation
+            nixpkgs-derivation*
 
             define-record-type*
             compile-time-value
@@ -456,6 +457,10 @@ starting from the right of S."
     (and (zero? (status:exit-val s))
          (not (eof-object? l))
          l)))
+
+(define-syntax-rule (nixpkgs-derivation* attribute)
+  "Evaluate the given Nixpkgs derivation at compile-time."
+  (compile-time-value (nixpkgs-derivation attribute)))
 
 
 ;;;

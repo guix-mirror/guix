@@ -211,7 +211,7 @@ faster algorithms.")
               "0649qfpzkswgcj9vqkkr9rn4nlcx80faxpyqscy2k1x9c94f93dk"))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)
-                    ("perl" ,(nixpkgs-derivation "perl"))))
+                    ("perl" ,(nixpkgs-derivation* "perl"))))
    (description "GNU Libtool, a generic library support script")
    (long-description
     "GNU libtool is a generic library support script.  Libtool hides the
@@ -290,7 +290,7 @@ internal in-memory representation.")
    (inputs `(("patch/snarf"
               ,(search-path %load-path "distro/guile-1.8-cpp-4.5.patch"))
              ("gawk" ,gawk)
-             ("readline" ,(nixpkgs-derivation "readline"))))
+             ("readline" ,(nixpkgs-derivation* "readline"))))
 
    ;; Since `guile-1.8.pc' has "Libs: ... -lgmp -lltdl", these must be
    ;; propagated.
@@ -320,10 +320,10 @@ extensible.  It supports many SRFIs.")
              (base32
               "000ng5qsq3cl1k35jvzvhwxj92wx4q87745n2fppkd4irh58vv5l"))))
    (build-system gnu-build-system)
-   (native-inputs `(("xz" ,(nixpkgs-derivation "xz"))
-                    ("pkgconfig" ,(nixpkgs-derivation "pkgconfig"))))
-   (inputs `(("libffi" ,(nixpkgs-derivation "libffi"))
-             ("readline" ,(nixpkgs-derivation "readline"))))
+   (native-inputs `(("xz" ,(nixpkgs-derivation* "xz"))
+                    ("pkgconfig" ,(nixpkgs-derivation* "pkgconfig"))))
+   (inputs `(("libffi" ,(nixpkgs-derivation* "libffi"))
+             ("readline" ,(nixpkgs-derivation* "readline"))))
 
    (propagated-inputs
     `( ;; These ones aren't normally needed here, but since `libguile-2.0.la'
@@ -335,7 +335,7 @@ extensible.  It supports many SRFIs.")
 
       ;; The headers and/or `guile-2.0.pc' refer to these packages, so they
       ;; must be propagated.
-      ("bdw-gc" ,(nixpkgs-derivation "boehmgc"))
+      ("bdw-gc" ,(nixpkgs-derivation* "boehmgc"))
       ("gmp" ,gmp)))
 
    (self-native-input? #t)
@@ -366,8 +366,8 @@ or 2.0."
               (base32
                "1svlyk5pm4fsdp2g7n6qffdl6fdggxnlicj0jn9s4lxd63gzxy1n"))))
    (build-system gnu-build-system)
-   (native-inputs `(("pkgconfig" ,(nixpkgs-derivation "pkgconfig"))
-                    ("gperf" ,(nixpkgs-derivation "gperf"))))
+   (native-inputs `(("pkgconfig" ,(nixpkgs-derivation* "pkgconfig"))
+                    ("gperf" ,(nixpkgs-derivation* "gperf"))))
    (inputs `(("guile" ,guile)))
    (description "Guile-Reader, a simple framework for building readers for
 GNU Guile")
@@ -462,7 +462,7 @@ many readers as needed).")
                "12gkyqrn0kaa8xq7sc7v3wm407pz2fxg9ngc75aybhi5z825b9vq"))))
     (build-system gnu-build-system)               ; actually, just a makefile
     (outputs '("out" "doc"))
-    (inputs `(("ghostscript" ,(nixpkgs-derivation "ghostscript"))))
+    (inputs `(("ghostscript" ,(nixpkgs-derivation* "ghostscript"))))
     (arguments `(#:modules ((guix build utils)
                             (guix build gnu-build-system)
                             (srfi srfi-1))        ; we need SRFI-1
