@@ -198,6 +198,31 @@ faster algorithms.")
    (license "LGPLv3+")
    (home-page "http://gmplib.org/")))
 
+(define-public libtool
+  (package
+   (name "libtool")
+   (version "2.4.2")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/libtool/libtool-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "0649qfpzkswgcj9vqkkr9rn4nlcx80faxpyqscy2k1x9c94f93dk"))))
+   (build-system gnu-build-system)
+   (native-inputs `(("m4" ,m4)
+                    ("perl" ,(nixpkgs-derivation "perl"))))
+   (description "GNU Libtool, a generic library support script")
+   (long-description
+    "GNU libtool is a generic library support script.  Libtool hides the
+complexity of using shared libraries behind a consistent, portable interface.
+
+To use libtool, add the new generic library building commands to your
+Makefile, Makefile.in, or Makefile.am.  See the documentation for
+details.")
+   (license "GPLv3+")
+   (home-page "http://www.gnu.org/software/libtool/")))
+
 (define-public guile-1.8
   (package
    (name "guile")
@@ -236,7 +261,7 @@ faster algorithms.")
    ;; Since `guile-1.8.pc' has "Libs: ... -lgmp -lltdl", these must be
    ;; propagated.
    (propagated-inputs `(("gmp" ,gmp)
-                        ("libtool" ,(nixpkgs-derivation "libtool"))))
+                        ("libtool" ,libtool)))
 
    ;; When cross-compiling, a native version of Guile itself is needed.
    (self-native-input? #t)
@@ -272,7 +297,7 @@ extensible.  It supports many SRFIs.")
        ;; `-L' flags.  As for why the `.la' file lacks the `-L' flags, see
        ;; <http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/18903>.
       ("libunistring" ,(nixpkgs-derivation "libunistring"))
-      ("libtool" ,(nixpkgs-derivation "libtool"))
+      ("libtool" ,libtool)
 
       ;; The headers and/or `guile-2.0.pc' refer to these packages, so they
       ;; must be propagated.
