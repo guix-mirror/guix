@@ -37,7 +37,9 @@ GOBJECTS = $(MODULES:%.scm=%.go)
 
 nobase_dist_guilemodule_DATA =			\
   $(MODULES)					\
-  distro/guile-1.8-cpp-4.5.patch
+  distro/guile-1.8-cpp-4.5.patch		\
+  distro/m4-readlink-EINVAL.patch		\
+  distro/m4-s_isdir.patch
 
 nobase_nodist_guilemodule_DATA = $(GOBJECTS)
 
