@@ -223,6 +223,40 @@ details.")
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/libtool/")))
 
+(define-public libunistring
+  (package
+   (name "libunistring")
+   (version "0.9.3")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append
+                  "http://ftp.gnu.org/gnu/libunistring/libunistring-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "18q620269xzpw39dwvr9zpilnl2dkw5z5kz3mxaadnpv4k3kw3b1"))))
+   (propagated-inputs '())                  ; FIXME: add libiconv when !glibc
+   (build-system gnu-build-system)
+   (description "GNU Libunistring, a Unicode string library")
+   (long-description
+    "This library provides functions for manipulating Unicode strings and for
+manipulating C strings according to the Unicode standard.
+
+GNU libunistring is for you if your application involves non-trivial text
+processing, such as upper/lower case conversions, line breaking, operations
+on words, or more advanced analysis of text.  Text provided by the user can,
+in general, contain characters of all kinds of scripts.  The text processing
+functions provided by this library handle all scripts and all languages.
+
+libunistring is for you if your application already uses the ISO C / POSIX
+<ctype.h>, <wctype.h> functions and the text it operates on is provided by
+the user and can be in any language.
+
+libunistring is also for you if your application uses Unicode strings as
+internal in-memory representation.")
+   (home-page "http://www.gnu.org/software/libunistring/")
+   (license "LGPLv3+")))
+
 (define-public guile-1.8
   (package
    (name "guile")
@@ -296,7 +330,7 @@ extensible.  It supports many SRFIs.")
        ;; reads `-lltdl -lunistring', adding them here will add the needed
        ;; `-L' flags.  As for why the `.la' file lacks the `-L' flags, see
        ;; <http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/18903>.
-      ("libunistring" ,(nixpkgs-derivation "libunistring"))
+      ("libunistring" ,libunistring)
       ("libtool" ,libtool)
 
       ;; The headers and/or `guile-2.0.pc' refer to these packages, so they
