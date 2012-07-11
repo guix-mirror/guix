@@ -156,6 +156,48 @@ macro processor in its own right.")
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/m4/")))
 
+(define-public gmp
+  (package
+   (name "gmp")
+   (version "5.0.5")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/gmp-" version
+                                ".tar.bz2"))
+            (sha256
+             (base32
+              "1jfymbr90mpn0zw5sg001llqnvf2462y77vgjknrmfs1rjn8ln0z"))))
+   (build-system gnu-build-system)
+   (native-inputs `(("m4" ,m4)))
+   (arguments `(#:configure-flags
+                '(;; Build a "fat binary", with routines for several
+                  ;; sub-architectures.
+                  "--enable-fat"
+                  "--enable-cxx")))
+   (description "GMP, the GNU multiple precision arithmetic library")
+   (long-description
+    "GMP is a free library for arbitrary precision arithmetic, operating on
+signed integers, rational numbers, and floating point numbers.  There is no
+practical limit to the precision except the ones implied by the available
+memory in the machine GMP runs on.  GMP has a rich set of functions, and the
+functions have a regular interface.
+
+The main target applications for GMP are cryptography applications and
+research, Internet security applications, algebra systems, computational
+algebra research, etc.
+
+GMP is carefully designed to be as fast as possible, both for small operands
+and for huge operands.  The speed is achieved by using fullwords as the basic
+arithmetic type, by using fast algorithms, with highly optimised assembly
+code for the most common inner loops for a lot of CPUs, and by a general
+emphasis on speed.
+
+GMP is faster than any other bignum library.  The advantage for GMP increases
+with the operand sizes for many operations, since GMP uses asymptotically
+faster algorithms.")
+   (license "LGPLv3+")
+   (home-page "http://gmplib.org/")))
+
 (define-public guile-1.8
   (package
    (name "guile")
@@ -193,7 +235,7 @@ macro processor in its own right.")
 
    ;; Since `guile-1.8.pc' has "Libs: ... -lgmp -lltdl", these must be
    ;; propagated.
-   (propagated-inputs `(("gmp" ,(nixpkgs-derivation "gmp"))
+   (propagated-inputs `(("gmp" ,gmp)
                         ("libtool" ,(nixpkgs-derivation "libtool"))))
 
    ;; When cross-compiling, a native version of Guile itself is needed.
@@ -235,7 +277,7 @@ extensible.  It supports many SRFIs.")
       ;; The headers and/or `guile-2.0.pc' refer to these packages, so they
       ;; must be propagated.
       ("bdw-gc" ,(nixpkgs-derivation "boehmgc"))
-      ("gmp" ,(nixpkgs-derivation "gmp"))))
+      ("gmp" ,gmp)))
 
    (self-native-input? #t)
 
