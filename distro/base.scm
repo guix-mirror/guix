@@ -198,6 +198,40 @@ faster algorithms.")
    (license "LGPLv3+")
    (home-page "http://gmplib.org/")))
 
+(define-public readline
+  (package
+   (name "readline")
+   (version "6.2")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/readline/readline-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "10ckm2bd2rkxhvdmj7nmbsylmihw0abwcsnxf8y27305183rd9kr"))))
+   (build-system gnu-build-system)
+   (propagated-inputs `(("ncurses" ,(nixpkgs-derivation* "ncurses"))))
+   (inputs `(("patch/link-ncurses"
+              ,(search-path %load-path
+                            "distro/readline-link-ncurses.patch"))))
+   (arguments `(#:patches (list (assoc-ref %build-inputs
+                                           "patch/link-ncurses"))
+                #:patch-flags '("-p0")))
+   (description "GNU Readline, a library for interactive line editing")
+   (long-description
+    "The GNU Readline library provides a set of functions for use by
+applications that allow users to edit command lines as they are typed in.
+Both Emacs and vi editing modes are available.  The Readline library includes
+additional functions to maintain a list of previously-entered command lines,
+to recall and perhaps reedit those lines, and perform csh-like history
+expansion on previous commands.
+
+The history facilites are also placed into a separate library, the History
+library, as part of the build process.  The History library may be used
+without Readline in applications which desire its capabilities.")
+   (license "GPLv3+")
+   (home-page "http://savannah.gnu.org/projects/readline/")))
+
 (define-public libtool
   (package
    (name "libtool")
@@ -290,7 +324,7 @@ internal in-memory representation.")
    (inputs `(("patch/snarf"
               ,(search-path %load-path "distro/guile-1.8-cpp-4.5.patch"))
              ("gawk" ,gawk)
-             ("readline" ,(nixpkgs-derivation* "readline"))))
+             ("readline" ,readline)))
 
    ;; Since `guile-1.8.pc' has "Libs: ... -lgmp -lltdl", these must be
    ;; propagated.
@@ -323,7 +357,7 @@ extensible.  It supports many SRFIs.")
    (native-inputs `(("xz" ,(nixpkgs-derivation* "xz"))
                     ("pkgconfig" ,(nixpkgs-derivation* "pkgconfig"))))
    (inputs `(("libffi" ,(nixpkgs-derivation* "libffi"))
-             ("readline" ,(nixpkgs-derivation* "readline"))))
+             ("readline" ,readline)))
 
    (propagated-inputs
     `( ;; These ones aren't normally needed here, but since `libguile-2.0.la'
