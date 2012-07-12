@@ -198,6 +198,85 @@ faster algorithms.")
    (license "LGPLv3+")
    (home-page "http://gmplib.org/")))
 
+(define-public ncurses
+  (let ((post-install-phase
+         '(lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              ;; When building a wide-character (Unicode) build, create backward
+              ;; compatibility links from the the "normal" libraries to the
+              ;; wide-character libraries (e.g. libncurses.so to libncursesw.so).
+              (with-directory-excursion (string-append out "/lib")
+                (for-each (lambda (lib)
+                            (define libw.a
+                              (string-append "lib" lib "w.a"))
+                            (define lib.a
+                              (string-append "lib" lib ".a"))
+                            (define libw.so.x
+                              (string-append "lib" lib "w.so.5"))
+                            (define lib.so.x
+                              (string-append "lib" lib ".so.5"))
+                            (define lib.so
+                              (string-append "lib" lib ".so"))
+
+                            (when (file-exists? libw.a)
+                              (format #t "creating symlinks for `lib~a'~%" lib)
+                              (symlink libw.a lib.a)
+                              (symlink libw.so.x lib.so.x)
+                              (false-if-exception (delete-file lib.so))
+                              (call-with-output-file lib.so
+                                (lambda (p)
+                                  (format p "INPUT (-l~aw)~%" lib)))))
+                          '("curses" "ncurses" "form" "panel" "menu")))))))
+    (package
+     (name "ncurses")
+     (version "5.9")
+     (source (origin
+              (method http-fetch)
+              (uri (string-append "http://ftp.gnu.org/gnu/ncurses/ncurses-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0fsn7xis81za62afan0vvm38bvgzg5wfmv1m86flqcj0nj7jjilh"))))
+     (build-system gnu-build-system)
+     (arguments
+      (case-lambda
+        ((system)
+         `(#:configure-flags
+           `("--with-shared" "--without-debug" "--enable-widec"
+
+             ;; By default headers land in an `ncursesw' subdir, which is not
+             ;; what users expect.
+             ,(string-append "--includedir=" (assoc-ref %outputs "out")
+                             "/include")
+
+             ;; C++ bindings fail to build on
+             ;; `i386-pc-solaris2.11' with GCC 3.4.3:
+             ;; <http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=6395191>.
+             ,,@(if (string=? system "i686-solaris")
+                    '("--without-cxx-binding")
+                    '()))
+           #:tests? #f                            ; no "check" target
+           #:phases (alist-cons-after 'install 'post-install
+                                      ,post-install-phase
+                                      %standard-phases)))
+        ((system cross-system)
+         (arguments cross-system))))
+     (self-native-input? #t)
+     (description
+      "GNU Ncurses, a free software emulation of curses in SVR4 and more")
+     (long-description
+      "The Ncurses (new curses) library is a free software emulation of curses
+in System V Release 4.0, and more.  It uses Terminfo format, supports pads
+and color and multiple highlights and forms characters and function-key
+mapping, and has all the other SYSV-curses enhancements over BSD Curses.
+
+The ncurses code was developed under GNU/Linux.  It has been in use for some
+time with OpenBSD as the system curses library, and on FreeBSD and NetBSD as
+an external package.  It should port easily to any ANSI/POSIX-conforming
+UNIX.  It has even been ported to OS/2 Warp!")
+     (license "X11")
+     (home-page "http://www.gnu.org/software/ncurses/"))))
+
 (define-public readline
   (package
    (name "readline")
@@ -210,7 +289,7 @@ faster algorithms.")
              (base32
               "10ckm2bd2rkxhvdmj7nmbsylmihw0abwcsnxf8y27305183rd9kr"))))
    (build-system gnu-build-system)
-   (propagated-inputs `(("ncurses" ,(nixpkgs-derivation* "ncurses"))))
+   (propagated-inputs `(("ncurses" ,ncurses)))
    (inputs `(("patch/link-ncurses"
               ,(search-path %load-path
                             "distro/readline-link-ncurses.patch"))))
