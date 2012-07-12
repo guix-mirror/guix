@@ -181,7 +181,8 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
     ;; TODO: Add more options.
     (set-build-options %store
                        #:keep-failed? (assoc-ref opts 'keep-failed?)
-                       #:build-cores (or (assoc-ref opts 'cores) 1))
+                       #:build-cores (or (assoc-ref opts 'cores)
+                                         (current-processor-count)))
 
     (or (assoc-ref opts 'dry-run?)
         (and (build-derivations %store drv)
