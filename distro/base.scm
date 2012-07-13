@@ -421,6 +421,54 @@ extensible.  It supports many SRFIs.")
    (home-page "http://www.gnu.org/software/guile/")
    (license "LGPLv2+")))
 
+(define-public libffi
+  (let ((post-install-phase
+         ;; Install headers in the right place.
+         '(lambda* (#:key outputs #:allow-other-keys)
+            (define out (assoc-ref outputs "out"))
+            (mkdir (string-append out "/include"))
+            (with-directory-excursion
+                (string-append out "/lib/libffi-3.0.9/include")
+              (for-each (lambda (h)
+                          (format #t "moving `~a' to includedir~%" h)
+                          (rename-file h (string-append out "/include/" h)))
+                        (scandir "."
+                                 (lambda (x)
+                                   (not (member x '("." ".."))))))))))
+   (package
+    (name "libffi")
+    (version "3.0.9")
+    (source (origin
+             (method http-fetch)
+             (uri ;; FIXME: should be ftp://
+              (string-append "http://sourceware.org/pub/libffi/"
+                             name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0ln4jbpb6clcsdpb9niqk0frgx4k0xki96wiv067ig0q4cajb7aq"))))
+    (build-system gnu-build-system)
+    (arguments `(#:modules ((guix build utils) (guix build gnu-build-system)
+                            (ice-9 ftw) (srfi srfi-26))
+                 #:phases (alist-cons-after 'install 'post-install
+                                            ,post-install-phase
+                                            %standard-phases)))
+    (description "libffi, a foreign function call interface library")
+    (long-description
+     "The libffi library provides a portable, high level programming interface
+to various calling conventions.  This allows a programmer to call any
+function specified by a call interface description at run-time.
+
+FFI stands for Foreign Function Interface.  A foreign function interface is
+the popular name for the interface that allows code written in one language
+to call code written in another language.  The libffi library really only
+provides the lowest, machine dependent layer of a fully featured foreign
+function interface.  A layer must exist above libffi that handles type
+conversions for values passed between the two languages.")
+    (home-page "http://sources.redhat.com/libffi/")
+
+    ;; See <http://github.com/atgreen/libffi/blob/master/LICENSE>.
+    (license "free, non-copyleft"))))
+
 (define-public guile-2.0
   (package
    (name "guile")
@@ -435,7 +483,7 @@ extensible.  It supports many SRFIs.")
    (build-system gnu-build-system)
    (native-inputs `(("xz" ,(nixpkgs-derivation* "xz"))
                     ("pkgconfig" ,(nixpkgs-derivation* "pkgconfig"))))
-   (inputs `(("libffi" ,(nixpkgs-derivation* "libffi"))
+   (inputs `(("libffi" ,libffi)
              ("readline" ,readline)))
 
    (propagated-inputs
