@@ -224,6 +224,29 @@ double-precision floating-point arithmetic (53-bit mantissa).")
    (license "LGPLv3+")
    (home-page "http://www.mpfr.org/")))
 
+(define-public mpc
+  (package
+   (name "mpc")
+   (version "0.9")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append
+                  "http://www.multiprecision.org/mpc/download/mpc-"
+                  version ".tar.gz"))
+            (sha256 (base32
+                     "1b29n3gd9awla1645nmyy8dkhbhs1p0g504y0n94ai8d5x1gwgpx"))))
+   (build-system gnu-build-system)
+   (inputs `(("gmp" ,gmp)
+             ("mpfr" ,mpfr)))
+   (description "GNU MPC, a library for multiprecision complex arithmetic
+with exact rounding")
+   (long-description
+    "GNU MPC is a C library for the arithmetic of complex numbers with
+arbitrarily high precision and correct rounding of the result.  It is built
+upon and follows the same principles as GNU MPFR.")
+   (license "LGPLv3+")
+   (home-page "http://mpc.multiprecision.org/")))
+
 (define-public ncurses
   (let ((post-install-phase
          '(lambda* (#:key outputs #:allow-other-keys)
