@@ -198,6 +198,32 @@ faster algorithms.")
    (license "LGPLv3+")
    (home-page "http://gmplib.org/")))
 
+(define-public mpfr
+  (package
+   (name "mpfr")
+   (version "3.1.1")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/mpfr/mpfr-" version
+                                ".tar.xz"))
+            (sha256 (base32
+                     "0ym1ylcq803n52qrggxqmkz66gbn8ncc3ybawal31v5y5p1srma9"))))
+   (build-system gnu-build-system)
+   (inputs `(("gmp" ,gmp)))
+   (description "GNU MPFR, a library for multiple-precision floating-point
+arithmetic")
+   (long-description
+    "The GNU MPFR library is a C library for multiple-precision
+floating-point computations with correct rounding.  MPFR is based on the GMP
+multiple-precision library.
+
+The main goal of MPFR is to provide a library for multiple-precision
+floating-point computation which is both efficient and has a well-defined
+semantics.  It copies the good ideas from the ANSI/IEEE-754 standard for
+double-precision floating-point arithmetic (53-bit mantissa).")
+   (license "LGPLv3+")
+   (home-page "http://www.mpfr.org/")))
+
 (define-public ncurses
   (let ((post-install-phase
          '(lambda* (#:key outputs #:allow-other-keys)
