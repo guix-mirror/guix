@@ -370,6 +370,31 @@ internal in-memory representation.")
    (home-page "http://www.gnu.org/software/libunistring/")
    (license "LGPLv3+")))
 
+(define-public recutils
+  (package
+   (name "recutils")
+   (version "1.5")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/recutils/recutils-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "1v2xzwwwhc5j5kmvg4sv6baxjpsfqh8ln7ilv4mgb1408rs7xmky"))))
+   (build-system gnu-build-system)
+   (inputs `(("curl" ,(nixpkgs-derivation* "curl"))
+             ("emacs" ,(nixpkgs-derivation* "emacs"))
+             ("check" ,(nixpkgs-derivation* "check"))
+             ("bc" ,(nixpkgs-derivation* "bc"))))
+   (description "GNU recutils, tools and libraries to access human-editable,
+text-based databases")
+   (long-description
+    "GNU recutils is a set of tools and libraries to access human-editable,
+text-based databases called recfiles.  The data is stored as a sequence of
+records, each record containing an arbitrary number of named fields.")
+   (license "GPLv3+")
+   (home-page "http://www.gnu.org/software/recutils/")))
+
 (define-public guile-1.8
   (package
    (name "guile")
