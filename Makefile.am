@@ -59,7 +59,7 @@ TESTS_ENVIRONMENT =								\
 LOG_COMPILER =					\
   $(GUILE) --no-auto-compile -L "$(top_srcdir)"
 
-EXTRA_DIST = build-aux/config.rpath $(TESTS)
+EXTRA_DIST = build-aux/config.rpath release.nix $(TESTS)
 
 CLEANFILES = $(GOBJECTS) *.log
 
