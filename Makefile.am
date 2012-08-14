@@ -64,6 +64,7 @@ LOG_COMPILER =					\
 EXTRA_DIST =					\
   srfi/srfi-64.scm				\
   srfi/srfi-64.upstream.scm			\
+  tests/test.drv				\
   build-aux/config.rpath			\
   release.nix					\
   $(TESTS)
