@@ -46,9 +46,10 @@ let
         configureFlags =
           [ "--with-nixpkgs=${nixpkgs}" "--with-nix-prefix=${pkgs.nix}" ];
 
-        # XXX: The test suite cannot be run currently in the chroot, because
-        # it expects to have a running nix-worker to talk to.
-        doCheck = false;
+        # XXX: Since we need to talk to a running daemon, for the benefit of
+        # `nixpkgs-derivation*' & co., we need to escape the chroot.
+        preConfigure = "export NIX_REMOTE=daemon";
+        __noChroot = true;
       };
   };
 in
