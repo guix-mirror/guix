@@ -95,3 +95,5 @@ $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
 SUBDIRS = po
 
 ACLOCAL_AMFLAGS = -I m4
+AM_DISTCHECK_CONFIGURE_FLAGS =					\
+  --with-nixpkgs=$(NIXPKGS) --with-nix-prefix="$(NIX_PREFIX)"

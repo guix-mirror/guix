@@ -27,7 +27,11 @@ AC_ARG_WITH([nix-prefix],
   [AS_HELP_STRING([--with-nix-prefix=DIR], [search for Nix in DIR])],
   [case "$withval" in
     yes|no) ;;
-    *)      PATH="$withval/bin:$PATH"; export PATH;;
+    *)
+      NIX_PREFIX="$withval"
+      PATH="$NIX_PREFIX/bin:$PATH"; export PATH
+      AC_SUBST([NIX_PREFIX])
+      ;;
    esac],
   [])
 
