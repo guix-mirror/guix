@@ -450,8 +450,9 @@ starting from the right of S."
 
 (define (nixpkgs-derivation attribute)
   "Return the derivation path of ATTRIBUTE in Nixpkgs."
-  (let* ((p (open-pipe* OPEN_READ "nix-instantiate" "-A"
-                        attribute (%nixpkgs-directory)))
+  (let* ((p (open-pipe* OPEN_READ (or (getenv "NIX_INSTANTIATE")
+                                      "nix-instantiate")
+                        "-A" attribute (%nixpkgs-directory)))
          (l (read-line p))
          (s (close-pipe p)))
     (and (zero? (status:exit-val s))

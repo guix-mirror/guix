@@ -29,6 +29,10 @@
   #:use-module (ice-9 popen)
   #:use-module (ice-9 match))
 
+(define %nix-hash
+  (or (getenv "NIX_HASH")
+      "nix-hash"))
+
 (test-begin "utils")
 
 (test-assert "bytevector->base32-string"
@@ -72,7 +76,7 @@
          (map string->utf8 '("" "f" "fo" "foo" "foob" "fooba" "foobar"))))
 
 ;; The following tests requires `nix-hash' in $PATH.
-(test-skip (if (false-if-exception (system* "nix-hash" "--version"))
+(test-skip (if (false-if-exception (system* %nix-hash "--version"))
                0
                1))
 
@@ -80,8 +84,8 @@
   (let ((file (search-path %load-path "tests/test.drv")))
     (equal? (bytevector->nix-base32-string
              (sha256 (call-with-input-file file get-bytevector-all)))
-            (let* ((c (format #f "nix-hash --type sha256 --base32 --flat \"~a\""
-                              file))
+            (let* ((c (format #f "~a --type sha256 --base32 --flat \"~a\""
+                              %nix-hash file))
                    (p (open-input-pipe c))
                    (l (read-line p)))
               (close-pipe p)

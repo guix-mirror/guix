@@ -52,9 +52,11 @@ TESTS =						\
   tests/packages.scm
 
 TESTS_ENVIRONMENT =								\
+  NIX_HASH="$(NIX_HASH)";							\
+  NIX_INSTANTIATE="$(NIX_INSTANTIATE)";						\
   NIXPKGS="$(NIXPKGS)";								\
   GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH";	\
-  export NIXPKGS GUILE_LOAD_COMPILED_PATH;
+  export NIX_HASH NIX_INSTANTIATE NIXPKGS GUILE_LOAD_COMPILED_PATH;
 
 LOG_COMPILER =					\
   $(GUILE) --no-auto-compile -L "$(top_srcdir)"
@@ -70,6 +72,7 @@ CLEANFILES = $(GOBJECTS) *.log
 
 .scm.go:
 	$(MKDIR_P) `dirname "$@"`
+	NIX_INSTANTIATE="$(NIX_INSTANTIATE)"					\
 	NIXPKGS="$(NIXPKGS)"							\
 	GUILE_AUTO_COMPILE=0							\
 	GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
