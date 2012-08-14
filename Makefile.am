@@ -59,7 +59,12 @@ TESTS_ENVIRONMENT =								\
 LOG_COMPILER =					\
   $(GUILE) --no-auto-compile -L "$(top_srcdir)"
 
-EXTRA_DIST = build-aux/config.rpath release.nix $(TESTS)
+EXTRA_DIST =					\
+  srfi/srfi-64.scm				\
+  srfi/srfi-64.upstream.scm			\
+  build-aux/config.rpath			\
+  release.nix					\
+  $(TESTS)
 
 CLEANFILES = $(GOBJECTS) *.log
 
