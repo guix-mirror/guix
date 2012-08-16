@@ -200,13 +200,13 @@ with their propagated inputs, recursively."
                           (list name (package-derivation store package)
                                 sub-drv))
                          (((? string? name)
-                           (and (? string?) (? store-path?) drv))
-                          ;; Both derivation and output paths.  The latter
-                          ;; can be files already in the store.
+                           (and (? string?) (? derivation-path?) drv))
                           (list name drv))
                          (((? string? name)
-                           (and (? string?) (? (negate store-path?))
-                                (? file-exists? file)))
+                           (and (? string?) (? file-exists? file)))
+                          ;; Add FILE to the store.  When FILE is in the
+                          ;; sub-directory of a store path, it needs to be
+                          ;; added anyway, so it can be used as a source.
                           (list name
                                 (add-to-store store (basename file)
                                               #t #f "sha256" file))))
