@@ -200,7 +200,9 @@ with their propagated inputs, recursively."
                           (list name (package-derivation store package)
                                 sub-drv))
                          (((? string? name)
-                           (and (? string?) (? derivation-path?) drv))
+                           (and (? string?) (? store-path?) drv))
+                          ;; Both derivation and output paths.  The latter
+                          ;; can be files already in the store.
                           (list name drv))
                          (((? string? name)
                            (and (? string?) (? (negate store-path?))
