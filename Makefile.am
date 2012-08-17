@@ -75,6 +75,7 @@ CLEANFILES = $(GOBJECTS) *.log
 	$(MKDIR_P) `dirname "$@"`
 	NIX_INSTANTIATE="$(NIX_INSTANTIATE)"					\
 	NIXPKGS="$(NIXPKGS)"							\
+	LIBGCRYPT="$(LIBGCRYPT)"						\
 	GUILE_AUTO_COMPILE=0							\
 	GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
 	$(GUILD) compile -L "$(top_srcdir)"					\

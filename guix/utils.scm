@@ -384,14 +384,18 @@ starting from the right of S."
 ;;; Hash.
 ;;;
 
+(define %libgcrypt
+  ;; Name of the libgcrypt shared library.
+  (compile-time-value (or (getenv "LIBGCRYPT") "libgcrypt")))
+
 (define sha256
   (cond
    ((compile-time-value
-     (false-if-exception (dynamic-link "libgcrypt")))
+     (false-if-exception (dynamic-link %libgcrypt)))
     ;; Using libgcrypt.
     (let ((hash   (pointer->procedure void
                                       (dynamic-func "gcry_md_hash_buffer"
-                                                    (dynamic-link "libgcrypt"))
+                                                    (dynamic-link %libgcrypt))
                                       `(,int * * ,size_t)))
           (sha256 8))                           ; GCRY_MD_SHA256, as of 1.5.0
       (lambda (bv)

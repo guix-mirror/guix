@@ -58,6 +58,23 @@ else
    AC_MSG_WARN([Please use `--with-nixpkgs'.])
 fi
 
+AC_ARG_WITH([libgcrypt-prefix],
+  [AS_HELP_STRING([--with-libgcrypt-prefix=DIR], [search for GNU libgcrypt in DIR])],
+  [case "$withval" in
+    yes|no)
+      LIBGCRYPT="libgcrypt"
+      ;;
+    *)
+      LIBGCRYPT="$withval/lib/libgcrypt"
+      ;;
+   esac],
+  [LIBGCRYPT="libgcrypt"])
+
+dnl Library name suitable for `dynamic-link'.
+AC_MSG_CHECKING([for libgcrypt shared library name])
+AC_MSG_RESULT([$LIBGCRYPT])
+AC_SUBST([LIBGCRYPT])
+
 AC_CONFIG_FILES([Makefile
                  po/Makefile.in
 		 guix-build])
