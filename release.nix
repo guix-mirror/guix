@@ -44,7 +44,9 @@ let
         buildNativeInputs = [ pkgs.pkgconfig ];
         src = jobs.tarball;
         configureFlags =
-          [ "--with-nixpkgs=${nixpkgs}" "--with-nix-prefix=${pkgs.nix}" ];
+          [ "--with-nixpkgs=${nixpkgs}" "--with-nix-prefix=${pkgs.nix}"
+            "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
+          ];
 
         # XXX: Since we need to talk to a running daemon, for the benefit of
         # `nixpkgs-derivation*' & co., we need to escape the chroot.
