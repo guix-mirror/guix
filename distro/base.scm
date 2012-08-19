@@ -162,7 +162,7 @@ macro processor in its own right.")
    (version "5.0.5")
    (source (origin
             (method http-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/gmp-" version
+            (uri (string-append "http://ftp.gnu.org/gnu/gmp/gmp-" version
                                 ".tar.bz2"))
             (sha256
              (base32
