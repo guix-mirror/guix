@@ -134,11 +134,13 @@
                         (string-append dir "/sbin"))))
                 outputs))
 
-  (for-each (lambda (dir)
-              (let ((files (list-of-files dir)))
-                (for-each patch-shebang files)))
-            bindirs)
-  #t)
+  (let ((path (append bindirs
+                      (search-path-as-string->list (getenv "PATH")))))
+   (for-each (lambda (dir)
+               (let ((files (list-of-files dir)))
+                 (for-each (cut patch-shebang <> path) files)))
+             bindirs)
+   #t))
 
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
