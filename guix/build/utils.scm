@@ -255,10 +255,12 @@ match substring."
           (loop (get-bytevector-n! in buffer 0 buffer-size))))))
 
 (define patch-shebang
-  (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]*)/([[:alnum:]]+)(.*)$")))
-    (lambda (file)
-      "Patch the #! interpreter path in FILE, if FILE actually starts with a
-shebang."
+  (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]+)(.*)$")))
+    (lambda* (file
+              #:optional (path (search-path-as-string->list (getenv "PATH"))))
+      "Replace the #! interpreter file name in FILE by a valid one found in
+PATH, when FILE actually starts with a shebang.  Return #t when FILE was
+patched, #f otherwise."
       (define (patch p interpreter rest-of-line)
         (let* ((template (string-append file ".XXXXXX"))
                (out      (mkstemp! template))
@@ -287,21 +289,21 @@ shebang."
                  (let ((line (false-if-exception (read-line p))))
                    (and=> (and line (regexp-exec shebang-rx line))
                           (lambda (m)
-                            (let* ((PATH
-                                    (search-path-as-string->list (getenv "PATH")))
-                                   (cmd (match:substring m 2))
-                                   (bin (search-path PATH cmd)))
+                            (let* ((cmd (match:substring m 1))
+                                   (bin (search-path path
+                                                     (basename cmd))))
                               (if bin
-                                  (begin
-                                    (format (current-error-port)
-                                            "patch-shebang: ~a: changing `~a/~a' to `~a'~%"
-                                            file (match:substring m 1)
-                                            cmd bin)
-                                    (patch p bin (match:substring m 3)))
+                                  (if (string=? bin cmd)
+                                      #f          ; nothing to do
+                                      (begin
+                                        (format (current-error-port)
+                                                "patch-shebang: ~a: changing `~a' to `~a'~%"
+                                                file cmd bin)
+                                        (patch p bin (match:substring m 2))))
                                   (begin
                                     (format (current-error-port)
                                             "patch-shebang: ~a: warning: no binary for interpreter `~a' found in $PATH~%"
-                                            file cmd)
+                                            file (basename cmd))
                                     #f)))))))))))))
 
 ;;; Local Variables:
