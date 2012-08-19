@@ -22,14 +22,20 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
+  #:use-module (rnrs bytevectors)
+  #:use-module (rnrs io ports)
   #:export (directory-exists?
             with-directory-excursion
             set-path-environment-variable
+            search-path-as-string->list
+            list->search-path-as-string
             alist-cons-before
             alist-cons-after
             alist-replace
             substitute
-            substitute*))
+            substitute*
+            dump-port
+            patch-shebang))
 
 
 ;;;
@@ -79,6 +85,9 @@ INPUT-DIRS.  Example:
 
 (define (list->search-path-as-string lst separator)
   (string-join lst separator))
+
+(define* (search-path-as-string->list path #:optional (separator #\:))
+  (string-tokenize path (char-set-complement (char-set separator))))
 
 (define* (set-path-environment-variable env-var sub-directories input-dirs
                                         #:key (separator ":"))
@@ -228,6 +237,72 @@ match substring."
                                          (display (begin body ...) p))))
                     ...)))
 
+
+;;;
+;;; Patching shebangs---e.g., /bin/sh -> /nix/store/xyz...-bash/bin/sh.
+;;;
+
+(define (dump-port in out)
+  "Read as much data as possible from IN and write it to OUT."
+  (define buffer-size 4096)
+  (define buffer
+    (make-bytevector buffer-size))
+
+  (let loop ((bytes (get-bytevector-n! in buffer 0 buffer-size)))
+    (or (eof-object? bytes)
+        (begin
+          (put-bytevector out buffer 0 bytes)
+          (loop (get-bytevector-n! in buffer 0 buffer-size))))))
+
+(define patch-shebang
+  (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]*)/([[:alnum:]]+)(.*)$")))
+    (lambda (file)
+      "Patch the #! interpreter path in FILE, if FILE actually starts with a
+shebang."
+      (define (patch p interpreter rest-of-line)
+        (let* ((template (string-append file ".XXXXXX"))
+               (out      (mkstemp! template))
+               (mode     (stat:mode (stat file))))
+          (with-throw-handler #t
+            (lambda ()
+              (format out "#!~a~a~%"
+                      interpreter rest-of-line)
+              (dump-port p out)
+              (close out)
+              (chmod template mode)
+              (rename-file template file)
+              #t)
+            (lambda (key . args)
+              (format (current-error-port)
+                      "patch-shebang: ~a: error: ~a ~s~%"
+                      file key args)
+              (false-if-exception (delete-file template))
+              #f))))
+
+      (with-fluids ((%default-port-encoding #f))  ; ASCII
+        (call-with-input-file file
+          (lambda (p)
+            (and (eq? #\# (read-char p))
+                 (eq? #\! (read-char p))
+                 (let ((line (false-if-exception (read-line p))))
+                   (and=> (and line (regexp-exec shebang-rx line))
+                          (lambda (m)
+                            (let* ((PATH
+                                    (search-path-as-string->list (getenv "PATH")))
+                                   (cmd (match:substring m 2))
+                                   (bin (search-path PATH cmd)))
+                              (if bin
+                                  (begin
+                                    (format (current-error-port)
+                                            "patch-shebang: ~a: changing `~a/~a' to `~a'~%"
+                                            file (match:substring m 1)
+                                            cmd bin)
+                                    (patch p bin (match:substring m 3)))
+                                  (begin
+                                    (format (current-error-port)
+                                            "patch-shebang: ~a: warning: no binary for interpreter `~a' found in $PATH~%"
+                                            file cmd)
+                                    #f)))))))))))))
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)
