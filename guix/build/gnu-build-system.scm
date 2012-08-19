@@ -21,6 +21,7 @@
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:export (%standard-phases
             gnu-build))
 
@@ -117,11 +118,34 @@
 (define* (install #:key (make-flags '()) #:allow-other-keys)
   (zero? (apply system* "make" "install" make-flags)))
 
+(define* (patch-shebangs #:key outputs (patch-shebangs? #t)
+                         #:allow-other-keys)
+  (define (list-of-files dir)
+    (map (cut string-append dir "/" <>)
+         (or (scandir dir (lambda (f)
+                            (let ((s (stat (string-append dir "/" f))))
+                              (eq? 'regular (stat:type s)))))
+             '())))
+
+  (define bindirs
+    (append-map (match-lambda
+                 ((_ . dir)
+                  (list (string-append dir "/bin")
+                        (string-append dir "/sbin"))))
+                outputs))
+
+  (for-each (lambda (dir)
+              (let ((files (list-of-files dir)))
+                (for-each patch-shebang files)))
+            bindirs)
+  #t)
+
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
-    (phases set-paths unpack patch configure build check install)))
+    (phases set-paths unpack patch configure build check install
+            patch-shebangs)))
 
 
 (define* (gnu-build #:key (source #f) (outputs #f) (inputs #f)
