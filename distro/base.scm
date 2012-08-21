@@ -390,6 +390,55 @@ without Readline in applications which desire its capabilities.")
    (license "GPLv3+")
    (home-page "http://savannah.gnu.org/projects/readline/")))
 
+(define-public bash
+  (let ((cppflags (string-join '("-DSYS_BASHRC='\"/etc/bashrc\"'"
+                                 "-DSYS_BASH_LOGOUT='\"/etc/bash_logout\"'"
+                                 "-DDEFAULT_PATH_VALUE='\"/no-such-path\"'"
+                                 "-DSTANDARD_UTILS_PATH='\"/no-such-path\"'"
+                                 "-DNON_INTERACTIVE_LOGIN_SHELLS"
+                                 "-DSSH_SOURCE_BASHRC")
+                               " ")))
+    (package
+     (name "bash")
+     (version "4.2")
+     (source (origin
+              (method http-fetch)
+              (uri (string-append
+                    "http://ftp.gnu.org/gnu/bash/bash-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1n5kbblp5ykbz5q8aq88lsif2z0gnvddg9babk33024wxiwi2ym2"))))
+     (build-system gnu-build-system)
+     (inputs `(("readline" ,readline)))           ; TODO: add texinfo
+     (arguments
+      `(#:configure-flags '("--with-installed-readline"
+                            ,(string-append "CPPFLAGS=" cppflags))
+
+        ;; XXX: The tests have a lot of hard-coded paths, so disable them
+        ;; for now.
+        #:tests? #f
+
+        #:phases
+        (alist-cons-after 'install 'post-install
+                          (lambda* (#:key outputs #:allow-other-keys)
+                            ;; Add a `bash' -> `sh' link.
+                            (let ((out (assoc-ref outputs "out")))
+                              (with-directory-excursion
+                                  (string-append out "/bin")
+                                (symlink "bash" "sh"))))
+                          %standard-phases)))
+     (description "GNU Bourne-Again Shell")
+     (long-description
+      "Bash is the shell, or command language interpreter, that will appear in
+the GNU operating system.  Bash is an sh-compatible shell that incorporates
+useful features from the Korn shell (ksh) and C shell (csh).  It is intended
+to conform to the IEEE POSIX P1003.2/ISO 9945.2 Shell and Tools standard.  It
+offers functional improvements over sh for both programming and interactive
+use.  In addition, most sh scripts can be run by Bash without
+modification.")
+     (license "GPLv3+")
+     (home-page "http://www.gnu.org/software/bash/"))))
+
 (define-public libtool
   (package
    (name "libtool")
