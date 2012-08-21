@@ -156,6 +156,36 @@ macro processor in its own right.")
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/m4/")))
 
+(define-public gnu-make
+  (package
+   (name "make")
+   (version "3.82")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/make/make-" version
+                                ".tar.bz2"))
+            (sha256
+             (base32
+              "0ri98385hsd7li6rh4l5afcq92v8l2lgiaz85wgcfh4w2wzsghg2"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("patch/impure-dirs"
+       ,(search-path %load-path "distro/make-impure-dirs.patch"))))
+   (arguments `(#:patches (list (assoc-ref %build-inputs
+                                           "patch/impure-dirs"))))
+   (description "GNU Make, a program controlling the generation of non-source
+files from sources")
+   (long-description
+    "Make is a tool which controls the generation of executables and other
+non-source files of a program from the program's source files.
+
+Make gets its knowledge of how to build your program from a file called the
+makefile, which lists each of the non-source files and how to compute it from
+other files. When you write a program, you should write a makefile for it, so
+that it is possible to use Make to build and install the program.")
+   (license "GPLv3+")
+   (home-page "http://www.gnu.org/software/make/")))
+
 (define-public gmp
   (package
    (name "gmp")
