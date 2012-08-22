@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.68)
-AC_INIT([Guix], [0.0], [guile-user@gnu.org])
+AC_INIT([Guix], [0.1], [guile-user@gnu.org])
 AC_CONFIG_AUX_DIR([build-aux])
 
 AM_INIT_AUTOMAKE([1.11 gnu silent-rules subdir-objects \
