@@ -356,10 +356,7 @@ The tools supplied with this package are:
    (build-system gnu-build-system)
    (inputs `())                      ; TODO: optional deps: SELinux, ACL, GMP
    (arguments
-    '(;; In the chroot, `./configure' thinks it's running as root.
-      #:configure-flags '("FORCE_UNSAFE_CONFIGURE=1")
-
-      ;; Perl is missing, and some tests are failing.
+    '(;; Perl is missing, and some tests are failing.
       #:tests? #f))
    (description
     "The basic file, shell and text manipulation utilities of the GNU
