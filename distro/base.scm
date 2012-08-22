@@ -342,6 +342,35 @@ The tools supplied with this package are:
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/findutils/")))
 
+(define-public coreutils
+  (package
+   (name "coreutils")
+   (version "8.19")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/coreutils/coreutils-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "1rx9x3fp848w4nny7irdkcpkan9fcx24d99v5dkwgkyq7wc76f5d"))))
+   (build-system gnu-build-system)
+   (inputs `())                      ; TODO: optional deps: SELinux, ACL, GMP
+   (arguments
+    '(;; In the chroot, `./configure' thinks it's running as root.
+      #:configure-flags '("FORCE_UNSAFE_CONFIGURE=1")
+
+      ;; Perl is missing, and some tests are failing.
+      #:tests? #f))
+   (description
+    "The basic file, shell and text manipulation utilities of the GNU
+operating system")
+   (long-description
+    "The GNU Core Utilities are the basic file, shell and text manipulation
+utilities of the GNU operating system.  These are the core utilities which
+are expected to exist on every operating system.")
+   (license "GPLv3+")
+   (home-page "http://www.gnu.org/software/coreutils/")))
+
 (define-public m4
   (package
    (name "m4")
