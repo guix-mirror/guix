@@ -108,6 +108,26 @@ code.")
    (home-page "http://www.gnu.org/software/hello/")
    (license "GPLv3+")))
 
+(define-public grep
+  (package
+   (name "grep")
+   (version "2.14")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/grep/grep-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "1qbjb1l7f9blckc5pqy8jlf6482hpx4awn2acmhyf5mv9wfq03p7"))))
+   (build-system gnu-build-system)
+   (description "GNU implementation of the Unix grep command")
+   (long-description
+    "The grep command searches one or more input files for lines containing a
+match to a specified pattern.  By default, grep prints the matching
+lines.")
+   (license "GPLv3+")
+   (home-page "http://www.gnu.org/software/grep/")))
+
 (define-public sed
   (package
    (name "sed")
