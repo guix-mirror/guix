@@ -178,6 +178,48 @@ files (as archives).")
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/tar/")))
 
+(define-public diffutils
+  (package
+   (name "diffutils")
+   (version "3.2")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/diffutils/diffutils-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "0jci0wv68025xd0s0rq4s5qxpx56dd9d730lka63qpzk1rfvfkxb"))))
+   (build-system gnu-build-system)
+   (description "Programs to find differences among text files")
+   (long-description
+    "GNU Diffutils is a package of several programs related to finding
+differences between files.
+
+Computer users often find occasion to ask how two files differ. Perhaps one
+file is a newer version of the other file. Or maybe the two files started out
+as identical copies but were changed by different people.
+
+You can use the diff command to show differences between two files, or each
+corresponding file in two directories. diff outputs differences between files
+line by line in any of several formats, selectable by command line
+options. This set of differences is often called a ‘diff’ or ‘patch’. For
+files that are identical, diff normally produces no output; for
+binary (non-text) files, diff normally reports only that they are different.
+
+You can use the cmp command to show the offsets and line numbers where two
+files differ. cmp can also show all the characters that differ between the
+two files, side by side.
+
+You can use the diff3 command to show differences among three files. When two
+people have made independent changes to a common original, diff3 can report
+the differences between the original and the two changed versions, and can
+produce a merged file that contains both persons' changes together with
+warnings about conflicts.
+
+You can use the sdiff command to merge two files interactively.")
+   (license "GPLv3+")
+   (home-page "http://www.gnu.org/software/diffutils/")))
+
 (define-public findutils
   (package
    (name "findutils")
