@@ -41,6 +41,7 @@
             hash-algo
 
             open-connection
+            close-connection
             set-build-options
             valid-path?
             add-text-to-store
@@ -279,6 +280,10 @@
                                                (protocol-minor v))))
                       (process-stderr s)
                       s))))))))
+
+(define (close-connection server)
+  "Close the connection to SERVER."
+  (close (nix-server-socket server)))
 
 (define current-build-output-port
   ;; The port where build output is sent.
