@@ -41,6 +41,7 @@ nobase_dist_guilemodule_DATA =			\
   distro/m4-readlink-EINVAL.patch		\
   distro/m4-s_isdir.patch			\
   distro/make-impure-dirs.patch			\
+  distro/findutils-absolute-paths.patch		\
   distro/readline-link-ncurses.patch
 
 nobase_nodist_guilemodule_DATA = $(GOBJECTS)

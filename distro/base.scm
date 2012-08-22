@@ -177,6 +177,48 @@ files (as archives).")
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/tar/")))
 
+(define-public findutils
+  (package
+   (name "findutils")
+   (version "4.4.2")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/findutils/findutils-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "0amn0bbwqvsvvsh6drfwz20ydc2czk374lzw5kksbh6bf78k4ks3"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("patch/absolute-paths"
+       ,(search-path %load-path "distro/findutils-absolute-paths.patch"))))
+   (arguments
+    (case-lambda
+      ((system)
+       `(#:patches (list (assoc-ref %build-inputs "patch/absolute-paths"))))
+      ((system cross-system)
+       ;; Work around cross-compilation failure.
+       ;; See <http://savannah.gnu.org/bugs/?27299#comment1>.
+       `(#:configure-flags '("gl_cv_func_wcwidth_works=yes")
+         ,@(arguments cross-system)))))
+   (description "Basic directory searching utilities of the GNU operating
+system")
+   (long-description
+    "The GNU Find Utilities are the basic directory searching utilities of
+the GNU operating system.  These programs are typically used in conjunction
+with other programs to provide modular and powerful directory search and file
+locating capabilities to other commands.
+
+The tools supplied with this package are:
+
+  * find - search for files in a directory hierarchy;
+  * locate - list files in databases that match a pattern;
+  * updatedb - update a file name database;
+  * xargs - build and execute command lines from standard input.
+")
+   (license "GPLv3+")
+   (home-page "http://www.gnu.org/software/findutils/")))
+
 (define-public m4
   (package
    (name "m4")
