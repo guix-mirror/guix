@@ -130,6 +130,33 @@ substituting multiple occurrences of a string within a file.")
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/sed/")))
 
+(define-public tar
+  (package
+   (name "tar")
+   (version "1.26")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/tar/tar-"
+                                version ".tar.bz2"))
+            (sha256
+             (base32
+              "0hbdkzmchq9ycr2x1pxqdcgdbaxksh8c6ac0jf75jajhcks6jlss"))))
+   (build-system gnu-build-system)
+   (description "GNU implementation of the `tar' archiver")
+   (long-description
+    "The Tar program provides the ability to create tar archives, as well as
+various other kinds of manipulation.  For example, you can use Tar on
+previously created archives to extract files, to store additional files, or
+to update or list files which were already stored.
+
+Initially, tar archives were used to store files conveniently on magnetic
+tape.  The name \"Tar\" comes from this use; it stands for tape archiver.
+Despite the utility's name, Tar can direct its output to available devices,
+files, or other programs (using pipes), it can even access remote devices or
+files (as archives).")
+   (license "GPLv3+")
+   (home-page "http://www.gnu.org/software/tar/")))
+
 (define-public m4
   (package
    (name "m4")
