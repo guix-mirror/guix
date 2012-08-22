@@ -108,6 +108,28 @@ code.")
    (home-page "http://www.gnu.org/software/hello/")
    (license "GPLv3+")))
 
+(define-public sed
+  (package
+   (name "sed")
+   (version "4.2.1")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/sed/sed-" version
+                                ".tar.bz2"))
+            (sha256
+             (base32
+              "13wlsb4sf5d5a82xjhxqmdvrrn36rmw5f0pl9qyb9zkvldnb7hra"))))
+   (build-system gnu-build-system)
+   (description "GNU sed, a batch stream editor")
+   (long-description
+    "Sed (stream editor) isn't really a true text editor or text processor.
+Instead, it is used to filter text, i.e., it takes text input and performs
+some operation (or set of operations) on it and outputs the modified text.
+Sed is typically used for extracting part of a file using pattern matching or
+substituting multiple occurrences of a string within a file.")
+   (license "GPLv3+")
+   (home-page "http://www.gnu.org/software/sed/")))
+
 (define-public m4
   (package
    (name "m4")
