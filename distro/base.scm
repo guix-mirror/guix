@@ -178,6 +178,33 @@ files (as archives).")
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/tar/")))
 
+(define-public gzip
+  (package
+   (name "gzip")
+   (version "1.5")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/gzip/gzip-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "18rm80kar7n016g8bsyy1a3zk50i2826xdgs874yh64rzj7nxmdm"))))
+   (build-system gnu-build-system)
+   (description "Gzip, the GNU zip compression program")
+   (arguments
+    ;; FIXME: The test suite wants `less', and optionally Perl.
+    '(#:tests? #f))
+   (long-description
+    "gzip (GNU zip) is a popular data compression program written by Jean-loup
+Gailly for the GNU project.  Mark Adler wrote the decompression part.
+
+We developed this program as a replacement for compress because of the Unisys
+and IBM patents covering the LZW algorithm used by compress.  These patents
+made it impossible for us to use compress, and we needed a replacement.  The
+superior compression ratio of gzip is just a bonus.")
+   (license "GPLv3+")
+   (home-page "http://www.gnu.org/software/gzip/")))
+
 (define-public patch
   (package
    (name "patch")
