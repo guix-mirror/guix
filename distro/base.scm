@@ -178,6 +178,32 @@ files (as archives).")
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/tar/")))
 
+(define-public patch
+  (package
+   (name "patch")
+   (version "2.6.1")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/patch/patch-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "18012gxs9wc96izskp1q7bclrwns6rdmkn4jj31c8jbyfz6l5npq"))))
+   (build-system gnu-build-system)
+   (native-inputs '())                      ; FIXME: needs `ed' for the tests
+   (arguments
+    (case-lambda
+      ((system) '(#:tests? #f))
+      ((system cross-system)
+       '(#:configure-flags '("ac_cv_func_strnlen_working=yes")))))
+   (description "GNU Patch, a program to apply differences to files")
+   (long-description
+    "GNU Patch takes a patch file containing a difference listing produced by
+the diff program and applies those differences to one or more original files,
+producing patched versions.")
+   (license "GPLv3+")
+   (home-page "http://savannah.gnu.org/projects/patch/")))
+
 (define-public diffutils
   (package
    (name "diffutils")
