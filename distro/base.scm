@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro base)
+  #:use-module (distro)
   #:use-module (guix packages)
   #:use-module (guix http)
   #:use-module (guix build-system gnu)
@@ -191,7 +192,7 @@ files (as archives).")
    (build-system gnu-build-system)
    (native-inputs
     `(("patch/absolute-paths"
-       ,(search-path %load-path "distro/findutils-absolute-paths.patch"))))
+       ,(search-patch "findutils-absolute-paths.patch"))))
    (arguments
     (case-lambda
       ((system)
@@ -245,10 +246,9 @@ The tools supplied with this package are:
                  `(#:patches (list (assoc-ref %build-inputs "patch/s_isdir")
                                    (assoc-ref %build-inputs
                                               "patch/readlink-EINVAL"))))))
-   (inputs `(("patch/s_isdir"
-              ,(search-path %load-path "distro/m4-s_isdir.patch"))
+   (inputs `(("patch/s_isdir" ,(search-patch "m4-s_isdir.patch"))
              ("patch/readlink-EINVAL"
-              ,(search-path %load-path "distro/m4-readlink-EINVAL.patch"))))
+              ,(search-patch "m4-readlink-EINVAL.patch"))))
    (description "GNU M4, a macro processor")
    (long-description
     "GNU M4 is an implementation of the traditional Unix macro processor.  It
@@ -280,8 +280,7 @@ macro processor in its own right.")
               "0ri98385hsd7li6rh4l5afcq92v8l2lgiaz85wgcfh4w2wzsghg2"))))
    (build-system gnu-build-system)
    (native-inputs
-    `(("patch/impure-dirs"
-       ,(search-path %load-path "distro/make-impure-dirs.patch"))))
+    `(("patch/impure-dirs" ,(search-patch "make-impure-dirs.patch"))))
    (arguments `(#:patches (list (assoc-ref %build-inputs
                                            "patch/impure-dirs"))))
    (description "GNU Make, a program controlling the generation of non-source
@@ -481,8 +480,7 @@ UNIX.  It has even been ported to OS/2 Warp!")
    (build-system gnu-build-system)
    (propagated-inputs `(("ncurses" ,ncurses)))
    (inputs `(("patch/link-ncurses"
-              ,(search-path %load-path
-                            "distro/readline-link-ncurses.patch"))))
+              ,(search-patch "readline-link-ncurses.patch"))))
    (arguments `(#:patches (list (assoc-ref %build-inputs
                                            "patch/link-ncurses"))
                 #:patch-flags '("-p0")))
@@ -664,8 +662,7 @@ records, each record containing an arbitrary number of named fields.")
                                                    match
                                                    (assoc-ref outputs "out")))))
                            %standard-phases)))
-   (inputs `(("patch/snarf"
-              ,(search-path %load-path "distro/guile-1.8-cpp-4.5.patch"))
+   (inputs `(("patch/snarf" ,(search-patch "guile-1.8-cpp-4.5.patch"))
              ("gawk" ,gawk)
              ("readline" ,readline)))
 

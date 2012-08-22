@@ -18,10 +18,14 @@
 
 (define-module (distro)
   #:use-module (guix packages)
+  #:use-module (guix utils)
   #:use-module (ice-9 ftw)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
-  #:export (find-packages-by-name))
+  #:use-module (srfi srfi-39)
+  #:export (search-patch
+            %patch-directory
+            find-packages-by-name))
 
 ;;; Commentary:
 ;;;
@@ -31,6 +35,15 @@
 ;;; Code:
 
 (define _ (cut gettext <> "guix"))
+
+(define %patch-directory
+  (make-parameter
+   (or (getenv "DISTRO_PATCH_DIRECTORY")
+       (compile-time-value (getenv "DISTRO_INSTALLED_PATCH_DIRECTORY")))))
+
+(define (search-patch file-name)
+  "Search the patch FILE-NAME."
+  (search-path (list (%patch-directory)) file-name))
 
 (define %distro-module-directory
   ;; Absolute path of the (distro ...) module root.

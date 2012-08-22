@@ -35,14 +35,16 @@ MODULES =					\
 
 GOBJECTS = $(MODULES:%.scm=%.go)
 
-nobase_dist_guilemodule_DATA =			\
-  $(MODULES)					\
-  distro/guile-1.8-cpp-4.5.patch		\
-  distro/m4-readlink-EINVAL.patch		\
-  distro/m4-s_isdir.patch			\
-  distro/make-impure-dirs.patch			\
-  distro/findutils-absolute-paths.patch		\
-  distro/readline-link-ncurses.patch
+nobase_dist_guilemodule_DATA = $(MODULES)
+
+patchdir = $(pkgdatadir)/patches
+dist_patch_DATA =				\
+  distro/patches/guile-1.8-cpp-4.5.patch	\
+  distro/patches/m4-readlink-EINVAL.patch	\
+  distro/patches/m4-s_isdir.patch		\
+  distro/patches/make-impure-dirs.patch		\
+  distro/patches/findutils-absolute-paths.patch	\
+  distro/patches/readline-link-ncurses.patch
 
 nobase_nodist_guilemodule_DATA = $(GOBJECTS)
 
@@ -57,6 +59,7 @@ TESTS_ENVIRONMENT =								\
   NIX_HASH="$(NIX_HASH)";							\
   NIX_INSTANTIATE="$(NIX_INSTANTIATE)";						\
   NIXPKGS="$(NIXPKGS)";								\
+  DISTRO_PATCH_DIRECTORY="$(top_srcdir)/distro/patches"				\
   GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH";	\
   export NIX_HASH NIX_INSTANTIATE NIXPKGS GUILE_LOAD_COMPILED_PATH;
 
@@ -78,6 +81,8 @@ CLEANFILES = $(GOBJECTS) *.log
 	NIX_INSTANTIATE="$(NIX_INSTANTIATE)"					\
 	NIXPKGS="$(NIXPKGS)"							\
 	LIBGCRYPT="$(LIBGCRYPT)"						\
+	DISTRO_PATCH_DIRECTORY="$(top_srcdir)/distro/patches"			\
+	DISTRO_INSTALLED_PATCH_DIRECTORY="$(patchdir)"				\
 	GUILE_AUTO_COMPILE=0							\
 	GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
 	$(GUILD) compile -L "$(top_srcdir)"					\
