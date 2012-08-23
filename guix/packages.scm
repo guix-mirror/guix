@@ -23,6 +23,8 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:export (location
             location?
             location-file
@@ -60,7 +62,12 @@
             package-transitive-inputs
             package-source-derivation
             package-derivation
-            package-cross-derivation))
+            package-cross-derivation
+
+            &package-error
+            package-error-package
+            &package-input-error
+            package-error-invalid-input))
 
 ;;; Commentary:
 ;;;
@@ -116,6 +123,7 @@ representation."
          #''bv)))))
 
 ;; A package.
+
 (define-record-type* <package>
   package make-package
   package?
@@ -155,6 +163,18 @@ representation."
   (location package-location
             (default (and=> (current-source-location)
                             source-properties->location))))
+
+
+;; Error conditions.
+
+(define-condition-type &package-error &error
+  package-error?
+  (package package-error-package))
+
+(define-condition-type &package-input-error &package-error
+  package-input-error?
+  (input package-error-invalid-input))
+
 
 (define (package-source-derivation store source)
   "Return the derivation path for SOURCE, a package source."
@@ -209,7 +229,11 @@ with their propagated inputs, recursively."
                           ;; added anyway, so it can be used as a source.
                           (list name
                                 (add-to-store store (basename file)
-                                              #t #f "sha256" file))))
+                                              #t #f "sha256" file)))
+                         (x
+                          (raise (condition (&package-input-error
+                                             (package package)
+                                             (input   x))))))
                         (package-transitive-inputs package))))
        (apply builder
               store (string-append name "-" version)
