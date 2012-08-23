@@ -46,6 +46,7 @@
                     #:key (outputs '("out")) (configure-flags ''())
                     (make-flags ''())
                     (patches ''()) (patch-flags ''("--batch" "-p1"))
+                    (out-of-source? #f)
                     (tests? #t)
                     (parallel-build? #t) (parallel-tests? #t)
                     (patch-shebangs? #t)
@@ -68,6 +69,7 @@ input derivation INPUTS, using the usual procedure of the GNU Build System."
                   #:phases ,phases
                   #:configure-flags ,configure-flags
                   #:make-flags ,make-flags
+                  #:out-of-source? ,out-of-source?
                   #:tests? ,tests?
                   #:parallel-build? ,parallel-build?
                   #:parallel-tests? ,parallel-tests?

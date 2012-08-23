@@ -74,7 +74,8 @@
                          (append patch-flags (list p)))))
          patches))
 
-(define* (configure #:key outputs (configure-flags '()) #:allow-other-keys)
+(define* (configure #:key outputs (configure-flags '()) out-of-source?
+                    #:allow-other-keys)
   (let* ((prefix     (assoc-ref outputs "out"))
          (libdir     (assoc-ref outputs "lib"))
          (includedir (assoc-ref outputs "include"))
@@ -90,9 +91,18 @@
                              (list (string-append "--includedir="
                                                   includedir "/include"))
                              '())
-                       ,@configure-flags)))
+                       ,@configure-flags))
+         (srcdir     (getcwd)))
+    (format #t "source directory: ~s~%" srcdir)
+    (if out-of-source?
+        (begin
+          (mkdir "../build")
+          (chdir "../build")))
+    (format #t "build directory: ~s~%" (getcwd))
     (format #t "configure flags: ~s~%" flags)
-    (zero? (apply system* "./configure" flags))))
+    (zero? (apply system*
+                  (string-append (if out-of-source? srcdir ".") "/configure")
+                  flags))))
 
 (define* (build #:key (make-flags '()) (parallel-build? #t)
                 #:allow-other-keys)
