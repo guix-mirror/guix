@@ -535,6 +535,91 @@ upon and follows the same principles as GNU MPFR.")
    (license "LGPLv3+")
    (home-page "http://mpc.multiprecision.org/")))
 
+(define-public gcc-4.7
+  (let ((stripped? #t))                         ; TODO: make this a parameter
+    (package
+     (name "gcc")
+     (version "4.7.1")
+     (source (origin
+              (method http-fetch)
+              (uri (string-append "http://ftp.gnu.org/gnu/gcc/gcc-"
+                                  version "/gcc-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "0vs0v89zzgkngkw2p8kdynyk7j8ky4wf6zyrg3rsschpl1pky28n"))))
+     (build-system gnu-build-system)
+     (inputs `(("libc" ,(nixpkgs-derivation* "glibc"))
+               ("gmp" ,gmp)
+               ("mpfr" ,mpfr)
+               ("mpc" ,mpc)))           ; TODO: libelf, ppl, cloog, zlib, etc.
+     (arguments
+      `(#:modules ((guix build utils)
+                   (guix build gnu-build-system)
+                   (ice-9 regex))                 ; we need this one
+        #:out-of-source? #t
+        #:configure-flags
+        `("--enable-plugin"
+          "--enable-languages=c,c++"
+          "--disable-multilib"
+          ,(string-append "--with-native-system-header-dir="
+                          (assoc-ref %build-inputs "libc")
+                          "/include"))
+        #:make-flags
+        (let ((libc (assoc-ref %build-inputs "libc")))
+          `(,(string-append "LDFLAGS_FOR_BUILD="
+                            "-L" libc "/lib "
+                            "-Wl,-dynamic-linker "
+                            "-Wl," libc "/lib/ld-linux-x86-64.so.2")
+            ,(string-append "BOOT_CFLAGS=-O2 "
+                            ,(if stripped? "-g0" "-g"))))
+        #:tests? #f
+        #:phases
+        (alist-cons-before
+         'configure 'pre-configure
+         (lambda* (#:key inputs #:allow-other-keys)
+           (let ((libc (assoc-ref inputs "libc")))
+             ;; Fix the dynamic linker's file name.
+             (substitute* "gcc/config/i386/linux64.h"
+               (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
+                (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
+                        suffix
+                        (string-append libc "/lib/ld-linux-x86-64.so.2"))))
+
+             ;; Tell where to find libc and `?crt*.o', except
+             ;; `crt{begin,end}.o', which come with GCC.
+             (substitute* ("gcc/config/gnu-user.h"
+                           "gcc/config/i386/gnu-user.h"
+                           "gcc/config/i386/gnu-user64.h")
+               (("#define LIB_SPEC (.*)$" _ suffix)
+                (format #f "#define LIB_SPEC \"-L~a/lib \" ~a~%"
+                        libc suffix))
+               (("^.*crt([^\\.])\\.o.*$" line)
+                (regexp-substitute/global #f
+                                          "([a-zA-Z]?)crt([^\\.])\\.o"
+                                          (string-append line "\n")
+                                          'pre libc "/lib/" 1 "crt" 2 ".o"
+                                          'post)))))
+         (alist-replace 'install
+                        (lambda* (#:key outputs #:allow-other-keys)
+                          (zero?
+                           (system* "make"
+                                    ,(if stripped?
+                                         "install-strip"
+                                         "install"))))
+                        %standard-phases))))
+
+     (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
+     (description "The GNU Compiler Collection")
+     (long-description
+      "The GNU Compiler Collection includes compiler front ends for C, C++,
+Objective-C, Fortran, OpenMP for C/C++/Fortran, Java, and Ada, as well as
+libraries for these languages (libstdc++, libgcj, libgomp,...).
+
+GCC development is a part of the GNU Project, aiming to improve the compiler
+used in the GNU system including the GNU/Linux variant.")
+     (license "GPLv3+")
+     (home-page "http://gcc.gnu.org/"))))
+
 (define-public ncurses
   (let ((post-install-phase
          '(lambda* (#:key outputs #:allow-other-keys)
