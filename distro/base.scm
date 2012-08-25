@@ -535,6 +535,38 @@ upon and follows the same principles as GNU MPFR.")
    (license "LGPLv3+")
    (home-page "http://mpc.multiprecision.org/")))
 
+(define-public binutils
+  (package
+   (name "binutils")
+   (version "2.22")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/binutils/binutils-"
+                                version ".tar.bz2"))
+            (sha256
+             (base32
+              "1a9w66v5dwvbnawshjwqcgz7km6kw6ihkzp6sswv9ycc3knzhykc"))))
+   (build-system gnu-build-system)
+
+   ;; TODO: Add dependency on zlib + those for Gold.
+   (native-inputs
+    `(("patch/new-dtags" ,(search-patch "binutils-ld-new-dtags.patch"))))
+   (arguments
+    `(#:patches (list (assoc-ref %build-inputs "patch/new-dtags"))
+
+      ;; Add `-static-libgcc' to not retain a dependency on GCC when
+      ;; bootstrapping.
+      #:configure-flags '("LDFLAGS=-static-libgcc")))
+
+   (description "GNU Binutils, tools for manipulating binaries (linker,
+assembler, etc.)")
+   (long-description
+    "The GNU Binutils are a collection of binary tools.  The main ones are
+`ld' (the GNU linker) and `as' (the GNU assembler).  They also include the
+BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
+   (license "GPLv3+")
+   (home-page "http://www.gnu.org/software/binutils/")))
+
 (define-public gcc-4.7
   (let ((stripped? #t))                         ; TODO: make this a parameter
     (package
