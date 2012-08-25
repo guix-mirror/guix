@@ -210,10 +210,9 @@ as (PROC MATCH OUTPUT-PORT)."
     ((let-matches index match () body ...)
      (begin body ...))))
 
-(define-syntax-rule (substitute* file
-                                 ((regexp match-var ...) body ...)
-                                 ...)
-  "Substitute REGEXP in FILE by the string returned by BODY.  BODY is
+(define-syntax substitute*
+  (syntax-rules ()
+    "Substitute REGEXP in FILE by the string returned by BODY.  BODY is
 evaluated with each MATCH-VAR bound to the corresponding positional regexp
 sub-expression.  For example:
 
@@ -230,12 +229,17 @@ bound to the last one.
 
 When one of the MATCH-VAR is `_', no variable is bound to the corresponding
 match substring."
-  (substitute file
-              (list (cons regexp
-                          (lambda (m p)
-                            (let-matches 0 m (match-var ...)
-                                         (display (begin body ...) p))))
-                    ...)))
+    ((substitute* (file ...) clause ...)
+     (begin
+       (substitute* file clause ...)
+       ...))
+    ((substitute* file ((regexp match-var ...) body ...) ...)
+     (substitute file
+                 (list (cons regexp
+                             (lambda (m p)
+                               (let-matches 0 m (match-var ...)
+                                            (display (begin body ...) p))))
+                       ...)))))
 
 
 ;;;
