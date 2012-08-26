@@ -22,6 +22,9 @@ AC_CANONICAL_HOST
 PKG_CHECK_MODULES([GUILE], [guile-2.0])
 AC_PATH_PROG([GUILE], [guile])
 AC_PATH_PROG([GUILD], [guild])
+if test "x$GUILD" = "x"; then
+   AC_MSG_ERROR(['guild' binary not found; please check your guile-2.x installation.])
+fi
 
 AC_ARG_WITH([nix-prefix],
   [AS_HELP_STRING([--with-nix-prefix=DIR], [search for Nix in DIR])],
