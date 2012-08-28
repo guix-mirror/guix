@@ -39,6 +39,7 @@ nobase_dist_guilemodule_DATA = $(MODULES)
 
 patchdir = $(pkgdatadir)/patches
 dist_patch_DATA =				\
+  distro/patches/binutils-ld-new-dtags.patch	\
   distro/patches/guile-1.8-cpp-4.5.patch	\
   distro/patches/m4-readlink-EINVAL.patch	\
   distro/patches/m4-s_isdir.patch		\
