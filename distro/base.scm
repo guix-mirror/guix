@@ -1038,6 +1038,53 @@ call interface, and powerful string processing.")
    (home-page "http://www.gnu.org/software/guile/")
    (license "LGPLv3+")))
 
+(define-public linux-headers
+  (let* ((version* "3.3.5")
+         (build-phase
+          '(lambda* (#:key outputs #:allow-other-keys)
+             (setenv "ARCH" "x86_64")       ; XXX
+             (and (zero? (system* "make" "defconfig"))
+                  (zero? (system* "make" "mrproper" "headers_check")))))
+         (install-phase
+          `(lambda* (#:key outputs #:allow-other-keys)
+             (let ((out (assoc-ref outputs "out")))
+               (and (zero? (system* "make"
+                                    (string-append "INSTALL_HDR_PATH=" out)
+                                    "headers_install"))
+                    (mkdir (string-append out "/include/config"))
+                    (call-with-output-file
+                        (string-append out
+                                       "/include/config/kernel.release")
+                      (lambda (p)
+                        (format p "~a-default~%" ,version*))))))))
+   (package
+    (name "linux-headers")
+    (version version*)
+    (source (origin                               ; TODO: use Linux-Libre
+             (method http-fetch)
+             (uri (string-append
+                   "http://www.kernel.org/pub/linux/kernel/v3.x/linux-"
+                   version ".tar.xz"))
+             (sha256
+              (base32
+               "0i74jn47f6vs5kcvk8abvz3k08z32c9bbqw0sdjkdxwvr4jbczpv"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("perl" ,(nixpkgs-derivation* "perl"))))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases (alist-replace
+                 'build ,build-phase
+                 (alist-replace
+                  'install ,install-phase
+                  (alist-delete 'configure %standard-phases)))
+       #:tests? #f))
+    (description "Linux kernel headers")
+    (long-description "Headers of the Linux kernel.")
+    (license "GPLv2")
+    (home-page "http://kernel.org/"))))
+
 (define (guile-reader guile)
   "Build Guile-Reader against GUILE, a package of some version of Guile 1.8
 or 2.0."
