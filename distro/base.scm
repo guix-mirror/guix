@@ -1085,6 +1085,68 @@ call interface, and powerful string processing.")
     (license "GPLv2")
     (home-page "http://kernel.org/"))))
 
+(define-public glibc
+  (package
+   (name "glibc")
+   (version "2.16.0")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/glibc/glibc-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "092rdm49zh6l1pqkxbcpcaawgsgzxhpf1s7wf5wi5dvc5am3dp0y"))))
+   (build-system gnu-build-system)
+   (native-inputs `(("linux-headers" ,linux-headers)))
+   (arguments
+    `(#:modules ((guix build utils)
+                 (guix build gnu-build-system)
+                 (ice-9 regex))
+      #:out-of-source? #t
+      #:configure-flags
+      (list "--enable-add-ons"
+            "--sysconfdir=/etc"
+            "--localedir=/var/run/current-system/sw/lib/locale" ; XXX
+            (string-append "--with-headers="
+                           (assoc-ref %build-inputs "linux-headers")
+                           "/include")
+            ;; To avoid linking with -lgcc_s (dynamic link) so the libc does
+            ;; not depend on its compiler store path.
+            "libc_cv_as_needed=no"
+
+            ;; XXX: Work around "undefined reference to `__stack_chk_guard'".
+            "libc_cv_ssp=no")
+      #:tests? #f                                 ; XXX
+      #:phases (alist-cons-before
+                'configure 'pre-configure
+                (lambda* (#:key outputs #:allow-other-keys)
+                  (let ((out (assoc-ref outputs "out")))
+                    ;; Use `pwd', not `/bin/pwd'.
+                    (substitute* "configure"
+                      (("^.*/bin/pwd.*$" line)
+                       (regexp-substitute/global #f
+                                                 "/bin/pwd"
+                                                 (string-append line "\n")
+                                                 'pre "pwd" 'post)))
+
+                    ;; Install the rpc data base file under `$out/etc/rpc'.
+                    (substitute* "sunrpc/Makefile"
+                      (("^\\$\\(inst_sysconfdir\\)/rpc(.*)$" _ suffix)
+                       (string-append out "/etc/rpc" suffix "\n"))
+                      (("^install-others =.*$")
+                       (string-append "install-others = " out "/etc/rpc\n")))))
+                %standard-phases)))
+   (description "The GNU C Library")
+   (long-description
+    "Any Unix-like operating system needs a C library: the library which
+defines the \"system calls\" and other basic facilities such as open, malloc,
+printf, exit...
+
+The GNU C library is used as the C library in the GNU system and most systems
+with the Linux kernel.")
+   (license "LGPLv2+")
+   (home-page "http://www.gnu.org/software/libc/")))
+
 (define (guile-reader guile)
   "Build Guile-Reader against GUILE, a package of some version of Guile 1.8
 or 2.0."
