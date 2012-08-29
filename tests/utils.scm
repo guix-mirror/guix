@@ -132,6 +132,36 @@
          (match (bar (z 21) (x (/ z 3)))
            (($ <bar> 7 42 21))))))
 
+(test-assert "define-record-type* & inherit"
+  (begin
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar)
+      (baz foo-baz (default (+ 40 2))))
+    (let* ((a (foo (bar 1)))
+           (b (foo (inherit a) (baz 2)))
+           (c (foo (inherit b) (bar -2)))
+           (d (foo (inherit c)))
+           (e (foo (inherit (foo (bar 42))) (baz 77))))
+     (and (match a (($ <foo> 1 42) #t))
+          (match b (($ <foo> 1 2) #t))
+          (match c (($ <foo> -2 2) #t))
+          (equal? c d)
+          (match e (($ <foo> 42 77) #t))))))
+
+(test-assert "define-record-type* & inherit & letrec* behavior"
+  (begin
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar)
+      (baz foo-baz (default (+ 40 2))))
+    (let* ((a (foo (bar 77)))
+           (b (foo (inherit a) (bar 1) (baz (+ bar 1))))
+           (c (foo (inherit b) (baz 2) (bar (- baz 1)))))
+     (and (match a (($ <foo> 77 42) #t))
+          (match b (($ <foo> 1 2) #t))
+          (equal? b c)))))
+
 (test-end)
 
 
