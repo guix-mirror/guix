@@ -631,14 +631,22 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                                           (string-append line "\n")
                                           'pre libc "/lib/" 1 "crt" 2 ".o"
                                           'post)))))
-         (alist-replace 'install
-                        (lambda* (#:key outputs #:allow-other-keys)
-                          (zero?
-                           (system* "make"
-                                    ,(if stripped?
-                                         "install-strip"
-                                         "install"))))
-                        %standard-phases))))
+         (alist-cons-after
+          'configure 'post-configure
+          (lambda _
+            ;; Don't store configure flags, to avoid retaining references to
+            ;; build-time dependencies---e.g., `--with-ppl=/nix/store/xxx'.
+            (substitute* "Makefile"
+              (("^TOPLEVEL_CONFIGURE_ARGUMENTS=(.*)$" _ rest)
+               "TOPLEVEL_CONFIGURE_ARGUMENTS=\n")))
+          (alist-replace 'install
+                         (lambda* (#:key outputs #:allow-other-keys)
+                           (zero?
+                            (system* "make"
+                                     ,(if stripped?
+                                          "install-strip"
+                                          "install"))))
+                         %standard-phases)))))
 
      (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
      (description "The GNU Compiler Collection")
