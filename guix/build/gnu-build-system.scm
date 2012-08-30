@@ -92,16 +92,24 @@
                                                   includedir "/include"))
                              '())
                        ,@configure-flags))
-         (srcdir     (getcwd)))
-    (format #t "source directory: ~s~%" srcdir)
+         (abs-srcdir (getcwd))
+         (srcdir     (if out-of-source?
+                         (string-append "../" (basename abs-srcdir))
+                         ".")))
+    (format #t "source directory: ~s (relative from build: ~s)~%"
+            abs-srcdir srcdir)
     (if out-of-source?
         (begin
           (mkdir "../build")
           (chdir "../build")))
     (format #t "build directory: ~s~%" (getcwd))
     (format #t "configure flags: ~s~%" flags)
+
+    ;; Call `configure' with a relative path.  Otherwise, GCC's build system
+    ;; (for instance) records absolute source file names, which typically
+    ;; contain the hash part of the `.drv' file, leading to a reference leak.
     (zero? (apply system*
-                  (string-append (if out-of-source? srcdir ".") "/configure")
+                  (string-append srcdir "/configure")
                   flags))))
 
 (define* (build #:key (make-flags '()) (parallel-build? #t)
