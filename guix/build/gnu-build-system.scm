@@ -152,13 +152,14 @@
                         (string-append dir "/sbin"))))
                 outputs))
 
-  (let ((path (append bindirs
-                      (search-path-as-string->list (getenv "PATH")))))
-   (for-each (lambda (dir)
-               (let ((files (list-of-files dir)))
-                 (for-each (cut patch-shebang <> path) files)))
-             bindirs)
-   #t))
+  (when patch-shebangs?
+    (let ((path (append bindirs
+                        (search-path-as-string->list (getenv "PATH")))))
+      (for-each (lambda (dir)
+                  (let ((files (list-of-files dir)))
+                    (for-each (cut patch-shebang <> path) files)))
+                bindirs)))
+  #t)
 
 (define* (strip #:key outputs (strip-binaries? #t)
                 (strip-flags '("--strip-debug"))
@@ -166,6 +167,8 @@
                                      "bin" "sbin"))
                 #:allow-other-keys)
   (define (strip-dir dir)
+    (format #t "stripping binaries in ~s with flags ~s~%"
+            dir strip-flags)
     (file-system-fold (const #t)
                       (lambda (path stat result)  ; leaf
                         (zero? (apply system* "strip"
@@ -181,14 +184,15 @@
                       #t
                       dir))
 
-  (every strip-dir
-         (append-map (match-lambda
-                      ((_ . dir)
-                       (filter-map (lambda (d)
-                                     (let ((sub (string-append dir "/" d)))
-                                       (and (directory-exists? sub) sub)))
-                                   strip-directories)))
-                     outputs)))
+  (or (not strip-binaries?)
+      (every strip-dir
+             (append-map (match-lambda
+                          ((_ . dir)
+                           (filter-map (lambda (d)
+                                         (let ((sub (string-append dir "/" d)))
+                                           (and (directory-exists? sub) sub)))
+                                       strip-directories)))
+                         outputs))))
 
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
