@@ -589,6 +589,7 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                    (guix build gnu-build-system)
                    (ice-9 regex))                 ; we need this one
         #:out-of-source? #t
+        #:strip-binaries? ,stripped?
         #:configure-flags
         `("--enable-plugin"
           "--enable-languages=c,c++"
