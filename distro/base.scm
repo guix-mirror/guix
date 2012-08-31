@@ -605,6 +605,15 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                             "-Wl," libc "/lib/ld-linux-x86-64.so.2")
             ,(string-append "BOOT_CFLAGS=-O2 "
                             ,(if stripped? "-g0" "-g"))))
+
+        ;; Exclude libc from $LIBRARY_PATH since the compiler being used
+        ;; should know whether its libc is, and to avoid linking build tools
+        ;; like `genhooks' against the wrong libc (for instance, when
+        ;; building a gcc-for-glibc-2.16 with a gcc-for-glibc-2.13,
+        ;; `genhooks' could end up being linked with glibc-2.16 but using
+        ;; crt*.o from glibc-2.13.)
+        #:path-exclusions '(("LIBRARY_PATH" "libc"))
+
         #:tests? #f
         #:phases
         (alist-cons-before

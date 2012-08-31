@@ -47,17 +47,37 @@
                     #f
                     dir))
 
-(define* (set-paths #:key inputs #:allow-other-keys)
+(define* (set-paths #:key inputs (path-exclusions '())
+                    #:allow-other-keys)
   (let ((inputs (map cdr inputs)))
-    (set-path-environment-variable "PATH" '("bin") inputs)
-    (set-path-environment-variable "CPATH" '("include") inputs)
-    (set-path-environment-variable "LIBRARY_PATH" '("lib" "lib64") inputs)
+    (set-path-environment-variable "PATH" '("bin")
+                                   (remove (cute member <>
+                                                 (or (assoc-ref path-exclusions
+                                                                "PATH")
+                                                     '()))
+                                           inputs))
+    (set-path-environment-variable "CPATH" '("include")
+                                   (remove (cute member <>
+                                                 (or (assoc-ref path-exclusions
+                                                                "CPATH")
+                                                     '()))
+                                           inputs))
+    (set-path-environment-variable "LIBRARY_PATH" '("lib" "lib64")
+                                   (remove (cute member <>
+                                                 (or (assoc-ref path-exclusions
+                                                                "LIBRARY_PATH")
+                                                     '()))
+                                           inputs))
 
     ;; FIXME: Eventually move this to the `search-paths' field of the
     ;; `pkg-config' package.
     (set-path-environment-variable "PKG_CONFIG_PATH"
                                    '("lib/pkgconfig" "lib64/pkgconfig")
-                                   inputs)
+                                   (remove (cute member <>
+                                                 (or (assoc-ref path-exclusions
+                                                                "PKG_CONFIG_PATH")
+                                                     '()))
+                                           inputs))
 
     ;; Dump the environment variables as a shell script, for handy debugging.
     (system "export > environment-variables")))

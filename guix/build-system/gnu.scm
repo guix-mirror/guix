@@ -47,6 +47,7 @@
                     (make-flags ''())
                     (patches ''()) (patch-flags ''("--batch" "-p1"))
                     (out-of-source? #f)
+                    (path-exclusions ''())
                     (tests? #t)
                     (parallel-build? #t) (parallel-tests? #t)
                     (patch-shebangs? #t)
@@ -74,6 +75,7 @@ input derivation INPUTS, using the usual procedure of the GNU Build System."
                   #:configure-flags ,configure-flags
                   #:make-flags ,make-flags
                   #:out-of-source? ,out-of-source?
+                  #:path-exclusions ,path-exclusions
                   #:tests? ,tests?
                   #:parallel-build? ,parallel-build?
                   #:parallel-tests? ,parallel-tests?
