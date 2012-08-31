@@ -609,8 +609,9 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
         #:phases
         (alist-cons-before
          'configure 'pre-configure
-         (lambda* (#:key inputs #:allow-other-keys)
-           (let ((libc (assoc-ref inputs "libc")))
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let ((out  (assoc-ref outputs "out"))
+                 (libc (assoc-ref inputs "libc")))
              ;; Fix the dynamic linker's file name.
              (substitute* "gcc/config/i386/linux64.h"
                (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
@@ -618,14 +619,14 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                         suffix
                         (string-append libc "/lib/ld-linux-x86-64.so.2"))))
 
-             ;; Tell where to find libc and `?crt*.o', except
+             ;; Tell where to find libstdc++, libc, and `?crt*.o', except
              ;; `crt{begin,end}.o', which come with GCC.
              (substitute* ("gcc/config/gnu-user.h"
                            "gcc/config/i386/gnu-user.h"
                            "gcc/config/i386/gnu-user64.h")
                (("#define LIB_SPEC (.*)$" _ suffix)
-                (format #f "#define LIB_SPEC \"-L~a/lib \" ~a~%"
-                        libc suffix))
+                (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
+                        libc out out suffix))
                (("^.*crt([^\\.])\\.o.*$" line)
                 (regexp-substitute/global #f
                                           "([a-zA-Z]?)crt([^\\.])\\.o"
