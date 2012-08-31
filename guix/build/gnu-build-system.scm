@@ -160,12 +160,42 @@
              bindirs)
    #t))
 
+(define* (strip #:key outputs (strip-binaries? #t)
+                (strip-flags '("--strip-debug"))
+                (strip-directories '("lib" "lib64" "libexec"
+                                     "bin" "sbin"))
+                #:allow-other-keys)
+  (define (strip-dir dir)
+    (file-system-fold (const #t)
+                      (lambda (path stat result)  ; leaf
+                        (zero? (apply system* "strip"
+                                      (append strip-flags (list path)))))
+                      (const #t)                  ; down
+                      (const #t)                  ; up
+                      (const #t)                  ; skip
+                      (lambda (path stat errno result)
+                        (format (current-error-port)
+                                "strip: failed to access `~a': ~a~%"
+                                path (strerror errno))
+                        #f)
+                      #t
+                      dir))
+
+  (every strip-dir
+         (append-map (match-lambda
+                      ((_ . dir)
+                       (filter-map (lambda (d)
+                                     (let ((sub (string-append dir "/" d)))
+                                       (and (directory-exists? sub) sub)))
+                                   strip-directories)))
+                     outputs)))
+
 (define %standard-phases
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
     (phases set-paths unpack patch configure build check install
-            patch-shebangs)))
+            patch-shebangs strip)))
 
 
 (define* (gnu-build #:key (source #f) (outputs #f) (inputs #f)

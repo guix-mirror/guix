@@ -50,6 +50,10 @@
                     (tests? #t)
                     (parallel-build? #t) (parallel-tests? #t)
                     (patch-shebangs? #t)
+                    (strip-binaries? #t)
+                    (strip-flags ''("--strip-debug"))
+                    (strip-directories ''("lib" "lib64" "libexec"
+                                          "bin" "sbin"))
                     (phases '%standard-phases)
                     (system (%current-system))
                     (modules '((guix build gnu-build-system)
@@ -73,7 +77,10 @@ input derivation INPUTS, using the usual procedure of the GNU Build System."
                   #:tests? ,tests?
                   #:parallel-build? ,parallel-build?
                   #:parallel-tests? ,parallel-tests?
-                  #:patch-shebangs? ,patch-shebangs?)))
+                  #:patch-shebangs? ,patch-shebangs?
+                  #:strip-binaries? ,strip-binaries?
+                  #:strip-flags ,strip-flags
+                  #:strip-directories ,strip-directories)))
 
   (build-expression->derivation store name system
                                 builder
