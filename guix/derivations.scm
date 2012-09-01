@@ -508,15 +508,18 @@ search path."
 (define* (build-expression->derivation store name system exp inputs
                                        #:key (outputs '("out"))
                                        hash hash-algo
+                                       (env-vars '())
                                        (modules '()))
   "Return a derivation that executes Scheme expression EXP as a builder for
 derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV) tuples;
 when SUB-DRV is omitted, \"out\" is assumed.  EXP is evaluated in an
 environment where %OUTPUT is bound to the main output path, %OUTPUTS is bound
 to a list of output/path pairs, and where %BUILD-INPUTS is bound to an alist
-of string/output-path pairs made from INPUTS.  The builder terminates by
-passing the result of EXP to `exit'; thus, when EXP returns #f, the build is
-considered to have failed."
+of string/output-path pairs made from INPUTS.  Optionally, ENV-VARS is a list
+of string pairs specifying the name and value of environment variables
+visible to the builder.  The builder terminates by passing the result of EXP
+to `exit'; thus, when EXP returns #f, the build is considered to have
+failed."
   (define guile
     (string-append (derivation-path->output-path (%guile-for-build))
                    "/bin/guile"))
@@ -575,7 +578,7 @@ considered to have failed."
                 `("--no-auto-compile"
                   ,@(if mod-dir `("-L" ,mod-dir) '())
                   ,builder)
-                '(("HOME" . "/homeless"))
+                env-vars
                 `((,(%guile-for-build))
                   (,builder)
                   ,@(map cdr inputs)
