@@ -21,7 +21,10 @@
   #:use-module (guix packages)
   #:use-module (guix http)
   #:use-module (guix build-system gnu)
-  #:use-module (guix utils))
+  #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match))
 
 ;;; Commentary:
 ;;;
@@ -613,7 +616,7 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                             ,(if stripped? "-g0" "-g"))))
 
         ;; Exclude libc from $LIBRARY_PATH since the compiler being used
-        ;; should know whether its libc is, and to avoid linking build tools
+        ;; should know where its libc is, and to avoid linking build tools
         ;; like `genhooks' against the wrong libc (for instance, when
         ;; building a gcc-for-glibc-2.16 with a gcc-for-glibc-2.13,
         ;; `genhooks' could end up being linked with glibc-2.16 but using
@@ -1031,8 +1034,7 @@ conversions for values passed between the two languages.")
              (base32
               "000ng5qsq3cl1k35jvzvhwxj92wx4q87745n2fppkd4irh58vv5l"))))
    (build-system gnu-build-system)
-   (native-inputs `(("xz" ,(nixpkgs-derivation* "xz"))
-                    ("pkgconfig" ,(nixpkgs-derivation* "pkgconfig"))))
+   (native-inputs `(("pkgconfig" ,(nixpkgs-derivation* "pkgconfig"))))
    (inputs `(("libffi" ,libffi)
              ("readline" ,readline)))
 
@@ -1168,6 +1170,171 @@ The GNU C library is used as the C library in the GNU system and most systems
 with the Linux kernel.")
    (license "LGPLv2+")
    (home-page "http://www.gnu.org/software/libc/")))
+
+
+;;;
+;;; Bootstrap packages.
+;;;
+
+(define %bootstrap-inputs
+  (compile-time-value
+   `(("libc" ,(nixpkgs-derivation "glibc"))
+     ,@(map (lambda (name)
+              (list name (nixpkgs-derivation name)))
+            '("gnutar" "gzip" "bzip2" "xz" "diffutils" "patch"
+              "coreutils" "gnused" "gnugrep" "bash"
+              "findutils"                           ; used by `libtool'
+              "gawk"                                ; used by `config.status'
+              "gcc" "binutils" "gnumake"
+              "gmp" "mpfr" "mpc")))))               ; TODO: remove from here?
+
+(define gcc-boot0
+  (package (inherit gcc-4.7)
+    (name "gcc-boot0")
+    (arguments
+     `(#:implicit-inputs? #f
+       ,@(package-arguments gcc-4.7)))
+    (inputs `(,@%bootstrap-inputs))))
+
+(define binutils-boot0
+  ;; Since Binutils in the bootstrap inputs may be too old, build ours here.
+  (package (inherit binutils)
+    (name "binutils-boot0")
+    (arguments
+     `(#:implicit-inputs? #f
+       ,@(package-arguments binutils)))
+    (inputs `(("gcc" ,gcc-boot0)
+              ,@(alist-delete "gcc" %bootstrap-inputs)))))
+
+(define linux-headers-boot0
+  (package (inherit linux-headers)
+    (arguments `(#:implicit-inputs? #f
+                 ,@(package-arguments linux-headers)))
+    (native-inputs `(("perl" ,(nixpkgs-derivation* "perl"))
+                     ,@%bootstrap-inputs))))
+
+(define %boot1-inputs
+  ;; 2nd stage inputs.
+  `(("gcc" ,gcc-boot0)
+    ("binutils" ,binutils-boot0)
+    ,@(fold alist-delete %bootstrap-inputs
+            '("gcc" "binutils"))))
+
+(define-public glibc-final
+  ;; The final libc.
+  ;; FIXME: It depends on GCC-BOOT0, which depends on some of
+  ;; %BOOTSTRAP-INPUTS.
+  (package (inherit glibc)
+    (arguments
+     `(#:implicit-inputs? #f
+
+       ;; Leave /bin/sh as the interpreter for `ldd', `sotruss', etc. to
+       ;; avoid keeping a reference to the bootstrap Bash.
+       #:patch-shebangs? #f
+       ,@(let loop ((args   (package-arguments glibc))
+                    (before '()))
+           (match args
+             ((#:configure-flags ('list cf ...) after ...)
+              (append (reverse before)
+                      `(#:configure-flags (list "BASH_SHELL=/bin/sh" ,@cf))
+                      after))
+             ((x rest ...)
+              (loop rest (cons x before)))))))
+    (propagated-inputs `(("linux-headers" ,linux-headers-boot0)))
+    (inputs %boot1-inputs)))
+
+(define %boot2-inputs
+  ;; 3rd stage inputs.
+  `(("libc" ,glibc-final)
+    ,@(alist-delete "libc" %bootstrap-inputs)))
+
+(define m4-boot2
+  (package (inherit m4)
+    (name "m4-boot2")
+    (arguments (lambda (system)
+                 `(#:implicit-inputs? #f
+                   ,@((package-arguments m4) system))))
+    (inputs `(,@(package-inputs m4)
+              ,@%boot2-inputs))))
+
+(define gmp-boot2
+  (package (inherit gmp)
+    (name "gmp-boot2")
+    (arguments
+     `(#:implicit-inputs? #f
+       ,@(package-arguments gmp)))
+    (native-inputs `(("m4" ,m4-boot2)
+                     ,@%boot2-inputs))))
+
+(define mpfr-boot2
+  (package (inherit mpfr)
+    (name "mpfr-boot2")
+    (arguments
+     `(#:implicit-inputs? #f
+       ,@(package-arguments mpfr)))
+    (inputs `(("gmp" ,gmp-boot2)
+              ,@%boot2-inputs))))
+
+(define mpc-boot2
+  (package (inherit mpc)
+    (name "mpc-boot2")
+    (arguments
+     `(#:implicit-inputs? #f
+       ,@(package-arguments mpc)))
+    (inputs `(("gmp" ,gmp-boot2)
+              ("mpfr" ,mpfr-boot2)
+              ,@%boot2-inputs))))
+
+(define %boot3-inputs
+  ;; 4th stage inputs.
+  `(("libc" ,glibc-final)
+    ("gmp" ,gmp-boot2)
+    ("mpfr" ,mpfr-boot2)
+    ("mpc" ,mpc-boot2)
+    ,@(fold alist-delete
+            %boot2-inputs
+            '("libc" "gmp" "mpfr" "mpc"))))
+
+(define-public gcc-final
+  ;; The final GCC.
+  (package (inherit gcc-boot0)
+    (name "gcc")
+    (inputs %boot3-inputs)))
+
+(define %boot4-inputs
+  ;; 5th stage inputs.
+  `(("gcc" ,gcc-final)
+    ,@(fold alist-delete %boot3-inputs
+            '("gcc" "gmp" "mpfr" "mpc"))))
+
+(define-public %final-inputs
+  ;; Final derivations used as implicit inputs by `gnu-build-system'.
+  (let ((finalize (cut package-with-explicit-inputs <> %boot4-inputs
+                       (source-properties->location
+                        (current-source-location)))))
+    `(,@(map (match-lambda
+              ((name package)
+               (list name (finalize package))))
+             `(("tar" ,tar)
+               ("gzip" ,gzip)
+               ("xz" ,xz)
+               ("diffutils" ,diffutils)
+               ("patch" ,patch)
+               ("coreutils" ,coreutils)
+               ("sed" ,sed)
+               ("grep" ,grep)
+               ("bash" ,bash)
+               ("findutils" ,findutils)
+               ("gawk" ,gawk)
+               ("make" ,gnu-make)
+               ("binutils" ,binutils)))
+      ("gcc" ,gcc-final)
+      ("glibc" ,glibc-final))))
+
+
+;;;
+;;; Apps & libs --- TODO: move to separate module.
+;;;
 
 (define (guile-reader guile)
   "Build Guile-Reader against GUILE, a package of some version of Guile 1.8
@@ -1322,4 +1489,5 @@ beginning.")
 ;;; eval: (put 'lambda* 'scheme-indent-function 1)
 ;;; eval: (put 'substitute* 'scheme-indent-function 1)
 ;;; eval: (put 'with-directory-excursion 'scheme-indent-function 1)
+;;; eval: (put 'package 'scheme-indent-function 1)
 ;;; End:

@@ -21,9 +21,13 @@
   #:use-module (guix utils)
   #:use-module (guix derivations)
   #:use-module (guix build-system)
+  #:use-module (guix packages)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-39)
+  #:use-module (ice-9 match)
   #:export (gnu-build
-            gnu-build-system))
+            gnu-build-system
+            package-with-explicit-inputs))
 
 ;; Commentary:
 ;;
@@ -32,15 +36,66 @@
 ;;
 ;; Code:
 
-(define %standard-inputs
-  (compile-time-value
-   (map (lambda (name)
-          (list name (nixpkgs-derivation name)))
-        '("gnutar" "gzip" "bzip2" "xz" "diffutils" "patch"
-          "coreutils" "gnused" "gnugrep" "bash"
-          "findutils"                             ; used by `libtool'
-          "gawk"                                  ; used by `config.status'
-          "gcc" "binutils" "gnumake" "glibc"))))
+(define* (package-with-explicit-inputs p boot-inputs
+                                       #:optional
+                                       (loc (source-properties->location
+                                             (current-source-location))))
+  "Rewrite P, which is assumed to use GNU-BUILD-SYSTEM, to take BOOT-INPUTS
+as explicit inputs instead of the implicit default, and return it."
+  (define rewritten-input
+    (match-lambda
+     ((name (? package? p) sub-drv ...)
+      (cons* name (package-with-explicit-inputs p boot-inputs) sub-drv))
+     (x x)))
+
+  (define boot-input-names
+    (map car boot-inputs))
+
+  (define (filtered-inputs inputs)
+    (fold alist-delete inputs boot-input-names))
+
+  (package (inherit p)
+    (location loc)
+    (arguments
+     (let ((args (package-arguments p)))
+       (if (procedure? args)
+           (lambda (system)
+             `(#:implicit-inputs? #f ,@(args system)))
+           `(#:implicit-inputs? #f ,@args))))
+    (native-inputs (map rewritten-input
+                        (filtered-inputs (package-native-inputs p))))
+    (propagated-inputs (map rewritten-input
+                            (filtered-inputs
+                             (package-propagated-inputs p))))
+    (inputs `(,@boot-inputs
+              ,@(map rewritten-input
+                     (filtered-inputs (package-inputs p)))))))
+
+(define %store
+  ;; Store passed to STANDARD-INPUTS.
+  (make-parameter #f))
+
+(define standard-inputs
+  (memoize
+   (lambda (system)
+     "Return the list of implicit standard inputs used with the GNU Build
+System: GCC, GNU Make, Bash, Coreutils, etc."
+     (map (match-lambda
+           ((name pkg sub-drv ...)
+            (cons* name (package-derivation (%store) pkg system) sub-drv))
+           ((name (? derivation-path? path) sub-drv ...)
+            (cons* name path sub-drv))
+           (z
+            (error "invalid standard input" z)))
+
+          ;; Resolve (distro base) lazily to hide circular dependency.
+          (let* ((distro (resolve-module '(distro base)))
+                 (inputs (module-ref distro '%final-inputs)))
+            (append inputs
+                    (append-map (match-lambda
+                                 ((name package _ ...)
+                                  (package-transitive-propagated-inputs package)))
+                                inputs)))))))
 
 (define* (gnu-build store name source inputs
                     #:key (outputs '("out")) (configure-flags ''())
@@ -57,6 +112,7 @@
                                           "bin" "sbin"))
                     (phases '%standard-phases)
                     (system (%current-system))
+                    (implicit-inputs? #t)         ; useful when bootstrapping
                     (modules '((guix build gnu-build-system)
                                (guix build utils))))
   "Return a derivation called NAME that builds from tarball SOURCE, with
@@ -88,7 +144,10 @@ input derivation INPUTS, using the usual procedure of the GNU Build System."
                                 builder
                                 `(("source" ,source)
                                   ,@inputs
-                                  ,@%standard-inputs)
+                                  ,@(if implicit-inputs?
+                                        (parameterize ((%store store))
+                                          (standard-inputs system))
+                                        '()))
                                 #:outputs outputs
                                 #:modules modules))
 
