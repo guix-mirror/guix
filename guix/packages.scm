@@ -61,6 +61,7 @@
             package-location
 
             package-transitive-inputs
+            package-transitive-propagated-inputs
             package-source-derivation
             package-derivation
             package-cross-derivation
@@ -196,12 +197,8 @@ representation."
     (($ <origin> uri method sha256 name)
      (method store uri 'sha256 sha256 name))))
 
-(define (package-transitive-inputs package)
-  "Return the transitive inputs of PACKAGE---i.e., its direct inputs along
-with their propagated inputs, recursively."
-  (let loop ((inputs (concatenate (list (package-native-inputs package)
-                                        (package-inputs package)
-                                        (package-propagated-inputs package))))
+(define (transitive-inputs inputs)
+  (let loop ((inputs  inputs)
              (result '()))
     (match inputs
       (()
@@ -216,6 +213,18 @@ with their propagated inputs, recursively."
                (append t (cons i result)))))
       ((input rest ...)
        (loop rest (cons input result))))))
+
+(define (package-transitive-inputs package)
+  "Return the transitive inputs of PACKAGE---i.e., its direct inputs along
+with their propagated inputs, recursively."
+  (transitive-inputs (append (package-native-inputs package)
+                             (package-inputs package)
+                             (package-propagated-inputs package))))
+
+(define (package-transitive-propagated-inputs package)
+  "Return the propagated inputs of PACKAGE, and their propagated inputs,
+recursively."
+  (transitive-inputs (package-propagated-inputs package)))
 
 
 ;;;
