@@ -908,7 +908,10 @@ internal in-memory representation.")
    (inputs `(("curl" ,(nixpkgs-derivation* "curl"))
              ("emacs" ,(nixpkgs-derivation* "emacs"))
              ("check" ,(nixpkgs-derivation* "check"))
-             ("bc" ,(nixpkgs-derivation* "bc"))))
+             ("bc" ,(nixpkgs-derivation* "bc"))
+             ("patch/gets"
+              ,(search-patch "diffutils-gets-undeclared.patch"))))
+   (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
    (description "GNU recutils, tools and libraries to access human-editable,
 text-based databases")
    (long-description
