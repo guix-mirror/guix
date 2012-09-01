@@ -23,6 +23,7 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:export (location
@@ -163,6 +164,19 @@ representation."
   (location package-location
             (default (and=> (current-source-location)
                             source-properties->location))))
+
+(set-record-type-printer! <package>
+                          (lambda (package port)
+                            (let ((loc    (package-location package))
+                                  (format simple-format))
+                              (format port "#<package ~a-~a ~a:~a ~a>"
+                                      (package-name package)
+                                      (package-version package)
+                                      (location-file loc)
+                                      (location-line loc)
+                                      (number->string (object-address
+                                                       package)
+                                                      16)))))
 
 
 ;; Error conditions.
