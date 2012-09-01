@@ -840,7 +840,11 @@ UNIX.  It has even been ported to OS/2 Warp!")
               ,(search-patch "readline-link-ncurses.patch"))))
    (arguments `(#:patches (list (assoc-ref %build-inputs
                                            "patch/link-ncurses"))
-                #:patch-flags '("-p0")))
+                #:patch-flags '("-p0")
+                #:configure-flags
+                (list (string-append "LDFLAGS=-Wl,-rpath -Wl,"
+                                     (assoc-ref %build-inputs "ncurses")
+                                     "/lib"))))
    (description "GNU Readline, a library for interactive line editing")
    (long-description
     "The GNU Readline library provides a set of functions for use by
@@ -875,10 +879,18 @@ without Readline in applications which desire its capabilities.")
                (base32
                 "1n5kbblp5ykbz5q8aq88lsif2z0gnvddg9babk33024wxiwi2ym2"))))
      (build-system gnu-build-system)
-     (inputs `(("readline" ,readline)))           ; TODO: add texinfo
+     (inputs `(("readline" ,readline)
+               ("ncurses" ,ncurses)))             ; TODO: add texinfo
      (arguments
-      `(#:configure-flags '("--with-installed-readline"
-                            ,(string-append "CPPFLAGS=" cppflags))
+      `(#:configure-flags `("--with-installed-readline"
+                            ,,(string-append "CPPFLAGS=" cppflags)
+                            ,(string-append
+                              "LDFLAGS=-Wl,-rpath -Wl,"
+                              (assoc-ref %build-inputs "readline")
+                              "/lib"
+                              " -Wl,-rpath -Wl,"
+                              (assoc-ref %build-inputs "ncurses")
+                              "/lib"))
 
         ;; XXX: The tests have a lot of hard-coded paths, so disable them
         ;; for now.
