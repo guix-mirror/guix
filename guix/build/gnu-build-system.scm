@@ -91,7 +91,7 @@
   (every (lambda (p)
            (format #t "applying patch `~a'~%" p)
            (zero? (apply system* "patch"
-                         (append patch-flags (list p)))))
+                         (append patch-flags (list "--input" p)))))
          patches))
 
 (define* (configure #:key outputs (configure-flags '()) out-of-source?
