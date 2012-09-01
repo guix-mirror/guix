@@ -440,7 +440,7 @@ known in advance, such as a file download."
 (define %guile-for-build
   ;; The derivation of the Guile to be used within the build environment,
   ;; when using `build-expression->derivation'.
-  (make-parameter (false-if-exception (nixpkgs-derivation "guile"))))
+  (make-parameter (false-if-exception (nixpkgs-derivation* "guile"))))
 
 (define* (imported-files store files
                          #:key (name "file-import") (system (%current-system)))
@@ -509,7 +509,8 @@ search path."
                                        #:key (outputs '("out"))
                                        hash hash-algo
                                        (env-vars '())
-                                       (modules '()))
+                                       (modules '())
+                                       guile-for-build)
   "Return a derivation that executes Scheme expression EXP as a builder for
 derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV) tuples;
 when SUB-DRV is omitted, \"out\" is assumed.  EXP is evaluated in an
@@ -519,9 +520,13 @@ of string/output-path pairs made from INPUTS.  Optionally, ENV-VARS is a list
 of string pairs specifying the name and value of environment variables
 visible to the builder.  The builder terminates by passing the result of EXP
 to `exit'; thus, when EXP returns #f, the build is considered to have
-failed."
+failed.
+
+EXP is built using GUILE-FOR-BUILD (a derivation).  When GUILE-FOR-BUILD is
+omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
   (define guile
-    (string-append (derivation-path->output-path (%guile-for-build))
+    (string-append (derivation-path->output-path (or guile-for-build
+                                                     (%guile-for-build)))
                    "/bin/guile"))
 
   (define module-form?
@@ -579,7 +584,7 @@ failed."
                   ,@(if mod-dir `("-L" ,mod-dir) '())
                   ,builder)
                 env-vars
-                `((,(%guile-for-build))
+                `((,(or guile-for-build (%guile-for-build)))
                   (,builder)
                   ,@(map cdr inputs)
                   ,@(if mod-drv `((,mod-drv)) '()))
