@@ -200,6 +200,10 @@ available in STORE, recursively."
   "Write the ATerm-like serialization of DRV to PORT.  See Section 2.4 of
 Eelco Dolstra's PhD dissertation for an overview of a previous version of
 that form."
+
+  ;; Make sure we're using the faster implementation.
+  (define format simple-format)
+
   (define (list->string lst)
     (string-append "[" (string-join lst ",") "]"))
 
@@ -269,12 +273,15 @@ that form."
                               (string<? (car e1) (car e2))))))
      (display ")" port))))
 
-(define* (derivation-path->output-path path #:optional (output "out"))
-  "Read the derivation from PATH (`/nix/store/xxx.drv'), and return the store
+(define derivation-path->output-path
+  ;; This procedure is called frequently, so memoize it.
+  (memoize
+   (lambda* (path #:optional (output "out"))
+     "Read the derivation from PATH (`/nix/store/xxx.drv'), and return the store
 path of its output OUTPUT."
-  (let* ((drv     (call-with-input-file path read-derivation))
-         (outputs (derivation-outputs drv)))
-    (and=> (assoc-ref outputs output) derivation-output-path)))
+     (let* ((drv     (call-with-input-file path read-derivation))
+            (outputs (derivation-outputs drv)))
+       (and=> (assoc-ref outputs output) derivation-output-path)))))
 
 
 ;;;
