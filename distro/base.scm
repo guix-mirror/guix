@@ -163,6 +163,9 @@ substituting multiple occurrences of a string within a file.")
              (base32
               "0hbdkzmchq9ycr2x1pxqdcgdbaxksh8c6ac0jf75jajhcks6jlss"))))
    (build-system gnu-build-system)
+   (inputs `(("patch/gets" ,(search-patch "tar-gets-undeclared.patch"))))
+   (arguments
+    `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
    (description "GNU implementation of the `tar' archiver")
    (long-description
     "The Tar program provides the ability to create tar archives, as well as

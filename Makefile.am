@@ -46,7 +46,8 @@ dist_patch_DATA =				\
   distro/patches/m4-s_isdir.patch		\
   distro/patches/make-impure-dirs.patch		\
   distro/patches/findutils-absolute-paths.patch	\
-  distro/patches/readline-link-ncurses.patch
+  distro/patches/readline-link-ncurses.patch	\
+  distro/patches/tar-gets-undeclared.patch
 
 nobase_nodist_guilemodule_DATA = $(GOBJECTS)
 
