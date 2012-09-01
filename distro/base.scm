@@ -588,10 +588,7 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                ("mpfr" ,mpfr)
                ("mpc" ,mpc)))           ; TODO: libelf, ppl, cloog, zlib, etc.
      (arguments
-      `(#:modules ((guix build utils)
-                   (guix build gnu-build-system)
-                   (ice-9 regex))                 ; we need this one
-        #:out-of-source? #t
+      `(#:out-of-source? #t
         #:strip-binaries? ,stripped?
         #:configure-flags
         `("--enable-plugin"
@@ -639,12 +636,8 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                (("#define LIB_SPEC (.*)$" _ suffix)
                 (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
                         libc out out suffix))
-               (("^.*crt([^\\.])\\.o.*$" line)
-                (regexp-substitute/global #f
-                                          "([a-zA-Z]?)crt([^\\.])\\.o"
-                                          (string-append line "\n")
-                                          'pre libc "/lib/" 1 "crt" 2 ".o"
-                                          'post)))))
+               (("([^ ]*)crt([^\\.])\\.o" _ prefix suffix)
+                (string-append libc "/lib/" prefix "crt" suffix ".o")))))
          (alist-cons-after
           'configure 'post-configure
           (lambda _
@@ -1121,10 +1114,7 @@ call interface, and powerful string processing.")
    (build-system gnu-build-system)
    (native-inputs `(("linux-headers" ,linux-headers)))
    (arguments
-    `(#:modules ((guix build utils)
-                 (guix build gnu-build-system)
-                 (ice-9 regex))
-      #:out-of-source? #t
+    `(#:out-of-source? #t
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"
@@ -1145,13 +1135,10 @@ call interface, and powerful string processing.")
                   (let ((out (assoc-ref outputs "out")))
                     ;; Use `pwd', not `/bin/pwd'.
                     (substitute* "configure"
-                      (("^.*/bin/pwd.*$" line)
-                       (regexp-substitute/global #f
-                                                 "/bin/pwd"
-                                                 (string-append line "\n")
-                                                 'pre "pwd" 'post)))
+                      (("/bin/pwd" _) "pwd"))
 
                     ;; Install the rpc data base file under `$out/etc/rpc'.
+                    ;; FIXME: Use installFlags = [ "sysconfdir=$(out)/etc" ];
                     (substitute* "sunrpc/Makefile"
                       (("^\\$\\(inst_sysconfdir\\)/rpc(.*)$" _ suffix)
                        (string-append out "/etc/rpc" suffix "\n"))

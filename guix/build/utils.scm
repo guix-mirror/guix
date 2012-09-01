@@ -159,7 +159,8 @@ An error is raised when no such pair exists."
 (define (substitute file pattern+procs)
   "PATTERN+PROCS is a list of regexp/two-argument procedure.  For each line
 of FILE, and for each PATTERN that it matches, call the corresponding PROC
-as (PROC MATCH OUTPUT-PORT)."
+as (PROC LINE MATCHES); PROC must return the line that will be written as a
+substitution of the original line."
   (let* ((rx+proc  (map (match-lambda
                          (((? regexp? pattern) . proc)
                           (cons pattern proc))
@@ -174,22 +175,20 @@ as (PROC MATCH OUTPUT-PORT)."
       (lambda ()
         (call-with-input-file file
           (lambda (in)
-            (let loop ((line (read-line in)))
+            (let loop ((line (read-line in 'concat)))
               (if (eof-object? line)
                   #t
-                  (begin
-                    (or (any (match-lambda
-                              ((regexp . proc)
-                               (and=> (regexp-exec regexp line)
-                                      (lambda (m)
-                                        (proc m out)
-                                        #t))))
-                             rx+proc)
-                        (begin
-                          (display line out)
-                          (newline out)
-                          #t))
-                    (loop (read-line in)))))))
+                  (let ((line (fold (lambda (r+p line)
+                                      (match r+p
+                                        ((regexp . proc)
+                                         (match (list-matches regexp line)
+                                           ((and m+ (_ _ ...))
+                                            (proc line m+))
+                                           (_ line)))))
+                                    line
+                                    rx+proc)))
+                    (display line out)
+                    (loop (read-line in 'concat)))))))
         (close out)
         (chmod template mode)
         (rename-file template file))
@@ -236,9 +235,24 @@ match substring."
     ((substitute* file ((regexp match-var ...) body ...) ...)
      (substitute file
                  (list (cons regexp
-                             (lambda (m p)
-                               (let-matches 0 m (match-var ...)
-                                            (display (begin body ...) p))))
+                             (lambda (l m+)
+                               ;; Iterate over matches M+ and return the
+                               ;; modified line based on L.
+                               (let loop ((m* m+)   ; matches
+                                          (o  0)    ; offset in L
+                                          (r  '())) ; result
+                                 (match m*
+                                   (()
+                                    (let ((r (cons (substring l o) r)))
+                                      (string-concatenate-reverse r)))
+                                   ((m . rest)
+                                    (let-matches 0 m (match-var ...)
+                                      (loop rest
+                                            (match:end m)
+                                            (cons*
+                                             (begin body ...)
+                                             (substring l o (match:start m))
+                                             r))))))))
                        ...)))))
 
 
@@ -313,4 +327,5 @@ patched, #f otherwise."
 ;;; Local Variables:
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)
 ;;; eval: (put 'with-throw-handler 'scheme-indent-function 1)
+;;; eval: (put 'let-matches 'scheme-indent-function 3)
 ;;; End:
