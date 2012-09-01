@@ -1118,7 +1118,11 @@ call interface, and powerful string processing.")
              (base32
               "092rdm49zh6l1pqkxbcpcaawgsgzxhpf1s7wf5wi5dvc5am3dp0y"))))
    (build-system gnu-build-system)
-   (native-inputs `(("linux-headers" ,linux-headers)))
+
+   ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
+   ;; users should automatically pull Linux headers as well.
+   (propagated-inputs `(("linux-headers" ,linux-headers)))
+
    (arguments
     `(#:out-of-source? #t
       #:configure-flags
@@ -1141,7 +1145,7 @@ call interface, and powerful string processing.")
                   (let ((out (assoc-ref outputs "out")))
                     ;; Use `pwd', not `/bin/pwd'.
                     (substitute* "configure"
-                      (("/bin/pwd" _) "pwd"))
+                      (("/bin/pwd") "pwd"))
 
                     ;; Install the rpc data base file under `$out/etc/rpc'.
                     ;; FIXME: Use installFlags = [ "sysconfdir=$(out)/etc" ];
