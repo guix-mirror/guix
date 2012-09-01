@@ -389,14 +389,17 @@ are expected to exist on every operating system.")
                                             "i686-sunos")))
                    #:patches (list (assoc-ref %build-inputs "patch/s_isdir")
                                    (assoc-ref %build-inputs
-                                              "patch/readlink-EINVAL"))))
+                                              "patch/readlink-EINVAL")
+                                   (assoc-ref %build-inputs "patch/gets"))))
                 ((system cross-system)
                  `(#:patches (list (assoc-ref %build-inputs "patch/s_isdir")
                                    (assoc-ref %build-inputs
-                                              "patch/readlink-EINVAL"))))))
+                                              "patch/readlink-EINVAL")
+                                   (assoc-ref %build-inputs "patch/gets"))))))
    (inputs `(("patch/s_isdir" ,(search-patch "m4-s_isdir.patch"))
              ("patch/readlink-EINVAL"
-              ,(search-patch "m4-readlink-EINVAL.patch"))))
+              ,(search-patch "m4-readlink-EINVAL.patch"))
+             ("patch/gets" ,(search-patch "m4-gets-undeclared.patch"))))
    (description "GNU M4, a macro processor")
    (long-description
     "GNU M4 is an implementation of the traditional Unix macro processor.  It
