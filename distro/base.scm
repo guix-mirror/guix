@@ -211,6 +211,74 @@ superior compression ratio of gzip is just a bonus.")
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/gzip/")))
 
+(define-public bzip2
+  (let ((fix-man-dir
+         ;; Move man pages to $out/share/.
+         '(lambda* (#:key outputs #:allow-other-keys)
+            (with-directory-excursion (assoc-ref outputs "out")
+              (mkdir "share")
+              (rename-file "man" "share"))))
+        (build-shared-lib
+         ;; Build a shared library.
+         '(lambda* (#:key inputs #:allow-other-keys)
+            (zero? (system* "make" "-f" "Makefile-libbz2_so"))))
+        (install-shared-lib
+         '(lambda* (#:key outputs #:allow-other-keys)
+            (let* ((out    (assoc-ref outputs "out"))
+                   (libdir (string-append out "/lib")))
+              ;; XXX: mv libbz2.so* $libdir
+              (file-system-fold (const #t)
+                                (lambda (path stat result) ; leaf
+                                  (define base (basename path))
+                                  (when (string-prefix? "libbz2.so" base)
+                                    (format #t "installing `~a' to `~a'~%"
+                                            base libdir)
+                                    (copy-file path
+                                               (string-append libdir "/"
+                                                              base))))
+                                (const #t)        ; down
+                                (const #t)        ; up
+                                (const #t)        ; skip
+                                (lambda (path stat errno result)
+                                  (error "i/o error" path (strerror errno)))
+                                #t
+                                ".")))))
+    (package
+      (name "bzip2")
+      (version "1.0.6")
+      (source (origin
+               (method http-fetch)
+               (uri (string-append "http://www.bzip.org/" version "/bzip2-"
+                                   version ".tar.gz"))
+               (sha256
+                (base32
+                 "1kfrc7f0ja9fdn6j1y6yir6li818npy6217hvr3wzmnmzhs8z152"))))
+      (build-system gnu-build-system)
+      (arguments
+       `(#:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (srfi srfi-1)
+                    (ice-9 ftw))
+                   #:phases
+                   (alist-cons-before
+                    'build 'build-shared-lib ,build-shared-lib
+                    (alist-cons-after
+                     'install 'fix-man-dir ,fix-man-dir
+                     (alist-cons-after
+                      'install 'install-shared-lib ,install-shared-lib
+                      (alist-delete 'configure %standard-phases))))
+                   #:make-flags (list (string-append "PREFIX="
+                                                     (assoc-ref %outputs "out")))))
+      (description "high-quality data compression program")
+      (long-description
+       "bzip2 is a freely available, patent free (see below), high-quality data
+compressor.  It typically compresses files to within 10% to 15% of the best
+available techniques (the PPM family of statistical compressors), whilst
+being around twice as fast at compression and six times faster at
+decompression.")
+      (license "BSD-style")
+      (home-page "http://www.bzip.org/"))))
+
 (define-public xz
   (package
    (name "xz")
@@ -1317,6 +1385,7 @@ with the Linux kernel.")
                (list name (finalize package))))
              `(("tar" ,tar)
                ("gzip" ,gzip)
+               ("bzip2" ,bzip2)
                ("xz" ,xz)
                ("diffutils" ,diffutils)
                ("patch" ,patch)
