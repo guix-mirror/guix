@@ -22,17 +22,10 @@
   #:use-module (guix build-system)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:export (location
-            location?
-            location-file
-            location-line
-            location-column
-
-            origin
+  #:export (origin
             origin?
             origin-uri
             origin-method
@@ -77,31 +70,6 @@
 ;;; Guix-based distribution.
 ;;;
 ;;; Code:
-
-;; A source location.
-(define-record-type <location>
-  (make-location file line column)
-  location?
-  (file          location-file)                   ; file name
-  (line          location-line)                   ; 1-indexed line
-  (column        location-column))                ; 0-indexed column
-
-(define location
-  (memoize
-   (lambda (file line column)
-     "Return the <location> object for the given FILE, LINE, and COLUMN."
-     (and line column file
-          (make-location file line column)))))
-
-(define (source-properties->location loc)
-  "Return a location object based on the info in LOC, an alist as returned
-by Guile's `source-properties', `frame-source', `current-source-location',
-etc."
-  (let ((file (assq-ref loc 'filename))
-        (line (assq-ref loc 'line))
-        (col  (assq-ref loc 'column)))
-    (location file (and line (+ line 1)) col)))
-
 
 ;; The source of a package, such as a tarball URL and fetcher---called
 ;; "origin" to avoid name clash with `package-source', `source', etc.

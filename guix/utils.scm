@@ -48,6 +48,14 @@
             define-record-type*
             compile-time-value
             memoize
+
+            location
+            location?
+            location-file
+            location-line
+            location-column
+            source-properties->location
+
             gnu-triplet->nix-system
             %current-system))
 
@@ -605,3 +613,32 @@ returned by `config.guess'."
 (define %current-system
   ;; System type as expected by Nix, usually ARCHITECTURE-KERNEL.
   (make-parameter (gnu-triplet->nix-system %host-type)))
+
+
+;;;
+;;; Source location.
+;;;
+
+;; A source location.
+(define-record-type <location>
+  (make-location file line column)
+  location?
+  (file          location-file)                   ; file name
+  (line          location-line)                   ; 1-indexed line
+  (column        location-column))                ; 0-indexed column
+
+(define location
+  (memoize
+   (lambda (file line column)
+     "Return the <location> object for the given FILE, LINE, and COLUMN."
+     (and line column file
+          (make-location file line column)))))
+
+(define (source-properties->location loc)
+  "Return a location object based on the info in LOC, an alist as returned
+by Guile's `source-properties', `frame-source', `current-source-location',
+etc."
+  (let ((file (assq-ref loc 'filename))
+        (line (assq-ref loc 'line))
+        (col  (assq-ref loc 'column)))
+    (location file (and line (+ line 1)) col)))
