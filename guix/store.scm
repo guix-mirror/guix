@@ -414,13 +414,12 @@ Return #t on success."
   ;; Absolute path to the Nix store.
   (make-parameter "/nix/store"))
 
-(define store-path?
-  (let ((store-path-rx
-         (delay (make-regexp
-                 (string-append "^.*" (%store-prefix) "/[^-]{32}-(.+)$")))))
-    (lambda (path)
-      "Return #t if PATH is a store path."
-      (not (not (regexp-exec (force store-path-rx) path))))))
+(define (store-path? path)
+  "Return #t if PATH is a store path."
+  ;; This is a lightweight check, compared to using a regexp, but this has to
+  ;; be fast as it's called often in `derivation', for instance.
+  ;; `isStorePath' in Nix does something similar.
+  (string-prefix? (%store-prefix) path))
 
 (define (derivation-path? path)
   "Return #t if PATH is a derivation path."
