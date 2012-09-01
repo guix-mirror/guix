@@ -38,15 +38,16 @@ GOBJECTS = $(MODULES:%.scm=%.go)
 nobase_dist_guilemodule_DATA = $(MODULES)
 
 patchdir = $(pkgdatadir)/patches
-dist_patch_DATA =				\
-  distro/patches/binutils-ld-new-dtags.patch	\
-  distro/patches/guile-1.8-cpp-4.5.patch	\
-  distro/patches/m4-gets-undeclared.patch	\
-  distro/patches/m4-readlink-EINVAL.patch	\
-  distro/patches/m4-s_isdir.patch		\
-  distro/patches/make-impure-dirs.patch		\
-  distro/patches/findutils-absolute-paths.patch	\
-  distro/patches/readline-link-ncurses.patch	\
+dist_patch_DATA =					\
+  distro/patches/binutils-ld-new-dtags.patch		\
+  distro/patches/diffutils-gets-undeclared.patch	\
+  distro/patches/guile-1.8-cpp-4.5.patch		\
+  distro/patches/m4-gets-undeclared.patch		\
+  distro/patches/m4-readlink-EINVAL.patch		\
+  distro/patches/m4-s_isdir.patch			\
+  distro/patches/make-impure-dirs.patch			\
+  distro/patches/findutils-absolute-paths.patch		\
+  distro/patches/readline-link-ncurses.patch		\
   distro/patches/tar-gets-undeclared.patch
 
 nobase_nodist_guilemodule_DATA = $(GOBJECTS)

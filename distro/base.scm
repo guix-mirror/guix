@@ -273,6 +273,9 @@ producing patched versions.")
              (base32
               "0jci0wv68025xd0s0rq4s5qxpx56dd9d730lka63qpzk1rfvfkxb"))))
    (build-system gnu-build-system)
+   (inputs `(("patch/gets"
+              ,(search-patch "diffutils-gets-undeclared.patch"))))
+   (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
    (description "Programs to find differences among text files")
    (long-description
     "GNU Diffutils is a package of several programs related to finding
