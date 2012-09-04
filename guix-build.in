@@ -44,11 +44,14 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 (define %store
   (open-connection))
 
-(define (derivations-from-package-expressions exp)
-  "Eval EXP and return the corresponding derivation path."
+(define (derivations-from-package-expressions exp source?)
+  "Eval EXP and return the corresponding derivation path.  When SOURCE? is
+true, return the derivations of the package sources."
   (let ((p (eval exp (current-module))))
     (if (package? p)
-        (package-derivation %store p)
+        (if source?
+            (package-source-derivation %store (package-source p))
+            (package-derivation %store p))
         (begin
           (format (current-error-port)
                   (_ "expression `~s' does not evaluate to a package")
@@ -79,6 +82,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -e, --expression=EXPR  build the package EXPR evaluates to"))
   (display (_ "
+  -S, --source           build the packages' source derivations"))
+  (display (_ "
   -K, --keep-failed      keep build tree of failed builds"))
   (display (_ "
   -n, --dry-run          do not build the derivations"))
@@ -104,6 +109,9 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                   (show-version)
                   (exit 0)))
 
+        (option '(#\S "source") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'source? #t result)))
         (option '(#\e "expression") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'expression
@@ -143,18 +151,22 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
   (setvbuf (current-error-port) _IOLBF)
 
   (let* ((opts (parse-options))
+         (src? (assoc-ref opts 'source?))
          (drv  (filter-map (match-lambda
-                            (('expression . exp)
-                             (derivations-from-package-expressions exp))
-                            (('argument . (? derivation-path? drv))
-                             drv)
-                            (('argument . (? string? x))
-                             (match (find-packages-by-name x)
-                               ((p _ ...)
-                                (package-derivation %store p))
-                               (_
-                                (leave (_ "~A: unknown package~%") x))))
-                            (_ #f))
+                             (('expression . exp)
+                              (derivations-from-package-expressions exp src?))
+                             (('argument . (? derivation-path? drv))
+                              drv)
+                             (('argument . (? string? x))
+                              (match (find-packages-by-name x)
+                                ((p _ ...)
+                                 (if src?
+                                     (let ((s (package-source p)))
+                                       (package-source-derivation %store s))
+                                     (package-derivation %store p)))
+                                (_
+                                 (leave (_ "~A: unknown package~%") x))))
+                             (_ #f))
                            opts))
          (req  (append-map (lambda (drv-path)
                              (let ((d (call-with-input-file drv-path
