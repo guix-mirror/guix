@@ -84,6 +84,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -S, --source           build the packages' source derivations"))
   (display (_ "
+  -d, --derivations      return the derivation paths of the given packages"))
+  (display (_ "
   -K, --keep-failed      keep build tree of failed builds"))
   (display (_ "
   -n, --dry-run          do not build the derivations"))
@@ -112,6 +114,9 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
         (option '(#\S "source") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'source? #t result)))
+        (option '(#\d "derivations") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'derivations-only? #t result)))
         (option '(#\e "expression") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'expression
@@ -196,15 +201,17 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                        #:build-cores (or (assoc-ref opts 'cores)
                                          (current-processor-count)))
 
-    (or (assoc-ref opts 'dry-run?)
-        (and (build-derivations %store drv)
-             (for-each (lambda (d)
-                         (let ((drv (call-with-input-file d
-                                      read-derivation)))
-                           (format #t "~{~a~%~}"
-                                   (map (match-lambda
-                                         ((out-name . out)
-                                          (derivation-path->output-path
-                                           d out-name)))
-                                        (derivation-outputs drv)))))
-                       drv)))))
+    (if (assoc-ref opts 'derivations-only?)
+        (format #t "~{~a~%~}" drv)
+        (or (assoc-ref opts 'dry-run?)
+            (and (build-derivations %store drv)
+                 (for-each (lambda (d)
+                             (let ((drv (call-with-input-file d
+                                          read-derivation)))
+                               (format #t "~{~a~%~}"
+                                       (map (match-lambda
+                                             ((out-name . out)
+                                              (derivation-path->output-path
+                                               d out-name)))
+                                            (derivation-outputs drv)))))
+                           drv))))))
