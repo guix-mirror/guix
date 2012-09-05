@@ -37,6 +37,7 @@
             package?
             package-name
             package-version
+            package-full-name
             package-source
             package-build-system
             package-arguments
@@ -159,6 +160,10 @@ representation."
   (input package-error-invalid-input))
 
 
+(define (package-full-name package)
+  "Return the full name of PACKAGE--i.e., `NAME-VERSION'."
+  (string-append (package-name package) "-" (package-version package)))
+
 (define (package-source-derivation store source)
   "Return the derivation path for SOURCE, a package source."
   (match source
@@ -252,7 +257,7 @@ recursively."
            ;; row.
            (cache package system
                   (apply builder
-                         store (string-append name "-" version)
+                         store (package-full-name package)
                          (package-source-derivation store source)
                          inputs
                          #:outputs outputs #:system system
