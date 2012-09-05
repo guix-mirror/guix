@@ -1273,23 +1273,108 @@ with the Linux kernel.")
    `(("libc" ,(nixpkgs-derivation "glibc"))
      ,@(map (lambda (name)
               (list name (nixpkgs-derivation name)))
+
+            ;; TODO: Reduce the bootstrap set.  For instance, GNU Make can be
+            ;; built without a `make' instance; Findutils, bzip2, and xz can
+            ;; be built later.
             '("gnutar" "gzip" "bzip2" "xz" "diffutils" "patch"
               "coreutils" "gnused" "gnugrep" "bash"
               "findutils"                           ; used by `libtool'
               "gawk"                                ; used by `config.status'
-              "gcc" "binutils" "gnumake"
-              "gmp" "mpfr" "mpc")))))               ; TODO: remove from here?
+              "gcc" "binutils" "gnumake")))))
+
+(define-syntax substitute-keyword-arguments
+  (syntax-rules ()
+    "Return a new list of arguments where the value for keyword arg KW is
+replaced by EXP.  EXP is evaluated in a context where VAR is boud to the
+previous value of the keyword argument."
+    ((_ original-args ((kw var) exp) ...)
+     (let loop ((args    original-args)
+                (before '()))
+       (match args
+         ((kw var rest (... ...))
+          (loop rest (cons* exp kw before)))
+         ...
+         ((x rest (... ...))
+          (loop rest (cons x before)))
+         (()
+          (reverse before)))))))
 
 (define gcc-boot0
   (package (inherit gcc-4.7)
     (name "gcc-boot0")
     (arguments
      `(#:implicit-inputs? #f
-       ,@(package-arguments gcc-4.7)))
-    (inputs `(,@%bootstrap-inputs))))
+
+       ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
+           ((#:phases phases)
+            (let ((binutils-name (package-full-name binutils)))
+              `(alist-cons-after
+                'unpack 'unpack-binutils&co
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let ((binutils (assoc-ref %build-inputs "binutils-source"))
+                        (gmp      (assoc-ref %build-inputs "gmp-source"))
+                        (mpfr     (assoc-ref %build-inputs "mpfr-source"))
+                        (mpc      (assoc-ref %build-inputs "mpc-source")))
+
+                    ;; We want to make sure feature tests like the
+                    ;; `.init_array' one really look at the linker we're
+                    ;; targeting (especially since our target Glibc requires
+                    ;; these features.)  Thus, make a joint GCC/Binutils
+                    ;; build.
+                    (or (zero? (system* "tar" "xvf" binutils))
+                        (error "failed to unpack tarball" binutils))
+
+                    ;; By default, `configure' looks for `ld' under `ld', not
+                    ;; `binutils/ld'.  Thus add an additional symlink.  Also
+                    ;; add links for its dependencies, so it can find BFD
+                    ;; headers & co.
+                    ,@(map (lambda (tool)
+                             `(symlink ,(string-append binutils-name "/" tool)
+                                       ,tool))
+                           '("bfd" "ld"))
+
+                    ;; To reduce the set of pre-built bootstrap inputs, build
+                    ;; GMP & co. from GCC.
+                    (for-each (lambda (source)
+                                (or (zero? (system* "tar" "xvf" source))
+                                    (error "failed to unpack tarball"
+                                           source)))
+                              (list gmp mpfr mpc))
+
+                    ;; Create symlinks like `gmp' -> `gmp-5.0.5'.
+                    ,@(map (lambda (lib)
+                             `(symlink ,(package-full-name lib)
+                                       ,(package-name lib)))
+                           (list gmp mpfr mpc))
+
+                    ;; MPFR headers/lib are found under $(MPFR)/src, but
+                    ;; `configure' wrongfully tells MPC too look under
+                    ;; $(MPFR), so fix that.
+                    (substitute* "configure"
+                      (("extra_mpc_mpfr_configure_flags(.+)--with-mpfr-include=([^/]+)/mpfr(.*)--with-mpfr-lib=([^ ]+)/mpfr"
+                        _ equals include middle lib)
+                       (string-append "extra_mpc_mpfr_configure_flags" equals
+                                      "--with-mpfr-include=" include
+                                      "/mpfr/src" middle
+                                      "--with-mpfr-lib=" lib
+                                      "/mpfr/src"))
+                      (("gmpinc='-I([^ ]+)/mpfr -I([^ ]+)/mpfr" _ a b)
+                       (string-append "gmpinc='-I" a "/mpfr/src "
+                                      "-I" b "/mpfr/src"))
+                      (("gmplibs='-L([^ ]+)/mpfr" _ a)
+                       (string-append "gmplibs='-L" a "/mpfr/src")))))
+                ,phases))))))
+
+    (inputs `(("binutils-source" ,(package-source binutils))
+              ("gmp-source" ,(package-source gmp))
+              ("mpfr-source" ,(package-source mpfr))
+              ("mpc-source" ,(package-source mpc))
+              ,@%bootstrap-inputs))))
 
 (define binutils-boot0
-  ;; Since Binutils in the bootstrap inputs may be too old, build ours here.
+  ;; Since Binutils in GCC-BOOT0 does not get installed, we need another one
+  ;; here.
   (package (inherit binutils)
     (name "binutils-boot0")
     (arguments
@@ -1323,15 +1408,9 @@ with the Linux kernel.")
        ;; Leave /bin/sh as the interpreter for `ldd', `sotruss', etc. to
        ;; avoid keeping a reference to the bootstrap Bash.
        #:patch-shebangs? #f
-       ,@(let loop ((args   (package-arguments glibc))
-                    (before '()))
-           (match args
-             ((#:configure-flags ('list cf ...) after ...)
-              (append (reverse before)
-                      `(#:configure-flags (list "BASH_SHELL=/bin/sh" ,@cf))
-                      after))
-             ((x rest ...)
-              (loop rest (cons x before)))))))
+       ,@(substitute-keyword-arguments (package-arguments glibc)
+           ((#:configure-flags flags)
+            `(cons "BASH_SHELL=/bin/sh" ,flags)))))
     (propagated-inputs `(("linux-headers" ,linux-headers-boot0)))
     (inputs %boot1-inputs)))
 
@@ -1389,8 +1468,10 @@ with the Linux kernel.")
 
 (define-public gcc-final
   ;; The final GCC.
-  (package (inherit gcc-boot0)
+  (package (inherit gcc-4.7)
     (name "gcc")
+    (arguments `(#:implicit-inputs? #f
+                 ,@(package-arguments gcc-4.7)))
     (inputs %boot3-inputs)))
 
 (define %boot4-inputs
