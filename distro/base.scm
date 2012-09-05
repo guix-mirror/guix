@@ -1217,6 +1217,12 @@ call interface, and powerful string processing.")
             (string-append "--with-headers="
                            (assoc-ref %build-inputs "linux-headers")
                            "/include")
+
+            ;; The default is to assume a 2.4 Linux interface, but we'll
+            ;; always use something newer.  See "kernel-features.h" in the
+            ;; GNU libc for details.
+            "--enable-kernel=2.6.30"
+
             ;; To avoid linking with -lgcc_s (dynamic link) so the libc does
             ;; not depend on its compiler store path.
             "libc_cv_as_needed=no"
