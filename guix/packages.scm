@@ -245,6 +245,9 @@ recursively."
                               (list name
                                     (add-to-store store (basename file)
                                                   #t #f "sha256" file)))
+                             (((? string? name) (? origin? source))
+                              (list name
+                                    (package-source-derivation store source)))
                              (x
                               (raise (condition (&package-input-error
                                                  (package package)
