@@ -595,14 +595,14 @@ double-precision floating-point arithmetic (53-bit mantissa).")
 (define-public mpc
   (package
    (name "mpc")
-   (version "0.9")
+   (version "1.0")
    (source (origin
             (method http-fetch)
             (uri (string-append
                   "http://www.multiprecision.org/mpc/download/mpc-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "1b29n3gd9awla1645nmyy8dkhbhs1p0g504y0n94ai8d5x1gwgpx"))))
+                     "00rxjmkpqnv6zzcyw9aa5w6rzaav32ys87km25zgfcv9i32km5cw"))))
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)
              ("mpfr" ,mpfr)))
