@@ -38,8 +38,7 @@
 
 (define* (package-with-explicit-inputs p boot-inputs
                                        #:optional
-                                       (loc (source-properties->location
-                                             (current-source-location))))
+                                       (loc (current-source-location)))
   "Rewrite P, which is assumed to use GNU-BUILD-SYSTEM, to take BOOT-INPUTS
 as explicit inputs instead of the implicit default, and return it."
   (define rewritten-input
@@ -55,7 +54,7 @@ as explicit inputs instead of the implicit default, and return it."
     (fold alist-delete inputs boot-input-names))
 
   (package (inherit p)
-    (location loc)
+    (location (if (pair? loc) (source-properties->location loc) loc))
     (arguments
      (let ((args (package-arguments p)))
        (if (procedure? args)
