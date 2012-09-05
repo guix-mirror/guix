@@ -714,7 +714,13 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                 (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
                         libc out out suffix))
                (("([^ ]*)crt([^\\.])\\.o" _ prefix suffix)
-                (string-append libc "/lib/" prefix "crt" suffix ".o")))))
+                (string-append libc "/lib/" prefix "crt" suffix ".o")))
+
+             ;; Don't retain a dependency on the build-time sed.
+             (substitute* "fixincludes/fixincl.x"
+               (("static char const sed_cmd_z\\[\\] =.*;")
+                "static char const sed_cmd_z[] = \"sed\";"))))
+
          (alist-cons-after
           'configure 'post-configure
           (lambda _
