@@ -98,10 +98,11 @@ SEPARATOR-separated path accordingly.  Example:
                                  '(\"lib/pkgconfig\")
                                  (list package1 package2))
 "
-  (setenv env-var
-          (list->search-path-as-string (search-path-as-list sub-directories
-                                                            input-dirs)
-                                       separator)))
+  (let* ((path  (search-path-as-list sub-directories input-dirs))
+         (value (list->search-path-as-string path separator)))
+   (setenv env-var value)
+   (format #t "environment variable `~a' set to `~a'~%"
+           env-var value)))
 
 
 ;;;
