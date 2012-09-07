@@ -1273,15 +1273,10 @@ with the Linux kernel.")
    `(("libc" ,(nixpkgs-derivation "glibc"))
      ,@(map (lambda (name)
               (list name (nixpkgs-derivation name)))
-
-            ;; TODO: Reduce the bootstrap set.  For instance, GNU Make can be
-            ;; built without a `make' instance; Findutils, bzip2, and xz can
-            ;; be built later.
-            '("gnutar" "gzip" "bzip2" "xz" "diffutils" "patch"
+            '("gnutar" "gzip" "bzip2" "xz" "patch"
               "coreutils" "gnused" "gnugrep" "bash"
-              "findutils"                           ; used by `libtool'
               "gawk"                                ; used by `config.status'
-              "gcc" "binutils" "gnumake")))))
+              "gcc" "binutils")))))
 
 (define-syntax substitute-keyword-arguments
   (syntax-rules ()
@@ -1299,6 +1294,50 @@ previous value of the keyword argument."
           (loop rest (cons x before)))
          (()
           (reverse before)))))))
+
+(define gnu-make-boot0
+  (package (inherit gnu-make)
+    (name "make-boot0")
+    (location (source-properties->location (current-source-location)))
+    (arguments `(#:implicit-inputs? #f
+                 #:tests? #f                      ; cannot run "make check"
+                 #:phases
+                 (alist-replace
+                  'build (lambda _
+                           (zero? (system* "./build.sh")))
+                  (alist-replace
+                   'install (lambda* (#:key outputs #:allow-other-keys)
+                              (let* ((out (assoc-ref outputs "out"))
+                                     (bin (string-append out "/bin")))
+                                (mkdir out)
+                                (mkdir bin)
+                                (copy-file "make"
+                                           (string-append bin "/make"))))
+                   %standard-phases))))
+    (inputs %bootstrap-inputs)))
+
+(define diffutils-boot0
+  (let ((p (package-with-explicit-inputs diffutils
+                                         `(("make" ,gnu-make-boot0)
+                                           ,@%bootstrap-inputs))))
+    (package (inherit p)
+      (location (source-properties->location (current-source-location)))
+      (arguments `(#:tests? #f               ; the test suite needs diffutils
+                   ,@(package-arguments p))))))
+
+(define findutils-boot0
+  (package-with-explicit-inputs findutils
+                                `(("make" ,gnu-make-boot0)
+                                  ("diffutils" ,diffutils-boot0) ; for tests
+                                  ,@%bootstrap-inputs)
+                                (current-source-location)))
+
+
+(define %boot0-inputs
+  `(("make" ,gnu-make-boot0)
+    ("diffutils" ,diffutils-boot0)
+    ("findutils" ,findutils-boot0)
+    ,@%bootstrap-inputs))
 
 (define gcc-boot0
   (package (inherit gcc-4.7)
@@ -1370,7 +1409,7 @@ previous value of the keyword argument."
               ("gmp-source" ,(package-source gmp))
               ("mpfr-source" ,(package-source mpfr))
               ("mpc-source" ,(package-source mpc))
-              ,@%bootstrap-inputs))))
+              ,@%boot0-inputs))))
 
 (define binutils-boot0
   ;; Since Binutils in GCC-BOOT0 does not get installed, we need another one
@@ -1381,20 +1420,20 @@ previous value of the keyword argument."
      `(#:implicit-inputs? #f
        ,@(package-arguments binutils)))
     (inputs `(("gcc" ,gcc-boot0)
-              ,@(alist-delete "gcc" %bootstrap-inputs)))))
+              ,@(alist-delete "gcc" %boot0-inputs)))))
 
 (define linux-headers-boot0
   (package (inherit linux-headers)
     (arguments `(#:implicit-inputs? #f
                  ,@(package-arguments linux-headers)))
     (native-inputs `(("perl" ,(nixpkgs-derivation* "perl"))
-                     ,@%bootstrap-inputs))))
+                     ,@%boot0-inputs))))
 
 (define %boot1-inputs
   ;; 2nd stage inputs.
   `(("gcc" ,gcc-boot0)
     ("binutils" ,binutils-boot0)
-    ,@(fold alist-delete %bootstrap-inputs
+    ,@(fold alist-delete %boot0-inputs
             '("gcc" "binutils"))))
 
 (define-public glibc-final
@@ -1483,8 +1522,7 @@ previous value of the keyword argument."
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by `gnu-build-system'.
   (let ((finalize (cut package-with-explicit-inputs <> %boot4-inputs
-                       (source-properties->location
-                        (current-source-location)))))
+                       (current-source-location))))
     `(,@(map (match-lambda
               ((name package)
                (list name (finalize package))))
