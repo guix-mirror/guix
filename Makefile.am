@@ -23,6 +23,7 @@ MODULES =					\
   guix/derivations.scm				\
   guix/build-system.scm				\
   guix/build-system/gnu.scm			\
+  guix/build-system/trivial.scm			\
   guix/http.scm					\
   guix/store.scm				\
   guix/build/gnu-build-system.scm		\

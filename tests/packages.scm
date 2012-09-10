@@ -22,6 +22,7 @@
   #:use-module (guix utils)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (distro)
   #:use-module (distro base)
@@ -62,7 +63,24 @@
                    ("d" ,d) ("d/x" "something.drv"))
                  (pk 'x (package-transitive-inputs e))))))
 
-(test-skip (if (not %store) 1 0))
+(test-skip (if (not %store) 2 0))
+
+(test-assert "trivial"
+  (let* ((p (package (inherit (dummy-package "trivial"))
+              (build-system trivial-build-system)
+              (source #f)
+              (arguments
+               '(#:builder
+                 (begin
+                   (mkdir %output)
+                   (call-with-output-file (string-append %output "/test")
+                     (lambda (p)
+                       (display '(hello guix) p))))))))
+         (d (package-derivation %store p)))
+    (and (build-derivations %store (list d))
+         (let ((p (pk 'drv d (derivation-path->output-path d))))
+           (equal? '(hello guix)
+                   (call-with-input-file (string-append p "/test") read))))))
 
 (test-assert "GNU Hello"
   (and (package? hello)

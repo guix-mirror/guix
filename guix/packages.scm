@@ -261,7 +261,7 @@ recursively."
            (cache package system
                   (apply builder
                          store (package-full-name package)
-                         (package-source-derivation store source)
+                         (and source (package-source-derivation store source))
                          inputs
                          #:outputs outputs #:system system
                          (if (procedure? args)
