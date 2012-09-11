@@ -1529,8 +1529,12 @@ identifier SYSTEM."
   (package (inherit linux-headers)
     (arguments `(#:implicit-inputs? #f
                  ,@(package-arguments linux-headers)))
-    (native-inputs `(("perl" ,(nixpkgs-derivation* "perl"))
-                     ,@%boot0-inputs))))
+    (native-inputs
+     (let ((perl (package-with-explicit-inputs perl
+                                               %boot0-inputs
+                                               (current-source-location))))
+       `(("perl" ,perl)
+         ,@%boot0-inputs)))))
 
 (define %boot1-inputs
   ;; 2nd stage inputs.
