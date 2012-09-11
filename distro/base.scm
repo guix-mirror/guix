@@ -185,6 +185,56 @@ files (as archives).")
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/tar/")))
 
+(define-public perl
+  ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
+  (package
+    (name "perl")
+    (version "5.16.1")
+    (source (origin
+             (method http-fetch)
+             (uri (string-append "http://www.cpan.org/src/5.0/perl-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "15qxzba3a50c9nik5ydgyfp62x7h9vxxn12yd1jgl93hb1wj96km"))))
+    (build-system gnu-build-system)
+    (arguments
+     (lambda (system)
+       `(#:tests? #f
+         #:patches (list (assoc-ref %build-inputs "patch/no-sys-dirs"))
+         #:phases
+         (alist-replace
+          'configure
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out  (assoc-ref outputs "out"))
+                  (libc (assoc-ref inputs "libc"))
+                  (pwd  (search-path (search-path-as-string->list
+                                      (getenv "PATH"))
+                                     "pwd")))
+              ;; Use the right path for `pwd'.
+              (substitute* "dist/Cwd/Cwd.pm"
+                (("/bin/pwd") pwd))
+
+              (zero?
+               (system* "/bin/sh" "./Configure"
+                        (string-append "-Dprefix=" out)
+                        (string-append "-Dman1dir=" out "/share/man/man1")
+                        (string-append "-Dman3dir=" out "/share/man/man3")
+                        "-de" "-Dcc=gcc"
+                        "-Uinstallusrbinperl"
+                        "-Dinstallstyle=lib/perl5"
+                        "-Duseshrplib"
+                        (string-append "-Dlocincpth=" libc "/include")
+                        (string-append "-Dloclibpth=" libc "/lib")))))
+          %standard-phases))))
+    (inputs `(("patch/no-sys-dirs" ,(search-patch "perl-no-sys-dirs.patch"))))
+    (description "Implementation of the Perl programming language")
+    (long-description
+     "Perl 5 is a highly capable, feature-rich programming language with over
+24 years of development.")
+    (home-page "http://www.perl.org/")
+    (license "GPLv1+")))                          ; or "Artistic"
+
 (define-public gzip
   (package
    (name "gzip")
@@ -946,7 +996,7 @@ modification.")
               "0649qfpzkswgcj9vqkkr9rn4nlcx80faxpyqscy2k1x9c94f93dk"))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)
-                    ("perl" ,(nixpkgs-derivation* "perl"))))
+                    ("perl" ,perl)))
    (description "GNU Libtool, a generic library support script")
    (long-description
     "GNU libtool is a generic library support script.  Libtool hides the
@@ -1191,7 +1241,7 @@ call interface, and powerful string processing.")
               (base32
                "0i74jn47f6vs5kcvk8abvz3k08z32c9bbqw0sdjkdxwvr4jbczpv"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,(nixpkgs-derivation* "perl"))))
+    (native-inputs `(("perl" ,perl)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
