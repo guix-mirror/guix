@@ -21,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix http)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -647,6 +648,12 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/binutils/")))
 
+(define (glibc-dynamic-linker system)
+  "Return the name of Glibc's dynamic linker for SYSTEM."
+  (if (string=? system "x86_64-linux")
+      "ld-linux-x86-64.so.2"
+      (error "dynamic linker name not known for this system" system)))
+
 (define-public gcc-4.7
   (let ((stripped? #t))                         ; TODO: make this a parameter
     (package
@@ -671,25 +678,22 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
         `("--enable-plugin"
           "--enable-languages=c,c++"
           "--disable-multilib"
-          ,(string-append "--with-native-system-header-dir="
-                          (assoc-ref %build-inputs "libc")
-                          "/include"))
+          ,(let ((libc (assoc-ref %build-inputs "libc")))
+             (if libc
+                 (string-append "--with-native-system-header-dir=" libc
+                                "/include")
+                 "--without-headers")))
         #:make-flags
         (let ((libc (assoc-ref %build-inputs "libc")))
-          `(,(string-append "LDFLAGS_FOR_BUILD="
-                            "-L" libc "/lib "
-                            "-Wl,-dynamic-linker "
-                            "-Wl," libc "/lib/ld-linux-x86-64.so.2")
+          `(,@(if libc
+                  (list (string-append "LDFLAGS_FOR_BUILD="
+                                       "-L" libc "/lib "
+                                       "-Wl,-dynamic-linker "
+                                       "-Wl," libc
+                                       "/lib/ld-linux-x86-64.so.2"))
+                  '())
             ,(string-append "BOOT_CFLAGS=-O2 "
                             ,(if stripped? "-g0" "-g"))))
-
-        ;; Exclude libc from $LIBRARY_PATH since the compiler being used
-        ;; should know where its libc is, and to avoid linking build tools
-        ;; like `genhooks' against the wrong libc (for instance, when
-        ;; building a gcc-for-glibc-2.16 with a gcc-for-glibc-2.13,
-        ;; `genhooks' could end up being linked with glibc-2.16 but using
-        ;; crt*.o from glibc-2.13.)
-        #:path-exclusions '(("LIBRARY_PATH" "libc"))
 
         #:tests? #f
         #:phases
@@ -698,23 +702,29 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
          (lambda* (#:key inputs outputs #:allow-other-keys)
            (let ((out  (assoc-ref outputs "out"))
                  (libc (assoc-ref inputs "libc")))
-             ;; Fix the dynamic linker's file name.
-             (substitute* "gcc/config/i386/linux64.h"
-               (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
-                (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
-                        suffix
-                        (string-append libc "/lib/ld-linux-x86-64.so.2"))))
+             (when libc
+               ;; The following is not performed for `--without-headers'
+               ;; cross-compiler builds.
 
-             ;; Tell where to find libstdc++, libc, and `?crt*.o', except
-             ;; `crt{begin,end}.o', which come with GCC.
-             (substitute* ("gcc/config/gnu-user.h"
-                           "gcc/config/i386/gnu-user.h"
-                           "gcc/config/i386/gnu-user64.h")
-               (("#define LIB_SPEC (.*)$" _ suffix)
-                (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
-                        libc out out suffix))
-               (("([^ ]*)crt([^\\.])\\.o" _ prefix suffix)
-                (string-append libc "/lib/" prefix "crt" suffix ".o")))
+               ;; Fix the dynamic linker's file name.
+               (substitute* "gcc/config/i386/linux64.h"
+                 (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
+                  (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
+                          suffix
+                          (string-append libc "/lib/ld-linux-x86-64.so.2"))))
+
+               ;; Tell where to find libstdc++, libc, and `?crt*.o', except
+               ;; `crt{begin,end}.o', which come with GCC.
+               ;; XXX: For crt*.o, use `STANDARD_STARTFILE_PREFIX' instead?  See
+               ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/gcc-pass1.html>.
+               (substitute* ("gcc/config/gnu-user.h"
+                             "gcc/config/i386/gnu-user.h"
+                             "gcc/config/i386/gnu-user64.h")
+                 (("#define LIB_SPEC (.*)$" _ suffix)
+                  (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
+                          libc out out suffix))
+                 (("([^ ]*)crt([^\\.])\\.o" _ prefix suffix)
+                  (string-append libc "/lib/" prefix "crt" suffix ".o"))))
 
              ;; Don't retain a dependency on the build-time sed.
              (substitute* "fixincludes/fixincl.x"
@@ -1229,10 +1239,6 @@ call interface, and powerful string processing.")
             ;; GNU libc for details.
             "--enable-kernel=2.6.30"
 
-            ;; To avoid linking with -lgcc_s (dynamic link) so the libc does
-            ;; not depend on its compiler store path.
-            "libc_cv_as_needed=no"
-
             ;; XXX: Work around "undefined reference to `__stack_chk_guard'".
             "libc_cv_ssp=no")
       #:tests? #f                                 ; XXX
@@ -1250,7 +1256,14 @@ call interface, and powerful string processing.")
                       (("^\\$\\(inst_sysconfdir\\)/rpc(.*)$" _ suffix)
                        (string-append out "/etc/rpc" suffix "\n"))
                       (("^install-others =.*$")
-                       (string-append "install-others = " out "/etc/rpc\n")))))
+                       (string-append "install-others = " out "/etc/rpc\n")))
+
+                    (substitute* "Makeconfig"
+                      ;; According to
+                      ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/glibc.html>,
+                      ;; linking against libgcc_s is not needed with GCC
+                      ;; 4.7.1.
+                      ((" -lgcc_s") ""))))
                 %standard-phases)))
    (description "The GNU C Library")
    (long-description
@@ -1339,39 +1352,75 @@ previous value of the keyword argument."
     ("findutils" ,findutils-boot0)
     ,@%bootstrap-inputs))
 
+(define* (nix-system->gnu-triplet system #:optional (vendor "unknown"))
+  "Return an a guess of the GNU triplet corresponding to Nix system
+identifier SYSTEM."
+  (let* ((dash (string-index system #\-))
+         (arch (substring system 0 dash))
+         (os   (substring system (+ 1 dash))))
+    (string-append arch
+                   "-" vendor "-"
+                   (if (string=? os "linux")
+                       "linux-gnu"
+                       os))))
+
+(define boot-triplet
+  ;; Return the triplet used to create the cross toolchain needed in the
+  ;; first bootstrapping stage.
+  (cut nix-system->gnu-triplet <> "guix"))
+
+;; Following Linux From Scratch, build a cross-toolchain in stage 0.  That
+;; toolchain actually targets the same OS and arch, but it has the advantage
+;; of being independent of the libc and tools in %BOOTSTRAP-INPUTS, since
+;; GCC-BOOT0 (below) is built without any reference to the target libc.
+
+(define binutils-boot0
+  (package (inherit binutils)
+    (name "binutils-cross-boot0")
+    (arguments
+     (lambda (system)
+       `(#:implicit-inputs? #f
+         ,@(substitute-keyword-arguments (package-arguments binutils)
+             ((#:configure-flags cf)
+              `(list ,(string-append "--target=" (boot-triplet system))))))))
+    (inputs %boot0-inputs)))
+
 (define gcc-boot0
   (package (inherit gcc-4.7)
-    (name "gcc-boot0")
+    (name "gcc-cross-boot0")
     (arguments
-     `(#:implicit-inputs? #f
+     (lambda (system)
+       `(#:implicit-inputs? #f
+         #:modules ((guix build gnu-build-system)
+                    (guix build utils)
+                    (ice-9 regex)
+                    (srfi srfi-1)
+                    (srfi srfi-26))
+         ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
+             ((#:configure-flags flags)
+              `(append (list ,(string-append "--target="
+                                             (boot-triplet system))
 
-       ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
-           ((#:phases phases)
-            (let ((binutils-name (package-full-name binutils)))
+                             ;; No libc yet.
+                             "--without-headers"
+
+                             ;; Disable features not needed at this stage.
+                             "--disable-shared"
+                             "--enable-languages=c"
+                             "--disable-libmudflap"
+                             "--disable-libgomp"
+                             "--disable-libssp"
+                             "--disable-libquadmath"
+                             "--disable-decimal-float")
+                       (remove (cut string-match "--enable-languages.*" <>)
+                               ,flags)))
+             ((#:phases phases)
               `(alist-cons-after
-                'unpack 'unpack-binutils&co
+                'unpack 'unpack-gmp&co
                 (lambda* (#:key inputs #:allow-other-keys)
-                  (let ((binutils (assoc-ref %build-inputs "binutils-source"))
-                        (gmp      (assoc-ref %build-inputs "gmp-source"))
-                        (mpfr     (assoc-ref %build-inputs "mpfr-source"))
-                        (mpc      (assoc-ref %build-inputs "mpc-source")))
-
-                    ;; We want to make sure feature tests like the
-                    ;; `.init_array' one really look at the linker we're
-                    ;; targeting (especially since our target Glibc requires
-                    ;; these features.)  Thus, make a joint GCC/Binutils
-                    ;; build.
-                    (or (zero? (system* "tar" "xvf" binutils))
-                        (error "failed to unpack tarball" binutils))
-
-                    ;; By default, `configure' looks for `ld' under `ld', not
-                    ;; `binutils/ld'.  Thus add an additional symlink.  Also
-                    ;; add links for its dependencies, so it can find BFD
-                    ;; headers & co.
-                    ,@(map (lambda (tool)
-                             `(symlink ,(string-append binutils-name "/" tool)
-                                       ,tool))
-                           '("bfd" "ld"))
+                  (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
+                        (mpfr (assoc-ref %build-inputs "mpfr-source"))
+                        (mpc  (assoc-ref %build-inputs "mpc-source")))
 
                     ;; To reduce the set of pre-built bootstrap inputs, build
                     ;; GMP & co. from GCC.
@@ -1403,24 +1452,28 @@ previous value of the keyword argument."
                                       "-I" b "/mpfr/src"))
                       (("gmplibs='-L([^ ]+)/mpfr" _ a)
                        (string-append "gmplibs='-L" a "/mpfr/src")))))
-                ,phases))))))
+                (alist-cons-after
+                 'install 'symlink-libgcc_eh
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     ;; Glibc wants to link against libgcc_eh, so provide
+                     ;; it.
+                     (with-directory-excursion
+                         (string-append out "/lib/gcc/"
+                                        ,(boot-triplet system)
+                                        "/" ,(package-version gcc-4.7))
+                       (symlink "libgcc.a" "libgcc_eh.a"))))
+                 ,phases)))))))
 
-    (inputs `(("binutils-source" ,(package-source binutils))
-              ("gmp-source" ,(package-source gmp))
+    (inputs `(("gmp-source" ,(package-source gmp))
               ("mpfr-source" ,(package-source mpfr))
               ("mpc-source" ,(package-source mpc))
-              ,@%boot0-inputs))))
+              ("binutils-cross" ,binutils-boot0)
 
-(define binutils-boot0
-  ;; Since Binutils in GCC-BOOT0 does not get installed, we need another one
-  ;; here.
-  (package (inherit binutils)
-    (name "binutils-boot0")
-    (arguments
-     `(#:implicit-inputs? #f
-       ,@(package-arguments binutils)))
-    (inputs `(("gcc" ,gcc-boot0)
-              ,@(alist-delete "gcc" %boot0-inputs)))))
+              ;; Call it differently so that the builder can check whether
+              ;; the "libc" input is #f.
+              ("libc-native" ,@(assoc-ref %boot0-inputs "libc"))
+              ,@(alist-delete "libc" %boot0-inputs)))))
 
 (define linux-headers-boot0
   (package (inherit linux-headers)
@@ -1432,96 +1485,135 @@ previous value of the keyword argument."
 (define %boot1-inputs
   ;; 2nd stage inputs.
   `(("gcc" ,gcc-boot0)
-    ("binutils" ,binutils-boot0)
-    ,@(fold alist-delete %boot0-inputs
-            '("gcc" "binutils"))))
+    ("binutils-cross" ,binutils-boot0)
+
+    ;; Keep "binutils" here because the cross-gcc invokes `as', not the
+    ;; cross-`as'.
+    ,@%boot0-inputs))
 
 (define-public glibc-final
-  ;; The final libc.
-  ;; FIXME: It depends on GCC-BOOT0, which depends on some of
-  ;; %BOOTSTRAP-INPUTS.
+  ;; The final libc, "cross-built".  If everything went well, the resulting
+  ;; store path has no dependencies.
   (package (inherit glibc)
     (arguments
-     `(#:implicit-inputs? #f
+     (lambda (system)
+      `(#:implicit-inputs? #f
 
-       ;; Leave /bin/sh as the interpreter for `ldd', `sotruss', etc. to
-       ;; avoid keeping a reference to the bootstrap Bash.
-       #:patch-shebangs? #f
-       ,@(substitute-keyword-arguments (package-arguments glibc)
-           ((#:configure-flags flags)
-            `(cons "BASH_SHELL=/bin/sh" ,flags)))))
+        ;; Leave /bin/sh as the interpreter for `ldd', `sotruss', etc. to
+        ;; avoid keeping a reference to the bootstrap Bash.
+        #:patch-shebangs? #f
+        ,@(substitute-keyword-arguments (package-arguments glibc)
+            ((#:configure-flags flags)
+             `(append (list ,(string-append "--host=" (boot-triplet system))
+                            ,(string-append "--build="
+                                            (nix-system->gnu-triplet system))
+                            "BASH_SHELL=/bin/sh"
+
+                            ;; cross-rpcgen fails to build, because it gets
+                            ;; built with the cross-compiler instead of the
+                            ;; native compiler.  See also
+                            ;; <http://sourceware.org/ml/libc-alpha/2012-03/msg00325.html>.
+                            "--disable-obsolete-rpc")
+                     ,flags))))))
     (propagated-inputs `(("linux-headers" ,linux-headers-boot0)))
-    (inputs %boot1-inputs)))
+    (inputs `(;; A native GCC is needed to build `cross-rpcgen'.
+              ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))
+              ,@%boot1-inputs))))
+
+(define gcc-boot0-wrapped
+  ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
+  ;; non-cross names.
+  (package (inherit gcc-4.7)
+    (name (string-append (package-name gcc-boot0) "-wrapped"))
+    (build-system trivial-build-system)
+    (arguments
+     (lambda (system)
+      `(#:modules ((guix build utils))
+        #:builder (begin
+                    (use-modules (guix build utils))
+
+                    (let* ((binutils (assoc-ref %build-inputs "binutils"))
+                           (gcc      (assoc-ref %build-inputs "gcc"))
+                           (libc     (assoc-ref %build-inputs "libc"))
+                           (out      (assoc-ref %outputs "out"))
+                           (bindir   (string-append out "/bin"))
+                           (triplet  ,(boot-triplet system)))
+                      (mkdir out) (mkdir bindir)
+                      (with-directory-excursion bindir
+                        (for-each (lambda (tool)
+                                    (symlink (string-append binutils "/bin/"
+                                                            triplet "-" tool)
+                                             tool))
+                                  '("ar" "ranlib"))
+
+                        ;; GCC-BOOT0 is a libc-less cross-compiler, so it
+                        ;; needs to be told where to find the crt files and
+                        ;; the dynamic linker.
+                        (call-with-output-file "gcc"
+                          (lambda (p)
+                            (format p "#!/bin/sh
+exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/lib/~a \"$@\"~%"
+                                    gcc triplet
+                                    libc libc
+                                    ,(glibc-dynamic-linker system))))
+
+                        (chmod "gcc" #o555)))))))
+    (native-inputs
+     `(("binutils" ,binutils-boot0)
+       ("gcc" ,gcc-boot0)
+       ("libc" ,glibc-final)))
+    (inputs '())))
 
 (define %boot2-inputs
   ;; 3rd stage inputs.
   `(("libc" ,glibc-final)
-    ,@(alist-delete "libc" %bootstrap-inputs)))
+    ("gcc" ,gcc-boot0-wrapped)
+    ,@(fold alist-delete %boot1-inputs '("libc" "gcc"))))
 
-(define m4-boot2
-  (package (inherit m4)
-    (name "m4-boot2")
-    (arguments (lambda (system)
-                 `(#:implicit-inputs? #f
-                   ,@((package-arguments m4) system))))
-    (inputs `(,@(package-inputs m4)
-              ,@%boot2-inputs))))
-
-(define gmp-boot2
-  (package (inherit gmp)
-    (name "gmp-boot2")
+(define binutils-final
+  (package (inherit binutils)
     (arguments
-     `(#:implicit-inputs? #f
-       ,@(package-arguments gmp)))
-    (native-inputs `(("m4" ,m4-boot2)
-                     ,@%boot2-inputs))))
+     (lambda (system)
+       `(#:implicit-inputs? #f
+         ,@(package-arguments binutils))))
+    (inputs %boot2-inputs)))
 
-(define mpfr-boot2
-  (package (inherit mpfr)
-    (name "mpfr-boot2")
+(define-public gcc-final
+  ;; The final GCC.
+  (package (inherit gcc-boot0)
+    (name "gcc")
     (arguments
-     `(#:implicit-inputs? #f
-       ,@(package-arguments mpfr)))
-    (inputs `(("gmp" ,gmp-boot2)
-              ,@%boot2-inputs))))
+     (lambda (system)
+       `(#:implicit-inputs? #f
 
-(define mpc-boot2
-  (package (inherit mpc)
-    (name "mpc-boot2")
-    (arguments
-     `(#:implicit-inputs? #f
-       ,@(package-arguments mpc)))
-    (inputs `(("gmp" ,gmp-boot2)
-              ("mpfr" ,mpfr-boot2)
+         ;; Build again GMP & co. within GCC's build process, because it's hard
+         ;; to do outside (because GCC-BOOT0 is a cross-compiler, and thus
+         ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
+         ,@(substitute-keyword-arguments ((package-arguments gcc-boot0) system)
+             ((#:configure-flags boot-flags)
+              (let loop ((args (package-arguments gcc-4.7)))
+                (match args
+                  ((#:configure-flags normal-flags _ ...)
+                   normal-flags)
+                  ((_ rest ...)
+                   (loop rest)))))
+             ((#:phases phases)
+              `(alist-delete 'symlink-libgcc_eh ,phases))))))
+
+    (inputs `(("gmp-source" ,(package-source gmp))
+              ("mpfr-source" ,(package-source mpfr))
+              ("mpc-source" ,(package-source mpc))
+              ("binutils" ,binutils-final)
               ,@%boot2-inputs))))
 
 (define %boot3-inputs
   ;; 4th stage inputs.
-  `(("libc" ,glibc-final)
-    ("gmp" ,gmp-boot2)
-    ("mpfr" ,mpfr-boot2)
-    ("mpc" ,mpc-boot2)
-    ,@(fold alist-delete
-            %boot2-inputs
-            '("libc" "gmp" "mpfr" "mpc"))))
-
-(define-public gcc-final
-  ;; The final GCC.
-  (package (inherit gcc-4.7)
-    (name "gcc")
-    (arguments `(#:implicit-inputs? #f
-                 ,@(package-arguments gcc-4.7)))
-    (inputs %boot3-inputs)))
-
-(define %boot4-inputs
-  ;; 5th stage inputs.
   `(("gcc" ,gcc-final)
-    ,@(fold alist-delete %boot3-inputs
-            '("gcc" "gmp" "mpfr" "mpc"))))
+    ,@(alist-delete "gcc" %boot2-inputs)))
 
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by `gnu-build-system'.
-  (let ((finalize (cut package-with-explicit-inputs <> %boot4-inputs
+  (let ((finalize (cut package-with-explicit-inputs <> %boot3-inputs
                        (current-source-location))))
     `(,@(map (match-lambda
               ((name package)
@@ -1538,10 +1630,10 @@ previous value of the keyword argument."
                ("bash" ,bash)
                ("findutils" ,findutils)
                ("gawk" ,gawk)
-               ("make" ,gnu-make)
-               ("binutils" ,binutils)))
+               ("make" ,gnu-make)))
+      ("binutils" ,binutils-final)
       ("gcc" ,gcc-final)
-      ("glibc" ,glibc-final))))
+      ("libc" ,glibc-final))))
 
 
 ;;;
@@ -1702,4 +1794,5 @@ beginning.")
 ;;; eval: (put 'substitute* 'scheme-indent-function 1)
 ;;; eval: (put 'with-directory-excursion 'scheme-indent-function 1)
 ;;; eval: (put 'package 'scheme-indent-function 1)
+;;; eval: (put 'substitute-keyword-arguments 'scheme-indent-function 1)
 ;;; End:
