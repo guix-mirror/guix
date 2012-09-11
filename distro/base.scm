@@ -717,8 +717,7 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                (base32
                 "0vs0v89zzgkngkw2p8kdynyk7j8ky4wf6zyrg3rsschpl1pky28n"))))
      (build-system gnu-build-system)
-     (inputs `(("libc" ,(nixpkgs-derivation* "glibc"))
-               ("gmp" ,gmp)
+     (inputs `(("gmp" ,gmp)
                ("mpfr" ,mpfr)
                ("mpc" ,mpc)))           ; TODO: libelf, ppl, cloog, zlib, etc.
      (arguments
@@ -771,8 +770,9 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                              "gcc/config/i386/gnu-user.h"
                              "gcc/config/i386/gnu-user64.h")
                  (("#define LIB_SPEC (.*)$" _ suffix)
-                  (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
-                          libc out out suffix))
+                  (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib \
+-rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
+                          libc libc out out suffix))
                  (("([^ ]*)crt([^\\.])\\.o" _ prefix suffix)
                   (string-append libc "/lib/" prefix "crt" suffix ".o"))))
 
