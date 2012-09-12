@@ -19,6 +19,7 @@
 (define-module (distro base)
   #:use-module (distro)
   #:use-module (guix packages)
+  #:use-module (guix ftp)
   #:use-module (guix http)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -1138,9 +1139,9 @@ extensible.  It supports many SRFIs.")
     (name "libffi")
     (version "3.0.9")
     (source (origin
-             (method http-fetch)
-             (uri ;; FIXME: should be ftp://
-              (string-append "http://sourceware.org/pub/libffi/"
+             (method ftp-fetch)
+             (uri
+              (string-append "ftp://sourceware.org/pub/libffi/"
                              name "-" version ".tar.gz"))
              (sha256
               (base32
