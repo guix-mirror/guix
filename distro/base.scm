@@ -765,6 +765,18 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 
                ;; Tell where to find libstdc++, libc, and `?crt*.o', except
                ;; `crt{begin,end}.o', which come with GCC.
+               ;;
+               ;; The `%{L*:-rpath %*}' rule adds a `-rpath LIBDIR' argument
+               ;; for each occurrence of `-L LIBDIR'.  We could avoid
+               ;; `-rpath' altogether and instead use the `LD_RUN_PATH'
+               ;; environment variable, but that would tend to include more
+               ;; than needed in the RPATH; for instance, given a package
+               ;; with `libfoo' as an input, all its binaries would have
+               ;; libfoo in their RPATH, regardless of whether they actually
+               ;; NEED it.  See
+               ;; <http://gcc.gnu.org/ml/gcc-help/2012-09/msg00110.html> for
+               ;; details.
+
                ;; XXX: For crt*.o, use `STANDARD_STARTFILE_PREFIX' instead?  See
                ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/gcc-pass1.html>.
                (substitute* ("gcc/config/gnu-user.h"
@@ -772,7 +784,7 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                              "gcc/config/i386/gnu-user64.h")
                  (("#define LIB_SPEC (.*)$" _ suffix)
                   (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib \
--rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
+-rpath=~a/lib64 -rpath=~a/lib %{L*:-rpath %*}\" ~a~%"
                           libc libc out out suffix))
                  (("([^ ]*)crt([^\\.])\\.o" _ prefix suffix)
                   (string-append libc "/lib/" prefix "crt" suffix ".o"))))
@@ -998,6 +1010,11 @@ modification.")
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)
                     ("perl" ,perl)))
+   (arguments
+    ;; TODO: Use `TESTSUITEFLAGS=-jN' for tests.
+    `(#:patches (list (assoc-ref %build-inputs "patch/skip-tests"))))
+   (inputs `(("patch/skip-tests"
+              ,(search-patch "libtool-skip-tests.patch"))))
    (description "GNU Libtool, a generic library support script")
    (long-description
     "GNU libtool is a generic library support script.  Libtool hides the
@@ -1668,6 +1685,8 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/lib/~a \"$@\"~%"
 
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by `gnu-build-system'.
+  ;; FIXME: Build bash before the others, otherwise patch-shebangs uses it in
+  ;; bzip2, for instance.
   (let ((finalize (cut package-with-explicit-inputs <> %boot3-inputs
                        (current-source-location))))
     `(,@(map (match-lambda

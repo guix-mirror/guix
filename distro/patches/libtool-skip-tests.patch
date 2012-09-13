@@ -1,0 +1,37 @@
+Because our GCC `lib' spec automatically adds `-rpath' for each `-L'
+and a couple more `-rpath, there are two test failures:
+demo-hardcode.test, and destdir.at.  Disable these.
+
+--- libtool-2.4.2/Makefile.in	2011-10-17 12:18:55.000000000 +0200
++++ libtool-2.4.2/Makefile.in	2012-09-13 23:50:37.000000000 +0200
+@@ -909,7 +908,7 @@ COMMON_TESTS = \
+ # but they depend on the other tests being run beforehand.
+ INTERACTIVE_TESTS = tests/demo-shared.test tests/demo-shared-make.test \
+ 	tests/demo-shared-exec.test tests/demo-shared-inst.test \
+-	tests/demo-hardcode.test tests/demo-relink.test \
++	tests/demo-relink.test \
+ 	tests/demo-noinst-link.test tests/demo-shared-unst.test \
+ 	tests/depdemo-shared.test tests/depdemo-shared-make.test \
+ 	tests/depdemo-shared-exec.test tests/depdemo-shared-inst.test \
+@@ -2580,8 +2579,7 @@ tests/cdemo-static-make.log:	tests/cdemo
+ 
+ tests/demo-shared-unst.log:	tests/demo-noinst-link.log
+ tests/demo-noinst-link.log:	tests/demo-relink.log
+-tests/demo-relink.log:		tests/demo-hardcode.log
+-tests/demo-hardcode.log:	tests/demo-shared-inst.log
++tests/demo-relink.log:		tests/demo-shared-inst.log
+ tests/demo-shared-inst.log:	tests/demo-shared-exec.log
+ tests/demo-shared-exec.log:	tests/demo-shared-make.log
+ tests/demo-shared-make.log:	tests/demo-shared.log
+
+--- libtool-2.4.2/tests/testsuite	2011-10-17 12:19:52.000000000 +0200
++++ libtool-2.4.2/tests/testsuite	2012-09-14 00:28:45.000000000 +0200
+@@ -14443,6 +14443,6 @@ read at_status <"$at_status_file"
+ #AT_START_69
+ at_fn_group_banner 69 'destdir.at:75' \
+   "DESTDIR with in-package deplibs" "                " 4
+-at_xfail=no
++at_xfail=yes
+       eval `$LIBTOOL --config | grep '^fast_install='`
+            case $fast_install in no) :;; *) false;; esac && at_xfail=yes
+
