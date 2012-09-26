@@ -7,7 +7,7 @@
 # Use `load-compiled' because `load' (and `-l') doesn't otherwise load our
 # .go file (see <http://bugs.gnu.org/12519>).
 
-main="(@ (distro ld-wrapper) ld-wrapper)"
+main="(@ (distro packages ld-wrapper) ld-wrapper)"
 exec @GUILE@ -c "(load-compiled \"$0.go\") (apply $main (cdr (command-line)))" "$@"
 !#
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
@@ -28,7 +28,7 @@ exec @GUILE@ -c "(load-compiled \"$0.go\") (apply $main (cdr (command-line)))" "
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (distro ld-wrapper)
+(define-module (distro packages ld-wrapper)
   #:use-module (srfi srfi-1)
   #:export (ld-wrapper))
 

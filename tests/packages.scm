@@ -25,7 +25,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (distro)
-  #:use-module (distro base)
+  #:use-module (distro packages base)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))

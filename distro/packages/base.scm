@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (distro base)
+(define-module (distro packages base)
   #:use-module (distro)
   #:use-module (guix packages)
   #:use-module (guix ftp)
@@ -1676,7 +1676,8 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/lib/~a \"$@\"~%"
     (build-system trivial-build-system)
     (inputs `(("binutils" ,binutils-final)
               ("guile"   ,(nixpkgs-derivation* "guile"))
-              ("wrapper" ,(search-path %load-path "distro/ld-wrapper.scm"))))
+              ("wrapper" ,(search-path %load-path
+                                       "distro/packages/ld-wrapper.scm"))))
     (arguments
      `(#:modules ((guix build utils))
        #:builder (begin

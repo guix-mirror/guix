@@ -87,8 +87,8 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
            (z
             (error "invalid standard input" z)))
 
-          ;; Resolve (distro base) lazily to hide circular dependency.
-          (let* ((distro (resolve-module '(distro base)))
+          ;; Resolve (distro packages base) lazily to hide circular dependency.
+          (let* ((distro (resolve-module '(distro packages base)))
                  (inputs (module-ref distro '%final-inputs)))
             (append inputs
                     (append-map (match-lambda

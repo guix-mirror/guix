@@ -48,7 +48,7 @@
 (define %distro-module-directory
   ;; Absolute path of the (distro ...) module root.
   (string-append (dirname (search-path %load-path "distro.scm"))
-                 "/distro"))
+                 "/distro/packages"))
 
 (define (package-files)
   "Return the list of files that implement distro modules."
