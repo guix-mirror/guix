@@ -1147,6 +1147,33 @@ conversions for values passed between the two languages.")
     ;; See <http://github.com/atgreen/libffi/blob/master/LICENSE>.
     (license "free, non-copyleft"))))
 
+(define-public pkg-config
+  (package
+   (name "pkg-config")
+   (version "0.27.1")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append
+                  "http://pkgconfig.freedesktop.org/releases/pkg-config-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "05wc5nwkqz7saj2v33ydmz1y6jdg659dll4jjh91n41m63gx0qsg"))))
+   (build-system gnu-build-system)
+   (arguments `(#:configure-flags '("--with-internal-glib")))
+   (home-page "http://www.freedesktop.org/wiki/Software/pkg-config")
+   (license "GPLv2+")
+   (description "a helper tool used when compiling applications and
+libraries")
+   (long-description
+    "pkg-config is a helper tool used when compiling applications and
+libraries.  It helps you insert the correct compiler options on the
+command line so an application can use gcc -o test test.c `pkg-config
+--libs --cflags glib-2.0` for instance, rather than hard-coding values
+on where to find glib (or other libraries). It is language-agnostic, so
+it can be used for defining the location of documentation tools, for
+instance.")))
+
 (define-public guile-2.0
   (package
    (name "guile")
@@ -1159,7 +1186,7 @@ conversions for values passed between the two languages.")
              (base32
               "000ng5qsq3cl1k35jvzvhwxj92wx4q87745n2fppkd4irh58vv5l"))))
    (build-system gnu-build-system)
-   (native-inputs `(("pkgconfig" ,(nixpkgs-derivation* "pkgconfig"))))
+   (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
              ("readline" ,readline)))
 
