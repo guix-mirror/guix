@@ -53,7 +53,7 @@
 (define (package-files)
   "Return the list of files that implement distro modules."
   (define prefix-len
-    (string-length (dirname %distro-module-directory)))
+    (string-length (dirname (search-path %load-path "distro.scm"))))
 
   (file-system-fold (const #t)                    ; enter?
                     (lambda (path stat result)    ; leaf

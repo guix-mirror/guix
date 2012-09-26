@@ -1,0 +1,60 @@
+;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
+;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;;
+;;; This file is part of Guix.
+;;;
+;;; Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (distro packages databases)
+  #:use-module (distro)
+  #:use-module (guix packages)
+  #:use-module (guix http)
+  #:use-module (guix utils)
+  #:use-module (guix build-system gnu))
+
+;;; Commentary:
+;;;
+;;; Database management software and related packages.
+;;;
+;;; Code:
+
+(define-public recutils
+  (package
+   (name "recutils")
+   (version "1.5")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/recutils/recutils-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "1v2xzwwwhc5j5kmvg4sv6baxjpsfqh8ln7ilv4mgb1408rs7xmky"))))
+   (build-system gnu-build-system)
+   (inputs `(("curl" ,(nixpkgs-derivation* "curl"))
+             ("emacs" ,(nixpkgs-derivation* "emacs"))
+             ("check" ,(nixpkgs-derivation* "check"))
+             ("bc" ,(nixpkgs-derivation* "bc"))
+             ("patch/gets"
+              ,(search-patch "diffutils-gets-undeclared.patch"))))
+   (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
+   (description "GNU recutils, tools and libraries to access human-editable,
+text-based databases")
+   (long-description
+    "GNU recutils is a set of tools and libraries to access human-editable,
+text-based databases called recfiles.  The data is stored as a sequence of
+records, each record containing an arbitrary number of named fields.")
+   (license "GPLv3+")
+   (home-page "http://www.gnu.org/software/recutils/")))
+
+;;; databases.scm ends here
