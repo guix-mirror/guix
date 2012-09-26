@@ -765,17 +765,6 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 
                ;; Tell where to find libstdc++, libc, and `?crt*.o', except
                ;; `crt{begin,end}.o', which come with GCC.
-               ;;
-               ;; The `%{L*:-rpath %*}' rule adds a `-rpath LIBDIR' argument
-               ;; for each occurrence of `-L LIBDIR'.  We could avoid
-               ;; `-rpath' altogether and instead use the `LD_RUN_PATH'
-               ;; environment variable, but that would tend to include more
-               ;; than needed in the RPATH; for instance, given a package
-               ;; with `libfoo' as an input, all its binaries would have
-               ;; libfoo in their RPATH, regardless of whether they actually
-               ;; NEED it.  See
-               ;; <http://gcc.gnu.org/ml/gcc-help/2012-09/msg00110.html> for
-               ;; details.
 
                ;; XXX: For crt*.o, use `STANDARD_STARTFILE_PREFIX' instead?  See
                ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/gcc-pass1.html>.
@@ -784,7 +773,7 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                              "gcc/config/i386/gnu-user64.h")
                  (("#define LIB_SPEC (.*)$" _ suffix)
                   (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib \
--rpath=~a/lib64 -rpath=~a/lib %{L*:-rpath %*}\" ~a~%"
+-rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
                           libc libc out out suffix))
                  (("([^ ]*)crt([^\\.])\\.o" _ prefix suffix)
                   (string-append libc "/lib/" prefix "crt" suffix ".o"))))
@@ -1678,10 +1667,73 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/lib/~a \"$@\"~%"
               ("binutils" ,binutils-final)
               ,@%boot2-inputs))))
 
+(define ld-wrapper-boot3
+  ;; A linker wrapper that uses the bootstrap Guile.
+  (package
+    (name "ld-wrapper-boot3")
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (inputs `(("binutils" ,binutils-final)
+              ("guile"   ,(nixpkgs-derivation* "guile"))
+              ("wrapper" ,(search-path %load-path "distro/ld-wrapper.scm"))))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (system base compile))
+
+                   (let* ((out (assoc-ref %outputs "out"))
+                          (bin (string-append out "/bin"))
+                          (ld  (string-append bin "/ld"))
+                          (go  (string-append bin "/ld.go")))
+
+                     (setvbuf (current-output-port) _IOLBF)
+                     (format #t "building ~s/bin/ld wrapper in ~s~%"
+                             (assoc-ref %build-inputs "binutils")
+                             out)
+
+                     (mkdir out) (mkdir bin)
+                     (copy-file (assoc-ref %build-inputs "wrapper") ld)
+                     (substitute* ld
+                       (("@GUILE@")
+                        (string-append (assoc-ref %build-inputs "guile")
+                                       "/bin/guile"))
+                       (("@LD@")
+                        (string-append (assoc-ref %build-inputs "binutils")
+                                       "/bin/ld")))
+                     (chmod ld #o555)
+                     (compile-file ld #:output-file go)))))
+    (description "The linker wrapper")
+    (long-description
+     "The linker wrapper (or `ld-wrapper') wraps the linker to add any
+missing `-rpath' flags, and to detect any misuse of libraries outside of the
+store.")
+    (home-page #f)
+    (license "GPLv3+")))
+
 (define %boot3-inputs
   ;; 4th stage inputs.
   `(("gcc" ,gcc-final)
+    ("ld-wrapper" ,ld-wrapper-boot3)
     ,@(alist-delete "gcc" %boot2-inputs)))
+
+(define-public bash-final
+  (package-with-explicit-inputs bash %boot3-inputs
+                                (current-source-location)))
+
+(define-public guile-final
+  (package-with-explicit-inputs guile-2.0
+                                `(("bash" ,bash-final)
+                                  ,@(alist-delete "bash" %boot3-inputs))
+                                (current-source-location)))
+
+(define-public ld-wrapper
+  ;; The final `ld' wrapper, which uses the final Guile.
+  (package (inherit ld-wrapper-boot3)
+    (name "ld-wrapper")
+    (inputs `(("guile" ,guile-final)
+              ,@(alist-delete "guile" (package-inputs ld-wrapper-boot3))))))
 
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by `gnu-build-system'.
@@ -1701,10 +1753,11 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/lib/~a \"$@\"~%"
                ("coreutils" ,coreutils)
                ("sed" ,sed)
                ("grep" ,grep)
-               ("bash" ,bash)
                ("findutils" ,findutils)
                ("gawk" ,gawk)
                ("make" ,gnu-make)))
+      ("bash" ,bash-final)
+      ("ld-wrapper" ,ld-wrapper)
       ("binutils" ,binutils-final)
       ("gcc" ,gcc-final)
       ("libc" ,glibc-final))))

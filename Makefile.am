@@ -35,7 +35,8 @@ MODULES =					\
   guix/packages.scm				\
   guix.scm					\
   distro.scm					\
-  distro/base.scm
+  distro/base.scm				\
+  distro/ld-wrapper.scm
 
 GOBJECTS = $(MODULES:%.scm=%.go)
 
