@@ -709,14 +709,14 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
   (let ((stripped? #t))                         ; TODO: make this a parameter
     (package
      (name "gcc")
-     (version "4.7.1")
+     (version "4.7.2")
      (source (origin
               (method http-fetch)
               (uri (string-append "http://ftp.gnu.org/gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.bz2"))
               (sha256
                (base32
-                "0vs0v89zzgkngkw2p8kdynyk7j8ky4wf6zyrg3rsschpl1pky28n"))))
+                "115h03hil99ljig8lkrq4qk426awmzh0g99wrrggxf8g07bq74la"))))
      (build-system gnu-build-system)
      (inputs `(("gmp" ,gmp)
                ("mpfr" ,mpfr)
