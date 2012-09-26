@@ -1174,6 +1174,42 @@ on where to find glib (or other libraries). It is language-agnostic, so
 it can be used for defining the location of documentation tools, for
 instance.")))
 
+(define-public libgc
+  (package
+   (name "libgc")
+   (version "7.2alpha6")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append
+                  "http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc-"
+                  version ".tar.gz"))
+            (sha256
+             (base32
+              "05jwadjbrv8pr7z9cb4miskicxqpxm0pca4h2rg5cgbpajr2bx7b"))))
+   (build-system gnu-build-system)
+   (description "The Boehm-Demers-Weiser conservative garbage collector
+for C and C++")
+   (long-description
+    "The Boehm-Demers-Weiser conservative garbage collector can be used
+as a garbage collecting replacement for C malloc or C++ new.  It allows
+you to allocate memory basically as you normally would, without
+explicitly deallocating memory that is no longer useful.  The collector
+automatically recycles memory when it determines that it can no longer
+be otherwise accessed.
+
+The collector is also used by a number of programming language
+implementations that either use C as intermediate code, want to
+facilitate easier interoperation with C libraries, or just prefer the
+simple collector interface.
+
+Alternatively, the garbage collector may be used as a leak detector for
+C or C++ programs, though that is not its primary goal.")
+   (home-page "http://www.hpl.hp.com/personal/Hans_Boehm/gc/")
+
+   ;; permissive X11-style license:
+   ;; http://www.hpl.hp.com/personal/Hans_Boehm/gc/license.txt
+   (license "X11")))
+
 (define-public guile-2.0
   (package
    (name "guile")
@@ -1200,7 +1236,7 @@ instance.")))
 
       ;; The headers and/or `guile-2.0.pc' refer to these packages, so they
       ;; must be propagated.
-      ("bdw-gc" ,(nixpkgs-derivation* "boehmgc"))
+      ("bdw-gc" ,libgc)
       ("gmp" ,gmp)))
 
    (self-native-input? #t)
