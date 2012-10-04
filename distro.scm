@@ -67,7 +67,7 @@
                     (const #f)                    ; skip
                     (lambda (path stat errno result)
                       (format (current-error-port)
-                              (_ "warning: cannot access `~a': ~a")
+                              (_ "warning: cannot access `~a': ~a~%")
                               path (strerror errno))
                       result)
                     '()
