@@ -20,10 +20,22 @@ Guix currently depends on the following packages:
   - [[http://gnupg.org/][GNU libgcrypt]], or [[http://nongnu.org/libchop/][libchop]]
 
 For bootstrapping purposes, it is useful to reuse packages from Nixpkgs.
-For this to work, you need to have a checkout of the Nixpkgs repository,
-with the `NIXPKGS' environment variable pointing to it.
+For this to work, you need to have a checkout of the Nixpkgs repository;
+the `--with-nixpkgs' option allows you to let `configure' know where the
+Nixpkgs checkout is.
 
   - [[http://nixos.org/nixpkgs/][Nixpkgs]]
+
+When building Guix from a checkout, the following packages are also
+required:
+
+  - [[http://www.gnu.org/software/autoconf/][GNU Autoconf]]
+  - [[http://www.gnu.org/software/automake/][GNU Automake]]
+  - [[http://www.gnu.org/software/gettext/][GNU Gettext]]
+
+The "autoreconf -vi" command can be used to generate the build system
+infrastructure; it reports an error if an inappropriate version of the
+above packages is being used.
 
 * How It Works
 
