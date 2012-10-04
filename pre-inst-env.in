@@ -1,0 +1,48 @@
+#!/bin/sh
+
+# Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
+# Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+#
+# This file is part of Guix.
+#
+# Guix is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
+#
+# Guix is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+# Usage: ./pre-inst-env COMMAND ARG...
+#
+# Run COMMAND in a pre-installation environment.  Typical use is
+# "./pre-inst-env guix-build hello".
+
+DISTRO_PATCH_DIRECTORY="@abs_top_srcdir@/distro/patches"
+GUILE_LOAD_COMPILED_PATH="@abs_top_builddir@${GUILE_LOAD_COMPILED_PATH:+:}$GUILE_LOAD_COMPILED_PATH"
+GUILE_LOAD_PATH="@abs_top_srcdir@${GUILE_LOAD_PATH:+:}:$GUILE_LOAD_PATH"
+
+export DISTRO_PATCH_DIRECTORY GUILE_LOAD_COMPILED_PATH GUILE_LOAD_PATH
+
+# Define $PATH so that `guix-build' and friends are easily found.
+
+PATH="@abs_top_builddir@:$PATH"
+export PATH
+
+# The following variables need only be defined when compiling Guix
+# modules, but we define them to be on the safe side in case of
+# auto-compilation.
+
+NIX_HASH="@NIX_HASH@"
+NIX_INSTANTIATE="@NIX_INSTANTIATE@"
+NIXPKGS="@NIXPKGS@"
+LIBGCRYPT="@LIBGCRYPT@"
+
+export NIX_HASH NIX_INSTANTIATE NIXPKGS LIBGCRYPT
+
+exec "$@"

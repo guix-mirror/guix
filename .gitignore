@@ -38,3 +38,4 @@ config.cache
 /tests/*.trs
 /INSTALL
 /m4/*
+/pre-inst-env
