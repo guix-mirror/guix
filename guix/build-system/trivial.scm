@@ -31,14 +31,14 @@
 ignored."
   (define guile-for-build
     (match guile
+      ((? package?)
+       (package-derivation store guile system))
+      ((and (? string?) (? derivation-path?))
+       guile)
       (#f                                         ; the default
        (let* ((distro (resolve-interface '(distro packages base)))
               (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system)))
-      ((? package?)
-       (package-derivation store guile system))
-      ((? derivation-path?)
-       guile)))
+         (package-derivation store guile system)))))
 
   (build-expression->derivation store name system builder inputs
                                 #:outputs outputs

@@ -119,7 +119,7 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
                                           "bin" "sbin"))
                     (phases '%standard-phases)
                     (system (%current-system))
-                    (implicit-inputs? #t)         ; useful when bootstrapping
+                    (implicit-inputs? #t)    ; useful when bootstrapping
                     (modules '((guix build gnu-build-system)
                                (guix build utils))))
   "Return a derivation called NAME that builds from tarball SOURCE, with
@@ -151,14 +151,14 @@ package if GUILE is #f or omitted."
 
   (define guile-for-build
     (match guile
+      ((? package?)
+       (package-derivation store guile system))
+      ((and (? string?) (? derivation-path?))
+       guile)
       (#f                                         ; the default
        (let* ((distro (resolve-interface '(distro packages base)))
               (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system)))
-      ((? package?)
-       (package-derivation store guile system))
-      ((? derivation-path?)
-       guile)))
+         (package-derivation store guile system)))))
 
   (build-expression->derivation store name system
                                 builder
