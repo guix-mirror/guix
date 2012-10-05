@@ -35,6 +35,18 @@
 (define %store
   (false-if-exception (open-connection)))
 
+(define %bootstrap-inputs
+  ;; Derivations taken from Nixpkgs, so that the initial tests don't
+  ;; take forever.
+  (and (file-exists? (%nixpkgs-directory))
+       `(("make" ,(nixpkgs-derivation "gnumake"))
+         ("diffutils" ,(nixpkgs-derivation "diffutils"))
+         ,@(@@ (distro packages base) %bootstrap-inputs))))
+
+(define %bootstrap-guile
+  (@@ (distro packages base) %bootstrap-guile))
+
+
 (test-begin "packages")
 
 (define-syntax-rule (dummy-package name* extra-fields ...)
@@ -70,7 +82,8 @@
               (build-system trivial-build-system)
               (source #f)
               (arguments
-               '(#:builder
+               `(#:guile ,%bootstrap-guile
+                 #:builder
                  (begin
                    (mkdir %output)
                    (call-with-output-file (string-append %output "/test")
@@ -83,13 +96,15 @@
                    (call-with-input-file (string-append p "/test") read))))))
 
 (test-assert "GNU Hello"
-  (and (package? hello)
-       (or (location? (package-location hello))
-           (not (package-location hello)))
-       (let* ((drv (package-derivation %store hello))
-              (out (derivation-path->output-path drv)))
-         (and (build-derivations %store (list drv))
-              (file-exists? (string-append out "/bin/hello"))))))
+  (let ((hello (package-with-explicit-inputs hello %bootstrap-inputs
+                                             #:guile %bootstrap-guile)))
+    (and (package? hello)
+         (or (location? (package-location hello))
+             (not (package-location hello)))
+         (let* ((drv (package-derivation %store hello))
+                (out (derivation-path->output-path drv)))
+           (and (build-derivations %store (list drv))
+                (file-exists? (string-append out "/bin/hello")))))))
 
 (test-assert "find-packages-by-name"
   (match (find-packages-by-name "hello")

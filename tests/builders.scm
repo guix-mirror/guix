@@ -32,6 +32,18 @@
 (define %store
   (false-if-exception (open-connection)))
 
+(define %bootstrap-inputs
+  ;; Derivations taken from Nixpkgs, so that the initial tests don't
+  ;; take forever.
+  (and (file-exists? (%nixpkgs-directory))
+       `(("make" ,(nixpkgs-derivation "gnumake"))
+         ("diffutils" ,(nixpkgs-derivation "diffutils"))
+         ,@(@@ (distro packages base) %bootstrap-inputs))))
+
+(define %bootstrap-guile
+  (@@ (distro packages base) %bootstrap-guile))
+
+
 (test-begin "builders")
 
 (test-assert "http-fetch"
@@ -48,13 +60,17 @@
   (and (build-system? gnu-build-system)
        (eq? gnu-build (build-system-builder gnu-build-system))))
 
+(test-skip (if (file-exists? (%nixpkgs-directory)) 1 0))
+
 (test-assert "gnu-build"
   (let* ((url      "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")
          (hash     (nix-base32-string->bytevector
                     "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))
          (tarball  (http-fetch %store url 'sha256 hash))
          (build    (gnu-build %store "hello-2.8" tarball
-                              `(("gawk" ,(nixpkgs-derivation "gawk")))))
+                              %bootstrap-inputs
+                              #:implicit-inputs? #f
+                              #:guile %bootstrap-guile))
          (out      (derivation-path->output-path build)))
     (and (build-derivations %store (list (pk 'hello-drv build)))
          (valid-path? %store out)
