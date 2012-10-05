@@ -813,6 +813,7 @@ used in the GNU system including the GNU/Linux variant.")
      (home-page "http://gcc.gnu.org/"))))
 
 (define-public ncurses
+  ;; FIXME: `ncurses-config' retains a ref on bash
   (let ((post-install-phase
          '(lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
@@ -1383,6 +1384,10 @@ with the Linux kernel.")
               "gawk"                                ; used by `config.status'
               "gcc" "binutils")))))
 
+(define %bootstrap-guile
+  ;; The Guile used to run the build scripts of the initial derivations.
+  (nixpkgs-derivation* "guile"))
+
 (define-syntax substitute-keyword-arguments
   (syntax-rules ()
     "Return a new list of arguments where the value for keyword arg KW is
@@ -1404,7 +1409,8 @@ previous value of the keyword argument."
   (package (inherit gnu-make)
     (name "make-boot0")
     (location (source-properties->location (current-source-location)))
-    (arguments `(#:implicit-inputs? #f
+    (arguments `(#:guile ,%bootstrap-guile
+                 #:implicit-inputs? #f
                  #:tests? #f                      ; cannot run "make check"
                  #:phases
                  (alist-replace
@@ -1424,7 +1430,8 @@ previous value of the keyword argument."
 (define diffutils-boot0
   (let ((p (package-with-explicit-inputs diffutils
                                          `(("make" ,gnu-make-boot0)
-                                           ,@%bootstrap-inputs))))
+                                           ,@%bootstrap-inputs)
+                                         #:guile %bootstrap-guile)))
     (package (inherit p)
       (location (source-properties->location (current-source-location)))
       (arguments `(#:tests? #f               ; the test suite needs diffutils
@@ -1435,7 +1442,8 @@ previous value of the keyword argument."
                                 `(("make" ,gnu-make-boot0)
                                   ("diffutils" ,diffutils-boot0) ; for tests
                                   ,@%bootstrap-inputs)
-                                (current-source-location)))
+                                (current-source-location)
+                                #:guile %bootstrap-guile))
 
 
 (define %boot0-inputs
@@ -1471,7 +1479,8 @@ identifier SYSTEM."
     (name "binutils-cross-boot0")
     (arguments
      (lambda (system)
-       `(#:implicit-inputs? #f
+       `(#:guile ,%bootstrap-guile
+         #:implicit-inputs? #f
          ,@(substitute-keyword-arguments (package-arguments binutils)
              ((#:configure-flags cf)
               `(list ,(string-append "--target=" (boot-triplet system))))))))
@@ -1482,7 +1491,8 @@ identifier SYSTEM."
     (name "gcc-cross-boot0")
     (arguments
      (lambda (system)
-       `(#:implicit-inputs? #f
+       `(#:guile ,%bootstrap-guile
+         #:implicit-inputs? #f
          #:modules ((guix build gnu-build-system)
                     (guix build utils)
                     (ice-9 regex)
@@ -1569,12 +1579,14 @@ identifier SYSTEM."
 
 (define linux-headers-boot0
   (package (inherit linux-headers)
-    (arguments `(#:implicit-inputs? #f
+    (arguments `(#:guile ,%bootstrap-guile
+                 #:implicit-inputs? #f
                  ,@(package-arguments linux-headers)))
     (native-inputs
      (let ((perl (package-with-explicit-inputs perl
                                                %boot0-inputs
-                                               (current-source-location))))
+                                               (current-source-location)
+                                               #:guile %bootstrap-guile)))
        `(("perl" ,perl)
          ,@%boot0-inputs)))))
 
@@ -1593,7 +1605,8 @@ identifier SYSTEM."
   (package (inherit glibc)
     (arguments
      (lambda (system)
-      `(#:implicit-inputs? #f
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
 
         ;; Leave /bin/sh as the interpreter for `ldd', `sotruss', etc. to
         ;; avoid keeping a reference to the bootstrap Bash.
@@ -1624,7 +1637,8 @@ identifier SYSTEM."
     (build-system trivial-build-system)
     (arguments
      (lambda (system)
-      `(#:modules ((guix build utils))
+      `(#:guile ,%bootstrap-guile
+        #:modules ((guix build utils))
         #:builder (begin
                     (use-modules (guix build utils))
 
@@ -1670,7 +1684,8 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/lib/~a \"$@\"~%"
   (package (inherit binutils)
     (arguments
      (lambda (system)
-       `(#:implicit-inputs? #f
+       `(#:guile ,%bootstrap-guile
+         #:implicit-inputs? #f
          ,@(package-arguments binutils))))
     (inputs %boot2-inputs)))
 
@@ -1680,7 +1695,8 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/lib/~a \"$@\"~%"
     (name "gcc")
     (arguments
      (lambda (system)
-       `(#:implicit-inputs? #f
+       `(#:guile ,%bootstrap-guile
+         #:implicit-inputs? #f
 
          ;; Build again GMP & co. within GCC's build process, because it's hard
          ;; to do outside (because GCC-BOOT0 is a cross-compiler, and thus
@@ -1710,11 +1726,12 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/lib/~a \"$@\"~%"
     (source #f)
     (build-system trivial-build-system)
     (inputs `(("binutils" ,binutils-final)
-              ("guile"   ,(nixpkgs-derivation* "guile"))
+              ("guile"   ,%bootstrap-guile)
               ("wrapper" ,(search-path %load-path
                                        "distro/packages/ld-wrapper.scm"))))
     (arguments
-     `(#:modules ((guix build utils))
+     `(#:guile ,%bootstrap-guile
+       #:modules ((guix build utils))
        #:builder (begin
                    (use-modules (guix build utils)
                                 (system base compile))
@@ -1756,13 +1773,15 @@ store.")
 
 (define-public bash-final
   (package-with-explicit-inputs bash %boot3-inputs
-                                (current-source-location)))
+                                (current-source-location)
+                                #:guile %bootstrap-guile))
 
 (define-public guile-final
   (package-with-explicit-inputs guile-2.0
                                 `(("bash" ,bash-final)
                                   ,@(alist-delete "bash" %boot3-inputs))
-                                (current-source-location)))
+                                (current-source-location)
+                                #:guile %bootstrap-guile))
 
 (define-public ld-wrapper
   ;; The final `ld' wrapper, which uses the final Guile.
@@ -1773,8 +1792,6 @@ store.")
 
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by `gnu-build-system'.
-  ;; FIXME: Build bash before the others, otherwise patch-shebangs uses it in
-  ;; bzip2, for instance.
   (let ((finalize (cut package-with-explicit-inputs <> %boot3-inputs
                        (current-source-location))))
     `(,@(map (match-lambda
