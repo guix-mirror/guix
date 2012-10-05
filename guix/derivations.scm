@@ -171,6 +171,10 @@ available in STORE, recursively."
                 '()
                 x))
 
+  ;; The contents of a derivation are typically ASCII, but choosing
+  ;; UTF-8 allows us to take the fast path for Guile's `scm_getc'.
+  (set-port-encoding! drv-port "UTF-8")
+
   (let loop ((exp    (read drv-port))
              (result '()))
     (match exp
