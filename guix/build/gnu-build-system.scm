@@ -128,11 +128,18 @@
                   (string-append srcdir "/configure")
                   flags))))
 
+(define %parallel-job-count
+  ;; String to be passed next to GNU Make's `-j' argument.
+  (match (getenv "NIX_BUILD_CORES")
+    (#f "1")
+    ("0" (number->string (current-processor-count)))
+    (x x)))
+
 (define* (build #:key (make-flags '()) (parallel-build? #t)
                 #:allow-other-keys)
   (zero? (apply system* "make"
                 `(,@(if parallel-build?
-                        `("-j" ,(getenv "NIX_BUILD_CORES"))
+                        `("-j" ,%parallel-job-count)
                         '())
                   ,@make-flags))))
 
@@ -142,7 +149,7 @@
   (if tests?
       (zero? (apply system* "make" test-target
                     `(,@(if parallel-tests?
-                            `("-j" ,(getenv "NIX_BUILD_CORES"))
+                            `("-j" ,%parallel-job-count)
                             '())
                       ,@make-flags)))
       (begin

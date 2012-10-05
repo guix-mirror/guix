@@ -198,8 +198,7 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
     ;; TODO: Add more options.
     (set-build-options %store
                        #:keep-failed? (assoc-ref opts 'keep-failed?)
-                       #:build-cores (or (assoc-ref opts 'cores)
-                                         (current-processor-count)))
+                       #:build-cores (or (assoc-ref opts 'cores) 0))
 
     (if (assoc-ref opts 'derivations-only?)
         (format #t "~{~a~%~}" drv)
