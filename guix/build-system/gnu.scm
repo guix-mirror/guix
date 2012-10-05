@@ -38,13 +38,18 @@
 
 (define* (package-with-explicit-inputs p boot-inputs
                                        #:optional
-                                       (loc (current-source-location)))
-  "Rewrite P, which is assumed to use GNU-BUILD-SYSTEM, to take BOOT-INPUTS
-as explicit inputs instead of the implicit default, and return it."
+                                       (loc (current-source-location))
+                                       #:key guile)
+  "Rewrite P, which is assumed to use GNU-BUILD-SYSTEM, to take
+BOOT-INPUTS as explicit inputs instead of the implicit default, and
+return it.  Use GUILE to run the builder, or the distro's final Guile
+when GUILE is #f."
   (define rewritten-input
     (match-lambda
      ((name (? package? p) sub-drv ...)
-      (cons* name (package-with-explicit-inputs p boot-inputs) sub-drv))
+      (cons* name
+             (package-with-explicit-inputs p boot-inputs #:guile guile)
+             sub-drv))
      (x x)))
 
   (define boot-input-names
@@ -59,8 +64,10 @@ as explicit inputs instead of the implicit default, and return it."
      (let ((args (package-arguments p)))
        (if (procedure? args)
            (lambda (system)
-             `(#:implicit-inputs? #f ,@(args system)))
-           `(#:implicit-inputs? #f ,@args))))
+             `(#:guile ,guile
+               #:implicit-inputs? #f ,@(args system)))
+           `(#:guile ,guile
+             #:implicit-inputs? #f ,@args))))
     (native-inputs (map rewritten-input
                         (filtered-inputs (package-native-inputs p))))
     (propagated-inputs (map rewritten-input
@@ -97,7 +104,8 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
                                 inputs)))))))
 
 (define* (gnu-build store name source inputs
-                    #:key (outputs '("out")) (configure-flags ''())
+                    #:key (guile #f)
+                    (outputs '("out")) (configure-flags ''())
                     (make-flags ''())
                     (patches ''()) (patch-flags ''("--batch" "-p1"))
                     (out-of-source? #f)
@@ -115,7 +123,9 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
                     (modules '((guix build gnu-build-system)
                                (guix build utils))))
   "Return a derivation called NAME that builds from tarball SOURCE, with
-input derivation INPUTS, using the usual procedure of the GNU Build System."
+input derivation INPUTS, using the usual procedure of the GNU Build
+System.  The builder is run with GUILE, or with the distro's final Guile
+package if GUILE is #f or omitted."
   (define builder
     `(begin
        (use-modules ,@modules)
@@ -139,6 +149,17 @@ input derivation INPUTS, using the usual procedure of the GNU Build System."
                   #:strip-flags ,strip-flags
                   #:strip-directories ,strip-directories)))
 
+  (define guile-for-build
+    (match guile
+      (#f                                         ; the default
+       (let* ((distro (resolve-interface '(distro packages base)))
+              (guile  (module-ref distro 'guile-final)))
+         (package-derivation store guile system)))
+      ((? package?)
+       (package-derivation store guile system))
+      ((? derivation-path?)
+       guile)))
+
   (build-expression->derivation store name system
                                 builder
                                 `(("source" ,source)
@@ -148,7 +169,8 @@ input derivation INPUTS, using the usual procedure of the GNU Build System."
                                           (standard-inputs system))
                                         '()))
                                 #:outputs outputs
-                                #:modules modules))
+                                #:modules modules
+                                #:guile-for-build guile-for-build))
 
 (define gnu-build-system
   (build-system (name 'gnu)

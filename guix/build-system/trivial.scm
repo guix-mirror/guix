@@ -20,16 +20,30 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix derivations)
+  #:use-module (guix packages)
   #:use-module (guix build-system)
+  #:use-module (ice-9 match)
   #:export (trivial-build-system))
 
 (define* (trivial-build store name source inputs
-                        #:key outputs system builder (modules '()))
+                        #:key outputs guile system builder (modules '()))
   "Run build expression BUILDER, an expression, for SYSTEM.  SOURCE is
 ignored."
+  (define guile-for-build
+    (match guile
+      (#f                                         ; the default
+       (let* ((distro (resolve-interface '(distro packages base)))
+              (guile  (module-ref distro 'guile-final)))
+         (package-derivation store guile system)))
+      ((? package?)
+       (package-derivation store guile system))
+      ((? derivation-path?)
+       guile)))
+
   (build-expression->derivation store name system builder inputs
                                 #:outputs outputs
-                                #:modules modules))
+                                #:modules modules
+                                #:guile-for-build guile-for-build))
 
 (define trivial-build-system
   (build-system (name 'trivial)
