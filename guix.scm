@@ -23,8 +23,15 @@
 (eval-when (eval load compile)
   (begin
     (define %public-modules
-      '(store
-        derivations))
+      '(build-system
+        derivations
+        ftp-client
+        ftp
+        http
+        packages
+        snix
+        store
+        utils))
 
     (for-each (let ((i (module-public-interface (current-module))))
                 (lambda (m)
