@@ -221,52 +221,54 @@ recursively."
                              #:optional (system (%current-system)))
   "Return the derivation of PACKAGE for SYSTEM."
   (or (cached-derivation package system)
-      (match package
-        (($ <package> name version source (= build-system-builder builder)
-            args inputs propagated-inputs native-inputs self-native-input?
-            outputs)
-         ;; TODO: For `search-paths', add a builder prologue that calls
-         ;; `set-path-environment-variable'.
-         (let ((inputs (map (match-lambda
-                             (((? string? name) (? package? package))
-                              (list name (package-derivation store package)))
-                             (((? string? name) (? package? package)
-                               (? string? sub-drv))
-                              (list name (package-derivation store package)
-                                    sub-drv))
-                             (((? string? name)
-                               (and (? string?) (? derivation-path?) drv))
-                              (list name drv))
-                             (((? string? name)
-                               (and (? string?) (? file-exists? file)))
-                              ;; Add FILE to the store.  When FILE is in the
-                              ;; sub-directory of a store path, it needs to be
-                              ;; added anyway, so it can be used as a source.
-                              (list name
-                                    (add-to-store store (basename file)
-                                                  #t #f "sha256" file)))
-                             (((? string? name) (? origin? source))
-                              (list name
-                                    (package-source-derivation store source)))
-                             (x
-                              (raise (condition (&package-input-error
-                                                 (package package)
-                                                 (input   x))))))
-                            (package-transitive-inputs package))))
 
-           ;; Compute the derivation and cache the result.  Caching is
-           ;; important because some derivations, such as the implicit inputs
-           ;; of the GNU build system, will be queried many, many times in a
-           ;; row.
-           (cache package system
-                  (apply builder
-                         store (package-full-name package)
-                         (and source (package-source-derivation store source))
-                         inputs
-                         #:outputs outputs #:system system
-                         (if (procedure? args)
-                             (args system)
-                             args))))))))
+      ;; Compute the derivation and cache the result.  Caching is
+      ;; important because some derivations, such as the implicit inputs
+      ;; of the GNU build system, will be queried many, many times in a
+      ;; row.
+      (cache
+       package system
+       (match package
+         (($ <package> name version source (= build-system-builder builder)
+             args inputs propagated-inputs native-inputs self-native-input?
+             outputs)
+          ;; TODO: For `search-paths', add a builder prologue that calls
+          ;; `set-path-environment-variable'.
+          (let ((inputs (map (match-lambda
+                              (((? string? name) (? package? package))
+                               (list name (package-derivation store package)))
+                              (((? string? name) (? package? package)
+                                (? string? sub-drv))
+                               (list name (package-derivation store package)
+                                     sub-drv))
+                              (((? string? name)
+                                (and (? string?) (? derivation-path?) drv))
+                               (list name drv))
+                              (((? string? name)
+                                (and (? string?) (? file-exists? file)))
+                               ;; Add FILE to the store.  When FILE is in the
+                               ;; sub-directory of a store path, it needs to be
+                               ;; added anyway, so it can be used as a source.
+                               (list name
+                                     (add-to-store store (basename file)
+                                                   #t #f "sha256" file)))
+                              (((? string? name) (? origin? source))
+                               (list name
+                                     (package-source-derivation store source)))
+                              (x
+                               (raise (condition (&package-input-error
+                                                  (package package)
+                                                  (input   x))))))
+                             (package-transitive-inputs package))))
+
+            (apply builder
+                   store (package-full-name package)
+                   (and source (package-source-derivation store source))
+                   inputs
+                   #:outputs outputs #:system system
+                   (if (procedure? args)
+                       (args system)
+                       args))))))))
 
 (define* (package-cross-derivation store package)
   ;; TODO
