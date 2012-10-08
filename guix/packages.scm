@@ -206,16 +206,23 @@ recursively."
 
 (define %derivation-cache
   ;; Package to derivation-path mapping.
-  (make-weak-key-hash-table))
+  (make-weak-key-hash-table 100))
 
 (define (cache package system drv)
   "Memoize DRV as the derivation of PACKAGE on SYSTEM."
-  (hash-set! %derivation-cache (cons package system) drv)
+
+  ;; Use `hashq-set!' instead of `hash-set!' because `hash' returns the
+  ;; same value for all structs (as of Guile 2.0.6), and because pointer
+  ;; equality is sufficient in practice.
+  (hashq-set! %derivation-cache package `((,system . ,drv)))
   drv)
 
 (define (cached-derivation package system)
   "Return the cached derivation path of PACKAGE for SYSTEM, or #f."
-  (hash-ref %derivation-cache (cons package system)))
+  (match (hashq-ref %derivation-cache package)
+    ((alist ...)
+     (assoc-ref alist system))
+    (#f #f)))
 
 (define* (package-derivation store package
                              #:optional (system (%current-system)))
