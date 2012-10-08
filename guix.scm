@@ -29,7 +29,6 @@
         ftp
         http
         packages
-        snix
         store
         utils))
 
