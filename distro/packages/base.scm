@@ -1388,6 +1388,20 @@ with the Linux kernel.")
   ;; The Guile used to run the build scripts of the initial derivations.
   (nixpkgs-derivation* "guile"))
 
+(define (default-keyword-arguments args defaults)
+  "Return ARGS augmented with any keyword/value from DEFAULTS for
+keywords not already present in ARGS."
+  (let loop ((defaults defaults)
+             (args     args))
+    (match defaults
+      ((kw value rest ...)
+       (loop rest
+             (if (assoc-ref kw args)
+                 args
+                 (cons* kw value args))))
+      (()
+       args))))
+
 (define-syntax substitute-keyword-arguments
   (syntax-rules ()
     "Return a new list of arguments where the value for keyword arg KW is
