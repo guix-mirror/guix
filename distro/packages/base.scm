@@ -1815,4 +1815,172 @@ store.")
       ("gcc" ,gcc-final)
       ("libc" ,glibc-final))))
 
+
+;;;
+;;; Bootstrap binaries.
+;;;
+;;; These are the binaries that are taken for granted and used as the
+;;; root of the whole bootstrap procedure.
+;;;
+
+(define* (static-package p #:optional (loc (current-source-location)))
+  "Return a statically-linked version of package P."
+  ;; TODO: Move to (guix build-system gnu).
+  (let ((args (package-arguments p)))
+    (package (inherit p)
+      (location (source-properties->location loc))
+      (arguments
+       (let ((augment (lambda (args)
+                        (let ((a (default-keyword-arguments args
+                                   '(#:configure-flags '()
+                                     #:strip-flags #f))))
+                          (substitute-keyword-arguments a
+                            ((#:configure-flags flags)
+                             `(cons* "--disable-shared"
+                                     "LDFLAGS=-static"
+                                     ,flags))
+                            ((#:strip-flags _)
+                             ''("--strip-all")))))))
+         (if (procedure? args)
+             (lambda x
+               (augment (apply args x)))
+             (augment args)))))))
+
+(define %bash-static
+  (let ((bash-light (package (inherit bash-final)
+                      (inputs '())              ; no readline, no curses
+                      (arguments
+                       (let ((args `(#:modules ((guix build gnu-build-system)
+                                                (guix build utils)
+                                                (srfi srfi-1)
+                                                (srfi srfi-26))
+                                               ,@(package-arguments bash))))
+                         (substitute-keyword-arguments args
+                           ((#:configure-flags flags)
+                            `(list "--without-bash-malloc"
+                                   "--disable-readline"
+                                   "--disable-history"
+                                   "--disable-help-builtin"
+                                   "--disable-progcomp"
+                                   "--disable-net-redirections"
+                                   "--disable-nls"))))))))
+    (static-package bash-light)))
+
+(define %static-inputs
+  ;; Packages that are to be used as %BOOTSTRAP-INPUTS.
+  (let ((coreutils (package (inherit coreutils)
+                     (arguments
+                      `(#:configure-flags
+                        '("--disable-nls"
+                          "--disable-silent-rules"
+                          "--enable-no-install-program=stdbuf,libstdbuf.so"
+                          "LDFLAGS=-static -pthread")
+                        ,@(package-arguments coreutils)))))
+        (bzip2 (package (inherit bzip2)
+                 (arguments
+                  (substitute-keyword-arguments (package-arguments bzip2)
+                    ((#:phases phases)
+                     `(alist-cons-before
+                       'build 'dash-static
+                       (lambda _
+                         (substitute* "Makefile"
+                           (("^LDFLAGS[[:blank:]]*=.*$")
+                            "LDFLAGS = -static")))
+                       ,phases))))))
+        (xz (package (inherit xz)
+              (arguments
+               `(#:strip-flags '("--strip-all")
+                 #:phases (alist-cons-before
+                           'configure 'static-executable
+                           (lambda _
+                             ;; Ask Libtool for a static executable.
+                             (substitute* "src/xz/Makefile.in"
+                               (("^xz_LDADD =")
+                                "xz_LDADD = -all-static")))
+                           %standard-phases)))))
+        (gawk (package (inherit gawk)
+                (arguments
+                 (lambda (system)
+                   `(#:phases (alist-cons-before
+                               'build 'no-export-dynamic
+                               (lambda* (#:key outputs #:allow-other-keys)
+                                 ;; Since we use `-static', remove
+                                 ;; `-export-dynamic'.
+                                 (substitute* "configure"
+                                  (("-export-dynamic") "")))
+                               %standard-phases)
+                     ,@((package-arguments gawk) system)))))))
+    `(,@(map (match-lambda
+              ((name package)
+               (list name (static-package package (current-source-location)))))
+             `(("tar" ,tar)
+               ("gzip" ,gzip)
+               ("bzip2" ,bzip2)
+               ("xz" ,xz)
+               ("patch" ,patch)
+               ("coreutils" ,coreutils)
+               ("sed" ,sed)
+               ("grep" ,grep)
+               ("gawk" ,gawk)))
+      ("bash" ,%bash-static)
+      ;; ("ld-wrapper" ,ld-wrapper)
+      ;; ("binutils" ,binutils-final)
+      ;; ("gcc" ,gcc-final)
+      ;; ("libc" ,glibc-final)
+      )))
+
+(define %static-binaries
+  (package
+    (name "static-binaries")
+    (version "0")
+    (build-system trivial-build-system)
+    (source #f)
+    (inputs %static-inputs)
+    (arguments
+     `(#:builder
+       (begin
+         (use-modules (ice-9 ftw)
+                      (ice-9 match)
+                      (srfi srfi-1)
+                      (srfi srfi-26))
+
+         (let ()
+          (define (directory-contents dir)
+            (map (cut string-append dir "/" <>)
+                 (scandir dir (negate (cut member <> '("." ".."))))))
+
+          (define (copy-directory source destination)
+            (for-each (lambda (file)
+                        (format #t "copying ~s...~%" file)
+                        (copy-file file
+                                   (string-append destination "/"
+                                                  (basename file))))
+                      (directory-contents source)))
+
+          (let* ((out (assoc-ref %outputs "out"))
+                 (bin (string-append out "/bin")))
+            (mkdir out) (mkdir bin)
+
+            ;; Copy Coreutils binaries.
+            (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
+                   (source    (string-append coreutils "/bin")))
+              (copy-directory source bin))
+
+            ;; For the other inputs, copy just one binary, which has the
+            ;; same name as the input.
+            (for-each (match-lambda
+                       ((name . dir)
+                        (let ((source (string-append dir "/bin/" name)))
+                          (format #t "copying ~s...~%" source)
+                          (copy-file source
+                                     (string-append bin "/" name)))))
+                      (alist-delete "coreutils" %build-inputs))
+
+            #t)))))
+    (description "Statically-linked bootstrap binaries")
+    (long-description
+     "Binaries used to bootstrap the distribution.")
+    (license #f)
+    (home-page #f)))
+
 ;;; base.scm ends here
