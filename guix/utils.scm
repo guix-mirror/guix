@@ -588,6 +588,26 @@ FIELD/DEFAULT-VALUE tuples."
               (hash-set! cache args results)
               (apply values results)))))))
 
+(define-syntax hash-set-proc
+  (syntax-rules (eq? eqv? equal?)
+    ((_ eq?)    hashq-set!)
+    ((_ eqv?)   hashv-set!)
+    ((_ equal?) hash-set!)))
+
+(define-syntax hash-ref*
+  (syntax-rules (eq? eqv? equal?)
+    ((_ table key eq?)    (hashq-ref table key))
+    ((_ table key eqv?)   (hashv-ref table key))
+    ((_ table key equal?) (hash-ref table key))))
+
+(define-syntax memoizing-lambda
+  (syntax-rules ()
+    ((_ ((arg type) ...) body ...)
+     (let ((cache (make-weak-key-hash-table 100)))
+       (lambda (arg ...)
+         (or (and (hash-ref* cache)))
+         )))))
+
 (define (gnu-triplet->nix-system triplet)
   "Return the Nix system type corresponding to TRIPLET, a GNU triplet as
 returned by `config.guess'."

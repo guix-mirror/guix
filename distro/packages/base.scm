@@ -1997,4 +1997,104 @@ store.")
     (license #f)
     (home-page #f)))
 
+(define %guile-static
+  ;; A statically-linked Guile that is relocatable--i.e., it can search
+  ;; .scm and .go files relative to its installation directory, rather
+  ;; than in hard-coded configure-time paths.
+  (let ((guile (package (inherit guile-2.0)
+                 (inputs
+                  `(("patch/relocatable"
+                     ,(search-patch "guile-relocatable.patch"))
+                    ,@(package-inputs guile-2.0)))
+                 (arguments
+                  `(;; When `configure' checks for ltdl availability, it
+                    ;; doesn't try to link using libtool, and thus fails
+                    ;; because of a missing -ldl.  Work around that.
+                    #:configure-flags '("LDFLAGS=-ldl")
+
+                    #:phases (alist-cons-before
+                              'configure 'static-guile
+                              (lambda _
+                                (substitute* "libguile/Makefile.in"
+                                  ;; Create a statically-linked `guile'
+                                  ;; executable.
+                                  (("^guile_LDFLAGS =")
+                                   "guile_LDFLAGS = -all-static")
+
+                                  ;; Add `-ldl' *after* libguile-2.0.la.
+                                  (("^guile_LDADD =(.*)$" _ ldadd)
+                                   (string-append "guile_LDADD = "
+                                                  (string-trim-right ldadd)
+                                                  " -ldl\n"))))
+                              %standard-phases)
+
+                    ;; Allow Guile to be relocated, as is needed during
+                    ;; bootstrap.
+                    #:patches
+                    (list (assoc-ref %build-inputs "patch/relocatable"))
+
+                    ;; There are uses of `dynamic-link' in
+                    ;; {foreign,coverage}.test that don't fly here.
+                    #:tests? #f)))))
+    (static-package guile (current-source-location))))
+
+(define %guile-static-stripped
+  ;; A stripped static Guile binary, for use during bootstrap.
+  (package (inherit %guile-static)
+    (name "guile-static-stripped")
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (let ()
+         (use-modules (ice-9 ftw)
+                      (guix build utils))
+
+         (define (copy-recursively source destination)
+           ;; Copy SOURCE directory to DESTINATION.
+           (with-directory-excursion source
+             (file-system-fold (const #t)
+                               (lambda (file stat result) ; leaf
+                                 (format #t "copying `~s/~s' to `~s'...~%"
+                                         source file destination)
+                                 (copy-file file
+                                            (string-append destination
+                                                           "/" file)))
+                               (lambda (dir stat result)  ; down
+                                 (let ((dir (string-append destination
+                                                           "/" dir)))
+                                   (unless (file-exists? dir)
+                                     (mkdir dir))))
+                               (lambda (dir stat result)  ; up
+                                 result)
+                               (const #t)                 ; skip
+                               (lambda (file stat errno result)
+                                 (format (current-error-port)
+                                         "i/o error: ~a: ~a~%" file
+                                         (strerror errno)))
+                               #t
+                               ".")))
+
+         (let ((in  (assoc-ref %build-inputs "guile"))
+               (out (assoc-ref %outputs "out")))
+           (mkdir out)
+           (mkdir (string-append out "/share"))
+           (mkdir (string-append out "/share/guile"))
+           (mkdir (string-append out "/share/guile/2.0"))
+           (copy-recursively (string-append in "/share/guile/2.0")
+                             (string-append out "/share/guile/2.0"))
+
+           (mkdir (string-append out "/lib"))
+           (mkdir (string-append out "/lib/guile"))
+           (mkdir (string-append out "/lib/guile/2.0"))
+           (mkdir (string-append out "/lib/guile/2.0/ccache"))
+           (copy-recursively (string-append in "/lib/guile/2.0/ccache")
+                             (string-append out "/lib/guile/2.0/ccache"))
+
+           (mkdir (string-append out "/bin"))
+           (copy-file (string-append in "/bin/guile")
+                      (string-append out "/bin/guile"))
+           #t))))
+    (inputs `(("guile" ,%guile-static)))))
+
 ;;; base.scm ends here

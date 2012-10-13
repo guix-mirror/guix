@@ -264,6 +264,10 @@
              ;; This trick allows use of the `scm_c_read' optimization.
              (socket PF_UNIX SOCK_STREAM 0)))
         (a (make-socket-address PF_UNIX file)))
+
+    ;; Enlarge the receive buffer.
+    (setsockopt s SOL_SOCKET SO_RCVBUF (* 12 1024))
+
     (connect s a)
     (write-int %worker-magic-1 s)
     (let ((r (read-int s)))

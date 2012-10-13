@@ -1,0 +1,60 @@
+This patch changes Guile to use a default search path relative to the
+location of the `guile' binary, allowing it to be relocated.
+
+diff --git a/libguile/load.c b/libguile/load.c
+index af2ca45..751c903 100644
+--- a/libguile/load.c
++++ b/libguile/load.c
+@@ -26,6 +26,7 @@
+ 
+ #include <string.h>
+ #include <stdio.h>
++#include <libgen.h>
+ 
+ #include "libguile/_scm.h"
+ #include "libguile/private-gc.h" /* scm_getenv_int */
+@@ -255,6 +256,26 @@ scm_init_load_path ()
+   SCM cpath = SCM_EOL;
+ 
+ #ifdef SCM_LIBRARY_DIR
++  char *bin_dir, *prefix, *module_dir, *ccache_dir;
++
++  /* Determine the source and compiled module directories at run-time,
++     relative to the executable's location.  */
++
++  bin_dir = dirname (strdupa (program_invocation_name));
++
++  prefix = scm_gc_malloc_pointerless (strlen (bin_dir) + 4, "string");
++  strcpy (prefix, bin_dir);
++  strcat (prefix, "/..");
++  prefix = canonicalize_file_name (prefix);
++
++  module_dir = scm_gc_malloc_pointerless (strlen (prefix) + 50, "string");
++  strcpy (module_dir, prefix);
++  strcat (module_dir, "/share/guile/2.0");
++
++  ccache_dir = scm_gc_malloc_pointerless (strlen (prefix) + 50, "string");
++  strcpy (ccache_dir, prefix);
++  strcat (ccache_dir, "/lib/guile/2.0/ccache");
++
+   env = getenv ("GUILE_SYSTEM_PATH");
+   if (env && strcmp (env, "") == 0)
+     /* special-case interpret system-path=="" as meaning no system path instead
+@@ -263,7 +284,7 @@ scm_init_load_path ()
+   else if (env)
+     path = scm_parse_path (scm_from_locale_string (env), path);
+   else
+-    path = scm_list_4 (scm_from_locale_string (SCM_LIBRARY_DIR),
++    path = scm_list_4 (scm_from_locale_string (module_dir),
+                        scm_from_locale_string (SCM_SITE_DIR),
+                        scm_from_locale_string (SCM_GLOBAL_SITE_DIR),
+                        scm_from_locale_string (SCM_PKGDATA_DIR));
+@@ -276,7 +297,7 @@ scm_init_load_path ()
+     cpath = scm_parse_path (scm_from_locale_string (env), cpath);
+   else
+     {
+-      cpath = scm_list_2 (scm_from_locale_string (SCM_CCACHE_DIR),
++      cpath = scm_list_2 (scm_from_locale_string (ccache_dir),
+                           scm_from_locale_string (SCM_SITE_CCACHE_DIR));
+     }
+ 
