@@ -81,24 +81,40 @@
         (else  (throw 'ftp-error port command code message))))))
 
 (define (ftp-open host)
+  "Open an FTP connection to HOST, and return it."
   (catch 'getaddrinfo-error
     (lambda ()
-      (let* ((ai (car (getaddrinfo host "ftp")))
-             (s  (socket (addrinfo:fam ai) (addrinfo:socktype ai)
-                         (addrinfo:protocol ai))))
-        (connect s (addrinfo:addr ai))
-        (setvbuf s _IOLBF)
-        (let-values (((code message) (%ftp-listen s)))
-          (if (eqv? code 220)
-              (begin
-                ;(%ftp-command "OPTS UTF8 ON" 200 s)
-                (%ftp-login "anonymous" "ludo@example.com" s)
-                (%make-ftp-connection s ai))
-              (begin
-                (format (current-error-port) "FTP to `~a' failed: ~A: ~A~%"
-                        host code message)
-                (close s)
-                #f)))))
+      (define addresses
+        (getaddrinfo host "ftp"))
+
+      (let loop ((addresses addresses))
+        (let* ((ai (car addresses))
+               (s  (socket (addrinfo:fam ai) (addrinfo:socktype ai)
+                           (addrinfo:protocol ai))))
+
+          (catch 'system-error
+            (lambda ()
+              (connect s (addrinfo:addr ai))
+              (setvbuf s _IOLBF)
+              (let-values (((code message) (%ftp-listen s)))
+                (if (eqv? code 220)
+                    (begin
+                      ;;(%ftp-command "OPTS UTF8 ON" 200 s)
+                      (%ftp-login "anonymous" "guix@example.com" s)
+                      (%make-ftp-connection s ai))
+                    (begin
+                      (format (current-error-port)
+                              "FTP to `~a' failed: ~A: ~A~%"
+                              host code message)
+                      (close s)
+                      #f))))
+
+            (lambda args
+              ;; Connection failed, so try one of the other addresses.
+              (close s)
+              (if (null? addresses)
+                  (apply throw args)
+                  (loop (cdr addresses))))))))
     (lambda (key errcode)
       (format (current-error-port) "failed to resolve `~a': ~a~%"
               host (gai-strerror errcode))
