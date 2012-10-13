@@ -1,0 +1,185 @@
+\input texinfo
+@c -*-texinfo-*-
+
+@c %**start of header
+@setfilename guix.info
+@documentencoding UTF-8
+@settitle Guix Reference Manual
+@c %**end of header
+
+@include version.texi
+
+@ifinfo
+@dircategory Development
+@direntry
+* guix: (guix).       Guix, the functional package manager.
+* guix-build: (guix)Invoking guix-build
+                      Building packages with Guix.
+@end direntry
+@end ifinfo
+
+@titlepage
+@title{Guix Reference Manual}
+@subtitle{Using the Guix Functional Package Manager}
+@author Ludovic Courtès
+
+@page
+@vskip 0pt plus 1filll
+Edition @value{EDITION} @*
+@value{UPDATED} @*
+
+Copyright @copyright{} 2012 Ludovic Court@`es
+
+@quotation
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License''.
+@end quotation
+@end titlepage
+
+@copying
+This manual documents Guix version @value{VERSION}.
+
+Copyright (C) 2012 Ludovic Courtès
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License.''
+@end copying
+
+@contents
+
+@c *********************************************************************
+@node Top
+@top Guix
+
+This document describes Guix version @value{VERSION}.
+
+@menu
+* Introduction::                What is Guix about?
+* Programming Interface::       Using Guix in Scheme.
+* Utilities::                   Package management commands.
+
+* Acknowledgments::             Thanks!
+* GNU Free Documentation License::  The license of this manual.
+* Concept Index::               Concepts.
+* Function Index::              Functions.
+@end menu
+
+@c *********************************************************************
+@node Introduction
+@chapter Introduction
+
+Guix is a functional package management tool.  Package management
+consists in all the activities that relate to building packages from
+source, honoring the build-time and run-time dependencies on packages,
+installing packages in user environments, upgrading installed packages
+to new versions or rolling back to a previous set, removing unused
+software packages, etc.
+
+@cindex functional package management
+The term @dfn{functional} refers to a specific package management
+discipline.  In Guix, the package build and installation process is seen
+as a function, in the mathematical sense: that function takes inputs,
+such as build scripts, a compiler, and libraries depended on, and
+returns the installed package.  As a pure function, its result depends
+solely on its inputs---for instance, it cannot refer to software or
+scripts that were not explicitly passed as inputs.  A build function
+always produces the same result when passed a given set of inputs.  Last
+but not least, a build function cannot alter the system's environment in
+any way; for instance, it cannot create, modify, or delete files outside
+of its build and installation directories.  This is achieved by running
+build processes in dedicated ``chroots'', where only their explicit
+inputs are visible.
+
+@cindex package store
+The result of package build functions is @dfn{cached} in the file
+system, in a special directory called the @dfn{package store}.  In
+practice, each package is installed in a directory of its own, in the
+store---by default under @file{/nix/store}.  The directory name contains
+a hash of all the inputs used to build that package; thus, changing an
+input yields a different directory name.
+
+This approach is the foundation of Guix's salient features: support for
+transactional package upgrades and rollback, per-user installation, and
+garbage collection of packages.
+
+Guix has a command-line interface allowing users to build, install,
+upgrade, and remove packages, as well as a Scheme programming interface.
+The remainder of this manual describes them.
+
+@c *********************************************************************
+@node Programming Interface
+@chapter Programming Interface
+
+@menu
+* Defining Packages::   Defining new packages.
+* The Store::           Manipulating the package store.
+* Derivations::         Low-level interface to package derivations.
+@end menu
+
+@node Defining Packages
+@section Defining Packages
+
+@code{(guix packages)} and @code{(guix build-system)}
+
+@node The Store
+@section The Store
+
+@code{(guix store)}
+
+@node Derivations
+@section Derivations
+
+@code{(guix derivations)}
+
+@c *********************************************************************
+@node Utilities
+@chapter Utilities
+
+@menu
+* Invoking guix-build:: Building packages from the command line.
+@end menu
+
+@node Invoking guix-build
+@section Invoking @command{guix-build}
+
+@c *********************************************************************
+@node Acknowledgments
+@chapter Acknowledgments
+
+Guix is based on the Nix package manager, which was designed and
+implemented by Eelco Dolstra.  Nix pioneered functional package
+management, and promoted unprecedented features, such as transactional
+package upgrades and rollbacks, per-user profiles, and referentially
+transparent build processes.  Without this work, Guix would not exist.
+
+The Nix-based software distributions, Nixpkgs and NixOS, have also been
+an inspiration for Guix.
+
+@c *********************************************************************
+@node GNU Free Documentation License
+@appendix GNU Free Documentation License
+
+@include fdl-1.3.texi
+
+@c *********************************************************************
+@node Concept Index
+@unnumbered Concept Index
+@printindex cp
+
+@node Function Index
+@unnumbered Function Index
+@printindex fn
+
+@bye
+
+@c Local Variables:
+@c ispell-local-dictionary: "american";
+@c End:

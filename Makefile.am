@@ -117,6 +117,9 @@ $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
 
 SUBDIRS = po
 
+info_TEXINFOS = doc/guix.texi
+EXTRA_DIST += doc/fdl-1.3.texi
+
 ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS =					\
   --with-nixpkgs=$(NIXPKGS) --with-nix-prefix="$(NIX_PREFIX)"

@@ -39,3 +39,8 @@ config.cache
 /INSTALL
 /m4/*
 /pre-inst-env
+/doc/.dirstamp
+/doc/guix.info
+/doc/guix.pdf
+/doc/stamp-vti
+/doc/version.texi
