@@ -32,6 +32,7 @@
             alist-cons-before
             alist-cons-after
             alist-replace
+            with-atomic-file-replacement
             substitute
             substitute*
             dump-port
@@ -157,44 +158,54 @@ An error is raised when no such pair exists."
 ;;; Text substitution (aka. sed).
 ;;;
 
-(define (substitute file pattern+procs)
-  "PATTERN+PROCS is a list of regexp/two-argument procedure.  For each line
-of FILE, and for each PATTERN that it matches, call the corresponding PROC
-as (PROC LINE MATCHES); PROC must return the line that will be written as a
-substitution of the original line."
-  (let* ((rx+proc  (map (match-lambda
-                         (((? regexp? pattern) . proc)
-                          (cons pattern proc))
-                         ((pattern . proc)
-                          (cons (make-regexp pattern regexp/extended)
-                                proc)))
-                        pattern+procs))
-         (template (string-append file ".XXXXXX"))
+(define (with-atomic-file-replacement file proc)
+  "Call PROC with two arguments: an input port for FILE, and an output
+port for the file that is going to replace FILE.  Upon success, FILE is
+atomically replaced by what has been written to the output port, and
+PROC's result is returned."
+  (let* ((template (string-append file ".XXXXXX"))
          (out      (mkstemp! template))
          (mode     (stat:mode (stat file))))
     (with-throw-handler #t
       (lambda ()
         (call-with-input-file file
           (lambda (in)
-            (let loop ((line (read-line in 'concat)))
-              (if (eof-object? line)
-                  #t
-                  (let ((line (fold (lambda (r+p line)
-                                      (match r+p
-                                        ((regexp . proc)
-                                         (match (list-matches regexp line)
-                                           ((and m+ (_ _ ...))
-                                            (proc line m+))
-                                           (_ line)))))
-                                    line
-                                    rx+proc)))
-                    (display line out)
-                    (loop (read-line in 'concat)))))))
-        (close out)
-        (chmod template mode)
-        (rename-file template file))
+            (let ((result (proc in out)))
+              (close out)
+              (chmod template mode)
+              (rename-file template file)
+              result))))
       (lambda (key . args)
         (false-if-exception (delete-file template))))))
+
+(define (substitute file pattern+procs)
+  "PATTERN+PROCS is a list of regexp/two-argument procedure.  For each line
+of FILE, and for each PATTERN that it matches, call the corresponding PROC
+as (PROC LINE MATCHES); PROC must return the line that will be written as a
+substitution of the original line."
+  (let ((rx+proc  (map (match-lambda
+                        (((? regexp? pattern) . proc)
+                         (cons pattern proc))
+                        ((pattern . proc)
+                         (cons (make-regexp pattern regexp/extended)
+                               proc)))
+                       pattern+procs)))
+    (with-atomic-file-replacement file
+      (lambda (in out)
+        (let loop ((line (read-line in 'concat)))
+          (if (eof-object? line)
+              #t
+              (let ((line (fold (lambda (r+p line)
+                                  (match r+p
+                                    ((regexp . proc)
+                                     (match (list-matches regexp line)
+                                       ((and m+ (_ _ ...))
+                                        (proc line m+))
+                                       (_ line)))))
+                                line
+                                rx+proc)))
+                (display line out)
+                (loop (read-line in 'concat)))))))))
 
 
 (define-syntax let-matches
@@ -329,4 +340,5 @@ patched, #f otherwise."
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)
 ;;; eval: (put 'with-throw-handler 'scheme-indent-function 1)
 ;;; eval: (put 'let-matches 'scheme-indent-function 3)
+;;; eval: (put 'with-atomic-file-replacement 'scheme-indent-function 1)
 ;;; End:
