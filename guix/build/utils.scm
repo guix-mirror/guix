@@ -36,7 +36,9 @@
             substitute
             substitute*
             dump-port
-            patch-shebang))
+            patch-shebang
+            fold-port-matches
+            remove-store-references))
 
 
 ;;;
@@ -335,6 +337,89 @@ patched, #f otherwise."
                                             "patch-shebang: ~a: warning: no binary for interpreter `~a' found in $PATH~%"
                                             file (basename cmd))
                                     #f)))))))))))))
+
+(define* (fold-port-matches proc init pattern port
+                            #:optional (unmatched (lambda (_ r) r)))
+  "Read from PORT character-by-character; for each match against
+PATTERN, call (PROC MATCH RESULT), where RESULT is seeded with INIT.
+PATTERN is a list of SRFI-14 char-sets.  Call (UNMATCHED CHAR RESULT)
+for each unmatched character."
+  (define initial-pattern
+    ;; The poor developer's regexp.
+    (if (string? pattern)
+        (map char-set (string->list pattern))
+        pattern))
+
+  ;; Note: we're not really striving for performance here...
+  (let loop ((chars   '())
+             (pattern initial-pattern)
+             (matched '())
+             (result  init))
+    (cond ((null? chars)
+           (loop (list (get-char port))
+                 pattern
+                 matched
+                 result))
+          ((null? pattern)
+           (loop chars
+                 initial-pattern
+                 '()
+                 (proc (list->string (reverse matched)) result)))
+          ((eof-object? (car chars))
+           (fold-right unmatched result matched))
+          ((char-set-contains? (car pattern) (car chars))
+           (loop (cdr chars)
+                 (cdr pattern)
+                 (cons (car chars) matched)
+                 result))
+          ((null? matched)                        ; common case
+           (loop (cdr chars)
+                 pattern
+                 matched
+                 (unmatched (car chars) result)))
+          (else
+           (let ((matched (reverse matched)))
+             (loop (append (cdr matched) chars)
+                   initial-pattern
+                   '()
+                   (unmatched (car matched) result)))))))
+
+(define* (remove-store-references file
+                                  #:optional (store (or (getenv "NIX_STORE")
+                                                        "/nix/store")))
+  "Remove from FILE occurrences of file names in STORE; return #t when
+store paths were encountered in FILE, #f otherwise.  This procedure is
+known as `nuke-refs' in Nixpkgs."
+  (define pattern
+    (let ((nix-base32-chars
+           '(#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9
+             #\a #\b #\c #\d #\f #\g #\h #\i #\j #\k #\l #\m #\n
+             #\p #\q #\r #\s #\v #\w #\x #\y #\z)))
+      `(,@(map char-set (string->list store))
+        ,(char-set #\/)
+        ,@(make-list 32 (list->char-set nix-base32-chars))
+        ,(char-set #\-))))
+
+  (with-fluids ((%default-port-encoding #f))
+    (with-atomic-file-replacement file
+      (lambda (in out)
+        ;; We cannot use `regexp-exec' here because it cannot deal with
+        ;; strings containing NUL characters.
+        (format #t "removing store references from `~a'...~%" file)
+        (setvbuf in _IOFBF 65536)
+        (setvbuf out _IOFBF 65536)
+        (fold-port-matches (lambda (match result)
+                             (put-string out store)
+                             (put-char out #\/)
+                             (put-string out
+                              "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-")
+                             #t)
+                           #f
+                           pattern
+                           in
+                           (lambda (char result)
+                             (put-char out char)
+                             result))))))
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)

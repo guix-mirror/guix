@@ -47,6 +47,39 @@
   (not (false-if-exception
         (alist-replace 'z 77 '((a . 1) (b . 2) (c . 3))))))
 
+(test-equal "fold-port-matches"
+  (make-list 3 "Guix")
+  (call-with-input-string "Guix is cool, Guix rocks, and it uses Guile, Guix!"
+    (lambda (port)
+      (fold-port-matches cons '() "Guix" port))))
+
+(test-equal "fold-port-matches, trickier"
+  (reverse '("Guix" "guix" "Guix" "guiX" "Guix"))
+  (call-with-input-string "Guix, guix, GuiGuixguiX, Guix"
+    (lambda (port)
+      (fold-port-matches cons '()
+                         (list (char-set #\G #\g)
+                               (char-set #\u)
+                               (char-set #\i)
+                               (char-set #\x #\X))
+                         port))))
+
+(test-equal "fold-port-matches, with unmatched chars"
+  '("Guix" #\, #\space
+    "guix" #\, #\space
+    #\G #\u #\i "Guix" "guiX" #\, #\space
+    "Guix")
+  (call-with-input-string "Guix, guix, GuiGuixguiX, Guix"
+    (lambda (port)
+      (reverse
+       (fold-port-matches cons '()
+                          (list (char-set #\G #\g)
+                                (char-set #\u)
+                                (char-set #\i)
+                                (char-set #\x #\X))
+                          port
+                          cons)))))
+
 (test-end)
 
 
@@ -55,4 +88,5 @@
 ;;; Local Variables:
 ;;; eval: (put 'test-assert 'scheme-indent-function 1)
 ;;; eval: (put 'test-equal 'scheme-indent-function 1)
+;;; eval: (put 'call-with-input-string 'scheme-indent-function 1)
 ;;; End:
