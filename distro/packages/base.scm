@@ -1,5 +1,6 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
 ;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -704,9 +705,9 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 
 (define (glibc-dynamic-linker system)
   "Return the name of Glibc's dynamic linker for SYSTEM."
-  (if (string=? system "x86_64-linux")
-      "ld-linux-x86-64.so.2"
-      (error "dynamic linker name not known for this system" system)))
+  (cond ((string=? system "x86_64-linux") "/lib/ld-linux-x86-64.so.2")
+        ((string=? system "i686-linux") "/lib/ld-linux.so.2")
+        (else (error "dynamic linker name not known for this system" system))))
 
 (define-public gcc-4.7
   (let ((stripped? #t))                         ; TODO: make this a parameter
@@ -725,83 +726,84 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                ("mpfr" ,mpfr)
                ("mpc" ,mpc)))           ; TODO: libelf, ppl, cloog, zlib, etc.
      (arguments
-      `(#:out-of-source? #t
-        #:strip-binaries? ,stripped?
-        #:configure-flags
-        `("--enable-plugin"
-          "--enable-languages=c,c++"
-          "--disable-multilib"
-          ,(let ((libc (assoc-ref %build-inputs "libc")))
-             (if libc
-                 (string-append "--with-native-system-header-dir=" libc
-                                "/include")
-                 "--without-headers")))
-        #:make-flags
-        (let ((libc (assoc-ref %build-inputs "libc")))
-          `(,@(if libc
-                  (list (string-append "LDFLAGS_FOR_BUILD="
-                                       "-L" libc "/lib "
-                                       "-Wl,-dynamic-linker "
-                                       "-Wl," libc
-                                       "/lib/ld-linux-x86-64.so.2"))
-                  '())
-            ,(string-append "BOOT_CFLAGS=-O2 "
-                            ,(if stripped? "-g0" "-g"))))
+      (lambda (system)
+        `(#:out-of-source? #t
+          #:strip-binaries? ,stripped?
+          #:configure-flags
+          `("--enable-plugin"
+            "--enable-languages=c,c++"
+            "--disable-multilib"
+            ,(let ((libc (assoc-ref %build-inputs "libc")))
+               (if libc
+                   (string-append "--with-native-system-header-dir=" libc
+                                  "/include")
+                   "--without-headers")))
+          #:make-flags
+          (let ((libc (assoc-ref %build-inputs "libc")))
+            `(,@(if libc
+                    (list (string-append "LDFLAGS_FOR_BUILD="
+                                         "-L" libc "/lib "
+                                         "-Wl,-dynamic-linker "
+                                         "-Wl," libc
+                                         ,(glibc-dynamic-linker system)))
+                    '())
+              ,(string-append "BOOT_CFLAGS=-O2 "
+                              ,(if stripped? "-g0" "-g"))))
 
-        #:tests? #f
-        #:phases
-        (alist-cons-before
-         'configure 'pre-configure
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let ((out  (assoc-ref outputs "out"))
-                 (libc (assoc-ref inputs "libc")))
-             (when libc
-               ;; The following is not performed for `--without-headers'
-               ;; cross-compiler builds.
+          #:tests? #f
+          #:phases
+          (alist-cons-before
+           'configure 'pre-configure
+           (lambda* (#:key inputs outputs #:allow-other-keys)
+             (let ((out  (assoc-ref outputs "out"))
+                   (libc (assoc-ref inputs "libc")))
+               (when libc
+                 ;; The following is not performed for `--without-headers'
+                 ;; cross-compiler builds.
 
-               ;; Fix the dynamic linker's file name.
-               (substitute* "gcc/config/i386/linux64.h"
-                 (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
-                  (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
-                          suffix
-                          (string-append libc "/lib/ld-linux-x86-64.so.2"))))
+                 ;; Fix the dynamic linker's file name.
+                 (substitute* "gcc/config/i386/linux64.h"
+                   (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
+                    (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
+                            suffix
+                            (string-append libc ,(glibc-dynamic-linker system)))))
 
-               ;; Tell where to find libstdc++, libc, and `?crt*.o', except
-               ;; `crt{begin,end}.o', which come with GCC.
+                 ;; Tell where to find libstdc++, libc, and `?crt*.o', except
+                 ;; `crt{begin,end}.o', which come with GCC.
 
-               ;; XXX: For crt*.o, use `STANDARD_STARTFILE_PREFIX' instead?  See
-               ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/gcc-pass1.html>.
-               (substitute* ("gcc/config/gnu-user.h"
-                             "gcc/config/i386/gnu-user.h"
-                             "gcc/config/i386/gnu-user64.h")
-                 (("#define LIB_SPEC (.*)$" _ suffix)
-                  (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib \
+                 ;; XXX: For crt*.o, use `STANDARD_STARTFILE_PREFIX' instead?  See
+                 ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/gcc-pass1.html>.
+                 (substitute* ("gcc/config/gnu-user.h"
+                               "gcc/config/i386/gnu-user.h"
+                               "gcc/config/i386/gnu-user64.h")
+                   (("#define LIB_SPEC (.*)$" _ suffix)
+                    (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib \
 -rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
-                          libc libc out out suffix))
-                 (("([^ ]*)crt([^\\.])\\.o" _ prefix suffix)
-                  (string-append libc "/lib/" prefix "crt" suffix ".o"))))
+                            libc libc out out suffix))
+                   (("([^ ]*)crt([^\\.])\\.o" _ prefix suffix)
+                    (string-append libc "/lib/" prefix "crt" suffix ".o"))))
 
-             ;; Don't retain a dependency on the build-time sed.
-             (substitute* "fixincludes/fixincl.x"
-               (("static char const sed_cmd_z\\[\\] =.*;")
-                "static char const sed_cmd_z[] = \"sed\";"))))
+               ;; Don't retain a dependency on the build-time sed.
+               (substitute* "fixincludes/fixincl.x"
+                 (("static char const sed_cmd_z\\[\\] =.*;")
+                  "static char const sed_cmd_z[] = \"sed\";"))))
 
-         (alist-cons-after
-          'configure 'post-configure
-          (lambda _
-            ;; Don't store configure flags, to avoid retaining references to
-            ;; build-time dependencies---e.g., `--with-ppl=/nix/store/xxx'.
-            (substitute* "Makefile"
-              (("^TOPLEVEL_CONFIGURE_ARGUMENTS=(.*)$" _ rest)
-               "TOPLEVEL_CONFIGURE_ARGUMENTS=\n")))
-          (alist-replace 'install
-                         (lambda* (#:key outputs #:allow-other-keys)
-                           (zero?
-                            (system* "make"
-                                     ,(if stripped?
-                                          "install-strip"
-                                          "install"))))
-                         %standard-phases)))))
+           (alist-cons-after
+            'configure 'post-configure
+            (lambda _
+              ;; Don't store configure flags, to avoid retaining references to
+              ;; build-time dependencies---e.g., `--with-ppl=/nix/store/xxx'.
+              (substitute* "Makefile"
+                (("^TOPLEVEL_CONFIGURE_ARGUMENTS=(.*)$" _ rest)
+                 "TOPLEVEL_CONFIGURE_ARGUMENTS=\n")))
+            (alist-replace 'install
+                           (lambda* (#:key outputs #:allow-other-keys)
+                             (zero?
+                              (system* "make"
+                                       ,(if stripped?
+                                            "install-strip"
+                                            "install"))))
+                           %standard-phases))))))
 
      (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
      (description "The GNU Compiler Collection")
@@ -1557,7 +1559,7 @@ identifier SYSTEM."
                     (ice-9 regex)
                     (srfi srfi-1)
                     (srfi srfi-26))
-         ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
+         ,@(substitute-keyword-arguments ((package-arguments gcc-4.7) system)
              ((#:configure-flags flags)
               `(append (list ,(string-append "--target="
                                              (boot-triplet system))
@@ -1762,7 +1764,7 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/lib/~a \"$@\"~%"
          ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
          ,@(substitute-keyword-arguments ((package-arguments gcc-boot0) system)
              ((#:configure-flags boot-flags)
-              (let loop ((args (package-arguments gcc-4.7)))
+              (let loop ((args ((package-arguments gcc-4.7) system)))
                 (match args
                   ((#:configure-flags normal-flags _ ...)
                    normal-flags)
