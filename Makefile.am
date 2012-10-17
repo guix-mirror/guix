@@ -70,15 +70,8 @@ TESTS =						\
   tests/build-utils.scm				\
   tests/packages.scm
 
-TESTS_ENVIRONMENT =								\
-  NIX_HASH="$(NIX_HASH)";							\
-  NIX_INSTANTIATE="$(NIX_INSTANTIATE)";						\
-  NIXPKGS="$(NIXPKGS)";								\
-  DISTRO_PATCH_DIRECTORY="$(top_srcdir)/distro/patches"				\
-  GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH";	\
-  export NIX_HASH NIX_INSTANTIATE NIXPKGS GUILE_LOAD_COMPILED_PATH;
-
 LOG_COMPILER =					\
+  $(top_builddir)/pre-inst-env			\
   $(GUILE) --no-auto-compile -L "$(top_srcdir)"
 
 EXTRA_DIST =					\
