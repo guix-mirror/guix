@@ -1967,7 +1967,7 @@ store.")
                                  ;; Since we use `-static', remove
                                  ;; `-export-dynamic'.
                                  (substitute* "configure"
-                                  (("-export-dynamic") "")))
+                                   (("-export-dynamic") "")))
                                %standard-phases)
                      ,@((package-arguments gawk) system)))))))
     `(,@(map (match-lambda
@@ -2035,6 +2035,10 @@ store.")
                           (copy-file source
                                      (string-append bin "/" name)))))
                       (alist-delete "coreutils" %build-inputs))
+
+            ;; Clear references to the store path.
+            (for-each remove-store-references
+                      (directory-contents bin))
 
             #t)))))
     (description "Statically-linked bootstrap binaries")
