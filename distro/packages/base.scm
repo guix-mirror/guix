@@ -1481,8 +1481,7 @@ previous value of the keyword argument."
                    'install (lambda* (#:key outputs #:allow-other-keys)
                               (let* ((out (assoc-ref outputs "out"))
                                      (bin (string-append out "/bin")))
-                                (mkdir out)
-                                (mkdir bin)
+                                (mkdir-p bin)
                                 (copy-file "make"
                                            (string-append bin "/make"))))
                    %standard-phases))))
@@ -1709,7 +1708,7 @@ identifier SYSTEM."
                            (out      (assoc-ref %outputs "out"))
                            (bindir   (string-append out "/bin"))
                            (triplet  ,(boot-triplet system)))
-                      (mkdir out) (mkdir bindir)
+                      (mkdir-p bindir)
                       (with-directory-excursion bindir
                         (for-each (lambda (tool)
                                     (symlink (string-append binutils "/bin/"
@@ -1807,7 +1806,7 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/lib/~a \"$@\"~%"
                              (assoc-ref %build-inputs "binutils")
                              out)
 
-                     (mkdir out) (mkdir bin)
+                     (mkdir-p bin)
                      (copy-file (assoc-ref %build-inputs "wrapper") ld)
                      (substitute* ld
                        (("@GUILE@")
@@ -2020,7 +2019,7 @@ store.")
 
           (let* ((out (assoc-ref %outputs "out"))
                  (bin (string-append out "/bin")))
-            (mkdir out) (mkdir bin)
+            (mkdir-p bin)
 
             ;; Copy Coreutils binaries.
             (let* ((coreutils (assoc-ref %build-inputs "coreutils"))
@@ -2127,17 +2126,11 @@ store.")
 
          (let ((in  (assoc-ref %build-inputs "guile"))
                (out (assoc-ref %outputs "out")))
-           (mkdir out)
-           (mkdir (string-append out "/share"))
-           (mkdir (string-append out "/share/guile"))
-           (mkdir (string-append out "/share/guile/2.0"))
+           (mkdir-p (string-append out "/share/guile/2.0"))
            (copy-recursively (string-append in "/share/guile/2.0")
                              (string-append out "/share/guile/2.0"))
 
-           (mkdir (string-append out "/lib"))
-           (mkdir (string-append out "/lib/guile"))
-           (mkdir (string-append out "/lib/guile/2.0"))
-           (mkdir (string-append out "/lib/guile/2.0/ccache"))
+           (mkdir-p (string-append out "/lib/guile/2.0/ccache"))
            (copy-recursively (string-append in "/lib/guile/2.0/ccache")
                              (string-append out "/lib/guile/2.0/ccache"))
 

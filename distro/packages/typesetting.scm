@@ -46,12 +46,10 @@
                 (("^MANDIR[[:blank:]]*=.*$")
                  (string-append "MANDIR = " out "/man\n")))
               (mkdir out)
-              (mkdir (string-append out "/bin"))  ; TODO: use `mkdir-p'
+              (mkdir (string-append out "/bin"))
               (mkdir (string-append out "/lib"))
               (mkdir (string-append out "/man"))
-              (mkdir doc)
-              (mkdir (string-append doc "/doc"))
-              (mkdir (string-append doc "/doc/lout")))))
+              (mkdir-p (string-append doc "/doc/lout")))))
         (install-man-phase
          '(lambda* (#:key outputs #:allow-other-keys)
             (zero? (system* "make" "installman"))))

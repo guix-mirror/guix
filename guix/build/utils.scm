@@ -26,6 +26,7 @@
   #:use-module (rnrs io ports)
   #:export (directory-exists?
             with-directory-excursion
+            mkdir-p
             set-path-environment-variable
             search-path-as-string->list
             list->search-path-as-string
@@ -61,6 +62,31 @@
        body ...)
      (lambda ()
        (chdir init)))))
+
+(define (mkdir-p dir)
+  "Create directory DIR and all its ancestors."
+  (define absolute?
+    (string-prefix? "/" dir))
+
+  (define not-slash
+    (char-set-complement (char-set #\/)))
+
+  (let loop ((components (string-tokenize dir not-slash))
+             (root       (if absolute?
+                             ""
+                             ".")))
+    (match components
+      ((head tail ...)
+       (let ((path (string-append root "/" head)))
+         (catch 'system-error
+           (lambda ()
+             (mkdir path)
+             (loop tail path))
+           (lambda args
+             (if (= EEXIST (system-error-errno args))
+                 (loop tail path)
+                 (apply throw args))))))
+      (() #t))))
 
 
 ;;;
