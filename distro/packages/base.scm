@@ -1424,6 +1424,46 @@ $out/bin/guile --version~%"
      (home-page #f)
      (license "LGPLv3+"))))
 
+(define (bootstrap-origin source)
+  "Return a variant of SOURCE, an <origin> instance, whose method uses
+%BOOTSTRAP-GUILE to do its job."
+  (define (boot fetch)
+    (lambda* (store url hash-algo hash #:optional name)
+      (fetch store url hash-algo hash
+             #:guile %bootstrap-guile)))
+
+  (let ((orig-method (origin-method source)))
+    (origin (inherit source)
+      (method (cond ((eq? orig-method http-fetch)
+                     (boot http-fetch))
+                    ((eq? orig-method ftp-fetch)
+                     (boot ftp-fetch))
+                    (else orig-method))))))
+
+(define package-with-bootstrap-guile
+  (memoize
+   (lambda (p)
+    "Return a variant of P such that all its origins are fetched with
+%BOOTSTRAP-GUILE."
+    (define rewritten-input
+      (match-lambda
+       ((name (? origin? o))
+        `(,name ,(bootstrap-origin o)))
+       ((name (? package? p) sub-drvs ...)
+        `(,name ,(package-with-bootstrap-guile p) ,@sub-drvs))
+       (x x)))
+
+    (package (inherit p)
+      (source (match (package-source p)
+                ((? origin? o) (bootstrap-origin o))
+                (s s)))
+      (inputs (map rewritten-input
+                   (package-inputs p)))
+      (native-inputs (map rewritten-input
+                          (package-native-inputs p)))
+      (propagated-inputs (map rewritten-input
+                              (package-propagated-inputs p)))))))
+
 (define (default-keyword-arguments args defaults)
   "Return ARGS augmented with any keyword/value from DEFAULTS for
 keywords not already present in ARGS."
@@ -1456,43 +1496,46 @@ previous value of the keyword argument."
           (reverse before)))))))
 
 (define gnu-make-boot0
-  (package (inherit gnu-make)
-    (name "make-boot0")
-    (location (source-properties->location (current-source-location)))
-    (arguments `(#:guile ,%bootstrap-guile
-                 #:implicit-inputs? #f
-                 #:tests? #f                      ; cannot run "make check"
-                 #:phases
-                 (alist-replace
-                  'build (lambda _
-                           (zero? (system* "./build.sh")))
+  (package-with-bootstrap-guile
+   (package (inherit gnu-make)
+     (name "make-boot0")
+     (location (source-properties->location (current-source-location)))
+     (arguments `(#:guile ,%bootstrap-guile
+                  #:implicit-inputs? #f
+                  #:tests? #f                  ; cannot run "make check"
+                  #:phases
                   (alist-replace
-                   'install (lambda* (#:key outputs #:allow-other-keys)
-                              (let* ((out (assoc-ref outputs "out"))
-                                     (bin (string-append out "/bin")))
-                                (mkdir-p bin)
-                                (copy-file "make"
-                                           (string-append bin "/make"))))
-                   %standard-phases))))
-    (inputs %bootstrap-inputs)))
+                   'build (lambda _
+                            (zero? (system* "./build.sh")))
+                   (alist-replace
+                    'install (lambda* (#:key outputs #:allow-other-keys)
+                               (let* ((out (assoc-ref outputs "out"))
+                                      (bin (string-append out "/bin")))
+                                 (mkdir-p bin)
+                                 (copy-file "make"
+                                            (string-append bin "/make"))))
+                    %standard-phases))))
+     (inputs %bootstrap-inputs))))
 
 (define diffutils-boot0
-  (let ((p (package-with-explicit-inputs diffutils
-                                         `(("make" ,gnu-make-boot0)
-                                           ,@%bootstrap-inputs)
-                                         #:guile %bootstrap-guile)))
-    (package (inherit p)
-      (location (source-properties->location (current-source-location)))
-      (arguments `(#:tests? #f               ; the test suite needs diffutils
-                   ,@(package-arguments p))))))
+  (package-with-bootstrap-guile
+   (let ((p (package-with-explicit-inputs diffutils
+                                          `(("make" ,gnu-make-boot0)
+                                            ,@%bootstrap-inputs)
+                                          #:guile %bootstrap-guile)))
+     (package (inherit p)
+       (location (source-properties->location (current-source-location)))
+       (arguments `(#:tests? #f         ; the test suite needs diffutils
+                    ,@(package-arguments p)))))))
 
 (define findutils-boot0
-  (package-with-explicit-inputs findutils
-                                `(("make" ,gnu-make-boot0)
-                                  ("diffutils" ,diffutils-boot0) ; for tests
-                                  ,@%bootstrap-inputs)
-                                (current-source-location)
-                                #:guile %bootstrap-guile))
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs findutils
+                                 `(("make" ,gnu-make-boot0)
+                                   ("diffutils" ,diffutils-boot0) ; for tests
+                                   ,@%bootstrap-inputs)
+                                 (current-source-location)
+                                 #:guile %bootstrap-guile)))
 
 
 (define %boot0-inputs
@@ -1524,120 +1567,123 @@ identifier SYSTEM."
 ;; GCC-BOOT0 (below) is built without any reference to the target libc.
 
 (define binutils-boot0
-  (package (inherit binutils)
-    (name "binutils-cross-boot0")
-    (arguments
-     (lambda (system)
-       `(#:guile ,%bootstrap-guile
-         #:implicit-inputs? #f
-         ,@(substitute-keyword-arguments (package-arguments binutils)
-             ((#:configure-flags cf)
-              `(list ,(string-append "--target=" (boot-triplet system))))))))
-    (inputs %boot0-inputs)))
+  (package-with-bootstrap-guile
+   (package (inherit binutils)
+     (name "binutils-cross-boot0")
+     (arguments
+      (lambda (system)
+        `(#:guile ,%bootstrap-guile
+          #:implicit-inputs? #f
+          ,@(substitute-keyword-arguments (package-arguments binutils)
+              ((#:configure-flags cf)
+               `(list ,(string-append "--target=" (boot-triplet system))))))))
+     (inputs %boot0-inputs))))
 
 (define gcc-boot0
-  (package (inherit gcc-4.7)
-    (name "gcc-cross-boot0")
-    (arguments
-     (lambda (system)
-       `(#:guile ,%bootstrap-guile
-         #:implicit-inputs? #f
-         #:modules ((guix build gnu-build-system)
-                    (guix build utils)
-                    (ice-9 regex)
-                    (srfi srfi-1)
-                    (srfi srfi-26))
-         ,@(substitute-keyword-arguments ((package-arguments gcc-4.7) system)
-             ((#:configure-flags flags)
-              `(append (list ,(string-append "--target="
-                                             (boot-triplet system))
+  (package-with-bootstrap-guile
+   (package (inherit gcc-4.7)
+     (name "gcc-cross-boot0")
+     (arguments
+      (lambda (system)
+        `(#:guile ,%bootstrap-guile
+          #:implicit-inputs? #f
+          #:modules ((guix build gnu-build-system)
+                     (guix build utils)
+                     (ice-9 regex)
+                     (srfi srfi-1)
+                     (srfi srfi-26))
+          ,@(substitute-keyword-arguments ((package-arguments gcc-4.7) system)
+              ((#:configure-flags flags)
+               `(append (list ,(string-append "--target="
+                                              (boot-triplet system))
 
-                             ;; No libc yet.
-                             "--without-headers"
+                              ;; No libc yet.
+                              "--without-headers"
 
-                             ;; Disable features not needed at this stage.
-                             "--disable-shared"
-                             "--enable-languages=c"
-                             "--disable-libmudflap"
-                             "--disable-libgomp"
-                             "--disable-libssp"
-                             "--disable-libquadmath"
-                             "--disable-decimal-float")
-                       (remove (cut string-match "--enable-languages.*" <>)
-                               ,flags)))
-             ((#:phases phases)
-              `(alist-cons-after
-                'unpack 'unpack-gmp&co
-                (lambda* (#:key inputs #:allow-other-keys)
-                  (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
-                        (mpfr (assoc-ref %build-inputs "mpfr-source"))
-                        (mpc  (assoc-ref %build-inputs "mpc-source")))
+                              ;; Disable features not needed at this stage.
+                              "--disable-shared"
+                              "--enable-languages=c"
+                              "--disable-libmudflap"
+                              "--disable-libgomp"
+                              "--disable-libssp"
+                              "--disable-libquadmath"
+                              "--disable-decimal-float")
+                        (remove (cut string-match "--enable-languages.*" <>)
+                                ,flags)))
+              ((#:phases phases)
+               `(alist-cons-after
+                 'unpack 'unpack-gmp&co
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
+                         (mpfr (assoc-ref %build-inputs "mpfr-source"))
+                         (mpc  (assoc-ref %build-inputs "mpc-source")))
 
-                    ;; To reduce the set of pre-built bootstrap inputs, build
-                    ;; GMP & co. from GCC.
-                    (for-each (lambda (source)
-                                (or (zero? (system* "tar" "xvf" source))
-                                    (error "failed to unpack tarball"
-                                           source)))
-                              (list gmp mpfr mpc))
+                     ;; To reduce the set of pre-built bootstrap inputs, build
+                     ;; GMP & co. from GCC.
+                     (for-each (lambda (source)
+                                 (or (zero? (system* "tar" "xvf" source))
+                                     (error "failed to unpack tarball"
+                                            source)))
+                               (list gmp mpfr mpc))
 
-                    ;; Create symlinks like `gmp' -> `gmp-5.0.5'.
-                    ,@(map (lambda (lib)
-                             `(symlink ,(package-full-name lib)
-                                       ,(package-name lib)))
-                           (list gmp mpfr mpc))
+                     ;; Create symlinks like `gmp' -> `gmp-5.0.5'.
+                     ,@(map (lambda (lib)
+                              `(symlink ,(package-full-name lib)
+                                        ,(package-name lib)))
+                            (list gmp mpfr mpc))
 
-                    ;; MPFR headers/lib are found under $(MPFR)/src, but
-                    ;; `configure' wrongfully tells MPC too look under
-                    ;; $(MPFR), so fix that.
-                    (substitute* "configure"
-                      (("extra_mpc_mpfr_configure_flags(.+)--with-mpfr-include=([^/]+)/mpfr(.*)--with-mpfr-lib=([^ ]+)/mpfr"
-                        _ equals include middle lib)
-                       (string-append "extra_mpc_mpfr_configure_flags" equals
-                                      "--with-mpfr-include=" include
-                                      "/mpfr/src" middle
-                                      "--with-mpfr-lib=" lib
-                                      "/mpfr/src"))
-                      (("gmpinc='-I([^ ]+)/mpfr -I([^ ]+)/mpfr" _ a b)
-                       (string-append "gmpinc='-I" a "/mpfr/src "
-                                      "-I" b "/mpfr/src"))
-                      (("gmplibs='-L([^ ]+)/mpfr" _ a)
-                       (string-append "gmplibs='-L" a "/mpfr/src")))))
-                (alist-cons-after
-                 'install 'symlink-libgcc_eh
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     ;; Glibc wants to link against libgcc_eh, so provide
-                     ;; it.
-                     (with-directory-excursion
-                         (string-append out "/lib/gcc/"
-                                        ,(boot-triplet system)
-                                        "/" ,(package-version gcc-4.7))
-                       (symlink "libgcc.a" "libgcc_eh.a"))))
-                 ,phases)))))))
+                     ;; MPFR headers/lib are found under $(MPFR)/src, but
+                     ;; `configure' wrongfully tells MPC too look under
+                     ;; $(MPFR), so fix that.
+                     (substitute* "configure"
+                       (("extra_mpc_mpfr_configure_flags(.+)--with-mpfr-include=([^/]+)/mpfr(.*)--with-mpfr-lib=([^ ]+)/mpfr"
+                         _ equals include middle lib)
+                        (string-append "extra_mpc_mpfr_configure_flags" equals
+                                       "--with-mpfr-include=" include
+                                       "/mpfr/src" middle
+                                       "--with-mpfr-lib=" lib
+                                       "/mpfr/src"))
+                       (("gmpinc='-I([^ ]+)/mpfr -I([^ ]+)/mpfr" _ a b)
+                        (string-append "gmpinc='-I" a "/mpfr/src "
+                                       "-I" b "/mpfr/src"))
+                       (("gmplibs='-L([^ ]+)/mpfr" _ a)
+                        (string-append "gmplibs='-L" a "/mpfr/src")))))
+                 (alist-cons-after
+                  'install 'symlink-libgcc_eh
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "out")))
+                      ;; Glibc wants to link against libgcc_eh, so provide
+                      ;; it.
+                      (with-directory-excursion
+                          (string-append out "/lib/gcc/"
+                                         ,(boot-triplet system)
+                                         "/" ,(package-version gcc-4.7))
+                        (symlink "libgcc.a" "libgcc_eh.a"))))
+                  ,phases)))))))
 
-    (inputs `(("gmp-source" ,(package-source gmp))
-              ("mpfr-source" ,(package-source mpfr))
-              ("mpc-source" ,(package-source mpc))
-              ("binutils-cross" ,binutils-boot0)
+     (inputs `(("gmp-source" ,(package-source gmp))
+               ("mpfr-source" ,(package-source mpfr))
+               ("mpc-source" ,(package-source mpc))
+               ("binutils-cross" ,binutils-boot0)
 
-              ;; Call it differently so that the builder can check whether
-              ;; the "libc" input is #f.
-              ("libc-native" ,@(assoc-ref %boot0-inputs "libc"))
-              ,@(alist-delete "libc" %boot0-inputs)))))
+               ;; Call it differently so that the builder can check whether
+               ;; the "libc" input is #f.
+               ("libc-native" ,@(assoc-ref %boot0-inputs "libc"))
+               ,@(alist-delete "libc" %boot0-inputs))))))
 
 (define linux-libre-headers-boot0
-  (package (inherit linux-libre-headers)
-    (arguments `(#:guile ,%bootstrap-guile
-                 #:implicit-inputs? #f
-                 ,@(package-arguments linux-libre-headers)))
-    (native-inputs
-     (let ((perl (package-with-explicit-inputs perl
-                                               %boot0-inputs
-                                               (current-source-location)
-                                               #:guile %bootstrap-guile)))
-       `(("perl" ,perl)
-         ,@%boot0-inputs)))))
+  (package-with-bootstrap-guile
+   (package (inherit linux-libre-headers)
+     (arguments `(#:guile ,%bootstrap-guile
+                  #:implicit-inputs? #f
+                  ,@(package-arguments linux-libre-headers)))
+     (native-inputs
+      (let ((perl (package-with-explicit-inputs perl
+                                                %boot0-inputs
+                                                (current-source-location)
+                                                #:guile %bootstrap-guile)))
+        `(("perl" ,perl)
+          ,@%boot0-inputs))))))
 
 (define %boot1-inputs
   ;; 2nd stage inputs.
@@ -1651,38 +1697,40 @@ identifier SYSTEM."
 (define-public glibc-final
   ;; The final libc, "cross-built".  If everything went well, the resulting
   ;; store path has no dependencies.
-  (package (inherit glibc)
-    (arguments
-     (lambda (system)
-      `(#:guile ,%bootstrap-guile
-        #:implicit-inputs? #f
+  (package-with-bootstrap-guile
+   (package (inherit glibc)
+     (arguments
+      (lambda (system)
+        `(#:guile ,%bootstrap-guile
+          #:implicit-inputs? #f
 
-        ;; Leave /bin/sh as the interpreter for `ldd', `sotruss', etc. to
-        ;; avoid keeping a reference to the bootstrap Bash.
-        #:patch-shebangs? #f
-        ,@(substitute-keyword-arguments (package-arguments glibc)
-            ((#:configure-flags flags)
-             `(append (list ,(string-append "--host=" (boot-triplet system))
-                            ,(string-append "--build="
-                                            (nix-system->gnu-triplet system))
-                            "BASH_SHELL=/bin/sh"
+          ;; Leave /bin/sh as the interpreter for `ldd', `sotruss', etc. to
+          ;; avoid keeping a reference to the bootstrap Bash.
+          #:patch-shebangs? #f
+          ,@(substitute-keyword-arguments (package-arguments glibc)
+              ((#:configure-flags flags)
+               `(append (list ,(string-append "--host=" (boot-triplet system))
+                              ,(string-append "--build="
+                                              (nix-system->gnu-triplet system))
+                              "BASH_SHELL=/bin/sh"
 
-                            ;; cross-rpcgen fails to build, because it gets
-                            ;; built with the cross-compiler instead of the
-                            ;; native compiler.  See also
-                            ;; <http://sourceware.org/ml/libc-alpha/2012-03/msg00325.html>.
-                            "--disable-obsolete-rpc")
-                      ,flags))))))
-    (propagated-inputs `(("linux-headers" ,linux-libre-headers-boot0)))
-    (inputs `(;; A native GCC is needed to build `cross-rpcgen'.
-              ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))
-              ,@%boot1-inputs))))
+                              ;; cross-rpcgen fails to build, because it gets
+                              ;; built with the cross-compiler instead of the
+                              ;; native compiler.  See also
+                              ;; <http://sourceware.org/ml/libc-alpha/2012-03/msg00325.html>.
+                              "--disable-obsolete-rpc")
+                        ,flags))))))
+     (propagated-inputs `(("linux-headers" ,linux-libre-headers-boot0)))
+     (inputs `( ;; A native GCC is needed to build `cross-rpcgen'.
+               ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))
+               ,@%boot1-inputs)))))
 
 (define gcc-boot0-wrapped
   ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
   ;; non-cross names.
   (package (inherit gcc-4.7)
     (name (string-append (package-name gcc-boot0) "-wrapped"))
+    (source #f)
     (build-system trivial-build-system)
     (arguments
      (lambda (system)
@@ -1821,16 +1869,18 @@ store.")
     ,@(alist-delete "gcc" %boot2-inputs)))
 
 (define-public bash-final
-  (package-with-explicit-inputs bash %boot3-inputs
-                                (current-source-location)
-                                #:guile %bootstrap-guile))
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs bash %boot3-inputs
+                                 (current-source-location)
+                                 #:guile %bootstrap-guile)))
 
 (define-public guile-final
-  (package-with-explicit-inputs guile-2.0
-                                `(("bash" ,bash-final)
-                                  ,@(alist-delete "bash" %boot3-inputs))
-                                (current-source-location)
-                                #:guile %bootstrap-guile))
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs guile-2.0
+                                 `(("bash" ,bash-final)
+                                   ,@(alist-delete "bash" %boot3-inputs))
+                                 (current-source-location)
+                                 #:guile %bootstrap-guile)))
 
 (define-public ld-wrapper
   ;; The final `ld' wrapper, which uses the final Guile.
