@@ -29,6 +29,8 @@
             with-directory-excursion
             mkdir-p
             copy-recursively
+            find-files
+
             set-path-environment-variable
             search-path-as-string->list
             list->search-path-as-string
@@ -116,6 +118,31 @@
                       #f)
                     #t
                     source))
+
+(define (find-files dir regexp)
+  "Return the list of files under DIR whose basename matches REGEXP."
+  (define file-rx
+    (if (regexp? regexp)
+        regexp
+        (make-regexp regexp)))
+
+  (file-system-fold (const #t)
+                    (lambda (file stat result)    ; leaf
+                      (if (regexp-exec file-rx (basename file))
+                          (cons file result)
+                          result))
+                    (lambda (dir stat result)     ; down
+                      result)
+                    (lambda (dir stat result)     ; up
+                      result)
+                    (lambda (file stat result)    ; skip
+                      result)
+                    (lambda (file stat errno result)
+                      (format (current-error-port) "find-files: ~a: ~a~%"
+                              file (strerror errno))
+                      #f)
+                    '()
+                    dir))
 
 
 ;;;
