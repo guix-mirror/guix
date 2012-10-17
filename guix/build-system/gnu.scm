@@ -132,6 +132,7 @@ package if GUILE is #f or omitted."
        (gnu-build #:source ,(if (derivation-path? source)
                                 (derivation-path->output-path source)
                                 source)
+                  #:system ,system
                   #:outputs %outputs
                   #:inputs %build-inputs
                   #:patches ,patches
