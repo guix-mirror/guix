@@ -29,7 +29,7 @@ let
         name = "guix-tarball";
         src = <guix>;
         buildInputs = with pkgs; [ guile ];
-        buildNativeInputs = with pkgs; [ gettext cvs pkgconfig ];
+        buildNativeInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
         configureFlags =
           [ "--with-nixpkgs=${nixpkgs}" "--with-nix-prefix=${pkgs.nix}" ];
       };
