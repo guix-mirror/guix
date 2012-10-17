@@ -2005,6 +2005,8 @@ store.")
                  (inputs
                   `(("patch/relocatable"
                      ,(search-patch "guile-relocatable.patch"))
+                    ("patch/utf8"
+                     ,(search-patch "guile-default-utf8.patch"))
                     ,@(package-inputs guile-2.0)))
                  (arguments
                   `(;; When `configure' checks for ltdl availability, it
@@ -2031,7 +2033,8 @@ store.")
                     ;; Allow Guile to be relocated, as is needed during
                     ;; bootstrap.
                     #:patches
-                    (list (assoc-ref %build-inputs "patch/relocatable"))
+                    (list (assoc-ref %build-inputs "patch/relocatable")
+                          (assoc-ref %build-inputs "patch/utf8"))
 
                     ;; There are uses of `dynamic-link' in
                     ;; {foreign,coverage}.test that don't fly here.
@@ -2094,6 +2097,7 @@ store.")
            (mkdir (string-append out "/bin"))
            (copy-file (string-append in "/bin/guile")
                       (string-append out "/bin/guile"))
+           (remove-store-references (string-append out "/bin/guile"))
            #t))))
     (inputs `(("guile" ,%guile-static)))))
 
