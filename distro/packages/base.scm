@@ -2101,4 +2101,32 @@ store.")
            #t))))
     (inputs `(("guile" ,%guile-static)))))
 
+(define %guile-bootstrap-tarball
+  ;; A tarball with the statically-linked, relocatable Guile.
+  (package (inherit %guile-static)
+    (name "guile-bootstrap-tarball")
+    (build-system trivial-build-system)
+    (inputs `(("tar" ,tar)
+              ("xz" ,xz)
+              ("guile" ,%guile-static-stripped)))
+    (arguments
+     (lambda (system)
+       `(#:modules ((guix build utils))
+                   #:builder
+                   (begin
+                     (use-modules (guix build utils))
+                     (let ((out   (assoc-ref %outputs "out"))
+                           (guile (assoc-ref %build-inputs "guile"))
+                           (tar   (assoc-ref %build-inputs "tar"))
+                           (xz    (assoc-ref %build-inputs "xz")))
+             (mkdir out)
+             (set-path-environment-variable "PATH" '("bin") (list tar xz))
+             (with-directory-excursion guile
+               (zero? (system* "tar" "cJvf"
+                               (string-append out "/guile-bootstrap-"
+                                              ,(package-version %guile-static)
+                                              "-" ,system
+                                              ".tar.xz")
+                               "."))))))))))
+
 ;;; base.scm ends here
