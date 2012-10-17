@@ -62,6 +62,31 @@ dist_patch_DATA =					\
   distro/patches/readline-link-ncurses.patch		\
   distro/patches/tar-gets-undeclared.patch
 
+bootstrapdir = $(pkgdatadir)/bootstrap
+bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
+
+dist_bootstrap_x86_64_linux_DATA =		\
+  distro/packages/bootstrap/x86_64-linux/bash	\
+  distro/packages/bootstrap/x86_64-linux/mkdir	\
+  distro/packages/bootstrap/x86_64-linux/tar	\
+  distro/packages/bootstrap/x86_64-linux/xz
+
+# Big bootstrap binaries are not included in the tarball.  Instead, they
+# are downloaded.
+nodist_bootstrap_x86_64_linux_DATA =					\
+  distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz
+
+DISTCLEANFILES = $(nodist_bootstrap_x86_64_linux_DATA)
+
+# Method to download a file from an external source.
+DOWNLOAD_FILE =								\
+  GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
+  $(GUILE) --no-auto-compile -L "$(top_srcdir)"				\
+           "$(top_srcdir)/build-aux/download.scm"
+
+distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz: guix/utils.go
+	$(DOWNLOAD_FILE) "$@" "0467a82cbe4136f60a79eb4176011bf88cf28ea19c9ad9defa365811ff8e11cf"
+
 nobase_nodist_guilemodule_DATA = $(GOBJECTS)
 
 TESTS =						\
@@ -77,6 +102,7 @@ LOG_COMPILER =					\
 
 EXTRA_DIST =					\
   .dir-locals.el				\
+  build-aux/download.scm			\
   srfi/srfi-64.scm				\
   srfi/srfi-64.upstream.scm			\
   tests/test.drv				\
@@ -93,6 +119,8 @@ CLEANFILES = $(GOBJECTS) *.log
 	LIBGCRYPT="$(LIBGCRYPT)"						\
 	DISTRO_PATCH_DIRECTORY="$(top_srcdir)/distro/patches"			\
 	DISTRO_INSTALLED_PATCH_DIRECTORY="$(patchdir)"				\
+	DISTRO_BOOTSTRAP_DIRECTORY="$(top_srcdir)/distro/packages/bootstrap"	\
+	DISTRO_INSTALLED_BOOTSTRAP_DIRECTORY="$(bootstrapdir)"			\
 	GUILE_AUTO_COMPILE=0							\
 	GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
 	$(GUILD) compile -L "$(top_srcdir)"					\

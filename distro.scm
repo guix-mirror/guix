@@ -24,6 +24,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-39)
   #:export (search-patch
+            search-bootstrap-binary
             %patch-directory
             find-packages-by-name))
 
@@ -41,9 +42,19 @@
    (or (getenv "DISTRO_PATCH_DIRECTORY")
        (compile-time-value (getenv "DISTRO_INSTALLED_PATCH_DIRECTORY")))))
 
+(define %bootstrap-binaries-directory
+  (make-parameter
+   (or (getenv "DISTRO_BOOTSTRAP_DIRECTORY")
+       (compile-time-value (getenv "DISTRO_INSTALLED_BOOTSTRAP_DIRECTORY")))))
+
 (define (search-patch file-name)
   "Search the patch FILE-NAME."
   (search-path (list (%patch-directory)) file-name))
+
+(define (search-bootstrap-binary file-name system)
+  "Search the bootstrap binary FILE-NAME for SYSTEM."
+  (search-path (list (%bootstrap-binaries-directory))
+               (string-append system "/" file-name)))
 
 (define %distro-module-directory
   ;; Absolute path of the (distro ...) module root.

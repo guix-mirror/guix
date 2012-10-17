@@ -44,3 +44,4 @@ config.cache
 /doc/guix.pdf
 /doc/stamp-vti
 /doc/version.texi
+/distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz

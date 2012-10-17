@@ -21,8 +21,11 @@
   #:use-module (guix packages)
   #:use-module (guix ftp)
   #:use-module (guix http)
+  #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
+  #:use-module ((guix store) #:select (add-to-store add-text-to-store))
+  #:use-module ((guix derivations) #:select (derivation))
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -1386,7 +1389,49 @@ with the Linux kernel.")
 
 (define %bootstrap-guile
   ;; The Guile used to run the build scripts of the initial derivations.
-  (nixpkgs-derivation* "guile"))
+  ;; It is just unpacked from a tarball containing a pre-built binary.
+  ;; This is typically built using %GUILE-BOOTSTRAP-TARBALL below.
+  ;;
+  ;; XXX: Would need libc's `libnss_files2.so' for proper `getaddrinfo'
+  ;; support (for /etc/services).
+  (let ((raw (build-system
+              (name "raw")
+              (description "Raw build system with direct store access")
+              (build (lambda* (store name source inputs #:key outputs system)
+                       (define (->store file)
+                         (add-to-store store file #t #t "sha256"
+                                       (search-bootstrap-binary file system)))
+
+                       (let* ((tar   (->store "tar"))
+                              (xz    (->store "xz"))
+                              (mkdir (->store "mkdir"))
+                              (bash  (->store "bash"))
+                              (guile (->store "guile-bootstrap-2.0.6.tar.xz"))
+                              (builder
+                               (add-text-to-store store
+                                                  "build-bootstrap-guile.sh"
+                                                  (format #f "
+echo \"unpacking bootstrap Guile to '$out'...\"
+~a $out
+cd $out
+~a -dc < ~a | ~a xv
+
+# Sanity check.
+$out/bin/guile --version~%"
+                                                          mkdir xz guile tar)
+                                                  (list mkdir xz guile tar))))
+                         (derivation store name system
+                                     bash `(,builder) '()
+                                     `((,bash) (,builder)))))))))
+   (package
+     (name "guile-bootstrap")
+     (version "2.0")
+     (source #f)
+     (build-system raw)
+     (description "Bootstrap Guile")
+     (long-description "Pre-built Guile for bootstrapping purposes.")
+     (home-page #f)
+     (license "LGPLv3+"))))
 
 (define (default-keyword-arguments args defaults)
   "Return ARGS augmented with any keyword/value from DEFAULTS for
