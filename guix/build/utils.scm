@@ -19,6 +19,7 @@
 (define-module (guix build utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
@@ -27,6 +28,7 @@
   #:export (directory-exists?
             with-directory-excursion
             mkdir-p
+            copy-recursively
             set-path-environment-variable
             search-path-as-string->list
             list->search-path-as-string
@@ -87,6 +89,33 @@
                  (loop tail path)
                  (apply throw args))))))
       (() #t))))
+
+(define* (copy-recursively source destination
+                           #:optional (log (current-output-port)))
+  "Copy SOURCE directory to DESTINATION."
+  (define strip-source
+    (let ((len (string-length source)))
+      (lambda (file)
+        (substring file len))))
+
+  (file-system-fold (const #t)                    ; enter?
+                    (lambda (file stat result)    ; leaf
+                      (let ((dest (string-append destination
+                                                 (strip-source file))))
+                        (format log "`~a' -> `~a'~%" file dest)
+                        (copy-file file dest)))
+                    (lambda (dir stat result)     ; down
+                      (mkdir-p (string-append destination
+                                              (strip-source dir))))
+                    (lambda (dir stat result)     ; up
+                      result)
+                    (const #t)                    ; skip
+                    (lambda (file stat errno result)
+                      (format (current-error-port) "i/o error: ~a: ~a~%"
+                              file (strerror errno))
+                      #f)
+                    #t
+                    source))
 
 
 ;;;

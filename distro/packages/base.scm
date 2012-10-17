@@ -2096,33 +2096,7 @@ store.")
      `(#:modules ((guix build utils))
        #:builder
        (let ()
-         (use-modules (ice-9 ftw)
-                      (guix build utils))
-
-         (define (copy-recursively source destination)
-           ;; Copy SOURCE directory to DESTINATION.
-           (with-directory-excursion source
-             (file-system-fold (const #t)
-                               (lambda (file stat result) ; leaf
-                                 (format #t "copying `~s/~s' to `~s'...~%"
-                                         source file destination)
-                                 (copy-file file
-                                            (string-append destination
-                                                           "/" file)))
-                               (lambda (dir stat result)  ; down
-                                 (let ((dir (string-append destination
-                                                           "/" dir)))
-                                   (unless (file-exists? dir)
-                                     (mkdir dir))))
-                               (lambda (dir stat result)  ; up
-                                 result)
-                               (const #t)                 ; skip
-                               (lambda (file stat errno result)
-                                 (format (current-error-port)
-                                         "i/o error: ~a: ~a~%" file
-                                         (strerror errno)))
-                               #t
-                               ".")))
+         (use-modules (guix build utils))
 
          (let ((in  (assoc-ref %build-inputs "guile"))
                (out (assoc-ref %outputs "out")))
