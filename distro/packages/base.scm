@@ -1256,8 +1256,8 @@ call interface, and powerful string processing.")
    (home-page "http://www.gnu.org/software/guile/")
    (license "LGPLv3+")))
 
-(define-public linux-headers
-  (let* ((version* "3.3.5")
+(define-public linux-libre-headers
+  (let* ((version* "3.3.8")
          (build-phase
           '(lambda* (#:key outputs #:allow-other-keys)
              (setenv "ARCH" "x86_64")       ; XXX
@@ -1276,16 +1276,16 @@ call interface, and powerful string processing.")
                       (lambda (p)
                         (format p "~a-default~%" ,version*))))))))
    (package
-    (name "linux-headers")
+    (name "linux-libre-headers")
     (version version*)
-    (source (origin                               ; TODO: use Linux-Libre
+    (source (origin
              (method http-fetch)
              (uri (string-append
-                   "http://www.kernel.org/pub/linux/kernel/v3.x/linux-"
-                   version ".tar.xz"))
+                   "http://linux-libre.fsfla.org/pub/linux-libre/releases/3.3.8-gnu/linux-libre-"
+                   version "-gnu.tar.xz"))
              (sha256
               (base32
-               "0i74jn47f6vs5kcvk8abvz3k08z32c9bbqw0sdjkdxwvr4jbczpv"))))
+               "0jkfh0z1s6izvdnc3njm39dhzp1cg8i06jv06izwqz9w9qsprvnl"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (arguments
@@ -1298,10 +1298,10 @@ call interface, and powerful string processing.")
                   'install ,install-phase
                   (alist-delete 'configure %standard-phases)))
        #:tests? #f))
-    (description "Linux kernel headers")
-    (long-description "Headers of the Linux kernel.")
+    (description "GNU Linux-Libre kernel headers")
+    (long-description "Headers of the Linux-Libre kernel.")
     (license "GPLv2")
-    (home-page "http://kernel.org/"))))
+    (home-page "http://www.gnu.org/software/linux-libre/"))))
 
 (define-public glibc
   (package
@@ -1318,7 +1318,7 @@ call interface, and powerful string processing.")
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
    ;; users should automatically pull Linux headers as well.
-   (propagated-inputs `(("linux-headers" ,linux-headers)))
+   (propagated-inputs `(("linux-headers" ,linux-libre-headers)))
 
    (arguments
     `(#:out-of-source? #t
@@ -1636,11 +1636,11 @@ identifier SYSTEM."
               ("libc-native" ,@(assoc-ref %boot0-inputs "libc"))
               ,@(alist-delete "libc" %boot0-inputs)))))
 
-(define linux-headers-boot0
-  (package (inherit linux-headers)
+(define linux-libre-headers-boot0
+  (package (inherit linux-libre-headers)
     (arguments `(#:guile ,%bootstrap-guile
                  #:implicit-inputs? #f
-                 ,@(package-arguments linux-headers)))
+                 ,@(package-arguments linux-libre-headers)))
     (native-inputs
      (let ((perl (package-with-explicit-inputs perl
                                                %boot0-inputs
@@ -1682,8 +1682,8 @@ identifier SYSTEM."
                             ;; native compiler.  See also
                             ;; <http://sourceware.org/ml/libc-alpha/2012-03/msg00325.html>.
                             "--disable-obsolete-rpc")
-                     ,flags))))))
-    (propagated-inputs `(("linux-headers" ,linux-headers-boot0)))
+                      ,flags))))))
+    (propagated-inputs `(("linux-headers" ,linux-libre-headers-boot0)))
     (inputs `(;; A native GCC is needed to build `cross-rpcgen'.
               ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))
               ,@%boot1-inputs))))
