@@ -90,6 +90,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -n, --dry-run          do not build the derivations"))
   (display (_ "
+      --local-build      build locally instead of resorting to substitutes"))
+  (display (_ "
   -c, --cores=N          allow the use of up to N CPU cores for the build"))
   (newline)
   (display (_ "
@@ -131,9 +133,12 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                     (if c
                         (alist-cons 'cores c result)
                         (leave (_ "~a: not a number~%") arg)))))
-        (option '(#\n "dry-run") #f #F
+        (option '(#\n "dry-run") #f #f
                 (lambda (opt name arg result)
-                  (alist-cons 'dry-run? #t result)))))
+                  (alist-cons 'dry-run? #t result)))
+        (option '("local-build") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'local-build? #t result)))))
 
 
 ;;;
@@ -198,7 +203,8 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
     ;; TODO: Add more options.
     (set-build-options %store
                        #:keep-failed? (assoc-ref opts 'keep-failed?)
-                       #:build-cores (or (assoc-ref opts 'cores) 0))
+                       #:build-cores (or (assoc-ref opts 'cores) 0)
+                       #:use-substitutes? (not (assoc-ref opts 'local-build?)))
 
     (if (assoc-ref opts 'derivations-only?)
         (format #t "~{~a~%~}" drv)
