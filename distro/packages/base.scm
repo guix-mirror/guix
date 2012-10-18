@@ -282,23 +282,13 @@ superior compression ratio of gzip is just a bonus.")
          '(lambda* (#:key outputs #:allow-other-keys)
             (let* ((out    (assoc-ref outputs "out"))
                    (libdir (string-append out "/lib")))
-              ;; XXX: mv libbz2.so* $libdir
-              (file-system-fold (const #t)
-                                (lambda (path stat result) ; leaf
-                                  (define base (basename path))
-                                  (when (string-prefix? "libbz2.so" base)
-                                    (format #t "installing `~a' to `~a'~%"
-                                            base libdir)
-                                    (copy-file path
-                                               (string-append libdir "/"
-                                                              base))))
-                                (const #t)        ; down
-                                (const #t)        ; up
-                                (const #t)        ; skip
-                                (lambda (path stat errno result)
-                                  (error "i/o error" path (strerror errno)))
-                                #t
-                                ".")))))
+              (for-each (lambda (file)
+                          (let ((base (basename file)))
+                            (format #t "installing `~a' to `~a'~%"
+                                    base libdir)
+                            (copy-file file
+                                       (string-append libdir "/" base))))
+                        (find-files "." "^libbz2\\.so"))))))
     (package
       (name "bzip2")
       (version "1.0.6")
@@ -313,18 +303,17 @@ superior compression ratio of gzip is just a bonus.")
       (arguments
        `(#:modules ((guix build gnu-build-system)
                     (guix build utils)
-                    (srfi srfi-1)
-                    (ice-9 ftw))
-                   #:phases
-                   (alist-cons-before
-                    'build 'build-shared-lib ,build-shared-lib
-                    (alist-cons-after
-                     'install 'fix-man-dir ,fix-man-dir
-                     (alist-cons-after
-                      'install 'install-shared-lib ,install-shared-lib
-                      (alist-delete 'configure %standard-phases))))
-                   #:make-flags (list (string-append "PREFIX="
-                                                     (assoc-ref %outputs "out")))))
+                    (srfi srfi-1))
+         #:phases
+         (alist-cons-before
+          'build 'build-shared-lib ,build-shared-lib
+          (alist-cons-after
+           'install 'fix-man-dir ,fix-man-dir
+           (alist-cons-after
+            'install 'install-shared-lib ,install-shared-lib
+            (alist-delete 'configure %standard-phases))))
+         #:make-flags (list (string-append "PREFIX="
+                                           (assoc-ref %outputs "out")))))
       (description "high-quality data compression program")
       (long-description
        "bzip2 is a freely available, patent free (see below), high-quality data
