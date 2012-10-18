@@ -1391,7 +1391,10 @@ with the Linux kernel.")
               (build (lambda* (store name source inputs #:key outputs system)
                        (define (->store file)
                          (add-to-store store file #t #t "sha256"
-                                       (search-bootstrap-binary file system)))
+                                       (or (search-bootstrap-binary file
+                                                                    system)
+                                           (error "bootstrap binary not found"
+                                                  file system))))
 
                        (let* ((tar   (->store "tar"))
                               (xz    (->store "xz"))
