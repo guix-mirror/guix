@@ -30,6 +30,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module ((guix utils) #:select (%current-system))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -44,14 +45,14 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 (define %store
   (open-connection))
 
-(define (derivations-from-package-expressions exp source?)
-  "Eval EXP and return the corresponding derivation path.  When SOURCE? is
-true, return the derivations of the package sources."
+(define (derivations-from-package-expressions exp system source?)
+  "Eval EXP and return the corresponding derivation path for SYSTEM.
+When SOURCE? is true, return the derivations of the package sources."
   (let ((p (eval exp (current-module))))
     (if (package? p)
         (if source?
             (package-source-derivation %store (package-source p))
-            (package-derivation %store p))
+            (package-derivation %store p system))
         (begin
           (format (current-error-port)
                   (_ "expression `~s' does not evaluate to a package")
@@ -65,7 +66,7 @@ true, return the derivations of the package sources."
 
 (define %default-options
   ;; Alist of default option values.
-  '())
+  `((system . ,(%current-system))))
 
 (define-syntax-rule (leave fmt args ...)
   "Format FMT and ARGS to the error port and exit."
@@ -83,6 +84,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   -e, --expression=EXPR  build the package EXPR evaluates to"))
   (display (_ "
   -S, --source           build the packages' source derivations"))
+  (display (_ "
+  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (_ "
   -d, --derivations      return the derivation paths of the given packages"))
   (display (_ "
@@ -116,6 +119,10 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
         (option '(#\S "source") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'source? #t result)))
+        (option '(#\s "system") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'system arg
+                              (alist-delete 'system result eq?))))
         (option '(#\d "derivations") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'derivations-only? #t result)))
@@ -162,9 +169,11 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
 
   (let* ((opts (parse-options))
          (src? (assoc-ref opts 'source?))
+         (sys  (assoc-ref opts 'system))
          (drv  (filter-map (match-lambda
                              (('expression . exp)
-                              (derivations-from-package-expressions exp src?))
+                              (derivations-from-package-expressions exp sys
+                                                                    src?))
                              (('argument . (? derivation-path? drv))
                               drv)
                              (('argument . (? string? x))
@@ -173,7 +182,7 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                                  (if src?
                                      (let ((s (package-source p)))
                                        (package-source-derivation %store s))
-                                     (package-derivation %store p)))
+                                     (package-derivation %store p sys)))
                                 (_
                                  (leave (_ "~A: unknown package~%") x))))
                              (_ #f))
