@@ -1722,7 +1722,7 @@ identifier SYSTEM."
                         (call-with-output-file "gcc"
                           (lambda (p)
                             (format p "#!/bin/sh
-exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/lib/~a \"$@\"~%"
+exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                     gcc triplet
                                     libc libc
                                     ,(glibc-dynamic-linker system))))
