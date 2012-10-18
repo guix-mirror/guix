@@ -80,12 +80,18 @@
         ((331) (%ftp-command (string-append "PASS " pass) 230 port))
         (else  (throw 'ftp-error port command code message))))))
 
-(define (ftp-open host)
-  "Open an FTP connection to HOST, and return it."
+(define* (ftp-open host #:optional (port 21))
+  "Open an FTP connection to HOST on PORT (a service-identifying string,
+or a TCP port number), and return it."
+  ;; Use 21 as the default PORT instead of "ftp", to avoid depending on
+  ;; libc's NSS, which is not available during bootstrap.
+
   (catch 'getaddrinfo-error
     (lambda ()
       (define addresses
-        (getaddrinfo host "ftp"))
+        (getaddrinfo host
+                     (if (number? port) (number->string port) port)
+                     (if (number? port) AI_NUMERICSERV 0)))
 
       (let loop ((addresses addresses))
         (let* ((ai (car addresses))
