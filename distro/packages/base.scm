@@ -1997,12 +1997,14 @@ store.")
     (source #f)
     (inputs %static-inputs)
     (arguments
-     `(#:builder
+     `(#:modules ((guix build utils))
+       #:builder
        (begin
          (use-modules (ice-9 ftw)
                       (ice-9 match)
                       (srfi srfi-1)
-                      (srfi srfi-26))
+                      (srfi srfi-26)
+                      (guix build utils))
 
          (let ()
           (define (directory-contents dir)
