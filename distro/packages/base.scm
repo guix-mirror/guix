@@ -2163,32 +2163,42 @@ store.")
            #t))))
     (inputs `(("guile" ,%guile-static)))))
 
-(define %guile-bootstrap-tarball
-  ;; A tarball with the statically-linked, relocatable Guile.
-  (package (inherit %guile-static)
-    (name "guile-bootstrap-tarball")
+(define (tarball-package pkg)
+  "Return a package containing a tarball of PKG."
+  (package (inherit pkg)
+    (location (source-properties->location (current-source-location)))
+    (name (string-append (package-name pkg) "-tarball"))
     (build-system trivial-build-system)
     (inputs `(("tar" ,tar)
               ("xz" ,xz)
-              ("guile" ,%guile-static-stripped)))
+              ("input" ,pkg)))
     (arguments
      (lambda (system)
-       `(#:modules ((guix build utils))
-                   #:builder
-                   (begin
-                     (use-modules (guix build utils))
-                     (let ((out   (assoc-ref %outputs "out"))
-                           (guile (assoc-ref %build-inputs "guile"))
-                           (tar   (assoc-ref %build-inputs "tar"))
-                           (xz    (assoc-ref %build-inputs "xz")))
-             (mkdir out)
-             (set-path-environment-variable "PATH" '("bin") (list tar xz))
-             (with-directory-excursion guile
-               (zero? (system* "tar" "cJvf"
-                               (string-append out "/guile-bootstrap-"
-                                              ,(package-version %guile-static)
-                                              "-" ,system
-                                              ".tar.xz")
-                               "."))))))))))
+       (let ((name    (package-name pkg))
+             (version (package-version pkg)))
+         `(#:modules ((guix build utils))
+           #:builder
+           (begin
+             (use-modules (guix build utils))
+             (let ((out   (assoc-ref %outputs "out"))
+                   (input (assoc-ref %build-inputs "input"))
+                   (tar   (assoc-ref %build-inputs "tar"))
+                   (xz    (assoc-ref %build-inputs "xz")))
+               (mkdir out)
+               (set-path-environment-variable "PATH" '("bin") (list tar xz))
+               (with-directory-excursion input
+                 (zero? (system* "tar" "cJvf"
+                                 (string-append out "/"
+                                                ,name "-" ,version
+                                                "-" ,system ".tar.xz")
+                                 ".")))))))))))
+
+(define %bootstrap-binaries-tarball
+  ;; A tarball with the statically-linked bootstrap binaries.
+  (tarball-package %static-binaries))
+
+(define %guile-bootstrap-tarball
+  ;; A tarball with the statically-linked, relocatable Guile.
+  (tarball-package %guile-static-stripped))
 
 ;;; base.scm ends here
