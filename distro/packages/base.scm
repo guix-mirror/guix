@@ -2091,6 +2091,53 @@ store.")
     (license #f)
     (home-page #f)))
 
+(define %binutils-static
+  ;; Statically-linked Binutils.
+  (package (inherit binutils)
+    (name "binutils-static")
+    (arguments
+     `(#:configure-flags '("--disable-gold")
+       #:strip-flags '("--strip-all")
+       #:phases (alist-cons-before
+                 'configure 'all-static
+                 (lambda _
+                   ;; The `-all-static' libtool flag can only be passed
+                   ;; after `configure', since configure tests don't use
+                   ;; libtool, and only for executables built with libtool.
+                   (substitute* ("binutils/Makefile.in"
+                                 "gas/Makefile.in"
+                                 "ld/Makefile.in")
+                     (("^LDFLAGS =(.*)$" line)
+                      (string-append line
+                                     "\nAM_LDFLAGS = -static -all-static\n"))))
+                 %standard-phases)))))
+
+(define %binutils-static-stripped
+  ;; The subset of Binutils that we need.
+  (package (inherit %binutils-static)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+
+         (setvbuf (current-output-port) _IOLBF)
+         (let* ((in  (assoc-ref %build-inputs "binutils"))
+                (out (assoc-ref %outputs "out"))
+                (bin (string-append out "/bin")))
+           (mkdir-p bin)
+           (for-each (lambda (file)
+                       (let ((target (string-append bin "/" file)))
+                         (format #t "copying `~a'...~%" file)
+                         (copy-file (string-append in "/bin/" file)
+                                    target)
+                         (remove-store-references target)))
+                     '("ar" "as" "ld" "nm"  "objcopy" "objdump"
+                       "ranlib" "readelf" "size" "strings" "strip"))
+           #t))))
+    (inputs `(("binutils" ,%binutils-static)))))
+
 (define %guile-static
   ;; A statically-linked Guile that is relocatable--i.e., it can search
   ;; .scm and .go files relative to its installation directory, rather
@@ -2196,6 +2243,10 @@ store.")
 (define %bootstrap-binaries-tarball
   ;; A tarball with the statically-linked bootstrap binaries.
   (tarball-package %static-binaries))
+
+(define %binutils-bootstrap-tarball
+  ;; A tarball with the statically-linked Binutils programs.
+  (tarball-package %binutils-static-stripped))
 
 (define %guile-bootstrap-tarball
   ;; A tarball with the statically-linked, relocatable Guile.
