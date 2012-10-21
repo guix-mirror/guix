@@ -2169,6 +2169,35 @@ store.")
            #t))))
     (inputs `(("libc" ,glibc-final)))))
 
+(define %gcc-stripped
+  (package (inherit gcc-final)
+    (name "gcc-stripped")
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+
+         (setvbuf (current-output-port) _IOLBF)
+         (let* ((out    (assoc-ref %outputs "out"))
+                (bindir (string-append out "/bin"))
+                (libdir (string-append out "/lib"))
+                (gcc    (assoc-ref %build-inputs "gcc")))
+           (copy-recursively (string-append gcc "/bin") bindir)
+           (for-each remove-store-references
+                     (find-files bindir ".*"))
+
+           (mkdir-p libdir)
+           (for-each (lambda (file)
+                       (let ((target (string-append libdir "/"
+                                                    (basename file))))
+                         (copy-file file target)
+                         (remove-store-references target)))
+                     (find-files (string-append gcc "/lib") "^libgcc_s.*"))
+           #t))))
+    (inputs `(("gcc" ,gcc-final)))))
+
 (define %guile-static
   ;; A statically-linked Guile that is relocatable--i.e., it can search
   ;; .scm and .go files relative to its installation directory, rather
@@ -2282,6 +2311,10 @@ store.")
 (define %glibc-bootstrap-tarball
   ;; A tarball with GNU libc's shared libraries, dynamic linker, and headers.
   (tarball-package %glibc-stripped))
+
+(define %gcc-bootstrap-tarball
+  ;; A tarball with a dynamic-linked GCC and its headers.
+  (tarball-package %gcc-stripped))
 
 (define %guile-bootstrap-tarball
   ;; A tarball with the statically-linked, relocatable Guile.
