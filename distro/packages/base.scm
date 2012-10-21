@@ -2138,6 +2138,37 @@ store.")
            #t))))
     (inputs `(("binutils" ,%binutils-static)))))
 
+(define %glibc-stripped
+  ;; GNU libc's essential shared libraries, dynamic linker, and headers,
+  ;; with all references to store directories stripped.  As a result,
+  ;; libc.so is unusable and need to be patched for proper relocation.
+  (package (inherit glibc-final)
+    (name "glibc-stripped")
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+
+         (setvbuf (current-output-port) _IOLBF)
+         (let* ((out    (assoc-ref %outputs "out"))
+                (libdir (string-append out "/lib"))
+                (incdir (string-append out "/include"))
+                (libc   (assoc-ref %build-inputs "libc")))
+           (mkdir-p libdir)
+           (for-each (lambda (file)
+                       (let ((target (string-append libdir "/"
+                                                    (basename file))))
+                         (copy-file file target)
+                         (remove-store-references target)))
+                     (find-files (string-append libc "/lib")
+                                 "^(crt.*|ld.*|lib(c|m|dl|rt|pthread|nsl|util).*\\.so|libc_nonshared\\.a)$"))
+
+           (copy-recursively (string-append libc "/include") incdir)
+           #t))))
+    (inputs `(("libc" ,glibc-final)))))
+
 (define %guile-static
   ;; A statically-linked Guile that is relocatable--i.e., it can search
   ;; .scm and .go files relative to its installation directory, rather
@@ -2247,6 +2278,10 @@ store.")
 (define %binutils-bootstrap-tarball
   ;; A tarball with the statically-linked Binutils programs.
   (tarball-package %binutils-static-stripped))
+
+(define %glibc-bootstrap-tarball
+  ;; A tarball with GNU libc's shared libraries, dynamic linker, and headers.
+  (tarball-package %glibc-stripped))
 
 (define %guile-bootstrap-tarball
   ;; A tarball with the statically-linked, relocatable Guile.
