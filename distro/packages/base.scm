@@ -1514,6 +1514,54 @@ check whether everything is alright."
                         "ld"                      ; the program to test
                         "Bootstrap binaries of the GNU Binutils"))
 
+(define %bootstrap-glibc
+  ;; The initial libc.
+  (package
+    (name "glibc-bootstrap")
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:modules ((guix build utils))
+       #:builder
+       (let ((out     (assoc-ref %outputs "out"))
+             (tar     (assoc-ref %build-inputs "tar"))
+             (xz      (assoc-ref %build-inputs "xz"))
+             (tarball (assoc-ref %build-inputs "tarball")))
+         (use-modules (guix build utils))
+
+         (mkdir out)
+         (copy-file tarball "binaries.tar.xz")
+         (system* xz "-d" "binaries.tar.xz")
+         (let ((builddir (getcwd)))
+           (with-directory-excursion out
+             (system* tar "xvf"
+                      (string-append builddir
+                                     "/binaries.tar"))
+             (chmod "lib" #o755)
+
+             ;; Patch libc.so so it refers to the right path.
+             (substitute* "lib/libc.so"
+               (("/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-glibc([^/]+)/")
+                (string-append "/" (basename out) "/"))))))))
+    (inputs
+     `(("tar" ,(lambda (system)
+                 (search-bootstrap-binary "tar" system)))
+       ("xz"  ,(lambda (system)
+                 (search-bootstrap-binary "xz" system)))
+       ("tarball" ,(lambda (system)
+                     (bootstrap-origin
+                      (origin
+                       (method http-fetch)
+                       (uri (string-append %bootstrap-base-url "/"
+                                           system "/glibc-2.16.0.tar.xz"))
+                       (sha256
+                        (base32 "1qbqmzjxsda74qmzl2rb7049iajary7lvznbym8m2xvqvyid8r2l"))))))))
+    (description "Bootstrap binaries and headers of the GNU C Library")
+    (long-description #f)
+    (home-page #f)))
+
 (define package-with-bootstrap-guile
   (memoize
    (lambda (p)
