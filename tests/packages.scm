@@ -95,6 +95,25 @@
            (equal? '(hello guix)
                    (call-with-input-file (string-append p "/test") read))))))
 
+(test-assert "trivial with system-dependent input"
+  (let* ((p (package (inherit (dummy-package "trivial-system-dependent-input"))
+              (build-system trivial-build-system)
+              (source #f)
+              (arguments
+               `(#:guile ,%bootstrap-guile
+                 #:builder
+                 (let ((out  (assoc-ref %outputs "out"))
+                       (bash (assoc-ref %build-inputs "bash")))
+                   (zero? (system* bash "-c"
+                                   (format #f "echo hello > ~a" out))))))
+              (inputs `(("bash" ,(lambda (system)
+                                   (search-bootstrap-binary "bash"
+                                                            system)))))))
+         (d (package-derivation %store p)))
+    (and (build-derivations %store (list d))
+         (let ((p (pk 'drv d (derivation-path->output-path d))))
+           (eq? 'hello (call-with-input-file p read))))))
+
 (test-assert "GNU Hello"
   (let ((hello (package-with-explicit-inputs hello %bootstrap-inputs
                                              #:guile %bootstrap-guile)))

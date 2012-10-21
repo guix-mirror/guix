@@ -227,6 +227,51 @@ recursively."
 (define* (package-derivation store package
                              #:optional (system (%current-system)))
   "Return the derivation of PACKAGE for SYSTEM."
+  (define (intern file)
+    ;; Add FILE to the store.  Set the `recursive?' bit to #t, so that
+    ;; file permissions are preserved.
+    (add-to-store store (basename file)
+                  #t #t "sha256" file))
+
+  (define expand-input
+    ;; Expand the given input tuple such that it contains only
+    ;; references to derivation paths or store paths.
+    (match-lambda
+     (((? string? name) (? package? package))
+      (list name (package-derivation store package)))
+     (((? string? name) (? package? package)
+       (? string? sub-drv))
+      (list name (package-derivation store package)
+            sub-drv))
+     (((? string? name)
+       (and (? string?) (? derivation-path?) drv))
+      (list name drv))
+     (((? string? name)
+       (and (? string?) (? file-exists? file)))
+      ;; Add FILE to the store.  When FILE is in the sub-directory of a
+      ;; store path, it needs to be added anyway, so it can be used as a
+      ;; source.
+      (list name (intern file)))
+     (((? string? name) (? origin? source))
+      (list name (package-source-derivation store source)))
+     ((and i ((? string? name) (? procedure? proc) sub-drv ...))
+      ;; This form allows PROC to make a SYSTEM-dependent choice.
+
+      ;; XXX: Currently PROC must return a .drv, a store path, a local
+      ;; file name, or an <origin>.  If it were allowed to return a
+      ;; package, then `transitive-inputs' and co. would need to be
+      ;; adjusted.
+      (let ((input (proc system)))
+        (if (or (string? input) (origin? input))
+            (expand-input (cons* name input sub-drv))
+            (raise (condition (&package-input-error
+                               (package package)
+                               (input   i)))))))
+     (x
+      (raise (condition (&package-input-error
+                         (package package)
+                         (input   x)))))))
+
   (or (cached-derivation package system)
 
       ;; Compute the derivation and cache the result.  Caching is
@@ -241,31 +286,7 @@ recursively."
              outputs)
           ;; TODO: For `search-paths', add a builder prologue that calls
           ;; `set-path-environment-variable'.
-          (let ((inputs (map (match-lambda
-                              (((? string? name) (? package? package))
-                               (list name (package-derivation store package)))
-                              (((? string? name) (? package? package)
-                                (? string? sub-drv))
-                               (list name (package-derivation store package)
-                                     sub-drv))
-                              (((? string? name)
-                                (and (? string?) (? derivation-path?) drv))
-                               (list name drv))
-                              (((? string? name)
-                                (and (? string?) (? file-exists? file)))
-                               ;; Add FILE to the store.  When FILE is in the
-                               ;; sub-directory of a store path, it needs to be
-                               ;; added anyway, so it can be used as a source.
-                               (list name
-                                     (add-to-store store (basename file)
-                                                   #t #f "sha256" file)))
-                              (((? string? name) (? origin? source))
-                               (list name
-                                     (package-source-derivation store source)))
-                              (x
-                               (raise (condition (&package-input-error
-                                                  (package package)
-                                                  (input   x))))))
+          (let ((inputs (map expand-input
                              (package-transitive-inputs package))))
 
             (apply builder
