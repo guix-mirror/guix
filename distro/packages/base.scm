@@ -1443,6 +1443,77 @@ $out/bin/guile --version~%"
                      (boot ftp-fetch))
                     (else orig-method))))))
 
+(define (package-from-tarball name* source* program-to-test description*)
+  "Return a package that correspond to the extraction of SOURCE*.
+PROGRAM-TO-TEST is a program to run after extraction of SOURCE*, to
+check whether everything is alright."
+  (package
+    (name name*)
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:guile ,%bootstrap-guile
+       #:modules ((guix build utils))
+       #:builder
+       (let ((out     (assoc-ref %outputs "out"))
+             (tar     (assoc-ref %build-inputs "tar"))
+             (xz      (assoc-ref %build-inputs "xz"))
+             (tarball (assoc-ref %build-inputs "tarball")))
+         (use-modules (guix build utils))
+
+         (mkdir out)
+         (copy-file tarball "binaries.tar.xz")
+         (system* xz "-d" "binaries.tar.xz")
+         (let ((builddir (getcwd)))
+           (with-directory-excursion out
+             (and (zero? (system* tar "xvf"
+                                  (string-append builddir "/binaries.tar")))
+                  (zero? (system* (string-append "bin/" ,program-to-test)
+                                  "--version"))))))))
+    (inputs
+     `(("tar" ,(lambda (system)
+                 (search-bootstrap-binary "tar" system)))
+       ("xz"  ,(lambda (system)
+                 (search-bootstrap-binary "xz" system)))
+       ("tarball" ,(lambda (system)
+                     (bootstrap-origin (source* system))))))
+    (description description*)
+    (long-description #f)
+    (home-page #f)))
+
+(define %bootstrap-base-url
+  ;; This is where the initial binaries come from.
+  "http://www.fdn.fr/~lcourtes/software/guix/packages")
+
+(define %bootstrap-coreutils&co
+  (package-from-tarball "bootstrap-binaries"
+                        (lambda (system)
+                          (origin
+                           (method http-fetch)
+                           (uri (string-append
+                                 %bootstrap-base-url "/"
+                                 system "/static-binaries.tar.xz"))
+                           (sha256
+                            (base32
+                             "0bvhkzahjgf6w5i3db5bjgq8kqm6xdr23lig0s1p8fgdqbfp0bzm"))))
+                        "true"                    ; the program to test
+                        "Bootstrap binaries of Coreutils, Awk, etc."))
+
+(define %bootstrap-binutils
+  (package-from-tarball "binutils-bootstrap"
+                        (lambda (system)
+                          (origin
+                           (method http-fetch)
+                           (uri (string-append
+                                 %bootstrap-base-url "/"
+                                 system "/binutils-static-2.22.tar.xz"))
+                           (sha256
+                            (base32
+                             "1cz1rwqhswgrr14kzbkaj3k32kzgv2b6mmzvc6ssbbz8k2m8jmqa"))))
+                        "ld"                      ; the program to test
+                        "Bootstrap binaries of the GNU Binutils"))
+
 (define package-with-bootstrap-guile
   (memoize
    (lambda (p)
