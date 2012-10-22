@@ -324,6 +324,23 @@
                               get-bytevector-all))))
                   files)))))
 
+(test-assert "build-expression->derivation with modules"
+  (let* ((builder  `(begin
+                      (use-modules (guix build utils))
+                      (let ((out (assoc-ref %outputs "out")))
+                        (mkdir-p (string-append out "/guile/guix/nix"))
+                        #t)))
+         (drv-path (build-expression->derivation %store
+                                                 "test-with-modules"
+                                                 (%current-system)
+                                                 builder '()
+                                                 #:modules
+                                                 '((guix build utils)))))
+    (and (build-derivations %store (list drv-path))
+         (let* ((p (derivation-path->output-path drv-path))
+                (s (stat (string-append p "/guile/guix/nix"))))
+           (eq? (stat:type s) 'directory)))))
+
 (test-skip (if (false-if-exception (getaddrinfo "ftp.gnu.org" "http"))
                0
                1))

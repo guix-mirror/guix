@@ -453,27 +453,27 @@ known in advance, such as a file download."
   ;; when using `build-expression->derivation'.
   (make-parameter (false-if-exception (nixpkgs-derivation* "guile"))))
 
+(define (parent-directories file-name)
+  "Return the list of parent dirs of FILE-NAME, in the order in which an
+`mkdir -p' implementation would make them."
+  (let ((not-slash (char-set-complement (char-set #\/))))
+    (reverse
+     (fold (lambda (dir result)
+             (match result
+               (()
+                (list dir))
+               ((prev _ ...)
+                (cons (string-append prev "/" dir)
+                      result))))
+           '()
+           (remove (cut string=? <> ".")
+                   (string-tokenize (dirname file-name) not-slash))))))
+
 (define* (imported-files store files
                          #:key (name "file-import") (system (%current-system)))
   "Return a derivation that imports FILES into STORE.  FILES must be a list
 of (FINAL-PATH . FILE-NAME) pairs; each FILE-NAME is read from the file
 system, imported, and appears under FINAL-PATH in the resulting store path."
-  (define (parent-dirs file-name)
-    ;; Return the list of parent dirs of FILE-NAME, in the order in which an
-    ;; `mkdir -p' implementation would make them.
-    (let ((not-slash (char-set-complement (char-set #\/))))
-      (reverse
-       (fold (lambda (dir result)
-               (match result
-                 (()
-                  (list dir))
-                 ((prev _ ...)
-                  (cons (string-append prev "/" dir)
-                        result))))
-             '()
-             (remove (cut string=? <> ".")
-                     (string-tokenize (dirname file-name) not-slash))))))
-
   (let* ((files   (map (match-lambda
                         ((final-path . file-name)
                          (list final-path
@@ -485,7 +485,7 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
              (mkdir %output) (chdir %output)
              ,@(append-map (match-lambda
                             ((final-path store-path)
-                             (append (match (parent-dirs final-path)
+                             (append (match (parent-directories final-path)
                                        (() '())
                                        ((head ... tail)
                                         (append (map (lambda (d)
@@ -515,6 +515,46 @@ search path."
                     modules)))
     (imported-files store files #:name name #:system system)))
 
+(define* (compiled-modules store modules
+                           #:key (name "module-import-compiled")
+                           (system (%current-system)))
+  "Return a derivation that builds a tree containing the `.go' files
+corresponding to MODULES.  All the MODULES are built in a context where
+they can refer to each other."
+  (let* ((module-drv (imported-modules store modules
+                                       #:system system))
+         (module-dir (derivation-path->output-path module-drv))
+         (files      (map (lambda (m)
+                            (let ((f (string-join (map symbol->string m)
+                                                  "/")))
+                              (cons (string-append f ".go")
+                                    (string-append module-dir "/" f ".scm"))))
+                      modules)))
+    (define builder
+      `(begin
+         (use-modules (system base compile))
+         (let ((out (assoc-ref %outputs "out")))
+           (mkdir out)
+           (chdir out))
+
+         (set! %load-path
+               (cons ,module-dir %load-path))
+
+         ,@(map (match-lambda
+                 ((output . input)
+                  (let ((make-parent-dirs (map (lambda (dir)
+                                                 `(unless (file-exists? ,dir)
+                                                    (mkdir ,dir)))
+                                               (parent-directories output))))
+                   `(begin
+                      ,@make-parent-dirs
+                      (compile-file ,input
+                                    #:output-file ,output
+                                    #:opts %auto-compilation-options)))))
+                files)))
+
+    (build-expression->derivation store name system builder
+                                  `(("modules" ,module-drv)))))
 
 (define* (build-expression->derivation store name system exp inputs
                                        #:key (outputs '("out"))
@@ -571,6 +611,11 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
                                              drv)))))
                                inputs))
 
+                      ,@(if (null? modules)
+                            '()
+                            ;; Remove our own settings.
+                            '((unsetenv "GUILE_LOAD_COMPILED_PATH")))
+
                       ;; Guile sets it, but remove it to avoid conflicts when
                       ;; building Guile-using packages.
                       (unsetenv "LD_LIBRARY_PATH")))
@@ -585,19 +630,30 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
                                               (remove module-form? exp))
                                              (_ `(,exp))))))
                                       (map second inputs)))
-         (mod-drv  (if (null? modules)
-                       #f
-                       (imported-modules store modules)))
+         (mod-drv  (and (pair? modules)
+                        (imported-modules store modules)))
          (mod-dir  (and mod-drv
-                        (derivation-path->output-path mod-drv))))
+                        (derivation-path->output-path mod-drv)))
+         (go-drv   (and (pair? modules)
+                        (compiled-modules store modules)))
+         (go-dir   (and go-drv
+                        (derivation-path->output-path go-drv))))
     (derivation store name system guile
                 `("--no-auto-compile"
                   ,@(if mod-dir `("-L" ,mod-dir) '())
                   ,builder)
-                env-vars
+
+                ;; When MODULES is non-empty, shamelessly clobber
+                ;; $GUILE_LOAD_COMPILED_PATH.
+                (if go-dir
+                    `(("GUILE_LOAD_COMPILED_PATH" . ,go-dir)
+                      ,@(alist-delete "GUILE_LOAD_COMPILED_PATH"
+                                      env-vars))
+                    env-vars)
+
                 `((,(or guile-for-build (%guile-for-build)))
                   (,builder)
                   ,@(map cdr inputs)
-                  ,@(if mod-drv `((,mod-drv)) '()))
+                  ,@(if mod-drv `((,mod-drv) (,go-drv)) '()))
                 #:hash hash #:hash-algo hash-algo
                 #:outputs outputs)))
