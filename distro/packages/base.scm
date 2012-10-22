@@ -2288,15 +2288,53 @@ store.")
            #t))))
     (inputs `(("libc" ,glibc-final)))))
 
-(define %gcc-stripped
+(define %gcc-static
+  ;; A statically-linked GCC, with stripped-down functionality.
   (package (inherit gcc-final)
+    (name "gcc-static")
+    (arguments
+     (lambda (system)
+       `(#:modules ((guix build utils)
+                    (guix build gnu-build-system)
+                    (srfi srfi-1)
+                    (srfi srfi-26)
+                    (ice-9 regex))
+         ,@(substitute-keyword-arguments ((package-arguments gcc-final) system)
+             ((#:guile _) #f)
+             ((#:implicit-inputs? _) #t)
+             ((#:configure-flags flags)
+              `(append (list
+                        "--disable-shared"
+                        "--disable-plugin"
+                        "--enable-languages=c"
+                        "--disable-libmudflap"
+                        "--disable-libgomp"
+                        "--disable-libssp"
+                        "--disable-libquadmath"
+                        "--disable-decimal-float")
+                       (remove (cut string-match "--(.*plugin|enable-languages)" <>)
+                               ,flags)))
+             ((#:make-flags flags)
+              `(cons "BOOT_LDFLAGS=-static" ,flags))))))
+    (inputs `(("gmp-source" ,(package-source gmp))
+              ("mpfr-source" ,(package-source mpfr))
+              ("mpc-source" ,(package-source mpc))
+              ("binutils" ,binutils-final)
+              ,@(package-inputs gcc-4.7)))))
+
+(define %gcc-stripped
+  ;; The subset of GCC files needed for bootstrap.
+  (package (inherit gcc-4.7)
     (name "gcc-stripped")
     (build-system trivial-build-system)
+    (source #f)
     (arguments
      `(#:modules ((guix build utils))
        #:builder
        (begin
-         (use-modules (guix build utils))
+         (use-modules (srfi srfi-1)
+                      (srfi srfi-26)
+                      (guix build utils))
 
          (setvbuf (current-output-port) _IOLBF)
          (let* ((out    (assoc-ref %outputs "out"))
@@ -2307,15 +2345,12 @@ store.")
            (for-each remove-store-references
                      (find-files bindir ".*"))
 
-           (mkdir-p libdir)
-           (for-each (lambda (file)
-                       (let ((target (string-append libdir "/"
-                                                    (basename file))))
-                         (copy-file file target)
-                         (remove-store-references target)))
-                     (find-files (string-append gcc "/lib") "^libgcc_s.*"))
+           (copy-recursively (string-append gcc "/lib") libdir)
+           (for-each remove-store-references
+                     (remove (cut string-suffix? ".h" <>)
+                             (find-files libdir ".*")))
            #t))))
-    (inputs `(("gcc" ,gcc-final)))))
+    (inputs `(("gcc" ,%gcc-static)))))
 
 (define %guile-static
   ;; A statically-linked Guile that is relocatable--i.e., it can search
