@@ -759,9 +759,6 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 
                  ;; Tell where to find libstdc++, libc, and `?crt*.o', except
                  ;; `crt{begin,end}.o', which come with GCC.
-
-                 ;; XXX: For crt*.o, use `STANDARD_STARTFILE_PREFIX' instead?  See
-                 ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/gcc-pass1.html>.
                  (substitute* ("gcc/config/gnu-user.h"
                                "gcc/config/i386/gnu-user.h"
                                "gcc/config/i386/gnu-user64.h")
@@ -769,8 +766,11 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                     (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib \
 -rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
                             libc libc out out suffix))
-                   (("([^ ]*)crt([^\\.])\\.o" _ prefix suffix)
-                    (string-append libc "/lib/" prefix "crt" suffix ".o"))))
+                   (("#define STARTFILE_SPEC.*$" line)
+                    (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
+#define STANDARD_STARTFILE_PREFIX_2 \"\"
+~a~%"
+                            libc line))))
 
                ;; Don't retain a dependency on the build-time sed.
                (substitute* "fixincludes/fixincl.x"
