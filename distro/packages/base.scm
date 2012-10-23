@@ -2282,7 +2282,7 @@ store.")
                          (copy-file file target)
                          (remove-store-references target)))
                      (find-files (string-append libc "/lib")
-                                 "^(crt.*|ld.*|lib(c|m|dl|rt|pthread|nsl|util).*\\.so|libc_nonshared\\.a)$"))
+                                 "^(crt.*|ld.*|lib(c|m|dl|rt|pthread|nsl|util).*\\.so(\\..*)?|libc_nonshared\\.a)$"))
 
            (copy-recursively (string-append libc "/include") incdir)
            #t))))
