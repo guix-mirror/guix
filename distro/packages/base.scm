@@ -2274,7 +2274,8 @@ store.")
          (let* ((out    (assoc-ref %outputs "out"))
                 (libdir (string-append out "/lib"))
                 (incdir (string-append out "/include"))
-                (libc   (assoc-ref %build-inputs "libc")))
+                (libc   (assoc-ref %build-inputs "libc"))
+                (linux  (assoc-ref %build-inputs "linux-headers")))
            (mkdir-p libdir)
            (for-each (lambda (file)
                        (let ((target (string-append libdir "/"
@@ -2285,8 +2286,30 @@ store.")
                                  "^(crt.*|ld.*|lib(c|m|dl|rt|pthread|nsl|util).*\\.so(\\..*)?|libc_nonshared\\.a)$"))
 
            (copy-recursively (string-append libc "/include") incdir)
+
+           ;; Copy some of the Linux-Libre headers that glibc headers
+           ;; refer to.
+           (mkdir (string-append incdir "/linux"))
+           (for-each (lambda (file)
+                       (copy-file (string-append linux "/include/linux/" file)
+                                  (string-append incdir "/linux/"
+                                                 (basename file))))
+                     '("limits.h" "errno.h" "socket.h" "kernel.h"
+                       "sysctl.h" "param.h"))
+
+           (mkdir (string-append incdir "/asm"))
+           (for-each (lambda (file)
+                       (copy-file (string-append linux "/include/asm/" file)
+                                  (string-append incdir "/asm/"
+                                                 (basename file))))
+                     '("types.h" "unistd.h" "ioctls.h" "socket.h"
+                       "param.h" "errno.h"))
+
+           (copy-recursively (string-append linux "/include/asm-generic")
+                             (string-append incdir "/asm-generic"))
            #t))))
-    (inputs `(("libc" ,glibc-final)))))
+    (inputs `(("libc" ,glibc-final)
+              ("linux-headers" ,linux-libre-headers)))))
 
 (define %gcc-static
   ;; A statically-linked GCC, with stripped-down functionality.
