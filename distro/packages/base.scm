@@ -1507,7 +1507,7 @@ check whether everything is alright."
                            (method http-fetch)
                            (uri (string-append
                                  %bootstrap-base-url "/"
-                                 system "/binutils-static-2.22.tar.xz"))
+                                 system "/binutils-2.22.tar.xz"))
                            (sha256
                             (base32
                              "1cz1rwqhswgrr14kzbkaj3k32kzgv2b6mmzvc6ssbbz8k2m8jmqa"))))
