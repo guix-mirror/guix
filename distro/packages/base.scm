@@ -2337,10 +2337,11 @@ store.")
                       (guix build utils))
 
          (setvbuf (current-output-port) _IOLBF)
-         (let* ((out    (assoc-ref %outputs "out"))
-                (bindir (string-append out "/bin"))
-                (libdir (string-append out "/lib"))
-                (gcc    (assoc-ref %build-inputs "gcc")))
+         (let* ((out        (assoc-ref %outputs "out"))
+                (bindir     (string-append out "/bin"))
+                (libdir     (string-append out "/lib"))
+                (libexecdir (string-append out "/libexec"))
+                (gcc        (assoc-ref %build-inputs "gcc")))
            (copy-recursively (string-append gcc "/bin") bindir)
            (for-each remove-store-references
                      (find-files bindir ".*"))
@@ -2349,6 +2350,11 @@ store.")
            (for-each remove-store-references
                      (remove (cut string-suffix? ".h" <>)
                              (find-files libdir ".*")))
+
+           (copy-recursively (string-append gcc "/libexec")
+                             libexecdir)
+           (for-each remove-store-references
+                     (find-files libexecdir ".*"))
            #t))))
     (inputs `(("gcc" ,%gcc-static)))))
 
