@@ -1543,8 +1543,8 @@ check whether everything is alright."
 
              ;; Patch libc.so so it refers to the right path.
              (substitute* "lib/libc.so"
-               (("/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-glibc([^/]+)/")
-                (string-append "/" (basename out) "/"))))))))
+               (("/[^ ]+/lib/(libc|ld)" _ prefix)
+                (string-append out "/lib/" prefix))))))))
     (inputs
      `(("tar" ,(lambda (system)
                  (search-bootstrap-binary "tar" system)))
@@ -1557,7 +1557,8 @@ check whether everything is alright."
                        (uri (string-append %bootstrap-base-url "/"
                                            system "/glibc-2.16.0.tar.xz"))
                        (sha256
-                        (base32 "1qbqmzjxsda74qmzl2rb7049iajary7lvznbym8m2xvqvyid8r2l"))))))))
+                        (base32
+                         "1xamrl1d6y3b0l98gmih4ac8aiqnfps1rhb62z0wxr7chisiqwan"))))))))
     (description "Bootstrap binaries and headers of the GNU C Library")
     (long-description #f)
     (home-page #f)))
