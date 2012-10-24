@@ -16,7 +16,9 @@
 # You should have received a copy of the GNU General Public License
 # along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-bin_SCRIPTS = guix-build
+bin_SCRIPTS =					\
+  guix-build					\
+  guix-download
 
 MODULES =					\
   guix/utils.scm				\

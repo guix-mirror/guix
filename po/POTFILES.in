@@ -5,3 +5,4 @@ distro/packages/databases.scm
 distro/packages/guile.scm
 distro/packages/typesetting.scm
 guix-build.in
+guix-download.in
