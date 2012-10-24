@@ -1558,7 +1558,7 @@ check whether everything is alright."
                                            system "/glibc-2.16.0.tar.xz"))
                        (sha256
                         (base32
-                         "1xamrl1d6y3b0l98gmih4ac8aiqnfps1rhb62z0wxr7chisiqwan"))))))))
+                         "1a6sq876l8x16bi6p0jznhb20kghbvxbp1amsyqp1907by9fg0hn"))))))))
     (description "Bootstrap binaries and headers of the GNU C Library")
     (long-description #f)
     (home-page #f)))
@@ -2374,16 +2374,11 @@ store.")
                                   (string-append incdir "/linux/"
                                                  (basename file))))
                      '("limits.h" "errno.h" "socket.h" "kernel.h"
-                       "sysctl.h" "param.h"))
+                       "sysctl.h" "param.h" "ioctl.h" "types.h"
+                       "posix_types.h" "stddef.h"))
 
-           (mkdir (string-append incdir "/asm"))
-           (for-each (lambda (file)
-                       (copy-file (string-append linux "/include/asm/" file)
-                                  (string-append incdir "/asm/"
-                                                 (basename file))))
-                     '("types.h" "unistd.h" "ioctls.h" "socket.h"
-                       "param.h" "errno.h"))
-
+           (copy-recursively (string-append linux "/include/asm")
+                             (string-append incdir "/asm"))
            (copy-recursively (string-append linux "/include/asm-generic")
                              (string-append incdir "/asm-generic"))
            #t))))
