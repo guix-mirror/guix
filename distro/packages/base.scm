@@ -1563,6 +1563,72 @@ check whether everything is alright."
     (long-description #f)
     (home-page #f)))
 
+(define %bootstrap-gcc
+  ;; The initial GCC.  Uses binaries from a tarball typically built by
+  ;; %GCC-BOOTSTRAP-TARBALL.
+  (package
+    (name "gcc-bootstrap")
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     (lambda (system)
+       `(#:guile ,%bootstrap-guile
+         #:modules ((guix build utils))
+         #:builder
+         (let ((out     (assoc-ref %outputs "out"))
+               (tar     (assoc-ref %build-inputs "tar"))
+               (xz      (assoc-ref %build-inputs "xz"))
+               (bash    (assoc-ref %build-inputs "bash"))
+               (libc    (assoc-ref %build-inputs "libc"))
+               (tarball (assoc-ref %build-inputs "tarball")))
+           (use-modules (guix build utils)
+                        (ice-9 popen))
+
+           (mkdir out)
+           (copy-file tarball "binaries.tar.xz")
+           (system* xz "-d" "binaries.tar.xz")
+           (let ((builddir (getcwd))
+                 (bindir   (string-append out "/bin")))
+             (with-directory-excursion out
+               (system* tar "xvf"
+                        (string-append builddir "/binaries.tar")))
+
+             (with-directory-excursion bindir
+               (chmod "." #o755)
+               (rename-file "gcc" ".gcc-wrapped")
+               (call-with-output-file "gcc"
+                 (lambda (p)
+                   (format p "#!~a
+exec ~a/bin/.gcc-wrapped -B~a/lib \
+     -Wl,-rpath -Wl,~a/lib \
+     -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
+                           bash
+                           out libc libc libc
+                           ,(glibc-dynamic-linker system))))
+
+               (chmod "gcc" #o555)))))))
+    (inputs
+     `(("tar" ,(lambda (system)
+                 (search-bootstrap-binary "tar" system)))
+       ("xz"  ,(lambda (system)
+                 (search-bootstrap-binary "xz" system)))
+       ("bash" ,(lambda (system)
+                  (search-bootstrap-binary "bash" system)))
+       ("libc" ,%bootstrap-glibc)
+       ("tarball" ,(lambda (system)
+                     (bootstrap-origin
+                      (origin
+                       (method http-fetch)
+                       (uri (string-append %bootstrap-base-url "/"
+                                           system "/gcc-4.7.2.tar.xz"))
+                       (sha256
+                        (base32
+                         "07piqzcdaksjbcj037y5gdbh9dfqwzjivg6fkhgg8kif82ibwxxr"))))))))
+    (description "Bootstrap binaries of the GNU Compiler Collection")
+    (long-description #f)
+    (home-page #f)))
+
 (define package-with-bootstrap-guile
   (memoize
    (lambda (p)
