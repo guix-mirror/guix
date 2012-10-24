@@ -1496,7 +1496,7 @@ check whether everything is alright."
                                  system "/static-binaries.tar.xz"))
                            (sha256
                             (base32
-                             "0bvhkzahjgf6w5i3db5bjgq8kqm6xdr23lig0s1p8fgdqbfp0bzm"))))
+                             "0azisn8l2b3cvgni9k0ahzsxs5cxrj0hmf38zgpq3k6pggk3zbfm"))))
                         "true"                    ; the program to test
                         "Bootstrap binaries of Coreutils, Awk, etc."))
 
@@ -2200,9 +2200,21 @@ store.")
                                      (string-append bin "/" name)))))
                       (alist-delete "coreutils" %build-inputs))
 
+            ;; But of course, there are exceptions to this rule.
+            (let ((grep (assoc-ref %build-inputs "grep")))
+              (copy-file (string-append grep "/bin/fgrep")
+                         (string-append bin "/fgrep"))
+              (copy-file (string-append grep "/bin/egrep")
+                         (string-append bin "/egrep")))
+
             ;; Clear references to the store path.
             (for-each remove-store-references
                       (directory-contents bin))
+
+            (with-directory-excursion bin
+              ;; Programs such as Perl's build system want these aliases.
+              (symlink "bash" "sh")
+              (symlink "gawk" "awk"))
 
             #t)))))
     (description "Statically-linked bootstrap binaries")
