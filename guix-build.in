@@ -66,7 +66,8 @@ When SOURCE? is true, return the derivations of the package sources."
 
 (define %default-options
   ;; Alist of default option values.
-  `((system . ,(%current-system))))
+  `((system . ,(%current-system))
+    (substitutes? . #t)))
 
 (define-syntax-rule (leave fmt args ...)
   "Format FMT and ARGS to the error port and exit."
@@ -93,7 +94,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -n, --dry-run          do not build the derivations"))
   (display (_ "
-      --local-build      build locally instead of resorting to substitutes"))
+      --no-substitutes   build instead of resorting to pre-built substitutes"))
   (display (_ "
   -c, --cores=N          allow the use of up to N CPU cores for the build"))
   (newline)
@@ -143,9 +144,10 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
         (option '(#\n "dry-run") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'dry-run? #t result)))
-        (option '("local-build") #f #f
+        (option '("no-substitutes") #f #f
                 (lambda (opt name arg result)
-                  (alist-cons 'local-build? #t result)))))
+                  (alist-cons 'substitutes? #f
+                              (alist-delete 'substitutes? result))))))
 
 
 ;;;
@@ -213,7 +215,7 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
     (set-build-options %store
                        #:keep-failed? (assoc-ref opts 'keep-failed?)
                        #:build-cores (or (assoc-ref opts 'cores) 0)
-                       #:use-substitutes? (not (assoc-ref opts 'local-build?)))
+                       #:use-substitutes? (assoc-ref opts 'substitutes?))
 
     (if (assoc-ref opts 'derivations-only?)
         (format #t "~{~a~%~}" drv)
