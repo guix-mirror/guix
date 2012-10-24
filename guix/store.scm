@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix store)
+  #:use-module (guix utils)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
@@ -44,6 +45,7 @@
             close-connection
             set-build-options
             valid-path?
+            query-path-hash
             add-text-to-store
             add-to-store
             build-derivations
@@ -217,7 +219,7 @@
       (write-string ")" p))))
 
 (define-syntax write-arg
-  (syntax-rules (integer boolean file string string-list)
+  (syntax-rules (integer boolean file string string-list base16)
     ((_ integer arg p)
      (write-int arg p))
     ((_ boolean arg p)
@@ -227,10 +229,12 @@
     ((_ string arg p)
      (write-string arg p))
     ((_ string-list arg p)
-     (write-string-list arg p))))
+     (write-string-list arg p))
+    ((_ base16 arg p)
+     (write-string (bytevector->base16-string arg) p))))
 
 (define-syntax read-arg
-  (syntax-rules (integer boolean string store-path)
+  (syntax-rules (integer boolean string store-path base16)
     ((_ integer p)
      (read-int p))
     ((_ boolean p)
@@ -238,7 +242,9 @@
     ((_ string p)
      (read-string p))
     ((_ store-path p)
-     (read-store-path p))))
+     (read-store-path p))
+    ((_ hash p)
+     (base16-string->bytevector (read-string p)))))
 
 
 ;; remote-store.cc
@@ -390,6 +396,10 @@ again until #t is returned or an error is raised."
 (define-operation (valid-path? (string path))
   "Return #t when PATH is a valid store path."
   boolean)
+
+(define-operation (query-path-hash (string path))
+  "Return the SHA256 hash of PATH as a bytevector."
+  base16)
 
 (define-operation (add-text-to-store (string name) (string text)
                                      (string-list references))

@@ -124,8 +124,9 @@
          (succeeded? (build-derivations %store (list drv-path))))
     (and succeeded?
          (let ((p (derivation-path->output-path drv-path)))
-           (equal? (string->utf8 "hello")
-                   (call-with-input-file p get-bytevector-all))))))
+           (and (equal? (string->utf8 "hello")
+                        (call-with-input-file p get-bytevector-all))
+                (bytevector? (query-path-hash %store p)))))))
 
 (test-assert "multiple-output derivation"
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
