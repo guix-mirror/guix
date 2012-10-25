@@ -451,7 +451,7 @@ known in advance, such as a file download."
 (define %guile-for-build
   ;; The derivation of the Guile to be used within the build environment,
   ;; when using `build-expression->derivation'.
-  (make-parameter (false-if-exception (nixpkgs-derivation* "guile"))))
+  (make-parameter #f))
 
 (define (parent-directories file-name)
   "Return the list of parent dirs of FILE-NAME, in the order in which an
@@ -470,7 +470,9 @@ known in advance, such as a file download."
                    (string-tokenize (dirname file-name) not-slash))))))
 
 (define* (imported-files store files
-                         #:key (name "file-import") (system (%current-system)))
+                         #:key (name "file-import")
+                         (system (%current-system))
+                         (guile (%guile-for-build)))
   "Return a derivation that imports FILES into STORE.  FILES must be a list
 of (FINAL-PATH . FILE-NAME) pairs; each FILE-NAME is read from the file
 system, imported, and appears under FINAL-PATH in the resulting store path."
@@ -497,11 +499,13 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
                                      `((symlink ,store-path ,final-path)))))
                            files))))
     (build-expression->derivation store name (%current-system)
-                                  builder files)))
+                                  builder files
+                                  #:guile-for-build guile)))
 
 (define* (imported-modules store modules
                            #:key (name "module-import")
-                           (system (%current-system)))
+                           (system (%current-system))
+                           (guile (%guile-for-build)))
   "Return a derivation that contains the source files of MODULES, a list of
 module names such as `(ice-9 q)'.  All of MODULES must be in the current
 search path."
@@ -513,16 +517,19 @@ search path."
                                 ".scm")))
                         (cons f (search-path %load-path f))))
                     modules)))
-    (imported-files store files #:name name #:system system)))
+    (imported-files store files #:name name #:system system
+                    #:guile guile)))
 
 (define* (compiled-modules store modules
                            #:key (name "module-import-compiled")
-                           (system (%current-system)))
+                           (system (%current-system))
+                           (guile (%guile-for-build)))
   "Return a derivation that builds a tree containing the `.go' files
 corresponding to MODULES.  All the MODULES are built in a context where
 they can refer to each other."
   (let* ((module-drv (imported-modules store modules
-                                       #:system system))
+                                       #:system system
+                                       #:guile guile))
          (module-dir (derivation-path->output-path module-drv))
          (files      (map (lambda (m)
                             (let ((f (string-join (map symbol->string m)
@@ -554,7 +561,8 @@ they can refer to each other."
                 files)))
 
     (build-expression->derivation store name system builder
-                                  `(("modules" ,module-drv)))))
+                                  `(("modules" ,module-drv))
+                                  #:guile-for-build guile)))
 
 (define* (build-expression->derivation store name system exp inputs
                                        #:key (outputs '("out"))
@@ -575,9 +583,11 @@ failed.
 
 EXP is built using GUILE-FOR-BUILD (a derivation).  When GUILE-FOR-BUILD is
 omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
+  (define guile-drv
+    (or guile-for-build (%guile-for-build)))
+
   (define guile
-    (string-append (derivation-path->output-path (or guile-for-build
-                                                     (%guile-for-build)))
+    (string-append (derivation-path->output-path guile-drv)
                    "/bin/guile"))
 
   (define module-form?
@@ -631,11 +641,11 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
                                              (_ `(,exp))))))
                                       (map second inputs)))
          (mod-drv  (and (pair? modules)
-                        (imported-modules store modules)))
+                        (imported-modules store modules #:guile guile-drv)))
          (mod-dir  (and mod-drv
                         (derivation-path->output-path mod-drv)))
          (go-drv   (and (pair? modules)
-                        (compiled-modules store modules)))
+                        (compiled-modules store modules #:guile guile-drv)))
          (go-dir   (and go-drv
                         (derivation-path->output-path go-drv))))
     (derivation store name system guile

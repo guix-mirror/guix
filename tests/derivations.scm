@@ -21,6 +21,8 @@
   #:use-module (guix derivations)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module ((guix packages) #:select (package-derivation))
+  #:use-module ((distro packages base) #:select (%bootstrap-guile))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -35,6 +37,11 @@
 
 (define %store
   (false-if-exception (open-connection)))
+
+(when %store
+  ;; By default, use %BOOTSTRAP-GUILE for the current system.
+  (let ((drv (package-derivation %store %bootstrap-guile)))
+    (%guile-for-build drv)))
 
 (define (directory-contents dir)
   "Return an alist representing the contents of DIR."
