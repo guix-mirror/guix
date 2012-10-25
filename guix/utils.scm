@@ -460,11 +460,12 @@ starting from the right of S."
    ;; Capture the build-time value of $NIXPKGS.
    (compile-time-value (getenv "NIXPKGS"))))
 
-(define (nixpkgs-derivation attribute)
+(define* (nixpkgs-derivation attribute #:optional (system (%current-system)))
   "Return the derivation path of ATTRIBUTE in Nixpkgs."
   (let* ((p (open-pipe* OPEN_READ (or (getenv "NIX_INSTANTIATE")
                                       "nix-instantiate")
-                        "-A" attribute (%nixpkgs-directory)))
+                        "-A" attribute (%nixpkgs-directory)
+                        "--argstr" "system" system))
          (l (read-line p))
          (s (close-pipe p)))
     (and (zero? (status:exit-val s))
