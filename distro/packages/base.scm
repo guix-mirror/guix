@@ -1558,7 +1558,7 @@ check whether everything is alright."
                                            system "/glibc-2.16.0.tar.xz"))
                        (sha256
                         (base32
-                         "1a6sq876l8x16bi6p0jznhb20kghbvxbp1amsyqp1907by9fg0hn"))))))))
+                         "1cz587p3scrrx0zgqnmp4nnfj0vvf01zdqdgkz445dnbfh64nl0v"))))))))
     (description "Bootstrap binaries and headers of the GNU C Library")
     (long-description #f)
     (home-page #f)))
@@ -1903,11 +1903,9 @@ identifier SYSTEM."
                                               (nix-system->gnu-triplet system))
                               "BASH_SHELL=/bin/sh"
 
-                              ;; cross-rpcgen fails to build, because it gets
-                              ;; built with the cross-compiler instead of the
-                              ;; native compiler.  See also
-                              ;; <http://sourceware.org/ml/libc-alpha/2012-03/msg00325.html>.
-                              "--disable-obsolete-rpc")
+                              ;; Build Sun/ONC RPC support.  In particular,
+                              ;; install rpc/*.h.
+                              "--enable-obsolete-rpc")
                         ,flags))))))
      (propagated-inputs `(("linux-headers" ,linux-libre-headers-boot0)))
      (inputs `( ;; A native GCC is needed to build `cross-rpcgen'.
