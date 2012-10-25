@@ -103,6 +103,7 @@ LOG_COMPILER =					\
   $(GUILE) --no-auto-compile -L "$(top_srcdir)"
 
 EXTRA_DIST =					\
+  HACKING					\
   .dir-locals.el				\
   build-aux/download.scm			\
   srfi/srfi-64.scm				\
