@@ -2062,11 +2062,18 @@ store.")
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
+(define %boot4-inputs
+  ;; Now use the final Bash.
+  `(("bash" ,bash-final)
+    ,@(alist-delete "bash" %boot3-inputs)))
+
 (define-public guile-final
+  ;; FIXME: The Libtool used here, specifically its `bin/libtool' script,
+  ;; holds a dependency on the bootstrap Binutils.  Use multiple outputs for
+  ;; Libtool, so that that dependency is isolated in the "bin" output.
   (package-with-bootstrap-guile
    (package-with-explicit-inputs guile-2.0
-                                 `(("bash" ,bash-final)
-                                   ,@(alist-delete "bash" %boot3-inputs))
+                                 %boot4-inputs
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
@@ -2079,7 +2086,7 @@ store.")
 
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by `gnu-build-system'.
-  (let ((finalize (cut package-with-explicit-inputs <> %boot3-inputs
+  (let ((finalize (cut package-with-explicit-inputs <> %boot4-inputs
                        (current-source-location))))
     `(,@(map (match-lambda
               ((name package)
