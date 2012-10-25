@@ -1368,16 +1368,6 @@ with the Linux kernel.")
 ;;; Bootstrap packages.
 ;;;
 
-(define %bootstrap-inputs
-  (compile-time-value
-   `(("libc" ,(nixpkgs-derivation "glibc"))
-     ,@(map (lambda (name)
-              (list name (nixpkgs-derivation name)))
-            '("gnutar" "gzip" "bzip2" "xz" "patch"
-              "coreutils" "gnused" "gnugrep" "bash"
-              "gawk"                                ; used by `config.status'
-              "gcc" "binutils")))))
-
 (define %bootstrap-guile
   ;; The Guile used to run the build scripts of the initial derivations.
   ;; It is just unpacked from a tarball containing a pre-built binary.
@@ -1628,6 +1618,14 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
     (description "Bootstrap binaries of the GNU Compiler Collection")
     (long-description #f)
     (home-page #f)))
+
+(define %bootstrap-inputs
+  ;; The initial, pre-built inputs.  From now on, we can start building our
+  ;; own packages.
+  `(("libc" ,%bootstrap-glibc)
+    ("gcc" ,%bootstrap-gcc)
+    ("binutils" ,%bootstrap-binutils)
+    ("coreutils&co" ,%bootstrap-coreutils&co)))
 
 (define package-with-bootstrap-guile
   (memoize
