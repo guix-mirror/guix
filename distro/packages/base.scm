@@ -807,7 +807,6 @@ used in the GNU system including the GNU/Linux variant.")
      (home-page "http://gcc.gnu.org/"))))
 
 (define-public ncurses
-  ;; FIXME: `ncurses-config' retains a ref on bash
   (let ((post-install-phase
          '(lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
@@ -867,7 +866,11 @@ used in the GNU system including the GNU/Linux variant.")
            #:tests? #f                            ; no "check" target
            #:phases (alist-cons-after 'install 'post-install
                                       ,post-install-phase
-                                      %standard-phases)))
+                                      %standard-phases)
+
+           ;; The `ncursesw5-config' has a #!/bin/sh that we don't want to
+           ;; patch, to avoid retaining a reference to the build-time Bash.
+           #:patch-shebangs? #f))
         ((system cross-system)
          (arguments cross-system))))
      (self-native-input? #t)
