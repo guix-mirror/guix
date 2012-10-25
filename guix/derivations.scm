@@ -498,7 +498,7 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
                                                       (mkdir ,tail))))))
                                      `((symlink ,store-path ,final-path)))))
                            files))))
-    (build-expression->derivation store name (%current-system)
+    (build-expression->derivation store name system
                                   builder files
                                   #:guile-for-build guile)))
 
@@ -641,11 +641,15 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
                                              (_ `(,exp))))))
                                       (map second inputs)))
          (mod-drv  (and (pair? modules)
-                        (imported-modules store modules #:guile guile-drv)))
+                        (imported-modules store modules
+                                          #:guile guile-drv
+                                          #:system system)))
          (mod-dir  (and mod-drv
                         (derivation-path->output-path mod-drv)))
          (go-drv   (and (pair? modules)
-                        (compiled-modules store modules #:guile guile-drv)))
+                        (compiled-modules store modules
+                                          #:guile guile-drv
+                                          #:system system)))
          (go-dir   (and go-drv
                         (derivation-path->output-path go-drv))))
     (derivation store name system guile
