@@ -1424,9 +1424,11 @@ $out/bin/guile --version~%"
   "Return a variant of SOURCE, an <origin> instance, whose method uses
 %BOOTSTRAP-GUILE to do its job."
   (define (boot fetch)
-    (lambda* (store url hash-algo hash #:optional name)
+    (lambda* (store url hash-algo hash
+              #:optional name #:key system)
       (fetch store url hash-algo hash
-             #:guile %bootstrap-guile)))
+             #:guile %bootstrap-guile
+             #:system system)))
 
   (let ((orig-method (origin-method source)))
     (origin (inherit source)

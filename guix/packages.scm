@@ -164,11 +164,13 @@ representation."
   "Return the full name of PACKAGE--i.e., `NAME-VERSION'."
   (string-append (package-name package) "-" (package-version package)))
 
-(define (package-source-derivation store source)
-  "Return the derivation path for SOURCE, a package source."
+(define* (package-source-derivation store source
+                                    #:optional (system (%current-system)))
+  "Return the derivation path for SOURCE, a package source, for SYSTEM."
   (match source
     (($ <origin> uri method sha256 name)
-     (method store uri 'sha256 sha256 name))))
+     (method store uri 'sha256 sha256 name
+             #:system system))))
 
 (define (transitive-inputs inputs)
   (let loop ((inputs  inputs)
@@ -238,10 +240,10 @@ recursively."
     ;; references to derivation paths or store paths.
     (match-lambda
      (((? string? name) (? package? package))
-      (list name (package-derivation store package)))
+      (list name (package-derivation store package system)))
      (((? string? name) (? package? package)
        (? string? sub-drv))
-      (list name (package-derivation store package)
+      (list name (package-derivation store package system)
             sub-drv))
      (((? string? name)
        (and (? string?) (? derivation-path?) drv))
@@ -253,7 +255,7 @@ recursively."
       ;; source.
       (list name (intern file)))
      (((? string? name) (? origin? source))
-      (list name (package-source-derivation store source)))
+      (list name (package-source-derivation store source system)))
      ((and i ((? string? name) (? procedure? proc) sub-drv ...))
       ;; This form allows PROC to make a SYSTEM-dependent choice.
 
@@ -291,7 +293,8 @@ recursively."
 
             (apply builder
                    store (package-full-name package)
-                   (and source (package-source-derivation store source))
+                   (and source
+                        (package-source-derivation store source system))
                    inputs
                    #:outputs outputs #:system system
                    (if (procedure? args)
