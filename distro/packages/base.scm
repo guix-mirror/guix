@@ -751,7 +751,8 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                  ;; cross-compiler builds.
 
                  ;; Fix the dynamic linker's file name.
-                 (substitute* "gcc/config/i386/linux64.h"
+                 (substitute* (find-files "gcc/config"
+                                          "^linux(64|-elf)?\\.h$")
                    (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
                     (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
                             suffix
@@ -759,9 +760,8 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 
                  ;; Tell where to find libstdc++, libc, and `?crt*.o', except
                  ;; `crt{begin,end}.o', which come with GCC.
-                 (substitute* '("gcc/config/gnu-user.h"
-                                "gcc/config/i386/gnu-user.h"
-                                "gcc/config/i386/gnu-user64.h")
+                 (substitute* (find-files "gcc/config"
+                                          "^(gnu-user(64)?|linux-elf)\\.h$")
                    (("#define LIB_SPEC (.*)$" _ suffix)
                     (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib \
 -rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
