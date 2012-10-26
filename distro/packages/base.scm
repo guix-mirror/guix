@@ -759,9 +759,9 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 
                  ;; Tell where to find libstdc++, libc, and `?crt*.o', except
                  ;; `crt{begin,end}.o', which come with GCC.
-                 (substitute* ("gcc/config/gnu-user.h"
-                               "gcc/config/i386/gnu-user.h"
-                               "gcc/config/i386/gnu-user64.h")
+                 (substitute* '("gcc/config/gnu-user.h"
+                                "gcc/config/i386/gnu-user.h"
+                                "gcc/config/i386/gnu-user64.h")
                    (("#define LIB_SPEC (.*)$" _ suffix)
                     (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib \
 -rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
@@ -2310,9 +2310,9 @@ store.")
                    ;; The `-all-static' libtool flag can only be passed
                    ;; after `configure', since configure tests don't use
                    ;; libtool, and only for executables built with libtool.
-                   (substitute* ("binutils/Makefile.in"
-                                 "gas/Makefile.in"
-                                 "ld/Makefile.in")
+                   (substitute* '("binutils/Makefile.in"
+                                  "gas/Makefile.in"
+                                  "ld/Makefile.in")
                      (("^LDFLAGS =(.*)$" line)
                       (string-append line
                                      "\nAM_LDFLAGS = -static -all-static\n"))))

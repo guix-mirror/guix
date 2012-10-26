@@ -312,10 +312,10 @@ evaluated with each MATCH-VAR bound to the corresponding positional regexp
 sub-expression.  For example:
 
   (substitute* file
-               ((\"hello\")
-                \"good morning\\n\")
-               ((\"foo([a-z]+)bar(.*)$\" all letters end)
-                (string-append \"baz\" letter end)))
+     ((\"hello\")
+      \"good morning\\n\")
+     ((\"foo([a-z]+)bar(.*)$\" all letters end)
+      (string-append \"baz\" letter end)))
 
 Here, anytime a line of FILE contains \"hello\", it is replaced by \"good
 morning\".  Anytime a line of FILE matches the second regexp, ALL is bound to
@@ -323,33 +323,41 @@ the complete match, LETTERS is bound to the first sub-expression, and END is
 bound to the last one.
 
 When one of the MATCH-VAR is `_', no variable is bound to the corresponding
-match substring."
-    ((substitute* (file ...) clause ...)
-     (begin
-       (substitute* file clause ...)
-       ...))
+match substring.
+
+Alternatively, FILE may be a list of file names, in which case they are
+all subject to the substitutions."
     ((substitute* file ((regexp match-var ...) body ...) ...)
-     (substitute file
-                 (list (cons regexp
-                             (lambda (l m+)
-                               ;; Iterate over matches M+ and return the
-                               ;; modified line based on L.
-                               (let loop ((m* m+)   ; matches
-                                          (o  0)    ; offset in L
-                                          (r  '())) ; result
-                                 (match m*
-                                   (()
-                                    (let ((r (cons (substring l o) r)))
-                                      (string-concatenate-reverse r)))
-                                   ((m . rest)
-                                    (let-matches 0 m (match-var ...)
-                                      (loop rest
-                                            (match:end m)
-                                            (cons*
-                                             (begin body ...)
-                                             (substring l o (match:start m))
-                                             r))))))))
-                       ...)))))
+     (let ()
+       (define (substitute-one-file file-name)
+         (substitute
+          file-name
+          (list (cons regexp
+                      (lambda (l m+)
+                        ;; Iterate over matches M+ and return the
+                        ;; modified line based on L.
+                        (let loop ((m* m+)  ; matches
+                                   (o  0)   ; offset in L
+                                   (r  '())) ; result
+                          (match m*
+                            (()
+                             (let ((r (cons (substring l o) r)))
+                               (string-concatenate-reverse r)))
+                            ((m . rest)
+                             (let-matches 0 m (match-var ...)
+                               (loop rest
+                                     (match:end m)
+                                     (cons*
+                                      (begin body ...)
+                                      (substring l o (match:start m))
+                                      r))))))))
+                ...)))
+
+       (match file
+         ((files (... ...))
+          (for-each substitute-one-file files))
+         ((? string? f)
+          (substitute-one-file f)))))))
 
 
 ;;;
