@@ -66,6 +66,7 @@ dist_patch_DATA =					\
 
 bootstrapdir = $(pkgdatadir)/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
+bootstrap_i686_linuxdir = $(bootstrapdir)/i686-linux
 
 dist_bootstrap_x86_64_linux_DATA =		\
   distro/packages/bootstrap/x86_64-linux/bash	\
@@ -73,12 +74,22 @@ dist_bootstrap_x86_64_linux_DATA =		\
   distro/packages/bootstrap/x86_64-linux/tar	\
   distro/packages/bootstrap/x86_64-linux/xz
 
+dist_bootstrap_i686_linux_DATA =		\
+  distro/packages/bootstrap/i686-linux/bash	\
+  distro/packages/bootstrap/i686-linux/mkdir	\
+  distro/packages/bootstrap/i686-linux/tar	\
+  distro/packages/bootstrap/i686-linux/xz
+
 # Big bootstrap binaries are not included in the tarball.  Instead, they
 # are downloaded.
 nodist_bootstrap_x86_64_linux_DATA =					\
   distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz
+nodist_bootstrap_i686_linux_DATA =					\
+  distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz
 
-DISTCLEANFILES = $(nodist_bootstrap_x86_64_linux_DATA)
+DISTCLEANFILES =				\
+  $(nodist_bootstrap_x86_64_linux_DATA)		\
+  $(nodist_bootstrap_i686_linux_DATA)
 
 # Method to download a file from an external source.
 DOWNLOAD_FILE =								\
@@ -88,6 +99,8 @@ DOWNLOAD_FILE =								\
 
 distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz: guix/utils.go
 	$(DOWNLOAD_FILE) "$@" "0467a82cbe4136f60a79eb4176011bf88cf28ea19c9ad9defa365811ff8e11cf"
+distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz: guix/utils.go
+	$(DOWNLOAD_FILE) "$@" "93b537766dfab3ad287143523751e3ec02dd32d3ccaf88ad2d31c63158f342ee"
 
 nobase_nodist_guilemodule_DATA = $(GOBJECTS)
 

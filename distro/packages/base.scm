@@ -1490,8 +1490,13 @@ check whether everything is alright."
                                  %bootstrap-base-url "/"
                                  system "/static-binaries.tar.xz"))
                            (sha256
-                            (base32
-                             "0azisn8l2b3cvgni9k0ahzsxs5cxrj0hmf38zgpq3k6pggk3zbfm"))))
+                            (match system
+                              ("x86_64-linux"
+                               (base32
+                                "0azisn8l2b3cvgni9k0ahzsxs5cxrj0hmf38zgpq3k6pggk3zbfm"))
+                              ("i686-linux"
+                               (base32
+                                "16v60frbh0naccanwxcxz0z3444dd8salbg8p7cp7vwz8245nhfk"))))))
                         "true"                    ; the program to test
                         "Bootstrap binaries of Coreutils, Awk, etc."))
 
@@ -1504,8 +1509,13 @@ check whether everything is alright."
                                  %bootstrap-base-url "/"
                                  system "/binutils-2.22.tar.xz"))
                            (sha256
-                            (base32
-                             "1cz1rwqhswgrr14kzbkaj3k32kzgv2b6mmzvc6ssbbz8k2m8jmqa"))))
+                            (match system
+                              ("x86_64-linux"
+                               (base32
+                                "1cz1rwqhswgrr14kzbkaj3k32kzgv2b6mmzvc6ssbbz8k2m8jmqa"))
+                              ("i686-linux"
+                               (base32
+                                "1crg5xsf4cxk249sg90h6fjhfkwj1s5dxvhwbym79g79ygbww1br"))))))
                         "ld"                      ; the program to test
                         "Bootstrap binaries of the GNU Binutils"))
 
@@ -1552,8 +1562,13 @@ check whether everything is alright."
                        (uri (string-append %bootstrap-base-url "/"
                                            system "/glibc-2.16.0.tar.xz"))
                        (sha256
-                        (base32
-                         "1cz587p3scrrx0zgqnmp4nnfj0vvf01zdqdgkz445dnbfh64nl0v"))))))))
+                        (match system
+                          ("x86_64-linux"
+                           (base32
+                            "1cz587p3scrrx0zgqnmp4nnfj0vvf01zdqdgkz445dnbfh64nl0v"))
+                          ("i686-linux"
+                           (base32
+                            "0vzybz1577vflm0p0zg1slqj32carj5102b45k7iskkj46viy14z"))))))))))
     (description "Bootstrap binaries and headers of the GNU C Library")
     (long-description #f)
     (home-page #f)))
@@ -1618,8 +1633,13 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                        (uri (string-append %bootstrap-base-url "/"
                                            system "/gcc-4.7.2.tar.xz"))
                        (sha256
-                        (base32
-                         "07piqzcdaksjbcj037y5gdbh9dfqwzjivg6fkhgg8kif82ibwxxr"))))))))
+                        (match system
+                          ("x86_64-linux"
+                           (base32
+                            "07piqzcdaksjbcj037y5gdbh9dfqwzjivg6fkhgg8kif82ibwxxr"))
+                          ("i686-linux"
+                           (base32
+                            "0caiihphp23rrqn382cabykz9ps3ixd5p63dgdnkhz1f01jiarl2"))))))))))
     (description "Bootstrap binaries of the GNU Compiler Collection")
     (long-description #f)
     (home-page #f)))
