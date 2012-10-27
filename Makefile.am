@@ -98,8 +98,10 @@ DOWNLOAD_FILE =								\
            "$(top_srcdir)/build-aux/download.scm"
 
 distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz: guix/utils.go
+	$(MKDIR_P) `dirname "$@"`
 	$(DOWNLOAD_FILE) "$@" "0467a82cbe4136f60a79eb4176011bf88cf28ea19c9ad9defa365811ff8e11cf"
 distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz: guix/utils.go
+	$(MKDIR_P) `dirname "$@"`
 	$(DOWNLOAD_FILE) "$@" "93b537766dfab3ad287143523751e3ec02dd32d3ccaf88ad2d31c63158f342ee"
 
 nobase_nodist_guilemodule_DATA = $(GOBJECTS)

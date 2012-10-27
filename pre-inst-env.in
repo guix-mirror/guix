@@ -24,7 +24,7 @@
 # "./pre-inst-env guix-build hello".
 
 DISTRO_PATCH_PATH="@abs_top_srcdir@/distro/packages/patches"
-DISTRO_BOOTSTRAP_PATH="@abs_top_srcdir@/distro/packages/bootstrap"
+DISTRO_BOOTSTRAP_PATH="@abs_top_srcdir@/distro/packages/bootstrap:@abs_top_builddir@/distro/packages/bootstrap"
 GUILE_LOAD_COMPILED_PATH="@abs_top_builddir@${GUILE_LOAD_COMPILED_PATH:+:}$GUILE_LOAD_COMPILED_PATH"
 GUILE_LOAD_PATH="@abs_top_srcdir@${GUILE_LOAD_PATH:+:}:$GUILE_LOAD_PATH"
 
