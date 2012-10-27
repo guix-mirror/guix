@@ -23,7 +23,7 @@
 # Run COMMAND in a pre-installation environment.  Typical use is
 # "./pre-inst-env guix-build hello".
 
-DISTRO_PATCH_DIRECTORY="@abs_top_srcdir@/distro/patches"
+DISTRO_PATCH_DIRECTORY="@abs_top_srcdir@/distro/packages/patches"
 DISTRO_BOOTSTRAP_DIRECTORY="@abs_top_srcdir@/distro/packages/bootstrap"
 GUILE_LOAD_COMPILED_PATH="@abs_top_builddir@${GUILE_LOAD_COMPILED_PATH:+:}$GUILE_LOAD_COMPILED_PATH"
 GUILE_LOAD_PATH="@abs_top_srcdir@${GUILE_LOAD_PATH:+:}:$GUILE_LOAD_PATH"

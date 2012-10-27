@@ -48,21 +48,21 @@ GOBJECTS = $(MODULES:%.scm=%.go)
 nobase_dist_guilemodule_DATA = $(MODULES)
 
 patchdir = $(pkgdatadir)/patches
-dist_patch_DATA =					\
-  distro/patches/binutils-ld-new-dtags.patch		\
-  distro/patches/diffutils-gets-undeclared.patch	\
-  distro/patches/guile-1.8-cpp-4.5.patch		\
-  distro/patches/guile-default-utf8.patch		\
-  distro/patches/guile-relocatable.patch		\
-  distro/patches/libtool-skip-tests.patch		\
-  distro/patches/m4-gets-undeclared.patch		\
-  distro/patches/m4-readlink-EINVAL.patch		\
-  distro/patches/m4-s_isdir.patch			\
-  distro/patches/make-impure-dirs.patch			\
-  distro/patches/findutils-absolute-paths.patch		\
-  distro/patches/perl-no-sys-dirs.patch			\
-  distro/patches/readline-link-ncurses.patch		\
-  distro/patches/tar-gets-undeclared.patch
+dist_patch_DATA =						\
+  distro/packages/patches/binutils-ld-new-dtags.patch		\
+  distro/packages/patches/diffutils-gets-undeclared.patch	\
+  distro/packages/patches/guile-1.8-cpp-4.5.patch		\
+  distro/packages/patches/guile-default-utf8.patch		\
+  distro/packages/patches/guile-relocatable.patch		\
+  distro/packages/patches/libtool-skip-tests.patch		\
+  distro/packages/patches/m4-gets-undeclared.patch		\
+  distro/packages/patches/m4-readlink-EINVAL.patch		\
+  distro/packages/patches/m4-s_isdir.patch			\
+  distro/packages/patches/make-impure-dirs.patch		\
+  distro/packages/patches/findutils-absolute-paths.patch	\
+  distro/packages/patches/perl-no-sys-dirs.patch		\
+  distro/packages/patches/readline-link-ncurses.patch		\
+  distro/packages/patches/tar-gets-undeclared.patch
 
 bootstrapdir = $(pkgdatadir)/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
