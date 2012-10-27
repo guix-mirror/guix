@@ -86,6 +86,29 @@ let
         inherit succeedOnFailure keepBuildDirectory
           buildOutOfSourceTree;
       };
+
+
+    # Jobs to test the distro.
+    distro = {
+      hello =
+        { system ? builtins.currentSystem }:
+
+        let
+          pkgs = import nixpkgs { inherit system; };
+          guix = jobs.build { inherit system; };
+        in
+          # XXX: We have no way to tell the Nix to swallow the .drv
+          # produced by `guix-build', so we have a pointless indirection
+          # here.  This could be worked around by generating Nix code
+          # from the .drv, and importing that.
+          pkgs.releaseTools.nixBuild {
+            src = null;
+            phases = "buildPhase";
+            buildInputs = [ guix ];
+            buildPhase = "guix-build hello";
+            __noChroot = true;
+          };
+    };
   };
 in
   jobs
