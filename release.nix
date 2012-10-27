@@ -22,6 +22,10 @@
 let
   nixpkgs = <nixpkgs>;
 
+  buildOutOfSourceTree = true;
+  succeedOnFailure = true;
+  keepBuildDirectory = true;
+
   jobs = {
     tarball =
       let pkgs = import nixpkgs {}; in
@@ -52,6 +56,9 @@ let
         # `nixpkgs-derivation*' & co., we need to escape the chroot.
         preConfigure = "export NIX_REMOTE=daemon";
         __noChroot = true;
+
+        inherit succeedOnFailure keepBuildDirectory
+          buildOutOfSourceTree;
       };
   };
 in
