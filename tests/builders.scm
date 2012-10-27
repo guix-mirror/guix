@@ -24,6 +24,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix derivations)
+  #:use-module ((guix packages) #:select (package-derivation))
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64))
 
@@ -33,12 +35,14 @@
   (false-if-exception (open-connection)))
 
 (define %bootstrap-inputs
-  ;; Derivations taken from Nixpkgs, so that the initial tests don't
-  ;; take forever.
-  (and (file-exists? (%nixpkgs-directory))
-       `(("make" ,(nixpkgs-derivation "gnumake"))
-         ("diffutils" ,(nixpkgs-derivation "diffutils"))
-         ,@(@@ (distro packages base) %bootstrap-inputs))))
+  ;; Use the bootstrap inputs so it doesn't take ages to run these tests.
+  ;; This still involves building Make, Diffutils, and Findutils.
+  ;; XXX: We're relying on the higher-level `package-derivations' here.
+  (and %store
+       (map (match-lambda
+             ((name package)
+              (list name (package-derivation %store package))))
+            (@@ (distro packages base) %boot0-inputs))))
 
 (define %bootstrap-guile
   (@@ (distro packages base) %bootstrap-guile))
@@ -59,8 +63,6 @@
 (test-assert "gnu-build-system"
   (and (build-system? gnu-build-system)
        (eq? gnu-build (build-system-builder gnu-build-system))))
-
-(test-skip (if (file-exists? (%nixpkgs-directory)) 1 0))
 
 (test-assert "gnu-build"
   (let* ((url      "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")

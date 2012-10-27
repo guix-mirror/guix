@@ -205,7 +205,11 @@
 
 
 (define %coreutils
-  (false-if-exception (nixpkgs-derivation "coreutils")))
+  (false-if-exception
+   (or (package-derivation %store
+                           (@@ (distro packages base)
+                               %bootstrap-coreutils&co))
+       (nixpkgs-derivation "coreutils"))))
 
 (test-skip (if %coreutils 0 1))
 

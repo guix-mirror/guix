@@ -36,12 +36,9 @@
   (false-if-exception (open-connection)))
 
 (define %bootstrap-inputs
-  ;; Derivations taken from Nixpkgs, so that the initial tests don't
-  ;; take forever.
-  (and (file-exists? (%nixpkgs-directory))
-       `(("make" ,(nixpkgs-derivation "gnumake"))
-         ("diffutils" ,(nixpkgs-derivation "diffutils"))
-         ,@(@@ (distro packages base) %bootstrap-inputs))))
+  ;; Use the bootstrap inputs so it doesn't take ages to run these tests.
+  ;; This still involves building GNU Make and GNU Diffutils.
+  (@@ (distro packages base) %boot0-inputs))
 
 (define %bootstrap-guile
   (@@ (distro packages base) %bootstrap-guile))
