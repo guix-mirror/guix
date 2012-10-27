@@ -958,6 +958,12 @@ without Readline in applications which desire its capabilities.")
                               (assoc-ref %build-inputs "ncurses")
                               "/lib"))
 
+        ;; Bash is reportedly not parallel-safe.  See, for instance,
+        ;; <http://patches.openembedded.org/patch/32745/> and
+        ;; <http://git.buildroot.net/buildroot/commit/?h=79e2d802ae7e376a413c02097790493e1f65c3a4>.
+        #:parallel-build? #f
+        #:parallel-tests? #f
+
         ;; XXX: The tests have a lot of hard-coded paths, so disable them
         ;; for now.
         #:tests? #f
