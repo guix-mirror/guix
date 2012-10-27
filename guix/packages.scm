@@ -61,8 +61,10 @@
             package-cross-derivation
 
             &package-error
+            package-error?
             package-error-package
             &package-input-error
+            package-input-error?
             package-error-invalid-input))
 
 ;;; Commentary:
