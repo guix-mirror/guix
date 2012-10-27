@@ -87,6 +87,11 @@ nodist_bootstrap_x86_64_linux_DATA =					\
 nodist_bootstrap_i686_linux_DATA =					\
   distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz
 
+# Those files must remain executable, so they remain executable once
+# imported into the store.
+install-data-hook:
+	chmod +x $(DESTDIR)$(bootstrapdir)/*/{bash,mkdir,tar,xz}
+
 DISTCLEANFILES =				\
   $(nodist_bootstrap_x86_64_linux_DATA)		\
   $(nodist_bootstrap_i686_linux_DATA)
