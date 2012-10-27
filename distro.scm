@@ -37,23 +37,31 @@
 
 (define _ (cut gettext <> "guix"))
 
-(define %patch-directory
-  (make-parameter
-   (or (getenv "DISTRO_PATCH_DIRECTORY")
-       (compile-time-value (getenv "DISTRO_INSTALLED_PATCH_DIRECTORY")))))
+(define not-colon
+  ;; The char set that contains all the characters but `:'.
+  (char-set-complement (char-set #\:)))
 
-(define %bootstrap-binaries-directory
+(define %patch-path
   (make-parameter
-   (or (getenv "DISTRO_BOOTSTRAP_DIRECTORY")
-       (compile-time-value (getenv "DISTRO_INSTALLED_BOOTSTRAP_DIRECTORY")))))
+   (or (and=> (getenv "DISTRO_PATCH_PATH")
+              (cut string-tokenize <> not-colon))
+       (compile-time-value
+        (list (getenv "DISTRO_INSTALLED_PATCH_DIRECTORY"))))))
+
+(define %bootstrap-binaries-path
+  (make-parameter
+   (or (and=> (getenv "DISTRO_BOOTSTRAP_PATH")
+              (cut string-tokenize <> not-colon))
+       (compile-time-value
+        (list (getenv "DISTRO_INSTALLED_BOOTSTRAP_DIRECTORY"))))))
 
 (define (search-patch file-name)
   "Search the patch FILE-NAME."
-  (search-path (list (%patch-directory)) file-name))
+  (search-path (%patch-path) file-name))
 
 (define (search-bootstrap-binary file-name system)
   "Search the bootstrap binary FILE-NAME for SYSTEM."
-  (search-path (list (%bootstrap-binaries-directory))
+  (search-path (%bootstrap-binaries-path)
                (string-append system "/" file-name)))
 
 (define %distro-module-directory
