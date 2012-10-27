@@ -130,18 +130,12 @@ CLEANFILES = $(GOBJECTS) *.log
 
 .scm.go:
 	$(MKDIR_P) `dirname "$@"`
-	NIX_INSTANTIATE="$(NIX_INSTANTIATE)"					\
-	NIXPKGS="$(NIXPKGS)"							\
-	LIBGCRYPT="$(LIBGCRYPT)"						\
-	DISTRO_PATCH_DIRECTORY="$(top_srcdir)/distro/patches"			\
-	DISTRO_INSTALLED_PATCH_DIRECTORY="$(patchdir)"				\
-	DISTRO_BOOTSTRAP_DIRECTORY="$(top_srcdir)/distro/packages/bootstrap"	\
-	DISTRO_INSTALLED_BOOTSTRAP_DIRECTORY="$(bootstrapdir)"			\
-	GUILE_AUTO_COMPILE=0							\
-	GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
-	$(GUILD) compile -L "$(top_srcdir)"					\
-	  -Wformat -Wunbound-variable -Warity-mismatch				\
-	  --target="$(host)"							\
+	DISTRO_INSTALLED_PATCH_DIRECTORY="$(patchdir)"		\
+	DISTRO_INSTALLED_BOOTSTRAP_DIRECTORY="$(bootstrapdir)"	\
+	$(top_builddir)/pre-inst-env				\
+	$(GUILD) compile -L "$(top_srcdir)"			\
+	  -Wformat -Wunbound-variable -Warity-mismatch		\
+	  --target="$(host)"					\
 	  -o "$@" "$<"
 
 SUFFIXES = .go
