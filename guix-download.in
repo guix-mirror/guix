@@ -1,6 +1,9 @@
 #!/bin/sh
 # aside from this initial boilerplate, this is actually -*- scheme -*- code
 
+prefix="@prefix@"
+datarootdir="@datarootdir@"
+
 GUILE_LOAD_COMPILED_PATH="@guilemoduledir@:$GUILE_LOAD_COMPILED_PATH"
 export GUILE_LOAD_COMPILED_PATH
 
