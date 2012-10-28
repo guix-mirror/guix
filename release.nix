@@ -103,9 +103,9 @@ let
           # from the .drv, and importing that.
           pkgs.releaseTools.nixBuild {
             src = null;
+            name = "guix-hello";
             phases = "buildPhase";
-            buildInputs = [ guix ];
-            buildPhase = "guix-build hello";
+            buildPhase = "${guix}/bin/guix-build hello | tee $out";
             __noChroot = true;
           };
     };
