@@ -34,6 +34,7 @@ MODULES =					\
   guix/build/ftp.scm				\
   guix/build/http.scm				\
   guix/build/utils.scm				\
+  guix/build/union.scm				\
   guix/packages.scm				\
   guix.scm					\
   distro.scm					\
@@ -116,7 +117,8 @@ TESTS =						\
   tests/derivations.scm				\
   tests/utils.scm				\
   tests/build-utils.scm				\
-  tests/packages.scm
+  tests/packages.scm				\
+  tests/union.scm
 
 LOG_COMPILER =					\
   $(top_builddir)/pre-inst-env			\
