@@ -49,6 +49,7 @@
             add-text-to-store
             add-to-store
             build-derivations
+            add-indirect-root
 
             current-build-output-port
 
@@ -417,6 +418,13 @@ again until #t is returned or an error is raised."
 (define-operation (build-derivations (string-list derivations))
   "Build DERIVATIONS, and return when the worker is done building them.
 Return #t on success."
+  boolean)
+
+(define-operation (add-indirect-root (string file-name))
+  "Make FILE-NAME an indirect root for the garbage collector; FILE-NAME
+can be anywhere on the file system, but it must be an absolute file
+name--it is the caller's responsibility to ensure that it is an absolute
+file name.  Return #t on success."
   boolean)
 
 
