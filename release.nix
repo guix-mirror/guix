@@ -97,7 +97,7 @@ let
           pkgs = import nixpkgs { inherit system; };
           guix = jobs.build { inherit system; };
         in
-          # XXX: We have no way to tell the Nix to swallow the .drv
+          # XXX: We have no way to tell the Nix code to swallow the .drv
           # produced by `guix-build', so we have a pointless indirection
           # here.  This could be worked around by generating Nix code
           # from the .drv, and importing that.
@@ -105,7 +105,7 @@ let
             src = null;
             name = "guix-hello";
             phases = "buildPhase";
-            buildPhase = "${guix}/bin/guix-build hello | tee $out";
+            buildPhase = "${guix}/bin/guix-build --no-substitutes hello | tee $out";
             __noChroot = true;
           };
     };
