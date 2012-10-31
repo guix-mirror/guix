@@ -30,6 +30,7 @@ MODULES =					\
   guix/ftp-client.scm				\
   guix/http.scm					\
   guix/store.scm				\
+  guix/ui.scm					\
   guix/build/gnu-build-system.scm		\
   guix/build/ftp.scm				\
   guix/build/http.scm				\

@@ -30,6 +30,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix-build)
+  #:use-module (guix ui)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
@@ -42,9 +43,6 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:use-module (srfi srfi-37)
   #:autoload   (distro) (find-packages-by-name)
   #:export (guix-build))
-
-(define _ (cut gettext <> "guix"))
-(define N_ (cut ngettext <> <> <> "guix"))
 
 (define %store
   (open-connection))
@@ -72,12 +70,6 @@ When SOURCE? is true, return the derivations of the package sources."
   ;; Alist of default option values.
   `((system . ,(%current-system))
     (substitutes? . #t)))
-
-(define-syntax-rule (leave fmt args ...)
-  "Format FMT and ARGS to the error port and exit."
-  (begin
-    (format (current-error-port) fmt args ...)
-    (exit 1)))
 
 (define (show-version)
   (display "guix-build (@PACKAGE_NAME@) @PACKAGE_VERSION@\n"))
@@ -206,16 +198,7 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)
 
-  (guard (c ((package-input-error? c)
-             (let* ((package  (package-error-package c))
-                    (input    (package-error-invalid-input c))
-                    (location (package-location package))
-                    (file     (location-file location))
-                    (line     (location-line location))
-                    (column   (location-column location)))
-               (leave (_ "~a:~a:~a: error: package `~a' has an invalid input: ~s~%")
-                      file line column
-                      (package-full-name package) input))))
+  (with-error-handling
     (let* ((opts (parse-options))
            (src? (assoc-ref opts 'source?))
            (sys  (assoc-ref opts 'system))

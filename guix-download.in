@@ -32,6 +32,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 (define-module (guix-download)
   #:use-module (web uri)
   #:use-module (web client)
+  #:use-module (guix ui)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix ftp-client)
@@ -43,9 +44,6 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:export (guix-download))
-
-(define _ (cut gettext <> "guix"))
-(define N_ (cut ngettext <> <> <> "guix"))
 
 (define (call-with-temporary-output-file proc)
   (let* ((template (string-copy "guix-download.XXXXXX"))
@@ -89,12 +87,6 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 (define %default-options
   ;; Alist of default option values.
   `((format . ,bytevector->nix-base32-string)))
-
-(define-syntax-rule (leave fmt args ...)
-  "Format FMT and ARGS to the error port and exit."
-  (begin
-    (format (current-error-port) fmt args ...)
-    (exit 1)))
 
 (define (show-version)
   (display "guix-download (@PACKAGE_NAME@) @PACKAGE_VERSION@\n"))
