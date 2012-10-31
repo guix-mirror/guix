@@ -120,12 +120,21 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
                     (phases '%standard-phases)
                     (system (%current-system))
                     (implicit-inputs? #t)    ; useful when bootstrapping
+                    (imported-modules '((guix build gnu-build-system)
+                                        (guix build utils)))
                     (modules '((guix build gnu-build-system)
                                (guix build utils))))
   "Return a derivation called NAME that builds from tarball SOURCE, with
 input derivation INPUTS, using the usual procedure of the GNU Build
 System.  The builder is run with GUILE, or with the distro's final Guile
-package if GUILE is #f or omitted."
+package if GUILE is #f or omitted.
+
+The builder is run in a context where MODULES are used; IMPORTED-MODULES
+specifies modules not provided by Guile itself that must be imported in
+the builder's environment, from the host.  Note that we distinguish
+between both, because for Guile's own modules like (ice-9 foo), we want
+to use GUILE's own version of it, rather than import the user's one,
+which could lead to gratuitous input divergence."
   (define builder
     `(begin
        (use-modules ,@modules)
@@ -170,7 +179,7 @@ package if GUILE is #f or omitted."
                                           (standard-inputs system))
                                         '()))
                                 #:outputs outputs
-                                #:modules modules
+                                #:modules imported-modules
                                 #:guile-for-build guile-for-build))
 
 (define gnu-build-system
