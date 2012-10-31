@@ -119,11 +119,16 @@ TESTS =						\
   tests/utils.scm				\
   tests/build-utils.scm				\
   tests/packages.scm				\
-  tests/union.scm
+  tests/union.scm				\
+  tests/guix-build.sh
 
-LOG_COMPILER =					\
-  $(top_builddir)/pre-inst-env			\
-  $(GUILE) --no-auto-compile -L "$(top_srcdir)"
+TEST_EXTENSIONS = .scm .sh
+
+SCM_LOG_COMPILER = $(top_builddir)/pre-inst-env $(GUILE)
+AM_SCM_LOG_FLAGS = --no-auto-compile -L "$(top_srcdir)"
+
+SH_LOG_COMPILER = $(top_builddir)/pre-inst-env $(SHELL)
+AM_SH_LOG_FLAGS = -x -e
 
 EXTRA_DIST =					\
   HACKING					\
