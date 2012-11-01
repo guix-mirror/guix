@@ -29,6 +29,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 ftw)
+  #:use-module (ice-9 regex)
   #:export (nix-server?
             nix-server-major-version
             nix-server-minor-version
@@ -55,7 +56,8 @@
 
             %store-prefix
             store-path?
-            derivation-path?))
+            derivation-path?
+            store-path-package-name))
 
 (define %protocol-version #x10b)
 
@@ -446,3 +448,12 @@ file name.  Return #t on success."
 (define (derivation-path? path)
   "Return #t if PATH is a derivation path."
   (and (store-path? path) (string-suffix? ".drv" path)))
+
+(define (store-path-package-name path)
+  "Return the package name part of PATH, a file name in the store."
+  (define store-path-rx
+    (make-regexp (string-append "^.*" (regexp-quote (%store-prefix))
+                                "/[^-]+-(.+)$")))
+
+  (and=> (regexp-exec store-path-rx path)
+         (cut match:substring <> 1)))
