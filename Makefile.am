@@ -18,7 +18,8 @@
 
 bin_SCRIPTS =					\
   guix-build					\
-  guix-download
+  guix-download					\
+  guix-package
 
 MODULES =					\
   guix/utils.scm				\
@@ -120,7 +121,8 @@ TESTS =						\
   tests/build-utils.scm				\
   tests/packages.scm				\
   tests/union.scm				\
-  tests/guix-build.sh
+  tests/guix-build.sh				\
+  tests/guix-package.sh
 
 TEST_EXTENSIONS = .scm .sh
 

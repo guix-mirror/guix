@@ -1,0 +1,392 @@
+#!/bin/sh
+# aside from this initial boilerplate, this is actually -*- scheme -*- code
+
+prefix="@prefix@"
+datarootdir="@datarootdir@"
+
+GUILE_LOAD_COMPILED_PATH="@guilemoduledir@:$GUILE_LOAD_COMPILED_PATH"
+export GUILE_LOAD_COMPILED_PATH
+
+main='(module-ref (resolve-interface '\''(guix-package)) '\'guix-package')'
+exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
+         -c "(apply $main (cdr (command-line)))" "$@"
+!#
+;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
+;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;;
+;;; This file is part of Guix.
+;;;
+;;; Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (guix-package)
+  #:use-module (guix store)
+  #:use-module (guix derivations)
+  #:use-module (guix packages)
+  #:use-module (guix utils)
+  #:use-module (ice-9 ftw)
+  #:use-module (ice-9 format)
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-37)
+  #:autoload   (distro) (find-packages-by-name)
+  #:use-module (distro packages base)
+  #:export (guix-package))
+
+(define _ (cut gettext <> "guix"))
+(define N_ (cut ngettext <> <> <> "guix"))
+
+(define %store
+  (open-connection))
+
+
+;;;
+;;; User environment.
+;;;
+
+(define %user-environment-directory
+  (and=> (getenv "HOME")
+         (cut string-append <> "/.guix-profile")))
+
+(define %profile-directory
+  (string-append "/nix/var/nix/profiles/"
+                 "guix/"
+                 (or (and=> (getenv "USER")
+                            (cut string-append "per-user/" <>))
+                     "default")))
+
+(define %current-profile
+  (string-append %profile-directory "/profile"))
+
+(define (profile-manifest profile)
+  "Return the PROFILE's manifest."
+  (let ((manifest (string-append profile "/manifest")))
+    (if (file-exists? manifest)
+        (call-with-input-file manifest read)
+        '(manifest (version 0) (packages ())))))
+
+(define (manifest-packages manifest)
+  "Return the packages listed in MANIFEST."
+  (match manifest
+    (('manifest ('version 0) ('packages packages))
+     packages)
+    (_
+     (error "unsupported manifest format" manifest))))
+
+(define (latest-profile-number profile)
+  "Return the identifying number of the latest generation of PROFILE.
+PROFILE is the name of the symlink to the current generation."
+  (define %profile-rx
+    (make-regexp (string-append "^" (regexp-quote (basename profile))
+                                "-([0-9]+)")))
+
+  (define* (scandir name #:optional (select? (const #t))
+                    (entry<? (@ (ice-9 i18n) string-locale<?)))
+    ;; XXX: Bug-fix version introduced in Guile v2.0.6-62-g139ce19.
+    (define (enter? dir stat result)
+      (and stat (string=? dir name)))
+
+    (define (visit basename result)
+      (if (select? basename)
+          (cons basename result)
+          result))
+
+    (define (leaf name stat result)
+      (and result
+           (visit (basename name) result)))
+
+    (define (down name stat result)
+      (visit "." '()))
+
+    (define (up name stat result)
+      (visit ".." result))
+
+    (define (skip name stat result)
+      ;; All the sub-directories are skipped.
+      (visit (basename name) result))
+
+    (define (error name* stat errno result)
+      (if (string=? name name*)             ; top-level NAME is unreadable
+          result
+          (visit (basename name*) result)))
+
+    (and=> (file-system-fold enter? leaf down up skip error #f name lstat)
+           (lambda (files)
+             (sort files entry<?))))
+
+  (match (scandir (dirname profile)
+                  (cut regexp-exec %profile-rx <>))
+    (#f                                         ; no profile directory
+     0)
+    (()                                         ; no profiles
+     0)
+    ((profiles ...)                             ; former profiles around
+     (let ((numbers (map (compose string->number
+                                  (cut match:substring <> 1)
+                                  (cut regexp-exec %profile-rx <>))
+                         profiles)))
+       (fold (lambda (number highest)
+               (if (> number highest)
+                   number
+                   highest))
+             0
+             numbers)))))
+
+(define (profile-derivation store packages)
+  "Return a derivation that builds a profile (a user environment) with
+all of PACKAGES, a list of name/version/output/path tuples."
+  (define builder
+    `(begin
+       (use-modules (ice-9 pretty-print)
+                    (guix build union))
+
+       (setvbuf (current-output-port) _IOLBF)
+       (setvbuf (current-error-port) _IOLBF)
+
+       (let ((output (assoc-ref %outputs "out"))
+             (inputs (map cdr %build-inputs)))
+         (format #t "building user environment `~a' with ~a packages...~%"
+                 output (length inputs))
+         (union-build output inputs)
+         (call-with-output-file (string-append output "/manifest")
+           (lambda (p)
+             (pretty-print '(manifest (version 0)
+                                      (packages ,packages))
+                           p))))))
+
+  (build-expression->derivation store "user-environment"
+                                (%current-system)
+                                builder
+                                (map (match-lambda
+                                      ((name version output path)
+                                       `(,name ,path)))
+                                     packages)
+                                #:modules '((guix build union))))
+
+
+;;;
+;;; Command-line options.
+;;;
+
+(define %default-options
+  ;; Alist of default option values.
+  `((profile . ,%current-profile)))
+
+(define-syntax-rule (leave fmt args ...)
+  "Format FMT and ARGS to the error port and exit."
+  (begin
+    (format (current-error-port) fmt args ...)
+    (exit 1)))
+
+(define (show-version)
+  (display "guix-package (@PACKAGE_NAME@) @PACKAGE_VERSION@\n"))
+
+(define (show-help)
+  (display (_ "Usage: guix-package [OPTION]... PACKAGES...
+Install, remove, or upgrade PACKAGES in a single transaction.\n"))
+  (display (_ "
+  -i, --install=PACKAGE  install PACKAGE"))
+  (display (_ "
+  -r, --remove=PACKAGE   remove PACKAGE"))
+  (display (_ "
+  -u, --upgrade=REGEXP   upgrade all the installed packages matching REGEXP"))
+  (newline)
+  (display (_ "
+  -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
+  (display (_ "
+  -n, --dry-run          show what would be done without actually doing it"))
+  (display (_ "
+  -b, --bootstrap        use the bootstrap Guile to build the profile"))
+  (newline)
+  (display (_ "
+  -h, --help             display this help and exit"))
+  (display (_ "
+  -V, --version          display version information and exit"))
+  (newline)
+  (format #t (_ "
+Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
+
+(define %options
+  ;; Specification of the command-line options.
+  (list (option '(#\h "help") #f #f
+                (lambda args
+                  (show-help)
+                  (exit 0)))
+        (option '(#\V "version") #f #f
+                (lambda args
+                  (show-version)
+                  (exit 0)))
+
+        (option '(#\i "install") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'install arg result)))
+        (option '(#\r "remove") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'remove arg result)))
+        (option '(#\p "profile") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'profile arg
+                              (alist-delete 'profile result))))
+        (option '(#\n "dry-run") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'dry-run? #t result)))
+        (option '(#\b "bootstrap") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'bootstrap? #t result)))))
+
+
+;;;
+;;; Entry point.
+;;;
+
+(define (guix-package . args)
+  (define (parse-options)
+    ;; Return the alist of option values.
+    (args-fold args %options
+               (lambda (opt name arg result)
+                 (leave (_ "~A: unrecognized option~%") name))
+               (lambda (arg result)
+                 (alist-cons 'argument arg result))
+               %default-options))
+
+  (define (show-what-to-build drv dry-run?)
+    ;; Show what will/would be built in realizing the derivations listed
+    ;; in DRV.
+    (let* ((req  (append-map (lambda (drv-path)
+                               (let ((d (call-with-input-file drv-path
+                                          read-derivation)))
+                                 (derivation-prerequisites-to-build %store d)))
+                             drv))
+           (req* (delete-duplicates
+                  (append (remove (compose (cut valid-path? %store <>)
+                                           derivation-path->output-path)
+                                  drv)
+                          (map derivation-input-path req)))))
+      (if dry-run?
+          (format (current-error-port)
+                  (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
+                      "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
+                      (length req*))
+                  (null? req*) req*)
+          (format (current-error-port)
+                  (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
+                      "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
+                      (length req*))
+                  (null? req*) req*))))
+
+  (define (find-package name)
+    ;; Find the package NAME; NAME may contain a version number and a
+    ;; sub-derivation name.
+    (define request name)
+    (define versioned-rx
+      (make-regexp "^(.*)-([0-9][^-]*)$"))
+
+    (let*-values (((name sub-drv)
+                   (match (string-rindex name #\:)
+                     (#f    (values name "out"))
+                     (colon (values (substring name (+ 1 colon))
+                                    (substring name colon)))))
+                  ((name version)
+                   (match (regexp-exec versioned-rx name)
+                     (#f    (values name #f))
+                     (m     (values (match:substring m 1)
+                                    (match:substring m 2))))))
+      (match (find-packages-by-name name version)
+        ((p)
+         (list name version sub-drv p))
+        ((p _ ...)
+         (format (current-error-port)
+                 (_ "warning: ambiguous package specification `~a'~%")
+                 request)
+         (format (current-error-port)
+                 (_ "warning: choosing ~s~%")
+                 p)
+         (list name version sub-drv p))
+        (()
+         (leave (_ "~a: package not found~%") request)))))
+
+  (setlocale LC_ALL "")
+  (textdomain "guix")
+  (setvbuf (current-output-port) _IOLBF)
+  (setvbuf (current-error-port) _IOLBF)
+
+  (let ((opts (parse-options)))
+    (parameterize ((%guile-for-build
+                    (package-derivation %store
+                                        (if (assoc-ref opts 'bootstrap?)
+                                            (@@ (distro packages base)
+                                                %bootstrap-guile)
+                                            guile-2.0))))
+      (let* ((dry-run? (assoc-ref opts 'dry-run?))
+             (profile  (assoc-ref opts 'profile))
+             (install  (filter-map (match-lambda
+                                    (('install . (? store-path?))
+                                     #f)
+                                    (('install . package)
+                                     (find-package package))
+                                    (_ #f))
+                                   opts))
+             (drv      (filter-map (match-lambda
+                                    ((name version sub-drv (? package? package))
+                                     (package-derivation %store package))
+                                    (_ #f))
+                                   install))
+             (install* (append
+                        (filter-map (match-lambda
+                                     (('install . (? store-path? path))
+                                      `(,(store-path-package-name path)
+                                        #f #f ,path))
+                                     (_ #f))
+                                    opts)
+                        (map (lambda (tuple drv)
+                               (match tuple
+                                 ((name version sub-drv _)
+                                  (let ((output-path
+                                         (derivation-path->output-path drv
+                                                                       sub-drv)))
+                                    `(,name ,version ,sub-drv ,output-path)))))
+                             install drv)))
+             (remove   (filter-map (match-lambda
+                                    (('remove . package)
+                                     package)
+                                    (_ #f))
+                                   opts))
+             (packages (append install*
+                               (fold alist-delete
+                                     (manifest-packages (profile-manifest profile))
+                                     remove))))
+
+        (show-what-to-build drv dry-run?)
+
+        (or dry-run?
+            (and (build-derivations %store drv)
+                 (let* ((prof-drv (profile-derivation %store packages))
+                        (prof     (derivation-path->output-path prof-drv))
+                        (number   (latest-profile-number profile))
+                        (name     (format #f "~a/~a-~a-link"
+                                          (dirname profile)
+                                          (basename profile) (+ 1 number))))
+                   (and (build-derivations %store (list prof-drv))
+                        (begin
+                          (symlink prof name)
+                          (when (file-exists? profile)
+                            (delete-file profile))
+                          (symlink name profile))))))))))
+
+;; Local Variables:
+;; eval: (put 'guard 'scheme-indent-function 1)
+;; End:
