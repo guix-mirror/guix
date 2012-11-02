@@ -35,6 +35,10 @@
 (define %store
   (false-if-exception (open-connection)))
 
+(when %store
+  ;; Make sure we build everything by ourselves.
+  (set-build-options %store #:use-substitutes? #f))
+
 (define %bootstrap-inputs
   ;; Use the bootstrap inputs so it doesn't take ages to run these tests.
   ;; This still involves building GNU Make and GNU Diffutils.

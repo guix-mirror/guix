@@ -39,6 +39,9 @@
   (false-if-exception (open-connection)))
 
 (when %store
+  ;; Make sure we build everything by ourselves.
+  (set-build-options %store #:use-substitutes? #f)
+
   ;; By default, use %BOOTSTRAP-GUILE for the current system.
   (let ((drv (package-derivation %store %bootstrap-guile)))
     (%guile-for-build drv)))
