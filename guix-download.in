@@ -88,9 +88,6 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   ;; Alist of default option values.
   `((format . ,bytevector->nix-base32-string)))
 
-(define (show-version)
-  (display "guix-download (@PACKAGE_NAME@) @PACKAGE_VERSION@\n"))
-
 (define (show-help)
   (display (_ "Usage: guix-download [OPTION]... URL
 Download the file at URL, add it to the store, and print its store path
@@ -131,8 +128,7 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version)
-                  (exit 0)))))
+                  (show-version-and-exit "guix-download")))))
 
 
 ;;;

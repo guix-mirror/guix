@@ -30,6 +30,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix-package)
+  #:use-module (guix ui)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
@@ -192,9 +193,6 @@ all of PACKAGES, a list of name/version/output/path tuples."
     (format (current-error-port) fmt args ...)
     (exit 1)))
 
-(define (show-version)
-  (display "guix-package (@PACKAGE_NAME@) @PACKAGE_VERSION@\n"))
-
 (define (show-help)
   (display (_ "Usage: guix-package [OPTION]... PACKAGES...
 Install, remove, or upgrade PACKAGES in a single transaction.\n"))
@@ -228,8 +226,7 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version)
-                  (exit 0)))
+                  (show-version-and-exit "guix-package")))
 
         (option '(#\i "install") #t #f
                 (lambda (opt name arg result)

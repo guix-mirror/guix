@@ -71,9 +71,6 @@ When SOURCE? is true, return the derivations of the package sources."
   `((system . ,(%current-system))
     (substitutes? . #t)))
 
-(define (show-version)
-  (display "guix-build (@PACKAGE_NAME@) @PACKAGE_VERSION@\n"))
-
 (define (show-help)
   (display (_ "Usage: guix-build [OPTION]... PACKAGE-OR-DERIVATION...
 Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
@@ -113,8 +110,7 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version)
-                  (exit 0)))
+                  (show-version-and-exit "guix-build")))
 
         (option '(#\S "source") #f #f
                 (lambda (opt name arg result)

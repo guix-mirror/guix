@@ -19,12 +19,14 @@
 (define-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix store)
+  #:use-module (guix config)
   #:use-module (guix packages)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:export (_
             N_
             leave
+            show-version-and-exit
             call-with-error-handling
             with-error-handling))
 
@@ -45,6 +47,12 @@
   (begin
     (format (current-error-port) fmt args ...)
     (exit 1)))
+
+(define* (show-version-and-exit #:optional (command (car (command-line))))
+  "Display version information for COMMAND and `(exit 0)'."
+  (simple-format #t "~a (~a) ~a~%"
+                 command %guix-package-name %guix-version)
+  (exit 0))
 
 (define (call-with-error-handling thunk)
   "Call THUNK within a user-friendly error handler."
