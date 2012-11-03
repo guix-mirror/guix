@@ -94,7 +94,7 @@
                "12gkyqrn0kaa8xq7sc7v3wm407pz2fxg9ngc75aybhi5z825b9vq"))))
     (build-system gnu-build-system)               ; actually, just a makefile
     (outputs '("out" "doc"))
-    (inputs `(("ghostscript" ,(nixpkgs-derivation* "ghostscript"))))
+    (inputs `(("ghostscript" ,(nixpkgs-derivation "ghostscript"))))
     (arguments `(#:modules ((guix build utils)
                             (guix build gnu-build-system)
                             (srfi srfi-1))        ; we need SRFI-1

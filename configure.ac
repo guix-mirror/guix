@@ -52,13 +52,12 @@ AC_ARG_WITH([nixpkgs],
    esac],
   [])
 
+AC_MSG_CHECKING([for Nixpkgs source tree])
 if test -f "$NIXPKGS/default.nix"; then
-   AC_MSG_CHECKING([for Nixpkgs source tree])
    AC_MSG_RESULT([$NIXPKGS])
    AC_SUBST([NIXPKGS])
 else
-   AC_MSG_WARN([Nixpkgs not found; this will prevent most tests from running.])
-   AC_MSG_WARN([Please use `--with-nixpkgs'.])
+   AC_MSG_RESULT([not found])
 fi
 
 AC_ARG_WITH([libgcrypt-prefix],

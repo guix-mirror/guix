@@ -458,7 +458,8 @@ starting from the right of S."
 (define %nixpkgs-directory
   (make-parameter
    ;; Capture the build-time value of $NIXPKGS.
-   (compile-time-value (getenv "NIXPKGS"))))
+   (or (compile-time-value (getenv "NIXPKGS"))
+       (getenv "NIXPKGS"))))
 
 (define* (nixpkgs-derivation attribute #:optional (system (%current-system)))
   "Return the derivation path of ATTRIBUTE in Nixpkgs."

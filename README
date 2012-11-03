@@ -19,7 +19,7 @@ Guix currently depends on the following packages:
   - [[http://nixos.org/nix/][Nix]]
   - [[http://gnupg.org/][GNU libgcrypt]], or [[http://nongnu.org/libchop/][libchop]]
 
-For bootstrapping purposes, it is useful to reuse packages from Nixpkgs.
+Optionally, packages from Nixpkgs may be transparently reused from Guix.
 For this to work, you need to have a checkout of the Nixpkgs repository;
 the `--with-nixpkgs' option allows you to let `configure' know where the
 Nixpkgs checkout is.

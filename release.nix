@@ -51,7 +51,7 @@ let
         buildInputs = with pkgs; [ guile ];
         buildNativeInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
         configureFlags =
-          [ "--with-nixpkgs=${nixpkgs}" "--with-nix-prefix=${pkgs.nix}" ];
+          [ "--with-nix-prefix=${pkgs.nix}" ];
       };
 
     build =
@@ -64,7 +64,7 @@ let
         buildNativeInputs = [ pkgs.pkgconfig ];
         src = jobs.tarball;
         configureFlags =
-          [ "--with-nixpkgs=${nixpkgs}" "--with-nix-prefix=${pkgs.nix}"
+          [ "--with-nix-prefix=${pkgs.nix}"
             "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
           ];
 

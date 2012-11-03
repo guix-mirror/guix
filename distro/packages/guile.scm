@@ -45,7 +45,7 @@ or 2.0."
                "1svlyk5pm4fsdp2g7n6qffdl6fdggxnlicj0jn9s4lxd63gzxy1n"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)
-                    ("gperf" ,(nixpkgs-derivation* "gperf"))))
+                    ("gperf" ,(nixpkgs-derivation "gperf"))))
    (inputs `(("guile" ,guile)))
    (description "Guile-Reader, a simple framework for building readers for
 GNU Guile")
