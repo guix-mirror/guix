@@ -79,6 +79,7 @@ AC_SUBST([LIBGCRYPT])
 
 AC_CONFIG_FILES([Makefile
                  po/Makefile.in
+		 guix/config.scm
 		 guix-build
 		 guix-download
 		 guix-package

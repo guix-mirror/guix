@@ -48,3 +48,4 @@ config.cache
 /guix-download
 /distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz
 /guix-package
+/guix/config.scm

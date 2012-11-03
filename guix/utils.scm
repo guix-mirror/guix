@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix utils)
+  #:use-module (guix config)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
@@ -392,10 +393,6 @@ starting from the right of S."
 ;;; Hash.
 ;;;
 
-(define %libgcrypt
-  ;; Name of the libgcrypt shared library.
-  (compile-time-value (or (getenv "LIBGCRYPT") "libgcrypt")))
-
 (define sha256
   (cond
    ((compile-time-value
@@ -458,13 +455,12 @@ starting from the right of S."
 (define %nixpkgs-directory
   (make-parameter
    ;; Capture the build-time value of $NIXPKGS.
-   (or (compile-time-value (getenv "NIXPKGS"))
-       (getenv "NIXPKGS"))))
+   (or %nixpkgs (getenv "NIXPKGS"))))
 
 (define* (nixpkgs-derivation attribute #:optional (system (%current-system)))
   "Return the derivation path of ATTRIBUTE in Nixpkgs."
   (let* ((p (open-pipe* OPEN_READ (or (getenv "NIX_INSTANTIATE")
-                                      "nix-instantiate")
+                                      %nix-instantiate)
                         "-A" attribute (%nixpkgs-directory)
                         "--argstr" "system" system))
          (l (read-line p))

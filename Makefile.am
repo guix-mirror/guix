@@ -46,7 +46,7 @@ MODULES =					\
   distro/packages/ld-wrapper.scm		\
   distro/packages/typesetting.scm
 
-GOBJECTS = $(MODULES:%.scm=%.go)
+GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
 
 nobase_dist_guilemodule_DATA = $(MODULES)
 
@@ -112,7 +112,7 @@ distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz: guix/utils.go
 	$(MKDIR_P) `dirname "$@"`
 	$(DOWNLOAD_FILE) "$@" "93b537766dfab3ad287143523751e3ec02dd32d3ccaf88ad2d31c63158f342ee"
 
-nobase_nodist_guilemodule_DATA = $(GOBJECTS)
+nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
 
 TESTS =						\
   tests/builders.scm				\
