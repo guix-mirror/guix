@@ -394,58 +394,17 @@ starting from the right of S."
 ;;;
 
 (define sha256
-  (cond
-   ((compile-time-value
-     (false-if-exception (dynamic-link %libgcrypt)))
-    ;; Using libgcrypt.
-    (let ((hash   (pointer->procedure void
-                                      (dynamic-func "gcry_md_hash_buffer"
-                                                    (dynamic-link %libgcrypt))
-                                      `(,int * * ,size_t)))
-          (sha256 8))                           ; GCRY_MD_SHA256, as of 1.5.0
-      (lambda (bv)
-        "Return the SHA256 of BV as a bytevector."
-        (let ((digest (make-bytevector (/ 256 8))))
-          (hash sha256 (bytevector->pointer digest)
-                (bytevector->pointer bv) (bytevector-length bv))
-          digest))))
-
-   ((compile-time-value
-     (false-if-exception (resolve-interface '(chop hash))))
-    ;; Using libchop.
-    (let ((bytevector-hash    (@ (chop hash) bytevector-hash))
-          (hash-method/sha256 (@ (chop hash) hash-method/sha256)))
-      (lambda (bv)
-        "Return the SHA256 of BV as a bytevector."
-        (bytevector-hash hash-method/sha256 bv))))
-
-   (else
-    ;; Slow, poor programmer's implementation that uses Coreutils.
+  (let ((hash   (pointer->procedure void
+                                    (dynamic-func "gcry_md_hash_buffer"
+                                                  (dynamic-link %libgcrypt))
+                                    `(,int * * ,size_t)))
+        (sha256 8))                        ; GCRY_MD_SHA256, as of 1.5.0
     (lambda (bv)
       "Return the SHA256 of BV as a bytevector."
-      (let ((in  (pipe))
-            (out (pipe))
-            (pid (primitive-fork)))
-        (if (= 0 pid)
-            (begin                                 ; child
-              (close (cdr in))
-              (close (car out))
-              (close 0)
-              (close 1)
-              (dup2 (fileno (car in)) 0)
-              (dup2 (fileno (cdr out)) 1)
-              (execlp "sha256sum" "sha256sum"))
-            (begin                                 ; parent
-              (close (car in))
-              (close (cdr out))
-              (put-bytevector (cdr in) bv)
-              (close (cdr in))                     ; EOF
-              (let ((line (car (string-tokenize (read-line (car out))))))
-                (close (car out))
-                (and (and=> (status:exit-val (cdr (waitpid pid)))
-                            zero?)
-                     (base16-string->bytevector line))))))))))
-
+      (let ((digest (make-bytevector (/ 256 8))))
+        (hash sha256 (bytevector->pointer digest)
+              (bytevector->pointer bv) (bytevector-length bv))
+        digest))))
 
 
 ;;;

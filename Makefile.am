@@ -172,4 +172,5 @@ EXTRA_DIST += doc/fdl-1.3.texi
 
 ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS =			\
+  --with-libgcrypt-prefix="$(LIBGCRYPT_PREFIX)"	\
   --with-nix-prefix="$(NIX_PREFIX)"

@@ -65,9 +65,11 @@ AC_ARG_WITH([libgcrypt-prefix],
   [case "$withval" in
     yes|no)
       LIBGCRYPT="libgcrypt"
+      LIBGCRYPT_PREFIX="no"
       ;;
     *)
       LIBGCRYPT="$withval/lib/libgcrypt"
+      LIBGCRYPT_PREFIX="$withval"
       ;;
    esac],
   [LIBGCRYPT="libgcrypt"])
@@ -76,6 +78,10 @@ dnl Library name suitable for `dynamic-link'.
 AC_MSG_CHECKING([for libgcrypt shared library name])
 AC_MSG_RESULT([$LIBGCRYPT])
 AC_SUBST([LIBGCRYPT])
+AC_SUBST([LIBGCRYPT_PREFIX])
+
+GUIX_ASSERT_LIBGCRYPT_USABLE
+
 
 AC_CONFIG_FILES([Makefile
                  po/Makefile.in
