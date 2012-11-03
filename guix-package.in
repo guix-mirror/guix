@@ -187,12 +187,6 @@ all of PACKAGES, a list of name/version/output/path tuples."
   ;; Alist of default option values.
   `((profile . ,%current-profile)))
 
-(define-syntax-rule (leave fmt args ...)
-  "Format FMT and ARGS to the error port and exit."
-  (begin
-    (format (current-error-port) fmt args ...)
-    (exit 1)))
-
 (define (show-help)
   (display (_ "Usage: guix-package [OPTION]... PACKAGES...
 Install, remove, or upgrade PACKAGES in a single transaction.\n"))
@@ -322,67 +316,70 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
   (setvbuf (current-error-port) _IOLBF)
 
   (let ((opts (parse-options)))
-    (parameterize ((%guile-for-build
-                    (package-derivation %store
-                                        (if (assoc-ref opts 'bootstrap?)
-                                            (@@ (distro packages base)
-                                                %bootstrap-guile)
-                                            guile-2.0))))
-      (let* ((dry-run? (assoc-ref opts 'dry-run?))
-             (profile  (assoc-ref opts 'profile))
-             (install  (filter-map (match-lambda
-                                    (('install . (? store-path?))
-                                     #f)
-                                    (('install . package)
-                                     (find-package package))
-                                    (_ #f))
-                                   opts))
-             (drv      (filter-map (match-lambda
-                                    ((name version sub-drv (? package? package))
-                                     (package-derivation %store package))
-                                    (_ #f))
-                                   install))
-             (install* (append
-                        (filter-map (match-lambda
-                                     (('install . (? store-path? path))
-                                      `(,(store-path-package-name path)
-                                        #f #f ,path))
-                                     (_ #f))
-                                    opts)
-                        (map (lambda (tuple drv)
-                               (match tuple
-                                 ((name version sub-drv _)
-                                  (let ((output-path
-                                         (derivation-path->output-path drv
-                                                                       sub-drv)))
-                                    `(,name ,version ,sub-drv ,output-path)))))
-                             install drv)))
-             (remove   (filter-map (match-lambda
-                                    (('remove . package)
-                                     package)
-                                    (_ #f))
-                                   opts))
-             (packages (append install*
-                               (fold alist-delete
-                                     (manifest-packages (profile-manifest profile))
-                                     remove))))
+    (with-error-handling
+      (parameterize ((%guile-for-build
+                      (package-derivation %store
+                                          (if (assoc-ref opts 'bootstrap?)
+                                              (@@ (distro packages base)
+                                                  %bootstrap-guile)
+                                              guile-2.0))))
+        (let* ((dry-run? (assoc-ref opts 'dry-run?))
+               (profile  (assoc-ref opts 'profile))
+               (install  (filter-map (match-lambda
+                                      (('install . (? store-path?))
+                                       #f)
+                                      (('install . package)
+                                       (find-package package))
+                                      (_ #f))
+                                     opts))
+               (drv      (filter-map (match-lambda
+                                      ((name version sub-drv
+                                             (? package? package))
+                                       (package-derivation %store package))
+                                      (_ #f))
+                                     install))
+               (install* (append
+                          (filter-map (match-lambda
+                                       (('install . (? store-path? path))
+                                        `(,(store-path-package-name path)
+                                          #f #f ,path))
+                                       (_ #f))
+                                      opts)
+                          (map (lambda (tuple drv)
+                                 (match tuple
+                                   ((name version sub-drv _)
+                                    (let ((output-path
+                                           (derivation-path->output-path
+                                            drv sub-drv)))
+                                      `(,name ,version ,sub-drv ,output-path)))))
+                               install drv)))
+               (remove   (filter-map (match-lambda
+                                      (('remove . package)
+                                       package)
+                                      (_ #f))
+                                     opts))
+               (packages (append install*
+                                 (fold alist-delete
+                                       (manifest-packages
+                                        (profile-manifest profile))
+                                       remove))))
 
-        (show-what-to-build drv dry-run?)
+          (show-what-to-build drv dry-run?)
 
-        (or dry-run?
-            (and (build-derivations %store drv)
-                 (let* ((prof-drv (profile-derivation %store packages))
-                        (prof     (derivation-path->output-path prof-drv))
-                        (number   (latest-profile-number profile))
-                        (name     (format #f "~a/~a-~a-link"
-                                          (dirname profile)
-                                          (basename profile) (+ 1 number))))
-                   (and (build-derivations %store (list prof-drv))
-                        (begin
-                          (symlink prof name)
-                          (when (file-exists? profile)
-                            (delete-file profile))
-                          (symlink name profile))))))))))
+          (or dry-run?
+              (and (build-derivations %store drv)
+                   (let* ((prof-drv (profile-derivation %store packages))
+                          (prof     (derivation-path->output-path prof-drv))
+                          (number   (latest-profile-number profile))
+                          (name     (format #f "~a/~a-~a-link"
+                                            (dirname profile)
+                                            (basename profile) (+ 1 number))))
+                     (and (build-derivations %store (list prof-drv))
+                          (begin
+                            (symlink prof name)
+                            (when (file-exists? profile)
+                              (delete-file profile))
+                            (symlink name profile)))))))))))
 
 ;; Local Variables:
 ;; eval: (put 'guard 'scheme-indent-function 1)
