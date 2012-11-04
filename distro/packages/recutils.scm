@@ -35,10 +35,11 @@
              (base32
               "1v2xzwwwhc5j5kmvg4sv6baxjpsfqh8ln7ilv4mgb1408rs7xmky"))))
    (build-system gnu-build-system)
-   (inputs `(("curl" ,(nixpkgs-derivation "curl"))
-             ("emacs" ,(nixpkgs-derivation "emacs"))
-             ("check" ,(nixpkgs-derivation "check"))
-             ("bc" ,(nixpkgs-derivation "bc"))
+   (inputs `(;; TODO: Enable optional deps when they're packaged.
+             ;; ("curl" ,(nixpkgs-derivation "curl"))
+             ;; ("emacs" ,(nixpkgs-derivation "emacs"))
+             ;; ("check" ,(nixpkgs-derivation "check"))
+             ;; ("bc" ,(nixpkgs-derivation "bc"))
              ("patch/gets"
               ,(search-patch "diffutils-gets-undeclared.patch"))))
    (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
