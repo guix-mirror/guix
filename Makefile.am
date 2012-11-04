@@ -43,6 +43,7 @@ MODULES =					\
   guix.scm					\
   distro.scm					\
   distro/packages/base.scm			\
+  distro/packages/bootstrap.scm			\
   distro/packages/guile.scm			\
   distro/packages/ld-wrapper.scm		\
   distro/packages/lout.scm			\

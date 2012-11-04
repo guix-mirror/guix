@@ -26,6 +26,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (distro)
   #:use-module (distro packages base)
+  #:use-module (distro packages bootstrap)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
@@ -43,9 +44,6 @@
   ;; Use the bootstrap inputs so it doesn't take ages to run these tests.
   ;; This still involves building GNU Make and GNU Diffutils.
   (@@ (distro packages base) %boot0-inputs))
-
-(define %bootstrap-guile
-  (@@ (distro packages base) %bootstrap-guile))
 
 
 (test-begin "packages")

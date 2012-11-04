@@ -25,6 +25,7 @@
   #:use-module (guix build union)
   #:use-module ((guix build utils)
                 #:select (with-directory-excursion directory-exists?))
+  #:use-module (distro packages bootstrap)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -32,9 +33,6 @@
 
 (define %store
   (false-if-exception (open-connection)))
-
-(define %bootstrap-guile
-  (@@ (distro packages base) %bootstrap-guile))
 
 (when %store
   ;; By default, use %BOOTSTRAP-GUILE for the current system.
@@ -72,7 +70,7 @@
   (let* ((inputs  (map (match-lambda
                         ((name package)
                          `(,name ,(package-derivation %store package))))
-                       (@@ (distro packages base) %bootstrap-inputs)))
+                       %bootstrap-inputs))
          (builder `(begin
                      (use-modules (guix build union))
                      (union-build (assoc-ref %outputs "out")

@@ -80,7 +80,7 @@ In that case, the easiest thing is to bootstrap the distro using
 binaries from Nixpkgs.
 
 To do that, you need to comment out the definitions of
-‘%bootstrap-guile’ and ‘%bootstrap-inputs’ in distro/packages/base.scm
+‘%bootstrap-guile’ and ‘%bootstrap-inputs’ in distro/packages/bootstrap.scm
 to force the use of Nixpkgs derivations.  For instance, when porting to
 ‘i686-linux’, you should redefine these variables along these lines:
 

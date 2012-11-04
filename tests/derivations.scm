@@ -22,7 +22,7 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module ((guix packages) #:select (package-derivation))
-  #:use-module ((distro packages base) #:select (%bootstrap-guile))
+  #:use-module (distro packages bootstrap)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -209,9 +209,7 @@
 
 (define %coreutils
   (false-if-exception
-   (or (package-derivation %store
-                           (@@ (distro packages base)
-                               %bootstrap-coreutils&co))
+   (or (package-derivation %store %bootstrap-coreutils&co)
        (nixpkgs-derivation "coreutils"))))
 
 (test-skip (if %coreutils 0 1))

@@ -25,6 +25,7 @@
   #:use-module (guix utils)
   #:use-module (guix derivations)
   #:use-module ((guix packages) #:select (package-derivation))
+  #:use-module (distro packages bootstrap)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64))
@@ -47,9 +48,6 @@
              ((name package)
               (list name (package-derivation %store package))))
             (@@ (distro packages base) %boot0-inputs))))
-
-(define %bootstrap-guile
-  (@@ (distro packages base) %bootstrap-guile))
 
 
 (test-begin "builders")
