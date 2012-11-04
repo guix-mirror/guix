@@ -48,6 +48,7 @@ MODULES =					\
   distro/packages/bootstrap.scm			\
   distro/packages/compression.scm		\
   distro/packages/gawk.scm			\
+  distro/packages/gnupg.scm			\
   distro/packages/gperf.scm			\
   distro/packages/guile.scm			\
   distro/packages/ld-wrapper.scm		\
