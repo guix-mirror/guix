@@ -58,7 +58,8 @@
             source-properties->location
 
             gnu-triplet->nix-system
-            %current-system))
+            %current-system
+            package-name->name+version))
 
 
 ;;;
@@ -570,6 +571,27 @@ returned by `config.guess'."
 (define %current-system
   ;; System type as expected by Nix, usually ARCHITECTURE-KERNEL.
   (make-parameter (gnu-triplet->nix-system %host-type)))
+
+(define (package-name->name+version name)
+  "Given NAME, a package name like \"foo-0.9.1b\", return two values:
+\"foo\" and \"0.9.1b\".  When the version part is unavailable, NAME and
+#f are returned.  The first hyphen followed by a digit is considered to
+introduce the version part."
+  ;; See also `DrvName' in Nix.
+
+  (define number?
+    (cut char-set-contains? char-set:digit <>))
+
+  (let loop ((chars   (string->list name))
+             (prefix '()))
+    (match chars
+      (()
+       (values name #f))
+      ((#\- (? number? n) rest ...)
+       (values (list->string (reverse prefix))
+               (list->string (cons n rest))))
+      ((head tail ...)
+       (loop tail (cons head prefix))))))
 
 
 ;;;

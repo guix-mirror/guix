@@ -104,6 +104,24 @@
                (equal? nix (gnu-triplet->nix-system gnu)))
              gnu nix))))
 
+(test-assert "package-name->name+version"
+  (every (match-lambda
+          ((name version)
+           (let*-values (((full-name)
+                          (if version
+                              (string-append name "-" version)
+                              name))
+                         ((name* version*)
+                          (package-name->name+version full-name)))
+             (and (equal? name* name)
+                  (equal? version* version)))))
+         '(("foo" "0.9.1b")
+           ("foo-bar" "1.0")
+           ("foo-bar2" #f)
+           ("guile" "2.0.6.65-134c9") ; as produced by `git-version-gen'
+           ("nixpkgs" "1.0pre22125_a28fe19")
+           ("gtk2" "2.38.0"))))
+
 (test-assert "define-record-type*"
   (begin
     (define-record-type* <foo> foo make-foo

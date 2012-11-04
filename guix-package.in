@@ -283,8 +283,6 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
     ;; Find the package NAME; NAME may contain a version number and a
     ;; sub-derivation name.
     (define request name)
-    (define versioned-rx
-      (make-regexp "^(.*)-([0-9][^-]*)$"))
 
     (let*-values (((name sub-drv)
                    (match (string-rindex name #\:)
@@ -292,10 +290,7 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                      (colon (values (substring name (+ 1 colon))
                                     (substring name colon)))))
                   ((name version)
-                   (match (regexp-exec versioned-rx name)
-                     (#f    (values name #f))
-                     (m     (values (match:substring m 1)
-                                    (match:substring m 2))))))
+                   (package-name->name+version name)))
       (match (find-packages-by-name name version)
         ((p)
          (list name version sub-drv p))
