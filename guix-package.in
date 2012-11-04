@@ -48,9 +48,6 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:use-module (distro packages base)
   #:export (guix-package))
 
-(define _ (cut gettext <> "guix"))
-(define N_ (cut ngettext <> <> <> "guix"))
-
 (define %store
   (open-connection))
 
