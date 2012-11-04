@@ -16,18 +16,12 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (distro packages databases)
+(define-module (distro packages recutils)
   #:use-module (distro)
   #:use-module (guix packages)
   #:use-module (guix http)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
-
-;;; Commentary:
-;;;
-;;; Database management software and related packages.
-;;;
-;;; Code:
 
 (define-public recutils
   (package
@@ -56,5 +50,3 @@ text-based databases called recfiles.  The data is stored as a sequence of
 records, each record containing an arbitrary number of named fields.")
    (license "GPLv3+")
    (home-page "http://www.gnu.org/software/recutils/")))
-
-;;; databases.scm ends here

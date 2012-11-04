@@ -43,10 +43,10 @@ MODULES =					\
   guix.scm					\
   distro.scm					\
   distro/packages/base.scm			\
-  distro/packages/databases.scm			\
   distro/packages/guile.scm			\
   distro/packages/ld-wrapper.scm		\
-  distro/packages/typesetting.scm
+  distro/packages/lout.scm			\
+  distro/packages/recutils.scm
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
 

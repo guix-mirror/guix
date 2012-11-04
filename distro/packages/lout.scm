@@ -16,17 +16,11 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (distro packages typesetting)
+(define-module (distro packages lout)
   #:use-module (guix packages)
   #:use-module (guix http)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
-
-;;; Commentary:
-;;;
-;;; Typesetting-related packages.
-;;;
-;;; Code:
 
 (define-public lout
   ;; This one is a bit tricky, because it doesn't follow the GNU Build System
@@ -131,5 +125,3 @@ outcome of an eight-year research project that went back to the
 beginning.")
     (license "GPLv3+")
     (home-page "http://savannah.nongnu.org/projects/lout/"))))
-
-;;; typesetting.scm ends here
