@@ -20,6 +20,7 @@
   #:use-module (distro)
   #:use-module (distro packages bdw-gc)
   #:use-module (distro packages gawk)
+  #:use-module (distro packages gperf)
   #:use-module (distro packages libffi)
   #:use-module (distro packages libtool)
   #:use-module (distro packages libunistring)
@@ -29,7 +30,6 @@
   #:use-module (distro packages readline)
   #:use-module (guix packages)
   #:use-module (guix http)
-  #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
 ;;; Commentary:
@@ -151,8 +151,7 @@ or 2.0."
                "1svlyk5pm4fsdp2g7n6qffdl6fdggxnlicj0jn9s4lxd63gzxy1n"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)
-                    ("gperf" ,(false-if-exception ; FIXME
-                               (nixpkgs-derivation "gperf")))))
+                    ("gperf" ,gperf)))
    (inputs `(("guile" ,guile)))
    (synopsis "Guile-Reader, a simple framework for building readers for
 GNU Guile")

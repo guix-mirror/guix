@@ -47,6 +47,7 @@ MODULES =					\
   distro/packages/bdw-gc.scm			\
   distro/packages/bootstrap.scm			\
   distro/packages/gawk.scm			\
+  distro/packages/gperf.scm			\
   distro/packages/guile.scm			\
   distro/packages/ld-wrapper.scm		\
   distro/packages/libffi.scm			\
