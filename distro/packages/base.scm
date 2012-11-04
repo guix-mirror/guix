@@ -876,13 +876,14 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     ,@(fold alist-delete %boot1-inputs '("libc" "gcc"))))
 
 (define binutils-final
-  (package (inherit binutils)
-    (arguments
-     (lambda (system)
-       `(#:guile ,%bootstrap-guile
-         #:implicit-inputs? #f
-         ,@(package-arguments binutils))))
-    (inputs %boot2-inputs)))
+  (package-with-bootstrap-guile
+   (package (inherit binutils)
+     (arguments
+      (lambda (system)
+        `(#:guile ,%bootstrap-guile
+                  #:implicit-inputs? #f
+                  ,@(package-arguments binutils))))
+     (inputs %boot2-inputs))))
 
 (define-public gcc-final
   ;; The final GCC.
