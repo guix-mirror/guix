@@ -51,7 +51,9 @@ let
         buildInputs = with pkgs; [ guile ];
         buildNativeInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
         configureFlags =
-          [ "--with-nix-prefix=${pkgs.nix}" ];
+          [ "--with-nix-prefix=${pkgs.nix}"
+            "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
+          ];
       };
 
     build =
