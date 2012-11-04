@@ -43,11 +43,25 @@ MODULES =					\
   guix.scm					\
   distro.scm					\
   distro/packages/base.scm			\
+  distro/packages/bash.scm			\
+  distro/packages/bdw-gc.scm			\
   distro/packages/bootstrap.scm			\
+  distro/packages/gawk.scm			\
   distro/packages/guile.scm			\
   distro/packages/ld-wrapper.scm		\
+  distro/packages/libffi.scm			\
+  distro/packages/libsigsegv.scm		\
+  distro/packages/libtool.scm			\
+  distro/packages/libunistring.scm		\
   distro/packages/lout.scm			\
+  distro/packages/m4.scm			\
+  distro/packages/multiprecision.scm		\
+  distro/packages/ncurses.scm			\
+  distro/packages/perl.scm			\
+  distro/packages/pkg-config.scm		\
+  distro/packages/readline.scm			\
   distro/packages/recutils.scm
+
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
 

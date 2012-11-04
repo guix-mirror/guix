@@ -17,7 +17,16 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages guile)
-  #:use-module (distro packages base)
+  #:use-module (distro)
+  #:use-module (distro packages bdw-gc)
+  #:use-module (distro packages gawk)
+  #:use-module (distro packages libffi)
+  #:use-module (distro packages libtool)
+  #:use-module (distro packages libunistring)
+  #:use-module (distro packages m4)
+  #:use-module (distro packages multiprecision)
+  #:use-module (distro packages pkg-config)
+  #:use-module (distro packages readline)
   #:use-module (guix packages)
   #:use-module (guix http)
   #:use-module (guix utils)
@@ -25,9 +34,106 @@
 
 ;;; Commentary:
 ;;;
-;;; Modules and extensions for GNU Guile.
+;;; GNU Guile, and modules and extensions.
 ;;;
 ;;; Code:
+
+(define-public guile-1.8
+  (package
+   (name "guile")
+   (version "1.8.8")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/guile/guile-" version
+                                ".tar.gz"))
+            (sha256
+             (base32
+              "0l200a0v7h8bh0cwz6v7hc13ds39cgqsmfrks55b1rbj5vniyiy3"))))
+   (build-system gnu-build-system)
+   (arguments '(#:configure-flags '("--disable-error-on-warning")
+                #:patches (list (assoc-ref %build-inputs "patch/snarf"))
+
+                ;; Insert a phase before `configure' to patch things up.
+                #:phases (alist-cons-before
+                           'configure
+                           'patch-loader-search-path
+                           (lambda* (#:key outputs #:allow-other-keys)
+                             ;; Add a call to `lt_dladdsearchdir' so that
+                             ;; `libguile-readline.so' & co. are in the
+                             ;; loader's search path.
+                             (substitute* "libguile/dynl.c"
+                                          (("lt_dlinit.*$" match)
+                                           (format #f
+                                                   "  ~a~%  lt_dladdsearchdir(\"~a/lib\");~%"
+                                                   match
+                                                   (assoc-ref outputs "out")))))
+                           %standard-phases)))
+   (inputs `(("patch/snarf" ,(search-patch "guile-1.8-cpp-4.5.patch"))
+             ("gawk" ,gawk)
+             ("readline" ,readline)))
+
+   ;; Since `guile-1.8.pc' has "Libs: ... -lgmp -lltdl", these must be
+   ;; propagated.
+   (propagated-inputs `(("gmp" ,gmp)
+                        ("libtool" ,libtool)))
+
+   ;; When cross-compiling, a native version of Guile itself is needed.
+   (self-native-input? #t)
+
+   (synopsis "GNU Guile 1.8, an embeddable Scheme interpreter")
+   (description
+"GNU Guile 1.8 is an interpreter for the Scheme programming language,
+packaged as a library that can be embedded into programs to make them
+extensible.  It supports many SRFIs.")
+   (home-page "http://www.gnu.org/software/guile/")
+   (license "LGPLv2+")))
+
+(define-public guile-2.0
+  (package
+   (name "guile")
+   (version "2.0.6")
+   (source (origin
+            (method http-fetch)
+            (uri (string-append "http://ftp.gnu.org/gnu/guile/guile-" version
+                                ".tar.xz"))
+            (sha256
+             (base32
+              "000ng5qsq3cl1k35jvzvhwxj92wx4q87745n2fppkd4irh58vv5l"))))
+   (build-system gnu-build-system)
+   (native-inputs `(("pkgconfig" ,pkg-config)))
+   (inputs `(("libffi" ,libffi)
+             ("readline" ,readline)))
+
+   (propagated-inputs
+    `( ;; These ones aren't normally needed here, but since `libguile-2.0.la'
+       ;; reads `-lltdl -lunistring', adding them here will add the needed
+       ;; `-L' flags.  As for why the `.la' file lacks the `-L' flags, see
+       ;; <http://thread.gmane.org/gmane.comp.lib.gnulib.bugs/18903>.
+      ("libunistring" ,libunistring)
+      ("libtool" ,libtool)
+
+      ;; The headers and/or `guile-2.0.pc' refer to these packages, so they
+      ;; must be propagated.
+      ("bdw-gc" ,libgc)
+      ("gmp" ,gmp)))
+
+   (self-native-input? #t)
+
+   (synopsis "GNU Guile 2.0, an embeddable Scheme implementation")
+   (description
+"GNU Guile is an implementation of the Scheme programming language, with
+support for many SRFIs, packaged for use in a wide variety of environments.
+In addition to implementing the R5RS Scheme standard and a large subset of
+R6RS, Guile includes a module system, full access to POSIX system calls,
+networking support, multiple threads, dynamic linking, a foreign function
+call interface, and powerful string processing.")
+   (home-page "http://www.gnu.org/software/guile/")
+   (license "LGPLv3+")))
+
+
+;;;
+;;; Extensions.
+;;;
 
 (define (guile-reader guile)
   "Build Guile-Reader against GUILE, a package of some version of Guile 1.8
@@ -45,7 +151,8 @@ or 2.0."
                "1svlyk5pm4fsdp2g7n6qffdl6fdggxnlicj0jn9s4lxd63gzxy1n"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)
-                    ("gperf" ,(nixpkgs-derivation "gperf"))))
+                    ("gperf" ,(false-if-exception ; FIXME
+                               (nixpkgs-derivation "gperf")))))
    (inputs `(("guile" ,guile)))
    (synopsis "Guile-Reader, a simple framework for building readers for
 GNU Guile")
