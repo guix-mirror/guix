@@ -60,6 +60,7 @@ MODULES =					\
   distro/packages/ncurses.scm			\
   distro/packages/perl.scm			\
   distro/packages/pkg-config.scm		\
+  distro/packages/pth.scm			\
   distro/packages/readline.scm			\
   distro/packages/recutils.scm
 
