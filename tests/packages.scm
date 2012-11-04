@@ -53,7 +53,7 @@
 (define-syntax-rule (dummy-package name* extra-fields ...)
   (package (name name*) (version "0") (source #f)
            (build-system gnu-build-system)
-           (description #f) (long-description #f)
+           (synopsis #f) (description #f)
            (home-page #f)
            extra-fields ...))
 

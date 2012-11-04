@@ -52,8 +52,8 @@
    (build-system gnu-build-system)
    (outputs '("out" "lib"))                   ; separate libdir from the rest
    (home-page "http://www.gnu.org/software/libsigsegv/")
-   (description "GNU libsigsegv, a library to handle page faults in user mode")
-   (long-description
+   (synopsis "GNU libsigsegv, a library to handle page faults in user mode")
+   (description
 "GNU libsigsegv is a library for handling page faults in user mode. A page
 fault occurs when a program tries to access to a region of memory that is
 currently not available. Catching and handling a page fault is a useful
@@ -83,8 +83,8 @@ handlers, distributed shared memory, and more.")
    (inputs `(("libsigsegv" ,libsigsegv)             ; headers
              ("libsigsegv/lib" ,libsigsegv "lib"))) ; library
    (home-page "http://www.gnu.org/software/gawk/")
-   (description "GNU implementation of the Awk programming language")
-   (long-description
+   (synopsis "GNU implementation of the Awk programming language")
+   (description
     "Many computer users need to manipulate text files: extract and then
 operate on data from parts of certain lines while discarding the rest, make
 changes in various text files wherever certain patterns appear, and so on.
@@ -113,8 +113,8 @@ code.")
                   ,(string-append "--with-gawk="  ; for illustration purposes
                                  (assoc-ref %build-inputs "gawk")))))
    (inputs `(("gawk" ,gawk)))
-   (description "GNU Hello")
-   (long-description "Yeah...")
+   (synopsis "GNU Hello")
+   (description "Yeah...")
    (home-page "http://www.gnu.org/software/hello/")
    (license "GPLv3+")))
 
@@ -130,8 +130,8 @@ code.")
              (base32
               "1qbjb1l7f9blckc5pqy8jlf6482hpx4awn2acmhyf5mv9wfq03p7"))))
    (build-system gnu-build-system)
-   (description "GNU implementation of the Unix grep command")
-   (long-description
+   (synopsis "GNU implementation of the Unix grep command")
+   (description
     "The grep command searches one or more input files for lines containing a
 match to a specified pattern.  By default, grep prints the matching
 lines.")
@@ -150,8 +150,8 @@ lines.")
              (base32
               "13wlsb4sf5d5a82xjhxqmdvrrn36rmw5f0pl9qyb9zkvldnb7hra"))))
    (build-system gnu-build-system)
-   (description "GNU sed, a batch stream editor")
-   (long-description
+   (synopsis "GNU sed, a batch stream editor")
+   (description
     "Sed (stream editor) isn't really a true text editor or text processor.
 Instead, it is used to filter text, i.e., it takes text input and performs
 some operation (or set of operations) on it and outputs the modified text.
@@ -175,8 +175,8 @@ substituting multiple occurrences of a string within a file.")
    (inputs `(("patch/gets" ,(search-patch "tar-gets-undeclared.patch"))))
    (arguments
     `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
-   (description "GNU implementation of the `tar' archiver")
-   (long-description
+   (synopsis "GNU implementation of the `tar' archiver")
+   (description
     "The Tar program provides the ability to create tar archives, as well as
 various other kinds of manipulation.  For example, you can use Tar on
 previously created archives to extract files, to store additional files, or
@@ -233,8 +233,8 @@ files (as archives).")
                         (string-append "-Dloclibpth=" libc "/lib")))))
           %standard-phases))))
     (inputs `(("patch/no-sys-dirs" ,(search-patch "perl-no-sys-dirs.patch"))))
-    (description "Implementation of the Perl programming language")
-    (long-description
+    (synopsis "Implementation of the Perl programming language")
+    (description
      "Perl 5 is a highly capable, feature-rich programming language with over
 24 years of development.")
     (home-page "http://www.perl.org/")
@@ -252,11 +252,11 @@ files (as archives).")
              (base32
               "18rm80kar7n016g8bsyy1a3zk50i2826xdgs874yh64rzj7nxmdm"))))
    (build-system gnu-build-system)
-   (description "Gzip, the GNU zip compression program")
+   (synopsis "Gzip, the GNU zip compression program")
    (arguments
     ;; FIXME: The test suite wants `less', and optionally Perl.
     '(#:tests? #f))
-   (long-description
+   (description
     "gzip (GNU zip) is a popular data compression program written by Jean-loup
 Gailly for the GNU project.  Mark Adler wrote the decompression part.
 
@@ -314,8 +314,8 @@ superior compression ratio of gzip is just a bonus.")
             (alist-delete 'configure %standard-phases))))
          #:make-flags (list (string-append "PREFIX="
                                            (assoc-ref %outputs "out")))))
-      (description "high-quality data compression program")
-      (long-description
+      (synopsis "high-quality data compression program")
+      (description
        "bzip2 is a freely available, patent free (see below), high-quality data
 compressor.  It typically compresses files to within 10% to 15% of the best
 available techniques (the PPM family of statistical compressors), whilst
@@ -336,9 +336,9 @@ decompression.")
              (base32
               "1dl35ca8fdss9z2d6y234gxh24ixq904xksizrjmjr5dimwhax6n"))))
    (build-system gnu-build-system)
-   (description
+   (synopsis
     "XZ, general-purpose data compression software, successor of LZMA")
-   (long-description
+   (description
     "XZ Utils is free general-purpose data compression software with high
 compression ratio.  XZ Utils were written for POSIX-like systems, but also
 work on some not-so-POSIX systems.  XZ Utils are the successor to LZMA Utils.
@@ -369,8 +369,8 @@ than gzip and 15 % smaller output than bzip2.")
       ((system) '(#:tests? #f))
       ((system cross-system)
        '(#:configure-flags '("ac_cv_func_strnlen_working=yes")))))
-   (description "GNU Patch, a program to apply differences to files")
-   (long-description
+   (synopsis "GNU Patch, a program to apply differences to files")
+   (description
     "GNU Patch takes a patch file containing a difference listing produced by
 the diff program and applies those differences to one or more original files,
 producing patched versions.")
@@ -392,8 +392,8 @@ producing patched versions.")
    (inputs `(("patch/gets"
               ,(search-patch "diffutils-gets-undeclared.patch"))))
    (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
-   (description "Programs to find differences among text files")
-   (long-description
+   (synopsis "Programs to find differences among text files")
+   (description
     "GNU Diffutils is a package of several programs related to finding
 differences between files.
 
@@ -446,9 +446,9 @@ You can use the sdiff command to merge two files interactively.")
        ;; See <http://savannah.gnu.org/bugs/?27299#comment1>.
        `(#:configure-flags '("gl_cv_func_wcwidth_works=yes")
          ,@(arguments cross-system)))))
-   (description "Basic directory searching utilities of the GNU operating
+   (synopsis "Basic directory searching utilities of the GNU operating
 system")
-   (long-description
+   (description
     "The GNU Find Utilities are the basic directory searching utilities of
 the GNU operating system.  These programs are typically used in conjunction
 with other programs to provide modular and powerful directory search and file
@@ -480,10 +480,10 @@ The tools supplied with this package are:
    (arguments
     '(;; Perl is missing, and some tests are failing.
       #:tests? #f))
-   (description
+   (synopsis
     "The basic file, shell and text manipulation utilities of the GNU
 operating system")
-   (long-description
+   (description
     "The GNU Core Utilities are the basic file, shell and text manipulation
 utilities of the GNU operating system.  These are the core utilities which
 are expected to exist on every operating system.")
@@ -522,8 +522,8 @@ are expected to exist on every operating system.")
              ("patch/readlink-EINVAL"
               ,(search-patch "m4-readlink-EINVAL.patch"))
              ("patch/gets" ,(search-patch "m4-gets-undeclared.patch"))))
-   (description "GNU M4, a macro processor")
-   (long-description
+   (synopsis "GNU M4, a macro processor")
+   (description
     "GNU M4 is an implementation of the traditional Unix macro processor.  It
 is mostly SVR4 compatible although it has some extensions (for example,
 handling more than 9 positional parameters to macros).  GNU M4 also has
@@ -556,9 +556,9 @@ macro processor in its own right.")
     `(("patch/impure-dirs" ,(search-patch "make-impure-dirs.patch"))))
    (arguments `(#:patches (list (assoc-ref %build-inputs
                                            "patch/impure-dirs"))))
-   (description "GNU Make, a program controlling the generation of non-source
+   (synopsis "GNU Make, a program controlling the generation of non-source
 files from sources")
-   (long-description
+   (description
     "Make is a tool which controls the generation of executables and other
 non-source files of a program from the program's source files.
 
@@ -587,8 +587,8 @@ that it is possible to use Make to build and install the program.")
                   ;; sub-architectures.
                   "--enable-fat"
                   "--enable-cxx")))
-   (description "GMP, the GNU multiple precision arithmetic library")
-   (long-description
+   (synopsis "GMP, the GNU multiple precision arithmetic library")
+   (description
     "GMP is a free library for arbitrary precision arithmetic, operating on
 signed integers, rational numbers, and floating point numbers.  There is no
 practical limit to the precision except the ones implied by the available
@@ -623,9 +623,9 @@ faster algorithms.")
                      "0ym1ylcq803n52qrggxqmkz66gbn8ncc3ybawal31v5y5p1srma9"))))
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)))
-   (description "GNU MPFR, a library for multiple-precision floating-point
+   (synopsis "GNU MPFR, a library for multiple-precision floating-point
 arithmetic")
-   (long-description
+   (description
     "The GNU MPFR library is a C library for multiple-precision
 floating-point computations with correct rounding.  MPFR is based on the GMP
 multiple-precision library.
@@ -651,9 +651,9 @@ double-precision floating-point arithmetic (53-bit mantissa).")
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)
              ("mpfr" ,mpfr)))
-   (description "GNU MPC, a library for multiprecision complex arithmetic
+   (synopsis "GNU MPC, a library for multiprecision complex arithmetic
 with exact rounding")
-   (long-description
+   (description
     "GNU MPC is a C library for the arithmetic of complex numbers with
 arbitrarily high precision and correct rounding of the result.  It is built
 upon and follows the same principles as GNU MPFR.")
@@ -683,9 +683,9 @@ upon and follows the same principles as GNU MPFR.")
       ;; bootstrapping.
       #:configure-flags '("LDFLAGS=-static-libgcc")))
 
-   (description "GNU Binutils, tools for manipulating binaries (linker,
+   (synopsis "GNU Binutils, tools for manipulating binaries (linker,
 assembler, etc.)")
-   (long-description
+   (description
     "The GNU Binutils are a collection of binary tools.  The main ones are
 `ld' (the GNU linker) and `as' (the GNU assembler).  They also include the
 BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
@@ -795,8 +795,8 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                            %standard-phases))))))
 
      (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
-     (description "The GNU Compiler Collection")
-     (long-description
+     (synopsis "The GNU Compiler Collection")
+     (description
       "The GNU Compiler Collection includes compiler front ends for C, C++,
 Objective-C, Fortran, OpenMP for C/C++/Fortran, Java, and Ada, as well as
 libraries for these languages (libstdc++, libgcj, libgomp,...).
@@ -874,9 +874,9 @@ used in the GNU system including the GNU/Linux variant.")
         ((system cross-system)
          (arguments cross-system))))
      (self-native-input? #t)
-     (description
+     (synopsis
       "GNU Ncurses, a free software emulation of curses in SVR4 and more")
-     (long-description
+     (description
       "The Ncurses (new curses) library is a free software emulation of curses
 in System V Release 4.0, and more.  It uses Terminfo format, supports pads
 and color and multiple highlights and forms characters and function-key
@@ -911,8 +911,8 @@ UNIX.  It has even been ported to OS/2 Warp!")
                 (list (string-append "LDFLAGS=-Wl,-rpath -Wl,"
                                      (assoc-ref %build-inputs "ncurses")
                                      "/lib"))))
-   (description "GNU Readline, a library for interactive line editing")
-   (long-description
+   (synopsis "GNU Readline, a library for interactive line editing")
+   (description
     "The GNU Readline library provides a set of functions for use by
 applications that allow users to edit command lines as they are typed in.
 Both Emacs and vi editing modes are available.  The Readline library includes
@@ -977,8 +977,8 @@ without Readline in applications which desire its capabilities.")
                                   (string-append out "/bin")
                                 (symlink "bash" "sh"))))
                           %standard-phases)))
-     (description "GNU Bourne-Again Shell")
-     (long-description
+     (synopsis "GNU Bourne-Again Shell")
+     (description
       "Bash is the shell, or command language interpreter, that will appear in
 the GNU operating system.  Bash is an sh-compatible shell that incorporates
 useful features from the Korn shell (ksh) and C shell (csh).  It is intended
@@ -1008,8 +1008,8 @@ modification.")
     `(#:patches (list (assoc-ref %build-inputs "patch/skip-tests"))))
    (inputs `(("patch/skip-tests"
               ,(search-patch "libtool-skip-tests.patch"))))
-   (description "GNU Libtool, a generic library support script")
-   (long-description
+   (synopsis "GNU Libtool, a generic library support script")
+   (description
     "GNU libtool is a generic library support script.  Libtool hides the
 complexity of using shared libraries behind a consistent, portable interface.
 
@@ -1033,8 +1033,8 @@ details.")
               "18q620269xzpw39dwvr9zpilnl2dkw5z5kz3mxaadnpv4k3kw3b1"))))
    (propagated-inputs '())                  ; FIXME: add libiconv when !glibc
    (build-system gnu-build-system)
-   (description "GNU Libunistring, a Unicode string library")
-   (long-description
+   (synopsis "GNU Libunistring, a Unicode string library")
+   (description
     "This library provides functions for manipulating Unicode strings and for
 manipulating C strings according to the Unicode standard.
 
@@ -1095,8 +1095,8 @@ internal in-memory representation.")
    ;; When cross-compiling, a native version of Guile itself is needed.
    (self-native-input? #t)
 
-   (description "GNU Guile 1.8, an embeddable Scheme interpreter")
-   (long-description
+   (synopsis "GNU Guile 1.8, an embeddable Scheme interpreter")
+   (description
 "GNU Guile 1.8 is an interpreter for the Scheme programming language,
 packaged as a library that can be embedded into programs to make them
 extensible.  It supports many SRFIs.")
@@ -1134,8 +1134,8 @@ extensible.  It supports many SRFIs.")
                  #:phases (alist-cons-after 'install 'post-install
                                             ,post-install-phase
                                             %standard-phases)))
-    (description "libffi, a foreign function call interface library")
-    (long-description
+    (synopsis "libffi, a foreign function call interface library")
+    (description
      "The libffi library provides a portable, high level programming interface
 to various calling conventions.  This allows a programmer to call any
 function specified by a call interface description at run-time.
@@ -1167,9 +1167,9 @@ conversions for values passed between the two languages.")
    (arguments `(#:configure-flags '("--with-internal-glib")))
    (home-page "http://www.freedesktop.org/wiki/Software/pkg-config")
    (license "GPLv2+")
-   (description "a helper tool used when compiling applications and
+   (synopsis "a helper tool used when compiling applications and
 libraries")
-   (long-description
+   (description
     "pkg-config is a helper tool used when compiling applications and
 libraries.  It helps you insert the correct compiler options on the
 command line so an application can use gcc -o test test.c `pkg-config
@@ -1191,9 +1191,9 @@ instance.")))
              (base32
               "05jwadjbrv8pr7z9cb4miskicxqpxm0pca4h2rg5cgbpajr2bx7b"))))
    (build-system gnu-build-system)
-   (description "The Boehm-Demers-Weiser conservative garbage collector
+   (synopsis "The Boehm-Demers-Weiser conservative garbage collector
 for C and C++")
-   (long-description
+   (description
     "The Boehm-Demers-Weiser conservative garbage collector can be used
 as a garbage collecting replacement for C malloc or C++ new.  It allows
 you to allocate memory basically as you normally would, without
@@ -1245,8 +1245,8 @@ C or C++ programs, though that is not its primary goal.")
 
    (self-native-input? #t)
 
-   (description "GNU Guile 2.0, an embeddable Scheme implementation")
-   (long-description
+   (synopsis "GNU Guile 2.0, an embeddable Scheme implementation")
+   (description
 "GNU Guile is an implementation of the Scheme programming language, with
 support for many SRFIs, packaged for use in a wide variety of environments.
 In addition to implementing the R5RS Scheme standard and a large subset of
@@ -1298,8 +1298,8 @@ call interface, and powerful string processing.")
                   'install ,install-phase
                   (alist-delete 'configure %standard-phases)))
        #:tests? #f))
-    (description "GNU Linux-Libre kernel headers")
-    (long-description "Headers of the Linux-Libre kernel.")
+    (synopsis "GNU Linux-Libre kernel headers")
+    (description "Headers of the Linux-Libre kernel.")
     (license "GPLv2")
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
@@ -1361,8 +1361,8 @@ call interface, and powerful string processing.")
                       ;; 4.7.1.
                       ((" -lgcc_s") ""))))
                 %standard-phases)))
-   (description "The GNU C Library")
-   (long-description
+   (synopsis "The GNU C Library")
+   (description
     "Any Unix-like operating system needs a C library: the library which
 defines the \"system calls\" and other basic facilities such as open, malloc,
 printf, exit...
@@ -1421,8 +1421,8 @@ $out/bin/guile --version~%"
      (version "2.0")
      (source #f)
      (build-system raw)
-     (description "Bootstrap Guile")
-     (long-description "Pre-built Guile for bootstrapping purposes.")
+     (synopsis "Bootstrap Guile")
+     (description "Pre-built Guile for bootstrapping purposes.")
      (home-page #f)
      (license "LGPLv3+"))))
 
@@ -1479,8 +1479,8 @@ check whether everything is alright."
                  (search-bootstrap-binary "xz" system)))
        ("tarball" ,(lambda (system)
                      (bootstrap-origin (source* system))))))
-    (description description*)
-    (long-description #f)
+    (synopsis description*)
+    (description #f)
     (home-page #f)))
 
 (define %bootstrap-base-url
@@ -1575,8 +1575,8 @@ check whether everything is alright."
                           ("i686-linux"
                            (base32
                             "0vzybz1577vflm0p0zg1slqj32carj5102b45k7iskkj46viy14z"))))))))))
-    (description "Bootstrap binaries and headers of the GNU C Library")
-    (long-description #f)
+    (synopsis "Bootstrap binaries and headers of the GNU C Library")
+    (description #f)
     (home-page #f)))
 
 (define %bootstrap-gcc
@@ -1646,8 +1646,8 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                           ("i686-linux"
                            (base32
                             "0caiihphp23rrqn382cabykz9ps3ixd5p63dgdnkhz1f01jiarl2"))))))))))
-    (description "Bootstrap binaries of the GNU Compiler Collection")
-    (long-description #f)
+    (synopsis "Bootstrap binaries of the GNU Compiler Collection")
+    (description #f)
     (home-page #f)))
 
 (define %bootstrap-inputs
@@ -2070,8 +2070,8 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                        "/bin/ld")))
                      (chmod ld #o555)
                      (compile-file ld #:output-file go)))))
-    (description "The linker wrapper")
-    (long-description
+    (synopsis "The linker wrapper")
+    (description
      "The linker wrapper (or `ld-wrapper') wraps the linker to add any
 missing `-rpath' flags, and to detect any misuse of libraries outside of the
 store.")
@@ -2317,8 +2317,8 @@ store.")
               (symlink "gawk" "awk"))
 
             #t)))))
-    (description "Statically-linked bootstrap binaries")
-    (long-description
+    (synopsis "Statically-linked bootstrap binaries")
+    (description
      "Binaries used to bootstrap the distribution.")
     (license #f)
     (home-page #f)))

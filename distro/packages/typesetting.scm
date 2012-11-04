@@ -112,8 +112,8 @@
                              'install 'install-doc
                              ,doc-phase
                              %standard-phases)))))
-    (description "Lout, a document layout system similar in style to LaTeX")
-    (long-description
+    (synopsis "Lout, a document layout system similar in style to LaTeX")
+    (description
 "The Lout document formatting system is now reads a high-level description of
 a document similar in style to LaTeX and produces a PostScript or plain text
 output file.

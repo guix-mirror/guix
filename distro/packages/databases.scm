@@ -48,9 +48,9 @@
              ("patch/gets"
               ,(search-patch "diffutils-gets-undeclared.patch"))))
    (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
-   (description "GNU recutils, tools and libraries to access human-editable,
+   (synopsis "GNU recutils, tools and libraries to access human-editable,
 text-based databases")
-   (long-description
+   (description
     "GNU recutils is a set of tools and libraries to access human-editable,
 text-based databases called recfiles.  The data is stored as a sequence of
 records, each record containing an arbitrary number of named fields.")

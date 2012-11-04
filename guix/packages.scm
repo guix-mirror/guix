@@ -46,8 +46,8 @@
             package-propagated-inputs
             package-outputs
             package-search-paths
+            package-synopsis
             package-description
-            package-long-description
             package-license
             package-platforms
             package-maintainers
@@ -124,8 +124,8 @@ representation."
                                           ; `set-path-environment-variable'
                                           ; (aka. "setup-hook")
 
-  (description package-description)       ; one-line description
-  (long-description package-long-description)     ; one or two paragraphs
+  (synopsis package-synopsis)                    ; one-line description
+  (description package-description)              ; one or two paragraphs
   (license package-license (default '()))
   (home-page package-home-page)
   (platforms package-platforms (default '()))

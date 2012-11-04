@@ -9,7 +9,7 @@ top_builddir = ..
 XGETTEXT_OPTIONS =					\
   --language=Scheme --from-code=UTF-8			\
   --keyword=_ --keyword=N_				\
-  --keyword=description --keyword=long-description
+  --keyword=synopsis --keyword=description
 
 COPYRIGHT_HOLDER = Ludovic Courtès
 

@@ -47,9 +47,9 @@ or 2.0."
    (native-inputs `(("pkgconfig" ,pkg-config)
                     ("gperf" ,(nixpkgs-derivation "gperf"))))
    (inputs `(("guile" ,guile)))
-   (description "Guile-Reader, a simple framework for building readers for
+   (synopsis "Guile-Reader, a simple framework for building readers for
 GNU Guile")
-   (long-description
+   (description
 "Guile-Reader is a simple framework for building readers for GNU Guile.
 
 The idea is to make it easy to build procedures that extend Guile’s read
