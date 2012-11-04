@@ -46,6 +46,7 @@ MODULES =					\
   distro/packages/bash.scm			\
   distro/packages/bdw-gc.scm			\
   distro/packages/bootstrap.scm			\
+  distro/packages/compression.scm		\
   distro/packages/gawk.scm			\
   distro/packages/gperf.scm			\
   distro/packages/guile.scm			\
