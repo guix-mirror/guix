@@ -21,6 +21,46 @@
   #:use-module (guix http)
   #:use-module (guix build-system gnu))
 
+(define-public zlib
+  (package
+    (name "zlib")
+    (version "1.2.7")
+    (source
+     (origin
+      (method http-fetch)
+      (uri (string-append "http://zlib.net/zlib-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "1i96gsdvxqb6skp9a58bacf1wxamwi9m9pg4yn7cpf7g7239r77s"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Zlib's home-made `configure' doesn't fails when passed
+                   ;; extra flags like `--enable-fast-install', so we need to
+                   ;; invoke it with just what it understand.
+                   (let ((out (assoc-ref outputs "out")))
+                     (zero? (system* "./configure"
+                                     (string-append "--prefix=" out)))))
+                 %standard-phases)))
+    (home-page "http://zlib.net/")
+    (synopsis "The zlib compression library")
+    (description
+     "zlib is designed to be a free, general-purpose, legally unencumbered --
+that is, not covered by any patents -- lossless data-compression library for
+use on virtually any computer hardware and operating system.  The zlib data
+format is itself portable across platforms. Unlike the LZW compression method
+used in Unix compress(1) and in the GIF image format, the compression method
+currently used in zlib essentially never expands the data. (LZW can double or
+triple the file size in extreme cases.)  zlib's memory footprint is also
+independent of the input data and can be reduced, if necessary, at some cost
+in compression.")
+
+    ;; See <http://zlib.net/zlib_license.html>.
+    (license "permissive")))
+
 (define-public gzip
   (package
    (name "gzip")
