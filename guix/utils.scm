@@ -49,6 +49,8 @@
             define-record-type*
             compile-time-value
             memoize
+            default-keyword-arguments
+            substitute-keyword-arguments
 
             location
             location?
@@ -545,6 +547,37 @@ FIELD/DEFAULT-VALUE tuples."
                              list)))
               (hash-set! cache args results)
               (apply values results)))))))
+
+(define (default-keyword-arguments args defaults)
+  "Return ARGS augmented with any keyword/value from DEFAULTS for
+keywords not already present in ARGS."
+  (let loop ((defaults defaults)
+             (args     args))
+    (match defaults
+      ((kw value rest ...)
+       (loop rest
+             (if (assoc-ref kw args)
+                 args
+                 (cons* kw value args))))
+      (()
+       args))))
+
+(define-syntax substitute-keyword-arguments
+  (syntax-rules ()
+    "Return a new list of arguments where the value for keyword arg KW is
+replaced by EXP.  EXP is evaluated in a context where VAR is boud to the
+previous value of the keyword argument."
+    ((_ original-args ((kw var) exp) ...)
+     (let loop ((args    original-args)
+                (before '()))
+       (match args
+         ((kw var rest (... ...))
+          (loop rest (cons* exp kw before)))
+         ...
+         ((x rest (... ...))
+          (loop rest (cons x before)))
+         (()
+          (reverse before)))))))
 
 (define (gnu-triplet->nix-system triplet)
   "Return the Nix system type corresponding to TRIPLET, a GNU triplet as

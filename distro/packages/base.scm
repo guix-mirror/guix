@@ -564,37 +564,6 @@ with the Linux kernel.")
 ;;; Bootstrap packages.
 ;;;
 
-(define (default-keyword-arguments args defaults)
-  "Return ARGS augmented with any keyword/value from DEFAULTS for
-keywords not already present in ARGS."
-  (let loop ((defaults defaults)
-             (args     args))
-    (match defaults
-      ((kw value rest ...)
-       (loop rest
-             (if (assoc-ref kw args)
-                 args
-                 (cons* kw value args))))
-      (()
-       args))))
-
-(define-syntax substitute-keyword-arguments
-  (syntax-rules ()
-    "Return a new list of arguments where the value for keyword arg KW is
-replaced by EXP.  EXP is evaluated in a context where VAR is boud to the
-previous value of the keyword argument."
-    ((_ original-args ((kw var) exp) ...)
-     (let loop ((args    original-args)
-                (before '()))
-       (match args
-         ((kw var rest (... ...))
-          (loop rest (cons* exp kw before)))
-         ...
-         ((x rest (... ...))
-          (loop rest (cons x before)))
-         (()
-          (reverse before)))))))
-
 (define gnu-make-boot0
   (package-with-bootstrap-guile
    (package (inherit gnu-make)
