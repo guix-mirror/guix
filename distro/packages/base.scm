@@ -400,8 +400,11 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                  (substitute* (find-files "gcc/config"
                                           "^(gnu-user(64)?|linux-elf)\\.h$")
                    (("#define LIB_SPEC (.*)$" _ suffix)
-                    (format #f "#define LIB_SPEC \"-L~a/lib -rpath=~a/lib \
--rpath=~a/lib64 -rpath=~a/lib \" ~a~%"
+                    ;; Note that with this "lib" spec, we may still add a
+                    ;; RUNPATH to GCC even when `libgcc_s' is not NEEDED.
+                    ;; There's not much that can be done to avoid it, though.
+                    (format #f "#define LIB_SPEC \"-L~a/lib %{!static:-rpath=~a/lib \
+%{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib}} \" ~a~%"
                             libc libc out out suffix))
                    (("#define STARTFILE_SPEC.*$" line)
                     (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
