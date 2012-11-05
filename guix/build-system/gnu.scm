@@ -27,7 +27,9 @@
   #:use-module (ice-9 match)
   #:export (gnu-build
             gnu-build-system
-            package-with-explicit-inputs))
+            package-with-explicit-inputs
+            package-with-extra-configure-variable
+            static-libgcc-package))
 
 ;; Commentary:
 ;;
@@ -77,6 +79,45 @@ when GUILE is #f."
               ,@(map rewritten-input
                      (filtered-inputs (package-inputs p)))))))
 
+(define (package-with-extra-configure-variable p variable value)
+  "Return a version of P with VARIABLE=VALUE specified as an extra
+`configure' flag.  An example is LDFLAGS=-static.  If P already has
+configure flags for VARIABLE, the associated value is augmented."
+  (let loop ((p p))
+    (define (rewritten-inputs inputs)
+      (map (match-lambda
+            ((name (? package? p) sub ...)
+             `(,name ,(loop p) ,@sub))
+            (input input))
+           inputs))
+
+    (package (inherit p)
+      (arguments
+       (lambda (system)
+         (let ((args (match (package-arguments p)
+                       ((? procedure? proc)
+                        (proc system))
+                       (x x))))
+          (substitute-keyword-arguments args
+            ((#:configure-flags flags)
+             (let* ((var= (string-append variable "="))
+                    (len  (string-length var=)))
+               `(cons ,(string-append var= value)
+                      (map (lambda (flag)
+                             (if (string-prefix? ,var= flag)
+                                 (string-append
+                                  ,(string-append var= value " ")
+                                  (substring flag ,len))
+                                 flag))
+                           ,flags))))))))
+      (inputs (rewritten-inputs (package-inputs p)))
+      (propagated-inputs (rewritten-inputs (package-propagated-inputs p))))))
+
+(define (static-libgcc-package p)
+  "A version of P linked with `-static-gcc'."
+  (package-with-extra-configure-variable p "LDFLAGS" "-static-libgcc"))
+
+
 (define %store
   ;; Store passed to STANDARD-INPUTS.
   (make-parameter #f))
