@@ -45,7 +45,21 @@
                 #:configure-flags
                 (list (string-append "LDFLAGS=-Wl,-rpath -Wl,"
                                      (assoc-ref %build-inputs "ncurses")
-                                     "/lib"))))
+                                     "/lib"))
+
+                #:phases (alist-cons-after
+                          'install 'post-install
+                          (lambda* (#:key outputs #:allow-other-keys)
+                            (let* ((out (assoc-ref outputs "out"))
+                                   (lib (string-append out "/lib")))
+                              ;; Make libraries writable so that `strip' can
+                              ;; work.  Failing to do that, it bails out with
+                              ;; "Permission denied".
+                              (for-each (lambda (f) (chmod f #o755))
+                                        (find-files lib "\\.so"))
+                              (for-each (lambda (f) (chmod f #o644))
+                                        (find-files lib "\\.a"))))
+                          %standard-phases)))
    (synopsis "GNU Readline, a library for interactive line editing")
    (description
     "The GNU Readline library provides a set of functions for use by
