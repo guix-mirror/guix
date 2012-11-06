@@ -58,6 +58,7 @@ MODULES =					\
   distro/packages/libunistring.scm		\
   distro/packages/lout.scm			\
   distro/packages/m4.scm			\
+  distro/packages/make-bootstrap.scm		\
   distro/packages/multiprecision.scm		\
   distro/packages/ncurses.scm			\
   distro/packages/perl.scm			\
