@@ -145,6 +145,7 @@ TESTS =						\
   tests/snix.scm				\
   tests/union.scm				\
   tests/guix-build.sh				\
+  tests/guix-download.sh			\
   tests/guix-package.sh
 
 TEST_EXTENSIONS = .scm .sh

@@ -32,6 +32,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 (define-module (guix-download)
   #:use-module (web uri)
   #:use-module (web client)
+  #:use-module (web response)
   #:use-module (guix ui)
   #:use-module (guix store)
   #:use-module (guix utils)
@@ -58,8 +59,13 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 
 (define (http-fetch url port)
   "Fetch from URL over HTTP and write the result to PORT."
-  (let-values (((response data) (http-get url #:decode-body? #f)))
-    (put-bytevector port data)))
+  (let*-values (((response data) (http-get url #:decode-body? #f))
+                ((code) (response-code response)))
+    (if (= code 200)
+        (put-bytevector port data)
+        (leave (_ "failed to download from `~a': ~a: ~a~%")
+               (uri->string url)
+               code (response-reason-phrase response)))))
 
 (define (ftp-fetch url port)
   "Fetch from URL over FTP and write the result to PORT."
