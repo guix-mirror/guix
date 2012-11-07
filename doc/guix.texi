@@ -9,14 +9,12 @@
 
 @include version.texi
 
-@ifinfo
 @dircategory Development
 @direntry
 * guix: (guix).       Guix, the functional package manager.
 * guix-build: (guix)Invoking guix-build
                       Building packages with Guix.
 @end direntry
-@end ifinfo
 
 @titlepage
 @title{Guix Reference Manual}
