@@ -40,4 +40,7 @@ guix-package -b -p "$profile" -r "guile-bootstrap-2.0"
 test -L "$profile-3-link"
 test -f "$profile/bin/make" && ! test -f "$profile/bin/guile"
 
+# Make sure the `:' syntax works.
+guix-package -b -i "libsigsegv:lib" -n
+
 rm "$profile" "$profile-"[0-9]*
