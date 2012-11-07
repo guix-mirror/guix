@@ -414,7 +414,8 @@ again until #t is returned or an error is raised."
                                 (boolean recursive?)
                                 (string hash-algo)
                                 (file file-name))
-  "Add the contents of FILE-NAME under BASENAME to the store."
+  "Add the contents of FILE-NAME under BASENAME to the store.  Note that
+FIXED? is for backward compatibility with old Nix versions and must be #t."
   store-path)
 
 (define-operation (build-derivations (string-list derivations))
