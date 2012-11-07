@@ -148,6 +148,86 @@ The remainder of this manual describes them.
 @node Invoking guix-build
 @section Invoking @command{guix-build}
 
+The @command{guix-build} command builds packages or derivations and
+their dependencies, and prints the resulting store paths.  It is mainly
+useful for distribution developers.  The general syntax is:
+
+@example
+guix-build @var{options} @var{package-or-derivation}@dots{}
+@end example
+
+@var{package-or-derivation} may be either the name of a package found in
+the software distribution such as @code{coreutils}, or a derivation such
+as @file{/nix/store/xxx-coreutils-8.19.drv}.  Alternatively, the
+@code{--expression} option may be used to specify a Scheme expression
+that evaluates to a package; this is useful when disambiguation among
+several same-named packages or package variants is needed.
+
+The @var{options} may be zero or more of the following:
+
+@table @code
+
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Build the package @var{expr} evaluates to.
+
+For example, @var{expr} may be @code{(@@ (distro packages guile)
+guile-1.8)}, which unambiguously designates this specific variant of
+version 1.8 of Guile.
+
+@item --source
+@itemx -S
+Build the packages' source derivations, rather than the packages
+themselves.
+
+For instance, @code{guix-build -S gcc} returns something like
+@file{/nix/store/xxx-gcc-4.7.2.tar.bz2}, which is GCC's source tarball.
+
+@item --system=@var{system}
+@itemx -s @var{system}
+Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
+the host's system type.
+
+An example use of this is on Linux-based systems, which can emulate
+different personalities.  For instance, passing
+@code{--system=i686-linux} on an @code{x86_64-linux} system allows users
+to build packages in a complete 32-bit environment.
+
+@item --derivations
+@itemx -d
+Return the derivation paths, not the output paths, of the given
+packages.
+
+@item --keep-failed
+@itemx -K
+Keep the build tree of failed builds.  Thus, if a build fail, its build
+tree is kept under @file{/tmp}, in a directory whose name is shown at
+the end of the build log.  This is useful when debugging build issues.
+
+@item --dry-run
+@itemx -n
+Do not build the derivations.
+
+@item --no-substitutes
+Build instead of resorting to pre-built substitutes.
+
+@item --cores=@var{n}
+@itemx -c @var{n}
+Allow the use of up to @var{n} CPU cores for the build.  The special
+value @code{0} means to use as many CPU cores as available.
+
+@item --root=@var{file}
+@itemx -r @var{file}
+Make @var{file} a symlink to the result, and register it as a garbage
+collector root.
+@end table
+
+Behind the scenes, @command{guix-build} is essentially an interface to
+the @code{package-derivation} procedure of the @code{(guix packages)}
+module, and to the @code{build-derivations} procedure of the @code{(guix
+store)} module.
+
+
 @c *********************************************************************
 @node Acknowledgments
 @chapter Acknowledgments
