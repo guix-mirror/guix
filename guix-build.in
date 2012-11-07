@@ -53,13 +53,16 @@ When SOURCE? is true, return the derivations of the package sources."
   (let ((p (eval exp (current-module))))
     (if (package? p)
         (if source?
-            (package-source-derivation %store (package-source p))
+            (let ((source (package-source p))
+                  (loc    (package-location p)))
+              (if source
+                  (package-source-derivation %store source)
+                  (leave (_ "~a:~a:~a: error: package `~a' has no source~%")
+                         (location-file loc) (location-line loc)
+                         (location-column loc) (package-name p))))
             (package-derivation %store p system))
-        (begin
-          (format (current-error-port)
-                  (_ "expression `~s' does not evaluate to a package")
-                  exp)
-          (exit 1)))))
+        (leave (_ "expression `~s' does not evaluate to a package~%")
+               exp))))
 
 
 ;;;
