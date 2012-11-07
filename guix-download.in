@@ -173,9 +173,9 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                    (fetch uri port)
                    (close port)
                    (add-to-store store (basename (uri-path uri))
-                                 #f #f "sha256" name))))
-         (fmt  (assq-ref opts 'format)))
-    (format #t "~a~%~a~%"
-            path
-            (fmt (query-path-hash store path)))
+                                 #t #f "sha256" name))))
+         (hash  (call-with-input-file path
+                  (compose sha256 get-bytevector-all)))
+         (fmt   (assq-ref opts 'format)))
+    (format #t "~a~%~a~%" path (fmt hash))
     #t))
