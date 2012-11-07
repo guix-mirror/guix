@@ -9,9 +9,11 @@
 
 @include version.texi
 
-@dircategory Development
+@dircategory Package management
 @direntry
 * guix: (guix).       Guix, the functional package manager.
+* guix-package: (guix)Invoking guix-package
+                      Managing packages with Guix.
 * guix-build: (guix)Invoking guix-build
                       Building packages with Guix.
 @end direntry
@@ -61,6 +63,7 @@ This document describes Guix version @value{VERSION}.
 
 @menu
 * Introduction::                What is Guix about?
+* Package Management::          Package installation, upgrade, etc.
 * Programming Interface::       Using Guix in Scheme.
 * Utilities::                   Package management commands.
 
@@ -106,11 +109,138 @@ input yields a different directory name.
 
 This approach is the foundation of Guix's salient features: support for
 transactional package upgrades and rollback, per-user installation, and
-garbage collection of packages.
+garbage collection of packages (@pxref{Features}).
 
 Guix has a command-line interface allowing users to build, install,
 upgrade, and remove packages, as well as a Scheme programming interface.
 The remainder of this manual describes them.
+
+@c *********************************************************************
+@node Package Management
+@chapter Package Management
+
+The purpose of Guix is to allow users to easily install, upgrade, and
+remove software packages, without having to know about their build
+procedure or dependencies.  Guix also goes beyond this obvious set of
+features.
+
+This chapter describes the main features of Guix, as well as the package
+management tools it provides.
+
+@menu
+* Features::                    How Guix will make your life brighter.
+* Invoking guix-package::       Package installation, removal, etc.
+@end menu
+
+@node Features
+@section Features
+
+When using Guix, each package ends up in the @dfn{package store}, in its
+own directory---something that resembles
+@file{/nix/store/xxx-package-1.2}, where @code{xxx} is a base32 string.
+
+Instead of referring to these directories, users have their own
+@dfn{profile}, which points to the packages that they actually want to
+use.  That profile is normally stored in @code{$HOME/.guix-profile}, and
+each user has its own profile.
+
+For example, if @code{alice} installed GCC 4.7.2, then
+@file{/home/alice/.guix-profile/bin/gcc} points to
+@file{/nix/store/xxx-gcc-4.7.2/bin/gcc}; on the same machine, @code{bob}
+may have installed GCC 4.8.0, in which case its profile refers to these
+particular package installation.  Both coexist, without any
+interference.
+
+The @command{guix-package} command is the central tool to manage
+packages.  It operates on those per-user profiles, and can be used
+@emph{with normal user privileges}.
+
+The command provides the obvious install, remove, and upgrade
+operations.  Each invocation is actually a @emph{transaction}: either
+the specified operations succeed, or nothing happens.  Thus, if the
+@command{guix-package} processed is terminated during the transaction,
+or if a power outage occurs during the transaction, then the user's
+profile remains in its previous state, and remains usable.
+
+In addition, any package transaction may be @emph{rolled back}.  So, if,
+for example, an upgrade installs a new version of a package that turns
+out to have a serious bug, users may roll back to the previous instance
+of their profile, which was known to work well.
+
+All those packages in the package store may be @emph{garbage-collected}.
+Guix can determine which packages are still referenced by the user
+profiles, and remove those that are provably no longer referenced.
+Users may also explicitly remove old generations of their profile so
+that the packages they refer to can be collected.
+
+Finally, Guix takes a @dfn{purely functional} approach to package
+management, as described in the introduction (@pxref{Introduction}).
+Each @file{/nix/store} package directory name contains a hash of all the
+inputs that were used to build that package---compiler, libraries, build
+scripts, etc.  This direct correspondence allows users to make sure a
+given package installation matches the current state of their
+distribution.
+
+This foundation allows Guix to support @dfn{transparent binary/source
+deployment}.  When a pre-built binary for a @file{/nix/store} path is
+available from an external source, Guix just downloads it; otherwise, it
+builds the package from source, locally.
+
+@node Invoking guix-package
+@section Invoking @command{guix-package}
+
+The @command{guix-package} command it the tool that allows users to
+install, upgrade, and remove packages, as well as rolling back to
+previous configurations.  It operates only on the user's own profile,
+and works with normal user privileges (@pxref{Features}).  Its syntax
+is:
+
+@example
+guix-package @var{options}
+@end example
+
+Primarily, @var{options} specify the operations to be performed during
+the transaction.  Upon completion, a new profile is created, but
+previous generations of the profile remain available, should the user
+want to roll back.
+
+@table @code
+
+@item --install=@var{package}
+@itemx -x @var{package}
+Install @var{package}.
+
+@var{package} may specify either a simple package name, such as
+@code{guile}, or a package name followed by a hyphen and version number,
+such as @code{guile-1.8}.  In addition, @var{package} may contain a
+colon, followed by the name of one of the outputs of the package, as in
+@code{gcc:doc} or @code{libsigsegv-2.10:lib}.
+
+@item --remove=@var{package}
+@itemx -r @var{package}
+Remove @var{package}.
+
+@item --upgrade=@var{REGEXP}
+@itemx -u @var{REGEXP}
+Upgrade all the installed packages matching @var{regexp}.
+
+@item --profile=@var{profile}
+@itemx -p @var{profile}
+Use @var{profile} instead of the user's default profile.
+
+@item --dry-run
+@itemx -n
+Show what would be done without actually doing it.
+
+@item --bootstrap
+Use the bootstrap Guile to build the profile.  This option is only
+useful to distribution developers.
+
+@end table
+
+
+
+
 
 @c *********************************************************************
 @node Programming Interface
