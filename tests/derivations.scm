@@ -129,7 +129,8 @@
          (hash       (sha256 (string->utf8 "hello")))
          (drv-path   (derivation %store "fixed" (%current-system)
                                  "/bin/sh" `(,builder)
-                                 '() `((,builder))
+                                 '()
+                                 `((,builder))    ; optional
                                  #:hash hash #:hash-algo 'sha256))
          (succeeded? (build-derivations %store (list drv-path))))
     (and succeeded?
@@ -137,6 +138,62 @@
            (and (equal? (string->utf8 "hello")
                         (call-with-input-file p get-bytevector-all))
                 (bytevector? (query-path-hash %store p)))))))
+
+(test-assert "fixed-output derivation: output paths are equal"
+  (let* ((builder1   (add-text-to-store %store "fixed-builder1.sh"
+                                        "echo -n hello > $out" '()))
+         (builder2   (add-text-to-store %store "fixed-builder2.sh"
+                                        "echo hey; echo -n hello > $out" '()))
+         (hash       (sha256 (string->utf8 "hello")))
+         (drv-path1  (derivation %store "fixed" (%current-system)
+                                 "/bin/sh" `(,builder1)
+                                 '() `()
+                                 #:hash hash #:hash-algo 'sha256))
+         (drv-path2  (derivation %store "fixed" (%current-system)
+                                 "/bin/sh" `(,builder2)
+                                 '() `()
+                                 #:hash hash #:hash-algo 'sha256))
+         (succeeded? (build-derivations %store
+                                        (list drv-path1 drv-path2))))
+    (and succeeded?
+         (equal? (derivation-path->output-path drv-path1)
+                 (derivation-path->output-path drv-path2)))))
+
+(test-assert "derivation with a fixed-output input"
+  ;; A derivation D using a fixed-output derivation F doesn't has the same
+  ;; output path when passed F or F', as long as F and F' have the same output
+  ;; path.
+  (let* ((builder1   (add-text-to-store %store "fixed-builder1.sh"
+                                        "echo -n hello > $out" '()))
+         (builder2   (add-text-to-store %store "fixed-builder2.sh"
+                                        "echo hey; echo -n hello > $out" '()))
+         (hash       (sha256 (string->utf8 "hello")))
+         (fixed1     (derivation %store "fixed" (%current-system)
+                                 "/bin/sh" `(,builder1)
+                                 '() `()
+                                 #:hash hash #:hash-algo 'sha256))
+         (fixed2     (derivation %store "fixed" (%current-system)
+                                 "/bin/sh" `(,builder2)
+                                 '() `()
+                                 #:hash hash #:hash-algo 'sha256))
+         (fixed-out  (derivation-path->output-path fixed1))
+         (builder3   (add-text-to-store
+                      %store "final-builder.sh"
+                      ;; Use Bash hackery to avoid Coreutils.
+                      "echo $in ; (read -u 3 c; echo $c) 3< $in > $out" '()))
+         (final1     (derivation %store "final" (%current-system)
+                                 "/bin/sh" `(,builder3)
+                                 `(("in" . ,fixed-out))
+                                 `((,builder3) (,fixed1))))
+         (final2     (derivation %store "final" (%current-system)
+                                 "/bin/sh" `(,builder3)
+                                 `(("in" . ,fixed-out))
+                                 `((,builder3) (,fixed2))))
+         (succeeded? (build-derivations %store
+                                        (list final1 final2))))
+    (and succeeded?
+         (equal? (derivation-path->output-path final1)
+                 (derivation-path->output-path final2)))))
 
 (test-assert "multiple-output derivation"
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
@@ -235,7 +292,7 @@
            (and (valid-path? %store p)
                 (file-exists? (string-append p "/good")))))))
 
-(test-skip (if (%guile-for-build) 0 6))
+(test-skip (if (%guile-for-build) 0 7))
 
 (test-assert "build-expression->derivation and derivation-prerequisites"
   (let-values (((drv-path drv)
@@ -377,6 +434,30 @@
          (succeeded?  (build-derivations %store (list drv-path))))
     (and succeeded?
          (file-exists? (derivation-path->output-path drv-path)))))
+
+(test-assert "build-expression->derivation: same fixed-output path"
+  (let* ((builder1   '(call-with-output-file %output
+                        (lambda (p)
+                          (write "hello" p))))
+         (builder2   '(call-with-output-file (pk 'difference-here! %output)
+                        (lambda (p)
+                          (write "hello" p))))
+         (hash       (sha256 (string->utf8 "hello")))
+         (input1     (build-expression->derivation %store "fixed"
+                                                   (%current-system)
+                                                   builder1 '()
+                                                   #:hash hash
+                                                   #:hash-algo 'sha256))
+         (input2     (build-expression->derivation %store "fixed"
+                                                   (%current-system)
+                                                   builder2 '()
+                                                   #:hash hash
+                                                   #:hash-algo 'sha256))
+         (succeeded? (build-derivations %store (list input1 input2))))
+    (and succeeded?
+         (not (string=? input1 input2))
+         (string=? (derivation-path->output-path input1)
+                   (derivation-path->output-path input2)))))
 
 (test-end)
 
