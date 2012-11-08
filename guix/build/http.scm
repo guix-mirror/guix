@@ -77,6 +77,9 @@ which is not available during bootstrap."
 (define (http-fetch url file)
   "Fetch data from URL and write it to FILE.  Return FILE on success."
 
+  (setvbuf (current-output-port) _IOLBF)
+  (format #t "starting HTTP download of `~a' from `~a'...~%" file url)
+
   ;; FIXME: Use a variant of `http-get' that returns a port instead of
   ;; loading everything in memory.
   (let*-values (((uri)
