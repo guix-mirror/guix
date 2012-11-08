@@ -17,8 +17,9 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build http)
-  #:use-module (web client)
   #:use-module (web uri)
+  #:use-module (web client)
+  #:use-module (web response)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-11)
   #:export (http-fetch))
@@ -83,8 +84,14 @@ which is not available during bootstrap."
                 ((connection)
                  (open-connection-for-uri uri))
                 ((resp bv)
-                 (http-get uri #:port connection #:decode-body? #f)))
-    (call-with-output-file file
-      (lambda (p)
-        (put-bytevector p bv))))
-  file)
+                 (http-get uri #:port connection #:decode-body? #f))
+                ((code)
+                 (response-code resp)))
+    (if (= 200 code)
+        (begin
+          (call-with-output-file file
+            (lambda (p)
+              (put-bytevector p bv)))
+          file)
+        (error "download failed" url
+               code (response-reason-phrase resp)))))
