@@ -595,6 +595,14 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
       (((or 'define-module 'use-modules) _ ...) #t)
       (_ #f)))
 
+  (define source-path
+    ;; When passed an input that is a source, return its path; otherwise
+    ;; return #f.
+    (match-lambda
+     ((_ path _ ...)
+      (and (not (derivation-path? path))
+           path))))
+
   (let* ((prologue `(begin
                       ,@(match exp
                           ((_ ...)
@@ -639,7 +647,18 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
                                              ((_ ...)
                                               (remove module-form? exp))
                                              (_ `(,exp))))))
-                                      (map second inputs)))
+
+                                      ;; The references don't really matter
+                                      ;; since the builder is always used in
+                                      ;; conjunction with the drv that needs
+                                      ;; it.  For clarity, we add references
+                                      ;; to the subset of INPUTS that are
+                                      ;; sources, avoiding references to other
+                                      ;; .drv; otherwise, BUILDER's hash would
+                                      ;; depend on those, even if they are
+                                      ;; fixed-output.
+                                      (filter-map source-path inputs)))
+
          (mod-drv  (and (pair? modules)
                         (imported-modules store modules
                                           #:guile guile-drv

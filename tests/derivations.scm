@@ -459,6 +459,40 @@
          (string=? (derivation-path->output-path input1)
                    (derivation-path->output-path input2)))))
 
+(test-assert "build-expression->derivation with a fixed-output input"
+  (let* ((builder1   '(call-with-output-file %output
+                        (lambda (p)
+                          (write "hello" p))))
+         (builder2   '(call-with-output-file (pk 'difference-here! %output)
+                        (lambda (p)
+                          (write "hello" p))))
+         (hash       (sha256 (string->utf8 "hello")))
+         (input1     (build-expression->derivation %store "fixed"
+                                                   (%current-system)
+                                                   builder1 '()
+                                                   #:hash hash
+                                                   #:hash-algo 'sha256))
+         (input2     (build-expression->derivation %store "fixed"
+                                                   (%current-system)
+                                                   builder2 '()
+                                                   #:hash hash
+                                                   #:hash-algo 'sha256))
+         (builder3  '(let ((input (assoc-ref %build-inputs "input")))
+                       (call-with-output-file %output
+                         (lambda (out)
+                           (format #f "My input is ~a.~%" input)))))
+         (final1    (build-expression->derivation %store "final"
+                                                  (%current-system)
+                                                  builder3
+                                                  `(("input" ,input1))))
+         (final2    (build-expression->derivation %store "final"
+                                                  (%current-system)
+                                                  builder3
+                                                  `(("input" ,input2)))))
+    (and (string=? (derivation-path->output-path final1)
+                   (derivation-path->output-path final2))
+         (build-derivations %store (list final1 final2)))))
+
 (test-end)
 
 
