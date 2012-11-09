@@ -40,11 +40,6 @@
   ;; Make sure we build everything by ourselves.
   (set-build-options %store #:use-substitutes? #f))
 
-(define %bootstrap-inputs
-  ;; Use the bootstrap inputs so it doesn't take ages to run these tests.
-  ;; This still involves building GNU Make and GNU Diffutils.
-  (@@ (distro packages base) %boot0-inputs))
-
 
 (test-begin "packages")
 
@@ -113,16 +108,17 @@
          (let ((p (pk 'drv d (derivation-path->output-path d))))
            (eq? 'hello (call-with-input-file p read))))))
 
-(test-assert "GNU Hello"
-  (let ((hello (package-with-explicit-inputs hello %bootstrap-inputs
-                                             #:guile %bootstrap-guile)))
-    (and (package? hello)
-         (or (location? (package-location hello))
-             (not (package-location hello)))
-         (let* ((drv (package-derivation %store hello))
+(test-assert "GNU Make, bootstrap"
+  ;; GNU Make is the first program built during bootstrap; we choose it
+  ;; here so that the test doesn't last for too long.
+  (let ((gnu-make (@@ (distro packages base) gnu-make-boot0)))
+    (and (package? gnu-make)
+         (or (location? (package-location gnu-make))
+             (not (package-location gnu-make)))
+         (let* ((drv (package-derivation %store gnu-make))
                 (out (derivation-path->output-path drv)))
            (and (build-derivations %store (list drv))
-                (file-exists? (string-append out "/bin/hello")))))))
+                (file-exists? (string-append out "/bin/make")))))))
 
 (test-assert "find-packages-by-name"
   (match (find-packages-by-name "hello")
