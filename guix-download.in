@@ -36,6 +36,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:use-module (guix ui)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix base32)
   #:use-module (guix ftp-client)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)

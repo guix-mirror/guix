@@ -23,7 +23,8 @@
 (eval-when (eval load compile)
   (begin
     (define %public-modules
-      '(build-system
+      '(base32
+        build-system
         derivations
         ftp-client
         ftp

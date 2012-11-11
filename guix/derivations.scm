@@ -26,6 +26,7 @@
   #:use-module (ice-9 rdelim)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix base32)
   #:export (<derivation>
             derivation?
             derivation-outputs

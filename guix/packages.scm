@@ -19,6 +19,7 @@
 (define-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix store)
+  #:use-module (guix base32)
   #:use-module (guix build-system)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)

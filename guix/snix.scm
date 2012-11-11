@@ -32,6 +32,7 @@
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
   #:use-module (guix utils)
+  #:use-module (guix base32)
   #:use-module (guix config)
   #:export (open-nixpkgs
             xml->snix

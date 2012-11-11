@@ -21,6 +21,7 @@
   #:use-module (guix derivations)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix base32)
   #:use-module ((guix packages) #:select (package-derivation))
   #:use-module (distro packages bootstrap)
   #:use-module (srfi srfi-1)

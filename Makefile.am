@@ -23,6 +23,7 @@ bin_SCRIPTS =					\
   guix-package
 
 MODULES =					\
+  guix/base32.scm				\
   guix/utils.scm				\
   guix/derivations.scm				\
   guix/build-system.scm				\
@@ -137,6 +138,7 @@ distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz:
 nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
 
 TESTS =						\
+  tests/base32.scm				\
   tests/builders.scm				\
   tests/derivations.scm				\
   tests/utils.scm				\
