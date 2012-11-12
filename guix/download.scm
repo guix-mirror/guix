@@ -22,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module ((guix store) #:select (derivation-path?))
   #:use-module (guix utils)
+  #:use-module (srfi srfi-26)
   #:export (url-fetch))
 
 ;;; Commentary:
@@ -30,18 +31,79 @@
 ;;;
 ;;; Code:
 
+(define %mirrors
+  ;; Mirror lists used when `mirror://' URLs are passed.
+  (let* ((gnu-mirrors
+          '(;; This one redirects to a (supposedly) nearby and (supposedly)
+            ;; up-to-date mirror.
+            "http://ftpmirror.gnu.org/"
+
+            "ftp://ftp.cs.tu-berlin.de/pub/gnu/"
+            "ftp://ftp.chg.ru/pub/gnu/"
+            "ftp://ftp.funet.fi/pub/mirrors/ftp.gnu.org/gnu/"
+
+            ;; This one is the master repository, and thus it's always
+            ;; up-to-date.
+            "http://ftp.gnu.org/pub/gnu/")))
+    `((gnu ,@gnu-mirrors)
+      (gcc
+       "ftp://ftp.nluug.nl/mirror/languages/gcc/"
+       "ftp://ftp.fu-berlin.de/unix/languages/gcc/"
+       "ftp://ftp.irisa.fr/pub/mirrors/gcc.gnu.org/gcc/"
+       "ftp://gcc.gnu.org/pub/gcc/"
+       ,@(map (cut string-append <> "/gcc") gnu-mirrors))
+      (gnupg
+       "ftp://gd.tuwien.ac.at/privacy/gnupg/"
+       "ftp://gnupg.x-zone.org/pub/gnupg/"
+       "ftp://ftp.gnupg.cz/pub/gcrypt/"
+       "ftp://sunsite.dk/pub/security/gcrypt/"
+       "http://gnupg.wildyou.net/"
+       "http://ftp.gnupg.zone-h.org/"
+       "ftp://ftp.jyu.fi/pub/crypt/gcrypt/"
+       "ftp://trumpetti.atm.tut.fi/gcrypt/"
+       "ftp://mirror.cict.fr/gnupg/"
+       "ftp://ftp.strasbourg.linuxfr.org/pub/gnupg/")
+      (savannah
+       "http://download.savannah.gnu.org/"
+       "ftp://ftp.twaren.net/Unix/NonGNU/"
+       "ftp://mirror.csclub.uwaterloo.ca/nongnu/"
+       "ftp://mirror.publicns.net/pub/nongnu/"
+       "ftp://savannah.c3sl.ufpr.br/"
+       "http://ftp.cc.uoc.gr/mirrors/nongnu.org/"
+       "http://ftp.twaren.net/Unix/NonGNU/"
+       "http://mirror.csclub.uwaterloo.ca/nongnu/"
+       "http://nongnu.askapache.com/"
+       "http://savannah.c3sl.ufpr.br/"
+       "http://www.centervenus.com/mirrors/nongnu/")
+      (sourceforge
+       "http://prdownloads.sourceforge.net/"
+       "http://heanet.dl.sourceforge.net/sourceforge/"
+       "http://surfnet.dl.sourceforge.net/sourceforge/"
+       "http://dfn.dl.sourceforge.net/sourceforge/"
+       "http://mesh.dl.sourceforge.net/sourceforge/"
+       "http://ovh.dl.sourceforge.net/sourceforge/"
+       "http://osdn.dl.sourceforge.net/sourceforge/"
+       "http://kent.dl.sourceforge.net/sourceforge/"))))
+
+
 (define* (url-fetch store url hash-algo hash
                     #:optional name
-                    #:key (system (%current-system)) guile)
+                    #:key (system (%current-system)) guile
+                    (mirrors %mirrors))
   "Return the path of a fixed-output derivation in STORE that fetches
 URL (a string, or a list of strings denoting alternate URLs), which is
 expected to have hash HASH of type HASH-ALGO (a symbol).  By default,
 the file name is the base name of URL; optionally, NAME can specify a
-different file name."
+different file name.
+
+When one of the URL starts with mirror://, then its host part is
+interpreted as the name of a mirror scheme, taken from MIRRORS; MIRRORS
+must be a list of symbol/URL-list pairs."
   (define builder
     `(begin
        (use-modules (guix build download))
-       (url-fetch ',url %output)))
+       (url-fetch ',url %output
+                  #:mirrors ',mirrors)))
 
   (define guile-for-build
     (match guile

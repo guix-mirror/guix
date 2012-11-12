@@ -23,7 +23,9 @@
   #:use-module (guix ftp-client)
   #:use-module (guix build utils)
   #:use-module (rnrs io ports)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (url-fetch))
 
@@ -129,14 +131,29 @@ which is not available during bootstrap."
     (lambda (key . args)
       (print-exception (current-error-port) #f key args))))
 
-(define (url-fetch url file)
+(define* (url-fetch url file #:key (mirrors '()))
   "Fetch FILE from URL; URL may be either a single string, or a list of
 string denoting alternate URLs for FILE.  Return #f on failure, and FILE
 on success."
+  (define (maybe-expand-mirrors uri)
+    (case (uri-scheme uri)
+      ((mirror)
+       (let ((kind (string->symbol (uri-host uri)))
+             (path (uri-path uri)))
+         (match (assoc-ref mirrors kind)
+           ((mirrors ..1)
+            (map (compose string->uri (cut string-append <> path))
+                 mirrors))
+           (_
+            (error "unsupported URL mirror kind" kind uri)))))
+      (else
+       (list uri))))
+
   (define uri
-    (match url
-      ((_ ...) (map string->uri url))
-      (_       (list (string->uri url)))))
+    (append-map maybe-expand-mirrors
+                (match url
+                  ((_ ...) (map string->uri url))
+                  (_       (list (string->uri url))))))
 
   (define (fetch uri file)
     (format #t "starting download of `~a' from `~a'...~%"
