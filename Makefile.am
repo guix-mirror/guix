@@ -26,6 +26,7 @@ MODULES =					\
   guix/base32.scm				\
   guix/utils.scm				\
   guix/derivations.scm				\
+  guix/download.scm				\
   guix/build-system.scm				\
   guix/build-system/gnu.scm			\
   guix/build-system/trivial.scm			\
@@ -34,6 +35,7 @@ MODULES =					\
   guix/http.scm					\
   guix/store.scm				\
   guix/ui.scm					\
+  guix/build/download.scm			\
   guix/build/gnu-build-system.scm		\
   guix/build/ftp.scm				\
   guix/build/http.scm				\

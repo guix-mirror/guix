@@ -21,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix ftp)
   #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
@@ -70,6 +71,8 @@
                      (boot http-fetch))
                     ((eq? orig-method ftp-fetch)
                      (boot ftp-fetch))
+                    ((eq? orig-method url-fetch)
+                     (boot url-fetch))
                     (else orig-method))))))
 
 (define (package-from-tarball name* source* program-to-test description*)

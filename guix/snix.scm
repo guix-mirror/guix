@@ -400,7 +400,7 @@ location of DERIVATION."
              (name ,name)
              (version ,version)
              (source (origin
-                      (method http-fetch)
+                      (method url-fetch)
                       (uri ,(pretty-uri (car urls) version))
                       (sha256
                        (base32
