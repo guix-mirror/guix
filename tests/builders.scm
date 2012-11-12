@@ -58,7 +58,8 @@
                      "ftp://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz"))
          (hash     (nix-base32-string->bytevector
                     "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))
-         (drv-path (url-fetch %store url 'sha256 hash))
+         (drv-path (url-fetch %store url 'sha256 hash
+                              #:guile %bootstrap-guile))
          (out-path (derivation-path->output-path drv-path)))
     (and (build-derivations %store (list drv-path))
          (file-exists? out-path)
@@ -72,7 +73,8 @@
   (let* ((url      "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")
          (hash     (nix-base32-string->bytevector
                     "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))
-         (tarball  (url-fetch %store url 'sha256 hash))
+         (tarball  (url-fetch %store url 'sha256 hash
+                              #:guile %bootstrap-guile))
          (build    (gnu-build %store "hello-2.8" tarball
                               %bootstrap-inputs
                               #:implicit-inputs? #f
