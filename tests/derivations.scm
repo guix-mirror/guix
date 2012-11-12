@@ -412,30 +412,6 @@
                 (s (stat (string-append p "/guile/guix/nix"))))
            (eq? (stat:type s) 'directory)))))
 
-(test-skip (if (false-if-exception (getaddrinfo "ftp.gnu.org" "http"))
-               0
-               1))
-
-(test-assert "build-expression->derivation for fixed-output derivation"
-  (let* ((url         "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")
-         (builder
-          `(begin
-             (use-modules (web client) (web uri)
-                          (rnrs io ports) (srfi srfi-11))
-             (let-values (((resp bv)
-                           (http-get (string->uri ,url) #:decode-body? #f)))
-               (call-with-output-file %output
-                 (lambda (p)
-                   (put-bytevector p bv))))))
-         (drv-path    (build-expression->derivation
-                       %store "hello-2.8.tar.gz" (%current-system) builder '()
-                       #:hash (nix-base32-string->bytevector
-                               "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6")
-                       #:hash-algo 'sha256))
-         (succeeded?  (build-derivations %store (list drv-path))))
-    (and succeeded?
-         (file-exists? (derivation-path->output-path drv-path)))))
-
 (test-assert "build-expression->derivation: same fixed-output path"
   (let* ((builder1   '(call-with-output-file %output
                         (lambda (p)
