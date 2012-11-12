@@ -124,7 +124,7 @@ DISTCLEANFILES =				\
 # Method to download a file from an external source.
 DOWNLOAD_FILE =								\
   GUILE_LOAD_COMPILED_PATH="$(top_builddir):$$GUILE_LOAD_COMPILED_PATH"	\
-  $(GUILE) --no-auto-compile -L "$(top_srcdir)"				\
+  $(GUILE) --no-auto-compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
            "$(top_srcdir)/build-aux/download.scm"
 
 distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz:
@@ -172,12 +172,12 @@ CLEANFILES = $(GOBJECTS) *.log
 
 .scm.go:
 	$(MKDIR_P) `dirname "$@"`
-	DISTRO_INSTALLED_PATCH_DIRECTORY="$(patchdir)"		\
-	DISTRO_INSTALLED_BOOTSTRAP_DIRECTORY="$(bootstrapdir)"	\
-	$(top_builddir)/pre-inst-env				\
-	$(GUILD) compile -L "$(top_srcdir)"			\
-	  -Wformat -Wunbound-variable -Warity-mismatch		\
-	  --target="$(host)"					\
+	DISTRO_INSTALLED_PATCH_DIRECTORY="$(patchdir)"			\
+	DISTRO_INSTALLED_BOOTSTRAP_DIRECTORY="$(bootstrapdir)"		\
+	$(top_builddir)/pre-inst-env					\
+	$(GUILD) compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
+	  -Wformat -Wunbound-variable -Warity-mismatch			\
+	  --target="$(host)"						\
 	  -o "$@" "$<"
 
 SUFFIXES = .go
