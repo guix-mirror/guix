@@ -29,7 +29,7 @@
    (version "1.5")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/recutils/recutils-"
+            (uri (string-append "mirror://gnu/recutils/recutils-"
                                 version ".tar.gz"))
             (sha256
              (base32

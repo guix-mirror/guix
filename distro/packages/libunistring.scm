@@ -29,7 +29,7 @@
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://ftp.gnu.org/gnu/libunistring/libunistring-"
+                  "mirror://gnu/libunistring/libunistring-"
                   version ".tar.gz"))
             (sha256
              (base32

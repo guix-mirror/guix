@@ -31,7 +31,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-"
+      (uri (string-append "mirror://gnupg/libgpg-error/libgpg-error-"
                           version ".tar.bz2"))
       (sha256
        (base32
@@ -54,7 +54,7 @@ Daemon and possibly more in the future.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "ftp://ftp.gnupg.org/gcrypt/libgcrypt/libgcrypt-"
+      (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                           version ".tar.bz2"))
       (sha256
        (base32
@@ -80,7 +80,7 @@ functions, random numbers and a lot of supporting functions.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "ftp://ftp.gnupg.org/gcrypt/libassuan/libassuan-"
+      (uri (string-append "mirror://gnupg/libassuan/libassuan-"
                           version ".tar.bz2"))
       (sha256
        (base32
@@ -106,7 +106,7 @@ provided.")
      (origin
       (method url-fetch)
       (uri (string-append
-            "ftp://ftp.gnupg.org/gcrypt/libksba/libksba-"
+            "mirror://gnupg/libksba/libksba-"
             version ".tar.bz2"))
       (sha256
        (base32
@@ -130,9 +130,8 @@ specifications are building blocks of S/MIME and TLS.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append
-            "ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-" version
-            ".tar.bz2"))
+      (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
+                          ".tar.bz2"))
       (sha256
        (base32
         "08n636sfffs5qvg9ppiprvsh00q0dmdw425psg3m3nssja53m8pg"))))

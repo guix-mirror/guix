@@ -30,7 +30,7 @@
    (version "6.2")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/readline/readline-"
+            (uri (string-append "mirror://gnu/readline/readline-"
                                 version ".tar.gz"))
             (sha256
              (base32

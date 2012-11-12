@@ -47,7 +47,7 @@
    (version "2.8")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/hello/hello-" version
+            (uri (string-append "mirror://gnu/hello/hello-" version
                                 ".tar.gz"))
             (sha256
              (base32 "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))))
@@ -68,7 +68,7 @@
    (version "2.14")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/grep/grep-"
+            (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
@@ -88,7 +88,7 @@ lines.")
    (version "4.2.1")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/sed/sed-" version
+            (uri (string-append "mirror://gnu/sed/sed-" version
                                 ".tar.bz2"))
             (sha256
              (base32
@@ -110,7 +110,7 @@ substituting multiple occurrences of a string within a file.")
    (version "1.26")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/tar/tar-"
+            (uri (string-append "mirror://gnu/tar/tar-"
                                 version ".tar.bz2"))
             (sha256
              (base32
@@ -140,7 +140,7 @@ files (as archives).")
    (version "2.6.1")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/patch/patch-"
+            (uri (string-append "mirror://gnu/patch/patch-"
                                 version ".tar.xz"))
             (sha256
              (base32
@@ -166,7 +166,7 @@ producing patched versions.")
    (version "3.2")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/diffutils/diffutils-"
+            (uri (string-append "mirror://gnu/diffutils/diffutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
@@ -211,7 +211,7 @@ You can use the sdiff command to merge two files interactively.")
    (version "4.4.2")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/findutils/findutils-"
+            (uri (string-append "mirror://gnu/findutils/findutils-"
                                 version ".tar.gz"))
             (sha256
              (base32
@@ -253,7 +253,7 @@ The tools supplied with this package are:
    (version "8.19")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/coreutils/coreutils-"
+            (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
@@ -279,7 +279,7 @@ are expected to exist on every operating system.")
    (version "3.82")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/make/make-" version
+            (uri (string-append "mirror://gnu/make/make-" version
                                 ".tar.bz2"))
             (sha256
              (base32
@@ -308,7 +308,7 @@ that it is possible to use Make to build and install the program.")
    (version "2.22")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/binutils/binutils-"
+            (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
@@ -341,7 +341,7 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
      (version "4.7.2")
      (source (origin
               (method url-fetch)
-              (uri (string-append "http://ftp.gnu.org/gnu/gcc/gcc-"
+              (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.bz2"))
               (sha256
                (base32
@@ -498,7 +498,7 @@ used in the GNU system including the GNU/Linux variant.")
    (version "2.16.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/glibc/glibc-"
+            (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32

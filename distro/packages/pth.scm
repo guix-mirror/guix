@@ -28,7 +28,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "ftp://ftp.gnu.org/gnu/pth/pth-" version
+      (uri (string-append "mirror://gnu/pth/pth-" version
                           ".tar.gz"))
       (sha256
        (base32

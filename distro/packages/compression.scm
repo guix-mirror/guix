@@ -67,7 +67,7 @@ in compression.")
    (version "1.5")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/gzip/gzip-"
+            (uri (string-append "mirror://gnu/gzip/gzip-"
                                 version ".tar.gz"))
             (sha256
              (base32

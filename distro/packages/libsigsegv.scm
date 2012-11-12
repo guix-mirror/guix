@@ -29,7 +29,7 @@
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://ftp.gnu.org/gnu/libsigsegv/libsigsegv-"
+                  "mirror://gnu/libsigsegv/libsigsegv-"
                   version ".tar.gz"))
             (sha256
              (base32 "16hrs8k3nmc7a8jam5j1fpspd6sdpkamskvsdpcw6m29vnis8q44"))))

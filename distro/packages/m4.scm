@@ -29,7 +29,7 @@
    (version "1.4.16")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/m4/m4-"
+            (uri (string-append "mirror://gnu/m4/m4-"
                                 version ".tar.bz2"))
             (sha256
              (base32

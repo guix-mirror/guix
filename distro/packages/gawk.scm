@@ -29,7 +29,7 @@
    (version "4.0.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/gawk/gawk-" version
+            (uri (string-append "mirror://gnu/gawk/gawk-" version
                                 ".tar.bz2"))
             (sha256
              (base32 "0sss7rhpvizi2a88h6giv0i7w5h07s2fxkw3s6n1hqvcnhrfgbb0"))))

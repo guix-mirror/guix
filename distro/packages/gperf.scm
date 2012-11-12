@@ -29,7 +29,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "ftp://ftp.gnu.org/gnu/gperf/gperf-"
+      (uri (string-append "mirror://gnu/gperf/gperf-"
                           version ".tar.gz"))
       (sha256
        (base32

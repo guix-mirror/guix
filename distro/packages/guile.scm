@@ -44,7 +44,7 @@
    (version "1.8.8")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/guile/guile-" version
+            (uri (string-append "mirror://gnu/guile/guile-" version
                                 ".tar.gz"))
             (sha256
              (base32
@@ -94,7 +94,7 @@ extensible.  It supports many SRFIs.")
    (version "2.0.6")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/guile/guile-" version
+            (uri (string-append "mirror://gnu/guile/guile-" version
                                 ".tar.xz"))
             (sha256
              (base32

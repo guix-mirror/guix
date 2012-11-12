@@ -38,7 +38,7 @@
      (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://ftp.gnu.org/gnu/bash/bash-" version ".tar.gz"))
+                    "mirror://gnu/bash/bash-" version ".tar.gz"))
               (sha256
                (base32
                 "1n5kbblp5ykbz5q8aq88lsif2z0gnvddg9babk33024wxiwi2ym2"))))

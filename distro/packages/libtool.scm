@@ -31,7 +31,7 @@
    (version "2.4.2")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/libtool/libtool-"
+            (uri (string-append "mirror://gnu/libtool/libtool-"
                                 version ".tar.gz"))
             (sha256
              (base32

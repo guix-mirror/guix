@@ -30,7 +30,7 @@
    (version "5.0.5")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/gmp/gmp-" version
+            (uri (string-append "mirror://gnu/gmp/gmp-" version
                                 ".tar.bz2"))
             (sha256
              (base32
@@ -72,7 +72,7 @@ faster algorithms.")
    (version "3.1.1")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnu.org/gnu/mpfr/mpfr-" version
+            (uri (string-append "mirror://gnu/mpfr/mpfr-" version
                                 ".tar.xz"))
             (sha256 (base32
                      "0ym1ylcq803n52qrggxqmkz66gbn8ncc3ybawal31v5y5p1srma9"))))

@@ -56,7 +56,7 @@
      (version "5.9")
      (source (origin
               (method url-fetch)
-              (uri (string-append "http://ftp.gnu.org/gnu/ncurses/ncurses-"
+              (uri (string-append "mirror://gnu/ncurses/ncurses-"
                                   version ".tar.gz"))
               (sha256
                (base32
