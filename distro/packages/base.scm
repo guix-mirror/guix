@@ -511,6 +511,7 @@ used in the GNU system including the GNU/Linux variant.")
 
    (arguments
     `(#:out-of-source? #t
+      #:patches (list (assoc-ref %build-inputs "patch/ld.so.cache"))
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"
@@ -550,6 +551,8 @@ used in the GNU system including the GNU/Linux variant.")
                       ;; 4.7.1.
                       ((" -lgcc_s") ""))))
                 %standard-phases)))
+   (inputs `(("patch/ld.so.cache"
+              ,(search-patch "glibc-no-ld-so-cache.patch"))))
    (synopsis "The GNU C Library")
    (description
     "Any Unix-like operating system needs a C library: the library which
@@ -792,7 +795,8 @@ identifier SYSTEM."
      (propagated-inputs `(("linux-headers" ,linux-libre-headers-boot0)))
      (inputs `( ;; A native GCC is needed to build `cross-rpcgen'.
                ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))
-               ,@%boot1-inputs)))))
+               ,@%boot1-inputs
+               ,@(package-inputs glibc))))))      ; patches
 
 (define gcc-boot0-wrapped
   ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
