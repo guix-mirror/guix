@@ -101,14 +101,22 @@ which is not available during bootstrap."
                  (http-get uri #:port connection #:decode-body? #f))
                 ((code)
                  (response-code resp)))
-    (if (= 200 code)
-        (begin
-          (call-with-output-file file
-            (lambda (p)
-              (put-bytevector p bv)))
-          file)
-        (error "download failed" (uri->string uri)
-               code (response-reason-phrase resp)))))
+    (case code
+      ((200)                                      ; OK
+       (begin
+         (call-with-output-file file
+           (lambda (p)
+             (put-bytevector p bv)))
+         file))
+      ((302)                                      ; found (redirection)
+       (let ((uri (response-location resp)))
+         (format #t "following redirection to `~a'...~%"
+                 (uri->string uri))
+         (close connection)
+         (http-fetch uri file)))
+      (else
+       (error "download failed" (uri->string uri)
+              code (response-reason-phrase resp))))))
 
 
 (define-syntax-rule (false-if-exception* body ...)
