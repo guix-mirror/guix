@@ -18,7 +18,7 @@
 
 (define-module (distro packages libsigsegv)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -27,7 +27,7 @@
    (name "libsigsegv")
    (version "2.10")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append
                   "http://ftp.gnu.org/gnu/libsigsegv/libsigsegv-"
                   version ".tar.gz"))

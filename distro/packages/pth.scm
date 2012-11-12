@@ -18,7 +18,7 @@
 
 (define-module (distro packages pth)
   #:use-module (guix packages)
-  #:use-module (guix ftp)
+  #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
 (define-public pth
@@ -27,7 +27,7 @@
     (version "2.0.7")
     (source
      (origin
-      (method ftp-fetch)
+      (method url-fetch)
       (uri (string-append "ftp://ftp.gnu.org/gnu/pth/pth-" version
                           ".tar.gz"))
       (sha256

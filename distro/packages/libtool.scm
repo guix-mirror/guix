@@ -21,7 +21,7 @@
   #:use-module (distro packages m4)
   #:use-module (distro packages perl)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -30,7 +30,7 @@
    (name "libtool")
    (version "2.4.2")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/libtool/libtool-"
                                 version ".tar.gz"))
             (sha256

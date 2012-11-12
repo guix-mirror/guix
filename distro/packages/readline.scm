@@ -20,7 +20,7 @@
   #:use-module (distro)
   #:use-module (distro packages ncurses)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -29,7 +29,7 @@
    (name "readline")
    (version "6.2")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/readline/readline-"
                                 version ".tar.gz"))
             (sha256

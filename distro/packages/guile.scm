@@ -29,7 +29,7 @@
   #:use-module (distro packages pkg-config)
   #:use-module (distro packages readline)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
 ;;; Commentary:
@@ -43,7 +43,7 @@
    (name "guile")
    (version "1.8.8")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/guile/guile-" version
                                 ".tar.gz"))
             (sha256
@@ -93,7 +93,7 @@ extensible.  It supports many SRFIs.")
    (name "guile")
    (version "2.0.6")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/guile/guile-" version
                                 ".tar.xz"))
             (sha256
@@ -142,7 +142,7 @@ or 2.0."
    (name (string-append "guile-reader-for-guile-" (package-version guile)))
    (version "0.6")
    (source  (origin
-             (method http-fetch)
+             (method url-fetch)
              (uri (string-append
                    "http://download-mirror.savannah.gnu.org/releases/guile-reader/guile-reader-"
                    version ".tar.gz"))

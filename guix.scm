@@ -27,8 +27,7 @@
         build-system
         derivations
         ftp-client
-        ftp
-        http
+        download
         packages
         store
         utils))

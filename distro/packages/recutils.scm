@@ -19,7 +19,7 @@
 (define-module (distro packages recutils)
   #:use-module (distro)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -28,7 +28,7 @@
    (name "recutils")
    (version "1.5")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/recutils/recutils-"
                                 version ".tar.gz"))
             (sha256

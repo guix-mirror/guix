@@ -18,7 +18,7 @@
 
 (define-module (distro packages pkg-config)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -27,7 +27,7 @@
    (name "pkg-config")
    (version "0.27.1")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append
                   "http://pkgconfig.freedesktop.org/releases/pkg-config-"
                   version ".tar.gz"))

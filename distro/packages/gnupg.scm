@@ -21,7 +21,7 @@
   #:use-module (distro packages readline)
   #:use-module (distro packages compression)
   #:use-module (guix packages)
-  #:use-module (guix ftp)
+  #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
 (define-public libgpg-error
@@ -30,7 +30,7 @@
     (version "1.10")
     (source
      (origin
-      (method ftp-fetch)
+      (method url-fetch)
       (uri (string-append "ftp://ftp.gnupg.org/gcrypt/libgpg-error/libgpg-error-"
                           version ".tar.bz2"))
       (sha256
@@ -53,7 +53,7 @@ Daemon and possibly more in the future.")
     (version "1.5.0")
     (source
      (origin
-      (method ftp-fetch)
+      (method url-fetch)
       (uri (string-append "ftp://ftp.gnupg.org/gcrypt/libgcrypt/libgcrypt-"
                           version ".tar.bz2"))
       (sha256
@@ -79,7 +79,7 @@ functions, random numbers and a lot of supporting functions.")
     (version "2.0.3")
     (source
      (origin
-      (method ftp-fetch)
+      (method url-fetch)
       (uri (string-append "ftp://ftp.gnupg.org/gcrypt/libassuan/libassuan-"
                           version ".tar.bz2"))
       (sha256
@@ -104,7 +104,7 @@ provided.")
     (version "1.2.0")
     (source
      (origin
-      (method ftp-fetch)
+      (method url-fetch)
       (uri (string-append
             "ftp://ftp.gnupg.org/gcrypt/libksba/libksba-"
             version ".tar.bz2"))
@@ -129,7 +129,7 @@ specifications are building blocks of S/MIME and TLS.")
     (version "2.0.19")
     (source
      (origin
-      (method ftp-fetch)
+      (method url-fetch)
       (uri (string-append
             "ftp://ftp.gnupg.org/gcrypt/gnupg/gnupg-" version
             ".tar.bz2"))

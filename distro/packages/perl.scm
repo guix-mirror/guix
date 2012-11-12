@@ -19,7 +19,7 @@
 (define-module (distro packages perl)
   #:use-module (distro)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -29,7 +29,7 @@
     (name "perl")
     (version "5.16.1")
     (source (origin
-             (method http-fetch)
+             (method url-fetch)
              (uri (string-append "http://www.cpan.org/src/5.0/perl-"
                                  version ".tar.gz"))
              (sha256

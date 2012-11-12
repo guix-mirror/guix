@@ -19,7 +19,7 @@
 (define-module (distro packages gawk)
   #:use-module (distro packages libsigsegv)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -28,7 +28,7 @@
    (name "gawk")
    (version "4.0.0")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/gawk/gawk-" version
                                 ".tar.bz2"))
             (sha256

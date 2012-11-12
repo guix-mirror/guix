@@ -18,7 +18,7 @@
 
 (define-module (distro packages gperf)
   #:use-module (guix packages)
-  #:use-module (guix ftp)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -28,7 +28,7 @@
     (version "3.0.4")
     (source
      (origin
-      (method ftp-fetch)
+      (method url-fetch)
       (uri (string-append "ftp://ftp.gnu.org/gnu/gperf/gperf-"
                           version ".tar.gz"))
       (sha256

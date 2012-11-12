@@ -18,7 +18,7 @@
 
 (define-module (distro packages compression)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
 (define-public zlib
@@ -27,7 +27,7 @@
     (version "1.2.7")
     (source
      (origin
-      (method http-fetch)
+      (method url-fetch)
       (uri (string-append "http://zlib.net/zlib-"
                           version ".tar.gz"))
       (sha256
@@ -66,7 +66,7 @@ in compression.")
    (name "gzip")
    (version "1.5")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/gzip/gzip-"
                                 version ".tar.gz"))
             (sha256
@@ -114,7 +114,7 @@ superior compression ratio of gzip is just a bonus.")
       (name "bzip2")
       (version "1.0.6")
       (source (origin
-               (method http-fetch)
+               (method url-fetch)
                (uri (string-append "http://www.bzip.org/" version "/bzip2-"
                                    version ".tar.gz"))
                (sha256
@@ -150,7 +150,7 @@ decompression.")
    (name "xz")
    (version "5.0.4")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://tukaani.org/xz/xz-" version
                                 ".tar.gz"))
             (sha256

@@ -27,8 +27,7 @@
   #:use-module (distro packages multiprecision)
   #:use-module (distro packages perl)
   #:use-module (guix packages)
-  #:use-module (guix ftp)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (guix utils)
@@ -47,7 +46,7 @@
    (name "hello")
    (version "2.8")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/hello/hello-" version
                                 ".tar.gz"))
             (sha256
@@ -68,7 +67,7 @@
    (name "grep")
    (version "2.14")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
@@ -88,7 +87,7 @@ lines.")
    (name "sed")
    (version "4.2.1")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/sed/sed-" version
                                 ".tar.bz2"))
             (sha256
@@ -110,7 +109,7 @@ substituting multiple occurrences of a string within a file.")
    (name "tar")
    (version "1.26")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/tar/tar-"
                                 version ".tar.bz2"))
             (sha256
@@ -140,7 +139,7 @@ files (as archives).")
    (name "patch")
    (version "2.6.1")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/patch/patch-"
                                 version ".tar.xz"))
             (sha256
@@ -166,7 +165,7 @@ producing patched versions.")
    (name "diffutils")
    (version "3.2")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/diffutils/diffutils-"
                                 version ".tar.xz"))
             (sha256
@@ -211,7 +210,7 @@ You can use the sdiff command to merge two files interactively.")
    (name "findutils")
    (version "4.4.2")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/findutils/findutils-"
                                 version ".tar.gz"))
             (sha256
@@ -253,7 +252,7 @@ The tools supplied with this package are:
    (name "coreutils")
    (version "8.19")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
@@ -279,7 +278,7 @@ are expected to exist on every operating system.")
    (name "make")
    (version "3.82")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/make/make-" version
                                 ".tar.bz2"))
             (sha256
@@ -308,7 +307,7 @@ that it is possible to use Make to build and install the program.")
    (name "binutils")
    (version "2.22")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
@@ -341,7 +340,7 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
      (name "gcc")
      (version "4.7.2")
      (source (origin
-              (method http-fetch)
+              (method url-fetch)
               (uri (string-append "http://ftp.gnu.org/gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.bz2"))
               (sha256
@@ -469,7 +468,7 @@ used in the GNU system including the GNU/Linux variant.")
     (name "linux-libre-headers")
     (version version*)
     (source (origin
-             (method http-fetch)
+             (method url-fetch)
              (uri (string-append
                    "http://linux-libre.fsfla.org/pub/linux-libre/releases/3.3.8-gnu/linux-libre-"
                    version "-gnu.tar.xz"))
@@ -498,7 +497,7 @@ used in the GNU system including the GNU/Linux variant.")
    (name "glibc")
    (version "2.16.0")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256

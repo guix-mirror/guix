@@ -19,8 +19,6 @@
 (define-module (distro packages bootstrap)
   #:use-module (distro)
   #:use-module (guix packages)
-  #:use-module (guix ftp)
-  #:use-module (guix http)
   #:use-module (guix download)
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
@@ -67,11 +65,7 @@
 
   (let ((orig-method (origin-method source)))
     (origin (inherit source)
-      (method (cond ((eq? orig-method http-fetch)
-                     (boot http-fetch))
-                    ((eq? orig-method ftp-fetch)
-                     (boot ftp-fetch))
-                    ((eq? orig-method url-fetch)
+      (method (cond ((eq? orig-method url-fetch)
                      (boot url-fetch))
                     (else orig-method))))))
 
@@ -207,7 +201,7 @@ $out/bin/guile --version~%"
   (package-from-tarball "bootstrap-binaries"
                         (lambda (system)
                           (origin
-                           (method http-fetch)
+                           (method url-fetch)
                            (uri (string-append
                                  %bootstrap-base-url "/"
                                  system "/static-binaries.tar.xz"))
@@ -226,7 +220,7 @@ $out/bin/guile --version~%"
   (package-from-tarball "binutils-bootstrap"
                         (lambda (system)
                           (origin
-                           (method http-fetch)
+                           (method url-fetch)
                            (uri (string-append
                                  %bootstrap-base-url "/"
                                  system "/binutils-2.22.tar.xz"))
@@ -280,7 +274,7 @@ $out/bin/guile --version~%"
        ("tarball" ,(lambda (system)
                      (bootstrap-origin
                       (origin
-                       (method http-fetch)
+                       (method url-fetch)
                        (uri (string-append %bootstrap-base-url "/"
                                            system "/glibc-2.16.0.tar.xz"))
                        (sha256
@@ -351,7 +345,7 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
        ("tarball" ,(lambda (system)
                      (bootstrap-origin
                       (origin
-                       (method http-fetch)
+                       (method url-fetch)
                        (uri (string-append %bootstrap-base-url "/"
                                            system "/gcc-4.7.2.tar.xz"))
                        (sha256

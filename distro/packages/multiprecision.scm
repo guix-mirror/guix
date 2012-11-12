@@ -20,7 +20,7 @@
   #:use-module (distro)
   #:use-module (distro packages m4)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -29,7 +29,7 @@
    (name "gmp")
    (version "5.0.5")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/gmp/gmp-" version
                                 ".tar.bz2"))
             (sha256
@@ -71,7 +71,7 @@ faster algorithms.")
    (name "mpfr")
    (version "3.1.1")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/mpfr/mpfr-" version
                                 ".tar.xz"))
             (sha256 (base32
@@ -97,7 +97,7 @@ double-precision floating-point arithmetic (53-bit mantissa).")
    (name "mpc")
    (version "1.0")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append
                   "http://www.multiprecision.org/mpc/download/mpc-"
                   version ".tar.gz"))

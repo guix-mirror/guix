@@ -18,7 +18,7 @@
 
 (define-module (distro packages lout)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -78,7 +78,7 @@
     (name "lout")
     (version "3.39")
     (source (origin
-             (method http-fetch)
+             (method url-fetch)
              ;; FIXME: `http-get' doesn't follow redirects, hence the URL.
              (uri (string-append
                    "http://download-mirror.savannah.gnu.org/releases/lout/lout-"

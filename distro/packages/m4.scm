@@ -19,7 +19,7 @@
 (define-module (distro packages m4)
   #:use-module (distro)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -28,7 +28,7 @@
    (name "m4")
    (version "1.4.16")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append "http://ftp.gnu.org/gnu/m4/m4-"
                                 version ".tar.bz2"))
             (sha256

@@ -18,7 +18,7 @@
 
 (define-module (distro packages bdw-gc)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -27,7 +27,7 @@
    (name "libgc")
    (version "7.2alpha6")
    (source (origin
-            (method http-fetch)
+            (method url-fetch)
             (uri (string-append
                   "http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc-"
                   version ".tar.gz"))

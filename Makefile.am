@@ -30,15 +30,11 @@ MODULES =					\
   guix/build-system.scm				\
   guix/build-system/gnu.scm			\
   guix/build-system/trivial.scm			\
-  guix/ftp.scm					\
   guix/ftp-client.scm				\
-  guix/http.scm					\
   guix/store.scm				\
   guix/ui.scm					\
   guix/build/download.scm			\
   guix/build/gnu-build-system.scm		\
-  guix/build/ftp.scm				\
-  guix/build/http.scm				\
   guix/build/utils.scm				\
   guix/build/union.scm				\
   guix/packages.scm				\

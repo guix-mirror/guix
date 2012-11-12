@@ -18,7 +18,7 @@
 
 (define-module (distro packages ncurses)
   #:use-module (guix packages)
-  #:use-module (guix http)
+  #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
@@ -55,7 +55,7 @@
      (name "ncurses")
      (version "5.9")
      (source (origin
-              (method http-fetch)
+              (method url-fetch)
               (uri (string-append "http://ftp.gnu.org/gnu/ncurses/ncurses-"
                                   version ".tar.gz"))
               (sha256
