@@ -159,16 +159,15 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
 
   (let* ((opts  (parse-options))
          (store (open-connection))
-         (uri   (string->uri (assq-ref opts 'argument)))
+         (uri   (or (string->uri (assq-ref opts 'argument))
+                    (leave (_ "guix-download: ~a: failed to parse URI~%")
+                           (assq-ref opts 'argument))))
          (fetch (case (uri-scheme uri)
                   ((http) http-fetch)
                   ((ftp)  ftp-fetch)
                   (else
-                   (begin
-                     (format (current-error-port)
-                             (_ "guix-download: ~a: unsupported URI scheme~%")
-                             (uri-scheme uri))
-                     (exit 1)))))
+                   (leave (_ "guix-download: ~a: unsupported URI scheme~%")
+                          (uri-scheme uri)))))
          (path  (call-with-temporary-output-file
                  (lambda (name port)
                    (fetch uri port)

@@ -25,3 +25,9 @@ guix-download --version
 # Make sure it fails here.
 if guix-download http://www.example.com/does-not-exist
 then false; else true; fi
+
+if guix-download unknown://some/where;
+then false; else true; fi
+
+if guix-download not/a/uri;
+then false; else true; fi
