@@ -86,6 +86,15 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
             (put-bytevector port buffer 0 count)
             (loop (get-bytevector-n! in buffer 0 len)))))))
 
+(define (fetch-and-store store fetch uri)
+  "Call FETCH for URI, and pass it an output port to write to; eventually,
+copy data from that port to STORE.  Return the resulting store path."
+  (call-with-temporary-output-file
+   (lambda (name port)
+     (fetch uri port)
+     (close port)
+     (add-to-store store (basename (uri-path uri))
+                   #t #f "sha256" name))))
 
 ;;;
 ;;; Command-line options.
@@ -162,18 +171,15 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
          (uri   (or (string->uri (assq-ref opts 'argument))
                     (leave (_ "guix-download: ~a: failed to parse URI~%")
                            (assq-ref opts 'argument))))
-         (fetch (case (uri-scheme uri)
-                  ((http) http-fetch)
-                  ((ftp)  ftp-fetch)
+         (path (case (uri-scheme uri)
+                  ((http) (fetch-and-store store uri http-fetch))
+                  ((ftp)  (fetch-and-store store uri ftp-fetch))
+                  ((file)
+                   (add-to-store store (basename (uri-path uri))
+                                 #t #f "sha256" (uri-path uri)))
                   (else
                    (leave (_ "guix-download: ~a: unsupported URI scheme~%")
                           (uri-scheme uri)))))
-         (path  (call-with-temporary-output-file
-                 (lambda (name port)
-                   (fetch uri port)
-                   (close port)
-                   (add-to-store store (basename (uri-path uri))
-                                 #t #f "sha256" name))))
          (hash  (call-with-input-file path
                   (compose sha256 get-bytevector-all)))
          (fmt   (assq-ref opts 'format)))

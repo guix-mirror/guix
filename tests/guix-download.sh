@@ -31,3 +31,6 @@ then false; else true; fi
 
 if guix-download not/a/uri;
 then false; else true; fi
+
+# This one should succeed.
+guix-download "file://$abs_top_srcdir/README"
