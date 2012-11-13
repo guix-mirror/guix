@@ -66,7 +66,8 @@ MODULES =					\
   distro/packages/pkg-config.scm		\
   distro/packages/pth.scm			\
   distro/packages/readline.scm			\
-  distro/packages/recutils.scm
+  distro/packages/recutils.scm			\
+  distro/packages/texinfo.scm
 
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
