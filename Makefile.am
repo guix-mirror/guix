@@ -60,6 +60,7 @@ MODULES =					\
   distro/packages/make-bootstrap.scm		\
   distro/packages/multiprecision.scm		\
   distro/packages/ncurses.scm			\
+  distro/packages/nettle.scm			\
   distro/packages/perl.scm			\
   distro/packages/pkg-config.scm		\
   distro/packages/pth.scm			\
