@@ -23,7 +23,8 @@
   #:use-module ((guix store) #:select (derivation-path?))
   #:use-module (guix utils)
   #:use-module (srfi srfi-26)
-  #:export (url-fetch))
+  #:export (%mirrors
+            url-fetch))
 
 ;;; Commentary:
 ;;;
