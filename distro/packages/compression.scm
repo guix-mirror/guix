@@ -171,3 +171,28 @@ container format.  With typical files, XZ Utils create 30 % smaller output
 than gzip and 15 % smaller output than bzip2.")
    (license '("GPLv2+" "LGPLv2.1+"))              ; bits of both
    (home-page "http://tukaani.org/xz/")))
+
+(define-public lzo
+  (package
+    (name "lzo")
+    (version "2.06")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://www.oberhumer.com/opensource/lzo/download/lzo-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0wryshs446s7cclrbjykyj766znhcpnr7s3cxy33ybfn6vwfcygz"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.oberhumer.com/opensource/lzo")
+    (synopsis
+     "A data compresion library suitable for real-time data de-/compression")
+    (description
+     "LZO is a data compression library which is suitable for data
+de-/compression in real-time.  This means it favours speed over
+compression ratio.
+
+LZO is written in ANSI C.  Both the source code and the compressed data
+format are designed to be portable across platforms.")
+    (license "GPLv2+")))
