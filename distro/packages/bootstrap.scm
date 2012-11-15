@@ -204,7 +204,7 @@ $out/bin/guile --version~%"
                            (method url-fetch)
                            (uri (string-append
                                  %bootstrap-base-url "/"
-                                 system "/static-binaries.tar.xz"))
+                                 system "/20121115/static-binaries.tar.xz"))
                            (sha256
                             (match system
                               ("x86_64-linux"
@@ -223,15 +223,15 @@ $out/bin/guile --version~%"
                            (method url-fetch)
                            (uri (string-append
                                  %bootstrap-base-url "/"
-                                 system "/binutils-2.22.tar.xz"))
+                                 system "/20121115/binutils-2.22.tar.xz"))
                            (sha256
                             (match system
                               ("x86_64-linux"
                                (base32
-                                "1cz1rwqhswgrr14kzbkaj3k32kzgv2b6mmzvc6ssbbz8k2m8jmqa"))
+                                "0ms6i035v40n7mhi91n4b8ivwv2qni3mcd5dj9sj9qmvgqb50r84"))
                               ("i686-linux"
                                (base32
-                                "1crg5xsf4cxk249sg90h6fjhfkwj1s5dxvhwbym79g79ygbww1br"))))))
+                                "193x62ach4l4x16rbzglrqa1d0a825z2as6czdiv9xjiizmcr0ad"))))))
                         "ld"                      ; the program to test
                         "Bootstrap binaries of the GNU Binutils"))
 
@@ -275,8 +275,8 @@ $out/bin/guile --version~%"
                      (bootstrap-origin
                       (origin
                        (method url-fetch)
-                       (uri (string-append %bootstrap-base-url "/"
-                                           system "/glibc-2.16.0.tar.xz"))
+                       (uri (string-append %bootstrap-base-url "/" system
+                                           "/20121115/glibc-2.16.0.tar.xz"))
                        (sha256
                         (match system
                           ("x86_64-linux"
@@ -346,16 +346,16 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                      (bootstrap-origin
                       (origin
                        (method url-fetch)
-                       (uri (string-append %bootstrap-base-url "/"
-                                           system "/gcc-4.7.2.tar.xz"))
+                       (uri (string-append %bootstrap-base-url "/" system
+                                           "/20121115/gcc-4.7.2.tar.xz"))
                        (sha256
                         (match system
                           ("x86_64-linux"
                            (base32
-                            "07piqzcdaksjbcj037y5gdbh9dfqwzjivg6fkhgg8kif82ibwxxr"))
+                            "0fg65i2qcym8ls5ig3g1cc9ida5cxwwsd6zi95xi1d8dnfrja4zz"))
                           ("i686-linux"
                            (base32
-                            "0caiihphp23rrqn382cabykz9ps3ixd5p63dgdnkhz1f01jiarl2"))))))))))
+                            "01hlz98qmc8yhqrxqajpg5kbkhpvqq6wjnbfvplys32n895avzxg"))))))))))
     (synopsis "Bootstrap binaries of the GNU Compiler Collection")
     (description #f)
     (home-page #f)))

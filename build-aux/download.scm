@@ -34,7 +34,8 @@
   "Return the URI for FILE."
   (match (string-tokenize file (char-set-complement (char-set #\/)))
     ((_ ... system basename)
-     (string->uri (string-append %url-base "/" system "/" basename)))))
+     (string->uri (string-append %url-base "/" system
+                                 "/20121115/" basename)))))
 
 (match (command-line)
   ((_ file expected-hash)
