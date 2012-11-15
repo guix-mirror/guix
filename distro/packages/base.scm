@@ -320,10 +320,12 @@ that it is possible to use Make to build and install the program.")
     `(("patch/new-dtags" ,(search-patch "binutils-ld-new-dtags.patch"))))
    (arguments
     `(#:patches (list (assoc-ref %build-inputs "patch/new-dtags"))
+      #:configure-flags '(;; Add `-static-libgcc' to not retain a dependency
+                          ;; on GCC when bootstrapping.
+                          "LDFLAGS=-static-libgcc"
 
-      ;; Add `-static-libgcc' to not retain a dependency on GCC when
-      ;; bootstrapping.
-      #:configure-flags '("LDFLAGS=-static-libgcc")))
+                          ;; Don't search under /usr/lib & co.
+                          "--with-lib-path=/no-ld-lib-path")))
 
    (synopsis "GNU Binutils, tools for manipulating binaries (linker,
 assembler, etc.)")
@@ -358,6 +360,9 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
           `("--enable-plugin"
             "--enable-languages=c,c++"
             "--disable-multilib"
+
+            "--with-local-prefix=/no-gcc-local-prefix"
+
             ,(let ((libc (assoc-ref %build-inputs "libc")))
                (if libc
                    (string-append "--with-native-system-header-dir=" libc

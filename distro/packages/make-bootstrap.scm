@@ -225,7 +225,7 @@
   (package (inherit binutils)
     (name "binutils-static")
     (arguments
-     `(#:configure-flags '("--disable-gold")
+     `(#:configure-flags '("--disable-gold" "--with-lib-path=/no-ld-lib-path")
        #:strip-flags '("--strip-all")
        #:phases (alist-cons-before
                  'configure 'all-static
