@@ -1,6 +1,6 @@
 -*- mode: org -*-
 
-Guix is Nix[0] from Guile[1]!
+GNU Guix is Nix[0] from Guile[1]!
 
 Concretely, it allows Nix package management to be done entirely in
 Scheme. The goal is to investigate whether Scheme, and in particular

@@ -4,7 +4,7 @@
 @c %**start of header
 @setfilename guix.info
 @documentencoding UTF-8
-@settitle Guix Reference Manual
+@settitle GNU Guix Reference Manual
 @c %**end of header
 
 @include version.texi
@@ -19,8 +19,8 @@
 @end direntry
 
 @titlepage
-@title{Guix Reference Manual}
-@subtitle{Using the Guix Functional Package Manager}
+@title{GNU Guix Reference Manual}
+@subtitle{Using the GNU Guix Functional Package Manager}
 @author Ludovic Courtès
 
 @page
@@ -41,7 +41,7 @@ Documentation License''.
 @end titlepage
 
 @copying
-This manual documents Guix version @value{VERSION}.
+This manual documents GNU Guix version @value{VERSION}.
 
 Copyright (C) 2012 Ludovic Courtès
 
@@ -57,9 +57,10 @@ Documentation License.''
 
 @c *********************************************************************
 @node Top
-@top Guix
+@top GNU Guix
 
-This document describes Guix version @value{VERSION}.
+This document describes GNU Guix version @value{VERSION}, a functional
+package management tool written for the GNU system.
 
 @menu
 * Introduction::                What is Guix about?
@@ -77,12 +78,12 @@ This document describes Guix version @value{VERSION}.
 @node Introduction
 @chapter Introduction
 
-Guix is a functional package management tool.  Package management
-consists in all the activities that relate to building packages from
-source, honoring the build-time and run-time dependencies on packages,
-installing packages in user environments, upgrading installed packages
-to new versions or rolling back to a previous set, removing unused
-software packages, etc.
+GNU Guix is a functional package management tool for the GNU system.
+Package management consists in all the activities that relate to
+building packages from source, honoring the build-time and run-time
+dependencies on packages, installing packages in user environments,
+upgrading installed packages to new versions or rolling back to a
+previous set, removing unused software packages, etc.
 
 @cindex functional package management
 The term @dfn{functional} refers to a specific package management
@@ -119,7 +120,7 @@ The remainder of this manual describes them.
 @node Package Management
 @chapter Package Management
 
-The purpose of Guix is to allow users to easily install, upgrade, and
+The purpose of GNU Guix is to allow users to easily install, upgrade, and
 remove software packages, without having to know about their build
 procedure or dependencies.  Guix also goes beyond this obvious set of
 features.
