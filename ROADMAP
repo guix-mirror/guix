@@ -1,0 +1,59 @@
+-*- mode: org; coding: utf-8; -*-
+
+#+TITLE: Tentative GNU Guix Road Map
+
+Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.
+
+The goals of the GNU Guix project are two-fold:
+
+  - to build a purely functional package manager, based on Nix and
+    Guile;
+
+  - to use it to build a practical 100% free software distribution of
+    GNU/Linux and possibly other GNU variants, with a focus on the
+    promotion and tight integration of GNU components.
+
+This documents lists tentative milestones toward these goals.
+
+
+* GNU Guix 0.1: Dec. 2012
+
+** basic package management facilities
+
+Including install, upgrade, remove, roll-back, and search.
+
+** self-contained user-land distribution
+
+  - GNU/Linux-only, i686 and x86_64; optionally mipsel64
+  - ~100 non-X11 packages
+
+** maybe integrated Nix code
+
+* GNU Guix 0.2: Feb./Mar. 2013
+
+** improved package management features
+
+  - user-environment hooks
+  - sophisticated handling of collisions when building a union (package
+    priorities, etc.)
+
+** auto-update facility available for GNU packages
+
+** more packages
+
+  - Xorg
+  - Emacs
+
+* GNU Guix 0.9: June 2013
+
+** bootable GNU/Linux-Libre distro
+** high-level OS configuration descriptive EDSL, à la NixOS
+
+* GNU Guix 1.0: September 2013 (GNU anniversary release)
+
+** bootable GNU/Linux-Libre distro with non-GUI installer
+** usable for a range of hacker-style uses

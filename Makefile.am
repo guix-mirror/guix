@@ -164,6 +164,7 @@ AM_SH_LOG_FLAGS = -x -e
 
 EXTRA_DIST =					\
   HACKING					\
+  ROADMAP					\
   TODO						\
   .dir-locals.el				\
   build-aux/download.scm			\
