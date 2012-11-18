@@ -56,3 +56,16 @@ The repository is at <https://gitorious.org/guix/>.
 
 Please email <ludo@gnu.org> or <nix-dev@lists.science.uu.nl>, or
 join #guile or #nixos on irc.freenode.net or `civodul'. 
+
+* Related software
+
+  - [[http://nixos.org][Nix, Nixpkgs, and NixOS]], functional package manager and associated
+    software distribution, are the inspiration of Guix
+  - [[http://www.gnu.org/software/stow/][GNU Stow]] builds around the idea of one directory per prefix, and a
+    symlink tree to create user environments
+  - [[http://www.pvv.ntnu.no/~arnej/store/storedoc_6.html][STORE]] shares the same idea
+  - [[https://live.gnome.org/OSTree/][GNOME's OSTree]] allows bootable system images to be built from a
+    specified set of packages
+  - The [[http://www.gnu.org/s/gsrc/][GNU Source Release Collection]] (GSRC) is a user-land software
+    distribution; unlike Guix, it relies on core tools available on the
+    host system
