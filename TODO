@@ -1,0 +1,113 @@
+-*- mode: org; coding: utf-8; -*-
+
+Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.
+
+* integrate needed Nix code
+
+Guix uses Nix’s daemon (‘nix-worker’, later renamed to ‘nix-daemon’) to
+actually perform builds, scheduling, substitution of pre-built binaries,
+and GC-related tasks.  The daemon mainly uses ‘libstore’ from Nix.
+Integrating it in Guix itself will make Guix self-contained, thereby
+simplifying our users’ lives.
+
+* infrastructure
+
+** have a Hydra instance build Guix packages
+
+[[http://nixos.org/hydra/][Hydra]] is a continuous integration tool based on Nix.  It now has
+[[https://github.com/NixOS/hydra/commit/f27ae1d5663680400cb99cfb898970f34d8d21be][Guile/Guix support]], which allows “build recipes” written in Guile using
+Guix to be used directly on Hydra.
+
+For a start, we may use the instance at hydra.nixos.org, generously
+provided by TU Delft.  However, in the future, we may want to setup our
+own instance at gnu.org.
+
+* extend <origin>
+** add OpenPGP signatures:
+
+   (origin
+     (method http-fetch)
+     (uri "http://.../foo.tgz")
+     (signature-uri (string-append uri ".sig"))
+     (signer-openpgp-fingerprint "..."))
+
+** allow <origin> to be a derivation/package or a file
+
+* extend <package>
+
+** add support for ‘search-paths’
+
+This should be passed to the build system, to extend package-specific
+search path environment variables–like ‘GUILE_LOAD_PATH’, ‘PERL5LIB’,
+etc.
+
+** add a ‘user-environment-hook’
+
+This should specify builder code to be run when building a user
+environment with ‘guix-package’.  For instance, Texinfo’s hook would
+create a new ‘dir’.
+
+* support cross-compilation
+
+Implement ‘package-cross-derivation’, and add the corresponding code in
+‘gnu-build-system’.  Then, actually bootstrap a cross-compilation
+environment–e.g., a cross-GNU environment.
+
+* gnu-build-system: produce a ‘debug’ derivation
+
+Set a .gnu_debuglink in the main derivations to point to the sibling
+file name (only the basename, to not retain a dependency on the ‘debug’
+derivation.)
+
+For /nix/store/xyz-foobar/bin/foo, we should have
+/nix/store/abc-foobar-debug/lib/nix/store/xyz-foobar/bin/foo.debug (info
+"(gdb) Separate Debug Files").
+
+Users should have a default GDB setting with ~/.guix-profile/lib/debug
+as their ‘debug-file-directory’.
+
+* build-expression->derivation: define `%system' in the builder
+
+Would allow build expressions to have system-dependent code, like
+`glibc-dynamic-linker'.
+
+* add ‘allowed-references’ in <package>
+
+[[file:~/src/nix/src/libstore/build.cc::if%20(drv.env.find("allowedReferences")%20!%3D%20drv.env.end())%20{][See how Nix implements that internally]].
+
+
+* union
+
+Support sophisticated collision handling when building a union: check
+whether the colliding files are identical, honor per-package priorities,
+etc.
+
+* guix-package
+
+** add ‘--roll-back’
+** add ‘--list-generations’, and ‘--delete-generations’
+** add ‘--upgrade’
+** add ‘--list-installed’ and ‘--list-available’
+** add ‘--search’
+
+* guix build utils
+** Add equivalent to "rm -rf"
+** Add equivalent to Nixpkgs's ‘wrapProgram’
+** Add equivalent to chrpath, possibly using [[https://gitorious.org/guile-dlhacks/guile-dlhacks/][guile-dlhacks]]
+
+* distro
+** choose a name! (Jinn?)
+** port to new GNU/Linux platforms, notably ‘mipsel64-linux’
+** port to GNU/Hurd, aka. ‘i686-gnu’
+
+Problems include that current glibc releases do not build on GNU/Hurd.
+In addition, there haven’t been stable releases of GNU Mach, MiG, and
+Hurd, which would be a pre-condition.
+
+** make a bootable GNU/Linux-Libre distro, with OS configuration EDSL
+
+Similar in spirit to /etc/nixos/configuration.nix.

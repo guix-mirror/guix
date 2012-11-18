@@ -164,6 +164,7 @@ AM_SH_LOG_FLAGS = -x -e
 
 EXTRA_DIST =					\
   HACKING					\
+  TODO						\
   .dir-locals.el				\
   build-aux/download.scm			\
   srfi/srfi-64.scm				\
