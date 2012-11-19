@@ -26,6 +26,7 @@
   #:export (search-patch
             search-bootstrap-binary
             %patch-directory
+            fold-packages
             find-packages-by-name))
 
 ;;; Commentary:
@@ -105,22 +106,34 @@
                   (false-if-exception (resolve-interface name))))
               (package-files)))
 
+(define (fold-packages proc init)
+  "Call (PROC PACKAGE RESULT) for each available package, using INIT as
+the initial value of RESULT."
+  (fold (lambda (module result)
+          (fold (lambda (var result)
+                  (if (package? var)
+                      (proc var result)
+                      result))
+                result
+                (module-map (lambda (sym var)
+                              (false-if-exception (variable-ref var)))
+                            module)))
+        init
+        (package-modules)))
+
 (define* (find-packages-by-name name #:optional version)
   "Return the list of packages with the given NAME.  If VERSION is not #f,
 then only return packages whose version is equal to VERSION."
   (define right-package?
     (if version
         (lambda (p)
-          (and (package? p)
-               (string=? (package-name p) name)
+          (and (string=? (package-name p) name)
                (string=? (package-version p) version)))
         (lambda (p)
-          (and (package? p)
-               (string=? (package-name p) name)))))
+          (string=? (package-name p) name))))
 
-  (append-map (lambda (module)
-                (filter right-package?
-                        (module-map (lambda (sym var)
-                                      (variable-ref var))
-                                    module)))
-              (package-modules)))
+  (fold-packages (lambda (package result)
+                   (if (right-package? package)
+                       (cons package result)
+                       result))
+                 '()))

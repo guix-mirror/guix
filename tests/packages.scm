@@ -120,6 +120,13 @@
            (and (build-derivations %store (list drv))
                 (file-exists? (string-append out "/bin/make")))))))
 
+(test-eq "fold-packages" hello
+  (fold-packages (lambda (p r)
+                   (if (string=? (package-name p) "hello")
+                       p
+                       r))
+                 #f))
+
 (test-assert "find-packages-by-name"
   (match (find-packages-by-name "hello")
     (((? (cut eq? hello <>))) #t)
@@ -136,6 +143,7 @@
 (exit (= (test-runner-fail-count (test-runner-current)) 0))
 
 ;;; Local Variables:
+;;; eval: (put 'test-equal 'scheme-indent-function 2)
 ;;; eval: (put 'test-assert 'scheme-indent-function 1)
 ;;; eval: (put 'dummy-package 'scheme-indent-function 1)
 ;;; End:
