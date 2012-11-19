@@ -42,12 +42,15 @@ test -f "$profile/bin/make" && test -f "$profile/bin/guile"
 # name and version string.
 installed="`guix-package -p "$profile" --list-installed | cut -f1 | xargs echo | sort`"
 case "x$installed" in
-    "guile* make*") true;;
-    "make* guile*") true;;
-    "*")            false;;
+    "guile-bootstrap make-boot0")
+	true;;
+    "make-boot0 guile-bootstrap")
+	true;;
+    "*")
+        false;;
 esac
 
-test "`guix-package -p "$profile" -I 'g.*e' | cut -f1`" = "guile-bootstrap-2.0"
+test "`guix-package -p "$profile" -I 'g.*e' | cut -f1`" = "guile-bootstrap"
 
 # Remove a package.
 guix-package -b -p "$profile" -r "guile-bootstrap-2.0"

@@ -338,8 +338,11 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
            (install* (append
                       (filter-map (match-lambda
                                    (('install . (? store-path? path))
-                                    `(,(store-path-package-name path)
-                                      #f #f ,path))
+                                    (let-values (((name version)
+                                                  (package-name->name+version
+                                                   (store-path-package-name
+                                                    path))))
+                                     `(,name ,version #f ,path)))
                                    (_ #f))
                                   opts)
                       (map (lambda (tuple drv)
