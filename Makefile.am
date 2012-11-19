@@ -51,6 +51,7 @@ MODULES =					\
   distro/packages/gnutls.scm			\
   distro/packages/gperf.scm			\
   distro/packages/guile.scm			\
+  distro/packages/help2man.scm			\
   distro/packages/ld-wrapper.scm		\
   distro/packages/libffi.scm			\
   distro/packages/libsigsegv.scm		\
