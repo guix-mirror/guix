@@ -69,7 +69,8 @@ MODULES =					\
   distro/packages/readline.scm			\
   distro/packages/recutils.scm			\
   distro/packages/system.scm			\
-  distro/packages/texinfo.scm
+  distro/packages/texinfo.scm			\
+  distro/packages/zile.scm
 
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
