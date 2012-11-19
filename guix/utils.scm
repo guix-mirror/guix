@@ -47,6 +47,7 @@
             default-keyword-arguments
             substitute-keyword-arguments
 
+            <location>
             location
             location?
             location-file

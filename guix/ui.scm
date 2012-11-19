@@ -23,12 +23,14 @@
   #:use-module (guix packages)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (ice-9 match)
   #:export (_
             N_
             leave
             show-version-and-exit
             call-with-error-handling
-            with-error-handling))
+            with-error-handling
+            location->string))
 
 ;;; Commentary:
 ;;;
@@ -79,5 +81,12 @@
      (call-with-error-handling
       (lambda ()
         body ...)))))
+
+(define (location->string loc)
+  "Return a human-friendly, GNU-standard representation of LOC."
+  (match loc
+    (#f (_ "<unknown location>"))
+    (($ <location> file line column)
+     (format #f "~a:~a:~a" file line column))))
 
 ;;; ui.scm ends here

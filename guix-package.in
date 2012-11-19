@@ -44,7 +44,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
-  #:autoload   (distro) (find-packages-by-name)
+  #:use-module (distro)
   #:use-module (distro packages guile)
   #:export (guix-package))
 
@@ -204,6 +204,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -I, --list-installed[=REGEXP]
                          list installed packages matching REGEXP"))
+  (display (_ "
+  -A, --list-available[=REGEXP]
+                         list available packages matching REGEXP"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -242,6 +245,10 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
         (option '(#\I "list-installed") #f #t
                 (lambda (opt name arg result)
                   (cons `(query list-installed ,(or arg ""))
+                        result)))
+        (option '(#\A "list-available") #f #t
+                (lambda (opt name arg result)
+                  (cons `(query list-available ,(or arg ""))
                         result)))))
 
 
@@ -385,7 +392,29 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                                  (regexp-exec regexp name))
                          (format #t "~a\t~a\t~a\t~a~%"
                                  name (or version "?") output path))))
-                     installed)))
+                     installed)
+           #t))
+        (('list-available regexp)
+         (let* ((regexp    (and regexp (make-regexp regexp)))
+                (available (fold-packages
+                            (lambda (p r)
+                              (let ((n (package-name p)))
+                                (if regexp
+                                    (if (regexp-exec regexp n)
+                                        (cons p r)
+                                        r)
+                                    (cons p r))))
+                            '())))
+           (for-each (lambda (p)
+                       (format #t "~a\t~a\t~a~%"
+                               (package-name p)
+                               (package-version p)
+                               (location->string (package-location p))))
+                     (sort available
+                           (lambda (p1 p2)
+                             (string<? (package-name p1)
+                                       (package-name p2)))))
+           #t))
         (_ #f))))
 
   (setlocale LC_ALL "")

@@ -57,4 +57,7 @@ test -f "$profile/bin/make" && ! test -f "$profile/bin/guile"
 # Make sure the `:' syntax works.
 guix-package -b -i "libsigsegv:lib" -n
 
+# Check whether `--list-available' returns something sensible.
+guix-package -A 'gui.*e' | grep guile
+
 rm "$profile" "$profile-"[0-9]*

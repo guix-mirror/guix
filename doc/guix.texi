@@ -257,6 +257,15 @@ is installed (for instance, @code{out} for the default output,
 @code{include} for its headers, etc.), and the path of this package in
 the store.
 
+@item --list-available[=@var{regexp}]
+@itemx -A [@var{regexp}]
+List packages currently available in the software distribution.  When
+@var{regexp} is specified, list only installed packages whose name
+matches @var{regexp}.
+
+For each package, print the following items separated by tabs: its name,
+its version string, and the source location of its definition.
+
 @end table
 
 
