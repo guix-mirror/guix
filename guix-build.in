@@ -57,9 +57,8 @@ When SOURCE? is true, return the derivations of the package sources."
                   (loc    (package-location p)))
               (if source
                   (package-source-derivation %store source)
-                  (leave (_ "~a:~a:~a: error: package `~a' has no source~%")
-                         (location-file loc) (location-line loc)
-                         (location-column loc) (package-name p))))
+                  (leave (_ "~a: error: package `~a' has no source~%")
+                         (location->string loc) (package-name p))))
             (package-derivation %store p system))
         (leave (_ "expression `~s' does not evaluate to a package~%")
                exp))))
