@@ -36,6 +36,20 @@ guix-package -b -p "$profile"						\
 test -L "$profile-2-link"
 test -f "$profile/bin/make" && test -f "$profile/bin/guile"
 
+
+# Check whether `--list-installed' works.
+# XXX: Change the tests when `--install' properly extracts the package
+# name and version string.
+installed="`guix-package -p "$profile" --list-installed | cut -f1 | xargs echo | sort`"
+case "x$installed" in
+    "guile* make*") true;;
+    "make* guile*") true;;
+    "*")            false;;
+esac
+
+test "`guix-package -p "$profile" -I 'g.*e' | cut -f1`" = "guile-bootstrap-2.0"
+
+# Remove a package.
 guix-package -b -p "$profile" -r "guile-bootstrap-2.0"
 test -L "$profile-3-link"
 test -f "$profile/bin/make" && ! test -f "$profile/bin/guile"

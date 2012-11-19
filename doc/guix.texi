@@ -239,7 +239,25 @@ useful to distribution developers.
 
 @end table
 
+In addition to these actions @command{guix-package} supports the
+following options to query the current state of a profile, or the
+availability of packages:
 
+@table @option
+
+@item --list-installed[=@var{regexp}]
+@itemx -I [@var{regexp}]
+List currently installed packages in the specified profile.  When
+@var{regexp} is specified, list only installed packages whose name
+matches @var{regexp}.
+
+For each installed package, print the following items, separated by
+tabs: the package name, its version string, the part of the package that
+is installed (for instance, @code{out} for the default output,
+@code{include} for its headers, etc.), and the path of this package in
+the store.
+
+@end table
 
 
 
