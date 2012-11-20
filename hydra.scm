@@ -23,9 +23,16 @@
 
 (use-modules (guix store)
              (guix packages)
+             ((guix utils) #:select (%current-system))
              (distro)
              (distro packages guile)
+             (srfi srfi-26)
              (ice-9 match))
+
+;; XXX: Debugging hack: since `hydra-eval-guile-jobs' redirects the output
+;; port to the bit bucket, let us write to the error port instead.
+(setvbuf (current-error-port) _IOLBF)
+(set-current-output-port (current-error-port))
 
 (define (package->alist store package system)
   "Convert PACKAGE to an alist suitable for Hydra."
@@ -37,12 +44,13 @@
 
 (define (package-job store job-name package system)
   "Return a job called JOB-NAME that builds PACKAGE on SYSTEM."
-  `(,job-name . ,(package->alist store package system)))
+  `(,job-name . ,(cut package->alist store package system)))
 
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
   (define system
-    (assoc-ref arguments "system"))
+    (or (assoc-ref arguments system)
+        (%current-system)))
 
   (map (match-lambda
         ((job-name (? package? package))
