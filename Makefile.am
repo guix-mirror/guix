@@ -46,6 +46,7 @@ MODULES =					\
   distro/packages/bdw-gc.scm			\
   distro/packages/bootstrap.scm			\
   distro/packages/compression.scm		\
+  distro/packages/ed.scm			\
   distro/packages/gawk.scm			\
   distro/packages/gnupg.scm			\
   distro/packages/gnutls.scm			\
