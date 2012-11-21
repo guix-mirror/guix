@@ -19,8 +19,8 @@ Package recipes in Guix look like this:
     (version "2.5")
     (source
       (origin
-        (method http-fetch)
-        (uri (string-append "http://ftp.gnu.org/gnu/nettle/nettle-"
+        (method url-fetch)
+        (uri (string-append "mirror://gnu/nettle/nettle-"
                             version ".tar.gz"))
         (sha256
           (base32

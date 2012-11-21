@@ -274,6 +274,30 @@ its version string, and the source location of its definition.
 @node Programming Interface
 @chapter Programming Interface
 
+GNU Guix provides several Scheme programming interfaces (APIs) to
+define, build, and query packages.  The first interface allows users to
+write high-level package definitions.  These definitions refer to
+familiar packaging concepts, such as the name and version of a package,
+its build system, and its dependencies.  These definitions can then be
+turned into concrete build actions.
+
+Build actions are performed the Guix daemon, on behalf of users.  In a
+standard setup, the daemon has write access to the store---the
+@file{/nix/store} directory---whereas users do not.  The recommended
+setup also has the daemon perform builds in chroots, under a specific
+build users, to minimize interference with the rest of the system.
+
+@cindex derivation
+Lower-level APIs are available to interact with the daemon and the
+store.  To instruct the daemon to perform a build action, users actually
+provide it with a @dfn{derivation}.  A derivation is a low-level
+representation of the build actions to be taken, and the environment in
+which they should occur---derivations are to package definitions what
+assembly is to C programs.
+
+This chapter describes all these APIs in turn, starting from high-level
+package definitions.
+
 @menu
 * Defining Packages::   Defining new packages.
 * The Store::           Manipulating the package store.
@@ -283,7 +307,131 @@ its version string, and the source location of its definition.
 @node Defining Packages
 @section Defining Packages
 
-@code{(guix packages)} and @code{(guix build-system)}
+The high-level interface to package definitions is implemented in the
+@code{(guix packages)} and @code{(guix build-system)} modules.  As an
+example, the package definition, or @dfn{recipe}, for the GNU Hello
+package looks like this:
+
+@example
+(define hello
+  (package
+    (name "hello")
+    (version "2.8")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/hello/hello-" version
+                                 ".tar.gz"))
+             (sha256
+              (base32 "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))))
+    (build-system gnu-build-system)
+    (inputs `(("gawk" ,gawk)))
+    (synopsis "GNU Hello")
+    (description "Yeah...")
+    (home-page "http://www.gnu.org/software/hello/")
+    (license "GPLv3+")))
+@end example
+
+@noindent
+Without being a Scheme expert, the reader may have guessed the meaning
+of the various fields here.  This expression binds variable @var{hello}
+to a @code{<package>} object, which is essentially a record
+(@pxref{SRFI-9, Scheme records,, guile, GNU Guile Reference Manual}).
+This package object can be inspected using procedures found in the
+@code{(guix packages)} module; for instance, @code{(package-name hello)}
+returns---surprise!---@code{"hello"}.
+
+There are a few points worth noting in the above package definition:
+
+@itemize
+@item
+The @code{source} field of the package is an @code{<origin>} object.
+Here, the @code{url-fetch} method from @code{(guix download)} is used,
+meaning that the source is a file to be downloaded over FTP or HTTP.
+
+The @code{mirror://gnu} prefix instructs @code{url-fetch} to use one of
+the GNU mirrors defined in @code{(guix download)}.
+
+The @code{sha256} field specifies the expected SHA256 hash of the file
+being downloaded.  It is mandatory, and allows Guix to check the
+integrity of the file.  The @code{(base32 @dots{})} form introduces the
+base32 representation of the hash.  A convenient way to obtain this
+information is with the @code{guix-download} tool.
+
+@item
+@cindex GNU Build System
+The @code{build-system} field is set to @var{gnu-build-system}.  The
+@var{gnu-build-system} variable is defined in the @code{(guix
+build-system gnu)} module, and is bound to a @code{<build-system>}
+object.
+
+Naturally, @var{gnu-build-system} represents the familiar GNU Build
+System, and variants thereof (@pxref{Configuration, configuration and
+makefile conventions,, standards, GNU Coding Standards}).  In a
+nutshell, packages using the GNU Build System may be configured, build,
+and installed with the usual @code{./configure && make && make check &&
+make install} command sequence.  This is what @var{gnu-build-system}
+does.
+
+In addition, @var{gnu-build-system} ensures that the ``standard''
+environment for GNU packages is available.  This includes tools such as
+GCC, Coreutils, Bash, Make, Diffutils, and Patch.
+
+@item
+The @code{inputs} field specifies inputs to the build process---i.e.,
+build-time or run-time dependencies of the package.  Here, we define an
+input called @code{"gawk"} whose value is that of the @var{gawk}
+variable; @var{gawk} is itself bound to a @code{<package>} object.
+
+Note that GCC, Coreutils, Bash, and other essential tools do not need to
+be specified as inputs here.  Instead, @var{gnu-build-system} takes care
+of ensuring that they are present.
+
+However, any other dependencies need to be specified in the
+@code{inputs} field.  Any dependency not specified here will simply be
+unavailable to the build process, possibly leading to a build failure.
+@end itemize
+
+There are other fields that package definitions may provide.  Of
+particular interest is the @code{arguments} field.  When specified, it
+must be bound to a list of additional arguments to be passed to the
+build system.  For instance, the above definition could be augmented
+with the following field initializer:
+
+@example
+    (arguments `(#:tests? #f
+                 #:configure-flags '("--enable-silent-rules")))
+@end example
+
+@noindent
+These are keyword arguments (@pxref{Optional Arguments, keyword
+arguments in Guile,, guile, GNU Guile Reference Manual}).  They are
+passed to @var{gnu-build-system}, which interprets them as meaning ``do
+not run @code{make check}'', and ``run @file{configure} with the
+@code{--enable-silent-rules} flag''.
+
+Once a package definition is in place@footnote{Simple package
+definitions like the one above may be automatically converted from the
+Nixpkgs distribution using the @command{guix-import} command.}, the
+package may actually be built using the @code{guix-build} command-line
+tool (@pxref{Invoking guix-build}).
+
+Behind the scenes, a derivation corresponding to the @code{<package>}
+object is first computed by the @code{package-derivation} procedure.
+That derivation is stored in a @code{.drv} file under @file{/nix/store}.
+The build actions is prescribes may then be realized by using the
+@code{build-derivations} procedure (@pxref{The Store}).
+
+@deffn {Scheme Procedure} package-derivation @var{store} @var{package} [@var{system}]
+Return the derivation of @var{package} for @var{system}.  The result is
+the file name of the derivation---i.e., a @code{.drv} file under
+@code{/nix/store}.
+
+@var{package} must be a valid @code{<package>} object, and @var{system}
+must be a string denoting the target system type---e.g.,
+@code{"x86_64-linux"} for an x86_64 Linux-based GNU system.  @var{store}
+must be a connection to the daemon, which operates on the store
+(@pxref{The Store}).
+@end deffn
 
 @node The Store
 @section The Store
