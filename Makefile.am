@@ -48,6 +48,7 @@ MODULES =					\
   distro/packages/compression.scm		\
   distro/packages/ed.scm			\
   distro/packages/gawk.scm			\
+  distro/packages/gdbm.scm			\
   distro/packages/gnupg.scm			\
   distro/packages/gnutls.scm			\
   distro/packages/gperf.scm			\
