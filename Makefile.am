@@ -44,6 +44,7 @@ MODULES =					\
   distro/packages/base.scm			\
   distro/packages/bash.scm			\
   distro/packages/bdw-gc.scm			\
+  distro/packages/bison.scm			\
   distro/packages/bootstrap.scm			\
   distro/packages/compression.scm		\
   distro/packages/ed.scm			\
