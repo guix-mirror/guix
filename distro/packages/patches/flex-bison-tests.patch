@@ -1,0 +1,24 @@
+The `test-bison-yyl{loc,val}' tests fail with "conflicting types for
+'testparse'" because `YYPARSE_PARAM' is undefined; work around that.
+
+--- flex-2.5.37/tests/test-bison-yylloc/main.c	2012-11-22 18:17:01.000000000 +0100
++++ flex-2.5.37/tests/test-bison-yylloc/main.c	2012-11-22 18:17:07.000000000 +0100
+@@ -21,6 +21,7 @@
+  * PURPOSE.
+  */
+ 
++#define YYPARSE_PARAM scanner
+ #include "parser.h"
+ #include "scanner.h"
+ 
+
+--- flex-2.5.37/tests/test-bison-yylval/main.c	2012-11-22 18:17:42.000000000 +0100
++++ flex-2.5.37/tests/test-bison-yylval/main.c	2012-11-22 18:17:49.000000000 +0100
+@@ -21,6 +21,7 @@
+  * PURPOSE.
+  */
+ 
++#define YYPARSE_PARAM scanner
+ #include "parser.h"
+ #include "scanner.h"
+ 

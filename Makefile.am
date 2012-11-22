@@ -48,6 +48,7 @@ MODULES =					\
   distro/packages/bootstrap.scm			\
   distro/packages/compression.scm		\
   distro/packages/ed.scm			\
+  distro/packages/flex.scm			\
   distro/packages/gawk.scm			\
   distro/packages/gdbm.scm			\
   distro/packages/gnupg.scm			\
@@ -84,6 +85,7 @@ patchdir = $(pkgdatadir)/patches
 dist_patch_DATA =						\
   distro/packages/patches/binutils-ld-new-dtags.patch		\
   distro/packages/patches/diffutils-gets-undeclared.patch	\
+  distro/packages/patches/flex-bison-tests.patch		\
   distro/packages/patches/glibc-no-ld-so-cache.patch		\
   distro/packages/patches/guile-1.8-cpp-4.5.patch		\
   distro/packages/patches/guile-default-utf8.patch		\
