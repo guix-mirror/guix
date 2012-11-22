@@ -22,7 +22,7 @@
   #:use-module (distro packages gawk)
   #:use-module (distro packages gperf)
   #:use-module (distro packages libffi)
-  #:use-module (distro packages libtool)
+  #:use-module (distro packages autotools)
   #:use-module (distro packages libunistring)
   #:use-module (distro packages m4)
   #:use-module (distro packages multiprecision)

@@ -60,7 +60,6 @@ MODULES =					\
   distro/packages/ld-wrapper.scm		\
   distro/packages/libffi.scm			\
   distro/packages/libsigsegv.scm		\
-  distro/packages/libtool.scm			\
   distro/packages/libunistring.scm		\
   distro/packages/lout.scm			\
   distro/packages/m4.scm			\
