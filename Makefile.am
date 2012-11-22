@@ -41,6 +41,7 @@ MODULES =					\
   guix/snix.scm					\
   guix.scm					\
   distro.scm					\
+  distro/packages/autotools.scm			\
   distro/packages/base.scm			\
   distro/packages/bash.scm			\
   distro/packages/bdw-gc.scm			\
