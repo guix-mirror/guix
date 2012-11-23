@@ -72,6 +72,7 @@ MODULES =					\
   distro/packages/pth.scm			\
   distro/packages/readline.scm			\
   distro/packages/recutils.scm			\
+  distro/packages/shishi.scm			\
   distro/packages/system.scm			\
   distro/packages/texinfo.scm			\
   distro/packages/zile.scm
@@ -98,6 +99,7 @@ dist_patch_DATA =						\
   distro/packages/patches/findutils-absolute-paths.patch	\
   distro/packages/patches/perl-no-sys-dirs.patch		\
   distro/packages/patches/readline-link-ncurses.patch		\
+  distro/packages/patches/shishi-gets-undeclared.patch		\
   distro/packages/patches/tar-gets-undeclared.patch
 
 bootstrapdir = $(pkgdatadir)/bootstrap
