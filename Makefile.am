@@ -48,6 +48,7 @@ MODULES =					\
   distro/packages/bison.scm			\
   distro/packages/bootstrap.scm			\
   distro/packages/compression.scm		\
+  distro/packages/ddrescue.scm			\
   distro/packages/ed.scm			\
   distro/packages/flex.scm			\
   distro/packages/gawk.scm			\
