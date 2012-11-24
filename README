@@ -1,19 +1,24 @@
 -*- mode: org -*-
 
-GNU Guix is Nix[0] from Guile[1]!
+[[http://www.gnu.org/software/guix/][GNU Guix]] is a purely functional package manager, and associated free
+software distribution, for the [[http://www.gnu.org/gnu/gnu.html][GNU system]].  In addition to standard
+package management features, Guix supports transactional upgrades and
+roll-backs, unprivileged package management, per-user profiles, and
+garbage collection.
 
-Concretely, it allows Nix package management to be done entirely in
-Scheme. The goal is to investigate whether Scheme, and in particular
-the ability to define EDSLs, would allow it to fulfill the role of the
-Nix language.
+It provides [[http://www.gnu.org/software/guile/][Guile]] Scheme APIs, including a high-level embedded
+domain-specific languages (EDSLs) to describe how packages are to be
+built and composed.
 
-[0] http://nixos.org/nix/
-[1] http://gnu.org/software/guile/
+A user-land free software distribution for GNU/Linux comes as part of
+Guix.
+
+Guix is based on the [[http://nixos.org/nix/][Nix]] package manager.
 
 
 * Hacking
 
-Guix currently depends on the following packages:
+GNU Guix currently depends on the following packages:
 
   - [[http://gnu.org/software/guile/][GNU Guile 2.0.x]]
   - [[http://nixos.org/nix/][Nix]]
@@ -52,10 +57,45 @@ the (guix store) module.
 
 * Contact
 
-The repository is at <https://gitorious.org/guix/>.
+GNU Guix is hosted at https://savannah.gnu.org/projects/guix/.
 
-Please email <ludo@gnu.org> or <nix-dev@lists.science.uu.nl>, or
-join #guile or #nixos on irc.freenode.net or `civodul'. 
+Please email <bug-guix@gnu.org> for bug reports or questions regarding
+Guix and its distribution; email <gnu-system-discuss@gnu.org> for
+general issues regarding the GNU system.
+
+Join #guix on irc.freenode.net.
+
+* Guix & Nix
+
+GNU Guix is based on [[http://nixos.org/nix/][the Nix package manager]].  It implements the same
+package deployment paradigm, and in fact it reuses some of its code.
+Yet, different engineering decisions were made for Guix, as described
+below.
+
+Nix is really two things: a package build tool, implemented by a library
+and daemon, and a special-purpose programming language.  GNU Guix relies
+on the former, but uses Scheme as a replacement for the latter.
+
+Using Scheme instead of a specific language allows us to get all the
+features and tooling that come with Guile (compiler, debugger, REPL,
+Unicode, libraries, etc.)  And it means that we have a general-purpose
+language, on top of which we can have embedded domain-specific languages
+(EDSLs), such as the one used to define packages.  This broadens what
+can be done in package recipes themselves, and what can be done around them.
+
+Technically, Guix makes remote procedure calls to the ‘nix-worker’
+daemon to perform operations on the store.  At the lowest level, Nix
+“derivations” represent promises of a build, stored in ‘.drv’ files in
+the store.  Guix produces such derivations, which are then interpreted
+by the daemon to perform the build.  Thus, Guix derivations can use
+derivations produced by Nix (and vice versa).
+
+With Nix and the [[http://nixos.org/nixpkgs][Nixpkgs]] distribution, package composition happens at
+the Nix language level, but builders are usually written in Bash.
+Conversely, Guix encourages the use of Scheme for both package
+composition and builders.  Likewise, the core functionality of Nix is
+written in C++ and Perl; Guix relies on some of the original C++ code,
+but exposes all the API as Scheme.
 
 * Related software
 
