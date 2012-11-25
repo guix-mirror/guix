@@ -67,6 +67,7 @@ MODULES =					\
   distro/packages/m4.scm			\
   distro/packages/make-bootstrap.scm		\
   distro/packages/multiprecision.scm		\
+  distro/packages/nano.scm			\
   distro/packages/ncurses.scm			\
   distro/packages/nettle.scm			\
   distro/packages/perl.scm			\
