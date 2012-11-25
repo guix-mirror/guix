@@ -60,6 +60,7 @@ MODULES =					\
   distro/packages/guile.scm			\
   distro/packages/help2man.scm			\
   distro/packages/ld-wrapper.scm		\
+  distro/packages/less.scm			\
   distro/packages/libffi.scm			\
   distro/packages/libsigsegv.scm		\
   distro/packages/libunistring.scm		\
