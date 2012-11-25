@@ -78,12 +78,14 @@ package management tool written for the GNU system.
 @node Introduction
 @chapter Introduction
 
-GNU Guix is a functional package management tool for the GNU system.
-Package management consists in all the activities that relate to
-building packages from source, honoring the build-time and run-time
-dependencies on packages, installing packages in user environments,
-upgrading installed packages to new versions or rolling back to a
-previous set, removing unused software packages, etc.
+GNU Guix@footnote{``Guix'' is pronounced like ``geeks'', or ``ɡiːks''
+using the international phonetic alphabet (IPA).} is a functional
+package management tool for the GNU system.  Package management consists
+in all the activities that relate to building packages from source,
+honoring the build-time and run-time dependencies on packages,
+installing packages in user environments, upgrading installed packages
+to new versions or rolling back to a previous set, removing unused
+software packages, etc.
 
 @cindex functional package management
 The term @dfn{functional} refers to a specific package management

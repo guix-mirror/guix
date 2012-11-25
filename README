@@ -1,10 +1,10 @@
 -*- mode: org -*-
 
-[[http://www.gnu.org/software/guix/][GNU Guix]] is a purely functional package manager, and associated free
-software distribution, for the [[http://www.gnu.org/gnu/gnu.html][GNU system]].  In addition to standard
-package management features, Guix supports transactional upgrades and
-roll-backs, unprivileged package management, per-user profiles, and
-garbage collection.
+[[http://www.gnu.org/software/guix/][GNU Guix]] (IPA: /ɡiːks/) is a purely functional package manager, and
+associated free software distribution, for the [[http://www.gnu.org/gnu/gnu.html][GNU system]].  In addition
+to standard package management features, Guix supports transactional
+upgrades and roll-backs, unprivileged package management, per-user
+profiles, and garbage collection.
 
 It provides [[http://www.gnu.org/software/guile/][Guile]] Scheme APIs, including a high-level embedded
 domain-specific languages (EDSLs) to describe how packages are to be
