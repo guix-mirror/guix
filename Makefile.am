@@ -48,6 +48,7 @@ MODULES =					\
   distro/packages/bison.scm			\
   distro/packages/bootstrap.scm			\
   distro/packages/compression.scm		\
+  distro/packages/cpio.scm			\
   distro/packages/ddrescue.scm			\
   distro/packages/ed.scm			\
   distro/packages/flex.scm			\
@@ -92,6 +93,7 @@ nobase_dist_guilemodule_DATA = $(MODULES)
 patchdir = $(guilemoduledir)/distro/packages/patches
 dist_patch_DATA =						\
   distro/packages/patches/binutils-ld-new-dtags.patch		\
+  distro/packages/patches/cpio-gets-undeclared.patch		\
   distro/packages/patches/diffutils-gets-undeclared.patch	\
   distro/packages/patches/flex-bison-tests.patch		\
   distro/packages/patches/gettext-gets-undeclared.patch		\
