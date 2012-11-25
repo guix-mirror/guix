@@ -50,6 +50,7 @@
             package-synopsis
             package-description
             package-license
+            package-home-page
             package-platforms
             package-maintainers
             package-properties
