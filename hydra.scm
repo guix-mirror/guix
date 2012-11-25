@@ -25,7 +25,9 @@
              (guix packages)
              ((guix utils) #:select (%current-system))
              (distro)
+             (distro packages base)
              (distro packages guile)
+             (srfi srfi-1)
              (srfi srfi-26)
              (ice-9 match))
 
@@ -40,7 +42,8 @@
     (description . ,(package-synopsis package))
     (long-description . ,(package-description package))
     (license . ,(package-license package))
-    (maintainers . ("gnu-system-discuss@gnu.org"))))
+    (home-page . ,(package-home-page package))
+    (maintainers . ("bug-guix@gnu.org"))))
 
 (define (package-job store job-name package system)
   "Return a job called JOB-NAME that builds PACKAGE on SYSTEM."
@@ -52,14 +55,21 @@
     (or (assoc-ref arguments system)
         (%current-system)))
 
-  (map (match-lambda
-        ((job-name (? package? package))
-         (package-job store job-name package system))
-        ((job-name (? string? name))
-         (package-job store job-name
-                      (car (find-packages-by-name name))
-                      system)))
-       `((hello "hello")
-         (gmp "gmp")
-         (guile_2_0 ,guile-2.0)
-         (guile_1_8 ,guile-1.8))))
+  ;; Return one job for each package, except bootstrap packages.
+  (let ((base-packages (delete-duplicates
+                        (append-map (match-lambda
+                                     ((_ package _ ...)
+                                      (match (package-transitive-inputs
+                                              package)
+                                        (((_ inputs _ ...) ...)
+                                         inputs))))
+                                    %final-inputs))))
+    (fold-packages (lambda (package result)
+                     (if (member package base-packages)
+                         result
+                         (let ((name (string->symbol
+                                      (package-full-name package))))
+                           (cons (package-job store name package
+                                              system)
+                                 result))))
+                   '())))
