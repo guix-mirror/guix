@@ -79,6 +79,7 @@ MODULES =					\
   distro/packages/shishi.scm			\
   distro/packages/system.scm			\
   distro/packages/texinfo.scm			\
+  distro/packages/time.scm			\
   distro/packages/wget.scm			\
   distro/packages/which.scm			\
   distro/packages/zile.scm
