@@ -87,7 +87,7 @@ GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
 
 nobase_dist_guilemodule_DATA = $(MODULES)
 
-patchdir = $(pkgdatadir)/patches
+patchdir = $(guilemoduledir)/distro/packages/patches
 dist_patch_DATA =						\
   distro/packages/patches/binutils-ld-new-dtags.patch		\
   distro/packages/patches/diffutils-gets-undeclared.patch	\
@@ -108,7 +108,7 @@ dist_patch_DATA =						\
   distro/packages/patches/shishi-gets-undeclared.patch		\
   distro/packages/patches/tar-gets-undeclared.patch
 
-bootstrapdir = $(pkgdatadir)/bootstrap
+bootstrapdir = $(guilemoduledir)/distro/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
 bootstrap_i686_linuxdir = $(bootstrapdir)/i686-linux
 
@@ -196,8 +196,6 @@ CLEANFILES = $(GOBJECTS) *.log
 
 .scm.go:
 	$(MKDIR_P) `dirname "$@"`
-	DISTRO_INSTALLED_PATCH_DIRECTORY="$(patchdir)"			\
-	DISTRO_INSTALLED_BOOTSTRAP_DIRECTORY="$(bootstrapdir)"		\
 	$(top_builddir)/pre-inst-env					\
 	$(GUILD) compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
 	  -Wformat -Wunbound-variable -Warity-mismatch			\

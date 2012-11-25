@@ -26,6 +26,7 @@
   #:export (search-patch
             search-bootstrap-binary
             %patch-directory
+            %bootstrap-binaries-path
             fold-packages
             find-packages-by-name))
 
@@ -38,23 +39,21 @@
 
 (define _ (cut gettext <> "guix"))
 
-(define not-colon
-  ;; The char set that contains all the characters but `:'.
-  (char-set-complement (char-set #\:)))
+;; By default, we store patches and bootstrap binaries alongside Guile
+;; modules.  This is so that these extra files can be found without
+;; requiring a special setup, such as a specific installation directory
+;; and an extra environment variable.  One advantage of this setup is
+;; that everything just works in an auto-compilation setting.
 
 (define %patch-path
   (make-parameter
-   (or (and=> (getenv "DISTRO_PATCH_PATH")
-              (cut string-tokenize <> not-colon))
-       (compile-time-value
-        (list (getenv "DISTRO_INSTALLED_PATCH_DIRECTORY"))))))
+   (map (cut string-append <>  "/distro/packages/patches")
+        %load-path)))
 
 (define %bootstrap-binaries-path
   (make-parameter
-   (or (and=> (getenv "DISTRO_BOOTSTRAP_PATH")
-              (cut string-tokenize <> not-colon))
-       (compile-time-value
-        (list (getenv "DISTRO_INSTALLED_BOOTSTRAP_DIRECTORY"))))))
+   (map (cut string-append <> "/distro/packages/bootstrap")
+        %load-path)))
 
 (define (search-patch file-name)
   "Search the patch FILE-NAME."
