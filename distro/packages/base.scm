@@ -26,6 +26,7 @@
   #:use-module (distro packages guile)
   #:use-module (distro packages multiprecision)
   #:use-module (distro packages perl)
+  #:use-module (distro packages linux)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -449,53 +450,6 @@ GCC development is a part of the GNU Project, aiming to improve the compiler
 used in the GNU system including the GNU/Linux variant.")
      (license "GPLv3+")
      (home-page "http://gcc.gnu.org/"))))
-
-(define-public linux-libre-headers
-  (let* ((version* "3.3.8")
-         (build-phase
-          '(lambda* (#:key outputs #:allow-other-keys)
-             (setenv "ARCH" "x86_64")       ; XXX
-             (and (zero? (system* "make" "defconfig"))
-                  (zero? (system* "make" "mrproper" "headers_check")))))
-         (install-phase
-          `(lambda* (#:key outputs #:allow-other-keys)
-             (let ((out (assoc-ref outputs "out")))
-               (and (zero? (system* "make"
-                                    (string-append "INSTALL_HDR_PATH=" out)
-                                    "headers_install"))
-                    (mkdir (string-append out "/include/config"))
-                    (call-with-output-file
-                        (string-append out
-                                       "/include/config/kernel.release")
-                      (lambda (p)
-                        (format p "~a-default~%" ,version*))))))))
-   (package
-    (name "linux-libre-headers")
-    (version version*)
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://linux-libre.fsfla.org/pub/linux-libre/releases/3.3.8-gnu/linux-libre-"
-                   version "-gnu.tar.xz"))
-             (sha256
-              (base32
-               "0jkfh0z1s6izvdnc3njm39dhzp1cg8i06jv06izwqz9w9qsprvnl"))))
-    (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)))
-    (arguments
-     `(#:modules ((guix build gnu-build-system)
-                  (guix build utils)
-                  (srfi srfi-1))
-       #:phases (alist-replace
-                 'build ,build-phase
-                 (alist-replace
-                  'install ,install-phase
-                  (alist-delete 'configure %standard-phases)))
-       #:tests? #f))
-    (synopsis "GNU Linux-Libre kernel headers")
-    (description "Headers of the Linux-Libre kernel.")
-    (license "GPLv2")
-    (home-page "http://www.gnu.org/software/linux-libre/"))))
 
 (define-public glibc
   (package
