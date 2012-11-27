@@ -135,6 +135,12 @@ which is not available during bootstrap."
   "Fetch FILE from URL; URL may be either a single string, or a list of
 string denoting alternate URLs for FILE.  Return #f on failure, and FILE
 on success."
+  (define (uri-vicinity dir file)
+    ;; Concatenate DIR, slash, and FILE, keeping only one slash in between.
+    ;; This is required by some HTTP servers.
+    (string-append (string-trim-right dir #\/) "/"
+                   (string-trim file #\/)))
+
   (define (maybe-expand-mirrors uri)
     (case (uri-scheme uri)
       ((mirror)
@@ -142,7 +148,7 @@ on success."
              (path (uri-path uri)))
          (match (assoc-ref mirrors kind)
            ((mirrors ..1)
-            (map (compose string->uri (cut string-append <> path))
+            (map (compose string->uri (cut uri-vicinity <> path))
                  mirrors))
            (_
             (error "unsupported URL mirror kind" kind uri)))))
