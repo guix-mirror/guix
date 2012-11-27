@@ -65,6 +65,7 @@ MODULES =					\
   distro/packages/libffi.scm			\
   distro/packages/libsigsegv.scm		\
   distro/packages/libunistring.scm		\
+  distro/packages/linux.scm			\
   distro/packages/lout.scm			\
   distro/packages/m4.scm			\
   distro/packages/make-bootstrap.scm		\
