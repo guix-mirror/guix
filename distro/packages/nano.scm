@@ -17,7 +17,8 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages nano)
-  #:use-module (distro packages gettext)
+  #:use-module ((distro packages gettext)
+                #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (distro packages ncurses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -37,7 +38,7 @@
         "0yp6pid67k8h7394spzw0067fl2r7rxm2b6kfccg87g8nlry2s5y"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,gettext)
+     `(("gettext" ,guix:gettext)
        ("ncurses" ,ncurses)))
     (home-page "http://www.nano-editor.org/")
     (synopsis

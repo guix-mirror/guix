@@ -17,7 +17,8 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages wget)
-  #:use-module (distro packages gettext)
+  #:use-module ((distro packages gettext)
+                #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (distro packages gnutls)
   #:use-module (distro packages perl)
   #:use-module (guix packages)
@@ -40,7 +41,7 @@
     (inputs
      `(("gnutls" ,gnutls)
        ("perl" ,perl)
-       ("gettext" ,gettext)))
+       ("gettext" ,guix:gettext)))
     (arguments
      '(#:phases
        (alist-cons-before 'build 'patch-/usr/bin/env
