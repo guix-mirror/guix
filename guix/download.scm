@@ -84,7 +84,13 @@
        "http://mesh.dl.sourceforge.net/sourceforge/"
        "http://ovh.dl.sourceforge.net/sourceforge/"
        "http://osdn.dl.sourceforge.net/sourceforge/"
-       "http://kent.dl.sourceforge.net/sourceforge/"))))
+       "http://kent.dl.sourceforge.net/sourceforge/")
+      (kernel.org
+       "http://www.all.kernel.org/pub/"
+       "http://ramses.wh2.tu-dresden.de/pub/mirrors/kernel.org/"
+       "http://linux-kernel.uio.no/pub/"
+       "http://kernel.osuosl.org/pub/"
+       "ftp://ftp.funet.fi/pub/mirrors/ftp.kernel.org/pub/"))))
 
 
 (define* (url-fetch store url hash-algo hash
