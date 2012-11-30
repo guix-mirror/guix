@@ -62,6 +62,12 @@ portable, and only require an ANSI C89 platform.")
        (base32
         "0fff9frz0ycbnppfn0w4a2s9x27k21l4hh9zbax3v7a8cg33dcpw"))))
     (build-system gnu-build-system)
+
+    ;; Build of the Guile bindings is not parallel-safe.  See
+    ;; <http://git.savannah.gnu.org/cgit/gnutls.git/commit/?id=330995a920037b6030ec0282b51dde3f8b493cad>
+    ;; for the actual fix.
+    (arguments '(#:parallel-build? #f))
+
     (inputs
      `(("guile" ,guile-2.0)
        ;; ("lzo" ,lzo)
