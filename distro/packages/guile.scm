@@ -130,6 +130,11 @@ call interface, and powerful string processing.")
    (home-page "http://www.gnu.org/software/guile/")
    (license "LGPLv3+")))
 
+(define-public guile-2.0/fixed
+  ;; A package of Guile 2.0 that's rarely changed.  It is the one used
+  ;; in the `base' module, and thus changing it entails a full rebuild.
+  guile-2.0)
+
 
 ;;;
 ;;; Extensions.

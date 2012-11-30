@@ -920,7 +920,7 @@ store.")
   ;; holds a dependency on the bootstrap Binutils.  Use multiple outputs for
   ;; Libtool, so that that dependency is isolated in the "bin" output.
   (package-with-bootstrap-guile
-   (package-with-explicit-inputs guile-2.0
+   (package-with-explicit-inputs guile-2.0/fixed
                                  %boot4-inputs
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
