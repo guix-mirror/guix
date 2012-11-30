@@ -91,14 +91,14 @@ extensible.  It supports many SRFIs.")
 (define-public guile-2.0
   (package
    (name "guile")
-   (version "2.0.6")
+   (version "2.0.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/guile/guile-" version
                                 ".tar.xz"))
             (sha256
              (base32
-              "000ng5qsq3cl1k35jvzvhwxj92wx4q87745n2fppkd4irh58vv5l"))))
+              "0f53pxkia4v17n0avwqlcjpy0n89hkazm2xsa6p84lv8k6k8y9vg"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
@@ -133,7 +133,15 @@ call interface, and powerful string processing.")
 (define-public guile-2.0/fixed
   ;; A package of Guile 2.0 that's rarely changed.  It is the one used
   ;; in the `base' module, and thus changing it entails a full rebuild.
-  guile-2.0)
+  (package (inherit guile-2.0)
+    (version "2.0.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/guile/guile-" version
+                                 ".tar.xz"))
+             (sha256
+              (base32
+               "000ng5qsq3cl1k35jvzvhwxj92wx4q87745n2fppkd4irh58vv5l"))))))
 
 
 ;;;
