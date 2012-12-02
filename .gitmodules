@@ -1,0 +1,3 @@
+[submodule "nix-upstream"]
+	path = nix-upstream
+	url = http://github.com/NixOS/nix.git
