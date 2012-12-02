@@ -26,6 +26,7 @@
   #:use-module (distro packages compression)
   #:use-module (distro packages gawk)
   #:use-module (distro packages guile)
+  #:use-module (distro packages linux)
   #:use-module (distro packages multiprecision)
   #:use-module (ice-9 match)
   #:export (%bootstrap-binaries-tarball
