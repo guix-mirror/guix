@@ -21,6 +21,7 @@
   #:use-module (guix download)
   #:use-module (distro packages flex)
   #:use-module (distro packages perl)
+  #:use-module (distro packages ncurses)
   #:use-module (guix build-system gnu))
 
 (define-public linux-libre-headers
@@ -104,3 +105,26 @@ Pluggable authentication modules are small shared object files that can
 be used through the PAM API to perform tasks, like authenticating a user
 at login.  Local and dynamic reconfiguration are its key features")
     (license "BSD")))
+
+(define-public psmisc
+  (package
+    (name "psmisc")
+    (version "22.20")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/psmisc/psmisc/psmisc-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "052mfraykmxnavpi8s78aljx8w87hyvpx8mvzsgpjsjz73i28wmi"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "http://psmisc.sourceforge.net/")
+    (synopsis
+     "set of utilities that use the proc filesystem, such as fuser, killall, and pstree")
+    (description
+     "This PSmisc package is a set of some small useful utilities that
+use the proc filesystem. We're not about changing the world, but
+providing the system administrator with some help in common tasks.")
+    (license "GPLv2+")))
