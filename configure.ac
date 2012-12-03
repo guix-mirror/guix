@@ -12,13 +12,23 @@ AM_INIT_AUTOMAKE([1.11 gnu silent-rules subdir-objects \
 AC_CONFIG_SRCDIR([guix.scm])
 AC_CONFIG_MACRO_DIR([m4])
 
+dnl For the C++ code.  This must be used early.
+AC_USE_SYSTEM_EXTENSIONS
+
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.18.1])
 
 guilemoduledir="${datarootdir}/guile/site/2.0"
 AC_SUBST([guilemoduledir])
 
-AC_CANONICAL_HOST
+GUIX_SYSTEM_TYPE
+
+AC_ARG_WITH(store-dir,
+  AC_HELP_STRING([--with-store-dir=PATH],
+    [path of the store (defaults to /nix/store)]),
+  [storedir="$withval"],
+  [storedir="/nix/store"])
+AC_SUBST(storedir)
 
 PKG_CHECK_MODULES([GUILE], [guile-2.0])
 AC_PATH_PROG([GUILE], [guile])
@@ -83,6 +93,9 @@ AC_SUBST([LIBGCRYPT_PREFIX])
 
 GUIX_ASSERT_LIBGCRYPT_USABLE
 
+AC_CACHE_SAVE
+
+m4_include([config-daemon.ac])
 
 AC_CONFIG_FILES([Makefile
                  po/Makefile.in

@@ -222,6 +222,12 @@ SUBDIRS = po
 info_TEXINFOS = doc/guix.texi
 EXTRA_DIST += doc/fdl-1.3.texi
 
+if BUILD_DAEMON
+
+include daemon.am
+
+endif BUILD_DAEMON
+
 ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --with-libgcrypt-prefix="$(LIBGCRYPT_PREFIX)"	\

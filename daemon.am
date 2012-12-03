@@ -1,0 +1,152 @@
+# Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
+# Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+#
+# This file is part of Guix.
+#
+# Guix is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
+#
+# Guix is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+# Integration of the `guix-daemon' code taken from upstream Nix.
+#
+
+BUILT_SOURCES = nix/libstore/schema.sql.hh
+CLEANFILES += $(BUILT_SOURCES)
+
+noinst_LIBRARIES = libformat.a libutil.a libstore.a
+
+libformat_a_SOURCES =				\
+  nix/boost/format/free_funcs.cc		\
+  nix/boost/format/parsing.cc			\
+  nix/boost/format/format_implementation.cc
+
+libformat_headers =				\
+  nix/boost/weak_ptr.hpp			\
+  nix/boost/throw_exception.hpp			\
+  nix/boost/checked_delete.hpp			\
+  nix/boost/shared_ptr.hpp			\
+  nix/boost/format.hpp				\
+  nix/boost/assert.hpp				\
+  nix/boost/format/macros_default.hpp		\
+  nix/boost/format/format_fwd.hpp		\
+  nix/boost/format/format_class.hpp		\
+  nix/boost/format/exceptions.hpp		\
+  nix/boost/format/group.hpp			\
+  nix/boost/format/feed_args.hpp		\
+  nix/boost/format/internals_fwd.hpp		\
+  nix/boost/format/internals.hpp		\
+  nix/boost/detail/workaround.hpp		\
+  nix/boost/detail/shared_count.hpp		\
+  nix/boost/enable_shared_from_this.hpp
+
+libformat_a_CPPFLAGS =				\
+  -I$(top_srcdir)/nix
+
+libutil_a_SOURCES =				\
+  nix/libutil/archive.cc			\
+  nix/libutil/serialise.cc			\
+  nix/libutil/immutable.cc			\
+  nix/libutil/util.cc				\
+  nix/libutil/xml-writer.cc			\
+  nix/libutil/hash.cc				\
+  nix/libutil/gcrypt-hash.cc
+
+libutil_headers =				\
+  nix/libutil/immutable.hh			\
+  nix/libutil/hash.hh				\
+  nix/libutil/serialise.hh			\
+  nix/libutil/xml-writer.hh			\
+  nix/libutil/util.hh				\
+  nix/libutil/archive.hh			\
+  nix/libutil/types.hh				\
+  nix/libutil/gcrypt-hash.hh			\
+  nix/libutil/md5.h				\
+  nix/libutil/sha1.h				\
+  nix/libutil/sha256.h
+
+libutil_a_CPPFLAGS =				\
+  -I$(top_builddir)/nix				\
+  -I$(top_srcdir)/nix/libutil			\
+  $(libformat_a_CPPFLAGS)
+
+libstore_a_SOURCES =				\
+  nix/libstore/gc.cc				\
+  nix/libstore/globals.cc			\
+  nix/libstore/misc.cc				\
+  nix/libstore/references.cc			\
+  nix/libstore/store-api.cc			\
+  nix/libstore/optimise-store.cc		\
+  nix/libstore/local-store.cc			\
+  nix/libstore/remote-store.cc			\
+  nix/libstore/build.cc				\
+  nix/libstore/pathlocks.cc			\
+  nix/libstore/derivations.cc
+
+libstore_headers =				\
+  nix/libstore/references.hh			\
+  nix/libstore/pathlocks.hh			\
+  nix/libstore/globals.hh			\
+  nix/libstore/schema.sql.hh			\
+  nix/libstore/worker-protocol.hh		\
+  nix/libstore/remote-store.hh			\
+  nix/libstore/derivations.hh			\
+  nix/libstore/misc.hh				\
+  nix/libstore/local-store.hh			\
+  nix/libstore/store-api.hh
+
+libstore_a_CPPFLAGS =				\
+  $(libutil_a_CPPFLAGS)				\
+  -I$(top_srcdir)/nix/libstore			\
+  -DNIX_STORE_DIR=\"$(storedir)\"		\
+  -DNIX_DATA_DIR=\"$(datadir)\"			\
+  -DNIX_STATE_DIR=\"$(localstatedir)/nix\"	\
+  -DNIX_LOG_DIR=\"$(localstatedir)/log/nix\"	\
+  -DNIX_CONF_DIR=\"$(sysconfdir)/nix\"		\
+  -DNIX_LIBEXEC_DIR=\"$(libexecdir)\"		\
+  -DNIX_BIN_DIR=\"$(bindir)\"			\
+  -DOPENSSL_PATH="\"FIXME--no OpenSSL support\""
+
+libstore_a_CFLAGS =				\
+  $(SQLITE3_CFLAGS) $(LIBGCRYPT_CFLAGS)
+
+bin_PROGRAMS = guix-daemon
+
+guix_daemon_SOURCES =				\
+  nix/nix-daemon/nix-daemon.cc			\
+  nix/nix-daemon/guix-daemon.cc
+
+guix_daemon_CPPFLAGS =				\
+  $(libutil_a_CPPFLAGS)				\
+  -I$(top_srcdir)/nix/libstore
+
+guix_daemon_LDADD =				\
+  libstore.a libutil.a libformat.a -lbz2	\
+  $(SQLITE3_LIBS) $(LIBGCRYPT_LIBS)
+
+
+noinst_HEADERS =						\
+  $(libformat_headers) $(libutil_headers) $(libstore_headers)
+
+nix/libstore/schema.sql.hh: nix/libstore/schema.sql
+	$(GUILE) --no-auto-compile -c				\
+	  "(use-modules (rnrs io ports))			\
+	   (call-with-output-file \"$@\"			\
+	     (lambda (out)					\
+	       (call-with-input-file \"$^\"			\
+	         (lambda (in)					\
+	           (write (get-string-all in) out)))))"
+
+EXTRA_DIST +=					\
+  nix/libstore/schema.sql			\
+  nix/AUTHORS					\
+  nix/COPYING

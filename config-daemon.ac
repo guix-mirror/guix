@@ -1,0 +1,64 @@
+dnl -*- Autoconf -*- fragment for the C++ daemon.
+
+AC_ARG_ENABLE([daemon],
+  [AS_HELP_STRING([--enable-daemon], [build the Nix daemon (C++)])],
+  [guix_build_daemon="$enableval"],
+  [guix_build_daemon="no"])
+
+AC_MSG_CHECKING([whether to build daemon])
+AC_MSG_RESULT([$guix_build_daemon])
+
+dnl C++ environment.  This macro must be used unconditionnaly.
+AC_PROG_CXX
+
+if test "x$guix_build_daemon" = "xyes"; then
+
+  AC_PROG_RANLIB
+  AC_CONFIG_HEADER([nix/config.h])
+
+  dnl Use 64-bit file system calls so that we can support files > 2 GiB.
+  AC_SYS_LARGEFILE
+
+  dnl Look for libbz2, a required dependency.
+  AC_CHECK_LIB([bz2], [BZ2_bzWriteOpen], [true],
+    [AC_MSG_ERROR([Guix requires libbz2, which is part of bzip2.  See http://www.bzip.org/.])])
+  AC_CHECK_HEADERS([bzlib.h], [true],
+    [AC_MSG_ERROR([Guix requires libbz2, which is part of bzip2.  See http://www.bzip.org/.])])
+
+  dnl Look for SQLite, a required dependency.
+  PKG_CHECK_MODULES([SQLITE3], [sqlite3 >= 3.6.19])
+
+  AC_DEFINE([NIX_VERSION], ["0.0.0"], [Fake Nix version number.])
+  AC_DEFINE_UNQUOTED([SYSTEM], ["\"$guix_system\""],
+    [Guix host system type--i.e., platform and OS kernel tuple.])
+
+  case "$LIBGCRYPT_PREFIX" in
+    no)
+      LIBGCRYPT_CFLAGS=""
+      LIBGCRYPT_LIBS=""
+      ;;
+    *)
+      LIBGCRYPT_CFLAGS="-I$LIBGCRYPT_PREFIX/include"
+      LIBGCRYPT_LIBS="-L$LIBGCRYPT_PREFIX/lib -lgcrypt"
+      ;;
+  esac
+  AC_SUBST([LIBGCRYPT_CFLAGS])
+  AC_SUBST([LIBGCRYPT_LIBS])
+
+  save_CFLAGS="$CFLAGS"
+  save_LDFLAGS="$LDFLAGS"
+  CFLAGS="$CFLAGS $LIBGCRYPT_CFLAGS"
+  LDFLAGS="$LDFLAGS $LIBGCRYPT_LDFLAGS"
+
+  have_gcrypt=yes
+  AC_CHECK_LIB([gcrypt], [gcry_md_open], [:], [have_gcrypt=no])
+  AC_CHECK_HEADER([gcrypt.h], [:], [have_gcrypt=no])
+  if test "x$have_gcrypt" != "xyes"; then
+    AC_MSG_ERROR([GNU libgcrypt not found; please install it.])
+  fi
+
+  CFLAGS="$save_CFLAGS"
+  LDFLAGS="$save_LDFLAGS"
+fi
+
+AM_CONDITIONAL([BUILD_DAEMON], [test "x$guix_build_daemon" = "xyes"])
