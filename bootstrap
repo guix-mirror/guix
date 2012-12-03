@@ -1,0 +1,16 @@
+#!/bin/sh
+
+# Import missing source files and create the build system.
+
+set -e -x
+
+top_srcdir="$PWD"
+export top_srcdir
+
+if [ ! -d nix-upstream ]
+then
+    git submodule init
+fi
+git submodule update
+
+exec autoreconf -vfi

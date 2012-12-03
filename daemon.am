@@ -147,6 +147,7 @@ nix/libstore/schema.sql.hh: nix/libstore/schema.sql
 	           (write (get-string-all in) out)))))"
 
 EXTRA_DIST +=					\
+  nix/sync-with-upstream			\
   nix/libstore/schema.sql			\
   nix/AUTHORS					\
   nix/COPYING

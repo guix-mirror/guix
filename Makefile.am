@@ -194,6 +194,7 @@ EXTRA_DIST =					\
   srfi/srfi-64.upstream.scm			\
   tests/test.drv				\
   build-aux/config.rpath			\
+  bootstrap					\
   release.nix					\
   $(TESTS)
 
