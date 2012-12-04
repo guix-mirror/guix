@@ -31,5 +31,5 @@ SHA256_Init (struct SHA256_CTX *ctx)
 static inline void
 SHA256_Final (void *resbuf, struct SHA256_CTX *ctx)
 {
-  guix_hash_final (ctx, ctx, GCRY_MD_SHA256);
+  guix_hash_final (resbuf, ctx, GCRY_MD_SHA256);
 }

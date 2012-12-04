@@ -31,5 +31,5 @@ MD5_Init (struct MD5_CTX *ctx)
 static inline void
 MD5_Final (void *resbuf, struct MD5_CTX *ctx)
 {
-  guix_hash_final (ctx, ctx, GCRY_MD_MD5);
+  guix_hash_final (resbuf, ctx, GCRY_MD_MD5);
 }

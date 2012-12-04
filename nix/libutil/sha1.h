@@ -31,5 +31,5 @@ SHA1_Init (struct SHA_CTX *ctx)
 static inline void
 SHA1_Final (void *resbuf, struct SHA_CTX *ctx)
 {
-  guix_hash_final (ctx, ctx, GCRY_MD_SHA1);
+  guix_hash_final (resbuf, ctx, GCRY_MD_SHA1);
 }
