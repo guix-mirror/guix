@@ -1,5 +1,6 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
 ;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -17,10 +18,13 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages linux)
+  #:use-module (distro packages compression)
+  #:use-module (distro packages flex)
+  #:use-module (distro packages ncurses)
+  #:use-module (distro packages perl)
+  #:use-module (distro packages ncurses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (distro packages flex)
-  #:use-module (distro packages perl)
   #:use-module (guix build-system gnu))
 
 (define-public linux-libre-headers
@@ -104,3 +108,64 @@ Pluggable authentication modules are small shared object files that can
 be used through the PAM API to perform tasks, like authenticating a user
 at login.  Local and dynamic reconfiguration are its key features")
     (license "BSD")))
+
+(define-public psmisc
+  (package
+    (name "psmisc")
+    (version "22.20")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/psmisc/psmisc/psmisc-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "052mfraykmxnavpi8s78aljx8w87hyvpx8mvzsgpjsjz73i28wmi"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "http://psmisc.sourceforge.net/")
+    (synopsis
+     "set of utilities that use the proc filesystem, such as fuser, killall, and pstree")
+    (description
+     "This PSmisc package is a set of some small useful utilities that
+use the proc filesystem. We're not about changing the world, but
+providing the system administrator with some help in common tasks.")
+    (license "GPLv2+")))
+
+(define-public util-linux
+  (package
+    (name "util-linux")
+    (version "2.21")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kernel.org/linux/utils/"
+                          name "/v" version "/"
+                          name "-" version ".2" ".tar.xz"))
+      (sha256
+       (base32
+        "1rpgghf7n0zx0cdy8hibr41wvkm2qp1yvd8ab1rxr193l1jmgcir"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-use-tty-group")
+       #:phases (alist-cons-after
+                 'install 'patch-chkdupexe
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (substitute* (string-append out "/bin/chkdupexe")
+                       ;; Allow 'patch-shebang' to do its work.
+                       (("@PERL@") "/bin/perl"))))
+                 %standard-phases)))
+    (inputs `(("zlib" ,zlib)
+              ("ncurses" ,ncurses)
+              ("perl" ,perl)))
+    (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
+    (synopsis
+     "util-linux is a random collection of utilities for the Linux kernel")
+    (description
+     "util-linux is a random collection of utilities for the Linux kernel.")
+    ;; Note that util-linux doesn't use the same license for all the
+    ;; code. GPLv2+ is the default license for a code without an
+    ;; explicitly defined license.
+    (license '("GPLv3+" "GPLv2+" "GPLv2" "LGPLv2+"
+               "BSD-original" "Public Domain"))))

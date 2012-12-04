@@ -29,6 +29,7 @@
   #:use-module (distro packages bootstrap)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
+  #:use-module (rnrs io ports)
   #:use-module (ice-9 match))
 
 ;; Test the high-level packaging layer.
@@ -88,6 +89,22 @@
          (let ((p (pk 'drv d (derivation-path->output-path d))))
            (equal? '(hello guix)
                    (call-with-input-file (string-append p "/test") read))))))
+
+(test-assert "trivial with local file as input"
+  (let* ((i (search-path %load-path "ice-9/boot-9.scm"))
+         (p (package (inherit (dummy-package "trivial-with-input-file"))
+              (build-system trivial-build-system)
+              (source #f)
+              (arguments
+               `(#:guile ,%bootstrap-guile
+                 #:builder (copy-file (assoc-ref %build-inputs "input")
+                                      %output)))
+              (inputs `(("input" ,i)))))
+         (d (package-derivation %store p)))
+    (and (build-derivations %store (list d))
+         (let ((p (pk 'drv d (derivation-path->output-path d))))
+           (equal? (call-with-input-file p get-bytevector-all)
+                   (call-with-input-file i get-bytevector-all))))))
 
 (test-assert "trivial with system-dependent input"
   (let* ((p (package (inherit (dummy-package "trivial-system-dependent-input"))

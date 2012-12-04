@@ -1,0 +1,9 @@
+Use (ice-9 rdelim) for `read-line'.
+
+--- lsh-2.0.4/src/scm/guile-compat.scm	2012-12-03 23:28:01.000000000 +0100
++++ lsh-2.0.4/src/scm/guile-compat.scm	2012-12-03 23:28:04.000000000 +0100
+@@ -21,3 +21,4 @@
+ ;; Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ 
+ (use-syntax (ice-9 syncase))
++(use-modules (ice-9 rdelim))

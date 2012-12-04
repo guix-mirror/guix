@@ -45,7 +45,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:export (guix-build))
 
 (define %store
-  (open-connection))
+  (make-parameter #f))
 
 (define (derivations-from-package-expressions exp system source?)
   "Eval EXP and return the corresponding derivation path for SYSTEM.
@@ -56,10 +56,10 @@ When SOURCE? is true, return the derivations of the package sources."
             (let ((source (package-source p))
                   (loc    (package-location p)))
               (if source
-                  (package-source-derivation %store source)
+                  (package-source-derivation (%store) source)
                   (leave (_ "~a: error: package `~a' has no source~%")
                          (location->string loc) (package-name p))))
-            (package-derivation %store p system))
+            (package-derivation (%store) p system))
         (leave (_ "expression `~s' does not evaluate to a package~%")
                exp))))
 
@@ -176,12 +176,12 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
          (match outputs*
            ((output)
             (symlink output root)
-            (add-indirect-root %store root))
+            (add-indirect-root (%store) root))
            ((outputs ...)
             (fold (lambda (output count)
                     (let ((root (string-append root "-" (number->string count))))
                       (symlink output root)
-                      (add-indirect-root %store root))
+                      (add-indirect-root (%store) root))
                     (+ 1 count))
                   0
                   outputs))))
@@ -197,77 +197,78 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
   (setvbuf (current-error-port) _IOLBF)
 
   (with-error-handling
-    (let* ((opts (parse-options))
-           (src? (assoc-ref opts 'source?))
-           (sys  (assoc-ref opts 'system))
-           (drv  (filter-map (match-lambda
-                              (('expression . exp)
-                               (derivations-from-package-expressions exp sys
-                                                                     src?))
-                              (('argument . (? derivation-path? drv))
-                               drv)
-                              (('argument . (? string? x))
-                               (match (find-packages-by-name x)
-                                 ((p _ ...)
-                                  (if src?
-                                      (let ((s (package-source p)))
-                                        (package-source-derivation %store s))
-                                      (package-derivation %store p sys)))
-                                 (_
-                                  (leave (_ "~A: unknown package~%") x))))
-                              (_ #f))
-                             opts))
-           (req  (append-map (lambda (drv-path)
-                               (let ((d (call-with-input-file drv-path
-                                          read-derivation)))
-                                 (derivation-prerequisites-to-build %store d)))
-                             drv))
-           (req* (delete-duplicates
-                  (append (remove (compose (cut valid-path? %store <>)
-                                           derivation-path->output-path)
-                                  drv)
-                          (map derivation-input-path req)))))
-      (if (assoc-ref opts 'dry-run?)
-          (format (current-error-port)
-                  (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
-                      "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
-                      (length req*))
-                  (null? req*) req*)
-          (format (current-error-port)
-                  (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
-                      "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
-                      (length req*))
-                  (null? req*) req*))
+    (let ((opts (parse-options)))
+      (parameterize ((%store (open-connection)))
+        (let* ((src? (assoc-ref opts 'source?))
+               (sys  (assoc-ref opts 'system))
+               (drv  (filter-map (match-lambda
+                                  (('expression . exp)
+                                   (derivations-from-package-expressions exp sys
+                                                                         src?))
+                                  (('argument . (? derivation-path? drv))
+                                   drv)
+                                  (('argument . (? string? x))
+                                   (match (find-packages-by-name x)
+                                     ((p _ ...)
+                                      (if src?
+                                          (let ((s (package-source p)))
+                                            (package-source-derivation (%store) s))
+                                          (package-derivation (%store) p sys)))
+                                     (_
+                                      (leave (_ "~A: unknown package~%") x))))
+                                  (_ #f))
+                                 opts))
+               (req  (append-map (lambda (drv-path)
+                                   (let ((d (call-with-input-file drv-path
+                                              read-derivation)))
+                                     (derivation-prerequisites-to-build (%store) d)))
+                                 drv))
+               (req* (delete-duplicates
+                      (append (remove (compose (cut valid-path? (%store) <>)
+                                               derivation-path->output-path)
+                                      drv)
+                              (map derivation-input-path req)))))
+          (if (assoc-ref opts 'dry-run?)
+              (format (current-error-port)
+                      (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
+                          "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
+                          (length req*))
+                      (null? req*) req*)
+              (format (current-error-port)
+                      (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
+                          "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
+                          (length req*))
+                      (null? req*) req*))
 
-      ;; TODO: Add more options.
-      (set-build-options %store
-                         #:keep-failed? (assoc-ref opts 'keep-failed?)
-                         #:build-cores (or (assoc-ref opts 'cores) 0)
-                         #:use-substitutes? (assoc-ref opts 'substitutes?))
+          ;; TODO: Add more options.
+          (set-build-options (%store)
+                             #:keep-failed? (assoc-ref opts 'keep-failed?)
+                             #:build-cores (or (assoc-ref opts 'cores) 0)
+                             #:use-substitutes? (assoc-ref opts 'substitutes?))
 
-      (if (assoc-ref opts 'derivations-only?)
-          (format #t "~{~a~%~}" drv)
-          (or (assoc-ref opts 'dry-run?)
-              (and (build-derivations %store drv)
-                   (for-each (lambda (d)
-                               (let ((drv (call-with-input-file d
-                                            read-derivation)))
-                                 (format #t "~{~a~%~}"
-                                         (map (match-lambda
-                                               ((out-name . out)
-                                                (derivation-path->output-path
-                                                 d out-name)))
-                                              (derivation-outputs drv)))))
-                             drv)
-                   (let ((roots (filter-map (match-lambda
-                                             (('gc-root . root)
-                                              root)
-                                             (_ #f))
-                                            opts)))
-                     (when roots
-                       (for-each (cut register-root <> <>)
-                                 drv roots)
-                       #t))))))))
+          (if (assoc-ref opts 'derivations-only?)
+              (format #t "~{~a~%~}" drv)
+              (or (assoc-ref opts 'dry-run?)
+                  (and (build-derivations (%store) drv)
+                       (for-each (lambda (d)
+                                   (let ((drv (call-with-input-file d
+                                                read-derivation)))
+                                     (format #t "~{~a~%~}"
+                                             (map (match-lambda
+                                                   ((out-name . out)
+                                                    (derivation-path->output-path
+                                                     d out-name)))
+                                                  (derivation-outputs drv)))))
+                                 drv)
+                       (let ((roots (filter-map (match-lambda
+                                                 (('gc-root . root)
+                                                  root)
+                                                 (_ #f))
+                                                opts)))
+                         (when roots
+                           (for-each (cut register-root <> <>)
+                                     drv roots)
+                           #t))))))))))
 
 ;; Local Variables:
 ;; eval: (put 'guard 'scheme-indent-function 1)

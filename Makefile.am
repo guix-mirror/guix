@@ -67,6 +67,7 @@ MODULES =					\
   distro/packages/libunistring.scm		\
   distro/packages/linux.scm			\
   distro/packages/lout.scm			\
+  distro/packages/lsh.scm			\
   distro/packages/m4.scm			\
   distro/packages/make-bootstrap.scm		\
   distro/packages/multiprecision.scm		\
@@ -103,6 +104,9 @@ dist_patch_DATA =						\
   distro/packages/patches/guile-default-utf8.patch		\
   distro/packages/patches/guile-relocatable.patch		\
   distro/packages/patches/libtool-skip-tests.patch		\
+  distro/packages/patches/lsh-guile-compat.patch		\
+  distro/packages/patches/lsh-no-root-login.patch		\
+  distro/packages/patches/lsh-pam-service-name.patch		\
   distro/packages/patches/m4-gets-undeclared.patch		\
   distro/packages/patches/m4-readlink-EINVAL.patch		\
   distro/packages/patches/m4-s_isdir.patch			\

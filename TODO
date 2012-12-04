@@ -51,6 +51,19 @@ This should specify builder code to be run when building a user
 environment with ‘guix-package’.  For instance, Texinfo’s hook would
 create a new ‘dir’.
 
+** add ‘patches’ there
+
+** extend ‘propagated-build-inputs’ with support for multiple outputs
+
+#+BEGIN_SRC scheme
+  (outputs '("out" "include"))
+  (propagated-build-inputs
+    `(((("i1" ,p1 "o1")
+        ("i2" ,p2))
+       => "include")
+      ("i3" ,p3)))
+#+END_SRC
+
 * support cross-compilation
 
 Implement ‘package-cross-derivation’, and add the corresponding code in
