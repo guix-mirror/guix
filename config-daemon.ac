@@ -29,7 +29,7 @@ if test "x$guix_build_daemon" = "xyes"; then
   PKG_CHECK_MODULES([SQLITE3], [sqlite3 >= 3.6.19])
 
   AC_DEFINE([NIX_VERSION], ["0.0.0"], [Fake Nix version number.])
-  AC_DEFINE_UNQUOTED([SYSTEM], ["\"$guix_system\""],
+  AC_DEFINE_UNQUOTED([SYSTEM], ["$guix_system"],
     [Guix host system type--i.e., platform and OS kernel tuple.])
 
   case "$LIBGCRYPT_PREFIX" in
