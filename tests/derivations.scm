@@ -124,6 +124,29 @@
                 (string=? (call-with-input-file path read-line)
                           "hello, world"))))))
 
+(test-assert "derivation with local file as input"
+  (let* ((builder    (add-text-to-store
+                      %store "my-builder.sh"
+                      "(while read line ; do echo $line ; done) < $in > $out"
+                      '()))
+         (input      (search-path %load-path "ice-9/boot-9.scm"))
+         (drv-path   (derivation %store "derivation-with-input-file"
+                                 (%current-system)
+                                 "/bin/sh" `(,builder)
+                                 `(("in"
+                                    ;; Cheat to pass the actual file
+                                    ;; name to the builder.
+                                    . ,(add-to-store %store
+                                                     (basename input)
+                                                     #t #t "sha256"
+                                                     input)))
+                                 `((,builder)
+                                   (,input)))))   ; ← local file name
+    (and (build-derivations %store (list drv-path))
+         (let ((p (derivation-path->output-path drv-path)))
+           (and (call-with-input-file p get-bytevector-all)
+                (call-with-input-file input get-bytevector-all))))))
+
 (test-assert "fixed-output derivation"
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
                                         "echo -n hello > $out" '()))

@@ -418,8 +418,7 @@ known in advance, such as a file download."
                            ((input . _)
                             (let ((path (add-to-store store
                                                       (basename input)
-                                                      (hash-algo sha256) #t #t
-                                                      input)))
+                                                      #t #t "sha256" input)))
                               (make-derivation-input path '()))))
                           (delete-duplicates inputs)))
          (env-vars   (env-vars-with-empty-outputs))
