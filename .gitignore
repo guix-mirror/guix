@@ -60,3 +60,4 @@ stamp-h[0-9]
 /libstore.a
 /libutil.a
 /guix-daemon
+/test-tmp

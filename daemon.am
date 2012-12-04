@@ -151,3 +151,15 @@ EXTRA_DIST +=					\
   nix/libstore/schema.sql			\
   nix/AUTHORS					\
   nix/COPYING
+
+# Temporary directory used to store the daemon's data.
+test_root = $(abs_top_builddir)/test-tmp
+
+AM_TESTS_ENVIRONMENT +=				\
+  TEST_ROOT="$(test_root)"
+
+TESTS +=					\
+  tests/guix-daemon.sh
+
+clean-local:
+	-rm -rf "$(test_root)"
