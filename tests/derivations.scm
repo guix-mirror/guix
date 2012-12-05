@@ -76,7 +76,7 @@
     (and (equal? b1 b2)
          (equal? d1 d2))))
 
-(test-skip (if %store 0 4))
+(test-skip (if %store 0 11))
 
 (test-assert "add-to-store, flat"
   (let* ((file (search-path %load-path "language/tree-il/spec.scm"))
