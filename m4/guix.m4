@@ -61,4 +61,5 @@ AC_DEFUN([GUIX_SYSTEM_TYPE], [
 	  # `darwin10.2.0', etc.
 	  guix_system="$machine_name-`echo $host_os | "$SED" -e's/@<:@0-9.@:>@*$//g'`";;
      esac])
+  AC_SUBST([guix_system])
 ])

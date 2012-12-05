@@ -20,6 +20,9 @@
   #:export (%guix-package-name
             %guix-version
             %guix-bug-report-address
+            %store-directory
+            %state-directory
+            %system
             %libgcrypt
             %nixpkgs
             %nix-instantiate))
@@ -38,6 +41,15 @@
 
 (define %guix-bug-report-address
   "@PACKAGE_BUGREPORT@")
+
+(define %store-directory
+  "@storedir@")
+
+(define %state-directory
+  "@guix_localstatedir@")
+
+(define %system
+  "@guix_system@")
 
 (define %libgcrypt
   "@LIBGCRYPT@")

@@ -18,6 +18,7 @@
 
 (define-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix config)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
@@ -111,10 +112,9 @@
   (sha1 2)
   (sha256 3))
 
-(define %nix-state-dir
-  (or (getenv "NIX_STATE_DIR") "/nix/var/nix"))
 (define %default-socket-path
-  (string-append %nix-state-dir "/daemon-socket/socket"))
+  (string-append (or (getenv "NIX_STATE_DIR") %state-directory)
+                 "/daemon-socket/socket"))
 
 
 ;; serialize.cc
@@ -439,7 +439,7 @@ file name.  Return #t on success."
 (define %store-prefix
   ;; Absolute path to the Nix store.
   (make-parameter (or (and=> (getenv "NIX_STORE_DIR") canonicalize-path)
-                      "/nix/store")))
+                      %store-directory)))
 
 (define (store-path? path)
   "Return #t if PATH is a store path."

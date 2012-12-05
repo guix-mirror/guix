@@ -30,6 +30,11 @@ AC_ARG_WITH(store-dir,
   [storedir="/nix/store"])
 AC_SUBST(storedir)
 
+# Prepare a version of $localstatedir that does not contain references
+# to shell variables.
+guix_localstatedir="`eval echo $localstatedir | sed -e "s|NONE|/usr/local|g"`"
+AC_SUBST([guix_localstatedir])
+
 PKG_CHECK_MODULES([GUILE], [guile-2.0])
 AC_PATH_PROG([GUILE], [guile])
 AC_PATH_PROG([GUILD], [guild])
