@@ -61,7 +61,12 @@ static const struct argp_option options[] =
     { "max-jobs", 'M', "N", 0,
       "Allow at most N build jobs" },
     { "disable-chroot", GUIX_OPT_DISABLE_CHROOT, 0, 0,
-      "Disable chroot builds" },
+      "Disable chroot builds"
+#ifndef HAVE_CHROOT
+      " (chroots are not supported in this configuration, so "
+      "this option has no effect)"
+#endif
+    },
     { "disable-log-compression", GUIX_OPT_DISABLE_LOG_COMPRESSION, 0, 0,
       "Disable compression of the build logs" },
     { 0, 0, 0, 0, 0 }
@@ -105,7 +110,12 @@ main (int argc, char *argv[])
 {
   Strings nothing;
 
+#ifdef HAVE_CHROOT
   settings.useChroot = true;
+#else
+  settings.useChroot = false;
+#endif
+
   settings.processEnvironment ();
 
   argp_parse (&argp, argc, argv, 0, 0, 0);
