@@ -61,3 +61,4 @@ stamp-h[0-9]
 /libutil.a
 /guix-daemon
 /test-tmp
+/nix/scripts/list-runtime-roots

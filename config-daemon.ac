@@ -91,6 +91,9 @@ if test "x$guix_build_daemon" = "xyes"; then
 
   dnl Check for <linux/fs.h> (for immutable file support).
   AC_CHECK_HEADERS([linux/fs.h])
+
+  AC_CONFIG_FILES([nix/scripts/list-runtime-roots],
+    [chmod +x nix/scripts/list-runtime-roots])
 fi
 
 AM_CONDITIONAL([BUILD_DAEMON], [test "x$guix_build_daemon" = "xyes"])

@@ -146,6 +146,9 @@ nix/libstore/schema.sql.hh: nix/libstore/schema.sql
 	         (lambda (in)					\
 	           (write (get-string-all in) out)))))"
 
+nodist_pkglibexec_SCRIPTS =			\
+  nix/scripts/list-runtime-roots
+
 EXTRA_DIST +=					\
   nix/sync-with-upstream			\
   nix/libstore/schema.sql			\
@@ -156,6 +159,7 @@ EXTRA_DIST +=					\
 test_root = $(abs_top_builddir)/test-tmp
 
 AM_TESTS_ENVIRONMENT +=				\
+  top_builddir="$(abs_top_builddir)"		\
   TEST_ROOT="$(test_root)"
 
 TESTS +=					\

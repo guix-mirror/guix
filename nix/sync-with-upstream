@@ -62,3 +62,7 @@ do
 done
 
 cp -v "$top_srcdir/nix-upstream/"{COPYING,AUTHORS} "$top_srcdir/nix"
+
+# Substitutions.
+sed -i "$top_srcdir/nix/libstore/gc.cc"					\
+    -e 's|/nix/find-runtime-roots\.pl|/guix/list-runtime-roots|g'
