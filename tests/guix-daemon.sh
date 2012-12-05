@@ -22,27 +22,8 @@
 
 set -e
 
-NIX_SUBSTITUTERS=""		# don't resort to substituters
-NIX_IGNORE_SYMLINK_STORE=1	# in case the store is a symlink
-NIX_STORE_DIR="$TEST_ROOT/store"
-NIX_LOCALSTATE_DIR="$TEST_ROOT/var"
-NIX_LOG_DIR="$TEST_ROOT/var/log/nix"
-NIX_STATE_DIR="$TEST_ROOT/var/nix"
-NIX_DB_DIR="$TEST_ROOT/db"
-NIX_ROOT_FINDER="$top_builddir/nix/scripts/list-runtime-roots"
-export NIX_SUBSTITUTERS NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR	\
-    NIX_LOCALSTATE_DIR NIX_LOG_DIR NIX_STATE_DIR NIX_DB_DIR	\
-    NIX_ROOT_FINDER
-
 guix-daemon --version
 guix-build --version
-
-# Launch the daemon without chroot support because is may be
-# unavailable, for instance if we're not running as root.
-guix-daemon --disable-chroot &
-
-daemon_pid=$!
-trap "kill $daemon_pid" EXIT
 
 guix-build -e '(@ (distro packages bootstrap) %bootstrap-guile)'
 guix-build coreutils -n

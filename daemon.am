@@ -155,15 +155,12 @@ EXTRA_DIST +=					\
   nix/AUTHORS					\
   nix/COPYING
 
-# Temporary directory used to store the daemon's data.
-test_root = $(abs_top_builddir)/test-tmp
-
 AM_TESTS_ENVIRONMENT +=				\
-  top_builddir="$(abs_top_builddir)"		\
-  TEST_ROOT="$(test_root)"
+  top_builddir="$(abs_top_builddir)"
 
 TESTS +=					\
   tests/guix-daemon.sh
 
 clean-local:
-	-rm -rf "$(test_root)"
+	-find "$(GUIX_TEST_ROOT)" | xargs chmod +w
+	-rm -rf "$(GUIX_TEST_ROOT)"

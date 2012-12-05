@@ -62,3 +62,4 @@ stamp-h[0-9]
 /guix-daemon
 /test-tmp
 /nix/scripts/list-runtime-roots
+/test-env

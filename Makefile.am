@@ -181,10 +181,10 @@ TEST_EXTENSIONS = .scm .sh
 
 AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)"
 
-SCM_LOG_COMPILER = $(top_builddir)/pre-inst-env $(GUILE)
+SCM_LOG_COMPILER = $(top_builddir)/test-env $(GUILE)
 AM_SCM_LOG_FLAGS = --no-auto-compile -L "$(top_srcdir)"
 
-SH_LOG_COMPILER = $(top_builddir)/pre-inst-env $(SHELL)
+SH_LOG_COMPILER = $(top_builddir)/test-env $(SHELL)
 AM_SH_LOG_FLAGS = -x -e
 
 EXTRA_DIST =					\
