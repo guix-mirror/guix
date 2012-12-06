@@ -50,7 +50,12 @@ builds derivations on behalf of its clients.";
 
 #define GUIX_OPT_SYSTEM 1
 #define GUIX_OPT_DISABLE_CHROOT 2
-#define GUIX_OPT_DISABLE_LOG_COMPRESSION 3
+#define GUIX_OPT_BUILD_USERS_GROUP 3
+#define GUIX_OPT_CACHE_FAILURES 4
+#define GUIX_OPT_LOSE_LOGS 5
+#define GUIX_OPT_DISABLE_LOG_COMPRESSION 6
+#define GUIX_OPT_DISABLE_STORE_OPTIMIZATION 7
+#define GUIX_OPT_IMPERSONATE_LINUX_26 8
 
 static const struct argp_option options[] =
   {
@@ -67,8 +72,22 @@ static const struct argp_option options[] =
       "this option has no effect)"
 #endif
     },
+    { "build-users-group", GUIX_OPT_BUILD_USERS_GROUP, "GROUP", 0,
+      "Perform builds as a user of GROUP" },
+    { "cache-failures", GUIX_OPT_CACHE_FAILURES, 0, 0,
+      "Cache build failures" },
+    { "lose-logs", GUIX_OPT_LOSE_LOGS, 0, 0,
+      "Do not keep build logs" },
     { "disable-log-compression", GUIX_OPT_DISABLE_LOG_COMPRESSION, 0, 0,
       "Disable compression of the build logs" },
+    { "disable-store-optimization", GUIX_OPT_DISABLE_STORE_OPTIMIZATION, 0, 0,
+      "Disable automatic file \"deduplication\" in the store" },
+    { "impersonate-linux-2.6", GUIX_OPT_IMPERSONATE_LINUX_26, 0, 0,
+      "Impersonate Linux 2.6"
+#ifndef HAVE_SYS_PERSONALITY_H
+      " (this option has no effect in this configuration)"
+#endif
+    },
     { 0, 0, 0, 0, 0 }
   };
 
@@ -83,6 +102,21 @@ parse_opt (int key, char *arg, struct argp_state *state)
       break;
     case GUIX_OPT_DISABLE_LOG_COMPRESSION:
       settings.compressLog = false;
+      break;
+    case GUIX_OPT_BUILD_USERS_GROUP:
+      settings.buildUsersGroup = arg;
+      break;
+    case GUIX_OPT_DISABLE_STORE_OPTIMIZATION:
+      settings.autoOptimiseStore = false;
+      break;
+    case GUIX_OPT_CACHE_FAILURES:
+      settings.cacheFailure = true;
+      break;
+    case GUIX_OPT_IMPERSONATE_LINUX_26:
+      settings.impersonateLinux26 = true;
+      break;
+    case GUIX_OPT_LOSE_LOGS:
+      settings.keepLog = false;
       break;
     case 'C':
       settings.buildCores = atoi (arg);
