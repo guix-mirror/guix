@@ -16,13 +16,22 @@ Guix.
 Guix is based on the [[http://nixos.org/nix/][Nix]] package manager.
 
 
-* Hacking
+* Requirements
 
 GNU Guix currently depends on the following packages:
 
   - [[http://gnu.org/software/guile/][GNU Guile 2.0.x]]
-  - [[http://nixos.org/nix/][Nix]]
   - [[http://gnupg.org/][GNU libgcrypt]]
+
+Unless `--disable-daemon' was passed, the following packages are needed:
+
+  - [[http://sqlite.org/][SQLite 3]]
+  - [[http://www.bzip.org][libbz2]]
+  - [[http://gcc.gnu.org][GCC's g++]]
+
+When `--disable-daemon' was passed, you instead need the following:
+
+  - [[http://nixos.org/nix/][Nix]]
 
 Optionally, packages from Nixpkgs may be transparently reused from Guix.
 For this to work, you need to have a checkout of the Nixpkgs repository;
