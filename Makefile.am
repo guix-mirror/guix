@@ -42,6 +42,7 @@ MODULES =					\
   guix/snix.scm					\
   guix.scm					\
   distro.scm					\
+  distro/packages/attr.scm			\
   distro/packages/autotools.scm			\
   distro/packages/base.scm			\
   distro/packages/bash.scm			\
