@@ -65,7 +65,7 @@
        "ftp://mirror.cict.fr/gnupg/"
        "ftp://ftp.strasbourg.linuxfr.org/pub/gnupg/")
       (savannah
-       "http://download.savannah.gnu.org/"
+       "http://download.savannah.gnu.org/releases/"
        "ftp://ftp.twaren.net/Unix/NonGNU/"
        "ftp://mirror.csclub.uwaterloo.ca/nongnu/"
        "ftp://mirror.publicns.net/pub/nongnu/"
