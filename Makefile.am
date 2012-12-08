@@ -28,6 +28,7 @@ MODULES =					\
   guix/derivations.scm				\
   guix/download.scm				\
   guix/gnu-maintenance.scm			\
+  guix/licenses.scm				\
   guix/build-system.scm				\
   guix/build-system/gnu.scm			\
   guix/build-system/trivial.scm			\
