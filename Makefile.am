@@ -176,6 +176,7 @@ TESTS =						\
   tests/build-utils.scm				\
   tests/packages.scm				\
   tests/snix.scm				\
+  tests/store.scm				\
   tests/union.scm				\
   tests/guix-build.sh				\
   tests/guix-download.sh			\
