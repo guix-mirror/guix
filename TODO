@@ -104,7 +104,6 @@ etc.
 ** add ‘--roll-back’
 ** add ‘--list-generations’, and ‘--delete-generations’
 ** add ‘--upgrade’
-** add ‘--list-installed’ and ‘--list-available’
 ** add ‘--search’
 
 * guix build utils
