@@ -364,6 +364,15 @@ the derivation called NAME with hash HASH."
 store path and <derivation> object.  When HASH, HASH-ALGO, and HASH-MODE
 are given, a fixed-output derivation is created---i.e., one whose result is
 known in advance, such as a file download."
+  (define direct-store-path?
+    (let ((len (+ 1 (string-length (%store-prefix)))))
+      (lambda (p)
+        ;; Return #t if P is a store path, and not a sub-directory of a
+        ;; store path.  This predicate is needed because files *under* a
+        ;; store path are not valid inputs.
+        (and (store-path? p)
+             (not (string-index (substring p len) #\/))))))
+
   (define (add-output-paths drv)
     ;; Return DRV with an actual store path for each of its output and the
     ;; corresponding environment variable.
@@ -411,9 +420,9 @@ known in advance, such as a file download."
                                   (make-derivation-output "" hash-algo hash)))
                           outputs))
          (inputs     (map (match-lambda
-                           (((? store-path? input))
+                           (((? direct-store-path? input))
                             (make-derivation-input input '("out")))
-                           (((? store-path? input) sub-drvs ...)
+                           (((? direct-store-path? input) sub-drvs ...)
                             (make-derivation-input input sub-drvs))
                            ((input . _)
                             (let ((path (add-to-store store
