@@ -1,1 +1,11 @@
-Ludovic Courtès <ludo@gnu.org>
+GNU Guix is consists of Scheme code that implements the deployment model
+of the Nix package management tool.  In fact, it currently talks to a
+build daemon whose code comes from Nix (see the manual for details.)
+
+Nix was initially written by Eelco Dolstra; other people have been
+contributing to it.  See `nix/AUTHORS' for details.
+
+GNU Guix was initiated by Ludovic Courtès <ludo@gnu.org>, but it would
+not be what it is without the contributions of the following people:
+
+  Nikita Karetnikov <nikita@karetnikov.org>

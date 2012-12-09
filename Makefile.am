@@ -27,6 +27,8 @@ MODULES =					\
   guix/utils.scm				\
   guix/derivations.scm				\
   guix/download.scm				\
+  guix/gnu-maintenance.scm			\
+  guix/licenses.scm				\
   guix/build-system.scm				\
   guix/build-system/gnu.scm			\
   guix/build-system/trivial.scm			\
@@ -41,6 +43,8 @@ MODULES =					\
   guix/snix.scm					\
   guix.scm					\
   distro.scm					\
+  distro/packages/acl.scm			\
+  distro/packages/attr.scm			\
   distro/packages/autotools.scm			\
   distro/packages/base.scm			\
   distro/packages/bash.scm			\
@@ -172,6 +176,7 @@ TESTS =						\
   tests/build-utils.scm				\
   tests/packages.scm				\
   tests/snix.scm				\
+  tests/store.scm				\
   tests/union.scm				\
   tests/guix-build.sh				\
   tests/guix-download.sh			\

@@ -51,7 +51,13 @@
             add-text-to-store
             add-to-store
             build-derivations
+            add-temp-root
             add-indirect-root
+
+            live-paths
+            dead-paths
+            collect-garbage
+            delete-paths
 
             current-build-output-port
 
@@ -112,6 +118,13 @@
   (sha1 2)
   (sha256 3))
 
+(define-enumerate-type gc-action
+  ;; store-api.hh
+  (return-live 0)
+  (return-dead 1)
+  (delete-dead 2)
+  (delete-specific 3))
+
 (define %default-socket-path
   (string-append (or (getenv "NIX_STATE_DIR") %state-directory)
                  "/daemon-socket/socket"))
@@ -132,6 +145,10 @@
   (let ((b (make-bytevector 8 0)))
     (bytevector-u64-set! b 0 n (endianness little))
     (put-bytevector p b)))
+
+(define (read-long-long p)
+  (let ((b (get-bytevector-n p 8)))
+    (bytevector-u64-ref b 0 (endianness little))))
 
 (define write-padding
   (let ((zero (make-bytevector 8 0)))
@@ -159,8 +176,22 @@
   (write-int (length l) p)
   (for-each (cut write-string <> p) l))
 
+(define (read-string-list p)
+  (let ((len (read-int p)))
+    (unfold (cut >= <> len)
+            (lambda (i)
+              (read-string p))
+            1+
+            0)))
+
+(define (write-store-path f p)
+  (write-string f p))                             ; TODO: assert path
+
 (define (read-store-path p)
   (read-string p))                                ; TODO: assert path
+
+(define write-store-path-list write-string-list)
+(define read-store-path-list read-string-list)
 
 (define (write-contents file p)
   "Write the contents of FILE to output port P."
@@ -223,7 +254,8 @@
       (write-string ")" p))))
 
 (define-syntax write-arg
-  (syntax-rules (integer boolean file string string-list base16)
+  (syntax-rules (integer boolean file string string-list
+                 store-path store-path-list base16)
     ((_ integer arg p)
      (write-int arg p))
     ((_ boolean arg p)
@@ -234,11 +266,15 @@
      (write-string arg p))
     ((_ string-list arg p)
      (write-string-list arg p))
+    ((_ store-path arg p)
+     (write-store-path arg p))
+    ((_ store-path-list arg p)
+     (write-store-path-list arg p))
     ((_ base16 arg p)
      (write-string (bytevector->base16-string arg) p))))
 
 (define-syntax read-arg
-  (syntax-rules (integer boolean string store-path base16)
+  (syntax-rules (integer boolean string store-path store-path-list base16)
     ((_ integer p)
      (read-int p))
     ((_ boolean p)
@@ -247,6 +283,8 @@
      (read-string p))
     ((_ store-path p)
      (read-store-path p))
+    ((_ store-path-list p)
+     (read-store-path-list p))
     ((_ hash p)
      (base16-string->bytevector (read-string p)))))
 
@@ -385,7 +423,7 @@ again until #t is returned or an error is raised."
 
 (define-syntax define-operation
   (syntax-rules ()
-    ((_ (name (type arg) ...) docstring return)
+    ((_ (name (type arg) ...) docstring return ...)
      (define (name server arg ...)
        docstring
        (let ((s (nix-server-socket server)))
@@ -395,7 +433,7 @@ again until #t is returned or an error is raised."
          ;; Loop until the server is done sending error output.
          (let loop ((done? (process-stderr server)))
            (or done? (loop (process-stderr server))))
-         (read-arg return s))))))
+         (values (read-arg return s) ...))))))
 
 (define-operation (valid-path? (string path))
   "Return #t when PATH is a valid store path."
@@ -424,12 +462,72 @@ FIXED? is for backward compatibility with old Nix versions and must be #t."
 Return #t on success."
   boolean)
 
+(define-operation (add-temp-root (store-path path))
+  "Make PATH a temporary root for the duration of the current session.
+Return #t."
+  boolean)
+
 (define-operation (add-indirect-root (string file-name))
   "Make FILE-NAME an indirect root for the garbage collector; FILE-NAME
 can be anywhere on the file system, but it must be an absolute file
 name--it is the caller's responsibility to ensure that it is an absolute
 file name.  Return #t on success."
   boolean)
+
+(define (run-gc server action to-delete min-freed)
+  "Perform the garbage-collector operation ACTION, one of the
+`gc-action' values.  When ACTION is `delete-specific', the TO-DELETE is
+the list of store paths to delete.  IGNORE-LIVENESS? should always be
+#f.  MIN-FREED is the minimum amount of disk space to be freed, in
+bytes, before the GC can stop.  Return the list of store paths delete,
+and the number of bytes freed."
+  (let ((s (nix-server-socket server)))
+    (write-int (operation-id collect-garbage) s)
+    (write-int action s)
+    (write-store-path-list to-delete s)
+    (write-arg boolean #f s)                      ; ignore-liveness?
+    (write-long-long min-freed s)
+    (write-int 0 s)                               ; obsolete
+    (when (>= (nix-server-minor-version server) 5)
+      ;; Obsolete `use-atime' and `max-atime' parameters.
+      (write-int 0 s)
+      (write-int 0 s))
+
+    ;; Loop until the server is done sending error output.
+    (let loop ((done? (process-stderr server)))
+      (or done? (loop (process-stderr server))))
+
+    (let ((paths    (read-store-path-list s))
+          (freed    (read-long-long s))
+          (obsolete (read-long-long s)))
+     (values paths freed))))
+
+(define-syntax-rule (%long-long-max)
+  ;; Maximum unsigned 64-bit integer.
+  (- (expt 2 64) 1))
+
+(define (live-paths server)
+  "Return the list of live store paths---i.e., store paths still
+referenced, and thus not subject to being garbage-collected."
+  (run-gc server (gc-action return-live) '() (%long-long-max)))
+
+(define (dead-paths server)
+  "Return the list of dead store paths---i.e., store paths no longer
+referenced, and thus subject to being garbage-collected."
+  (run-gc server (gc-action return-dead) '() (%long-long-max)))
+
+(define* (collect-garbage server #:optional (min-freed (%long-long-max)))
+  "Collect garbage from the store at SERVER.  If MIN-FREED is non-zero,
+then collect at least MIN-FREED bytes.  Return the paths that were
+collected, and the number of bytes freed."
+  (run-gc server (gc-action delete-dead) '() min-freed))
+
+(define* (delete-paths server paths #:optional (min-freed (%long-long-max)))
+  "Delete PATHS from the store at SERVER, if they are no longer
+referenced.  If MIN-FREED is non-zero, then stop after at least
+MIN-FREED bytes have been collected.  Return the paths that were
+collected, and the number of bytes freed."
+  (run-gc server (gc-action delete-specific) paths min-freed))
 
 
 ;;;

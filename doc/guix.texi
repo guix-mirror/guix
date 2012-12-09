@@ -210,7 +210,7 @@ want to roll back.
 @table @code
 
 @item --install=@var{package}
-@itemx -x @var{package}
+@itemx -i @var{package}
 Install @var{package}.
 
 @var{package} may specify either a simple package name, such as
