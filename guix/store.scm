@@ -424,6 +424,11 @@ FIXED? is for backward compatibility with old Nix versions and must be #t."
 Return #t on success."
   boolean)
 
+(define-operation (add-temp-root (store-path path))
+  "Make PATH a temporary root for the duration of the current session.
+Return #t."
+  boolean)
+
 (define-operation (add-indirect-root (string file-name))
   "Make FILE-NAME an indirect root for the garbage collector; FILE-NAME
 can be anywhere on the file system, but it must be an absolute file
