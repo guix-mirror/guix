@@ -156,7 +156,15 @@ evaluate to a simple datum."
 (define %nixpkgs-directory
   (make-parameter
    ;; Capture the build-time value of $NIXPKGS.
-   (or %nixpkgs (getenv "NIXPKGS"))))
+   (or %nixpkgs
+       (and=> (getenv "NIXPKGS")
+              (lambda (val)
+                ;; Bail out when passed an empty string, otherwise
+                ;; `nix-instantiate' will sit there and attempt to read
+                ;; from its standard input.
+                (if (string=? val "")
+                    #f
+                    val))))))
 
 (define* (nixpkgs-derivation attribute #:optional (system (%current-system)))
   "Return the derivation path of ATTRIBUTE in Nixpkgs."
