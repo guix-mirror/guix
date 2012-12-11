@@ -25,6 +25,8 @@ guix-package --version
 profile="t-profile-$$"
 rm -f "$profile"
 
+trap 'rm "$profile" "$profile-"[0-9]*' EXIT
+
 guix-package -b -p "$profile"						\
     -i `guix-build -e '(@@ (distro packages base) %bootstrap-guile)'`
 test -L "$profile" && test -L "$profile-1-link"
@@ -69,4 +71,3 @@ guix-package -b -i "libsigsegv:lib" -n
 # Check whether `--list-available' returns something sensible.
 guix-package -A 'gui.*e' | grep guile
 
-rm "$profile" "$profile-"[0-9]*
