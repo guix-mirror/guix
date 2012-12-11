@@ -30,6 +30,12 @@ guix-package -b -p "$profile"						\
 test -L "$profile" && test -L "$profile-1-link"
 test -f "$profile/bin/guile"
 
+# Installing the same package a second time does nothing.
+guix-package -b -p "$profile"						\
+    -i `guix-build -e '(@@ (distro packages base) %bootstrap-guile)'`
+test -L "$profile" && test -L "$profile-1-link"
+! test -f "$profile-2-link"
+test -f "$profile/bin/guile"
 
 guix-package -b -p "$profile"						\
     -i `guix-build -e '(@@ (distro packages base) gnu-make-boot0)'`
@@ -53,7 +59,7 @@ esac
 test "`guix-package -p "$profile" -I 'g.*e' | cut -f1`" = "guile-bootstrap"
 
 # Remove a package.
-guix-package -b -p "$profile" -r "guile-bootstrap-2.0"
+guix-package -b -p "$profile" -r "guile-bootstrap"
 test -L "$profile-3-link"
 test -f "$profile/bin/make" && ! test -f "$profile/bin/guile"
 

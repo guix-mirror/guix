@@ -359,10 +359,15 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                                   (_ #f))
                                  opts))
            (packages (append install*
-                             (fold alist-delete
-                                   (manifest-packages
-                                    (profile-manifest profile))
-                                   remove))))
+                             (fold (lambda (package result)
+                                     (match package
+                                       ((name _ ...)
+                                        (alist-delete name result))))
+                                   (fold alist-delete
+                                         (manifest-packages
+                                          (profile-manifest profile))
+                                         remove)
+                                   install*))))
 
       (show-what-to-build drv dry-run?)
 
@@ -370,16 +375,22 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
           (and (build-derivations %store drv)
                (let* ((prof-drv (profile-derivation %store packages))
                       (prof     (derivation-path->output-path prof-drv))
+                      (old-drv  (profile-derivation
+                                 %store (manifest-packages
+                                         (profile-manifest profile))))
+                      (old-prof (derivation-path->output-path old-drv))
                       (number   (latest-profile-number profile))
                       (name     (format #f "~a/~a-~a-link"
                                         (dirname profile)
                                         (basename profile) (+ 1 number))))
-                 (and (build-derivations %store (list prof-drv))
-                      (begin
-                        (symlink prof name)
-                        (when (file-exists? profile)
-                          (delete-file profile))
-                        (symlink name profile))))))))
+                 (if (string=? old-prof prof)
+                     (format (current-error-port) (_ "nothing to be done~%"))
+                     (and (build-derivations %store (list prof-drv))
+                          (begin
+                            (symlink prof name)
+                            (when (file-exists? profile)
+                              (delete-file profile))
+                            (symlink name profile)))))))))
 
   (define (process-query opts)
     ;; Process any query specified by OPTS.  Return #t when a query was
