@@ -14,6 +14,15 @@ and GC-related tasks.  The daemon mainly uses ‘libstore’ from Nix.
 Integrating it in Guix itself will make Guix self-contained, thereby
 simplifying our users’ lives.
 
+** Remove dependency on OpenSSL
+
+The ‘openssl’ command-line tool is used in libstore to sign store paths
+to be exported, and to check such signatures.  The signing keys are
+usually in /etc/nix/signing-key.{pub,sec}.  They are a PKCS#8-encoded
+X.509 SubjectPublicKeyInfo.  These can be decoded with the [[http://lists.gnu.org/archive/html/help-gnutls/2012-12/msg00012.html][C API of
+GnuTLS]], but not yet with its Guile bindings.  There’s also
+‘gnutls_privkey_sign_data’ to sign, and related functions.
+
 * infrastructure
 
 ** have a Hydra instance build Guix packages

@@ -114,7 +114,7 @@ libstore_a_CPPFLAGS =				\
   -DNIX_CONF_DIR=\"$(sysconfdir)/nix\"		\
   -DNIX_LIBEXEC_DIR=\"$(libexecdir)\"		\
   -DNIX_BIN_DIR=\"$(bindir)\"			\
-  -DOPENSSL_PATH="\"FIXME--no OpenSSL support\""
+  -DOPENSSL_PATH="\"openssl\""
 
 libstore_a_CFLAGS =				\
   $(SQLITE3_CFLAGS) $(LIBGCRYPT_CFLAGS)
