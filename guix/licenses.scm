@@ -22,14 +22,15 @@
   #:export (license? license-name license-uri license-comment
             asl2.0
             boost1.0
-            bsd-2 bsd-3 bsd-4
+            bsd-2 bsd-3 bsd-4 bsd-style
             cddl1.0
             cpl1.0
             epl1.0
-            gpl2 gpl2+ gpl3 gpl3+
+            expat
+            gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
             ijg
             ibmpl1.0
-            lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
+            lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
             mpl2.0
             openssl
             public-domain
@@ -78,6 +79,16 @@
            "http://directory.fsf.org/wiki/License:BSD_4Clause"
            "https://www.gnu.org/licenses/license-list#OriginalBSD"))
 
+(define* (bsd-style uri #:optional (comment ""))
+  "Return a BSD-style license, whose full text can be found at URI,
+which may be a file:// URI pointing the package's tree."
+  (license "BSD-style"
+           uri
+           (string-append
+            "This is a BSD-style, non-copyleft free software license.  "
+            "Check the URI for details.  "
+            comment)))
+
 (define cddl1.0
   (license "CDDL 1.0"
            "http://directory.fsf.org/wiki/License:CDDLv1.0"
@@ -92,6 +103,21 @@
   (license "EPL 1.0"
            "http://directory.fsf.org/wiki/License:EPLv1.0"
            "https://www.gnu.org/licenses/license-list#EPL"))
+
+(define expat
+  (license "Expat"
+           "http://directory.fsf.org/wiki/License:Expat"
+           "https://www.gnu.org/licenses/license-list.html#Expat"))
+
+(define gpl1
+  (license "GPL 1"
+           "https://www.gnu.org/licenses/old-licenses/gpl-1.0.html"
+           #f))
+
+(define gpl1+
+  (license "GPL 1+"
+           "https://www.gnu.org/licenses/old-licenses/gpl-1.0.html"
+           #f))
 
 (define gpl2
   (license "GPL 2"
@@ -122,6 +148,16 @@
   (license "IBMPL 1.0"
            "http://directory.fsf.org/wiki/License:IBMPLv1.0"
            "https://www.gnu.org/licenses/license-list#IBMPL"))
+
+(define lgpl2.0
+  (license "LGPL 2.0"
+           "https://www.gnu.org/licenses/old-licenses/lgpl-2.0.html"
+           "https://www.gnu.org/licenses/why-not-lgpl.html"))
+
+(define lgpl2.0+
+  (license "LGPL 2.0+"
+           "https://www.gnu.org/licenses/old-licenses/lgpl-2.0.html"
+           "https://www.gnu.org/licenses/why-not-lgpl.html"))
 
 (define lgpl2.1
   (license "LGPL 2.1"
