@@ -200,6 +200,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   -n, --dry-run          show what would be done without actually doing it"))
   (display (_ "
   -b, --bootstrap        use the bootstrap Guile to build the profile"))
+  (display (_ "
+      --verbose          produce verbose output"))
   (newline)
   (display (_ "
   -I, --list-installed[=REGEXP]
@@ -242,6 +244,9 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
         (option '(#\b "bootstrap") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'bootstrap? #t result)))
+        (option '("verbose") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'verbose? #t result)))
         (option '(#\I "list-installed") #f #t
                 (lambda (opt name arg result)
                   (cons `(query list-installed ,(or arg ""))
@@ -321,6 +326,7 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
   (define (process-actions opts)
     ;; Process any install/remove/upgrade action from OPTS.
     (let* ((dry-run? (assoc-ref opts 'dry-run?))
+           (verbose? (assoc-ref opts 'verbose?))
            (profile  (assoc-ref opts 'profile))
            (install  (filter-map (match-lambda
                                   (('install . (? store-path?))
@@ -385,7 +391,11 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                                         (basename profile) (+ 1 number))))
                  (if (string=? old-prof prof)
                      (format (current-error-port) (_ "nothing to be done~%"))
-                     (and (build-derivations %store (list prof-drv))
+                     (and (parameterize ((current-build-output-port
+                                          (if verbose?
+                                              (current-error-port)
+                                              (%make-void-port "w"))))
+                            (build-derivations %store (list prof-drv)))
                           (begin
                             (symlink prof name)
                             (when (file-exists? profile)

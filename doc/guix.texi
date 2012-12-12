@@ -235,6 +235,10 @@ Use @var{profile} instead of the user's default profile.
 @itemx -n
 Show what would be done without actually doing it.
 
+@item --verbose
+Produce verbose output.  In particular, emit the environment's build log
+on the standard error port.
+
 @item --bootstrap
 Use the bootstrap Guile to build the profile.  This option is only
 useful to distribution developers.
