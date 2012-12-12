@@ -1,10 +1,5 @@
 dnl -*- Autoconf -*- fragment for the C++ daemon.
 
-AC_ARG_ENABLE([daemon],
-  [AS_HELP_STRING([--enable-daemon], [build the Nix daemon (C++)])],
-  [guix_build_daemon="$enableval"],
-  [guix_build_daemon="no"])
-
 AC_MSG_CHECKING([whether to build daemon])
 AC_MSG_RESULT([$guix_build_daemon])
 

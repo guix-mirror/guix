@@ -30,6 +30,11 @@ AC_ARG_WITH(store-dir,
   [storedir="/nix/store"])
 AC_SUBST(storedir)
 
+AC_ARG_ENABLE([daemon],
+  [AS_HELP_STRING([--enable-daemon], [build the Nix daemon (C++)])],
+  [guix_build_daemon="$enableval"],
+  [guix_build_daemon="no"])
+
 # Prepare a version of $localstatedir that does not contain references
 # to shell variables.
 guix_localstatedir="`eval echo $localstatedir | sed -e "s|NONE|/usr/local|g"`"
@@ -56,7 +61,7 @@ AC_ARG_WITH([nix-prefix],
 
 AC_PATH_PROG([NIX_INSTANTIATE], [nix-instantiate])
 AC_PATH_PROG([NIX_HASH], [nix-hash])
-if test "x$NIX_INSTANTIATE$NIX_HASH" = "x"; then
+if test "x$guix_build_daemon$NIX_INSTANTIATE$NIX_HASH" = "xno"; then
    AC_MSG_ERROR([Nix programs not found; please install Nix or use `--with-nix-prefix'.])
 fi
 
