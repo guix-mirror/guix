@@ -31,9 +31,15 @@ then
     NIX_STORE_DIR="@GUIX_TEST_ROOT@/store"
     NIX_LOCALSTATE_DIR="@GUIX_TEST_ROOT@/var"
     NIX_LOG_DIR="@GUIX_TEST_ROOT@/var/log/nix"
-    NIX_STATE_DIR="@GUIX_TEST_ROOT@/var/nix-$$" # allow for parallel tests
     NIX_DB_DIR="@GUIX_TEST_ROOT@/db"
     NIX_ROOT_FINDER="@abs_top_builddir@/nix/scripts/list-runtime-roots"
+
+    # Choose a PID-dependent name to allow for parallel builds.  Note
+    # that the directory name must be chosen so that the socket's file
+    # name is less than 108-char long (the size of `sun_path' in glibc).
+    # Currently, in Nix builds, we're at ~106 chars...
+    NIX_STATE_DIR="@GUIX_TEST_ROOT@/var/$$" # allow for parallel tests
+
     export NIX_SUBSTITUTERS NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR	\
 	NIX_LOCALSTATE_DIR NIX_LOG_DIR NIX_STATE_DIR NIX_DB_DIR		\
 	NIX_ROOT_FINDER
