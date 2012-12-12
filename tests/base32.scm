@@ -23,14 +23,23 @@
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 popen)
+  #:use-module (ice-9 match)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports))
 
 ;; Test the (guix base32) module.
 
 (define %nix-hash
-  (or (getenv "NIX_HASH")
+  (or (and=> (getenv "NIX_HASH")
+             (match-lambda
+              ("" #f)
+              (val val)))
       "nix-hash"))
+
+(define %have-nix-hash?
+  ;; Note: Use `system', not `system*', because of <http://bugs.gnu.org/13166>.
+  (false-if-exception
+   (zero? (system (string-append %nix-hash " --version")))))
 
 (test-begin "base32")
 
@@ -67,10 +76,9 @@
          ;; Examples from RFC 4648.
          (map string->utf8 '("" "f" "fo" "foo" "foob" "fooba" "foobar"))))
 
-;; The following tests requires `nix-hash' in $PATH.
-(test-skip (if (false-if-exception (system* %nix-hash "--version"))
-               0
-               1))
+;; The following test requires `nix-hash' in $PATH.
+(unless %have-nix-hash?
+  (test-skip 1))
 
 (test-assert "sha256 & bytevector->nix-base32-string"
   (let ((file (search-path %load-path "tests/test.drv")))
