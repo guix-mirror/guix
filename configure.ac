@@ -31,9 +31,9 @@ AC_ARG_WITH(store-dir,
 AC_SUBST(storedir)
 
 AC_ARG_ENABLE([daemon],
-  [AS_HELP_STRING([--enable-daemon], [build the Nix daemon (C++)])],
+  [AS_HELP_STRING([--disable-daemon], [build the Nix daemon (C++)])],
   [guix_build_daemon="$enableval"],
-  [guix_build_daemon="no"])
+  [guix_build_daemon="yes"])
 
 # Prepare a version of $localstatedir that does not contain references
 # to shell variables.
