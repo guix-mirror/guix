@@ -95,14 +95,13 @@ double-precision floating-point arithmetic (53-bit mantissa).")
 (define-public mpc
   (package
    (name "mpc")
-   (version "1.0")
+   (version "1.0.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://www.multiprecision.org/mpc/download/mpc-"
-                  version ".tar.gz"))
+                  "mirror://gnu/mpc/mpc-" version ".tar.gz"))
             (sha256 (base32
-                     "00rxjmkpqnv6zzcyw9aa5w6rzaav32ys87km25zgfcv9i32km5cw"))))
+                     "1zq0fidp1jii2j5k5n9hmx55a6wwid33gjzhimvxq9d5zrf82npd"))))
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)
              ("mpfr" ,mpfr)))
@@ -110,7 +109,11 @@ double-precision floating-point arithmetic (53-bit mantissa).")
 with exact rounding")
    (description
     "GNU MPC is a C library for the arithmetic of complex numbers with
-arbitrarily high precision and correct rounding of the result.  It is built
-upon and follows the same principles as GNU MPFR.")
+arbitrarily high precision and correct rounding of the result. It extends
+the principles of the IEEE-754 standard for fixed precision real floating
+point numbers to complex numbers, providing well-defined semantics for
+every operation. At the same time, speed of operation at high precision
+is a major design goal. The library is built upon and follows the same
+principles as GNU MPFR.")
    (license "LGPLv3+")
    (home-page "http://mpc.multiprecision.org/")))
