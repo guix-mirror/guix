@@ -48,11 +48,12 @@ let
       pkgs.releaseTools.sourceTarball {
         name = "guix-tarball";
         src = <guix>;
-        buildInputs = with pkgs; [ guile ];
+        buildInputs = with pkgs; [ guile sqlite bzip2 git libgcrypt ];
         buildNativeInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
+        preAutoconf = ''git config submodule.gnulib.url "${<gnulib>}"'';
         configureFlags =
-          [ "--with-nix-prefix=${pkgs.nix}"
-            "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
+          [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
+            "--localstatedir=/nix/var/nix"
           ];
       };
 
@@ -62,12 +63,12 @@ let
       let pkgs = import nixpkgs { inherit system; }; in
       pkgs.releaseTools.nixBuild {
         name = "guix";
-        buildInputs = [ pkgs.guile ];
+        buildInputs = with pkgs; [ guile sqlite bzip2 libgcrypt ];
         buildNativeInputs = [ pkgs.pkgconfig ];
         src = jobs.tarball;
         configureFlags =
-          [ "--with-nix-prefix=${pkgs.nix}"
-            "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
+          [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
+            "--localstatedir=/nix/var/nix"
           ];
 
         preBuild =
