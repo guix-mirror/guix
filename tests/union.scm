@@ -64,7 +64,11 @@
                 (bin make)
                 (share (doc (make README))))))
 
-(test-skip (if %store 0 1))
+(test-skip (if (and %store
+                    (false-if-exception
+                     (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)))
+               0
+               1))
 
 (test-assert "union-build"
   (let* ((inputs  (map (match-lambda

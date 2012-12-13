@@ -125,6 +125,8 @@
          (let ((p (pk 'drv d (derivation-path->output-path d))))
            (eq? 'hello (call-with-input-file p read))))))
 
+(unless (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV))
+  (test-skip 1))
 (test-assert "GNU Make, bootstrap"
   ;; GNU Make is the first program built during bootstrap; we choose it
   ;; here so that the test doesn't last for too long.
