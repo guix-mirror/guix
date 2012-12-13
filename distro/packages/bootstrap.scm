@@ -366,6 +366,9 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
   `(("libc" ,%bootstrap-glibc)
     ("gcc" ,%bootstrap-gcc)
     ("binutils" ,%bootstrap-binutils)
-    ("coreutils&co" ,%bootstrap-coreutils&co)))
+    ("coreutils&co" ,%bootstrap-coreutils&co)
+
+    ;; In gnu-build-system.scm, we rely on the availability of Bash.
+    ("bash" ,%bootstrap-coreutils&co)))
 
 ;;; bootstrap.scm ends here

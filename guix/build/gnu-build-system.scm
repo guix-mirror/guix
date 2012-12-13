@@ -90,12 +90,17 @@
                          (append patch-flags (list "--input" p)))))
          patches))
 
-(define* (configure #:key outputs (configure-flags '()) out-of-source?
+(define* (configure #:key inputs outputs (configure-flags '()) out-of-source?
                     #:allow-other-keys)
   (let* ((prefix     (assoc-ref outputs "out"))
          (libdir     (assoc-ref outputs "lib"))
          (includedir (assoc-ref outputs "include"))
-         (flags      `(,(string-append "--prefix=" prefix)
+         (bash       (or (and=> (assoc-ref inputs "bash")
+                                (cut string-append <> "/bin/bash"))
+                         "/bin/sh"))
+         (flags      `(,(string-append "CONFIG_SHELL=" bash)
+                       ,(string-append "SHELL=" bash)
+                       ,(string-append "--prefix=" prefix)
                        "--enable-fast-install"    ; when using Libtool
 
                        ;; Produce multiple outputs when specific output names
@@ -121,10 +126,15 @@
     (format #t "build directory: ~s~%" (getcwd))
     (format #t "configure flags: ~s~%" flags)
 
+    ;; Use BASH to reduce reliance on /bin/sh since it may not always be
+    ;; reliable (see
+    ;; <http://thread.gmane.org/gmane.linux.distributions.nixos/9748>
+    ;; for a summary of the situation.)
+    ;;
     ;; Call `configure' with a relative path.  Otherwise, GCC's build system
     ;; (for instance) records absolute source file names, which typically
     ;; contain the hash part of the `.drv' file, leading to a reference leak.
-    (zero? (apply system*
+    (zero? (apply system* bash
                   (string-append srcdir "/configure")
                   flags))))
 

@@ -774,6 +774,7 @@ identifier SYSTEM."
                     (let* ((binutils (assoc-ref %build-inputs "binutils"))
                            (gcc      (assoc-ref %build-inputs "gcc"))
                            (libc     (assoc-ref %build-inputs "libc"))
+                           (bash     (assoc-ref %build-inputs "bash"))
                            (out      (assoc-ref %outputs "out"))
                            (bindir   (string-append out "/bin"))
                            (triplet  ,(boot-triplet system)))
@@ -790,8 +791,9 @@ identifier SYSTEM."
                         ;; the dynamic linker.
                         (call-with-output-file "gcc"
                           (lambda (p)
-                            (format p "#!/bin/sh
+                            (format p "#!~a/bin/bash
 exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
+                                    bash
                                     gcc triplet
                                     libc libc
                                     ,(glibc-dynamic-linker system))))
@@ -800,7 +802,8 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (native-inputs
      `(("binutils" ,binutils-boot0)
        ("gcc" ,gcc-boot0)
-       ("libc" ,glibc-final)))
+       ("libc" ,glibc-final)
+       ("bash" ,(assoc-ref %boot1-inputs "bash"))))
     (inputs '())))
 
 (define %boot2-inputs
