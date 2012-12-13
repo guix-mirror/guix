@@ -35,6 +35,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix config)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
@@ -61,8 +62,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
          (cut string-append <> "/.guix-profile")))
 
 (define %profile-directory
-  (string-append "/nix/var/nix/profiles/"
-                 "guix/"
+  (string-append %state-directory "/profiles/"
                  (or (and=> (getenv "USER")
                             (cut string-append "per-user/" <>))
                      "default")))
