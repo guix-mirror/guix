@@ -86,6 +86,23 @@ let
       };
 
 
+    build_disable_daemon =
+      { system ? builtins.currentSystem }:
+
+      let
+        pkgs = import nixpkgs { inherit system; };
+        build = jobs.build { inherit system; };
+      in
+        pkgs.lib.overrideDerivation build ({ configureFlags, ... }: {
+          configureFlags = configureFlags ++ [ "--disable-daemon" ];
+          buildInputs = with pkgs; [ guile nixUnstable pkgconfig ];
+
+          # Since we need to talk to a running daemon, we need to escape
+          # the chroot.
+          preConfigure = "export NIX_REMOTE=daemon";
+          __noChroot = true;
+        });
+
     # Jobs to test the distro.
     distro = {
       hello =
