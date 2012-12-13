@@ -81,11 +81,6 @@ let
                distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz
           '';
 
-        # XXX: Since we need to talk to a running daemon, for the benefit of
-        # `nixpkgs-derivation*' & co., we need to escape the chroot.
-        preConfigure = "export NIX_REMOTE=daemon";
-        __noChroot = true;
-
         inherit succeedOnFailure keepBuildDirectory
           buildOutOfSourceTree;
       };
