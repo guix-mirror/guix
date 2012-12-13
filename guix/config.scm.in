@@ -46,7 +46,8 @@
   "@storedir@")
 
 (define %state-directory
-  "@guix_localstatedir@")
+  ;; This must match `NIX_STATE_DIR' as defined in `daemon.am'.
+  "@guix_localstatedir@/nix")
 
 (define %system
   "@guix_system@")
