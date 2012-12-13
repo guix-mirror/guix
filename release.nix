@@ -50,7 +50,7 @@ let
         src = <guix>;
         buildInputs = with pkgs; [ guile sqlite bzip2 git libgcrypt ];
         buildNativeInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
-        preAutoconf = ''git config submodule.gnulib.url "${<gnulib>}"'';
+        preAutoconf = ''git config submodule.nix.url "${<nix>}"'';
         configureFlags =
           [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
             "--localstatedir=/nix/var/nix"
