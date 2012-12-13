@@ -68,7 +68,9 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
                      "default")))
 
 (define %current-profile
-  (string-append %profile-directory "/profile"))
+  ;; Call it `guix-profile', not `profile', to allow Guix profiles to
+  ;; coexist with Nix profiles.
+  (string-append %profile-directory "/guix-profile"))
 
 (define (profile-manifest profile)
   "Return the PROFILE's manifest."
