@@ -33,3 +33,33 @@ AC_DEFUN([GUIX_ASSERT_LIBGCRYPT_USABLE],
    if test "x$guix_cv_libgcrypt_usable_p" != "xyes"; then
      AC_MSG_ERROR([GNU libgcrypt does not appear to be usable; see `--with-libgcrypt-prefix' and `README'.])
    fi])
+
+dnl GUIX_SYSTEM_TYPE
+dnl
+dnl Determine the Guix host system type, and store it in the
+dnl `guix_system' variable.
+AC_DEFUN([GUIX_SYSTEM_TYPE], [
+  AC_REQUIRE([AC_CANONICAL_HOST])
+  AC_ARG_WITH(system, AC_HELP_STRING([--with-system=SYSTEM],
+    [Platform identifier (e.g., `i686-linux').]),
+    [guix_system="$withval"],
+    [case "$host_cpu" in
+       i*86)
+	  machine_name="i686";;
+       amd64)
+	  machine_name="x86_64";;
+       *)
+	  machine_name="$host_cpu";;
+     esac
+
+     case "$host_os" in
+       linux-gnu*)
+	  # For backward compatibility, strip the `-gnu' part.
+	  guix_system="$machine_name-linux";;
+       *)
+	  # Strip the version number from names such as `gnu0.3',
+	  # `darwin10.2.0', etc.
+	  guix_system="$machine_name-`echo $host_os | "$SED" -e's/@<:@0-9.@:>@*$//g'`";;
+     esac])
+  AC_SUBST([guix_system])
+])

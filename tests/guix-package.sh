@@ -39,31 +39,35 @@ test -L "$profile" && test -L "$profile-1-link"
 ! test -f "$profile-2-link"
 test -f "$profile/bin/guile"
 
-guix-package -b -p "$profile"						\
-    -i `guix-build -e '(@@ (distro packages base) gnu-make-boot0)'`
-test -L "$profile-2-link"
-test -f "$profile/bin/make" && test -f "$profile/bin/guile"
+# Check whether we have network access.
+if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
+then
+    guix-package -b -p "$profile"						\
+	-i `guix-build -e '(@@ (distro packages base) gnu-make-boot0)'`
+    test -L "$profile-2-link"
+    test -f "$profile/bin/make" && test -f "$profile/bin/guile"
 
 
-# Check whether `--list-installed' works.
-# XXX: Change the tests when `--install' properly extracts the package
-# name and version string.
-installed="`guix-package -p "$profile" --list-installed | cut -f1 | xargs echo | sort`"
-case "x$installed" in
-    "guile-bootstrap make-boot0")
-	true;;
-    "make-boot0 guile-bootstrap")
-	true;;
-    "*")
-        false;;
-esac
+    # Check whether `--list-installed' works.
+    # XXX: Change the tests when `--install' properly extracts the package
+    # name and version string.
+    installed="`guix-package -p "$profile" --list-installed | cut -f1 | xargs echo | sort`"
+    case "x$installed" in
+	"guile-bootstrap make-boot0")
+	    true;;
+	"make-boot0 guile-bootstrap")
+	    true;;
+	"*")
+            false;;
+    esac
 
-test "`guix-package -p "$profile" -I 'g.*e' | cut -f1`" = "guile-bootstrap"
+    test "`guix-package -p "$profile" -I 'g.*e' | cut -f1`" = "guile-bootstrap"
 
-# Remove a package.
-guix-package -b -p "$profile" -r "guile-bootstrap"
-test -L "$profile-3-link"
-test -f "$profile/bin/make" && ! test -f "$profile/bin/guile"
+    # Remove a package.
+    guix-package -b -p "$profile" -r "guile-bootstrap"
+    test -L "$profile-3-link"
+    test -f "$profile/bin/make" && ! test -f "$profile/bin/guile"
+fi
 
 # Make sure the `:' syntax works.
 guix-package -b -i "libsigsegv:lib" -n

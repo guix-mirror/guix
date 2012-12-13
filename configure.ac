@@ -12,13 +12,33 @@ AM_INIT_AUTOMAKE([1.11 gnu silent-rules subdir-objects \
 AC_CONFIG_SRCDIR([guix.scm])
 AC_CONFIG_MACRO_DIR([m4])
 
+dnl For the C++ code.  This must be used early.
+AC_USE_SYSTEM_EXTENSIONS
+
 AM_GNU_GETTEXT([external])
 AM_GNU_GETTEXT_VERSION([0.18.1])
 
 guilemoduledir="${datarootdir}/guile/site/2.0"
 AC_SUBST([guilemoduledir])
 
-AC_CANONICAL_HOST
+GUIX_SYSTEM_TYPE
+
+AC_ARG_WITH(store-dir,
+  AC_HELP_STRING([--with-store-dir=PATH],
+    [path of the store (defaults to /nix/store)]),
+  [storedir="$withval"],
+  [storedir="/nix/store"])
+AC_SUBST(storedir)
+
+AC_ARG_ENABLE([daemon],
+  [AS_HELP_STRING([--disable-daemon], [build the Nix daemon (C++)])],
+  [guix_build_daemon="$enableval"],
+  [guix_build_daemon="yes"])
+
+# Prepare a version of $localstatedir that does not contain references
+# to shell variables.
+guix_localstatedir="`eval echo $localstatedir | sed -e "s|NONE|/usr/local|g"`"
+AC_SUBST([guix_localstatedir])
 
 PKG_CHECK_MODULES([GUILE], [guile-2.0])
 AC_PATH_PROG([GUILE], [guile])
@@ -41,7 +61,7 @@ AC_ARG_WITH([nix-prefix],
 
 AC_PATH_PROG([NIX_INSTANTIATE], [nix-instantiate])
 AC_PATH_PROG([NIX_HASH], [nix-hash])
-if test "x$NIX_INSTANTIATE$NIX_HASH" = "x"; then
+if test "x$guix_build_daemon$NIX_INSTANTIATE$NIX_HASH" = "xno"; then
    AC_MSG_ERROR([Nix programs not found; please install Nix or use `--with-nix-prefix'.])
 fi
 
@@ -83,6 +103,9 @@ AC_SUBST([LIBGCRYPT_PREFIX])
 
 GUIX_ASSERT_LIBGCRYPT_USABLE
 
+AC_CACHE_SAVE
+
+m4_include([config-daemon.ac])
 
 AC_CONFIG_FILES([Makefile
                  po/Makefile.in
@@ -91,9 +114,10 @@ AC_CONFIG_FILES([Makefile
 		 guix-download
 		 guix-import
 		 guix-package
-		 pre-inst-env])
+		 pre-inst-env
+		 test-env])
 
 AC_CONFIG_COMMANDS([commands-exec],
-  [chmod +x guix-build guix-download guix-import guix-package pre-inst-env])
+  [chmod +x guix-build guix-download guix-import guix-package pre-inst-env test-env])
 
 AC_OUTPUT

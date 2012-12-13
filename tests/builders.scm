@@ -50,9 +50,13 @@
               (list name (package-derivation %store package))))
             (@@ (distro packages base) %boot0-inputs))))
 
+(define network-reachable?
+  (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)))
+
 
 (test-begin "builders")
 
+(unless network-reachable? (test-skip 1))
 (test-assert "url-fetch"
   (let* ((url      '("http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz"
                      "ftp://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz"))
@@ -69,6 +73,7 @@
   (and (build-system? gnu-build-system)
        (eq? gnu-build (build-system-builder gnu-build-system))))
 
+(unless network-reachable? (test-skip 1))
 (test-assert "gnu-build"
   (let* ((url      "http://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz")
          (hash     (nix-base32-string->bytevector

@@ -76,7 +76,7 @@
     (and (equal? b1 b2)
          (equal? d1 d2))))
 
-(test-skip (if %store 0 4))
+(test-skip (if %store 0 11))
 
 (test-assert "add-to-store, flat"
   (let* ((file (search-path %load-path "language/tree-il/spec.scm"))
@@ -290,8 +290,9 @@
 
 (define %coreutils
   (false-if-exception
-   (or (package-derivation %store %bootstrap-coreutils&co)
-       (nixpkgs-derivation "coreutils"))))
+   (and (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)
+        (or (package-derivation %store %bootstrap-coreutils&co)
+            (nixpkgs-derivation "coreutils")))))
 
 (test-skip (if %coreutils 0 1))
 
@@ -385,6 +386,7 @@
            (and (equal? '(hello) (call-with-input-file one read))
                 (equal? '(world) (call-with-input-file two read)))))))
 
+(test-skip (if %coreutils 0 1))
 (test-assert "build-expression->derivation with one input"
   (let* ((builder    '(call-with-output-file %output
                         (lambda (p)

@@ -48,11 +48,12 @@ let
       pkgs.releaseTools.sourceTarball {
         name = "guix-tarball";
         src = <guix>;
-        buildInputs = with pkgs; [ guile ];
+        buildInputs = with pkgs; [ guile sqlite bzip2 git libgcrypt ];
         buildNativeInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
+        preAutoconf = ''git config submodule.gnulib.url "${<gnulib>}"'';
         configureFlags =
-          [ "--with-nix-prefix=${pkgs.nix}"
-            "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
+          [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
+            "--localstatedir=/nix/var/nix"
           ];
       };
 
@@ -62,12 +63,12 @@ let
       let pkgs = import nixpkgs { inherit system; }; in
       pkgs.releaseTools.nixBuild {
         name = "guix";
-        buildInputs = [ pkgs.guile ];
+        buildInputs = with pkgs; [ guile sqlite bzip2 libgcrypt ];
         buildNativeInputs = [ pkgs.pkgconfig ];
         src = jobs.tarball;
         configureFlags =
-          [ "--with-nix-prefix=${pkgs.nix}"
-            "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
+          [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
+            "--localstatedir=/nix/var/nix"
           ];
 
         preBuild =
@@ -80,15 +81,27 @@ let
                distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz
           '';
 
-        # XXX: Since we need to talk to a running daemon, for the benefit of
-        # `nixpkgs-derivation*' & co., we need to escape the chroot.
-        preConfigure = "export NIX_REMOTE=daemon";
-        __noChroot = true;
-
         inherit succeedOnFailure keepBuildDirectory
           buildOutOfSourceTree;
       };
 
+
+    build_disable_daemon =
+      { system ? builtins.currentSystem }:
+
+      let
+        pkgs = import nixpkgs { inherit system; };
+        build = jobs.build { inherit system; };
+      in
+        pkgs.lib.overrideDerivation build ({ configureFlags, ... }: {
+          configureFlags = configureFlags ++ [ "--disable-daemon" ];
+          buildInputs = with pkgs; [ guile nixUnstable pkgconfig ];
+
+          # Since we need to talk to a running daemon, we need to escape
+          # the chroot.
+          preConfigure = "export NIX_REMOTE=daemon";
+          __noChroot = true;
+        });
 
     # Jobs to test the distro.
     distro = {

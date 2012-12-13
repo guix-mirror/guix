@@ -1,0 +1,68 @@
+#!/bin/sh
+# Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
+# Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+#
+# This file is part of Guix.
+#
+# Guix is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
+#
+# Guix is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+#
+# Update the local copy of Nix source code needed to build the daemon.
+# Assume GNU Coreutils and Git are available.
+#
+
+top_srcdir="${top_srcdir:-..}"
+
+log()
+{
+    echo "sync-with-upstream: $@" >&2
+}
+
+# checked_in_p FILE
+checked_in_p()
+{
+    ( cd "$top_srcdir" ;
+	git ls-tree HEAD -- "nix/$1" | grep "$1" > /dev/null )
+}
+
+if [ ! -d "$top_srcdir/build-aux" ]
+then
+    log "\`$top_srcdir' is not the valid top-level source directory"
+    exit 1
+fi
+
+set -e
+for upstream_file in `cd "$top_srcdir/nix-upstream/src" ;
+  find . -name \*.c -or -name \*.h -or -name \*.cc -or -name \*.hh \
+         -or -name \*.cpp -or -name \*.hpp -or -name \*.sql`
+do
+    if grep "$upstream_file" "$top_srcdir/daemon.am" > /dev/null
+    then
+    	if checked_in_p "$upstream_file"
+    	then
+    	    log "skipping \`$upstream_file', which has a checked-in copy"
+    	else
+    	    ( cd "$top_srcdir/nix-upstream/src" && \
+    		cp -v --parents "$upstream_file" ../../nix )
+    	fi
+    else
+    	log "skipping \`$upstream_file', which is not used"
+    fi
+done
+
+cp -v "$top_srcdir/nix-upstream/"{COPYING,AUTHORS} "$top_srcdir/nix"
+
+# Substitutions.
+sed -i "$top_srcdir/nix/libstore/gc.cc"					\
+    -e 's|/nix/find-runtime-roots\.pl|/guix/list-runtime-roots|g'

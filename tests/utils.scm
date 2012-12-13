@@ -18,7 +18,7 @@
 
 (define-module (test-utils)
   #:use-module (guix utils)
-  #:use-module ((guix store) #:select (store-path-package-name))
+  #:use-module ((guix store) #:select (%store-prefix store-path-package-name))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64)
@@ -127,7 +127,8 @@
 (test-equal "store-path-package-name"
   "bash-4.2-p24"
   (store-path-package-name
-   "/nix/store/qvs2rj2ia5vci3wsdb7qvydrmacig4pg-bash-4.2-p24"))
+   (string-append (%store-prefix)
+                  "/qvs2rj2ia5vci3wsdb7qvydrmacig4pg-bash-4.2-p24")))
 
 (test-end)
 

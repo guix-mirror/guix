@@ -50,3 +50,16 @@ config.cache
 /guix-package
 /guix/config.scm
 /guix-import
+/nix/nix-daemon/nix-daemon.cc
+/nix/config.h
+/nix/config.h.in
+stamp-h[0-9]
+/nix/AUTHORS
+/nix/COPYING
+/libformat.a
+/libstore.a
+/libutil.a
+/guix-daemon
+/test-tmp
+/nix/scripts/list-runtime-roots
+/test-env

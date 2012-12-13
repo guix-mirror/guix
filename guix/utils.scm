@@ -350,7 +350,8 @@ returned by `config.guess'."
 
 (define %current-system
   ;; System type as expected by Nix, usually ARCHITECTURE-KERNEL.
-  (make-parameter (gnu-triplet->nix-system %host-type)))
+  ;; By default, this is equal to (gnu-triplet->nix-system %host-type).
+  (make-parameter %system))
 
 (define (package-name->name+version name)
   "Given NAME, a package name like \"foo-0.9.1b\", return two values:

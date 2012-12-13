@@ -1,0 +1,116 @@
+#!@GUILE@ -ds
+!#
+;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
+;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;;
+;;; This file is part of Guix.
+;;;
+;;; Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+;;;
+;;; List files being used at run time; these files are garbage collector
+;;; roots.  This is equivalent to `find-runtime-roots.pl' in Nix.
+;;;
+
+(use-modules (ice-9 ftw)
+             (ice-9 regex)
+             (ice-9 rdelim)
+             (ice-9 popen)
+             (srfi srfi-1)
+             (srfi srfi-26))
+
+(define %proc-directory
+  ;; Mount point of Linuxish /proc file system.
+  "/proc")
+
+(define (proc-file-roots dir file)
+  "Return a one-element list containing the file pointed to by DIR/FILE,
+or the empty list."
+  (or (and=> (false-if-exception (readlink (string-append dir "/" file)))
+             list)
+      '()))
+
+(define proc-exe-roots (cut proc-file-roots <> "exe"))
+(define proc-cwd-roots (cut proc-file-roots <> "cwd"))
+
+(define (proc-fd-roots dir)
+  "Return the list of store files referenced by DIR, which is a
+/proc/XYZ directory."
+  (let ((dir (string-append dir "/fd")))
+    (filter-map (lambda (file)
+                  (let ((target (false-if-exception
+                                 (readlink (string-append dir "/" file)))))
+                    (and target
+                         (string-prefix? "/" target)
+                         target)))
+                (scandir dir string->number))))
+
+(define (proc-maps-roots dir)
+  "Return the list of store files referenced by DIR, which is a
+/proc/XYZ directory."
+  (define %file-mapping-line
+    (make-regexp "^.*[[:blank:]]+/([^ ]+)$"))
+
+  (call-with-input-file (string-append dir "/maps")
+    (lambda (maps)
+      (let loop ((line  (read-line maps))
+                 (roots '()))
+        (cond ((eof-object? line)
+               roots)
+              ((regexp-exec %file-mapping-line line)
+               =>
+               (lambda (match)
+                 (let ((file (string-append "/"
+                                            (match:substring match 1))))
+                   (loop (read-line maps)
+                         (cons file roots)))))
+              (else
+               (loop (read-line maps) roots)))))))
+
+(define (lsof-roots)
+  "Return the list of roots as found by calling `lsof'."
+  (catch 'system
+    (lambda ()
+      (let ((pipe (open-pipe* OPEN_READ "lsof" "-n" "-w" "-F" "n")))
+        (define %file-rx
+          (make-regexp "^n/(.*)$"))
+
+        (let loop ((line  (read-line pipe))
+                   (roots '()))
+          (cond ((eof-object? line)
+                 (begin
+                   (close-pipe pipe)
+                   roots))
+                ((regexp-exec %file-rx line)
+                 =>
+                 (lambda (match)
+                   (loop (read-line pipe)
+                         (cons (string-append "/"
+                                              (match:substring match 1))
+                               roots))))
+                (else
+                 (loop (read-line pipe) roots))))))
+    (lambda _
+      '())))
+
+(let ((proc (format #f "~a/~a" %proc-directory (getpid))))
+  (for-each (cut simple-format #t "~a~%" <>)
+            (delete-duplicates
+             (let ((proc-roots (if (file-exists? proc)
+                                   (append (proc-exe-roots proc)
+                                           (proc-cwd-roots proc)
+                                           (proc-fd-roots proc)
+                                           (proc-maps-roots proc))
+                                   '())))
+               (append proc-roots (lsof-roots))))))

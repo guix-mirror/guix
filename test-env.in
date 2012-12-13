@@ -1,0 +1,59 @@
+#!/bin/sh
+
+# Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
+# Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+#
+# This file is part of Guix.
+#
+# Guix is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or (at
+# your option) any later version.
+#
+# Guix is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+# Usage: ./test-env COMMAND ARG...
+#
+# Run the daemon in the build directory, and run COMMAND within
+# `pre-inst-env'.  This is used to run unit tests with the just-built
+# daemon, unless `--disable-daemon' was passed at configure time.
+
+if [ -x "@abs_top_builddir@/guix-daemon" ]
+then
+    NIX_SUBSTITUTERS=""		# don't resort to substituters
+    NIX_IGNORE_SYMLINK_STORE=1	# in case the store is a symlink
+    NIX_STORE_DIR="@GUIX_TEST_ROOT@/store"
+    NIX_LOCALSTATE_DIR="@GUIX_TEST_ROOT@/var"
+    NIX_LOG_DIR="@GUIX_TEST_ROOT@/var/log/nix"
+    NIX_DB_DIR="@GUIX_TEST_ROOT@/db"
+    NIX_ROOT_FINDER="@abs_top_builddir@/nix/scripts/list-runtime-roots"
+
+    # Choose a PID-dependent name to allow for parallel builds.  Note
+    # that the directory name must be chosen so that the socket's file
+    # name is less than 108-char long (the size of `sun_path' in glibc).
+    # Currently, in Nix builds, we're at ~106 chars...
+    NIX_STATE_DIR="@GUIX_TEST_ROOT@/var/$$" # allow for parallel tests
+
+    export NIX_SUBSTITUTERS NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR	\
+	NIX_LOCALSTATE_DIR NIX_LOG_DIR NIX_STATE_DIR NIX_DB_DIR		\
+	NIX_ROOT_FINDER
+
+    # Do that because store.scm calls `canonicalize-path' on it.
+    mkdir -p "$NIX_STORE_DIR"
+
+    # Launch the daemon without chroot support because is may be
+    # unavailable, for instance if we're not running as root.
+    "@abs_top_builddir@/guix-daemon" --disable-chroot &
+
+    daemon_pid=$!
+    trap "kill $daemon_pid ; rm -rf $NIX_STATE_DIR" EXIT
+fi
+
+"@abs_top_builddir@/pre-inst-env" "$@"
+exit $?

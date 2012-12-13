@@ -186,10 +186,10 @@ TEST_EXTENSIONS = .scm .sh
 
 AM_TESTS_ENVIRONMENT = abs_top_srcdir="$(abs_top_srcdir)"
 
-SCM_LOG_COMPILER = $(top_builddir)/pre-inst-env $(GUILE)
+SCM_LOG_COMPILER = $(top_builddir)/test-env $(GUILE)
 AM_SCM_LOG_FLAGS = --no-auto-compile -L "$(top_srcdir)"
 
-SH_LOG_COMPILER = $(top_builddir)/pre-inst-env $(SHELL)
+SH_LOG_COMPILER = $(top_builddir)/test-env $(SHELL)
 AM_SH_LOG_FLAGS = -x -e
 
 EXTRA_DIST =					\
@@ -203,6 +203,7 @@ EXTRA_DIST =					\
   srfi/srfi-64.upstream.scm			\
   tests/test.drv				\
   build-aux/config.rpath			\
+  bootstrap					\
   release.nix					\
   $(TESTS)
 
@@ -231,7 +232,14 @@ SUBDIRS = po
 info_TEXINFOS = doc/guix.texi
 EXTRA_DIST += doc/fdl-1.3.texi
 
+if BUILD_DAEMON
+
+include daemon.am
+
+endif BUILD_DAEMON
+
 ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --with-libgcrypt-prefix="$(LIBGCRYPT_PREFIX)"	\
-  --with-nix-prefix="$(NIX_PREFIX)"
+  --with-nix-prefix="$(NIX_PREFIX)"		\
+  --enable-daemon
