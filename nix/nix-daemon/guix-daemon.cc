@@ -152,6 +152,10 @@ main (int argc, char *argv[])
 
   settings.processEnvironment ();
 
+  /* FIXME: Disable substitutes until we have something that works.  */
+  settings.useSubstitutes = false;
+  settings.substituters.clear ();
+
   argp_parse (&argp, argc, argv, 0, 0, 0);
 
   argvSaved = argv;
