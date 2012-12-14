@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages cpio)
+  #:use-module (guix licenses)
   #:use-module (distro)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -54,4 +55,4 @@ default, cpio creates binary format archives, for compatibility with
 older cpio programs. When extracting from archives, cpio automatically
 recognizes which kind of archive it is reading and can read archives
 created on machines with a different byte-order.")
-    (license "GPLv3+")))
+    (license gpl3+)))

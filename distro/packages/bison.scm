@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages bison)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -53,4 +54,4 @@ grammars ought to work with Bison with no change.  Anyone
 familiar with Yacc should be able to use Bison with little
 trouble.  You need to be fluent in C or C++ programming in order
 to use Bison.")
-    (license "GPLv3+")))
+    (license gpl3+)))

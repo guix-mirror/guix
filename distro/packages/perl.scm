@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages perl)
+  #:use-module (guix licenses)
   #:use-module (distro)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -71,4 +72,4 @@
      "Perl 5 is a highly capable, feature-rich programming language with over
 24 years of development.")
     (home-page "http://www.perl.org/")
-    (license "GPLv1+")))                          ; or "Artistic"
+    (license gpl1+)))                          ; or "Artistic"

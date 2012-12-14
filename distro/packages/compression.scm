@@ -17,6 +17,8 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages compression)
+  #:use-module ((guix licenses)
+                #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -57,9 +59,7 @@ currently used in zlib essentially never expands the data. (LZW can double or
 triple the file size in extreme cases.)  zlib's memory footprint is also
 independent of the input data and can be reduced, if necessary, at some cost
 in compression.")
-
-    ;; See <http://zlib.net/zlib_license.html>.
-    (license "permissive")))
+    (license license:zlib)))
 
 (define-public gzip
   (package
@@ -85,7 +85,7 @@ We developed this program as a replacement for compress because of the Unisys
 and IBM patents covering the LZW algorithm used by compress.  These patents
 made it impossible for us to use compress, and we needed a replacement.  The
 superior compression ratio of gzip is just a bonus.")
-   (license "GPLv3+")
+   (license license:gpl3+)
    (home-page "http://www.gnu.org/software/gzip/")))
 
 (define-public bzip2
@@ -142,7 +142,8 @@ compressor.  It typically compresses files to within 10% to 15% of the best
 available techniques (the PPM family of statistical compressors), whilst
 being around twice as fast at compression and six times faster at
 decompression.")
-      (license "BSD-style")
+      (license (license:bsd-style "file://LICENSE"
+                                  "See LICENSE in the distribution."))
       (home-page "http://www.bzip.org/"))))
 
 (define-public xz
@@ -169,7 +170,7 @@ been modified quite a lot to be suitable for XZ Utils.  The primary
 compression algorithm is currently LZMA2, which is used inside the .xz
 container format.  With typical files, XZ Utils create 30 % smaller output
 than gzip and 15 % smaller output than bzip2.")
-   (license '("GPLv2+" "LGPLv2.1+"))              ; bits of both
+   (license '(license:gpl2+ license:lgpl2.1+))              ; bits of both
    (home-page "http://tukaani.org/xz/")))
 
 (define-public lzo
@@ -195,4 +196,4 @@ compression ratio.
 
 LZO is written in ANSI C.  Both the source code and the compressed data
 format are designed to be portable across platforms.")
-    (license "GPLv2+")))
+    (license license:gpl2+)))

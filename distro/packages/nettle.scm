@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages nettle)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -60,4 +61,4 @@ cryptographic libraries around.  \nNettle tries to avoid this problem by
 doing one thing, the low-level crypto stuff, and providing a simple but
 general interface to it.  In particular, Nettle doesn't do algorithm
 selection.  It doesn't do memory allocation. It doesn't do any I/O.")
-    (license "GPLv2+")))
+    (license gpl2+)))

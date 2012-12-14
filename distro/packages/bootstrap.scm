@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages bootstrap)
+  #:use-module (guix licenses)
   #:use-module (distro)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -191,7 +192,7 @@ $out/bin/guile --version~%"
      (synopsis "Bootstrap Guile")
      (description "Pre-built Guile for bootstrapping purposes.")
      (home-page #f)
-     (license "LGPLv3+"))))
+     (license lgpl3+))))
 
 (define %bootstrap-base-url
   ;; This is where the initial binaries come from.

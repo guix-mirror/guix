@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages flex)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -55,4 +56,6 @@ can be compiled and linked to produce an executable. When the executable
 is run, it analyzes its input for occurrences of text matching the
 regular expressions for each rule. Whenever it finds a match, it
 executes the corresponding C code.")
-    (license "BSD")))
+    (license (bsd-style "file://COPYING"
+                        "See COPYING in the distribution."))))
+

@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages readline)
+  #:use-module (guix licenses)
   #:use-module (distro)
   #:use-module (distro packages ncurses)
   #:use-module (guix packages)
@@ -72,5 +73,5 @@ expansion on previous commands.
 The history facilites are also placed into a separate library, the History
 library, as part of the build process.  The History library may be used
 without Readline in applications which desire its capabilities.")
-   (license "GPLv3+")
+   (license gpl3+)
    (home-page "http://savannah.gnu.org/projects/readline/")))

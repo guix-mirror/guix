@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages libsigsegv)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -44,4 +45,4 @@ currently not available. Catching and handling a page fault is a useful
 technique for implementing pageable virtual memory, memory-mapped access to
 persistent databases, generational garbage collectors, stack overflow
 handlers, distributed shared memory, and more.")
-   (license "GPLv2+")))
+   (license gpl2+)))

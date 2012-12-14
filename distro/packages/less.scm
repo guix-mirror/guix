@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages less)
+  #:use-module (guix licenses)
   #:use-module (distro packages ncurses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -47,4 +48,4 @@ have to read the entire input file before starting, so with large input
 files it starts up faster than text editors like vi. Less uses
 termcap (or terminfo on some systems), so it can run on a variety of
 terminals. There is even limited support for hardcopy terminals.")
-    (license "GPLv3+"))) ; some files are under GPLv2+
+    (license gpl3+))) ; some files are under GPLv2+

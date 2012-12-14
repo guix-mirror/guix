@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages lout)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -127,5 +128,5 @@ extended with definitions which are very much easier to write than troff of
 TeX macros because Lout is a high-level, purely functional language, the
 outcome of an eight-year research project that went back to the
 beginning.")
-    (license "GPLv3+")
+    (license gpl3+)
     (home-page "http://savannah.nongnu.org/projects/lout/"))))

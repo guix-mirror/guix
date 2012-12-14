@@ -18,7 +18,9 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages linux)
-  #:use-module (distro packages compression)
+  #:use-module (guix licenses)
+  #:use-module ((distro packages compression)
+                #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (distro packages flex)
   #:use-module (distro packages ncurses)
   #:use-module (distro packages perl)
@@ -107,7 +109,7 @@
 Pluggable authentication modules are small shared object files that can
 be used through the PAM API to perform tasks, like authenticating a user
 at login.  Local and dynamic reconfiguration are its key features")
-    (license "BSD")))
+    (license bsd-3)))
 
 (define-public psmisc
   (package
@@ -130,7 +132,7 @@ at login.  Local and dynamic reconfiguration are its key features")
      "This PSmisc package is a set of some small useful utilities that
 use the proc filesystem. We're not about changing the world, but
 providing the system administrator with some help in common tasks.")
-    (license "GPLv2+")))
+    (license gpl2+)))
 
 (define-public util-linux
   (package
@@ -156,7 +158,7 @@ providing the system administrator with some help in common tasks.")
                        ;; Allow 'patch-shebang' to do its work.
                        (("@PERL@") "/bin/perl"))))
                  %standard-phases)))
-    (inputs `(("zlib" ,zlib)
+    (inputs `(("zlib" ,guix:zlib)
               ("ncurses" ,ncurses)
               ("perl" ,perl)))
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
@@ -167,5 +169,5 @@ providing the system administrator with some help in common tasks.")
     ;; Note that util-linux doesn't use the same license for all the
     ;; code. GPLv2+ is the default license for a code without an
     ;; explicitly defined license.
-    (license '("GPLv3+" "GPLv2+" "GPLv2" "LGPLv2+"
-               "BSD-original" "Public Domain"))))
+    (license '(gpl3+ gpl2+ gpl2 lgpl2.0+
+               bsd-4 public-domain))))

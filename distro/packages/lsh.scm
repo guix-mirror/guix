@@ -17,13 +17,15 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages lsh)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (distro)
   #:use-module (distro packages m4)
   #:use-module (distro packages linux)
-  #:use-module (distro packages compression)
+  #:use-module ((distro packages compression)
+                #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (distro packages multiprecision)
   #:use-module (distro packages readline)
   #:use-module (distro packages gperf)
@@ -45,7 +47,7 @@
     (home-page "http://liboop.ofb.net/")
     (synopsis "`liboop', an event loop library")
     (description "liboop is an event loop library.")
-    (license "LGPLv2.1+")))
+    (license lgpl2.1+)))
 
 (define-public lsh
   (package
@@ -65,7 +67,7 @@
        ("m4" ,m4)
        ("readline" ,readline)
        ("liboop" ,liboop)
-       ("zlib" ,zlib)
+       ("zlib" ,guix:zlib)
        ("gmp" ,gmp)
        ("guile" ,guile-final)
        ("gperf" ,gperf)
@@ -122,4 +124,4 @@
      "lsh is a free implementation (in the GNU sense) of the ssh
 version 2 protocol, currently being standardised by the IETF
 SECSH working group.")
-    (license "GPLv2+")))
+    (license gpl2+)))

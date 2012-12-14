@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages ddrescue)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -56,4 +57,4 @@ the same output file, you will probably obtain a complete and error-free
 file.  This is so because the probability of having damaged areas at the
 same places on different input files is very low.  Using the logfile,
 only the needed blocks are read from the second and successive copies.")
-    (license "GPLv3+")))
+    (license gpl3+)))

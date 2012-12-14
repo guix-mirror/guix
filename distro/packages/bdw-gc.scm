@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages bdw-gc)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -56,4 +57,4 @@ C or C++ programs, though that is not its primary goal.")
 
    ;; permissive X11-style license:
    ;; http://www.hpl.hp.com/personal/Hans_Boehm/gc/license.txt
-   (license "X11")))
+   (license x11)))

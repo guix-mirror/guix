@@ -18,6 +18,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages base)
+  #:use-module (guix licenses)
   #:use-module (distro)
   #:use-module (distro packages bash)
   #:use-module (distro packages bootstrap)
@@ -61,7 +62,7 @@
    (synopsis "GNU Hello")
    (description "Yeah...")
    (home-page "http://www.gnu.org/software/hello/")
-   (license "GPLv3+")))
+   (license gpl3+)))
 
 (define-public grep
   (package
@@ -80,7 +81,7 @@
     "The grep command searches one or more input files for lines containing a
 match to a specified pattern.  By default, grep prints the matching
 lines.")
-   (license "GPLv3+")
+   (license gpl3+)
    (home-page "http://www.gnu.org/software/grep/")))
 
 (define-public sed
@@ -102,7 +103,7 @@ Instead, it is used to filter text, i.e., it takes text input and performs
 some operation (or set of operations) on it and outputs the modified text.
 Sed is typically used for extracting part of a file using pattern matching or
 substituting multiple occurrences of a string within a file.")
-   (license "GPLv3+")
+   (license gpl3+)
    (home-page "http://www.gnu.org/software/sed/")))
 
 (define-public tar
@@ -132,7 +133,7 @@ tape.  The name \"Tar\" comes from this use; it stands for tape archiver.
 Despite the utility's name, Tar can direct its output to available devices,
 files, or other programs (using pipes), it can even access remote devices or
 files (as archives).")
-   (license "GPLv3+")
+   (license gpl3+)
    (home-page "http://www.gnu.org/software/tar/")))
 
 (define-public patch
@@ -158,7 +159,7 @@ files (as archives).")
     "GNU Patch takes a patch file containing a difference listing produced by
 the diff program and applies those differences to one or more original files,
 producing patched versions.")
-   (license "GPLv3+")
+   (license gpl3+)
    (home-page "http://savannah.gnu.org/projects/patch/")))
 
 (define-public diffutils
@@ -203,7 +204,7 @@ produce a merged file that contains both persons' changes together with
 warnings about conflicts.
 
 You can use the sdiff command to merge two files interactively.")
-   (license "GPLv3+")
+   (license gpl3+)
    (home-page "http://www.gnu.org/software/diffutils/")))
 
 (define-public findutils
@@ -245,7 +246,7 @@ The tools supplied with this package are:
   * updatedb - update a file name database;
   * xargs - build and execute command lines from standard input.
 ")
-   (license "GPLv3+")
+   (license gpl3+)
    (home-page "http://www.gnu.org/software/findutils/")))
 
 (define-public coreutils
@@ -271,7 +272,7 @@ operating system")
     "The GNU Core Utilities are the basic file, shell and text manipulation
 utilities of the GNU operating system.  These are the core utilities which
 are expected to exist on every operating system.")
-   (license "GPLv3+")
+   (license gpl3+)
    (home-page "http://www.gnu.org/software/coreutils/")))
 
 (define-public gnu-make
@@ -300,7 +301,7 @@ Make gets its knowledge of how to build your program from a file called the
 makefile, which lists each of the non-source files and how to compute it from
 other files. When you write a program, you should write a makefile for it, so
 that it is possible to use Make to build and install the program.")
-   (license "GPLv3+")
+   (license gpl3+)
    (home-page "http://www.gnu.org/software/make/")))
 
 (define-public binutils
@@ -334,7 +335,7 @@ assembler, etc.)")
     "The GNU Binutils are a collection of binary tools.  The main ones are
 `ld' (the GNU linker) and `as' (the GNU assembler).  They also include the
 BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
-   (license "GPLv3+")
+   (license gpl3+)
    (home-page "http://www.gnu.org/software/binutils/")))
 
 (define-public gcc-4.7
@@ -448,7 +449,7 @@ libraries for these languages (libstdc++, libgcj, libgomp,...).
 
 GCC development is a part of the GNU Project, aiming to improve the compiler
 used in the GNU system including the GNU/Linux variant.")
-     (license "GPLv3+")
+     (license gpl3+)
      (home-page "http://gcc.gnu.org/"))))
 
 (define-public glibc
@@ -520,7 +521,7 @@ printf, exit...
 
 The GNU C library is used as the C library in the GNU system and most systems
 with the Linux kernel.")
-   (license "LGPLv2+")
+   (license lgpl2.0+)
    (home-page "http://www.gnu.org/software/libc/")))
 
 
@@ -893,7 +894,7 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 missing `-rpath' flags, and to detect any misuse of libraries outside of the
 store.")
     (home-page #f)
-    (license "GPLv3+")))
+    (license gpl3+)))
 
 (define %boot3-inputs
   ;; 4th stage inputs.

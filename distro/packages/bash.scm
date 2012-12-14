@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages bash)
+  #:use-module (guix licenses)
   #:use-module (distro packages ncurses)
   #:use-module (distro packages readline)
   #:use-module (guix packages)
@@ -84,5 +85,5 @@ to conform to the IEEE POSIX P1003.2/ISO 9945.2 Shell and Tools standard.  It
 offers functional improvements over sh for both programming and interactive
 use.  In addition, most sh scripts can be run by Bash without
 modification.")
-     (license "GPLv3+")
+     (license gpl3+)
      (home-page "http://www.gnu.org/software/bash/"))))

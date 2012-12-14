@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages which)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -44,4 +45,4 @@ been executed when this argument had been entered at the shell
 prompt. It does this by searching for an executable or script in the
 directories listed in the environment variable PATH using the same
 algorithm as bash(1).")
-    (license "GPLv3+"))) ; some files are under GPLv2+
+    (license gpl3+))) ; some files are under GPLv2+

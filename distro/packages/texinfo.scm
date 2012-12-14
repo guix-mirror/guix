@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages texinfo)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -57,4 +58,4 @@ for online information and another for a printed manual, you
 need write only one document.  And when the work is revised, you
 need revise only that one document.  The Texinfo system is
 well-integrated with GNU Emacs.")
-    (license "GPLv3+")))
+    (license gpl3+)))
