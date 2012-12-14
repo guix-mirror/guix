@@ -136,6 +136,16 @@ guix_daemon_LDADD =				\
 guix_daemon_headers =				\
   nix/nix-daemon/shared.hh
 
+libexec_PROGRAMS = nix-setuid-helper
+nix_setuid_helper_SOURCES =			\
+  nix/nix-setuid-helper/nix-setuid-helper.cc
+
+nix_setuid_helper_CPPFLAGS =			\
+  $(libutil_a_CPPFLAGS)
+
+nix_setuid_helper_LDADD =			\
+  libutil.a libformat.a
+
 noinst_HEADERS =						\
   $(libformat_headers) $(libutil_headers) $(libstore_headers)	\
   $(guix_daemon_headers)
