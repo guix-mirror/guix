@@ -803,7 +803,7 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      `(("binutils" ,binutils-boot0)
        ("gcc" ,gcc-boot0)
        ("libc" ,glibc-final)
-       ("bash" ,(assoc-ref %boot1-inputs "bash"))))
+       ,(assoc "bash" %boot1-inputs)))
     (inputs '())))
 
 (define %boot2-inputs
