@@ -21,6 +21,7 @@
 #include <types.hh>
 #include "shared.hh"
 #include <globals.hh>
+#include <util.hh>
 
 #include <stdlib.h>
 #include <argp.h>
@@ -56,6 +57,7 @@ builds derivations on behalf of its clients.";
 #define GUIX_OPT_DISABLE_LOG_COMPRESSION 6
 #define GUIX_OPT_DISABLE_STORE_OPTIMIZATION 7
 #define GUIX_OPT_IMPERSONATE_LINUX_26 8
+#define GUIX_OPT_DEBUG 9
 
 static const struct argp_option options[] =
   {
@@ -88,6 +90,8 @@ static const struct argp_option options[] =
       " (this option has no effect in this configuration)"
 #endif
     },
+    { "debug", GUIX_OPT_DEBUG, 0, 0,
+      "Produce debugging output" },
     { 0, 0, 0, 0, 0 }
   };
 
@@ -117,6 +121,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
       break;
     case GUIX_OPT_LOSE_LOGS:
       settings.keepLog = false;
+      break;
+    case GUIX_OPT_DEBUG:
+      verbosity = lvlDebug;
       break;
     case 'C':
       settings.buildCores = atoi (arg);
