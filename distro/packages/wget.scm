@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages wget)
+  #:use-module (guix licenses)
   #:use-module ((distro packages gettext)
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (distro packages gnutls)
@@ -57,4 +58,4 @@
 HTTPS and FTP, the most widely-used Internet protocols.  It is a
 non-interactive commandline tool, so it may easily be called from
 scripts, cron jobs, terminals without X-Windows support, etc.")
-    (license "GPLv3+"))) ; some files are under GPLv2+
+    (license gpl3+))) ; some files are under GPLv2+

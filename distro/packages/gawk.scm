@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages gawk)
+  #:use-module (guix licenses)
   #:use-module (distro packages libsigsegv)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -56,4 +57,4 @@ easy with awk, especially the GNU implementation: Gawk.
 The awk utility interprets a special-purpose programming language that makes
 it possible to handle many data-reformatting jobs with just a few lines of
 code.")
-   (license "GPLv3+")))
+   (license gpl3+)))

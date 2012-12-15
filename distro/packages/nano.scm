@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages nano)
+  #:use-module (guix licenses)
   #:use-module ((distro packages gettext)
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (distro packages ncurses)
@@ -48,4 +49,4 @@
 editor, part of the Pine email suite from The University of
 Washington. It aims to emulate Pico as closely as possible and perhaps
 include extra functionality.")
-    (license "GPLv3+"))) ; some files are under GPLv2+
+    (license gpl3+))) ; some files are under GPLv2+

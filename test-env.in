@@ -27,6 +27,7 @@
 if [ -x "@abs_top_builddir@/guix-daemon" ]
 then
     NIX_SUBSTITUTERS=""		# don't resort to substituters
+    NIX_SETUID_HELPER="@abs_top_builddir@/nix-setuid-helper" # normally unused
     NIX_IGNORE_SYMLINK_STORE=1	# in case the store is a symlink
     NIX_STORE_DIR="@GUIX_TEST_ROOT@/store"
     NIX_LOCALSTATE_DIR="@GUIX_TEST_ROOT@/var"
@@ -42,7 +43,7 @@ then
 
     export NIX_SUBSTITUTERS NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR	\
 	NIX_LOCALSTATE_DIR NIX_LOG_DIR NIX_STATE_DIR NIX_DB_DIR		\
-	NIX_ROOT_FINDER
+	NIX_ROOT_FINDER NIX_SETUID_HELPER
 
     # Do that because store.scm calls `canonicalize-path' on it.
     mkdir -p "$NIX_STORE_DIR"

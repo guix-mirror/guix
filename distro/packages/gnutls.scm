@@ -17,11 +17,13 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages gnutls)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (distro packages base)
-  #:use-module (distro packages compression)
+  #:use-module ((distro packages compression)
+                #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (distro packages nettle)
   #:use-module (distro packages guile)
   #:use-module (distro packages perl))
@@ -45,7 +47,7 @@
      "Libtasn1 is the ASN.1 library used by GnuTLS, GNU Shishi and some
 other packages.  The goal of this implementation is to be highly
 portable, and only require an ANSI C89 platform.")
-    (license "LGPLv2+")))
+    (license lgpl2.0+)))
 
 (define-public gnutls
   (package
@@ -71,7 +73,7 @@ portable, and only require an ANSI C89 platform.")
     (inputs
      `(("guile" ,guile-2.0)
        ;; ("lzo" ,lzo)
-       ("zlib" ,zlib)
+       ("zlib" ,guix:zlib)
        ("perl" ,perl)))
     (propagated-inputs
      `(("libtasn1" ,libtasn1)
@@ -91,4 +93,4 @@ Quoting from the TLS protocol specification:
 Internet. The protocol allows client/server applications to communicate
 in a way that is designed to prevent eavesdropping, tampering, or
 message forgery.\"")
-    (license "LGPLv2.1+")))
+    (license lgpl2.1+)))

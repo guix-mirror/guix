@@ -17,9 +17,11 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages gnupg)
+  #:use-module (guix licenses)
   #:use-module (distro packages pth)
   #:use-module (distro packages readline)
-  #:use-module (distro packages compression)
+  #:use-module ((distro packages compression)
+                #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -45,7 +47,7 @@
 for all GnuPG components.  Among these are GPG, GPGSM, GPGME,
 GPG-Agent, libgcrypt, Libksba, DirMngr, Pinentry, SmartCard
 Daemon and possibly more in the future.")
-    (license "LGPLv2+")))
+    (license lgpl2.0+)))
 
 (define-public libgcrypt
   (package
@@ -71,7 +73,7 @@ the code from GnuPG.  It provides functions for all
 cryptographic building blocks: symmetric ciphers, hash
 algorithms, MACs, public key algorithms, large integer
 functions, random numbers and a lot of supporting functions.")
-    (license "LGPLv2+")))
+    (license lgpl2.0+)))
 
 (define-public libassuan
   (package
@@ -96,7 +98,7 @@ functions, random numbers and a lot of supporting functions.")
 protocol.  This protocol is used for IPC between most newer
 GnuPG components.  Both, server and client side functions are
 provided.")
-    (license "LGPLv2+")))
+    (license lgpl2.0+)))
 
 (define-public libksba
   (package
@@ -121,7 +123,7 @@ provided.")
      "KSBA (pronounced Kasbah) is a library to make X.509 certificates
 as well as the CMS easily accessible by other applications.  Both
 specifications are building blocks of S/MIME and TLS.")
-    (license "GPLv3+")))
+    (license gpl3+)))
 
 (define-public gnupg
   (package
@@ -142,13 +144,13 @@ specifications are building blocks of S/MIME and TLS.")
        ;; ("libusb" ,libusb)
        ;; ("openldap" ,openldap)
 
-       ("bzip2" ,bzip2)
+       ("bzip2" ,guix:bzip2)
        ("libassuan" ,libassuan)
        ("libgcrypt" ,libgcrypt)
        ("libksba" ,libksba)
        ("pth" ,pth)
        ("libgpg-error" ,libgpg-error)
-       ("zlib" ,zlib)
+       ("zlib" ,guix:zlib)
        ("readline" ,readline)))
     (home-page "http://gnupg.org/")
     (synopsis
@@ -163,4 +165,4 @@ command line tool with features for easy integration with other
 applications.  A wealth of frontend applications and libraries
 are available.  Version 2 of GnuPG also provides support for
 S/MIME.")
-    (license "GPLv3+")))
+    (license gpl3+)))

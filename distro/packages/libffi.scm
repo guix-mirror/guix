@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages libffi)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -68,5 +69,5 @@ conversions for values passed between the two languages.")
     (home-page "http://sources.redhat.com/libffi/")
 
     ;; See <http://github.com/atgreen/libffi/blob/master/LICENSE>.
-    (license "free, non-copyleft"))))
+    (license expat))))
 

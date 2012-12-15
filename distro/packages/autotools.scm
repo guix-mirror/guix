@@ -18,6 +18,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages autotools)
+  #:use-module (guix licenses)
   #:use-module (distro)
   #:use-module (distro packages perl)
   #:use-module (distro packages m4)
@@ -56,7 +57,7 @@ UNIX-like systems without manual user intervention.  Autoconf
 creates a configuration script for a package from a template
 file that lists the operating system features that the package
 can use, in the form of M4 macro calls.")
-    (license "GPLv3+"))) ; some files are under GPLv2+
+    (license gpl3+))) ; some files are under GPLv2+
 
 (define-public automake
   (package
@@ -82,7 +83,7 @@ can use, in the form of M4 macro calls.")
      "GNU Automake is a tool for automatically generating
 `Makefile.in' files compliant with the GNU Coding
 Standards.  Automake requires the use of Autoconf.")
-    (license "GPLv2+"))) ; some files are under GPLv3+
+    (license gpl2+))) ; some files are under GPLv3+
 
 (define-public libtool
   (package
@@ -111,5 +112,5 @@ complexity of using shared libraries behind a consistent, portable interface.
 To use libtool, add the new generic library building commands to your
 Makefile, Makefile.in, or Makefile.am.  See the documentation for
 details.")
-    (license "GPLv3+")
+    (license gpl3+)
     (home-page "http://www.gnu.org/software/libtool/")))

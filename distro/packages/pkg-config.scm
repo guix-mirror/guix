@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages pkg-config)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -37,7 +38,7 @@
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--with-internal-glib")))
    (home-page "http://www.freedesktop.org/wiki/Software/pkg-config")
-   (license "GPLv2+")
+   (license gpl2+)
    (synopsis "a helper tool used when compiling applications and
 libraries")
    (description

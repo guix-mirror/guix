@@ -7,10 +7,9 @@ set -e -x
 top_srcdir="$PWD"
 export top_srcdir
 
-if [ ! -d nix-upstream ]
-then
-    git submodule init
-fi
+git submodule init
 git submodule update
+
+./nix/sync-with-upstream
 
 exec autoreconf -vfi

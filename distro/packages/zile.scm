@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages zile)
+  #:use-module (guix licenses)
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
@@ -62,4 +63,4 @@ containing the word \"emacs\", which instead contain the word
 
 However, all of this is packed into a program which typically
 compiles to about 130Kb.")
-    (license "GPLv3+")))
+    (license gpl3+)))

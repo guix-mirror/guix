@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages time)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -50,4 +51,4 @@ of time, memory, and I/O and IPC calls.  Some systems do not provide
 much information about program resource use; 'time' reports unavailable
 information as zero values.
 ")
-    (license "GPLv2+")))
+    (license gpl2+)))

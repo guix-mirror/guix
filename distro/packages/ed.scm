@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages ed)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -49,4 +50,4 @@ execute shell commands.  Ed is the \"standard\" text editor in the
 sense that it is the original editor for Unix, and thus widely
 available.  For most purposes, however, it is superseded by
 full-screen editors such as GNU Emacs or GNU Moe.")
-    (license "GPLv3+")))
+    (license gpl3+)))

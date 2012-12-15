@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages m4)
+  #:use-module (guix licenses)
   #:use-module (distro)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -70,5 +71,5 @@ expansion, m4 has builtin functions for including named files, running UNIX
 commands, doing integer arithmetic, manipulating text in various ways,
 recursion etc...  m4 can be used either as a front-end to a compiler or as a
 macro processor in its own right.")
-   (license "GPLv3+")
+   (license gpl3+)
    (home-page "http://www.gnu.org/software/m4/")))

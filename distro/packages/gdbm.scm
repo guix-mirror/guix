@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages gdbm)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -52,4 +53,4 @@ database.
 
 For compatibility with programs using old UNIX dbm function, the package
 also provides traditional dbm and ndbm interfaces.")
-    (license "GPLv3+")))
+    (license gpl3+)))

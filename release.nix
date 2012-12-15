@@ -53,7 +53,7 @@ let
         preAutoconf = ''git config submodule.nix.url "${<nix>}"'';
         configureFlags =
           [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
-            "--localstatedir=/nix/var/nix"
+            "--localstatedir=/nix/var"
           ];
       };
 
@@ -68,7 +68,7 @@ let
         src = jobs.tarball;
         configureFlags =
           [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
-            "--localstatedir=/nix/var/nix"
+            "--localstatedir=/nix/var"
           ];
 
         preBuild =

@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages recutils)
+  #:use-module (guix licenses)
   #:use-module (distro)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -49,5 +50,5 @@ text-based databases")
     "GNU recutils is a set of tools and libraries to access human-editable,
 text-based databases called recfiles.  The data is stored as a sequence of
 records, each record containing an arbitrary number of named fields.")
-   (license "GPLv3+")
+   (license gpl3+)
    (home-page "http://www.gnu.org/software/recutils/")))

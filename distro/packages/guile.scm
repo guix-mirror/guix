@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages guile)
+  #:use-module (guix licenses)
   #:use-module (distro)
   #:use-module (distro packages bdw-gc)
   #:use-module (distro packages gawk)
@@ -86,7 +87,7 @@
 packaged as a library that can be embedded into programs to make them
 extensible.  It supports many SRFIs.")
    (home-page "http://www.gnu.org/software/guile/")
-   (license "LGPLv2+")))
+   (license lgpl2.0+)))
 
 (define-public guile-2.0
   (package
@@ -128,7 +129,7 @@ R6RS, Guile includes a module system, full access to POSIX system calls,
 networking support, multiple threads, dynamic linking, a foreign function
 call interface, and powerful string processing.")
    (home-page "http://www.gnu.org/software/guile/")
-   (license "LGPLv3+")))
+   (license lgpl3+)))
 
 (define-public guile-2.0/fixed
   ;; A package of Guile 2.0 that's rarely changed.  It is the one used
@@ -181,7 +182,7 @@ Guile-Reader’s approach is similar to Common Lisp’s “read table”, but
 hopefully more powerful and flexible (for instance, one may instantiate as
 many readers as needed).")
    (home-page "http://www.nongnu.org/guile-reader/")
-   (license "GPLv3+")))
+   (license gpl3+)))
 
 (define-public guile-reader/guile-1.8
   ;; Guile-Reader built against Guile 1.8.

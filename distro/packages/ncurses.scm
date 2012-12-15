@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages ncurses)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -102,5 +103,5 @@ The ncurses code was developed under GNU/Linux.  It has been in use for some
 time with OpenBSD as the system curses library, and on FreeBSD and NetBSD as
 an external package.  It should port easily to any ANSI/POSIX-conforming
 UNIX.  It has even been ported to OS/2 Warp!")
-     (license "X11")
+     (license x11)
      (home-page "http://www.gnu.org/software/ncurses/"))))

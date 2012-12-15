@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages multiprecision)
+  #:use-module (guix licenses)
   #:use-module (distro)
   #:use-module (distro packages m4)
   #:use-module (guix packages)
@@ -63,7 +64,7 @@ emphasis on speed.
 GMP is faster than any other bignum library.  The advantage for GMP increases
 with the operand sizes for many operations, since GMP uses asymptotically
 faster algorithms.")
-   (license "LGPLv3+")
+   (license lgpl3+)
    (home-page "http://gmplib.org/")))
 
 (define-public mpfr
@@ -89,7 +90,7 @@ The main goal of MPFR is to provide a library for multiple-precision
 floating-point computation which is both efficient and has a well-defined
 semantics.  It copies the good ideas from the ANSI/IEEE-754 standard for
 double-precision floating-point arithmetic (53-bit mantissa).")
-   (license "LGPLv3+")
+   (license lgpl3+)
    (home-page "http://www.mpfr.org/")))
 
 (define-public mpc
@@ -115,5 +116,5 @@ point numbers to complex numbers, providing well-defined semantics for
 every operation. At the same time, speed of operation at high precision
 is a major design goal. The library is built upon and follows the same
 principles as GNU MPFR.")
-   (license "LGPLv3+")
+   (license lgpl3+)
    (home-page "http://mpc.multiprecision.org/")))

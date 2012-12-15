@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages gettext)
+  #:use-module (guix licenses)
   #:use-module (distro)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -61,4 +62,4 @@ offers to programmers, translators, and even users, a well integrated
 set of tools and documentation. Specifically, the GNU `gettext'
 utilities are a set of tools that provides a framework to help other
 GNU packages produce multi-lingual messages.")
-    (license "GPLv3"))) ; some files are under GPLv2+
+    (license gpl3))) ; some files are under GPLv2+

@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages pth)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -57,4 +58,4 @@ thread and process termination, and even customized callback functions.
 Additionally Pth provides an optional emulation API for POSIX.1c
 threads (\"Pthreads\") which can be used for backward compatibility to
 existing multithreaded applications.")
-    (license #f)))
+    (license lgpl2.1+)))

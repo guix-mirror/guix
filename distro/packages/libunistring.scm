@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages libunistring)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -54,4 +55,4 @@ the user and can be in any language.
 libunistring is also for you if your application uses Unicode strings as
 internal in-memory representation.")
    (home-page "http://www.gnu.org/software/libunistring/")
-   (license "LGPLv3+")))
+   (license lgpl3+)))

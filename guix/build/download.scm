@@ -92,6 +92,11 @@ which is not available during bootstrap."
                 'set-port-encoding!
                 (lambda (p e) #f))
 
+;; XXX: Work around <http://bugs.gnu.org/13095>, present in Guile
+;; up to 2.0.7.
+(module-define! (resolve-module '(web client))
+                'shutdown (const #f))
+
 (define (http-fetch uri file)
   "Fetch data from URI and write it to FILE.  Return FILE on success."
 

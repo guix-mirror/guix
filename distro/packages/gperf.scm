@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages gperf)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -51,4 +52,4 @@ GNU gperf is highly customizable.  There are options for
 generating C or C++ code, for emitting switch statements or
 nested ifs instead of a hash table, and for tuning the algorithm
 employed by gperf.")
-    (license "GPLv3+")))
+    (license gpl3+)))

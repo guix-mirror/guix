@@ -18,10 +18,12 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages shishi)
+  #:use-module (guix licenses)
   #:use-module (distro)
   #:use-module (distro packages gnutls)
   #:use-module (distro packages gnupg)
-  #:use-module (distro packages compression)
+  #:use-module ((distro packages compression)
+                #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -48,7 +50,7 @@
                                   "patch/gets"))))
     (inputs
      `(("gnutls" ,gnutls)
-       ("zlib" ,zlib)
+       ("zlib" ,guix:zlib)
        ("libgcrypt" ,libgcrypt)
        ("libtasn1" ,libtasn1)
        ("patch/gets" ,(search-patch "shishi-gets-undeclared.patch"))))
@@ -66,4 +68,4 @@
   users to acquire and manage tickets (and more).  The server
   side, a Key Distribution Center, is implemented by `shishid'.
 ")
-    (license "GPLv3+"))) ; some files are under GPLv2+
+    (license gpl3+))) ; some files are under GPLv2+

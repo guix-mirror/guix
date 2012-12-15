@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages system)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -57,7 +58,7 @@ controlling terminal, such as, e.g., minicom.  It can launch and control
 components of some complex system, such as Jabberd or MeTA1 (and it
 offers much more control over them than the native utilities).  Finally,
 it can replace the inetd utility!")
-    (license "GPLv3+")))
+    (license gpl3+)))
 
 (define-public inetutils
   (package
@@ -87,4 +88,4 @@ it can replace the inetd utility!")
 ftp(d), hostname, ifconfig, inetd, logger, ping, rcp, rexec(d),
 rlogin(d), rsh(d), syslogd, talk(d), telnet(d), tftp(d), traceroute,
 uucpd, and whois.")
-    (license "GPLv3+")))
+    (license gpl3+)))

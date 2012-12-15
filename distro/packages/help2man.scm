@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages help2man)
+  #:use-module (guix licenses)
   #:use-module (guix download)
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
@@ -48,4 +49,4 @@
     (description
      "help2man produces simple manual pages from the ‘--help’ and
 ‘--version’ output of other commands.")
-    (license "GPLv3+")))
+    (license gpl3+)))

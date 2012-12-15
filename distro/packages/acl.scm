@@ -17,6 +17,7 @@
 ;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages acl)
+  #:use-module (guix licenses)
   #:use-module (distro packages attr)
   #:use-module (distro packages perl)
   #:use-module ((distro packages gettext)
@@ -58,4 +59,4 @@
      "Library and tools for manipulating access control lists")
     (description
      "Library and tools for manipulating access control lists.")
-    (license '("GPLv2+" "LGPLv2.1+"))))
+    (license '(gpl2+ lgpl2.1+))))

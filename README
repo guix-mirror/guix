@@ -59,10 +59,29 @@ the promise of a build; it is stored as a text file under
 `derivation' primitive, as well as higher-level wrappers such as
 `build-expression->derivation'.
 
-Guix does remote procedure calls (RPCs) to the Nix daemon (the
-=nix-worker --daemon= command), which in turn performs builds and
-accesses to the Nix store on its behalf.  The RPCs are implemented in
-the (guix store) module.
+Guix does remote procedure calls (RPCs) to the Guix or Nix daemon (the
+=guix-daemon= or =nix-daemon= command), which in turn performs builds
+and accesses to the Nix store on its behalf.  The RPCs are implemented
+in the (guix store) module.
+
+* Installing Guix as non-root
+
+The Guix daemon allows software builds to be performed under alternate
+user accounts, which are normally created specifically for this
+purpose.  For instance, you may have a pool of accounts in the
+=guixbuild= group, and then you can instruct =guix-daemon= to use them
+like this:
+
+  $ guix-daemon --build-users-group=guixbuild
+
+However, unless it is run as root, =guix-daemon= cannot switch users.
+In that case, it falls back to using a setuid-root helper program call
+=nix-setuid-helper=.  That program is not setuid-root by default when
+you install it; instead you should run a command along these lines
+(assuming Guix is installed under /usr/local):
+
+  # chown root.root /usr/local/libexec/nix-setuid-helper
+  # chmod 4755 /usr/local/libexec/nix-setuid-helper
 
 * Contact
 
