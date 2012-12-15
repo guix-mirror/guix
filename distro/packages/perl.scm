@@ -55,7 +55,7 @@
                 (("/bin/pwd") pwd))
 
               (zero?
-               (system* "/bin/sh" "./Configure"
+               (system* "./Configure"
                         (string-append "-Dprefix=" out)
                         (string-append "-Dman1dir=" out "/share/man/man1")
                         (string-append "-Dman3dir=" out "/share/man/man3")

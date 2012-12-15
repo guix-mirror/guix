@@ -82,6 +82,24 @@
   (and (zero? (system* "tar" "xvf" source))
        (chdir (first-subdirectory "."))))
 
+(define* (patch-source-shebangs #:key source #:allow-other-keys)
+  ;; Patch shebangs in executable source files.  Most scripts honor
+  ;; $SHELL and $CONFIG_SHELL, but some don't, such as `mkinstalldirs'
+  ;; or Automake's `missing' script.
+  (for-each patch-shebang
+            (filter (lambda (file)
+                      (and (executable-file? file)
+                           (not (file-is-directory? file))))
+                    (find-files "." ".*")))
+
+  ;; Gettext-generated po/Makefile.in.in does not honor $SHELL.
+  (let ((bash (search-path (search-path-as-string->list (getenv "PATH"))
+                           "bash")))
+    (when (file-exists? "po/Makefile.in.in")
+      (substitute* "po/Makefile.in.in"
+        (("^SHELL[[:blank:]]*=.*$")
+         (string-append "SHELL = " bash))))))
+
 (define* (patch #:key (patches '()) (patch-flags '("--batch" "-p1"))
                 #:allow-other-keys)
   (every (lambda (p)
@@ -231,7 +249,8 @@
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
-    (phases set-paths unpack patch configure build check install
+    (phases set-paths unpack patch-source-shebangs patch configure
+            build check install
             patch-shebangs strip)))
 
 

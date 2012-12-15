@@ -26,6 +26,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:export (directory-exists?
+            executable-file?
             with-directory-excursion
             mkdir-p
             copy-recursively
@@ -55,6 +56,12 @@
   (let ((s (stat dir #f)))
     (and s
          (eq? 'directory (stat:type s)))))
+
+(define (executable-file? file)
+  "Return #t if FILE exists and is executable."
+  (let ((s (stat file #f)))
+    (and s
+         (not (zero? (logand (stat:mode s) #o100))))))
 
 (define-syntax-rule (with-directory-excursion dir body ...)
   "Run BODY with DIR as the process's current directory."
