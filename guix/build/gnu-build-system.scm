@@ -242,6 +242,7 @@
   "Build from SOURCE to OUTPUTS, using INPUTS, and by running all of PHASES
 in order.  Return #t if all the PHASES succeeded, #f otherwise."
   (setvbuf (current-output-port) _IOLBF)
+  (setvbuf (current-error-port) _IOLBF)
 
   ;; The trick is to #:allow-other-keys everywhere, so that each procedure in
   ;; PHASES can pick the keyword arguments it's interested in.
