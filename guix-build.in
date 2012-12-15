@@ -71,7 +71,8 @@ When SOURCE? is true, return the derivations of the package sources."
 (define %default-options
   ;; Alist of default option values.
   `((system . ,(%current-system))
-    (substitutes? . #t)))
+    (substitutes? . #t)
+    (verbosity . 0)))
 
 (define (show-help)
   (display (_ "Usage: guix-build [OPTION]... PACKAGE-OR-DERIVATION...
@@ -95,6 +96,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -r, --root=FILE        make FILE a symlink to the result, and register it
                          as a garbage collector root"))
+  (display (_ "
+      --verbosity=LEVEL  use the given verbosity LEVEL"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -147,7 +150,12 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                               (alist-delete 'substitutes? result))))
         (option '(#\r "root") #t #f
                 (lambda (opt name arg result)
-                  (alist-cons 'gc-root arg result)))))
+                  (alist-cons 'gc-root arg result)))
+        (option '("verbosity") #t #f
+                (lambda (opt name arg result)
+                  (let ((level (string->number arg)))
+                    (alist-cons 'verbosity level
+                                (alist-delete 'verbosity result)))))))
 
 
 ;;;
@@ -244,7 +252,8 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
           (set-build-options (%store)
                              #:keep-failed? (assoc-ref opts 'keep-failed?)
                              #:build-cores (or (assoc-ref opts 'cores) 0)
-                             #:use-substitutes? (assoc-ref opts 'substitutes?))
+                             #:use-substitutes? (assoc-ref opts 'substitutes?)
+                             #:verbosity (assoc-ref opts 'verbosity))
 
           (if (assoc-ref opts 'derivations-only?)
               (format #t "~{~a~%~}" drv)

@@ -532,6 +532,12 @@ value @code{0} means to use as many CPU cores as available.
 @itemx -r @var{file}
 Make @var{file} a symlink to the result, and register it as a garbage
 collector root.
+
+@item --verbosity=@var{level}
+Use the given verbosity level.  @var{level} must be an integer between 0
+and 5; higher means more verbose output.  Setting a level of 4 or more
+may be helpful when debugging setup issues with the build daemon.
+
 @end table
 
 Behind the scenes, @command{guix-build} is essentially an interface to
