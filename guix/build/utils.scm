@@ -364,9 +364,9 @@ all subject to the substitutions."
 ;;; Patching shebangs---e.g., /bin/sh -> /nix/store/xyz...-bash/bin/sh.
 ;;;
 
-(define (dump-port in out)
-  "Read as much data as possible from IN and write it to OUT."
-  (define buffer-size 4096)
+(define* (dump-port in out #:key (buffer-size 16384))
+  "Read as much data as possible from IN and write it to OUT, using
+chunks of BUFFER-SIZE bytes."
   (define buffer
     (make-bytevector buffer-size))
 
