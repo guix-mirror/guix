@@ -51,6 +51,7 @@ MODULES =					\
   distro/packages/bdw-gc.scm			\
   distro/packages/bison.scm			\
   distro/packages/bootstrap.scm			\
+  distro/packages/check.scm			\
   distro/packages/compression.scm		\
   distro/packages/cpio.scm			\
   distro/packages/ddrescue.scm			\
