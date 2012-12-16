@@ -58,6 +58,7 @@ builds derivations on behalf of its clients.";
 #define GUIX_OPT_DISABLE_STORE_OPTIMIZATION 7
 #define GUIX_OPT_IMPERSONATE_LINUX_26 8
 #define GUIX_OPT_DEBUG 9
+#define GUIX_OPT_CHROOT_DIR 10
 
 static const struct argp_option options[] =
   {
@@ -69,6 +70,13 @@ static const struct argp_option options[] =
       "Allow at most N build jobs" },
     { "disable-chroot", GUIX_OPT_DISABLE_CHROOT, 0, 0,
       "Disable chroot builds"
+#ifndef HAVE_CHROOT
+      " (chroots are not supported in this configuration, so "
+      "this option has no effect)"
+#endif
+    },
+    { "chroot-directory", GUIX_OPT_CHROOT_DIR, "DIR", 0,
+      "Add DIR to the build chroot"
 #ifndef HAVE_CHROOT
       " (chroots are not supported in this configuration, so "
       "this option has no effect)"
@@ -103,6 +111,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
     {
     case GUIX_OPT_DISABLE_CHROOT:
       settings.useChroot = false;
+      break;
+    case GUIX_OPT_CHROOT_DIR:
+      settings.dirsInChroot.insert (arg);
       break;
     case GUIX_OPT_DISABLE_LOG_COMPRESSION:
       settings.compressLog = false;
