@@ -27,6 +27,7 @@
 #include <argp.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <exception>
 
 /* Variables used by `nix-daemon.cc'.  */
 volatile ::sig_atomic_t blockInt;
@@ -170,18 +171,29 @@ main (int argc, char *argv[])
   settings.useChroot = false;
 #endif
 
-  settings.processEnvironment ();
-
-  /* FIXME: Disable substitutes until we have something that works.  */
-  settings.useSubstitutes = false;
-  settings.substituters.clear ();
-
-  argp_parse (&argp, argc, argv, 0, 0, 0);
-
-  if (geteuid () == 0 && settings.buildUsersGroup.empty ())
-    fprintf (stderr, "warning: running as root is highly recommended, "
-	     "unless `--build-users-group' is used\n");
-
   argvSaved = argv;
-  run (nothing);
+
+  try
+    {
+      settings.processEnvironment ();
+
+      /* FIXME: Disable substitutes until we have something that works.  */
+      settings.useSubstitutes = false;
+      settings.substituters.clear ();
+
+      argp_parse (&argp, argc, argv, 0, 0, 0);
+
+      if (geteuid () == 0 && settings.buildUsersGroup.empty ())
+	fprintf (stderr, "warning: running as root is highly recommended, "
+		 "unless `--build-users-group' is used\n");
+
+      run (nothing);
+    }
+  catch (std::exception &e)
+    {
+      fprintf (stderr, "error: %s\n", e.what ());
+      return EXIT_FAILURE;
+    }
+
+  return EXIT_SUCCESS;				  /* never reached */
 }
