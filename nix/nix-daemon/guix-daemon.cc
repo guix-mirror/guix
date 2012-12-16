@@ -25,6 +25,8 @@
 
 #include <stdlib.h>
 #include <argp.h>
+#include <unistd.h>
+#include <sys/types.h>
 
 /* Variables used by `nix-daemon.cc'.  */
 volatile ::sig_atomic_t blockInt;
@@ -175,6 +177,10 @@ main (int argc, char *argv[])
   settings.substituters.clear ();
 
   argp_parse (&argp, argc, argv, 0, 0, 0);
+
+  if (geteuid () == 0 && settings.buildUsersGroup.empty ())
+    fprintf (stderr, "warning: running as root is highly recommended, "
+	     "unless `--build-users-group' is used\n");
 
   argvSaved = argv;
   run (nothing);
