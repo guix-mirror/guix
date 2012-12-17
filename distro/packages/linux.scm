@@ -22,9 +22,10 @@
   #:use-module ((distro packages compression)
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (distro packages flex)
+  #:use-module (distro packages libusb)
   #:use-module (distro packages ncurses)
   #:use-module (distro packages perl)
-  #:use-module (distro packages ncurses)
+  #:use-module (distro packages pkg-config)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -171,3 +172,25 @@ providing the system administrator with some help in common tasks.")
     ;; explicitly defined license.
     (license '(gpl3+ gpl2+ gpl2 lgpl2.0+
                bsd-4 public-domain))))
+
+(define-public usbutils
+  (package
+    (name "usbutils")
+    (version "006")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kernel.org/linux/utils/usb/usbutils/"
+                          "usbutils-" version ".tar.xz"))
+      (sha256
+       (base32
+        "03pd57vv8c6x0hgjqcbrxnzi14h8hcghmapg89p8k5zpwpkvbdfr"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libusb" ,libusb) ("pkg-config" ,pkg-config)))
+    (home-page "http://www.linux-usb.org/")
+    (synopsis
+     "Tools for working with USB devices, such as lsusb")
+    (description
+     "Tools for working with USB devices, such as lsusb.")
+    (license gpl2+)))
