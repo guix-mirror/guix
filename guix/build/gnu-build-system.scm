@@ -98,7 +98,7 @@
     (when (file-exists? "po/Makefile.in.in")
       (substitute* "po/Makefile.in.in"
         (("^SHELL[[:blank:]]*=.*$")
-         (string-append "SHELL = " bash))))))
+         (string-append "SHELL = " bash "\n"))))))
 
 (define* (patch #:key (patches '()) (patch-flags '("--batch" "-p1"))
                 #:allow-other-keys)
@@ -249,7 +249,7 @@
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
-    (phases set-paths unpack patch-source-shebangs patch configure
+    (phases set-paths unpack patch patch-source-shebangs configure
             build check install
             patch-shebangs strip)))
 
