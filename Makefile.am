@@ -70,6 +70,7 @@ MODULES =					\
   distro/packages/libffi.scm			\
   distro/packages/libsigsegv.scm		\
   distro/packages/libunistring.scm		\
+  distro/packages/libusb.scm			\
   distro/packages/linux.scm			\
   distro/packages/lout.scm			\
   distro/packages/lsh.scm			\
