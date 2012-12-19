@@ -289,8 +289,18 @@ are expected to exist on every operating system.")
    (build-system gnu-build-system)
    (native-inputs
     `(("patch/impure-dirs" ,(search-patch "make-impure-dirs.patch"))))
-   (arguments `(#:patches (list (assoc-ref %build-inputs
-                                           "patch/impure-dirs"))))
+   (arguments
+    '(#:patches (list (assoc-ref %build-inputs "patch/impure-dirs"))
+      #:phases (alist-cons-before
+                'build 'set-default-shell
+                (lambda* (#:key inputs #:allow-other-keys)
+                  ;; Change the default shell from /bin/sh.
+                  (let ((bash (assoc-ref inputs "bash")))
+                    (substitute* "job.c"
+                      (("default_shell\\[\\] =.*$")
+                       (format #f "default_shell[] = \"~a/bin/bash\";\n"
+                               bash)))))
+                %standard-phases)))
    (synopsis "GNU Make, a program controlling the generation of non-source
 files from sources")
    (description
@@ -534,21 +544,23 @@ with the Linux kernel.")
    (package (inherit gnu-make)
      (name "make-boot0")
      (location (source-properties->location (current-source-location)))
-     (arguments `(#:guile ,%bootstrap-guile
-                  #:implicit-inputs? #f
-                  #:tests? #f                  ; cannot run "make check"
-                  #:phases
-                  (alist-replace
-                   'build (lambda _
-                            (zero? (system* "./build.sh")))
-                   (alist-replace
-                    'install (lambda* (#:key outputs #:allow-other-keys)
-                               (let* ((out (assoc-ref outputs "out"))
-                                      (bin (string-append out "/bin")))
-                                 (mkdir-p bin)
-                                 (copy-file "make"
-                                            (string-append bin "/make"))))
-                    %standard-phases))))
+     (arguments
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
+        #:tests? #f                  ; cannot run "make check"
+        ,@(substitute-keyword-arguments (package-arguments gnu-make)
+            ((#:phases phases)
+             `(alist-replace
+               'build (lambda _
+                        (zero? (system* "./build.sh")))
+               (alist-replace
+                'install (lambda* (#:key outputs #:allow-other-keys)
+                           (let* ((out (assoc-ref outputs "out"))
+                                  (bin (string-append out "/bin")))
+                             (mkdir-p bin)
+                             (copy-file "make"
+                                        (string-append bin "/make"))))
+                ,phases))))))
      (inputs %bootstrap-inputs))))
 
 (define diffutils-boot0
