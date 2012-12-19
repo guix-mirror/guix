@@ -428,6 +428,9 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 ~a~%"
                             libc line))))
 
+               ;; Adjust hard-coded #!/bin/sh.
+               (patch-shebang "gcc/exec-tool.in")
+
                ;; Don't retain a dependency on the build-time sed.
                (substitute* "fixincludes/fixincl.x"
                  (("static char const sed_cmd_z\\[\\] =.*;")
