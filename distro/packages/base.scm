@@ -872,9 +872,10 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (source #f)
     (build-system trivial-build-system)
     (inputs `(("binutils" ,binutils-final)
-              ("guile"   ,%bootstrap-guile)
-              ("wrapper" ,(search-path %load-path
-                                       "distro/packages/ld-wrapper.scm"))))
+              ("guile"    ,%bootstrap-guile)
+              ("bash"     ,@(assoc-ref %boot2-inputs "bash"))
+              ("wrapper"  ,(search-path %load-path
+                                        "distro/packages/ld-wrapper.scm"))))
     (arguments
      `(#:guile ,%bootstrap-guile
        #:modules ((guix build utils))
@@ -898,6 +899,9 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                        (("@GUILE@")
                         (string-append (assoc-ref %build-inputs "guile")
                                        "/bin/guile"))
+                       (("@BASH@")
+                        (string-append (assoc-ref %build-inputs "bash")
+                                       "/bin/bash"))
                        (("@LD@")
                         (string-append (assoc-ref %build-inputs "binutils")
                                        "/bin/ld")))
@@ -946,7 +950,9 @@ store.")
   (package (inherit ld-wrapper-boot3)
     (name "ld-wrapper")
     (inputs `(("guile" ,guile-final)
-              ,@(alist-delete "guile" (package-inputs ld-wrapper-boot3))))))
+              ("bash"  ,bash-final)
+              ,@(fold alist-delete (package-inputs ld-wrapper-boot3)
+                      '("guile" "bash"))))))
 
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by `gnu-build-system'.
