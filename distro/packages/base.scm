@@ -499,12 +499,19 @@ used in the GNU system including the GNU/Linux variant.")
             "--enable-kernel=2.6.30"
 
             ;; XXX: Work around "undefined reference to `__stack_chk_guard'".
-            "libc_cv_ssp=no")
+            "libc_cv_ssp=no"
+
+            ;; Use our Bash instead of /bin/sh.
+            (string-append "ac_cv_path_BASH_SHELL="
+                           (assoc-ref %build-inputs "bash")
+                           "/bin/bash"))
+
       #:tests? #f                                 ; XXX
       #:phases (alist-cons-before
                 'configure 'pre-configure
-                (lambda* (#:key outputs #:allow-other-keys)
-                  (let ((out (assoc-ref outputs "out")))
+                (lambda* (#:key inputs outputs #:allow-other-keys)
+                  (let* ((out  (assoc-ref outputs "out"))
+                         (bin  (string-append out "/bin")))
                     ;; Use `pwd', not `/bin/pwd'.
                     (substitute* "configure"
                       (("/bin/pwd") "pwd"))
@@ -522,10 +529,28 @@ used in the GNU system including the GNU/Linux variant.")
                       ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/glibc.html>,
                       ;; linking against libgcc_s is not needed with GCC
                       ;; 4.7.1.
-                      ((" -lgcc_s") ""))))
+                      ((" -lgcc_s") ""))
+
+                    ;; Copy a statically-linked Bash in the output.
+                    (mkdir-p bin)
+                    (copy-file (assoc-ref inputs "static-bash")
+                               (string-append bin "/bash"))
+                    (chmod (string-append bin "/bash") #o555)
+
+                    ;; Have `system' use that Bash.
+                    (substitute* "sysdeps/posix/system.c"
+                      (("#define[[:blank:]]+SHELL_PATH.*$")
+                       (format #f "#define SHELL_PATH \"~a/bin/bash\"\n"
+                               out)))
+
+                    ;; Same for `popen'.
+                    (substitute* "libio/iopopen.c"
+                      (("/bin/sh")
+                       (string-append out "/bin/bash")))))
                 %standard-phases)))
    (inputs `(("patch/ld.so.cache"
-              ,(search-patch "glibc-no-ld-so-cache.patch"))))
+              ,(search-patch "glibc-no-ld-so-cache.patch"))
+             ("static-bash" ,(cut search-bootstrap-binary "bash" <>))))
    (synopsis "The GNU C Library")
    (description
     "Any Unix-like operating system needs a C library: the library which
