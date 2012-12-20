@@ -1,0 +1,34 @@
+As for libc's `system', change Awk to look for `sh' in $PATH.  This patch is
+only meant to be used during bootstrapping, where we don't know in advance the
+absolute file name of `sh'.
+
+--- gawk-4.0.0/io.c	2011-05-18 20:47:29.000000000 +0200
++++ gawk-4.0.0/io.c	2012-12-18 15:56:06.000000000 +0100
+@@ -1759,7 +1759,7 @@ two_way_open(const char *str, struct red
+ 
+ 			signal(SIGPIPE, SIG_DFL);
+ 
+-			execl("/bin/sh", "sh", "-c", str, NULL);
++			execlp("sh", "sh", "-c", str, NULL);
+ 			_exit(errno == ENOENT ? 127 : 126);
+ 
+ 		case -1:
+@@ -1924,7 +1924,7 @@ use_pipes:
+ 		    || close(ctop[0]) == -1 || close(ctop[1]) == -1)
+ 			fatal(_("close of pipe failed (%s)"), strerror(errno));
+ 		/* stderr does NOT get dup'ed onto child's stdout */
+-		execl("/bin/sh", "sh", "-c", str, NULL);
++		execlp("sh", "sh", "-c", str, NULL);
+ 		_exit(errno == ENOENT ? 127 : 126);
+ 	}
+ #endif /* NOT __EMX__ */
+@@ -2074,7 +2074,7 @@ gawk_popen(const char *cmd, struct redir
+ 			fatal(_("moving pipe to stdout in child failed (dup: %s)"), strerror(errno));
+ 		if (close(p[0]) == -1 || close(p[1]) == -1)
+ 			fatal(_("close of pipe failed (%s)"), strerror(errno));
+-		execl("/bin/sh", "sh", "-c", cmd, NULL);
++		execlp("sh", "sh", "-c", cmd, NULL);
+ 		_exit(errno == ENOENT ? 127 : 126);
+ 	}
+ #endif /* NOT __EMX__ */
+

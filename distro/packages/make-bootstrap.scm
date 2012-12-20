@@ -20,6 +20,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix build-system trivial)
+  #:use-module ((guix build-system gnu) #:select (package-with-explicit-inputs))
   #:use-module ((distro) #:select (search-patch))
   #:use-module (distro packages base)
   #:use-module (distro packages bash)
@@ -29,6 +30,7 @@
   #:use-module (distro packages linux)
   #:use-module (distro packages multiprecision)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:export (%bootstrap-binaries-tarball
             %binutils-bootstrap-tarball
             %glibc-bootstrap-tarball
@@ -65,6 +67,29 @@
              (lambda x
                (augment (apply args x)))
              (augment args)))))))
+
+(define %glibc-with-relocatable-system
+  ;; A libc whose `system' and `popen' functions looks for `sh' in $PATH.
+  (package (inherit glibc-final)
+    (arguments
+     (lambda (system)
+       (substitute-keyword-arguments ((package-arguments glibc-final) system)
+         ((#:patches patches)
+          `(cons (assoc-ref %build-inputs "patch/system")
+                 ,patches)))))
+    (inputs
+     `(("patch/system" ,(search-patch "glibc-bootstrap-system.patch"))
+       ,@(package-inputs glibc-final)))))
+
+(define %standard-inputs-with-relocatable-glibc
+  ;; Standard inputs with the above libc and corresponding GCC.
+  `(("libc", %glibc-with-relocatable-system)
+    ("gcc" ,(package-with-explicit-inputs
+             gcc-4.7
+             `(("libc",%glibc-with-relocatable-system)
+               ,@(alist-delete "libc" %final-inputs))
+             (current-source-location)))
+    ,@(fold alist-delete %final-inputs '("libc" "gcc"))))
 
 (define %bash-static
   (let ((bash-light (package (inherit bash-final)
@@ -121,7 +146,8 @@
         (gawk (package (inherit gawk)
                 (arguments
                  (lambda (system)
-                   `(#:phases (alist-cons-before
+                   `(#:patches (list (assoc-ref %build-inputs "patch/sh"))
+                     #:phases (alist-cons-before
                                'build 'no-export-dynamic
                                (lambda* (#:key outputs #:allow-other-keys)
                                  ;; Since we use `-static', remove
@@ -129,10 +155,16 @@
                                  (substitute* "configure"
                                    (("-export-dynamic") "")))
                                %standard-phases)
-                     ,@((package-arguments gawk) system)))))))
+                     ,@((package-arguments gawk) system))))
+                (inputs `(("patch/sh" ,(search-patch "gawk-shell.patch"))))))
+        (finalize (lambda (p)
+                    (static-package (package-with-explicit-inputs
+                                     p
+                                     %standard-inputs-with-relocatable-glibc)
+                                    (current-source-location)))))
     `(,@(map (match-lambda
               ((name package)
-               (list name (static-package package (current-source-location)))))
+               (list name (finalize package))))
              `(("tar" ,tar)
                ("gzip" ,gzip)
                ("bzip2" ,bzip2)
@@ -272,84 +304,87 @@
   ;; GNU libc's essential shared libraries, dynamic linker, and headers,
   ;; with all references to store directories stripped.  As a result,
   ;; libc.so is unusable and need to be patched for proper relocation.
-  (package (inherit glibc-final)
-    (name "glibc-stripped")
-    (build-system trivial-build-system)
-    (arguments
-     `(#:modules ((guix build utils))
-       #:builder
-       (begin
-         (use-modules (guix build utils))
+  (let ((glibc %glibc-with-relocatable-system))
+    (package (inherit glibc)
+      (name "glibc-stripped")
+      (build-system trivial-build-system)
+      (arguments
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
 
-         (setvbuf (current-output-port) _IOLBF)
-         (let* ((out    (assoc-ref %outputs "out"))
-                (libdir (string-append out "/lib"))
-                (incdir (string-append out "/include"))
-                (libc   (assoc-ref %build-inputs "libc"))
-                (linux  (assoc-ref %build-inputs "linux-headers")))
-           (mkdir-p libdir)
-           (for-each (lambda (file)
-                       (let ((target (string-append libdir "/"
-                                                    (basename file))))
-                         (copy-file file target)
-                         (remove-store-references target)))
-                     (find-files (string-append libc "/lib")
-                                 "^(crt.*|ld.*|lib(c|m|dl|rt|pthread|nsl|util).*\\.so(\\..*)?|libc_nonshared\\.a)$"))
+           (setvbuf (current-output-port) _IOLBF)
+           (let* ((out    (assoc-ref %outputs "out"))
+                  (libdir (string-append out "/lib"))
+                  (incdir (string-append out "/include"))
+                  (libc   (assoc-ref %build-inputs "libc"))
+                  (linux  (assoc-ref %build-inputs "linux-headers")))
+             (mkdir-p libdir)
+             (for-each (lambda (file)
+                         (let ((target (string-append libdir "/"
+                                                      (basename file))))
+                           (copy-file file target)
+                           (remove-store-references target)))
+                       (find-files (string-append libc "/lib")
+                                   "^(crt.*|ld.*|lib(c|m|dl|rt|pthread|nsl|util).*\\.so(\\..*)?|libc_nonshared\\.a)$"))
 
-           (copy-recursively (string-append libc "/include") incdir)
+             (copy-recursively (string-append libc "/include") incdir)
 
-           ;; Copy some of the Linux-Libre headers that glibc headers
-           ;; refer to.
-           (mkdir (string-append incdir "/linux"))
-           (for-each (lambda (file)
-                       (copy-file (string-append linux "/include/linux/" file)
-                                  (string-append incdir "/linux/"
-                                                 (basename file))))
-                     '("limits.h" "errno.h" "socket.h" "kernel.h"
-                       "sysctl.h" "param.h" "ioctl.h" "types.h"
-                       "posix_types.h" "stddef.h"))
+             ;; Copy some of the Linux-Libre headers that glibc headers
+             ;; refer to.
+             (mkdir (string-append incdir "/linux"))
+             (for-each (lambda (file)
+                         (copy-file (string-append linux "/include/linux/" file)
+                                    (string-append incdir "/linux/"
+                                                   (basename file))))
+                       '("limits.h" "errno.h" "socket.h" "kernel.h"
+                         "sysctl.h" "param.h" "ioctl.h" "types.h"
+                         "posix_types.h" "stddef.h"))
 
-           (copy-recursively (string-append linux "/include/asm")
-                             (string-append incdir "/asm"))
-           (copy-recursively (string-append linux "/include/asm-generic")
-                             (string-append incdir "/asm-generic"))
-           #t))))
-    (inputs `(("libc" ,glibc-final)
-              ("linux-headers" ,linux-libre-headers)))))
+             (copy-recursively (string-append linux "/include/asm")
+                               (string-append incdir "/asm"))
+             (copy-recursively (string-append linux "/include/asm-generic")
+                               (string-append incdir "/asm-generic"))
+             #t))))
+      (inputs `(("libc" ,glibc)
+                ("linux-headers" ,linux-libre-headers))))))
 
 (define %gcc-static
   ;; A statically-linked GCC, with stripped-down functionality.
-  (package (inherit gcc-final)
-    (name "gcc-static")
-    (arguments
-     (lambda (system)
-       `(#:modules ((guix build utils)
-                    (guix build gnu-build-system)
-                    (srfi srfi-1)
-                    (srfi srfi-26)
-                    (ice-9 regex))
-         ,@(substitute-keyword-arguments ((package-arguments gcc-final) system)
-             ((#:guile _) #f)
-             ((#:implicit-inputs? _) #t)
-             ((#:configure-flags flags)
-              `(append (list
-                        "--disable-shared"
-                        "--disable-plugin"
-                        "--enable-languages=c"
-                        "--disable-libmudflap"
-                        "--disable-libgomp"
-                        "--disable-libssp"
-                        "--disable-libquadmath"
-                        "--disable-decimal-float")
-                       (remove (cut string-match "--(.*plugin|enable-languages)" <>)
-                               ,flags)))
-             ((#:make-flags flags)
-              `(cons "BOOT_LDFLAGS=-static" ,flags))))))
-    (inputs `(("gmp-source" ,(package-source gmp))
-              ("mpfr-source" ,(package-source mpfr))
-              ("mpc-source" ,(package-source mpc))
-              ("binutils" ,binutils-final)
-              ,@(package-inputs gcc-4.7)))))
+  (package-with-explicit-inputs
+   (package (inherit gcc-final)
+     (name "gcc-static")
+     (arguments
+      (lambda (system)
+        `(#:modules ((guix build utils)
+                     (guix build gnu-build-system)
+                     (srfi srfi-1)
+                     (srfi srfi-26)
+                     (ice-9 regex))
+          ,@(substitute-keyword-arguments ((package-arguments gcc-final) system)
+              ((#:guile _) #f)
+              ((#:implicit-inputs? _) #t)
+              ((#:configure-flags flags)
+               `(append (list
+                         "--disable-shared"
+                         "--disable-plugin"
+                         "--enable-languages=c"
+                         "--disable-libmudflap"
+                         "--disable-libgomp"
+                         "--disable-libssp"
+                         "--disable-libquadmath"
+                         "--disable-decimal-float")
+                        (remove (cut string-match "--(.*plugin|enable-languages)" <>)
+                                ,flags)))
+              ((#:make-flags flags)
+               `(cons "BOOT_LDFLAGS=-static" ,flags))))))
+     (inputs `(("gmp-source" ,(package-source gmp))
+               ("mpfr-source" ,(package-source mpfr))
+               ("mpc-source" ,(package-source mpc))
+               ("binutils" ,binutils-final)
+               ,@(package-inputs gcc-4.7))))
+   %standard-inputs-with-relocatable-glibc))
 
 (define %gcc-stripped
   ;; The subset of GCC files needed for bootstrap.
@@ -429,7 +464,9 @@
                     ;; There are uses of `dynamic-link' in
                     ;; {foreign,coverage}.test that don't fly here.
                     #:tests? #f)))))
-    (static-package guile (current-source-location))))
+    (package-with-explicit-inputs (static-package guile)
+                                  %standard-inputs-with-relocatable-glibc
+                                  (current-source-location))))
 
 (define %guile-static-stripped
   ;; A stripped static Guile binary, for use during bootstrap.

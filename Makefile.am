@@ -102,7 +102,9 @@ dist_patch_DATA =						\
   distro/packages/patches/cpio-gets-undeclared.patch		\
   distro/packages/patches/diffutils-gets-undeclared.patch	\
   distro/packages/patches/flex-bison-tests.patch		\
+  distro/packages/patches/gawk-shell.patch			\
   distro/packages/patches/gettext-gets-undeclared.patch		\
+  distro/packages/patches/glibc-bootstrap-system.patch		\
   distro/packages/patches/glibc-no-ld-so-cache.patch		\
   distro/packages/patches/guile-1.8-cpp-4.5.patch		\
   distro/packages/patches/guile-default-utf8.patch		\
