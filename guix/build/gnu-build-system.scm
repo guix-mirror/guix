@@ -101,6 +101,8 @@
         (("^SHELL[[:blank:]]*=.*$")
          (string-append "SHELL = " bash "\n"))))))
 
+(define patch-generated-files patch-source-shebangs)
+
 (define* (patch #:key (patches '()) (patch-flags '("--batch" "-p1"))
                 #:allow-other-keys)
   (every (lambda (p)
@@ -250,7 +252,8 @@
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
-    (phases set-paths unpack patch patch-source-shebangs configure
+    (phases set-paths unpack patch
+            patch-source-shebangs configure patch-generated-files
             build check install
             patch-shebangs strip)))
 
