@@ -969,20 +969,22 @@ store.")
   ;; Libtool, so that that dependency is isolated in the "bin" output.
   (let ((guile (package (inherit guile-2.0/fixed)
                  (arguments
-                  `(#:phases
-                    (alist-cons-before
-                     'patch-source-shebangs 'delete-encoded-test
-                     (lambda* (#:key inputs #:allow-other-keys)
-                       ;; %BOOTSTRAP-GUILE doesn't know about encodings other
-                       ;; than UTF-8.  That test declares an ISO-8859-1
-                       ;; encoding, which prevents `patch-shebang' from
-                       ;; working, so skip it.
-                       (call-with-output-file
-                           "test-suite/standalone/test-command-line-encoding2"
-                         (lambda (p)
-                           (format p "#!~a/bin/bash\nexit 77"
-                                   (assoc-ref inputs "bash")))))
-                     %standard-phases))))))
+                  (substitute-keyword-arguments
+                      (package-arguments guile-2.0/fixed)
+                    ((#:phases phases)
+                     `(alist-cons-before
+                       'patch-source-shebangs 'delete-encoded-test
+                       (lambda* (#:key inputs #:allow-other-keys)
+                         ;; %BOOTSTRAP-GUILE doesn't know about encodings other
+                         ;; than UTF-8.  That test declares an ISO-8859-1
+                         ;; encoding, which prevents `patch-shebang' from
+                         ;; working, so skip it.
+                         (call-with-output-file
+                             "test-suite/standalone/test-command-line-encoding2"
+                           (lambda (p)
+                             (format p "#!~a/bin/bash\nexit 77"
+                                     (assoc-ref inputs "bash")))))
+                       ,phases)))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs guile
                                    %boot4-inputs

@@ -120,6 +120,16 @@ extensible.  It supports many SRFIs.")
 
    (self-native-input? #t)
 
+   (arguments
+    '(#:phases (alist-cons-before
+                'configure 'pre-configure
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let ((bash (assoc-ref inputs "bash")))
+                    (substitute* "module/ice-9/popen.scm"
+                      (("/bin/sh")
+                       (string-append bash "/bin/bash")))))
+                %standard-phases)))
+
    (synopsis "GNU Guile 2.0, an embeddable Scheme implementation")
    (description
 "GNU Guile is an implementation of the Scheme programming language, with
