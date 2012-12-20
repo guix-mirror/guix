@@ -35,13 +35,25 @@
             (sha256
              (base32 "0sss7rhpvizi2a88h6giv0i7w5h07s2fxkw3s6n1hqvcnhrfgbb0"))))
    (build-system gnu-build-system)
-   (arguments (case-lambda
-                ((system)
-                 (if (string=? system "i686-cygwin")
-                     '(#:tests? #f)      ; work around test failure on Cygwin
-                     '(#:parallel-tests? #f))) ; test suite fails in parallel
-                ((system cross-system)
-                 '(#:parallel-tests? #f))))
+   (arguments
+    (case-lambda
+      ((system)
+       `(#:parallel-tests? #f             ; test suite fails in parallel
+
+         ;; Work around test failure on Cygwin.
+         #:tests? ,(not (string=? system "i686-cygwin"))
+
+         #:phases (alist-cons-before
+                   'configure 'set-shell-file-name
+                   (lambda* (#:key inputs #:allow-other-keys)
+                     ;; Refer to the right shell.
+                     (let ((bash (assoc-ref inputs "bash")))
+                       (substitute* "io.c"
+                         (("/bin/sh")
+                          (string-append bash "/bin/bash")))))
+                   %standard-phases)))
+      ((system cross-system)
+       '(#:parallel-tests? #f))))
    (inputs `(("libsigsegv" ,libsigsegv)             ; headers
              ("libsigsegv/lib" ,libsigsegv "lib"))) ; library
    (home-page "http://www.gnu.org/software/gawk/")
