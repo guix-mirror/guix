@@ -100,8 +100,30 @@ Standards.  Automake requires the use of Autoconf.")
     (native-inputs `(("m4" ,m4)
                      ("perl" ,perl)))
     (arguments
-     ;; TODO: Use `TESTSUITEFLAGS=-jN' for tests.
-     `(#:patches (list (assoc-ref %build-inputs "patch/skip-tests"))))
+     `(#:patches (list (assoc-ref %build-inputs "patch/skip-tests"))
+       #:phases (alist-cons-before
+                 'check 'pre-check
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; Run the test suite in parallel, if possible.
+                   (let ((ncores
+                          (cond
+                           ((getenv "NIX_BUILD_CORES")
+                            =>
+                            (lambda (n)
+                              (if (zero? (string->number n))
+                                  (number->string (current-processor-count))
+                                  n)))
+                           (else "1"))))
+                    (setenv "TESTSUITEFLAGS"
+                            (string-append "-j" ncores)))
+
+                   ;; Path references to /bin/sh.
+                   (patch-shebang "libtoolize")
+                   (let ((bash (assoc-ref inputs "bash")))
+                     (substitute* "tests/testsuite"
+                       (("/bin/sh")
+                        (string-append bash "/bin/bash")))))
+                 %standard-phases)))
     (inputs `(("patch/skip-tests"
                ,(search-patch "libtool-skip-tests.patch"))))
     (synopsis "GNU Libtool, a generic library support script")
