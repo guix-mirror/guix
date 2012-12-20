@@ -32,7 +32,20 @@
                                  "-DSTANDARD_UTILS_PATH='\"/no-such-path\"'"
                                  "-DNON_INTERACTIVE_LOGIN_SHELLS"
                                  "-DSSH_SOURCE_BASHRC")
-                               " ")))
+                               " "))
+        (pre-configure-phase
+         '(lambda* (#:key inputs #:allow-other-keys)
+            ;; Use the right shell for makefiles.
+            (let ((bash (assoc-ref inputs "bash")))
+              (substitute* "configure"
+                (("MAKE_SHELL=[^ ]+")
+                 (format #f "MAKE_SHELL=~a/bin/bash" bash))))))
+        (post-install-phase
+         '(lambda* (#:key outputs #:allow-other-keys)
+            ;; Add a `bash' -> `sh' link.
+            (let ((out (assoc-ref outputs "out")))
+              (with-directory-excursion (string-append out "/bin")
+                (symlink "bash" "sh"))))))
     (package
      (name "bash")
      (version "4.2")
@@ -67,15 +80,12 @@
         ;; for now.
         #:tests? #f
 
-        #:phases
-        (alist-cons-after 'install 'post-install
-                          (lambda* (#:key outputs #:allow-other-keys)
-                            ;; Add a `bash' -> `sh' link.
-                            (let ((out (assoc-ref outputs "out")))
-                              (with-directory-excursion
-                                  (string-append out "/bin")
-                                (symlink "bash" "sh"))))
-                          %standard-phases)))
+        #:phases (alist-cons-before
+                  'configure 'pre-configure
+                  ,pre-configure-phase
+                  (alist-cons-after 'install 'post-install
+                                    ,post-install-phase
+                                    %standard-phases))))
      (synopsis "GNU Bourne-Again Shell")
      (description
       "Bash is the shell, or command language interpreter, that will appear in
