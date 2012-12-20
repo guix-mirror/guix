@@ -20,6 +20,7 @@
   #:use-module (guix build utils)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%standard-phases
@@ -267,6 +268,11 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
   ;; PHASES can pick the keyword arguments it's interested in.
   (every (match-lambda
           ((name . proc)
-           (format #t "starting phase `~a'~%" name)
-           (apply proc args)))
+           (let ((start (gettimeofday)))
+            (format #t "starting phase `~a'~%" name)
+            (let ((result (apply proc args))
+                  (end    (gettimeofday)))
+              (format #t "phase `~a' ~:[failed~;succeeded~] after ~a seconds~%"
+                      name result (- (car end) (car start)))
+              result))))
          phases))
