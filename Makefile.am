@@ -142,9 +142,9 @@ dist_bootstrap_i686_linux_DATA =		\
 # Big bootstrap binaries are not included in the tarball.  Instead, they
 # are downloaded.
 nodist_bootstrap_x86_64_linux_DATA =					\
-  distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz
+  distro/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz
 nodist_bootstrap_i686_linux_DATA =					\
-  distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz
+  distro/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz
 
 # Those files must remain executable, so they remain executable once
 # imported into the store.
@@ -161,12 +161,12 @@ DOWNLOAD_FILE =								\
   $(GUILE) --no-auto-compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
            "$(top_srcdir)/build-aux/download.scm"
 
-distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz:
+distro/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
-	$(DOWNLOAD_FILE) "$@" "0467a82cbe4136f60a79eb4176011bf88cf28ea19c9ad9defa365811ff8e11cf"
-distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz:
+	$(DOWNLOAD_FILE) "$@" "953fbcc8db6e310626be79b67319cf4141dc23b296447952a99d95425b3a4dc1"
+distro/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
-	$(DOWNLOAD_FILE) "$@" "93b537766dfab3ad287143523751e3ec02dd32d3ccaf88ad2d31c63158f342ee"
+	$(DOWNLOAD_FILE) "$@" "45d1f9bfb9e4531a8f1c5a105f7ab094cd481b8a179ccc63cbabb73ce6b8437f"
 
 nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
 
