@@ -371,17 +371,25 @@ all subject to the substitutions."
 ;;; Patching shebangs---e.g., /bin/sh -> /nix/store/xyz...-bash/bin/sh.
 ;;;
 
-(define* (dump-port in out #:key (buffer-size 16384))
+(define* (dump-port in out
+                    #:key (buffer-size 16384)
+                    (progress (lambda (t k) (k))))
   "Read as much data as possible from IN and write it to OUT, using
-chunks of BUFFER-SIZE bytes."
+chunks of BUFFER-SIZE bytes.  Call PROGRESS after each successful
+transfer of BUFFER-SIZE bytes or less, passing it the total number of
+bytes transferred and the continuation of the transfer as a thunk."
   (define buffer
     (make-bytevector buffer-size))
 
-  (let loop ((bytes (get-bytevector-n! in buffer 0 buffer-size)))
+  (let loop ((total 0)
+             (bytes (get-bytevector-n! in buffer 0 buffer-size)))
     (or (eof-object? bytes)
-        (begin
+        (let ((total (+ total bytes)))
           (put-bytevector out buffer 0 bytes)
-          (loop (get-bytevector-n! in buffer 0 buffer-size))))))
+          (progress total
+                    (lambda ()
+                      (loop total
+                            (get-bytevector-n! in buffer 0 buffer-size))))))))
 
 (define patch-shebang
   (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]+)(.*)$")))
