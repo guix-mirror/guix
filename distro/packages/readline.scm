@@ -36,14 +36,7 @@
               (for-each (lambda (f) (chmod f #o755))
                         (find-files lib "\\.so"))
               (for-each (lambda (f) (chmod f #o644))
-                        (find-files lib "\\.a")))))
-        (pre-configure-phase
-         '(lambda* (#:key inputs #:allow-other-keys)
-            ;; Use the right shell for makefiles.
-            (let ((bash (assoc-ref inputs "bash")))
-              (substitute* "configure"
-                (("^MAKE_SHELL=.*")
-                 (format #f "MAKE_SHELL=~a/bin/bash" bash)))))))
+                        (find-files lib "\\.a"))))))
     (package
       (name "readline")
       (version "6.2")
@@ -69,10 +62,7 @@
                    #:phases (alist-cons-after
                              'install 'post-install
                              ,post-install-phase
-                             (alist-cons-before
-                              'configure 'pre-configure
-                              ,pre-configure-phase
-                              %standard-phases))))
+                             %standard-phases)))
       (synopsis "GNU Readline, a library for interactive line editing")
       (description
        "The GNU Readline library provides a set of functions for use by

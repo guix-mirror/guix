@@ -28,9 +28,6 @@
          '(lambda _
             (substitute* (find-files "." "Makefile.in")
               (("^SHELL[[:blank:]]*=.*$") ""))))
-        (pre-install-phase
-         '(lambda _
-            (for-each patch-shebang (find-files "." "\\.sh$"))))
         (post-install-phase
          '(lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
@@ -93,10 +90,7 @@
                      (alist-cons-before
                       'configure 'patch-makefile-SHELL
                       ,patch-makefile-phase
-                      (alist-cons-before
-                       'install 'pre-install-phase
-                       ,pre-install-phase
-                       %standard-phases)))
+                      %standard-phases))
 
            ;; The `ncursesw5-config' has a #!/bin/sh that we don't want to
            ;; patch, to avoid retaining a reference to the build-time Bash.

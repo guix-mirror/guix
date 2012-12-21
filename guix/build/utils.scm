@@ -27,6 +27,7 @@
   #:use-module (rnrs io ports)
   #:export (directory-exists?
             executable-file?
+            call-with-ascii-input-file
             with-directory-excursion
             mkdir-p
             copy-recursively
@@ -43,6 +44,7 @@
             substitute*
             dump-port
             patch-shebang
+            patch-makefile-SHELL
             fold-port-matches
             remove-store-references))
 
@@ -62,6 +64,21 @@
   (let ((s (stat file #f)))
     (and s
          (not (zero? (logand (stat:mode s) #o100))))))
+
+(define (call-with-ascii-input-file file proc)
+  "Open FILE as an ASCII or binary file, and pass the resulting port to
+PROC.  FILE is closed when PROC's dynamic extent is left.  Return the
+return values of applying PROC to the port."
+  (let ((port (with-fluids ((%default-port-encoding #f))
+                ;; Use "b" so that `open-file' ignores `coding:' cookies.
+                (open-file file "rb"))))
+    (dynamic-wind
+      (lambda ()
+        #t)
+      (lambda ()
+        (proc port))
+      (lambda ()
+        (close-input-port port)))))
 
 (define-syntax-rule (with-directory-excursion dir body ...)
   "Run BODY with DIR as the process's current directory."
@@ -418,30 +435,55 @@ patched, #f otherwise."
               (false-if-exception (delete-file template))
               #f))))
 
-      (with-fluids ((%default-port-encoding #f))  ; ASCII
-        (call-with-input-file file
-          (lambda (p)
-            (and (eq? #\# (read-char p))
-                 (eq? #\! (read-char p))
-                 (let ((line (false-if-exception (read-line p))))
-                   (and=> (and line (regexp-exec shebang-rx line))
-                          (lambda (m)
-                            (let* ((cmd (match:substring m 1))
-                                   (bin (search-path path
-                                                     (basename cmd))))
-                              (if bin
-                                  (if (string=? bin cmd)
-                                      #f          ; nothing to do
-                                      (begin
-                                        (format (current-error-port)
-                                                "patch-shebang: ~a: changing `~a' to `~a'~%"
-                                                file cmd bin)
-                                        (patch p bin (match:substring m 2))))
-                                  (begin
-                                    (format (current-error-port)
-                                            "patch-shebang: ~a: warning: no binary for interpreter `~a' found in $PATH~%"
-                                            file (basename cmd))
-                                    #f)))))))))))))
+      (call-with-ascii-input-file file
+        (lambda (p)
+          (and (eq? #\# (read-char p))
+               (eq? #\! (read-char p))
+               (let ((line (false-if-exception (read-line p))))
+                 (and=> (and line (regexp-exec shebang-rx line))
+                        (lambda (m)
+                          (let* ((cmd (match:substring m 1))
+                                 (bin (search-path path (basename cmd))))
+                            (if bin
+                                (if (string=? bin cmd)
+                                    #f            ; nothing to do
+                                    (begin
+                                      (format (current-error-port)
+                                              "patch-shebang: ~a: changing `~a' to `~a'~%"
+                                              file cmd bin)
+                                      (patch p bin (match:substring m 2))))
+                                (begin
+                                  (format (current-error-port)
+                                          "patch-shebang: ~a: warning: no binary for interpreter `~a' found in $PATH~%"
+                                          file (basename cmd))
+                                  #f))))))))))))
+
+(define (patch-makefile-SHELL file)
+  "Patch the `SHELL' variable in FILE, which is supposedly a makefile."
+
+  ;; For instance, Gettext-generated po/Makefile.in.in do not honor $SHELL.
+
+  ;; XXX: Unlike with `patch-shebang', FILE is always touched.
+
+  (define (find-shell name)
+    (let ((shell
+           (search-path (search-path-as-string->list (getenv "PATH"))
+                        name)))
+      (unless shell
+        (format (current-error-port)
+                "patch-makefile-SHELL: warning: no binary for shell `~a' found in $PATH~%"
+                name))
+      shell))
+
+  (substitute* file
+    (("^ *SHELL[[:blank:]]*=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)[[:blank:]]*" _ dir shell)
+     (let* ((old (string-append dir shell))
+            (new (or (find-shell shell) old)))
+       (unless (string=? new old)
+         (format (current-error-port)
+                 "patch-makefile-SHELL: ~a: changing `SHELL' from `~a' to `~a'~%"
+                 file old new))
+       (string-append "SHELL = " new "\n")))))
 
 (define* (fold-port-matches proc init pattern port
                             #:optional (unmatched (lambda (_ r) r)))

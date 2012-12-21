@@ -118,7 +118,6 @@ Standards.  Automake requires the use of Autoconf.")
                             (string-append "-j" ncores)))
 
                    ;; Path references to /bin/sh.
-                   (patch-shebang "libtoolize")
                    (let ((bash (assoc-ref inputs "bash")))
                      (substitute* "tests/testsuite"
                        (("/bin/sh")

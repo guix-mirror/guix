@@ -428,9 +428,6 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 ~a~%"
                             libc line))))
 
-               ;; Adjust hard-coded #!/bin/sh.
-               (patch-shebang "gcc/exec-tool.in")
-
                ;; Don't retain a dependency on the build-time sed.
                (substitute* "fixincludes/fixincl.x"
                  (("static char const sed_cmd_z\\[\\] =.*;")
@@ -967,29 +964,11 @@ store.")
   ;; FIXME: The Libtool used here, specifically its `bin/libtool' script,
   ;; holds a dependency on the bootstrap Binutils.  Use multiple outputs for
   ;; Libtool, so that that dependency is isolated in the "bin" output.
-  (let ((guile (package (inherit guile-2.0/fixed)
-                 (arguments
-                  (substitute-keyword-arguments
-                      (package-arguments guile-2.0/fixed)
-                    ((#:phases phases)
-                     `(alist-cons-before
-                       'patch-source-shebangs 'delete-encoded-test
-                       (lambda* (#:key inputs #:allow-other-keys)
-                         ;; %BOOTSTRAP-GUILE doesn't know about encodings other
-                         ;; than UTF-8.  That test declares an ISO-8859-1
-                         ;; encoding, which prevents `patch-shebang' from
-                         ;; working, so skip it.
-                         (call-with-output-file
-                             "test-suite/standalone/test-command-line-encoding2"
-                           (lambda (p)
-                             (format p "#!~a/bin/bash\nexit 77"
-                                     (assoc-ref inputs "bash")))))
-                       ,phases)))))))
-    (package-with-bootstrap-guile
-     (package-with-explicit-inputs guile
-                                   %boot4-inputs
-                                   (current-source-location)
-                                   #:guile %bootstrap-guile))))
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs guile-2.0/fixed
+                                 %boot4-inputs
+                                 (current-source-location)
+                                 #:guile %bootstrap-guile)))
 
 (define-public ld-wrapper
   ;; The final `ld' wrapper, which uses the final Guile.
