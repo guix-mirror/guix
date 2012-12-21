@@ -86,6 +86,7 @@ MODULES =					\
   distro/packages/pth.scm			\
   distro/packages/readline.scm			\
   distro/packages/recutils.scm			\
+  distro/packages/rsync.scm			\
   distro/packages/shishi.scm			\
   distro/packages/system.scm			\
   distro/packages/texinfo.scm			\
