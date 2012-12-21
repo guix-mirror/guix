@@ -66,6 +66,7 @@ MODULES =					\
   distro/packages/gperf.scm			\
   distro/packages/guile.scm			\
   distro/packages/help2man.scm			\
+  distro/packages/idutils.scm			\
   distro/packages/ld-wrapper.scm		\
   distro/packages/less.scm			\
   distro/packages/libffi.scm			\
