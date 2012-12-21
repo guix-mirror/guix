@@ -62,7 +62,7 @@ can use, in the form of M4 macro calls.")
 (define-public automake
   (package
     (name "automake")
-    (version "1.12.5")
+    (version "1.12.6")
     (source
      (origin
       (method url-fetch)
@@ -70,7 +70,7 @@ can use, in the form of M4 macro calls.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "1k4pa3rmj626n5d39rc9041dc71lv8nzd341k53dw07iflkwinim"))))
+        "1ynvca8z4aqcwr94rf7j1bfiid2w9w250y9qhnyj9vmi8lhsnd7q"))))
     (build-system gnu-build-system)
     (inputs
      `(("autoconf" ,autoconf)
