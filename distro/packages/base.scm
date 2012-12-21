@@ -252,14 +252,14 @@ The tools supplied with this package are:
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.19")
+   (version "8.20")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1rx9x3fp848w4nny7irdkcpkan9fcx24d99v5dkwgkyq7wc76f5d"))))
+              "1cly97xdy3v4nbbx631k43smqw0nnpn651kkprs0yyl2cj3pkjyv"))))
    (build-system gnu-build-system)
    (inputs `())                      ; TODO: optional deps: SELinux, ACL, GMP
    (arguments
