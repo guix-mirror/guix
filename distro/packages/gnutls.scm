@@ -31,7 +31,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "3.0")
+    (version "3.2")
     (source
      (origin
       (method url-fetch)
@@ -39,7 +39,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "00czfs2hlxb1nrnqicvwpm4ybpwg3hg5yj0a2nf13zrgkfdlkjzi"))))
+        "0gvgndypwicchf7m660zh7jdgmkfj9g9xavpcc08pyd0120y0bk7"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/libtasn1/")
     (synopsis "GNU Libtasn1, an ASN.1 library")
@@ -52,7 +52,7 @@ portable, and only require an ANSI C89 platform.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.1.3")
+    (version "3.1.5")
     (source
      (origin
       (method url-fetch)
@@ -62,7 +62,7 @@ portable, and only require an ANSI C89 platform.")
             ".tar.xz"))
       (sha256
        (base32
-        "0fff9frz0ycbnppfn0w4a2s9x27k21l4hh9zbax3v7a8cg33dcpw"))))
+        "1lz05l19s64s5hmhc9fh48ip6izy80bdiv0pwkfg9fwwvn25j29g"))))
     (build-system gnu-build-system)
 
     ;; Build of the Guile bindings is not parallel-safe.  See
