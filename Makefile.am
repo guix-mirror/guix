@@ -70,6 +70,7 @@ MODULES =					\
   distro/packages/ld-wrapper.scm		\
   distro/packages/less.scm			\
   distro/packages/libffi.scm			\
+  distro/packages/libidn.scm			\
   distro/packages/libsigsegv.scm		\
   distro/packages/libunistring.scm		\
   distro/packages/libusb.scm			\
