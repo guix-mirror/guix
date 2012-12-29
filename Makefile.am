@@ -78,6 +78,7 @@ MODULES =					\
   distro/packages/nano.scm			\
   distro/packages/ncurses.scm			\
   distro/packages/nettle.scm			\
+  distro/packages/openssl.scm			\
   distro/packages/perl.scm			\
   distro/packages/pkg-config.scm		\
   distro/packages/pth.scm			\
