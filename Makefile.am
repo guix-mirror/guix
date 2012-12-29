@@ -64,6 +64,7 @@ MODULES =					\
   distro/packages/gnupg.scm			\
   distro/packages/gnutls.scm			\
   distro/packages/gperf.scm			\
+  distro/packages/gsasl.scm			\
   distro/packages/guile.scm			\
   distro/packages/help2man.scm			\
   distro/packages/idutils.scm			\
