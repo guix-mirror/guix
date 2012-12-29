@@ -152,6 +152,7 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
                     (out-of-source? #f)
                     (path-exclusions ''())
                     (tests? #t)
+                    (test-target "check")
                     (parallel-build? #t) (parallel-tests? #t)
                     (patch-shebangs? #t)
                     (strip-binaries? #t)
@@ -193,6 +194,7 @@ which could lead to gratuitous input divergence."
                   #:out-of-source? ,out-of-source?
                   #:path-exclusions ,path-exclusions
                   #:tests? ,tests?
+                  #:test-target ,test-target
                   #:parallel-build? ,parallel-build?
                   #:parallel-tests? ,parallel-tests?
                   #:patch-shebangs? ,patch-shebangs?
