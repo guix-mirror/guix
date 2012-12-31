@@ -175,5 +175,7 @@ TESTS +=					\
   tests/guix-daemon.sh
 
 clean-local:
-	-find "$(GUIX_TEST_ROOT)" | xargs chmod +w
+	-if test -d "$(GUIX_TEST_ROOT)"; then		\
+	  find "$(GUIX_TEST_ROOT)" | xargs chmod +w;	\
+	 fi
 	-rm -rf "$(GUIX_TEST_ROOT)"
