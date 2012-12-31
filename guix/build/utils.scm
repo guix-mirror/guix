@@ -43,6 +43,7 @@
             substitute
             substitute*
             dump-port
+            set-file-time
             patch-shebang
             patch-makefile-SHELL
             fold-port-matches
@@ -408,17 +409,29 @@ bytes transferred and the continuation of the transfer as a thunk."
                       (loop total
                             (get-bytevector-n! in buffer 0 buffer-size))))))))
 
+(define (set-file-time file stat)
+  "Set the atime/mtime of FILE to that specified by STAT."
+  (utime file
+         (stat:atime stat)
+         (stat:mtime stat)
+         (stat:atimensec stat)
+         (stat:mtimensec stat)))
+
 (define patch-shebang
   (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]+)(.*)$")))
     (lambda* (file
-              #:optional (path (search-path-as-string->list (getenv "PATH"))))
+              #:optional
+              (path (search-path-as-string->list (getenv "PATH")))
+              #:key (keep-mtime? #t))
       "Replace the #! interpreter file name in FILE by a valid one found in
 PATH, when FILE actually starts with a shebang.  Return #t when FILE was
-patched, #f otherwise."
+patched, #f otherwise.  When KEEP-MTIME? is true, the atime/mtime of
+FILE are kept unchanged."
       (define (patch p interpreter rest-of-line)
         (let* ((template (string-append file ".XXXXXX"))
                (out      (mkstemp! template))
-               (mode     (stat:mode (stat file))))
+               (st       (stat file))
+               (mode     (stat:mode st)))
           (with-throw-handler #t
             (lambda ()
               (format out "#!~a~a~%"
@@ -427,6 +440,8 @@ patched, #f otherwise."
               (close out)
               (chmod template mode)
               (rename-file template file)
+              (when keep-mtime?
+                (set-file-time file st))
               #t)
             (lambda (key . args)
               (format (current-error-port)
@@ -458,8 +473,9 @@ patched, #f otherwise."
                                           file (basename cmd))
                                   #f))))))))))))
 
-(define (patch-makefile-SHELL file)
-  "Patch the `SHELL' variable in FILE, which is supposedly a makefile."
+(define* (patch-makefile-SHELL file #:key (keep-mtime? #t))
+  "Patch the `SHELL' variable in FILE, which is supposedly a makefile.
+When KEEP-MTIME? is true, the atime/mtime of FILE are kept unchanged."
 
   ;; For instance, Gettext-generated po/Makefile.in.in do not honor $SHELL.
 
@@ -475,15 +491,19 @@ patched, #f otherwise."
                 name))
       shell))
 
-  (substitute* file
-    (("^ *SHELL[[:blank:]]*=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)[[:blank:]]*" _ dir shell)
-     (let* ((old (string-append dir shell))
-            (new (or (find-shell shell) old)))
-       (unless (string=? new old)
-         (format (current-error-port)
-                 "patch-makefile-SHELL: ~a: changing `SHELL' from `~a' to `~a'~%"
-                 file old new))
-       (string-append "SHELL = " new "\n")))))
+  (let ((st (stat file)))
+   (substitute* file
+     (("^ *SHELL[[:blank:]]*=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)[[:blank:]]*" _ dir shell)
+      (let* ((old (string-append dir shell))
+             (new (or (find-shell shell) old)))
+        (unless (string=? new old)
+          (format (current-error-port)
+                  "patch-makefile-SHELL: ~a: changing `SHELL' from `~a' to `~a'~%"
+                  file old new))
+        (string-append "SHELL = " new "\n"))))
+
+   (when keep-mtime?
+     (set-file-time file st))))
 
 (define* (fold-port-matches proc init pattern port
                             #:optional (unmatched (lambda (_ r) r)))
