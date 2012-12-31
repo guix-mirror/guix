@@ -98,6 +98,7 @@ superior compression ratio of gzip is just a bonus.")
         (build-shared-lib
          ;; Build a shared library.
          '(lambda* (#:key inputs #:allow-other-keys)
+            (patch-makefile-SHELL "Makefile-libbz2_so")
             (zero? (system* "make" "-f" "Makefile-libbz2_so"))))
         (install-shared-lib
          '(lambda* (#:key outputs #:allow-other-keys)
