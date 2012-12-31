@@ -465,14 +465,14 @@ used in the GNU system including the GNU/Linux variant.")
 (define-public glibc
   (package
    (name "glibc")
-   (version "2.16.0")
+   (version "2.17")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "092rdm49zh6l1pqkxbcpcaawgsgzxhpf1s7wf5wi5dvc5am3dp0y"))))
+              "0gmjnn4kma9vgizccw1jv979xw55a8n1nkk94gg0l3hy80vy6539"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
