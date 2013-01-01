@@ -116,6 +116,7 @@ makefiles."
 (define* (configure #:key inputs outputs (configure-flags '()) out-of-source?
                     #:allow-other-keys)
   (let* ((prefix     (assoc-ref outputs "out"))
+         (bindir     (assoc-ref outputs "bin"))
          (libdir     (assoc-ref outputs "lib"))
          (includedir (assoc-ref outputs "include"))
          (bash       (or (and=> (assoc-ref inputs "bash")
@@ -128,6 +129,9 @@ makefiles."
 
                        ;; Produce multiple outputs when specific output names
                        ;; are recognized.
+                       ,@(if bindir
+                              (list (string-append "--bindir=" bindir "/bin"))
+                              '())
                        ,@(if libdir
                               (list (string-append "--libdir=" libdir "/lib"))
                               '())
