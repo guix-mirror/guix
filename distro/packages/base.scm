@@ -495,13 +495,13 @@ used in the GNU system including the GNU/Linux variant.")
             ;; GNU libc for details.
             "--enable-kernel=2.6.30"
 
-            ;; XXX: Work around "undefined reference to `__stack_chk_guard'".
-            "libc_cv_ssp=no"
-
             ;; Use our Bash instead of /bin/sh.
-            (string-append "ac_cv_path_BASH_SHELL="
+            (string-append "BASH_SHELL="
                            (assoc-ref %build-inputs "bash")
-                           "/bin/bash"))
+                           "/bin/bash")
+
+            ;; XXX: Work around "undefined reference to `__stack_chk_guard'".
+            "libc_cv_ssp=no")
 
       #:tests? #f                                 ; XXX
       #:phases (alist-cons-before
@@ -783,7 +783,6 @@ identifier SYSTEM."
                `(append (list ,(string-append "--host=" (boot-triplet system))
                               ,(string-append "--build="
                                               (nix-system->gnu-triplet system))
-                              "BASH_SHELL=/bin/sh"
 
                               ;; Build Sun/ONC RPC support.  In particular,
                               ;; install rpc/*.h.
