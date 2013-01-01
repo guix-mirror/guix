@@ -87,3 +87,24 @@ use.  In addition, most sh scripts can be run by Bash without
 modification.")
      (license gpl3+)
      (home-page "http://www.gnu.org/software/bash/"))))
+
+(define-public bash-light
+  ;; A stripped-down Bash for non-interactive use.
+  (package (inherit bash)
+    (name "bash-light")
+    (inputs '())                                ; no readline, no curses
+    (arguments
+     (let ((args `(#:modules ((guix build gnu-build-system)
+                              (guix build utils)
+                              (srfi srfi-1)
+                              (srfi srfi-26))
+                             ,@(package-arguments bash))))
+       (substitute-keyword-arguments args
+         ((#:configure-flags flags)
+          `(list "--without-bash-malloc"
+                 "--disable-readline"
+                 "--disable-history"
+                 "--disable-help-builtin"
+                 "--disable-progcomp"
+                 "--disable-net-redirections"
+                 "--disable-nls")))))))

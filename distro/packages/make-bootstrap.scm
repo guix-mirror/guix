@@ -1,5 +1,5 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -92,24 +92,7 @@
     ,@(fold alist-delete %final-inputs '("libc" "gcc"))))
 
 (define %bash-static
-  (let ((bash-light (package (inherit bash-final)
-                      (inputs '())              ; no readline, no curses
-                      (arguments
-                       (let ((args `(#:modules ((guix build gnu-build-system)
-                                                (guix build utils)
-                                                (srfi srfi-1)
-                                                (srfi srfi-26))
-                                               ,@(package-arguments bash))))
-                         (substitute-keyword-arguments args
-                           ((#:configure-flags flags)
-                            `(list "--without-bash-malloc"
-                                   "--disable-readline"
-                                   "--disable-history"
-                                   "--disable-help-builtin"
-                                   "--disable-progcomp"
-                                   "--disable-net-redirections"
-                                   "--disable-nls"))))))))
-    (static-package bash-light)))
+  (static-package bash-light))
 
 (define %static-inputs
   ;; Packages that are to be used as %BOOTSTRAP-INPUTS.
