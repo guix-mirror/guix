@@ -21,6 +21,7 @@
   #:use-module (guix utils)
   #:use-module (guix derivations)
   #:use-module (guix build-system)
+  #:use-module (guix build-system gnu)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-39)
@@ -29,7 +30,8 @@
             gnu-build-system
             package-with-explicit-inputs
             package-with-extra-configure-variable
-            static-libgcc-package))
+            static-libgcc-package
+            static-package))
 
 ;; Commentary:
 ;;
@@ -116,6 +118,28 @@ configure flags for VARIABLE, the associated value is augmented."
 (define (static-libgcc-package p)
   "A version of P linked with `-static-gcc'."
   (package-with-extra-configure-variable p "LDFLAGS" "-static-libgcc"))
+
+(define* (static-package p #:optional (loc (current-source-location)))
+  "Return a statically-linked version of package P."
+  (let ((args (package-arguments p)))
+    (package (inherit p)
+      (location (source-properties->location loc))
+      (arguments
+       (let ((augment (lambda (args)
+                        (let ((a (default-keyword-arguments args
+                                   '(#:configure-flags '()
+                                     #:strip-flags #f))))
+                          (substitute-keyword-arguments a
+                            ((#:configure-flags flags)
+                             `(cons* "--disable-shared"
+                                     "LDFLAGS=-static"
+                                     ,flags))
+                            ((#:strip-flags _)
+                             ''("--strip-all")))))))
+         (if (procedure? args)
+             (lambda x
+               (augment (apply args x)))
+             (augment args)))))))
 
 
 (define %store

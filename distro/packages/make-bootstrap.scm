@@ -20,7 +20,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix build-system trivial)
-  #:use-module ((guix build-system gnu) #:select (package-with-explicit-inputs))
+  #:use-module (guix build-system gnu)
   #:use-module ((distro) #:select (search-patch))
   #:use-module (distro packages base)
   #:use-module (distro packages bash)
@@ -44,29 +44,6 @@
 ;;; taken for granted and used as the root of the whole bootstrap procedure.
 ;;;
 ;;; Code:
-
-(define* (static-package p #:optional (loc (current-source-location)))
-  "Return a statically-linked version of package P."
-  ;; TODO: Move to (guix build-system gnu).
-  (let ((args (package-arguments p)))
-    (package (inherit p)
-      (location (source-properties->location loc))
-      (arguments
-       (let ((augment (lambda (args)
-                        (let ((a (default-keyword-arguments args
-                                   '(#:configure-flags '()
-                                     #:strip-flags #f))))
-                          (substitute-keyword-arguments a
-                            ((#:configure-flags flags)
-                             `(cons* "--disable-shared"
-                                     "LDFLAGS=-static"
-                                     ,flags))
-                            ((#:strip-flags _)
-                             ''("--strip-all")))))))
-         (if (procedure? args)
-             (lambda x
-               (augment (apply args x)))
-             (augment args)))))))
 
 (define %glibc-with-relocatable-system
   ;; A libc whose `system' and `popen' functions looks for `sh' in $PATH.
