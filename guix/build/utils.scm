@@ -1,5 +1,5 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -517,6 +517,14 @@ for each unmatched character."
         (map char-set (string->list pattern))
         pattern))
 
+  (define (get-char p)
+    ;; We call it `get-char', but that's really a binary version
+    ;; thereof.  (The real `get-char' cannot be used here because our
+    ;; bootstrap Guile is hacked to always use UTF-8.)
+    (match (get-u8 p)
+      ((? integer? x) (integer->char x))
+      (x x)))
+
   ;; Note: we're not really striving for performance here...
   (let loop ((chars   '())
              (pattern initial-pattern)
@@ -576,16 +584,17 @@ known as `nuke-refs' in Nixpkgs."
         (setvbuf in _IOFBF 65536)
         (setvbuf out _IOFBF 65536)
         (fold-port-matches (lambda (match result)
-                             (put-string out store)
-                             (put-char out #\/)
-                             (put-string out
-                              "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-")
+                             (put-bytevector out (string->utf8 store))
+                             (put-u8 out (char->integer #\/))
+                             (put-bytevector out
+                                             (string->utf8
+                                              "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-"))
                              #t)
                            #f
                            pattern
                            in
                            (lambda (char result)
-                             (put-char out char)
+                             (put-u8 out (char->integer char))
                              result))))))
 
 ;;; Local Variables:
