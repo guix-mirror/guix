@@ -1,6 +1,6 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
 ;;; Copyright (C) 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -99,6 +99,13 @@ Standards.  Automake requires the use of Autoconf.")
     (build-system gnu-build-system)
     (native-inputs `(("m4" ,m4)
                      ("perl" ,perl)))
+
+    ;; Separate binaries from the rest.  During bootstrap, only ltdl is
+    ;; used; not depending on the binaries allows us to avoid retaining
+    ;; a reference to the bootstrap bash.
+    (outputs '("bin"                         ; libtoolize, libtool, etc.
+               "out"))                       ; libltdl.so, ltdl.h, etc.
+
     (arguments
      `(#:patches (list (assoc-ref %build-inputs "patch/skip-tests"))
        #:phases (alist-cons-before

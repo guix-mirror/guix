@@ -1034,9 +1034,6 @@ store.")
     ,@(alist-delete "bash" %boot3-inputs)))
 
 (define-public guile-final
-  ;; FIXME: The Libtool used here, specifically its `bin/libtool' script,
-  ;; holds a dependency on the bootstrap Binutils.  Use multiple outputs for
-  ;; Libtool, so that that dependency is isolated in the "bin" output.
   (package-with-bootstrap-guile
    (package-with-explicit-inputs guile-2.0/fixed
                                  %boot4-inputs
