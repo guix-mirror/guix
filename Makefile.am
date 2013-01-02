@@ -55,6 +55,7 @@ MODULES =					\
   distro/packages/check.scm			\
   distro/packages/compression.scm		\
   distro/packages/cpio.scm			\
+  distro/packages/bdb.scm			\
   distro/packages/ddrescue.scm			\
   distro/packages/ed.scm			\
   distro/packages/flex.scm			\
