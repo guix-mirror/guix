@@ -1,5 +1,5 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -26,8 +26,23 @@
 (define-public ncurses
   (let ((patch-makefile-phase
          '(lambda _
-            (substitute* (find-files "." "Makefile.in")
-              (("^SHELL[[:blank:]]*=.*$") ""))))
+            (for-each patch-makefile-SHELL
+                      (find-files "." "Makefile.in"))))
+        (configure-phase
+         '(lambda* (#:key inputs outputs configure-flags
+                    #:allow-other-keys)
+            ;; The `ncursesw5-config' has a #!/bin/sh.  We want to patch
+            ;; it to point to libc's embedded Bash, to avoid retaining a
+            ;; reference to the bootstrap Bash.
+            (let* ((libc (assoc-ref inputs "libc"))
+                   (bash (string-append libc "/bin/bash"))
+                   (out  (assoc-ref outputs "out")))
+              (format #t "configure flags: ~s~%" configure-flags)
+              (zero? (apply system* bash "./configure"
+                            (string-append "SHELL=" bash)
+                            (string-append "CONFIG_SHELL=" bash)
+                            (string-append "--prefix=" out)
+                            configure-flags)))))
         (post-install-phase
          '(lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
@@ -90,11 +105,10 @@
                      (alist-cons-before
                       'configure 'patch-makefile-SHELL
                       ,patch-makefile-phase
-                      %standard-phases))
-
-           ;; The `ncursesw5-config' has a #!/bin/sh that we don't want to
-           ;; patch, to avoid retaining a reference to the build-time Bash.
-           #:patch-shebangs? #f))
+                      (alist-replace
+                       'configure
+                       ,configure-phase
+                       %standard-phases)))))
         ((system cross-system)
          (arguments cross-system))))
      (self-native-input? #t)
