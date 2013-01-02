@@ -1,5 +1,5 @@
 /* Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-   Copyright (C) 2012  Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012, 2013  Ludovic Courtès <ludo@gnu.org>
 
    This file is part of Guix.
 
@@ -22,6 +22,8 @@
 #include "shared.hh"
 #include <globals.hh>
 #include <util.hh>
+
+#include <gcrypt.h>
 
 #include <stdlib.h>
 #include <argp.h>
@@ -164,6 +166,13 @@ int
 main (int argc, char *argv[])
 {
   Strings nothing;
+
+  /* Initialize libgcrypt.  */
+  if (!gcry_check_version (GCRYPT_VERSION))
+    {
+      fprintf (stderr, "error: libgcrypt version mismatch\n");
+      exit (EXIT_FAILURE);
+    }
 
 #ifdef HAVE_CHROOT
   settings.useChroot = true;
