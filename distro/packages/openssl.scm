@@ -47,7 +47,10 @@
          (lambda* (#:key outputs #:allow-other-keys)
            (let ((out (assoc-ref outputs "out")))
              (zero?
-              (system* "./config" (string-append "--prefix=" out)))))
+              (system* "./config"
+                       "shared"                 ; build shared libraries
+                       "--libdir=lib"
+                       (string-append "--prefix=" out)))))
          (alist-cons-before
           'patch-source-shebangs 'patch-tests
           (lambda* (#:key inputs #:allow-other-keys)
