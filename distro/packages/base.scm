@@ -20,6 +20,7 @@
 (define-module (distro packages base)
   #:use-module (guix licenses)
   #:use-module (distro)
+  #:use-module (distro packages acl)
   #:use-module (distro packages bash)
   #:use-module (distro packages bootstrap)
   #:use-module (distro packages compression)
@@ -272,10 +273,24 @@ The tools supplied with this package are:
              (base32
               "1cly97xdy3v4nbbx631k43smqw0nnpn651kkprs0yyl2cj3pkjyv"))))
    (build-system gnu-build-system)
-   (inputs `())                      ; TODO: optional deps: SELinux, ACL, GMP
+   (inputs `(("acl"  ,acl)
+             ("gmp"  ,gmp)
+             ("perl" ,perl)))                     ; TODO: add SELinux
    (arguments
-    '(;; Perl is missing, and some tests are failing.
-      #:tests? #f))
+    `(#:parallel-build? #f            ; help2man may be called too early
+      #:phases (alist-cons-before
+                'build 'patch-shell-references
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let ((bash (assoc-ref inputs "bash")))
+                    (substitute* (cons "src/split.c"
+                                       (find-files "gnulib-tests"
+                                                   "\\.c$"))
+                      (("/bin/sh")
+                       (format #f "~a/bin/sh" bash)))
+                    (substitute* (find-files "tests" "\\.sh$")
+                      (("#!/bin/sh")
+                       (format #f "#!~a/bin/bash" bash)))))
+                %standard-phases)))
    (synopsis
     "The basic file, shell and text manipulation utilities of the GNU
 operating system")
