@@ -196,6 +196,17 @@ main (int argc, char *argv[])
 	fprintf (stderr, "warning: running as root is highly recommended, "
 		 "unless `--build-users-group' is used\n");
 
+#ifdef HAVE_CHROOT
+      if (settings.useChroot)
+	{
+	  foreach (PathSet::iterator, i, settings.dirsInChroot)
+	    {
+	      printMsg (lvlDebug,
+			format ("directory `%1%' added to the chroot") % *i);
+	    }
+	}
+#endif
+
       run (nothing);
     }
   catch (std::exception &e)
