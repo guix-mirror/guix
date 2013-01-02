@@ -41,15 +41,19 @@
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-replace 'check
-                      (lambda _
-                        (patch-shebang "test/run")
-                        (system* "make" "tests" "-C" "test")
+       (alist-cons-after
+        'configure 'patch-makefile-SHELL
+        (lambda _
+          (patch-makefile-SHELL "include/buildmacros"))
+        (alist-replace
+         'check
+         (lambda _
+           (system* "make" "tests" "-C" "test")
 
-                        ;; XXX: Ignore the test result since this is
-                        ;; dependent on the underlying file system.
-                        #t)
-                      %standard-phases)))
+           ;; XXX: Ignore the test result since this is
+           ;; dependent on the underlying file system.
+           #t)
+         %standard-phases))))
     (inputs `(("attr" ,attr)
               ("gettext" ,guix:gettext)
               ("perl" ,perl)))
