@@ -1,5 +1,5 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -23,6 +23,7 @@
   #:use-module (guix utils)
   #:use-module (guix base32)
   #:use-module ((guix packages) #:select (package-derivation))
+  #:use-module ((distro) #:select (search-bootstrap-binary))
   #:use-module (distro packages bootstrap)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -46,6 +47,11 @@
   ;; By default, use %BOOTSTRAP-GUILE for the current system.
   (let ((drv (package-derivation %store %bootstrap-guile)))
     (%guile-for-build drv)))
+
+(define %bash
+  (let ((bash (search-bootstrap-binary "bash" (%current-system))))
+    (and %store
+         (add-to-store %store "bash" #t #t "sha256" bash))))
 
 (define (directory-contents dir)
   "Return an alist representing the contents of DIR."
@@ -96,10 +102,11 @@
 
 (test-assert "derivation with no inputs"
   (let* ((builder  (add-text-to-store %store "my-builder.sh"
-                                      "#!/bin/sh\necho hello, world\n"
+                                      "echo hello, world\n"
                                       '()))
-         (drv-path (derivation %store "foo" (%current-system) builder
-                               '() '(("HOME" . "/homeless")) '())))
+         (drv-path (derivation %store "foo" (%current-system)
+                               %bash `("-e" ,builder)
+                               '(("HOME" . "/homeless")) '())))
     (and (store-path? drv-path)
          (valid-path? %store drv-path))))
 
@@ -110,7 +117,7 @@
                                     '()))
                 ((drv-path drv)
                  (derivation %store "foo" (%current-system)
-                             "/bin/sh" `(,builder)
+                             %bash `(,builder)
                              '(("HOME" . "/homeless")
                                ("zzz"  . "Z!")
                                ("AAA"  . "A!"))
@@ -132,7 +139,7 @@
          (input      (search-path %load-path "ice-9/boot-9.scm"))
          (drv-path   (derivation %store "derivation-with-input-file"
                                  (%current-system)
-                                 "/bin/sh" `(,builder)
+                                 %bash `(,builder)
                                  `(("in"
                                     ;; Cheat to pass the actual file
                                     ;; name to the builder.
@@ -152,7 +159,7 @@
                                         "echo -n hello > $out" '()))
          (hash       (sha256 (string->utf8 "hello")))
          (drv-path   (derivation %store "fixed" (%current-system)
-                                 "/bin/sh" `(,builder)
+                                 %bash `(,builder)
                                  '()
                                  `((,builder))    ; optional
                                  #:hash hash #:hash-algo 'sha256))
@@ -170,11 +177,11 @@
                                         "echo hey; echo -n hello > $out" '()))
          (hash       (sha256 (string->utf8 "hello")))
          (drv-path1  (derivation %store "fixed" (%current-system)
-                                 "/bin/sh" `(,builder1)
+                                 %bash `(,builder1)
                                  '() `()
                                  #:hash hash #:hash-algo 'sha256))
          (drv-path2  (derivation %store "fixed" (%current-system)
-                                 "/bin/sh" `(,builder2)
+                                 %bash `(,builder2)
                                  '() `()
                                  #:hash hash #:hash-algo 'sha256))
          (succeeded? (build-derivations %store
@@ -193,11 +200,11 @@
                                         "echo hey; echo -n hello > $out" '()))
          (hash       (sha256 (string->utf8 "hello")))
          (fixed1     (derivation %store "fixed" (%current-system)
-                                 "/bin/sh" `(,builder1)
+                                 %bash `(,builder1)
                                  '() `()
                                  #:hash hash #:hash-algo 'sha256))
          (fixed2     (derivation %store "fixed" (%current-system)
-                                 "/bin/sh" `(,builder2)
+                                 %bash `(,builder2)
                                  '() `()
                                  #:hash hash #:hash-algo 'sha256))
          (fixed-out  (derivation-path->output-path fixed1))
@@ -206,11 +213,11 @@
                       ;; Use Bash hackery to avoid Coreutils.
                       "echo $in ; (read -u 3 c; echo $c) 3< $in > $out" '()))
          (final1     (derivation %store "final" (%current-system)
-                                 "/bin/sh" `(,builder3)
+                                 %bash `(,builder3)
                                  `(("in" . ,fixed-out))
                                  `((,builder3) (,fixed1))))
          (final2     (derivation %store "final" (%current-system)
-                                 "/bin/sh" `(,builder3)
+                                 %bash `(,builder3)
                                  `(("in" . ,fixed-out))
                                  `((,builder3) (,fixed2))))
          (succeeded? (build-derivations %store
@@ -224,7 +231,7 @@
                                         "echo one > $out ; echo two > $second"
                                         '()))
          (drv-path   (derivation %store "fixed" (%current-system)
-                                 "/bin/sh" `(,builder)
+                                 %bash `(,builder)
                                  '(("HOME" . "/homeless")
                                    ("zzz"  . "Z!")
                                    ("AAA"  . "A!"))
@@ -244,7 +251,7 @@
                                         "echo one > $out ; echo two > $AAA"
                                         '()))
          (drv-path   (derivation %store "fixed" (%current-system)
-                                 "/bin/sh" `(,builder)
+                                 %bash `(,builder)
                                  '()
                                  `((,builder))
                                  #:outputs '("out" "AAA")))
@@ -262,7 +269,7 @@
                                         "echo one > $out ; echo two > $two"
                                         '()))
          (mdrv       (derivation %store "multiple-output" (%current-system)
-                                 "/bin/sh" `(,builder1)
+                                 %bash `(,builder1)
                                  '()
                                  `((,builder1))
                                  #:outputs '("out" "two")))
@@ -273,7 +280,7 @@
                                         '()))
          (udrv       (derivation %store "multiple-output-user"
                                  (%current-system)
-                                 "/bin/sh" `(,builder2)
+                                 %bash `(,builder2)
                                  `(("one" . ,(derivation-path->output-path
                                               mdrv "out"))
                                    ("two" . ,(derivation-path->output-path
@@ -303,7 +310,7 @@
                              '()))
          (drv-path
           (derivation %store "foo" (%current-system)
-                      "/bin/sh" `(,builder)
+                      %bash `(,builder)
                       `(("PATH" .
                          ,(string-append
                            (derivation-path->output-path %coreutils)

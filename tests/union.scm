@@ -1,5 +1,5 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -26,6 +26,7 @@
   #:use-module ((guix build utils)
                 #:select (with-directory-excursion directory-exists?))
   #:use-module (distro packages bootstrap)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -74,7 +75,9 @@
   (let* ((inputs  (map (match-lambda
                         ((name package)
                          `(,name ,(package-derivation %store package))))
-                       %bootstrap-inputs))
+                       (delete-duplicates %bootstrap-inputs
+                                          (lambda (i1 i2)
+                                            (eq? (second i1) (second i2))))))
          (builder `(begin
                      (use-modules (guix build union))
                      (union-build (assoc-ref %outputs "out")
