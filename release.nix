@@ -32,13 +32,13 @@ let
   bootstrap_guile =
     let pkgs = import nixpkgs {}; in {
       i686 = pkgs.fetchurl {
-        url = http://www.fdn.fr/~lcourtes/software/guix/packages/i686-linux/guile-bootstrap-2.0.6.tar.xz;
-        sha256 = "93b537766dfab3ad287143523751e3ec02dd32d3ccaf88ad2d31c63158f342ee";
+        url = http://www.fdn.fr/~lcourtes/software/guix/packages/i686-linux/20121219/guile-2.0.7.tar.xz;
+        sha256 = "45d1f9bfb9e4531a8f1c5a105f7ab094cd481b8a179ccc63cbabb73ce6b8437f";
       };
 
       x86_64 = pkgs.fetchurl {
-        url = http://www.fdn.fr/~lcourtes/software/guix/packages/x86_64-linux/guile-bootstrap-2.0.6.tar.xz;
-        sha256 = "0467a82cbe4136f60a79eb4176011bf88cf28ea19c9ad9defa365811ff8e11cf";
+        url = http://www.fdn.fr/~lcourtes/software/guix/packages/x86_64-linux/20121219/guile-2.0.7.tar.xz;
+        sha256 = "953fbcc8db6e310626be79b67319cf4141dc23b296447952a99d95425b3a4dc1";
       };
     };
 
@@ -76,9 +76,9 @@ let
           # the build system download it over and over again.
           '' mkdir -p distro/packages/bootstrap/{i686,x86_64}-linux
              cp -v "${bootstrap_guile.i686}" \
-               distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz
+               distro/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz
              cp -v "${bootstrap_guile.x86_64}" \
-               distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz
+               distro/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz
           '';
 
         inherit succeedOnFailure keepBuildDirectory
