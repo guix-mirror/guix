@@ -79,8 +79,13 @@
                         '("--disable-nls"
                           "--disable-silent-rules"
                           "--enable-no-install-program=stdbuf,libstdbuf.so"
+                          "CFLAGS=-Os -g0"        ; smaller, please
                           "LDFLAGS=-static -pthread")
-                        ,@(package-arguments coreutils)))))
+                        #:tests? #f   ; signal-related Gnulib tests fail
+                        ,@(package-arguments coreutils)))
+
+                     ;; Remove optional dependencies such as GMP.
+                     (inputs `(,(assoc "perl" (package-inputs coreutils))))))
         (bzip2 (package (inherit bzip2)
                  (arguments
                   (substitute-keyword-arguments (package-arguments bzip2)
