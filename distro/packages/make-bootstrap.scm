@@ -107,15 +107,17 @@
                 (arguments
                  (lambda (system)
                    `(#:patches (list (assoc-ref %build-inputs "patch/sh"))
-                     #:phases (alist-cons-before
-                               'build 'no-export-dynamic
-                               (lambda* (#:key outputs #:allow-other-keys)
-                                 ;; Since we use `-static', remove
-                                 ;; `-export-dynamic'.
-                                 (substitute* "configure"
-                                   (("-export-dynamic") "")))
-                               %standard-phases)
-                     ,@((package-arguments gawk) system))))
+                     ,@(substitute-keyword-arguments
+                           ((package-arguments gawk) system)
+                         ((#:phases phases)
+                          `(alist-cons-before
+                            'configure 'no-export-dynamic
+                            (lambda _
+                              ;; Since we use `-static', remove
+                              ;; `-export-dynamic'.
+                              (substitute* "configure"
+                                (("-export-dynamic") "")))
+                            ,phases))))))
                 (inputs `(("patch/sh" ,(search-patch "gawk-shell.patch"))))))
         (finalize (lambda (p)
                     (static-package (package-with-explicit-inputs
