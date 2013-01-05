@@ -171,27 +171,24 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                  (alist-cons 'argument arg result))
                %default-options))
 
-  (define (register-root drv root)
-    ;; Register ROOT as an indirect GC root for DRV's outputs.
-    (let* ((root     (string-append (canonicalize-path (dirname root))
-                                    "/" root))
-           (drv*     (call-with-input-file drv read-derivation))
-           (outputs  (derivation-outputs drv*))
-           (outputs* (map (compose derivation-output-path cdr) outputs)))
+  (define (register-root paths root)
+    ;; Register ROOT as an indirect GC root for all of PATHS.
+    (let* ((root (string-append (canonicalize-path (dirname root))
+                                "/" root)))
      (catch 'system-error
        (lambda ()
-         (match outputs*
-           ((output)
-            (symlink output root)
+         (match paths
+           ((path)
+            (symlink path root)
             (add-indirect-root (%store) root))
-           ((outputs ...)
-            (fold (lambda (output count)
+           ((paths ...)
+            (fold (lambda (path count)
                     (let ((root (string-append root "-" (number->string count))))
-                      (symlink output root)
+                      (symlink path root)
                       (add-indirect-root (%store) root))
                     (+ 1 count))
                   0
-                  outputs))))
+                  paths))))
        (lambda args
          (format (current-error-port)
                  (_ "failed to create GC root `~a': ~a~%")
@@ -234,7 +231,11 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                       (append (remove (compose (cut valid-path? (%store) <>)
                                                derivation-path->output-path)
                                       drv)
-                              (map derivation-input-path req)))))
+                              (map derivation-input-path req))))
+               (roots (filter-map (match-lambda
+                                   (('gc-root . root) root)
+                                   (_ #f))
+                                  opts)))
           (if (assoc-ref opts 'dry-run?)
               (format (current-error-port)
                       (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
@@ -255,7 +256,10 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                              #:verbosity (assoc-ref opts 'verbosity))
 
           (if (assoc-ref opts 'derivations-only?)
-              (format #t "~{~a~%~}" drv)
+              (begin
+                (format #t "~{~a~%~}" drv)
+                (for-each (cut register-root <> <>)
+                          (map list drv) roots))
               (or (assoc-ref opts 'dry-run?)
                   (and (build-derivations (%store) drv)
                        (for-each (lambda (d)
@@ -268,15 +272,12 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                                                      d out-name)))
                                                   (derivation-outputs drv)))))
                                  drv)
-                       (let ((roots (filter-map (match-lambda
-                                                 (('gc-root . root)
-                                                  root)
-                                                 (_ #f))
-                                                opts)))
-                         (when roots
-                           (for-each (cut register-root <> <>)
-                                     drv roots)
-                           #t))))))))))
+                       (for-each (cut register-root <> <>)
+                                 (map (lambda (drv)
+                                        (map cdr
+                                             (derivation-path->output-paths drv)))
+                                      drv)
+                                 roots)))))))))
 
 ;; Local Variables:
 ;; eval: (put 'guard 'scheme-indent-function 1)
