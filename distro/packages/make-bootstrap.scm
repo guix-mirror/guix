@@ -19,6 +19,7 @@
 (define-module (distro packages make-bootstrap)
   #:use-module (guix utils)
   #:use-module (guix packages)
+  #:use-module (guix licenses)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module ((distro) #:select (search-patch))
@@ -35,7 +36,8 @@
             %binutils-bootstrap-tarball
             %glibc-bootstrap-tarball
             %gcc-bootstrap-tarball
-            %guile-bootstrap-tarball))
+            %guile-bootstrap-tarball
+            %bootstrap-tarballs))
 
 ;;; Commentary:
 ;;;
@@ -519,5 +521,42 @@
 (define %guile-bootstrap-tarball
   ;; A tarball with the statically-linked, relocatable Guile.
   (tarball-package %guile-static-stripped))
+
+(define %bootstrap-tarballs
+  ;; A single derivation containing all the bootstrap tarballs, for
+  ;; convenience.
+  (package
+    (name "bootstrap-tarballs")
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (let ((out (assoc-ref %outputs "out")))
+         (use-modules (guix build utils)
+                      (ice-9 match)
+                      (srfi srfi-26))
+
+         (setvbuf (current-output-port) _IOLBF)
+         (mkdir out)
+         (chdir out)
+         (for-each (match-lambda
+                    ((name . directory)
+                     (for-each (lambda (file)
+                                 (format #t "~a -> ~a~%" file out)
+                                 (symlink file (basename file)))
+                               (find-files directory "\\.tar\\."))))
+                   %build-inputs)
+         #t)))
+    (inputs `(("guile-tarball" ,%guile-bootstrap-tarball)
+              ("gcc-tarball" ,%gcc-bootstrap-tarball)
+              ("binutils-tarball" ,%binutils-bootstrap-tarball)
+              ("glibc-tarball" ,%glibc-bootstrap-tarball)
+              ("coreutils&co-tarball" ,%bootstrap-binaries-tarball)))
+    (synopsis #f)
+    (description #f)
+    (home-page #f)
+    (license gpl3+)))
 
 ;;; make-bootstrap.scm ends here
