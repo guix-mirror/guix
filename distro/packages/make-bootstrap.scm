@@ -45,25 +45,32 @@
 ;;;
 ;;; Code:
 
-(define %glibc-with-relocatable-system
-  ;; A libc whose `system' and `popen' functions looks for `sh' in $PATH.
+(define %glibc-for-bootstrap
+  ;; A libc whose `system' and `popen' functions looks for `sh' in $PATH,
+  ;; without nscd, and with static NSS modules.
   (package (inherit glibc-final)
     (arguments
      (lambda (system)
        (substitute-keyword-arguments ((package-arguments glibc-final) system)
          ((#:patches patches)
           `(cons (assoc-ref %build-inputs "patch/system")
-                 ,patches)))))
+                 ,patches))
+         ((#:configure-flags flags)
+          ;; Arrange so that getaddrinfo & co. do not contact the nscd,
+          ;; and can use statically-linked NSS modules.
+          `(cons* "--disable-nscd" "--disable-build-nscd"
+                  "--enable-static-nss"
+                  ,flags)))))
     (inputs
      `(("patch/system" ,(search-patch "glibc-bootstrap-system.patch"))
        ,@(package-inputs glibc-final)))))
 
 (define %standard-inputs-with-relocatable-glibc
   ;; Standard inputs with the above libc and corresponding GCC.
-  `(("libc", %glibc-with-relocatable-system)
+  `(("libc", %glibc-for-bootstrap)
     ("gcc" ,(package-with-explicit-inputs
              gcc-4.7
-             `(("libc",%glibc-with-relocatable-system)
+             `(("libc",%glibc-for-bootstrap)
                ,@(alist-delete "libc" %final-inputs))
              (current-source-location)))
     ,@(fold alist-delete %final-inputs '("libc" "gcc"))))
@@ -271,7 +278,7 @@
   ;; GNU libc's essential shared libraries, dynamic linker, and headers,
   ;; with all references to store directories stripped.  As a result,
   ;; libc.so is unusable and need to be patched for proper relocation.
-  (let ((glibc %glibc-with-relocatable-system))
+  (let ((glibc %glibc-for-bootstrap))
     (package (inherit glibc)
       (name "glibc-stripped")
       (build-system trivial-build-system)
