@@ -7,3 +7,4 @@ distro/packages/recutils.scm
 guix/ui.scm
 guix-build.in
 guix-download.in
+guix-package.in

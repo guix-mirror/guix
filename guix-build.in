@@ -12,7 +12,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
          -c "(apply $main (cdr (command-line)))" "$@"
 !#
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -104,8 +104,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -V, --version          display version information and exit"))
   (newline)
-  (format #t (_ "
-Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
+  (show-bug-report-information))
 
 (define %options
   ;; Specifications of the command-line options.

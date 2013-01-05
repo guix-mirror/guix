@@ -1,5 +1,5 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -28,6 +28,7 @@
             N_
             leave
             show-version-and-exit
+            show-bug-report-information
             call-with-error-handling
             with-error-handling
             location->string))
@@ -55,6 +56,15 @@
   (simple-format #t "~a (~a) ~a~%"
                  command %guix-package-name %guix-version)
   (exit 0))
+
+(define (show-bug-report-information)
+  (format #t (_ "
+Report bugs to: ~a.") %guix-bug-report-address)
+  (format #t (_ "
+~a home page: <~a>") %guix-package-name %guix-home-page-url)
+  (display (_ "
+General help using GNU software: <http://www.gnu.org/gethelp/>"))
+  (newline))
 
 (define (call-with-error-handling thunk)
   "Call THUNK within a user-friendly error handler."
