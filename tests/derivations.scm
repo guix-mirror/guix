@@ -1,5 +1,5 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -234,7 +234,10 @@
     (and succeeded?
          (let ((one (derivation-path->output-path drv-path "out"))
                (two (derivation-path->output-path drv-path "second")))
-           (and (eq? 'one (call-with-input-file one read))
+           (and (lset= equal?
+                       (derivation-path->output-paths drv-path)
+                       `(("out" . ,one) ("second" . ,two)))
+                (eq? 'one (call-with-input-file one read))
                 (eq? 'two (call-with-input-file two read)))))))
 
 (test-assert "multiple-output derivation, non-alphabetic order"

@@ -1,5 +1,5 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -55,6 +55,7 @@
             read-derivation
             write-derivation
             derivation-path->output-path
+            derivation-path->output-paths
             derivation
 
             %guile-for-build
@@ -287,6 +288,16 @@ path of its output OUTPUT."
      (let* ((drv     (call-with-input-file path read-derivation))
             (outputs (derivation-outputs drv)))
        (and=> (assoc-ref outputs output) derivation-output-path)))))
+
+(define (derivation-path->output-paths path)
+  "Read the derivation from PATH (`/nix/store/xxx.drv'), and return the
+list of name/path pairs of its outputs."
+  (let* ((drv     (call-with-input-file path read-derivation))
+         (outputs (derivation-outputs drv)))
+    (map (match-lambda
+          ((name . output)
+           (cons name (derivation-output-path output))))
+         outputs)))
 
 
 ;;;
