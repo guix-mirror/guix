@@ -8,3 +8,4 @@ guix/ui.scm
 guix-build.in
 guix-download.in
 guix-package.in
+guix-gc.in

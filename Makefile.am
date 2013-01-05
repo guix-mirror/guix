@@ -1,5 +1,5 @@
 # Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-# Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+# Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of Guix.
 #
@@ -20,7 +20,8 @@ bin_SCRIPTS =					\
   guix-build					\
   guix-download					\
   guix-import					\
-  guix-package
+  guix-package					\
+  guix-gc
 
 MODULES =					\
   guix/base32.scm				\
@@ -189,6 +190,7 @@ TESTS =						\
   tests/union.scm				\
   tests/guix-build.sh				\
   tests/guix-download.sh			\
+  tests/guix-gc.sh				\
   tests/guix-package.sh
 
 TEST_EXTENSIONS = .scm .sh

@@ -64,3 +64,4 @@ stamp-h[0-9]
 /nix/scripts/list-runtime-roots
 /test-env
 /nix/nix-setuid-helper/nix-setuid-helper.cc
+/guix-gc
