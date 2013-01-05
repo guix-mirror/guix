@@ -36,6 +36,8 @@
             set-path-environment-variable
             search-path-as-string->list
             list->search-path-as-string
+            which
+
             alist-cons-before
             alist-cons-after
             alist-replace
@@ -213,6 +215,12 @@ SEPARATOR-separated path accordingly.  Example:
    (setenv env-var value)
    (format #t "environment variable `~a' set to `~a'~%"
            env-var value)))
+
+(define (which program)
+  "Return the complete file name for PROGRAM as found in $PATH, or #f if
+PROGRAM could not be found."
+  (search-path (search-path-as-string->list (getenv "PATH"))
+               program))
 
 
 ;;;

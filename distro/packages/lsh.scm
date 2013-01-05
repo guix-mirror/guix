@@ -1,5 +1,5 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -114,8 +114,7 @@
           (substitute* "src/testsuite/login-auth-test"
             (("/bin/cat")
              ;; Use the right path to `cat'.
-             (search-path (search-path-as-string->list (getenv "PATH"))
-                          "cat"))))
+             (which "cat"))))
         %standard-phases)))
     (home-page "http://www.lysator.liu.se/~nisse/lsh/")
     (synopsis

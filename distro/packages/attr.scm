@@ -56,12 +56,9 @@
           'check
           (lambda _
             ;; Use the right shell.
-            (let ((bash (search-path (search-path-as-string->list
-                                      (getenv "PATH"))
-                                     "bash")))
-              (substitute* "test/run"
-                (("/bin/sh")
-                 (string-append bash "/bin/bash"))))
+            (substitute* "test/run"
+              (("/bin/sh")
+               (which "bash")))
 
             (system* "make" "tests" "-C" "test")
 
