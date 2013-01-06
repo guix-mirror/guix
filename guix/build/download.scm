@@ -126,20 +126,34 @@ which is not available during bootstrap."
 (define (http-fetch uri file)
   "Fetch data from URI and write it to FILE.  Return FILE on success."
 
-  ;; FIXME: Use a variant of `http-get' that returns a port instead of
-  ;; loading everything in memory.
   (let*-values (((connection)
                  (open-connection-for-uri uri))
-                ((resp bv)
-                 (http-get uri #:port connection #:decode-body? #f))
+                ((resp bv-or-port)
+                 ;; XXX: `http-get*' was introduced in 2.0.7.  We know
+                 ;; we're using it within the chroot, but
+                 ;; `guix-download' might be using a different version.
+                 ;; So keep this compatibility hack for now.
+                 (if (module-defined? (resolve-interface '(web client))
+                                      'http-get*)
+                     (http-get* uri #:port connection #:decode-body? #f)
+                     (http-get uri #:port connection #:decode-body? #f)))
                 ((code)
-                 (response-code resp)))
+                 (response-code resp))
+                ((size)
+                 (response-content-length resp)))
     (case code
       ((200)                                      ; OK
        (begin
          (call-with-output-file file
            (lambda (p)
-             (put-bytevector p bv)))
+             (if (port? bv-or-port)
+                 (begin
+                   (dump-port bv-or-port p
+                              #:buffer-size 65536  ; don't flood the log
+                              #:progress (progress-proc (uri->string uri)
+                                                        size))
+                   (newline))
+                 (put-bytevector p bv-or-port))))
          file))
       ((302)                                      ; found (redirection)
        (let ((uri (response-location resp)))
