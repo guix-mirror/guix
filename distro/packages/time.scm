@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,18 @@
        (base32
         "0va9063fcn7xykv658v2s9gilj2fq4rcdxx2mn2mmy1v4ndafzp3"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (alist-replace 'configure
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        ;; This old `configure' script doesn't support
+                        ;; variables passed as arguments.
+                        (let ((out (assoc-ref outputs "out")))
+                          (setenv "CONFIG_SHELL" (which "bash"))
+                          (zero?
+                           (system* "./configure"
+                                    (string-append "--prefix=" out)))))
+                      %standard-phases)))
     (home-page "http://www.gnu.org/software/time/")
     (synopsis
      "GNU Time, a tool that runs programs and summarizes the system
@@ -49,6 +62,5 @@ in a file instead of displaying it on the screen.
 The resources that 'time' can report on fall into the general categories
 of time, memory, and I/O and IPC calls.  Some systems do not provide
 much information about program resource use; 'time' reports unavailable
-information as zero values.
-")
+information as zero values.")
     (license gpl2+)))
