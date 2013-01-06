@@ -1,20 +1,20 @@
-;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
-;;; This file is part of Guix.
+;;; This file is part of GNU Guix.
 ;;;
-;;; Guix is free software; you can redistribute it and/or modify it
+;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation; either version 3 of the License, or (at
 ;;; your option) any later version.
 ;;;
-;;; Guix is distributed in the hope that it will be useful, but
+;;; GNU Guix is distributed in the hope that it will be useful, but
 ;;; WITHOUT ANY WARRANTY; without even the implied warranty of
 ;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;;; GNU General Public License for more details.
 ;;;
 ;;; You should have received a copy of the GNU General Public License
-;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 
 (define-module (test-derivations)
@@ -241,7 +241,10 @@
     (and succeeded?
          (let ((one (derivation-path->output-path drv-path "out"))
                (two (derivation-path->output-path drv-path "second")))
-           (and (eq? 'one (call-with-input-file one read))
+           (and (lset= equal?
+                       (derivation-path->output-paths drv-path)
+                       `(("out" . ,one) ("second" . ,two)))
+                (eq? 'one (call-with-input-file one read))
                 (eq? 'two (call-with-input-file two read)))))))
 
 (test-assert "multiple-output derivation, non-alphabetic order"

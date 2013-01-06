@@ -60,15 +60,18 @@ which is not available during bootstrap."
                       ((http) 80)           ; /etc/services, not for me!
                       (else
                        (error "unsupported URI scheme" uri))))))
-      (getaddrinfo (uri-host uri)
-                   (number->string port)
-                   AI_NUMERICSERV)))
+      (delete-duplicates (getaddrinfo (uri-host uri)
+                                      (number->string port)
+                                      AI_NUMERICSERV)
+                         (lambda (ai1 ai2)
+                           (equal? (addrinfo:addr ai1)
+                                   (addrinfo:addr ai2))))))
 
   (let loop ((addresses addresses))
     (let* ((ai (car addresses))
            (s  (with-fluids ((%default-port-encoding #f))
-                 (socket (addrinfo:fam ai) (addrinfo:socktype ai)
-                         (addrinfo:protocol ai)))))
+                 ;; Restrict ourselves to TCP.
+                 (socket (addrinfo:fam ai) SOCK_STREAM IPPROTO_IP))))
       (catch 'system-error
         (lambda ()
           (connect s (addrinfo:addr ai))
@@ -81,7 +84,7 @@ which is not available during bootstrap."
         (lambda args
           ;; Connection failed, so try one of the other addresses.
           (close s)
-          (if (null? addresses)
+          (if (null? (cdr addresses))
               (apply throw args)
               (loop (cdr addresses))))))))
 

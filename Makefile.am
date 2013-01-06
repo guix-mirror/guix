@@ -1,26 +1,27 @@
-# Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-# Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+# GNU Guix --- Functional package management for GNU
+# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 #
-# This file is part of Guix.
+# This file is part of GNU Guix.
 #
-# Guix is free software; you can redistribute it and/or modify it
+# GNU Guix is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 3 of the License, or (at
 # your option) any later version.
 #
-# Guix is distributed in the hope that it will be useful, but
+# GNU Guix is distributed in the hope that it will be useful, but
 # WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+# along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 bin_SCRIPTS =					\
   guix-build					\
   guix-download					\
   guix-import					\
-  guix-package
+  guix-package					\
+  guix-gc
 
 MODULES =					\
   guix/base32.scm				\
@@ -44,6 +45,7 @@ MODULES =					\
   guix.scm					\
   distro.scm					\
   distro/packages/acl.scm			\
+  distro/packages/algebra.scm			\
   distro/packages/attr.scm			\
   distro/packages/autotools.scm			\
   distro/packages/base.scm			\
@@ -51,8 +53,10 @@ MODULES =					\
   distro/packages/bdw-gc.scm			\
   distro/packages/bison.scm			\
   distro/packages/bootstrap.scm			\
+  distro/packages/check.scm			\
   distro/packages/compression.scm		\
   distro/packages/cpio.scm			\
+  distro/packages/bdb.scm			\
   distro/packages/ddrescue.scm			\
   distro/packages/ed.scm			\
   distro/packages/flex.scm			\
@@ -62,18 +66,23 @@ MODULES =					\
   distro/packages/gnupg.scm			\
   distro/packages/gnutls.scm			\
   distro/packages/gperf.scm			\
+  distro/packages/gsasl.scm			\
   distro/packages/guile.scm			\
   distro/packages/help2man.scm			\
+  distro/packages/idutils.scm			\
   distro/packages/ld-wrapper.scm		\
   distro/packages/less.scm			\
   distro/packages/libffi.scm			\
+  distro/packages/libidn.scm			\
   distro/packages/libsigsegv.scm		\
   distro/packages/libunistring.scm		\
+  distro/packages/libusb.scm			\
   distro/packages/linux.scm			\
   distro/packages/lout.scm			\
   distro/packages/lsh.scm			\
   distro/packages/m4.scm			\
   distro/packages/make-bootstrap.scm		\
+  distro/packages/mit-krb5.scm			\
   distro/packages/multiprecision.scm		\
   distro/packages/nano.scm			\
   distro/packages/ncurses.scm			\
@@ -84,6 +93,7 @@ MODULES =					\
   distro/packages/pth.scm			\
   distro/packages/readline.scm			\
   distro/packages/recutils.scm			\
+  distro/packages/rsync.scm			\
   distro/packages/shishi.scm			\
   distro/packages/system.scm			\
   distro/packages/texinfo.scm			\
@@ -183,6 +193,7 @@ TESTS =						\
   tests/union.scm				\
   tests/guix-build.sh				\
   tests/guix-download.sh			\
+  tests/guix-gc.sh				\
   tests/guix-package.sh
 
 TEST_EXTENSIONS = .scm .sh

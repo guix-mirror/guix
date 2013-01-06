@@ -1,20 +1,20 @@
-;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
-;;; This file is part of Guix.
+;;; This file is part of GNU Guix.
 ;;;
-;;; Guix is free software; you can redistribute it and/or modify it
+;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation; either version 3 of the License, or (at
 ;;; your option) any later version.
 ;;;
-;;; Guix is distributed in the hope that it will be useful, but
+;;; GNU Guix is distributed in the hope that it will be useful, but
 ;;; WITHOUT ANY WARRANTY; without even the implied warranty of
 ;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;;; GNU General Public License for more details.
 ;;;
 ;;; You should have received a copy of the GNU General Public License
-;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix ui)
   #:use-module (guix utils)
@@ -28,6 +28,7 @@
             N_
             leave
             show-version-and-exit
+            show-bug-report-information
             call-with-error-handling
             with-error-handling
             location->string))
@@ -55,6 +56,15 @@
   (simple-format #t "~a (~a) ~a~%"
                  command %guix-package-name %guix-version)
   (exit 0))
+
+(define (show-bug-report-information)
+  (format #t (_ "
+Report bugs to: ~a.") %guix-bug-report-address)
+  (format #t (_ "
+~a home page: <~a>") %guix-package-name %guix-home-page-url)
+  (display (_ "
+General help using GNU software: <http://www.gnu.org/gethelp/>"))
+  (newline))
 
 (define (call-with-error-handling thunk)
   "Call THUNK within a user-friendly error handler."

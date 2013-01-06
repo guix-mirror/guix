@@ -114,10 +114,12 @@ AC_CONFIG_FILES([Makefile
 		 guix-download
 		 guix-import
 		 guix-package
+		 guix-gc
 		 pre-inst-env
 		 test-env])
 
 AC_CONFIG_COMMANDS([commands-exec],
-  [chmod +x guix-build guix-download guix-import guix-package pre-inst-env test-env])
+  [chmod +x guix-build guix-download guix-import guix-package guix-gc \
+            pre-inst-env test-env])
 
 AC_OUTPUT

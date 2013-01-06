@@ -1,30 +1,31 @@
-;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright (C) 2012 Nikita Karetnikov <nikita@karetnikov.org>
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
-;;; This file is part of Guix.
+;;; This file is part of GNU Guix.
 ;;;
-;;; Guix is free software; you can redistribute it and/or modify it
+;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation; either version 3 of the License, or (at
 ;;; your option) any later version.
 ;;;
-;;; Guix is distributed in the hope that it will be useful, but
+;;; GNU Guix is distributed in the hope that it will be useful, but
 ;;; WITHOUT ANY WARRANTY; without even the implied warranty of
 ;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;;; GNU General Public License for more details.
 ;;;
 ;;; You should have received a copy of the GNU General Public License
-;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages linux)
   #:use-module (guix licenses)
   #:use-module ((distro packages compression)
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (distro packages flex)
+  #:use-module (distro packages libusb)
   #:use-module (distro packages ncurses)
   #:use-module (distro packages perl)
-  #:use-module (distro packages ncurses)
+  #:use-module (distro packages pkg-config)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -176,3 +177,25 @@ providing the system administrator with some help in common tasks.")
     ;; explicitly defined license.
     (license '(gpl3+ gpl2+ gpl2 lgpl2.0+
                bsd-4 public-domain))))
+
+(define-public usbutils
+  (package
+    (name "usbutils")
+    (version "006")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://kernel.org/linux/utils/usb/usbutils/"
+                          "usbutils-" version ".tar.xz"))
+      (sha256
+       (base32
+        "03pd57vv8c6x0hgjqcbrxnzi14h8hcghmapg89p8k5zpwpkvbdfr"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libusb" ,libusb) ("pkg-config" ,pkg-config)))
+    (home-page "http://www.linux-usb.org/")
+    (synopsis
+     "Tools for working with USB devices, such as lsusb")
+    (description
+     "Tools for working with USB devices, such as lsusb.")
+    (license gpl2+)))

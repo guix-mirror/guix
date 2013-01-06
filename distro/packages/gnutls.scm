@@ -1,20 +1,20 @@
-;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
 ;;;
-;;; This file is part of Guix.
+;;; This file is part of GNU Guix.
 ;;;
-;;; Guix is free software; you can redistribute it and/or modify it
+;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation; either version 3 of the License, or (at
 ;;; your option) any later version.
 ;;;
-;;; Guix is distributed in the hope that it will be useful, but
+;;; GNU Guix is distributed in the hope that it will be useful, but
 ;;; WITHOUT ANY WARRANTY; without even the implied warranty of
 ;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;;; GNU General Public License for more details.
 ;;;
 ;;; You should have received a copy of the GNU General Public License
-;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages gnutls)
   #:use-module (guix licenses)
@@ -31,7 +31,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "3.0")
+    (version "3.2")
     (source
      (origin
       (method url-fetch)
@@ -39,7 +39,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "00czfs2hlxb1nrnqicvwpm4ybpwg3hg5yj0a2nf13zrgkfdlkjzi"))))
+        "0gvgndypwicchf7m660zh7jdgmkfj9g9xavpcc08pyd0120y0bk7"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/libtasn1/")
     (synopsis "GNU Libtasn1, an ASN.1 library")
@@ -52,7 +52,7 @@ portable, and only require an ANSI C89 platform.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.1.3")
+    (version "3.1.5")
     (source
      (origin
       (method url-fetch)
@@ -62,7 +62,7 @@ portable, and only require an ANSI C89 platform.")
             ".tar.xz"))
       (sha256
        (base32
-        "0fff9frz0ycbnppfn0w4a2s9x27k21l4hh9zbax3v7a8cg33dcpw"))))
+        "1lz05l19s64s5hmhc9fh48ip6izy80bdiv0pwkfg9fwwvn25j29g"))))
     (build-system gnu-build-system)
 
     ;; Build of the Guile bindings is not parallel-safe.  See

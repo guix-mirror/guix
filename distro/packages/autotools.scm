@@ -1,21 +1,21 @@
-;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
-;;; This file is part of Guix.
+;;; This file is part of GNU Guix.
 ;;;
-;;; Guix is free software; you can redistribute it and/or modify it
+;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation; either version 3 of the License, or (at
 ;;; your option) any later version.
 ;;;
-;;; Guix is distributed in the hope that it will be useful, but
+;;; GNU Guix is distributed in the hope that it will be useful, but
 ;;; WITHOUT ANY WARRANTY; without even the implied warranty of
 ;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;;; GNU General Public License for more details.
 ;;;
 ;;; You should have received a copy of the GNU General Public License
-;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (distro packages autotools)
   #:use-module (guix licenses)
@@ -62,7 +62,7 @@ can use, in the form of M4 macro calls.")
 (define-public automake
   (package
     (name "automake")
-    (version "1.12.5")
+    (version "1.12.6")
     (source
      (origin
       (method url-fetch)
@@ -70,7 +70,7 @@ can use, in the form of M4 macro calls.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "1k4pa3rmj626n5d39rc9041dc71lv8nzd341k53dw07iflkwinim"))))
+        "1ynvca8z4aqcwr94rf7j1bfiid2w9w250y9qhnyj9vmi8lhsnd7q"))))
     (build-system gnu-build-system)
     (inputs
      `(("autoconf" ,autoconf)

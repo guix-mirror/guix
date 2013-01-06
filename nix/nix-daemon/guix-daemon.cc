@@ -1,20 +1,20 @@
-/* Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
+/* GNU Guix --- Functional package management for GNU
    Copyright (C) 2012  Ludovic Courtès <ludo@gnu.org>
 
-   This file is part of Guix.
+   This file is part of GNU Guix.
 
-   Guix is free software; you can redistribute it and/or modify it
+   GNU Guix is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 3 of the License, or (at
    your option) any later version.
 
-   Guix is distributed in the hope that it will be useful, but
+   GNU Guix is distributed in the hope that it will be useful, but
    WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
-   along with Guix.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include <config.h>
 
@@ -23,8 +23,13 @@
 #include <globals.hh>
 #include <util.hh>
 
+#include <gcrypt.h>
+
 #include <stdlib.h>
 #include <argp.h>
+#include <unistd.h>
+#include <sys/types.h>
+#include <exception>
 
 /* Variables used by `nix-daemon.cc'.  */
 volatile ::sig_atomic_t blockInt;
@@ -58,6 +63,7 @@ builds derivations on behalf of its clients.";
 #define GUIX_OPT_DISABLE_STORE_OPTIMIZATION 7
 #define GUIX_OPT_IMPERSONATE_LINUX_26 8
 #define GUIX_OPT_DEBUG 9
+#define GUIX_OPT_CHROOT_DIR 10
 
 static const struct argp_option options[] =
   {
@@ -69,6 +75,13 @@ static const struct argp_option options[] =
       "Allow at most N build jobs" },
     { "disable-chroot", GUIX_OPT_DISABLE_CHROOT, 0, 0,
       "Disable chroot builds"
+#ifndef HAVE_CHROOT
+      " (chroots are not supported in this configuration, so "
+      "this option has no effect)"
+#endif
+    },
+    { "chroot-directory", GUIX_OPT_CHROOT_DIR, "DIR", 0,
+      "Add DIR to the build chroot"
 #ifndef HAVE_CHROOT
       " (chroots are not supported in this configuration, so "
       "this option has no effect)"
@@ -103,6 +116,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
     {
     case GUIX_OPT_DISABLE_CHROOT:
       settings.useChroot = false;
+      break;
+    case GUIX_OPT_CHROOT_DIR:
+      settings.dirsInChroot.insert (arg);
       break;
     case GUIX_OPT_DISABLE_LOG_COMPRESSION:
       settings.compressLog = false;
@@ -151,20 +167,53 @@ main (int argc, char *argv[])
 {
   Strings nothing;
 
+  /* Initialize libgcrypt.  */
+  if (!gcry_check_version (GCRYPT_VERSION))
+    {
+      fprintf (stderr, "error: libgcrypt version mismatch\n");
+      exit (EXIT_FAILURE);
+    }
+
 #ifdef HAVE_CHROOT
   settings.useChroot = true;
 #else
   settings.useChroot = false;
 #endif
 
-  settings.processEnvironment ();
-
-  /* FIXME: Disable substitutes until we have something that works.  */
-  settings.useSubstitutes = false;
-  settings.substituters.clear ();
-
-  argp_parse (&argp, argc, argv, 0, 0, 0);
-
   argvSaved = argv;
-  run (nothing);
+
+  try
+    {
+      settings.processEnvironment ();
+
+      /* FIXME: Disable substitutes until we have something that works.  */
+      settings.useSubstitutes = false;
+      settings.substituters.clear ();
+
+      argp_parse (&argp, argc, argv, 0, 0, 0);
+
+      if (geteuid () == 0 && settings.buildUsersGroup.empty ())
+	fprintf (stderr, "warning: running as root is highly recommended, "
+		 "unless `--build-users-group' is used\n");
+
+#ifdef HAVE_CHROOT
+      if (settings.useChroot)
+	{
+	  foreach (PathSet::iterator, i, settings.dirsInChroot)
+	    {
+	      printMsg (lvlDebug,
+			format ("directory `%1%' added to the chroot") % *i);
+	    }
+	}
+#endif
+
+      run (nothing);
+    }
+  catch (std::exception &e)
+    {
+      fprintf (stderr, "error: %s\n", e.what ());
+      return EXIT_FAILURE;
+    }
+
+  return EXIT_SUCCESS;				  /* never reached */
 }

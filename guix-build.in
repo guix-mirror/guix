@@ -11,23 +11,23 @@ main='(module-ref (resolve-interface '\''(guix-build)) '\'guix-build')'
 exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
          -c "(apply $main (cdr (command-line)))" "$@"
 !#
-;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
-;;; This file is part of Guix.
+;;; This file is part of GNU Guix.
 ;;;
-;;; Guix is free software; you can redistribute it and/or modify it
+;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation; either version 3 of the License, or (at
 ;;; your option) any later version.
 ;;;
-;;; Guix is distributed in the hope that it will be useful, but
+;;; GNU Guix is distributed in the hope that it will be useful, but
 ;;; WITHOUT ANY WARRANTY; without even the implied warranty of
 ;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;;; GNU General Public License for more details.
 ;;;
 ;;; You should have received a copy of the GNU General Public License
-;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix-build)
   #:use-module (guix ui)
@@ -104,8 +104,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -V, --version          display version information and exit"))
   (newline)
-  (format #t (_ "
-Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
+  (show-bug-report-information))
 
 (define %options
   ;; Specifications of the command-line options.
@@ -172,27 +171,24 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                  (alist-cons 'argument arg result))
                %default-options))
 
-  (define (register-root drv root)
-    ;; Register ROOT as an indirect GC root for DRV's outputs.
-    (let* ((root     (string-append (canonicalize-path (dirname root))
-                                    "/" root))
-           (drv*     (call-with-input-file drv read-derivation))
-           (outputs  (derivation-outputs drv*))
-           (outputs* (map (compose derivation-output-path cdr) outputs)))
+  (define (register-root paths root)
+    ;; Register ROOT as an indirect GC root for all of PATHS.
+    (let* ((root (string-append (canonicalize-path (dirname root))
+                                "/" root)))
      (catch 'system-error
        (lambda ()
-         (match outputs*
-           ((output)
-            (symlink output root)
+         (match paths
+           ((path)
+            (symlink path root)
             (add-indirect-root (%store) root))
-           ((outputs ...)
-            (fold (lambda (output count)
+           ((paths ...)
+            (fold (lambda (path count)
                     (let ((root (string-append root "-" (number->string count))))
-                      (symlink output root)
+                      (symlink path root)
                       (add-indirect-root (%store) root))
                     (+ 1 count))
                   0
-                  outputs))))
+                  paths))))
        (lambda args
          (format (current-error-port)
                  (_ "failed to create GC root `~a': ~a~%")
@@ -235,7 +231,11 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                       (append (remove (compose (cut valid-path? (%store) <>)
                                                derivation-path->output-path)
                                       drv)
-                              (map derivation-input-path req)))))
+                              (map derivation-input-path req))))
+               (roots (filter-map (match-lambda
+                                   (('gc-root . root) root)
+                                   (_ #f))
+                                  opts)))
           (if (assoc-ref opts 'dry-run?)
               (format (current-error-port)
                       (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
@@ -256,7 +256,10 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                              #:verbosity (assoc-ref opts 'verbosity))
 
           (if (assoc-ref opts 'derivations-only?)
-              (format #t "~{~a~%~}" drv)
+              (begin
+                (format #t "~{~a~%~}" drv)
+                (for-each (cut register-root <> <>)
+                          (map list drv) roots))
               (or (assoc-ref opts 'dry-run?)
                   (and (build-derivations (%store) drv)
                        (for-each (lambda (d)
@@ -269,15 +272,12 @@ Report bugs to: ~a.~%") "@PACKAGE_BUGREPORT@"))
                                                      d out-name)))
                                                   (derivation-outputs drv)))))
                                  drv)
-                       (let ((roots (filter-map (match-lambda
-                                                 (('gc-root . root)
-                                                  root)
-                                                 (_ #f))
-                                                opts)))
-                         (when roots
-                           (for-each (cut register-root <> <>)
-                                     drv roots)
-                           #t))))))))))
+                       (for-each (cut register-root <> <>)
+                                 (map (lambda (drv)
+                                        (map cdr
+                                             (derivation-path->output-paths drv)))
+                                      drv)
+                                 roots)))))))))
 
 ;; Local Variables:
 ;; eval: (put 'guard 'scheme-indent-function 1)

@@ -43,7 +43,7 @@ Documentation License''.
 @copying
 This manual documents GNU Guix version @value{VERSION}.
 
-Copyright (C) 2012 Ludovic Courtès
+Copyright (C) 2012, 2013 Ludovic Courtès
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -133,6 +133,7 @@ management tools it provides.
 @menu
 * Features::                    How Guix will make your life brighter.
 * Invoking guix-package::       Package installation, removal, etc.
+* Invoking guix-gc::            Running the garbage collector.
 @end menu
 
 @node Features
@@ -172,9 +173,10 @@ of their profile, which was known to work well.
 
 All those packages in the package store may be @emph{garbage-collected}.
 Guix can determine which packages are still referenced by the user
-profiles, and remove those that are provably no longer referenced.
-Users may also explicitly remove old generations of their profile so
-that the packages they refer to can be collected.
+profiles, and remove those that are provably no longer referenced
+(@pxref{Invoking guix-gc}).  Users may also explicitly remove old
+generations of their profile so that the packages they refer to can be
+collected.
 
 Finally, Guix takes a @dfn{purely functional} approach to package
 management, as described in the introduction (@pxref{Introduction}).
@@ -274,6 +276,53 @@ its version string, and the source location of its definition.
 
 @end table
 
+
+@node Invoking guix-gc
+@section Invoking @command{guix-gc}
+
+@cindex garbage collector
+Packages that are installed but not used may be @dfn{garbage-collected}.
+The @command{guix-gc} command allows users to explicitly run the garbage
+collector to reclaim space from the @file{/nix/store} directory.
+
+The garbage collector has a set of known @dfn{roots}: any file under
+@file{/nix/store} reachable from a root is considered @dfn{live} and
+cannot be deleted; any other file is considered @dfn{dead} and may be
+deleted.  The set of garbage collector roots includes default user
+profiles, and may be augmented with @command{guix-build --root}, for
+example (@pxref{Invoking guix-build}).
+
+The @command{guix-gc} command has three mode of operations: it can be
+used to garbage-collect any dead files (the default), to delete specific
+files (the @code{--delete} option), or to print garbage-collector
+information.  The available options are listed below:
+
+@table @code
+@item --collect-garbage[=@var{min}]
+@itemx -C [@var{min}]
+Collect garbage---i.e., unreachable @file{/nix/store} files and
+sub-directories.  This is the default operation when no option is
+specified.
+
+When @var{min} is given, stop once @var{min} bytes have been collected.
+@var{min} may be a number of bytes, or it may include a unit as a
+suffix, such as @code{MiB} for mebibytes and @code{GB} for gigabytes.
+
+When @var{min} is omitted, collect all the garbage.
+
+@item --delete
+@itemx -d
+Attempt to delete all the store files and directories specified as
+arguments.  This fails if some of the files are not in the store, or if
+they are still live.
+
+@item --list-dead
+Show the list of dead files and directories still present in the
+store---i.e., files and directories no longer reachable from any root.
+
+@item --list-live
+Show the list of live store files and directories.
+@end table
 
 
 @c *********************************************************************
