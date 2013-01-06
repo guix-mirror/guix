@@ -1,5 +1,5 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -35,7 +35,7 @@
   (match (string-tokenize file (char-set-complement (char-set #\/)))
     ((_ ... system basename)
      (string->uri (string-append %url-base "/" system
-                                 "/20121219/" basename)))))
+                                 "/20130105/" basename)))))
 
 (match (command-line)
   ((_ file expected-hash)

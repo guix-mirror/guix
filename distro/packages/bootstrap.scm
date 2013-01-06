@@ -1,5 +1,5 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -205,15 +205,15 @@ $out/bin/guile --version~%"
                            (method url-fetch)
                            (uri (string-append
                                  %bootstrap-base-url "/"
-                                 system "/20121219/static-binaries.tar.xz"))
+                                 system "/20130105/static-binaries.tar.xz"))
                            (sha256
                             (match system
                               ("x86_64-linux"
                                (base32
-                                "1vvdr1hfbjxlincpgfwhz9l4mbrjf502bv5nivapk5b2d3xxfyvv"))
+                                "0md23alzy6nc5f16pric7mkagczdzr8xbh074sb3rjzrls06j1ls"))
                               ("i686-linux"
                                (base32
-                                "18ky02ifa0w5afyil04fh5whlsqdw0h8kn2fkibfhwfsm5q9d5fx"))))))
+                                "0nzj1lmm9b94g7k737cr4w1dv282w5nmhb53238ikax9r6pkc0yb"))))))
                         "true"                    ; the program to test
                         "Bootstrap binaries of Coreutils, Awk, etc."))
 
@@ -224,15 +224,15 @@ $out/bin/guile --version~%"
                            (method url-fetch)
                            (uri (string-append
                                  %bootstrap-base-url "/"
-                                 system "/20121219/binutils-2.22.tar.xz"))
+                                 system "/20130105/binutils-2.22.tar.xz"))
                            (sha256
                             (match system
                               ("x86_64-linux"
                                (base32
-                                "0ms6i035v40n7mhi91n4b8ivwv2qni3mcd5dj9sj9qmvgqb50r84"))
+                                "1ffmk2yy2pxvkqgzrkzp3s4jpn4qaaksyk3b5nsc5cjwfm7qkgzh"))
                               ("i686-linux"
                                (base32
-                                "16yr3jxqjvd979vvpikfn4rl9fqrbcs5viwd2r8xzf5bakc2mq9p"))))))
+                                "1rafk6aq4sayvv3r3d2khn93nkyzf002xzh0xadlyci4mznr6b0a"))))))
                         "ld"                      ; the program to test
                         "Bootstrap binaries of the GNU Binutils"))
 
@@ -277,15 +277,15 @@ $out/bin/guile --version~%"
                       (origin
                        (method url-fetch)
                        (uri (string-append %bootstrap-base-url "/" system
-                                           "/20121219/glibc-2.16.0.tar.xz"))
+                                           "/20130105/glibc-2.17.tar.xz"))
                        (sha256
                         (match system
                           ("x86_64-linux"
                            (base32
-                            "1mqpb2sxfa5whdq0adyrgg7j3ci5v4d42wna8hg4j3dbcr5b2vpi"))
+                            "18kv1z9d8dr1j3hm9w7663kchqw9p6rsx11n1m143jgba2jz6jy3"))
                           ("i686-linux"
                            (base32
-                            "03wb29srsdswc775ppzwllys0dqyy235shm1n64jl6njw4l7c5x6"))))))))))
+                            "08hv8i0axwnihrcgbz19x0a7s6zyv3yx38x8r29liwl8h82x9g88"))))))))))
     (synopsis "Bootstrap binaries and headers of the GNU C Library")
     (description #f)
     (home-page #f)))
@@ -348,15 +348,15 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                       (origin
                        (method url-fetch)
                        (uri (string-append %bootstrap-base-url "/" system
-                                           "/20121219/gcc-4.7.2.tar.xz"))
+                                           "/20130105/gcc-4.7.2.tar.xz"))
                        (sha256
                         (match system
                           ("x86_64-linux"
                            (base32
-                            "1k374q9v1bph8605sirzmaxnawbddahpgq8d99x1527gj5n2xws1"))
+                            "1x1p7han5crnbw906iwdifykr6grzm0w27dy9gz75j0q1b32i4px"))
                           ("i686-linux"
                            (base32
-                            "040jkqkh0qyva5z6gy4d95khhhvsw4vp8x3l818gpi6hfknwb9l8"))))))))))
+                            "06wqs0xxnpw3hn0xjb4c9cs0899p1xwkcysa2rvzhvpra0c5vsg2"))))))))))
     (synopsis "Bootstrap binaries of the GNU Compiler Collection")
     (description #f)
     (home-page #f)))

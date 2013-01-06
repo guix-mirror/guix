@@ -164,10 +164,10 @@ DOWNLOAD_FILE =								\
 
 distro/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
-	$(DOWNLOAD_FILE) "$@" "953fbcc8db6e310626be79b67319cf4141dc23b296447952a99d95425b3a4dc1"
+	$(DOWNLOAD_FILE) "$@" "bc43210dcd146d242bef4d354b0aeac12c4ef3118c07502d17ffa8d49e15aa2c"
 distro/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
-	$(DOWNLOAD_FILE) "$@" "45d1f9bfb9e4531a8f1c5a105f7ab094cd481b8a179ccc63cbabb73ce6b8437f"
+	$(DOWNLOAD_FILE) "$@" "f9a7c6f4c556eaafa2a69bcf07d4ffbb6682ea831d4c9da9ba095aca3ccd217c"
 
 nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
 
