@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,6 +33,7 @@
             ftp-open
             ftp-close
             ftp-chdir
+            ftp-size
             ftp-list
             ftp-retr))
 
@@ -132,6 +133,12 @@ or a TCP port number), and return it."
 (define (ftp-chdir conn dir)
   (%ftp-command (string-append "CWD " dir) 250
                 (ftp-connection-socket conn)))
+
+(define (ftp-size conn file)
+  "Return the size in bytes of FILE."
+  (let ((message (%ftp-command (string-append "SIZE " file) 213
+                               (ftp-connection-socket conn))))
+    (string->number (string-trim-both message))))
 
 (define (ftp-pasv conn)
   (define %pasv-rx
