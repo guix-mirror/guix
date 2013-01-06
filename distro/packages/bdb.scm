@@ -44,7 +44,9 @@
            (let ((out (assoc-ref outputs "out")))
              (zero?
               (system* "./dist/configure"
-                       (string-append "--prefix=" out)))))
+                       (string-append "--prefix=" out)
+                       (string-append "CONFIG_SHELL=" (which "bash"))
+                       (string-append "SHELL=" (which "bash"))))))
          %standard-phases))))
    (synopsis "db, the Berkeley database")
    (description
