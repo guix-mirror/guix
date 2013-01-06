@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +27,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:export (url-fetch))
 
 ;;; Commentary:
@@ -35,17 +36,39 @@
 ;;;
 ;;; Code:
 
+(define* (progress-proc file size #:optional (log-port (current-output-port)))
+  "Return a procedure to show the progress of FILE's download, which is
+SIZE byte long.  The returned procedure is suitable for use as an
+argument to `dump-port'.  The progress report is written to LOG-PORT."
+  (if (number? size)
+      (lambda (transferred cont)
+        (let ((% (* 100.0 (/ transferred size))))
+          (display #\cr log-port)
+          (format log-port "~a\t~5,1f% of ~,1f KiB"
+                  file % (/ size 1024.0))
+          (flush-output-port log-port)
+          (cont)))
+      (lambda (transferred cont)
+        (display #\cr log-port)
+        (format log-port "~a\t~6,1f KiB transferred"
+                file (/ transferred 1024.0))
+        (flush-output-port log-port)
+        (cont))))
+
 (define (ftp-fetch uri file)
   "Fetch data from URI and write it to FILE.  Return FILE on success."
   (let* ((conn (ftp-open (uri-host uri)))
+         (size (false-if-exception (ftp-size conn (uri-path uri))))
          (in   (ftp-retr conn (basename (uri-path uri))
                          (dirname (uri-path uri)))))
     (call-with-output-file file
       (lambda (out)
-        ;; TODO: Show a progress bar.
-        (dump-port in out)))
+        (dump-port in out
+                   #:buffer-size 65536            ; don't flood the log
+                   #:progress (progress-proc (uri->string uri) size))))
 
     (ftp-close conn))
+    (newline)
   file)
 
 (define (open-connection-for-uri uri)
