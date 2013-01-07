@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,7 +61,7 @@
        ('home-page (? string?))
        ('synopsis (? string?))
        ('description (? string?))
-       ('license (? string?)))
+       ('license (? symbol?)))
      (and (member '("libffi" ,libffi) inputs)
           (member '("gmp" ,gmp) pinputs)
           #t))
