@@ -64,6 +64,7 @@ MODULES =					\
   distro/packages/gawk.scm			\
   distro/packages/gdbm.scm			\
   distro/packages/gettext.scm			\
+  distro/packages/global.scm			\
   distro/packages/gnupg.scm			\
   distro/packages/gnutls.scm			\
   distro/packages/gperf.scm			\
