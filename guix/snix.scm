@@ -393,6 +393,16 @@ location of DERIVATION."
             `(string-append ,@items))
            (x x)))
 
+       (define (license-variable license)
+         ;; Return the name of the (guix licenses) variable for LICENSE.
+         (match license
+           ("GPLv2+"    'gpl2+)
+           ("GPLv3+"    'gpl3+)
+           ("LGPLv2+"   'lgpl2.1+)
+           ("LGPLv2.1+" 'lgpl2.1+)
+           ("LGPLv3+"   'lgpl3+)
+           (_           license)))
+
        (let* ((source  (find-attribute-by-name "src" attributes))
               (urls    (source-urls source))
               (sha256  (source-sha256 source))
@@ -426,7 +436,7 @@ location of DERIVATION."
               ,(and=> (find-attribute-by-name "longDescription" meta)
                       attribute-value))
              (license ,(and=> (find-attribute-by-name "license" meta)
-                              attribute-value)))
+                              (compose license-variable attribute-value))))
           loc))))))
 
 (define (nixpkgs->guix-package nixpkgs attribute)
