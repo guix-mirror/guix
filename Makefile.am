@@ -57,6 +57,7 @@ MODULES =					\
   distro/packages/compression.scm		\
   distro/packages/cpio.scm			\
   distro/packages/bdb.scm			\
+  distro/packages/dejagnu.scm			\
   distro/packages/ddrescue.scm			\
   distro/packages/ed.scm			\
   distro/packages/flex.scm			\
@@ -95,6 +96,7 @@ MODULES =					\
   distro/packages/rsync.scm			\
   distro/packages/shishi.scm			\
   distro/packages/system.scm			\
+  distro/packages/tcl.scm			\
   distro/packages/texinfo.scm			\
   distro/packages/time.scm			\
   distro/packages/wget.scm			\
