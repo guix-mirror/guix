@@ -272,6 +272,11 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                  (alist-cons 'argument arg result))
                %default-options))
 
+  (define (guile-missing?)
+    ;; Return #t if %GUILE-FOR-BUILD is not available yet.
+    (let ((out (derivation-path->output-path (%guile-for-build))))
+      (not (valid-path? %store out))))
+
   (define (show-what-to-build drv dry-run?)
     ;; Show what will/would be built in realizing the derivations listed
     ;; in DRV.
@@ -393,7 +398,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                  (if (string=? old-prof prof)
                      (format (current-error-port) (_ "nothing to be done~%"))
                      (and (parameterize ((current-build-output-port
-                                          (if verbose?
+                                          ;; Output something when Guile
+                                          ;; needs to be built.
+                                          (if (or verbose? (guile-missing?))
                                               (current-error-port)
                                               (%make-void-port "w"))))
                             (build-derivations %store (list prof-drv)))
