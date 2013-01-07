@@ -46,6 +46,7 @@ MODULES =					\
   distro.scm					\
   distro/packages/acl.scm			\
   distro/packages/algebra.scm			\
+  distro/packages/aspell.scm			\
   distro/packages/attr.scm			\
   distro/packages/autotools.scm			\
   distro/packages/base.scm			\
