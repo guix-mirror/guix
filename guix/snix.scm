@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -366,15 +366,18 @@ location of DERIVATION."
                        attribute-value)
            (#f
             '())
-           ((('derivation _ _ (attributes ...)) ...)
-            (map (lambda (attrs)
-                   (let* ((full-name (attribute-value
-                                      (find-attribute-by-name "name" attrs)))
-                          (name      (package-name->name+version full-name)))
-                     (list name
-                           (list 'unquote
-                                 (string->symbol name)))))
-                 attributes))))
+           ((inputs ...)
+            ;; Inputs can be either derivations or the null value.
+            (filter-map (match-lambda
+                         (('derivation _ _ (attributes ...))
+                          (let* ((full-name
+                                  (attribute-value
+                                   (find-attribute-by-name "name" attributes)))
+                                 (name (package-name->name+version full-name)))
+                            (list name
+                                  (list 'unquote (string->symbol name)))))
+                         ('null #f))
+                        inputs))))
 
        (define (maybe-inputs guix-name inputs)
          (match inputs
