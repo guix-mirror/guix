@@ -201,7 +201,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -n, --dry-run          show what would be done without actually doing it"))
   (display (_ "
-  -b, --bootstrap        use the bootstrap Guile to build the profile"))
+      --bootstrap        use the bootstrap Guile to build the profile"))
   (display (_ "
       --verbose          produce verbose output"))
   (newline)
@@ -242,7 +242,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (option '(#\n "dry-run") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'dry-run? #t result)))
-        (option '(#\b "bootstrap") #f #f
+        (option '("bootstrap") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'bootstrap? #t result)))
         (option '("verbose") #f #f

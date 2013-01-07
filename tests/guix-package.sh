@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -27,13 +27,13 @@ rm -f "$profile"
 
 trap 'rm "$profile" "$profile-"[0-9]*' EXIT
 
-guix-package -b -p "$profile"						\
+guix-package --bootstrap -p "$profile"						\
     -i `guix-build -e '(@@ (distro packages base) %bootstrap-guile)'`
 test -L "$profile" && test -L "$profile-1-link"
 test -f "$profile/bin/guile"
 
 # Installing the same package a second time does nothing.
-guix-package -b -p "$profile"						\
+guix-package --bootstrap -p "$profile"						\
     -i `guix-build -e '(@@ (distro packages base) %bootstrap-guile)'`
 test -L "$profile" && test -L "$profile-1-link"
 ! test -f "$profile-2-link"
@@ -42,7 +42,7 @@ test -f "$profile/bin/guile"
 # Check whether we have network access.
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
-    guix-package -b -p "$profile"						\
+    guix-package --bootstrap -p "$profile"						\
 	-i `guix-build -e '(@@ (distro packages base) gnu-make-boot0)'`
     test -L "$profile-2-link"
     test -f "$profile/bin/make" && test -f "$profile/bin/guile"
@@ -64,13 +64,13 @@ then
     test "`guix-package -p "$profile" -I 'g.*e' | cut -f1`" = "guile-bootstrap"
 
     # Remove a package.
-    guix-package -b -p "$profile" -r "guile-bootstrap"
+    guix-package --bootstrap -p "$profile" -r "guile-bootstrap"
     test -L "$profile-3-link"
     test -f "$profile/bin/make" && ! test -f "$profile/bin/guile"
 fi
 
 # Make sure the `:' syntax works.
-guix-package -b -i "libsigsegv:lib" -n
+guix-package --bootstrap -i "libsigsegv:lib" -n
 
 # Check whether `--list-available' returns something sensible.
 guix-package -A 'gui.*e' | grep guile
