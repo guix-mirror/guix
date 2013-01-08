@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,10 +22,28 @@
   #:use-module (web client)
   #:use-module (web response)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
-  #:export (official-gnu-packages))
+  #:use-module (system foreign)
+  #:use-module (guix ftp-client)
+  #:export (official-gnu-packages
+            releases
+            latest-release
+            gnu-package-name->name+version))
+
+;;; Commentary:
+;;;
+;;; Code for dealing with the maintenance of GNU packages, such as
+;;; auto-updates.
+;;;
+;;; Code:
+
+
+;;;
+;;; List of GNU packages.
+;;;
 
 (define (http-fetch uri)
   "Return a string containing the textual data at URI, a string."
@@ -55,3 +73,119 @@
                   (and=> (regexp-exec %package-line-rx line)
                          (cut match:substring <> 1)))
                 lst)))
+
+;;;
+;;; Latest release.
+;;;
+
+(define (ftp-server/directory project)
+  "Return the FTP server and directory where PROJECT's tarball are
+stored."
+  (define quirks
+    '(("commoncpp2"   "ftp.gnu.org"   "/gnu/commoncpp")
+      ("ucommon"      "ftp.gnu.org"   "/gnu/commoncpp")
+      ("libzrtpcpp"   "ftp.gnu.org"   "/gnu/ccrtp")
+      ("libosip2"     "ftp.gnu.org"   "/gnu/osip")
+      ("libgcrypt"    "ftp.gnupg.org" "/gcrypt/libgcrypt")
+      ("libgpg-error" "ftp.gnupg.org" "/gcrypt/libgpg-error")
+      ("libassuan"    "ftp.gnupg.org" "/gcrypt/libassuan")
+      ("gnupg"        "ftp.gnupg.org" "/gcrypt/gnupg")
+      ("freefont-ttf" "ftp.gnu.org"   "/gnu/freefont")
+      ("gnu-ghostscript" "ftp.gnu.org"  "/gnu/ghostscript")
+      ("mit-scheme"   "ftp.gnu.org" "/gnu/mit-scheme/stable.pkg")
+      ("icecat"       "ftp.gnu.org" "/gnu/gnuzilla")
+      ("source-highlight" "ftp.gnu.org" "/gnu/src-highlite")
+      ("TeXmacs"      "ftp.texmacs.org" "/TeXmacs/targz")))
+
+  (match (assoc project quirks)
+    ((_ server directory)
+     (values server directory))
+    (_
+     (values "ftp.gnu.org" (string-append "/gnu/" project)))))
+
+(define (releases project)
+  "Return the list of releases of PROJECT as a list of release name/directory
+pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). "
+  ;; TODO: Parse something like fencepost.gnu.org:/gd/gnuorg/packages-ftp.
+  (define release-rx
+    (make-regexp (string-append "^" project
+                                "-([0-9]|[^-])*(-src)?\\.tar\\.")))
+
+  (define alpha-rx
+    (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
+
+  (define (sans-extension tarball)
+    (let ((end (string-contains tarball ".tar")))
+      (substring tarball 0 end)))
+
+  (let-values (((server directory) (ftp-server/directory project)))
+    (define conn (ftp-open server))
+
+    (let loop ((directories (list directory))
+               (result      '()))
+      (if (null? directories)
+          (begin
+            (ftp-close conn)
+            result)
+          (let* ((directory (car directories))
+                 (files     (ftp-list conn directory))
+                 (subdirs   (filter-map (lambda (file)
+                                          (match file
+                                            ((name 'directory . _) name)
+                                            (_ #f)))
+                                        files)))
+            (loop (append (map (cut string-append directory "/" <>)
+                               subdirs)
+                          (cdr directories))
+                  (append
+                   ;; Filter out signatures, deltas, and files which
+                   ;; are potentially not releases of PROJECT--e.g.,
+                   ;; in /gnu/guile, filter out guile-oops and
+                   ;; guile-www; in mit-scheme, filter out binaries.
+                   (filter-map (lambda (file)
+                                 (match file
+                                   ((file 'file . _)
+                                    (and (not (string-suffix? ".sig" file))
+                                         (regexp-exec release-rx file)
+                                         (not (regexp-exec alpha-rx file))
+                                         (let ((s (sans-extension file)))
+                                           (and (regexp-exec
+                                                 %package-name-rx s)
+                                                (cons s directory)))))
+                                   (_ #f)))
+                               files)
+                   result)))))))
+
+(define version-string>?
+  (let ((strverscmp
+         (let ((sym (or (dynamic-func "strverscmp" (dynamic-link))
+                        (error "could not find `strverscmp' (from GNU libc)"))))
+           (pointer->procedure int sym (list '* '*)))))
+    (lambda (a b)
+      "Return #t when B denotes a newer version than A."
+      (> (strverscmp (string->pointer a) (string->pointer b)) 0))))
+
+(define (latest-release project)
+  "Return (\"FOO-X.Y\" . \"/bar/foo\") or #f."
+  (let ((releases (releases project)))
+    (and (not (null? releases))
+         (fold (lambda (release latest)
+                 (if (version-string>? (car release) (car latest))
+                     release
+                     latest))
+               '("" . "")
+               releases))))
+
+(define %package-name-rx
+  ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
+  ;; "TeXmacs-X.Y-src", the `-src' suffix is allowed.
+  (make-regexp "^(.*)-(([0-9]|\\.)+)(-src)?"))
+
+(define (gnu-package-name->name+version name+version)
+  "Return the package name and version number extracted from NAME+VERSION."
+  (let ((match (regexp-exec %package-name-rx name+version)))
+    (if (not match)
+        (values name+version #f)
+        (values (match:substring match 1) (match:substring match 2)))))
+
+;;; gnu-maintenance.scm ends here
