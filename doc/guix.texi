@@ -442,7 +442,7 @@ Install @var{package}.
 
 @var{package} may specify either a simple package name, such as
 @code{guile}, or a package name followed by a hyphen and version number,
-such as @code{guile-1.8}.  In addition, @var{package} may contain a
+such as @code{guile-1.8.8}.  In addition, @var{package} may contain a
 colon, followed by the name of one of the outputs of the package, as in
 @code{gcc:doc} or @code{libsigsegv-2.10:lib}.
 
