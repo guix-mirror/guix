@@ -353,6 +353,11 @@ that it is possible to use Make to build and install the program.")
               "1a9w66v5dwvbnawshjwqcgz7km6kw6ihkzp6sswv9ycc3knzhykc"))))
    (build-system gnu-build-system)
 
+   ;; Split Binutils in several outputs, mostly to avoid collisions in
+   ;; user profiles with GCC---e.g., libiberty.a.
+   (outputs '("out"                        ; ar, ld, binutils.info, etc.
+              "lib"))                      ; libbfd.a, bfd.h, etc.
+
    ;; TODO: Add dependency on zlib + those for Gold.
    (native-inputs
     `(("patch/new-dtags" ,(search-patch "binutils-ld-new-dtags.patch"))))
