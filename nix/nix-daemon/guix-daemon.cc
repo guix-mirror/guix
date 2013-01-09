@@ -69,7 +69,7 @@ static const struct argp_option options[] =
   {
     { "system", GUIX_OPT_SYSTEM, "SYSTEM", 0,
       "Assume SYSTEM as the current system type" },
-    { "build-cores", 'C', "N", 0,
+    { "cores", 'c', "N", 0,
       "Use N CPU cores to build each derivation; 0 means as many as available" },
     { "max-jobs", 'M', "N", 0,
       "Allow at most N build jobs" },
@@ -141,7 +141,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
     case GUIX_OPT_DEBUG:
       verbosity = lvlDebug;
       break;
-    case 'C':
+    case 'c':
       settings.buildCores = atoi (arg);
       break;
     case 'M':
