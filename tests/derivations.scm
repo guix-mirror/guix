@@ -353,6 +353,44 @@
     ;; built.
     (null? (derivation-prerequisites-to-build %store drv))))
 
+(test-assert "derivation-prerequisites-to-build when outputs already present"
+  (let*-values (((builder)
+                 '(begin (mkdir %output) #t))
+                ((input-drv-path input-drv)
+                 (build-expression->derivation %store "input"
+                                               (%current-system)
+                                               builder '()))
+                ((input-path)
+                 (derivation-output-path
+                  (assoc-ref (derivation-outputs input-drv)
+                             "out")))
+                ((drv-path drv)
+                 (build-expression->derivation %store "something"
+                                               (%current-system)
+                                               builder
+                                               `(("i" ,input-drv-path))))
+                ((output)
+                 (derivation-output-path
+                  (assoc-ref (derivation-outputs drv) "out"))))
+    ;; Make sure these things are not already built.
+    (when (valid-path? %store input-path)
+      (delete-paths %store (list input-path)))
+    (when (valid-path? %store output)
+      (delete-paths %store (list output)))
+
+    (and (equal? (map derivation-input-path
+                      (derivation-prerequisites-to-build %store drv))
+                 (list input-drv-path))
+
+         ;; Build DRV and delete its input.
+         (build-derivations %store (list drv-path))
+         (delete-paths %store (list input-path))
+         (not (valid-path? %store input-path))
+
+         ;; Now INPUT-PATH is missing, yet it shouldn't be listed as a
+         ;; prerequisite to build because DRV itself is already built.
+         (null? (derivation-prerequisites-to-build %store drv)))))
+
 (test-assert "build-expression->derivation with expression returning #f"
   (let* ((builder  '(begin
                       (mkdir %output)
