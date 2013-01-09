@@ -1,6 +1,6 @@
 -*- mode: org; coding: utf-8; -*-
 
-Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -22,6 +22,16 @@ usually in /etc/nix/signing-key.{pub,sec}.  They are a PKCS#8-encoded
 X.509 SubjectPublicKeyInfo.  These can be decoded with the [[http://lists.gnu.org/archive/html/help-gnutls/2012-12/msg00012.html][C API of
 GnuTLS]], but not yet with its Guile bindings.  There’s also
 ‘gnutls_privkey_sign_data’ to sign, and related functions.
+
+** Add a binary cache substituter
+
+Like scripts/download-from-binary-cache.pl in Nix, but written in
+Scheme.  Substituters allow pre-built binaries to be downloaded when
+they are available from a trusted source.
+
+** Add a remote build hook
+
+Like scripts/build-remote.pl in Nix.
 
 * infrastructure
 
@@ -100,7 +110,6 @@ Would allow build expressions to have system-dependent code, like
 * add ‘allowed-references’ in <package>
 
 [[file:~/src/nix/src/libstore/build.cc::if%20(drv.env.find("allowedReferences")%20!%3D%20drv.env.end())%20{][See how Nix implements that internally]].
-
 
 * union
 
