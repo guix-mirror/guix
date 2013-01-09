@@ -193,8 +193,8 @@ main (int argc, char *argv[])
       argp_parse (&argp, argc, argv, 0, 0, 0);
 
       if (geteuid () == 0 && settings.buildUsersGroup.empty ())
-	fprintf (stderr, "warning: running as root is highly recommended, "
-		 "unless `--build-users-group' is used\n");
+	fprintf (stderr, "warning: daemon is running as root, so "
+		 "using `--build-users-group' is highly recommended\n");
 
 #ifdef HAVE_CHROOT
       if (settings.useChroot)
