@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +28,18 @@
 (define-public gmp
   (package
    (name "gmp")
-   (version "5.0.5")
+   (version "5.1.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://gnu/gmp/gmp-" version
-                                ".tar.bz2"))
+            (uri
+             ;; Note: this version is not available from GNU mirrors
+             ;; because it was made with an Automake affected by
+             ;; CVE-2012-3386.
+             (string-append "ftp://ftp.gmplib.org/pub/gmp-"
+                            version "/gmp-" version ".tar.bz2"))
             (sha256
              (base32
-              "1jfymbr90mpn0zw5sg001llqnvf2462y77vgjknrmfs1rjn8ln0z"))))
+              "15n7xxgasbxdch8ii8z9ic6fxc2ysk3q8iavf55abjp5iylspnfz"))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (arguments `(#:configure-flags
