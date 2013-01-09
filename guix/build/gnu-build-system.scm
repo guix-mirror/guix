@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -115,10 +115,20 @@ makefiles."
 
 (define* (configure #:key inputs outputs (configure-flags '()) out-of-source?
                     #:allow-other-keys)
+  (define (package-name)
+    (let* ((out  (assoc-ref outputs "out"))
+           (base (basename out))
+           (dash (string-rindex base #\-)))
+      ;; XXX: We'd rather use `package-name->name+version' or similar.
+      (if dash
+          (substring base 0 dash)
+          base)))
+
   (let* ((prefix     (assoc-ref outputs "out"))
          (bindir     (assoc-ref outputs "bin"))
          (libdir     (assoc-ref outputs "lib"))
          (includedir (assoc-ref outputs "include"))
+         (docdir     (assoc-ref outputs "doc"))
          (bash       (or (and=> (assoc-ref inputs "bash")
                                 (cut string-append <> "/bin/bash"))
                          "/bin/sh"))
@@ -133,11 +143,20 @@ makefiles."
                               (list (string-append "--bindir=" bindir "/bin"))
                               '())
                        ,@(if libdir
-                              (list (string-append "--libdir=" libdir "/lib"))
+                              (cons (string-append "--libdir=" libdir "/lib")
+                                    (if includedir
+                                        '()
+                                        (list
+                                         (string-append "--includedir="
+                                                        libdir "/include"))))
                               '())
                        ,@(if includedir
                              (list (string-append "--includedir="
                                                   includedir "/include"))
+                             '())
+                       ,@(if docdir
+                             (list (string-append "--docdir=" docdir
+                                                  "/doc/" (package-name)))
                              '())
                        ,@configure-flags))
          (abs-srcdir (getcwd))
