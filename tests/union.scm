@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,6 +63,25 @@
                 (share (doc (coreutils README)))
                 (bin make)
                 (share (doc (make README))))))
+
+(test-equal "delete-duplicate-leaves, default"
+  '(bin make touch ls)
+  (delete-duplicate-leaves '(bin ls make touch ls)))
+
+(test-equal "delete-duplicate-leaves, file names"
+  '("doc" ("info"
+           "/binutils/ld.info"
+           "/gcc/gcc.info"
+           "/binutils/standards.info"))
+  (let ((leaf=? (lambda (a b)
+                  (string=? (basename a) (basename b)))))
+    (delete-duplicate-leaves '("doc"
+                               ("info"
+                                "/binutils/ld.info"
+                                "/binutils/standards.info"
+                                "/gcc/gcc.info"
+                                "/gcc/standards.info"))
+                             leaf=?)))
 
 (test-skip (if (and %store
                     (false-if-exception

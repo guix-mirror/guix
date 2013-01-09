@@ -1,5 +1,5 @@
 ;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of Guix.
 ;;;
@@ -19,9 +19,11 @@
 (define-module (guix build union)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (tree-union
+            delete-duplicate-leaves
             union-build))
 
 ;;; Commentary:
@@ -56,6 +58,48 @@ itself a tree. "
                    '()
                    (delete-duplicates (map car dirs)))))))))
 
+(define* (delete-duplicate-leaves tree
+                                  #:optional
+                                  (leaf=? equal?)
+                                  (delete-duplicates (match-lambda
+                                                      ((head _ ...) head))))
+  "Delete duplicate leaves from TREE.  Two leaves are considered equal
+when LEAF=? applied to them returns #t.  Each collision (list of leaves
+that are LEAF=?) is passed to DELETE-DUPLICATES, which must return a
+single leaf."
+  (let loop ((tree tree))
+    (match tree
+      ((dir children ...)
+       (let ((dirs   (filter pair? children))
+             (leaves (remove pair? children)))
+         (define collisions
+           (fold (lambda (leaf result)
+                   (define same?
+                     (cut leaf=? leaf <>))
+
+                   (if (any (cut find same? <>) result)
+                       result
+                       (match (filter same? leaves)
+                         ((_)
+                          result)
+                         ((collision ...)
+                          (cons collision result)))))
+                 '()
+                 leaves))
+
+         (define non-collisions
+           (filter (lambda (leaf)
+                     (match (filter (cut leaf=? leaf <>) leaves)
+                       ((_) #t)
+                       ((_ _ ..1) #f)))
+                   leaves))
+
+         `(,dir
+           ,@non-collisions
+           ,@(map delete-duplicates collisions)
+           ,@(map loop dirs))))
+      (leaf leaf))))
+
 (define* (union-build output directories)
   "Build in the OUTPUT directory a symlink tree that is the union of all
 the DIRECTORIES."
@@ -88,12 +132,28 @@ the DIRECTORIES."
      (((? string?) leaves ...)
       leaves)))
 
+  (define (leaf=? a b)
+    (equal? (basename a) (basename b)))
+
+  (define (resolve-collision leaves)
+    ;; LEAVES all have the same basename, so choose one of them.
+    (format (current-error-port) "warning: collision encountered: ~{~a ~}~%"
+            leaves)
+
+    ;; TODO: Implement smarter strategies.
+    (format (current-error-port) "warning: arbitrarily choosing ~a~%"
+            (car leaves))
+    (car leaves))
+
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)
 
   (mkdir output)
-  (let loop ((tree (tree-union (append-map (compose tree-leaves file-tree)
-                                           directories)))
+  (let loop ((tree (delete-duplicate-leaves
+                    (tree-union (append-map (compose tree-leaves file-tree)
+                                            directories))
+                    leaf=?
+                    resolve-collision))
              (dir  '()))
     (match tree
       ((? string?)
