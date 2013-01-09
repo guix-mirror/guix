@@ -440,9 +440,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                     (cons p r))))
                             '())))
            (for-each (lambda (p)
-                       (format #t "~a\t~a\t~a~%"
+                       (format #t "~a\t~a\t~a\t~a~%"
                                (package-name p)
                                (package-version p)
+                               (string-join (package-outputs p) ",")
                                (location->string (package-location p))))
                      (sort available
                            (lambda (p1 p2)

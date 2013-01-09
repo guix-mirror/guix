@@ -491,7 +491,9 @@ List packages currently available in the software distribution.  When
 matches @var{regexp}.
 
 For each package, print the following items separated by tabs: its name,
-its version string, and the source location of its definition.
+its version string, the parts of the package (@code{out} for the main
+files, @code{lib} for libraries and possibly headers, etc.), and the
+source location of its definition.
 
 @end table
 
