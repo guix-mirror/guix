@@ -458,6 +458,13 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (setvbuf (current-error-port) _IOLBF)
 
   (let ((opts (parse-options)))
+
+    ;; Create ~/.guix-profile if it doesn't exist yet.
+    (when (and %user-environment-directory
+               %current-profile
+               (not (file-exists? %user-environment-directory)))
+      (symlink %current-profile %user-environment-directory))
+
     (with-error-handling
       (or (process-query opts)
           (parameterize ((%guile-for-build
@@ -466,7 +473,3 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                                   %bootstrap-guile
                                                   guile-final))))
             (process-actions opts))))))
-
-;; Local Variables:
-;; eval: (put 'guard 'scheme-indent-function 1)
-;; End:

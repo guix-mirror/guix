@@ -428,6 +428,12 @@ the transaction.  Upon completion, a new profile is created, but
 previous generations of the profile remain available, should the user
 want to roll back.
 
+For each user, a symlink to the user's default profile is automatically
+created in @file{$HOME/.guix-profile}.  This symlink always point to the
+current generation of the user's default profile.  Thus, users can add
+@file{$HOME/.guix-profile/bin} to their @code{PATH} environment
+variable, and so on.
+
 @table @code
 
 @item --install=@var{package}
