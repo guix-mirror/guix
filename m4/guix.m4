@@ -1,5 +1,5 @@
 dnl GNU Guix --- Functional package management for GNU
-dnl Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+dnl Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 dnl
 dnl This file is part of GNU Guix.
 dnl
@@ -61,5 +61,9 @@ AC_DEFUN([GUIX_SYSTEM_TYPE], [
 	  # `darwin10.2.0', etc.
 	  guix_system="$machine_name-`echo $host_os | "$SED" -e's/@<:@0-9.@:>@*$//g'`";;
      esac])
+
+  AC_MSG_CHECKING([for the Guix system type])
+  AC_MSG_RESULT([$guix_system])
+
   AC_SUBST([guix_system])
 ])
