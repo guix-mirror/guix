@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,8 +54,7 @@
                    %standard-phases)))
       ((system cross-system)
        '(#:parallel-tests? #f))))
-   (inputs `(("libsigsegv" ,libsigsegv)             ; headers
-             ("libsigsegv/lib" ,libsigsegv "lib"))) ; library
+   (inputs `(("libsigsegv" ,libsigsegv)))
    (home-page "http://www.gnu.org/software/gawk/")
    (synopsis "GNU implementation of the Awk programming language")
    (description
