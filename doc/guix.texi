@@ -219,7 +219,7 @@ Install @var{package}.
 @code{guile}, or a package name followed by a hyphen and version number,
 such as @code{guile-1.8}.  In addition, @var{package} may contain a
 colon, followed by the name of one of the outputs of the package, as in
-@code{gcc:doc} or @code{libsigsegv-2.10:lib}.
+@code{gcc:doc} or @code{binutils-2.22:lib}.
 
 @item --remove=@var{package}
 @itemx -r @var{package}

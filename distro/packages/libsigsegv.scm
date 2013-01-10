@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +35,6 @@
             (sha256
              (base32 "16hrs8k3nmc7a8jam5j1fpspd6sdpkamskvsdpcw6m29vnis8q44"))))
    (build-system gnu-build-system)
-   (outputs '("out" "lib"))                   ; separate libdir from the rest
    (home-page "http://www.gnu.org/software/libsigsegv/")
    (synopsis "GNU libsigsegv, a library to handle page faults in user mode")
    (description
