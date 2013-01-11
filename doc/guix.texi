@@ -4,6 +4,7 @@
 @c %**start of header
 @setfilename guix.info
 @documentencoding UTF-8
+@documentlanguage en
 @settitle GNU Guix Reference Manual
 @c %**end of header
 
@@ -138,6 +139,10 @@ The remainder of this manual describes them.
 This section describes the software requirements of Guix, as well as how
 to install it and get ready to use it.
 
+The build procedure for Guix is the same as for other GNU software, and
+are not covered here.  Please see the files @file{README} and
+@file{INSTALL} in the Guix source tree for additional details.
+
 @menu
 * Requirements::                Software needed to build and run Guix.
 * Setting Up the Daemon::       Preparing the build daemon's environment.
@@ -166,6 +171,16 @@ following packages are also needed:
 When a working installation of the Nix package manager is available, you
 can instead configure Guix with @code{--disable-daemon}.  In that case,
 @url{http://nixos.org/nix/, Nix} replaces the three dependencies above.
+
+Guix is compatible with Nix, so it is possible to share the same store
+between both.  To do so, you must pass @command{configure} not only the
+same @code{--with-store-dir} value, but also the same
+@code{--localstatedir} value (the latter is essential because it
+specifies where the database that store meta-data about the store is
+located, among other things.)  The default values are
+@code{--with-store-dir=/nix/store} and @code{--localstatedir=/nix/var}.
+Note that @code{--disable-daemon} is orthogonal and is not required if
+your goal is to share the same store as Nix.
 
 @node Setting Up the Daemon
 @section Setting Up the Daemon
@@ -595,6 +610,11 @@ example, the package definition, or @dfn{recipe}, for the GNU Hello
 package looks like this:
 
 @example
+(use-modules (guix packages)
+             (guix download)
+             (guix build-system gnu)
+             (guix licenses))
+
 (define hello
   (package
     (name "hello")
@@ -610,7 +630,7 @@ package looks like this:
     (synopsis "GNU Hello")
     (description "Yeah...")
     (home-page "http://www.gnu.org/software/hello/")
-    (license "GPLv3+")))
+    (license gpl3+)))
 @end example
 
 @noindent
