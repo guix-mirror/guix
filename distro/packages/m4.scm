@@ -46,7 +46,19 @@
                    #:patches (list (assoc-ref %build-inputs "patch/s_isdir")
                                    (assoc-ref %build-inputs
                                               "patch/readlink-EINVAL")
-                                   (assoc-ref %build-inputs "patch/gets"))))
+                                   (assoc-ref %build-inputs "patch/gets"))
+                   #:phases (alist-cons-before
+                             'check 'pre-check
+                             (lambda* (#:key inputs #:allow-other-keys)
+                               ;; Fix references to /bin/sh.
+                               (let ((bash (assoc-ref inputs "bash")))
+                                 (for-each patch-shebang
+                                           (find-files "tests" "\\.sh$"))
+                                 (substitute* (find-files "tests"
+                                                          "posix_spawn")
+                                   (("/bin/sh")
+                                    (format #f "~a/bin/bash" bash)))))
+                             %standard-phases)))
                 ((system cross-system)
                  `(#:patches (list (assoc-ref %build-inputs "patch/s_isdir")
                                    (assoc-ref %build-inputs

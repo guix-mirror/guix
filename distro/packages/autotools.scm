@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -99,9 +99,37 @@ Standards.  Automake requires the use of Autoconf.")
     (build-system gnu-build-system)
     (native-inputs `(("m4" ,m4)
                      ("perl" ,perl)))
+
+    ;; Separate binaries from the rest.  During bootstrap, only ltdl is
+    ;; used; not depending on the binaries allows us to avoid retaining
+    ;; a reference to the bootstrap bash.
+    (outputs '("bin"                         ; libtoolize, libtool, etc.
+               "out"))                       ; libltdl.so, ltdl.h, etc.
+
     (arguments
-     ;; TODO: Use `TESTSUITEFLAGS=-jN' for tests.
-     `(#:patches (list (assoc-ref %build-inputs "patch/skip-tests"))))
+     `(#:patches (list (assoc-ref %build-inputs "patch/skip-tests"))
+       #:phases (alist-cons-before
+                 'check 'pre-check
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; Run the test suite in parallel, if possible.
+                   (let ((ncores
+                          (cond
+                           ((getenv "NIX_BUILD_CORES")
+                            =>
+                            (lambda (n)
+                              (if (zero? (string->number n))
+                                  (number->string (current-processor-count))
+                                  n)))
+                           (else "1"))))
+                    (setenv "TESTSUITEFLAGS"
+                            (string-append "-j" ncores)))
+
+                   ;; Path references to /bin/sh.
+                   (let ((bash (assoc-ref inputs "bash")))
+                     (substitute* "tests/testsuite"
+                       (("/bin/sh")
+                        (string-append bash "/bin/bash")))))
+                 %standard-phases)))
     (inputs `(("patch/skip-tests"
                ,(search-patch "libtool-skip-tests.patch"))))
     (synopsis "GNU Libtool, a generic library support script")

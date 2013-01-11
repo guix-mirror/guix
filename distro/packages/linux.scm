@@ -33,8 +33,13 @@
 (define-public linux-libre-headers
   (let* ((version* "3.3.8")
          (build-phase
-          '(lambda* (#:key outputs #:allow-other-keys)
-             (setenv "ARCH" "x86_64")       ; XXX
+          '(lambda* (#:key system #:allow-other-keys)
+             (let ((arch (car (string-split system #\-))))
+               (setenv "ARCH"
+                       (cond ((string=? arch "i686") "i386")
+                             (else arch)))
+               (format #t "`ARCH' set to `~a'~%" (getenv "ARCH")))
+
              (and (zero? (system* "make" "defconfig"))
                   (zero? (system* "make" "mrproper" "headers_check")))))
          (install-phase

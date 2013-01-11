@@ -41,23 +41,31 @@
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-replace 'install
-                      (lambda _
-                        (zero? (system* "make"
-                                        "install"
-                                        "install-lib"
-                                        "install-dev")))
-                      (alist-replace 'check
-                                     (lambda _
-                                       (for-each patch-shebang
-                                                 (find-files "test" ".*"))
-                                       (system* "make" "tests" "-C" "test")
+       (alist-cons-after
+        'configure 'patch-makefile-SHELL
+        (lambda _
+          (patch-makefile-SHELL "include/buildmacros"))
+        (alist-replace
+         'install
+         (lambda _
+           (zero? (system* "make"
+                           "install"
+                           "install-lib"
+                           "install-dev")))
+         (alist-replace
+          'check
+          (lambda _
+            ;; Use the right shell.
+            (substitute* "test/run"
+              (("/bin/sh")
+               (which "bash")))
 
-                                       ;; XXX: Ignore the test result since
-                                       ;; this is dependent on the underlying
-                                       ;; file system.
-                                       #t)
-                                     %standard-phases))))
+            (system* "make" "tests" "-C" "test")
+
+            ;; XXX: Ignore the test result since this is dependent on the
+            ;; underlying file system.
+            #t)
+          %standard-phases)))))
     (inputs `(("perl" ,perl)
               ("gettext" ,guix:gettext)))
     (home-page

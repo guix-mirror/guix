@@ -90,6 +90,7 @@ MODULES =					\
   distro/packages/nano.scm			\
   distro/packages/ncurses.scm			\
   distro/packages/nettle.scm			\
+  distro/packages/openssl.scm			\
   distro/packages/perl.scm			\
   distro/packages/pkg-config.scm		\
   distro/packages/pth.scm			\
@@ -116,7 +117,9 @@ dist_patch_DATA =						\
   distro/packages/patches/cpio-gets-undeclared.patch		\
   distro/packages/patches/diffutils-gets-undeclared.patch	\
   distro/packages/patches/flex-bison-tests.patch		\
+  distro/packages/patches/gawk-shell.patch			\
   distro/packages/patches/gettext-gets-undeclared.patch		\
+  distro/packages/patches/glibc-bootstrap-system.patch		\
   distro/packages/patches/glibc-no-ld-so-cache.patch		\
   distro/packages/patches/guile-1.8-cpp-4.5.patch		\
   distro/packages/patches/guile-default-utf8.patch		\
@@ -154,9 +157,9 @@ dist_bootstrap_i686_linux_DATA =		\
 # Big bootstrap binaries are not included in the tarball.  Instead, they
 # are downloaded.
 nodist_bootstrap_x86_64_linux_DATA =					\
-  distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz
+  distro/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz
 nodist_bootstrap_i686_linux_DATA =					\
-  distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz
+  distro/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz
 
 # Those files must remain executable, so they remain executable once
 # imported into the store.
@@ -173,12 +176,12 @@ DOWNLOAD_FILE =								\
   $(GUILE) --no-auto-compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
            "$(top_srcdir)/build-aux/download.scm"
 
-distro/packages/bootstrap/x86_64-linux/guile-bootstrap-2.0.6.tar.xz:
+distro/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
-	$(DOWNLOAD_FILE) "$@" "0467a82cbe4136f60a79eb4176011bf88cf28ea19c9ad9defa365811ff8e11cf"
-distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz:
+	$(DOWNLOAD_FILE) "$@" "bc43210dcd146d242bef4d354b0aeac12c4ef3118c07502d17ffa8d49e15aa2c"
+distro/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
-	$(DOWNLOAD_FILE) "$@" "93b537766dfab3ad287143523751e3ec02dd32d3ccaf88ad2d31c63158f342ee"
+	$(DOWNLOAD_FILE) "$@" "f9a7c6f4c556eaafa2a69bcf07d4ffbb6682ea831d4c9da9ba095aca3ccd217c"
 
 nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
 

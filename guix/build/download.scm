@@ -1,20 +1,20 @@
-;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
-;;; This file is part of Guix.
+;;; This file is part of GNU Guix.
 ;;;
-;;; Guix is free software; you can redistribute it and/or modify it
+;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation; either version 3 of the License, or (at
 ;;; your option) any later version.
 ;;;
-;;; Guix is distributed in the hope that it will be useful, but
+;;; GNU Guix is distributed in the hope that it will be useful, but
 ;;; WITHOUT ANY WARRANTY; without even the implied warranty of
 ;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;;; GNU General Public License for more details.
 ;;;
 ;;; You should have received a copy of the GNU General Public License
-;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build download)
   #:use-module (web uri)
@@ -27,6 +27,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:export (url-fetch))
 
 ;;; Commentary:
@@ -35,17 +36,58 @@
 ;;;
 ;;; Code:
 
+(define* (progress-proc file size #:optional (log-port (current-output-port)))
+  "Return a procedure to show the progress of FILE's download, which is
+SIZE byte long.  The returned procedure is suitable for use as an
+argument to `dump-port'.  The progress report is written to LOG-PORT."
+  (if (number? size)
+      (lambda (transferred cont)
+        (let ((% (* 100.0 (/ transferred size))))
+          (display #\cr log-port)
+          (format log-port "~a\t~5,1f% of ~,1f KiB"
+                  file % (/ size 1024.0))
+          (flush-output-port log-port)
+          (cont)))
+      (lambda (transferred cont)
+        (display #\cr log-port)
+        (format log-port "~a\t~6,1f KiB transferred"
+                file (/ transferred 1024.0))
+        (flush-output-port log-port)
+        (cont))))
+
+(define* (uri-abbreviation uri #:optional (max-length 42))
+  "If URI's string representation is larger than MAX-LENGTH, return an
+abbreviation of URI showing the scheme, host, and basename of the file."
+  (define uri-as-string
+    (uri->string uri))
+
+  (define (elide-path)
+    (let ((path (uri-path uri)))
+      (string-append (symbol->string (uri-scheme uri))
+                     "://" (uri-host uri)
+                     (string-append "/.../" (basename path)))))
+
+  (if (> (string-length uri-as-string) max-length)
+      (let ((short (elide-path)))
+        (if (< (string-length short) (string-length uri-as-string))
+            short
+            uri-as-string))
+      uri-as-string))
+
 (define (ftp-fetch uri file)
   "Fetch data from URI and write it to FILE.  Return FILE on success."
   (let* ((conn (ftp-open (uri-host uri)))
+         (size (false-if-exception (ftp-size conn (uri-path uri))))
          (in   (ftp-retr conn (basename (uri-path uri))
                          (dirname (uri-path uri)))))
     (call-with-output-file file
       (lambda (out)
-        ;; TODO: Show a progress bar.
-        (dump-port in out)))
+        (dump-port in out
+                   #:buffer-size 65536            ; don't flood the log
+                   #:progress (progress-proc (uri-abbreviation uri) size))))
 
     (ftp-close conn))
+    (newline)
   file)
 
 (define (open-connection-for-uri uri)
@@ -103,20 +145,34 @@ which is not available during bootstrap."
 (define (http-fetch uri file)
   "Fetch data from URI and write it to FILE.  Return FILE on success."
 
-  ;; FIXME: Use a variant of `http-get' that returns a port instead of
-  ;; loading everything in memory.
   (let*-values (((connection)
                  (open-connection-for-uri uri))
-                ((resp bv)
-                 (http-get uri #:port connection #:decode-body? #f))
+                ((resp bv-or-port)
+                 ;; XXX: `http-get*' was introduced in 2.0.7.  We know
+                 ;; we're using it within the chroot, but
+                 ;; `guix-download' might be using a different version.
+                 ;; So keep this compatibility hack for now.
+                 (if (module-defined? (resolve-interface '(web client))
+                                      'http-get*)
+                     (http-get* uri #:port connection #:decode-body? #f)
+                     (http-get uri #:port connection #:decode-body? #f)))
                 ((code)
-                 (response-code resp)))
+                 (response-code resp))
+                ((size)
+                 (response-content-length resp)))
     (case code
       ((200)                                      ; OK
        (begin
          (call-with-output-file file
            (lambda (p)
-             (put-bytevector p bv)))
+             (if (port? bv-or-port)
+                 (begin
+                   (dump-port bv-or-port p
+                              #:buffer-size 65536  ; don't flood the log
+                              #:progress (progress-proc (uri-abbreviation uri)
+                                                        size))
+                   (newline))
+                 (put-bytevector p bv-or-port))))
          file))
       ((302)                                      ; found (redirection)
        (let ((uri (response-location resp)))

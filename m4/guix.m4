@@ -1,20 +1,20 @@
-dnl Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-dnl Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+dnl GNU Guix --- Functional package management for GNU
+dnl Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 dnl
-dnl This file is part of Guix.
+dnl This file is part of GNU Guix.
 dnl
-dnl Guix is free software; you can redistribute it and/or modify it
+dnl GNU Guix is free software; you can redistribute it and/or modify it
 dnl under the terms of the GNU General Public License as published by
 dnl the Free Software Foundation; either version 3 of the License, or (at
 dnl your option) any later version.
 dnl
-dnl Guix is distributed in the hope that it will be useful, but
+dnl GNU Guix is distributed in the hope that it will be useful, but
 dnl WITHOUT ANY WARRANTY; without even the implied warranty of
 dnl MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 dnl GNU General Public License for more details.
 dnl
 dnl You should have received a copy of the GNU General Public License
-dnl along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+dnl along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 dnl GUIX_ASSERT_LIBGCRYPT_USABLE
 dnl
@@ -61,5 +61,9 @@ AC_DEFUN([GUIX_SYSTEM_TYPE], [
 	  # `darwin10.2.0', etc.
 	  guix_system="$machine_name-`echo $host_os | "$SED" -e's/@<:@0-9.@:>@*$//g'`";;
      esac])
+
+  AC_MSG_CHECKING([for the Guix system type])
+  AC_MSG_RESULT([$guix_system])
+
   AC_SUBST([guix_system])
 ])

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,6 +20,7 @@
 (define-module (distro packages base)
   #:use-module (guix licenses)
   #:use-module (distro)
+  #:use-module (distro packages acl)
   #:use-module (distro packages bash)
   #:use-module (distro packages bootstrap)
   #:use-module (distro packages compression)
@@ -97,6 +98,17 @@ lines.")
               "13wlsb4sf5d5a82xjhxqmdvrrn36rmw5f0pl9qyb9zkvldnb7hra"))))
    (build-system gnu-build-system)
    (synopsis "GNU sed, a batch stream editor")
+   (arguments
+    `(#:phases (alist-cons-before
+                'patch-source-shebangs 'patch-test-suite
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let ((bash (assoc-ref inputs "bash")))
+                    (patch-makefile-SHELL "testsuite/Makefile.tests")
+                    (substitute* '("testsuite/bsd.sh"
+                                   "testsuite/bug-regex9.c")
+                      (("/bin/sh")
+                       (string-append bash "/bin/bash")))))
+                %standard-phases)))
    (description
     "Sed (stream editor) isn't really a true text editor or text processor.
 Instead, it is used to filter text, i.e., it takes text input and performs
@@ -252,19 +264,33 @@ The tools supplied with this package are:
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.19")
+   (version "8.20")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1rx9x3fp848w4nny7irdkcpkan9fcx24d99v5dkwgkyq7wc76f5d"))))
+              "1cly97xdy3v4nbbx631k43smqw0nnpn651kkprs0yyl2cj3pkjyv"))))
    (build-system gnu-build-system)
-   (inputs `())                      ; TODO: optional deps: SELinux, ACL, GMP
+   (inputs `(("acl"  ,acl)
+             ("gmp"  ,gmp)
+             ("perl" ,perl)))                     ; TODO: add SELinux
    (arguments
-    '(;; Perl is missing, and some tests are failing.
-      #:tests? #f))
+    `(#:parallel-build? #f            ; help2man may be called too early
+      #:phases (alist-cons-before
+                'build 'patch-shell-references
+                (lambda* (#:key inputs #:allow-other-keys)
+                  (let ((bash (assoc-ref inputs "bash")))
+                    (substitute* (cons "src/split.c"
+                                       (find-files "gnulib-tests"
+                                                   "\\.c$"))
+                      (("/bin/sh")
+                       (format #f "~a/bin/sh" bash)))
+                    (substitute* (find-files "tests" "\\.sh$")
+                      (("#!/bin/sh")
+                       (format #f "#!~a/bin/bash" bash)))))
+                %standard-phases)))
    (synopsis
     "The basic file, shell and text manipulation utilities of the GNU
 operating system")
@@ -289,8 +315,18 @@ are expected to exist on every operating system.")
    (build-system gnu-build-system)
    (native-inputs
     `(("patch/impure-dirs" ,(search-patch "make-impure-dirs.patch"))))
-   (arguments `(#:patches (list (assoc-ref %build-inputs
-                                           "patch/impure-dirs"))))
+   (arguments
+    '(#:patches (list (assoc-ref %build-inputs "patch/impure-dirs"))
+      #:phases (alist-cons-before
+                'build 'set-default-shell
+                (lambda* (#:key inputs #:allow-other-keys)
+                  ;; Change the default shell from /bin/sh.
+                  (let ((bash (assoc-ref inputs "bash")))
+                    (substitute* "job.c"
+                      (("default_shell\\[\\] =.*$")
+                       (format #f "default_shell[] = \"~a/bin/bash\";\n"
+                               bash)))))
+                %standard-phases)))
    (synopsis "GNU Make, a program controlling the generation of non-source
 files from sources")
    (description
@@ -316,6 +352,11 @@ that it is possible to use Make to build and install the program.")
              (base32
               "1a9w66v5dwvbnawshjwqcgz7km6kw6ihkzp6sswv9ycc3knzhykc"))))
    (build-system gnu-build-system)
+
+   ;; Split Binutils in several outputs, mostly to avoid collisions in
+   ;; user profiles with GCC---e.g., libiberty.a.
+   (outputs '("out"                        ; ar, ld, binutils.info, etc.
+              "lib"))                      ; libbfd.a, bfd.h, etc.
 
    ;; TODO: Add dependency on zlib + those for Gold.
    (native-inputs
@@ -455,14 +496,14 @@ used in the GNU system including the GNU/Linux variant.")
 (define-public glibc
   (package
    (name "glibc")
-   (version "2.16.0")
+   (version "2.17")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "092rdm49zh6l1pqkxbcpcaawgsgzxhpf1s7wf5wi5dvc5am3dp0y"))))
+              "0gmjnn4kma9vgizccw1jv979xw55a8n1nkk94gg0l3hy80vy6539"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -485,13 +526,20 @@ used in the GNU system including the GNU/Linux variant.")
             ;; GNU libc for details.
             "--enable-kernel=2.6.30"
 
+            ;; Use our Bash instead of /bin/sh.
+            (string-append "BASH_SHELL="
+                           (assoc-ref %build-inputs "bash")
+                           "/bin/bash")
+
             ;; XXX: Work around "undefined reference to `__stack_chk_guard'".
             "libc_cv_ssp=no")
+
       #:tests? #f                                 ; XXX
       #:phases (alist-cons-before
                 'configure 'pre-configure
-                (lambda* (#:key outputs #:allow-other-keys)
-                  (let ((out (assoc-ref outputs "out")))
+                (lambda* (#:key inputs outputs #:allow-other-keys)
+                  (let* ((out  (assoc-ref outputs "out"))
+                         (bin  (string-append out "/bin")))
                     ;; Use `pwd', not `/bin/pwd'.
                     (substitute* "configure"
                       (("/bin/pwd") "pwd"))
@@ -509,10 +557,35 @@ used in the GNU system including the GNU/Linux variant.")
                       ;; <http://www.linuxfromscratch.org/lfs/view/stable/chapter05/glibc.html>,
                       ;; linking against libgcc_s is not needed with GCC
                       ;; 4.7.1.
-                      ((" -lgcc_s") ""))))
+                      ((" -lgcc_s") ""))
+
+                    ;; Copy a statically-linked Bash in the output, with
+                    ;; no references to other store paths.
+                    (mkdir-p bin)
+                    (copy-file (string-append (assoc-ref inputs "static-bash")
+                                              "/bin/bash")
+                               (string-append bin "/bash"))
+                    (remove-store-references (string-append bin "/bash"))
+                    (chmod (string-append bin "/bash") #o555)
+
+                    ;; Keep a symlink, for `patch-shebang' resolution.
+                    (with-directory-excursion bin
+                      (symlink "bash" "sh"))
+
+                    ;; Have `system' use that Bash.
+                    (substitute* "sysdeps/posix/system.c"
+                      (("#define[[:blank:]]+SHELL_PATH.*$")
+                       (format #f "#define SHELL_PATH \"~a/bin/bash\"\n"
+                               out)))
+
+                    ;; Same for `popen'.
+                    (substitute* "libio/iopopen.c"
+                      (("/bin/sh")
+                       (string-append out "/bin/bash")))))
                 %standard-phases)))
    (inputs `(("patch/ld.so.cache"
-              ,(search-patch "glibc-no-ld-so-cache.patch"))))
+              ,(search-patch "glibc-no-ld-so-cache.patch"))
+             ("static-bash" ,(static-package bash-light))))
    (synopsis "The GNU C Library")
    (description
     "Any Unix-like operating system needs a C library: the library which
@@ -534,21 +607,23 @@ with the Linux kernel.")
    (package (inherit gnu-make)
      (name "make-boot0")
      (location (source-properties->location (current-source-location)))
-     (arguments `(#:guile ,%bootstrap-guile
-                  #:implicit-inputs? #f
-                  #:tests? #f                  ; cannot run "make check"
-                  #:phases
-                  (alist-replace
-                   'build (lambda _
-                            (zero? (system* "./build.sh")))
-                   (alist-replace
-                    'install (lambda* (#:key outputs #:allow-other-keys)
-                               (let* ((out (assoc-ref outputs "out"))
-                                      (bin (string-append out "/bin")))
-                                 (mkdir-p bin)
-                                 (copy-file "make"
-                                            (string-append bin "/make"))))
-                    %standard-phases))))
+     (arguments
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
+        #:tests? #f                  ; cannot run "make check"
+        ,@(substitute-keyword-arguments (package-arguments gnu-make)
+            ((#:phases phases)
+             `(alist-replace
+               'build (lambda _
+                        (zero? (system* "./build.sh")))
+               (alist-replace
+                'install (lambda* (#:key outputs #:allow-other-keys)
+                           (let* ((out (assoc-ref outputs "out"))
+                                  (bin (string-append out "/bin")))
+                             (mkdir-p bin)
+                             (copy-file "make"
+                                        (string-append bin "/make"))))
+                ,phases))))))
      (inputs %bootstrap-inputs))))
 
 (define diffutils-boot0
@@ -728,81 +803,124 @@ identifier SYSTEM."
     ;; cross-`as'.
     ,@%boot0-inputs))
 
-(define-public glibc-final
+(define glibc-final-with-bootstrap-bash
   ;; The final libc, "cross-built".  If everything went well, the resulting
-  ;; store path has no dependencies.
+  ;; store path has no dependencies.  Actually, the really-final libc is
+  ;; built just below; the only difference is that this one uses the
+  ;; bootstrap Bash.
   (package-with-bootstrap-guile
    (package (inherit glibc)
+     (name "glibc-intermediate")
      (arguments
       (lambda (system)
         `(#:guile ,%bootstrap-guile
           #:implicit-inputs? #f
 
-          ;; Leave /bin/sh as the interpreter for `ldd', `sotruss', etc. to
-          ;; avoid keeping a reference to the bootstrap Bash.
-          #:patch-shebangs? #f
           ,@(substitute-keyword-arguments (package-arguments glibc)
               ((#:configure-flags flags)
                `(append (list ,(string-append "--host=" (boot-triplet system))
                               ,(string-append "--build="
                                               (nix-system->gnu-triplet system))
-                              "BASH_SHELL=/bin/sh"
 
                               ;; Build Sun/ONC RPC support.  In particular,
                               ;; install rpc/*.h.
                               "--enable-obsolete-rpc")
                         ,flags))))))
      (propagated-inputs `(("linux-headers" ,linux-libre-headers-boot0)))
-     (inputs `( ;; A native GCC is needed to build `cross-rpcgen'.
-               ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))
-               ,@%boot1-inputs
-               ,@(package-inputs glibc))))))      ; patches
+     (inputs
+      `( ;; A native GCC is needed to build `cross-rpcgen'.
+        ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))
 
-(define gcc-boot0-wrapped
-  ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
-  ;; non-cross names.
+        ;; Here, we use the bootstrap Bash, which is not satisfactory
+        ;; because we don't want to depend on bootstrap tools.
+        ("static-bash" ,@(assoc-ref %boot0-inputs "bash"))
+
+        ,@%boot1-inputs
+        ,@(alist-delete "static-bash"
+                        (package-inputs glibc))))))) ; patches
+
+(define (cross-gcc-wrapper gcc binutils glibc bash)
+  "Return a wrapper for the pseudo-cross toolchain GCC/BINUTILS/GLIBC
+that makes it available under the native tool names."
   (package (inherit gcc-4.7)
-    (name (string-append (package-name gcc-boot0) "-wrapped"))
+    (name (string-append (package-name gcc) "-wrapped"))
     (source #f)
     (build-system trivial-build-system)
     (arguments
      (lambda (system)
-      `(#:guile ,%bootstrap-guile
-        #:modules ((guix build utils))
-        #:builder (begin
-                    (use-modules (guix build utils))
+       `(#:guile ,%bootstrap-guile
+         #:modules ((guix build utils))
+         #:builder (begin
+                     (use-modules (guix build utils))
 
-                    (let* ((binutils (assoc-ref %build-inputs "binutils"))
-                           (gcc      (assoc-ref %build-inputs "gcc"))
-                           (libc     (assoc-ref %build-inputs "libc"))
-                           (out      (assoc-ref %outputs "out"))
-                           (bindir   (string-append out "/bin"))
-                           (triplet  ,(boot-triplet system)))
-                      (mkdir-p bindir)
-                      (with-directory-excursion bindir
-                        (for-each (lambda (tool)
-                                    (symlink (string-append binutils "/bin/"
-                                                            triplet "-" tool)
-                                             tool))
-                                  '("ar" "ranlib"))
+                     (let* ((binutils (assoc-ref %build-inputs "binutils"))
+                            (gcc      (assoc-ref %build-inputs "gcc"))
+                            (libc     (assoc-ref %build-inputs "libc"))
+                            (bash     (assoc-ref %build-inputs "bash"))
+                            (out      (assoc-ref %outputs "out"))
+                            (bindir   (string-append out "/bin"))
+                            (triplet  ,(boot-triplet system)))
+                       (mkdir-p bindir)
+                       (with-directory-excursion bindir
+                         (for-each (lambda (tool)
+                                     (symlink (string-append binutils "/bin/"
+                                                             triplet "-" tool)
+                                              tool))
+                                   '("ar" "ranlib"))
 
-                        ;; GCC-BOOT0 is a libc-less cross-compiler, so it
-                        ;; needs to be told where to find the crt files and
-                        ;; the dynamic linker.
-                        (call-with-output-file "gcc"
-                          (lambda (p)
-                            (format p "#!/bin/sh
+                         ;; GCC-BOOT0 is a libc-less cross-compiler, so it
+                         ;; needs to be told where to find the crt files and
+                         ;; the dynamic linker.
+                         (call-with-output-file "gcc"
+                           (lambda (p)
+                             (format p "#!~a/bin/bash
 exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
-                                    gcc triplet
-                                    libc libc
-                                    ,(glibc-dynamic-linker system))))
+                                     bash
+                                     gcc triplet
+                                     libc libc
+                                     ,(glibc-dynamic-linker system))))
 
-                        (chmod "gcc" #o555)))))))
+                         (chmod "gcc" #o555)))))))
     (native-inputs
-     `(("binutils" ,binutils-boot0)
-       ("gcc" ,gcc-boot0)
-       ("libc" ,glibc-final)))
+     `(("binutils" ,binutils)
+       ("gcc" ,gcc)
+       ("libc" ,glibc)
+       ("bash" ,bash)))
     (inputs '())))
+
+(define static-bash-for-glibc
+  ;; A statically-linked Bash to be embedded in GLIBC-FINAL, for use by
+  ;; system(3) & co.
+  (let* ((gcc  (cross-gcc-wrapper gcc-boot0 binutils-boot0
+                                  glibc-final-with-bootstrap-bash
+                                  (car (assoc-ref %boot1-inputs "bash"))))
+         (bash (package (inherit bash-light)
+                 (arguments
+                  (lambda (system)
+                    `(#:guile ,%bootstrap-guile
+                      ,@(package-arguments bash-light)))))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs (static-package bash)
+                                   `(("gcc" ,gcc)
+                                     ("libc" ,glibc-final-with-bootstrap-bash)
+                                     ,@(fold alist-delete %boot1-inputs
+                                             '("gcc" "libc")))
+                                   (current-source-location)))))
+
+(define-public glibc-final
+  ;; The final glibc, which embeds the statically-linked Bash built above.
+  (package (inherit glibc-final-with-bootstrap-bash)
+    (name "glibc")
+    (inputs `(("static-bash" ,static-bash-for-glibc)
+              ,@(alist-delete
+                 "static-bash"
+                 (package-inputs glibc-final-with-bootstrap-bash))))))
+
+(define gcc-boot0-wrapped
+  ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
+  ;; non-cross names.
+  (cross-gcc-wrapper gcc-boot0 binutils-boot0 glibc-final
+                     (car (assoc-ref %boot1-inputs "bash"))))
 
 (define %boot2-inputs
   ;; 3rd stage inputs.
@@ -857,9 +975,10 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (source #f)
     (build-system trivial-build-system)
     (inputs `(("binutils" ,binutils-final)
-              ("guile"   ,%bootstrap-guile)
-              ("wrapper" ,(search-path %load-path
-                                       "distro/packages/ld-wrapper.scm"))))
+              ("guile"    ,%bootstrap-guile)
+              ("bash"     ,@(assoc-ref %boot2-inputs "bash"))
+              ("wrapper"  ,(search-path %load-path
+                                        "distro/packages/ld-wrapper.scm"))))
     (arguments
      `(#:guile ,%bootstrap-guile
        #:modules ((guix build utils))
@@ -883,6 +1002,9 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                        (("@GUILE@")
                         (string-append (assoc-ref %build-inputs "guile")
                                        "/bin/guile"))
+                       (("@BASH@")
+                        (string-append (assoc-ref %build-inputs "bash")
+                                       "/bin/bash"))
                        (("@LD@")
                         (string-append (assoc-ref %build-inputs "binutils")
                                        "/bin/ld")))
@@ -917,9 +1039,6 @@ store.")
     ,@(alist-delete "bash" %boot3-inputs)))
 
 (define-public guile-final
-  ;; FIXME: The Libtool used here, specifically its `bin/libtool' script,
-  ;; holds a dependency on the bootstrap Binutils.  Use multiple outputs for
-  ;; Libtool, so that that dependency is isolated in the "bin" output.
   (package-with-bootstrap-guile
    (package-with-explicit-inputs guile-2.0/fixed
                                  %boot4-inputs
@@ -931,7 +1050,9 @@ store.")
   (package (inherit ld-wrapper-boot3)
     (name "ld-wrapper")
     (inputs `(("guile" ,guile-final)
-              ,@(alist-delete "guile" (package-inputs ld-wrapper-boot3))))))
+              ("bash"  ,bash-final)
+              ,@(fold alist-delete (package-inputs ld-wrapper-boot3)
+                      '("guile" "bash"))))))
 
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by `gnu-build-system'.

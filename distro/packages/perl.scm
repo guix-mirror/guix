@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,16 +46,14 @@
           'configure
           (lambda* (#:key inputs outputs #:allow-other-keys)
             (let ((out  (assoc-ref outputs "out"))
-                  (libc (assoc-ref inputs "libc"))
-                  (pwd  (search-path (search-path-as-string->list
-                                      (getenv "PATH"))
-                                     "pwd")))
+                  (libc (assoc-ref inputs "libc")))
               ;; Use the right path for `pwd'.
               (substitute* "dist/Cwd/Cwd.pm"
-                (("/bin/pwd") pwd))
+                (("/bin/pwd")
+                 (which "pwd")))
 
               (zero?
-               (system* "/bin/sh" "./Configure"
+               (system* "./Configure"
                         (string-append "-Dprefix=" out)
                         (string-append "-Dman1dir=" out "/share/man/man1")
                         (string-append "-Dman3dir=" out "/share/man/man3")

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +28,18 @@
 (define-public gmp
   (package
    (name "gmp")
-   (version "5.0.5")
+   (version "5.1.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://gnu/gmp/gmp-" version
-                                ".tar.bz2"))
+            (uri
+             ;; Note: this version is not available from GNU mirrors
+             ;; because it was made with an Automake affected by
+             ;; CVE-2012-3386.
+             (string-append "ftp://ftp.gmplib.org/pub/gmp-"
+                            version "/gmp-" version ".tar.bz2"))
             (sha256
              (base32
-              "1jfymbr90mpn0zw5sg001llqnvf2462y77vgjknrmfs1rjn8ln0z"))))
+              "15n7xxgasbxdch8ii8z9ic6fxc2ysk3q8iavf55abjp5iylspnfz"))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (arguments `(#:configure-flags
@@ -96,14 +100,13 @@ double-precision floating-point arithmetic (53-bit mantissa).")
 (define-public mpc
   (package
    (name "mpc")
-   (version "1.0")
+   (version "1.0.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
-                  "http://www.multiprecision.org/mpc/download/mpc-"
-                  version ".tar.gz"))
+                  "mirror://gnu/mpc/mpc-" version ".tar.gz"))
             (sha256 (base32
-                     "00rxjmkpqnv6zzcyw9aa5w6rzaav32ys87km25zgfcv9i32km5cw"))))
+                     "1zq0fidp1jii2j5k5n9hmx55a6wwid33gjzhimvxq9d5zrf82npd"))))
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)
              ("mpfr" ,mpfr)))
@@ -111,7 +114,11 @@ double-precision floating-point arithmetic (53-bit mantissa).")
 with exact rounding")
    (description
     "GNU MPC is a C library for the arithmetic of complex numbers with
-arbitrarily high precision and correct rounding of the result.  It is built
-upon and follows the same principles as GNU MPFR.")
+arbitrarily high precision and correct rounding of the result. It extends
+the principles of the IEEE-754 standard for fixed precision real floating
+point numbers to complex numbers, providing well-defined semantics for
+every operation. At the same time, speed of operation at high precision
+is a major design goal. The library is built upon and follows the same
+principles as GNU MPFR.")
    (license lgpl3+)
    (home-page "http://mpc.multiprecision.org/")))

@@ -37,7 +37,20 @@
         "1sa3ch12qxa4h3ya6hkz119yclcccmincl9j20dhrdx5mykp3b4k"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
+     `(#:patches (list (assoc-ref %build-inputs "patch/gets"))
+       #:phases (alist-cons-before
+                 'check 'patch-tests
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((bash (assoc-ref inputs "bash")))
+                     (substitute* (find-files "gettext-tools/tests"
+                                              "^msgexec-[0-9]")
+                       (("#![[:blank:]]/bin/sh")
+                        (format #f "#!~a/bin/sh" bash)))
+                     (substitute* (find-files "gettext-tools/gnulib-tests"
+                                              "posix_spawn")
+                       (("/bin/sh")
+                        (format #f "~a/bin/bash" bash)))))
+                 %standard-phases)))
     (inputs
      `(("patch/gets"
         ,(search-patch "gettext-gets-undeclared.patch"))))

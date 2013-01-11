@@ -2,7 +2,7 @@
 
 #+TITLE: Hacking GNU Guix and its incredible distro
 
-Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -106,26 +106,10 @@ GCC, libc, etc. need to be built.  To that end, run the following
 commands:
 
 #+BEGIN_SRC sh
-  ./pre-inst-env guix-build                                       \
-      -e '(@@ (distro packages base) %guile-bootstrap-tarball)'   \
+  ./pre-inst-env guix-build                                         \
+      -e '(@ (distro packages make-bootstrap) bootstrap-tarballs)'  \
       --system=i686-linux
-  
-  ./pre-inst-env guix-build                                               \
-      -e '(@@ (distro packages base) %bootstrap-binaries-tarball)'        \
-      --system=i686-linux
-  
-  ./pre-inst-env guix-build                                               \
-      -e '(@@ (distro packages base) %binutils-bootstrap-tarball)'        \
-      --system=i686-linux
-  
-  ./pre-inst-env guix-build                                       \
-      -e '(@@ (distro packages base) %glibc-bootstrap-tarball)'   \
-      --system=i686-linux
-  
-  ./pre-inst-env guix-build                                       \
-      -e '(@@ (distro packages base) %gcc-bootstrap-tarball)'     \
-      --system=i686-linux
-  
+
 #+END_SRC
 
 These should build tarballs containing statically-linked tools usable on
@@ -135,12 +119,11 @@ In the source tree, you need to install binaries for ‘mkdir’, ‘bash’,
 ‘tar’, and ‘xz’ under ‘distro/packages/bootstrap/i686-linux’.  These
 binaries can be extracted from the static-binaries tarball built above.
 
-A rule for
-‘distro/packages/bootstrap/i686-linux/guile-bootstrap-2.0.6.tar.xz’
+A rule for ‘distro/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz’
 needs to be added in ‘Makefile.am’, with the appropriate hexadecimal
 vrepresentation of its SHA256 hash.
 
-You may then revert your changes to ‘base.scm’.  For the variables
+You may then revert your changes to ‘bootstrap.scm’.  For the variables
 ‘%bootstrap-coreutils&co’, ‘%bootstrap-binutils’, ‘%bootstrap-glibc’,
 and ‘%bootstrap-gcc’, the expected SHA256 of the corresponding tarballs
 for ‘i686-linux’ (built above) must be added.

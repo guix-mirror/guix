@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,42 +16,53 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (distro packages bdb)
+(define-module (distro packages openssl)
   #:use-module (distro)
+  #:use-module (distro packages perl)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
-(define-public bdb
+(define-public openssl
   (package
-   (name "bdb")
-   (version "5.3.21")
+   (name "openssl")
+   (version "1.0.1c")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://download.oracle.com/berkeley-db/db-" version
+            (uri (string-append "ftp://ftp.openssl.org/source/openssl-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1f2g2612lf8djbwbwhxsvmffmf9d7693kh2l20195pqp0f9jmnfx"))))
+                     "1gjy6a7d8nszi9wq8jdzx3cffn0nss23h3cw2ywlw4cb9v6v77ia"))))
    (build-system gnu-build-system)
+   (inputs `(("perl" ,perl)))
    (arguments
     (lambda (system)
-      `(#:tests? #f ; no check target available
+      `(#:parallel-build? #f
+        #:parallel-tests? #f
+        #:test-target "test"
         #:phases
         (alist-replace
          'configure
          (lambda* (#:key outputs #:allow-other-keys)
            (let ((out (assoc-ref outputs "out")))
              (zero?
-              (system* "./dist/configure"
-                       (string-append "--prefix=" out)
-                       (string-append "CONFIG_SHELL=" (which "bash"))
-                       (string-append "SHELL=" (which "bash"))))))
-         %standard-phases))))
-   (synopsis "db, the Berkeley database")
+              (system* "./config"
+                       "shared"                 ; build shared libraries
+                       "--libdir=lib"
+                       (string-append "--prefix=" out)))))
+         (alist-cons-before
+          'patch-source-shebangs 'patch-tests
+          (lambda* (#:key inputs #:allow-other-keys)
+            (let ((bash (assoc-ref inputs "bash")))
+             (substitute* (find-files "test" ".*")
+               (("/bin/sh")
+                (string-append bash "/bin/bash"))
+               (("/bin/rm")
+                "rm"))))
+          %standard-phases)))))
+   (synopsis "OpenSSL, an SSL/TLS implementation")
    (description
-    "Berkeley DB is an embeddable database allowing developers the choice of
-SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
-   (license (bsd-style "file://LICENSE"
-                       "See LICENSE in the distribution."))
-   (home-page "http://www.oracle.com/us/products/database/berkeley-db/overview/index.html")))
+    "OpenSSL is an implementation of SSL/TLS")
+   (license openssl)
+   (home-page "http://www.openssl.org/")))

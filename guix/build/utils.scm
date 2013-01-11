@@ -1,20 +1,20 @@
-;;; Guix --- Nix package management from Guile.         -*- coding: utf-8 -*-
-;;; Copyright (C) 2012 Ludovic Courtès <ludo@gnu.org>
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
-;;; This file is part of Guix.
+;;; This file is part of GNU Guix.
 ;;;
-;;; Guix is free software; you can redistribute it and/or modify it
+;;; GNU Guix is free software; you can redistribute it and/or modify it
 ;;; under the terms of the GNU General Public License as published by
 ;;; the Free Software Foundation; either version 3 of the License, or (at
 ;;; your option) any later version.
 ;;;
-;;; Guix is distributed in the hope that it will be useful, but
+;;; GNU Guix is distributed in the hope that it will be useful, but
 ;;; WITHOUT ANY WARRANTY; without even the implied warranty of
 ;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ;;; GNU General Public License for more details.
 ;;;
 ;;; You should have received a copy of the GNU General Public License
-;;; along with Guix.  If not, see <http://www.gnu.org/licenses/>.
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build utils)
   #:use-module (srfi srfi-1)
@@ -26,6 +26,8 @@
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:export (directory-exists?
+            executable-file?
+            call-with-ascii-input-file
             with-directory-excursion
             mkdir-p
             copy-recursively
@@ -34,6 +36,8 @@
             set-path-environment-variable
             search-path-as-string->list
             list->search-path-as-string
+            which
+
             alist-cons-before
             alist-cons-after
             alist-replace
@@ -41,7 +45,9 @@
             substitute
             substitute*
             dump-port
+            set-file-time
             patch-shebang
+            patch-makefile-SHELL
             fold-port-matches
             remove-store-references))
 
@@ -55,6 +61,27 @@
   (let ((s (stat dir #f)))
     (and s
          (eq? 'directory (stat:type s)))))
+
+(define (executable-file? file)
+  "Return #t if FILE exists and is executable."
+  (let ((s (stat file #f)))
+    (and s
+         (not (zero? (logand (stat:mode s) #o100))))))
+
+(define (call-with-ascii-input-file file proc)
+  "Open FILE as an ASCII or binary file, and pass the resulting port to
+PROC.  FILE is closed when PROC's dynamic extent is left.  Return the
+return values of applying PROC to the port."
+  (let ((port (with-fluids ((%default-port-encoding #f))
+                ;; Use "b" so that `open-file' ignores `coding:' cookies.
+                (open-file file "rb"))))
+    (dynamic-wind
+      (lambda ()
+        #t)
+      (lambda ()
+        (proc port))
+      (lambda ()
+        (close-input-port port)))))
 
 (define-syntax-rule (with-directory-excursion dir body ...)
   "Run BODY with DIR as the process's current directory."
@@ -188,6 +215,12 @@ SEPARATOR-separated path accordingly.  Example:
    (setenv env-var value)
    (format #t "environment variable `~a' set to `~a'~%"
            env-var value)))
+
+(define (which program)
+  "Return the complete file name for PROGRAM as found in $PATH, or #f if
+PROGRAM could not be found."
+  (search-path (search-path-as-string->list (getenv "PATH"))
+               program))
 
 
 ;;;
@@ -364,29 +397,49 @@ all subject to the substitutions."
 ;;; Patching shebangs---e.g., /bin/sh -> /nix/store/xyz...-bash/bin/sh.
 ;;;
 
-(define (dump-port in out)
-  "Read as much data as possible from IN and write it to OUT."
-  (define buffer-size 4096)
+(define* (dump-port in out
+                    #:key (buffer-size 16384)
+                    (progress (lambda (t k) (k))))
+  "Read as much data as possible from IN and write it to OUT, using
+chunks of BUFFER-SIZE bytes.  Call PROGRESS after each successful
+transfer of BUFFER-SIZE bytes or less, passing it the total number of
+bytes transferred and the continuation of the transfer as a thunk."
   (define buffer
     (make-bytevector buffer-size))
 
-  (let loop ((bytes (get-bytevector-n! in buffer 0 buffer-size)))
+  (let loop ((total 0)
+             (bytes (get-bytevector-n! in buffer 0 buffer-size)))
     (or (eof-object? bytes)
-        (begin
+        (let ((total (+ total bytes)))
           (put-bytevector out buffer 0 bytes)
-          (loop (get-bytevector-n! in buffer 0 buffer-size))))))
+          (progress total
+                    (lambda ()
+                      (loop total
+                            (get-bytevector-n! in buffer 0 buffer-size))))))))
+
+(define (set-file-time file stat)
+  "Set the atime/mtime of FILE to that specified by STAT."
+  (utime file
+         (stat:atime stat)
+         (stat:mtime stat)
+         (stat:atimensec stat)
+         (stat:mtimensec stat)))
 
 (define patch-shebang
   (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]+)(.*)$")))
     (lambda* (file
-              #:optional (path (search-path-as-string->list (getenv "PATH"))))
+              #:optional
+              (path (search-path-as-string->list (getenv "PATH")))
+              #:key (keep-mtime? #t))
       "Replace the #! interpreter file name in FILE by a valid one found in
 PATH, when FILE actually starts with a shebang.  Return #t when FILE was
-patched, #f otherwise."
+patched, #f otherwise.  When KEEP-MTIME? is true, the atime/mtime of
+FILE are kept unchanged."
       (define (patch p interpreter rest-of-line)
         (let* ((template (string-append file ".XXXXXX"))
                (out      (mkstemp! template))
-               (mode     (stat:mode (stat file))))
+               (st       (stat file))
+               (mode     (stat:mode st)))
           (with-throw-handler #t
             (lambda ()
               (format out "#!~a~a~%"
@@ -395,6 +448,8 @@ patched, #f otherwise."
               (close out)
               (chmod template mode)
               (rename-file template file)
+              (when keep-mtime?
+                (set-file-time file st))
               #t)
             (lambda (key . args)
               (format (current-error-port)
@@ -403,30 +458,60 @@ patched, #f otherwise."
               (false-if-exception (delete-file template))
               #f))))
 
-      (with-fluids ((%default-port-encoding #f))  ; ASCII
-        (call-with-input-file file
-          (lambda (p)
-            (and (eq? #\# (read-char p))
-                 (eq? #\! (read-char p))
-                 (let ((line (false-if-exception (read-line p))))
-                   (and=> (and line (regexp-exec shebang-rx line))
-                          (lambda (m)
-                            (let* ((cmd (match:substring m 1))
-                                   (bin (search-path path
-                                                     (basename cmd))))
-                              (if bin
-                                  (if (string=? bin cmd)
-                                      #f          ; nothing to do
-                                      (begin
-                                        (format (current-error-port)
-                                                "patch-shebang: ~a: changing `~a' to `~a'~%"
-                                                file cmd bin)
-                                        (patch p bin (match:substring m 2))))
-                                  (begin
-                                    (format (current-error-port)
-                                            "patch-shebang: ~a: warning: no binary for interpreter `~a' found in $PATH~%"
-                                            file (basename cmd))
-                                    #f)))))))))))))
+      (call-with-ascii-input-file file
+        (lambda (p)
+          (and (eq? #\# (read-char p))
+               (eq? #\! (read-char p))
+               (let ((line (false-if-exception (read-line p))))
+                 (and=> (and line (regexp-exec shebang-rx line))
+                        (lambda (m)
+                          (let* ((cmd (match:substring m 1))
+                                 (bin (search-path path (basename cmd))))
+                            (if bin
+                                (if (string=? bin cmd)
+                                    #f            ; nothing to do
+                                    (begin
+                                      (format (current-error-port)
+                                              "patch-shebang: ~a: changing `~a' to `~a'~%"
+                                              file cmd bin)
+                                      (patch p bin (match:substring m 2))))
+                                (begin
+                                  (format (current-error-port)
+                                          "patch-shebang: ~a: warning: no binary for interpreter `~a' found in $PATH~%"
+                                          file (basename cmd))
+                                  #f))))))))))))
+
+(define* (patch-makefile-SHELL file #:key (keep-mtime? #t))
+  "Patch the `SHELL' variable in FILE, which is supposedly a makefile.
+When KEEP-MTIME? is true, the atime/mtime of FILE are kept unchanged."
+
+  ;; For instance, Gettext-generated po/Makefile.in.in do not honor $SHELL.
+
+  ;; XXX: Unlike with `patch-shebang', FILE is always touched.
+
+  (define (find-shell name)
+    (let ((shell
+           (search-path (search-path-as-string->list (getenv "PATH"))
+                        name)))
+      (unless shell
+        (format (current-error-port)
+                "patch-makefile-SHELL: warning: no binary for shell `~a' found in $PATH~%"
+                name))
+      shell))
+
+  (let ((st (stat file)))
+   (substitute* file
+     (("^ *SHELL[[:blank:]]*=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)[[:blank:]]*" _ dir shell)
+      (let* ((old (string-append dir shell))
+             (new (or (find-shell shell) old)))
+        (unless (string=? new old)
+          (format (current-error-port)
+                  "patch-makefile-SHELL: ~a: changing `SHELL' from `~a' to `~a'~%"
+                  file old new))
+        (string-append "SHELL = " new "\n"))))
+
+   (when keep-mtime?
+     (set-file-time file st))))
 
 (define* (fold-port-matches proc init pattern port
                             #:optional (unmatched (lambda (_ r) r)))
@@ -439,6 +524,14 @@ for each unmatched character."
     (if (string? pattern)
         (map char-set (string->list pattern))
         pattern))
+
+  (define (get-char p)
+    ;; We call it `get-char', but that's really a binary version
+    ;; thereof.  (The real `get-char' cannot be used here because our
+    ;; bootstrap Guile is hacked to always use UTF-8.)
+    (match (get-u8 p)
+      ((? integer? x) (integer->char x))
+      (x x)))
 
   ;; Note: we're not really striving for performance here...
   (let loop ((chars   '())
@@ -499,16 +592,17 @@ known as `nuke-refs' in Nixpkgs."
         (setvbuf in _IOFBF 65536)
         (setvbuf out _IOFBF 65536)
         (fold-port-matches (lambda (match result)
-                             (put-string out store)
-                             (put-char out #\/)
-                             (put-string out
-                              "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-")
+                             (put-bytevector out (string->utf8 store))
+                             (put-u8 out (char->integer #\/))
+                             (put-bytevector out
+                                             (string->utf8
+                                              "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-"))
                              #t)
                            #f
                            pattern
                            in
                            (lambda (char result)
-                             (put-char out char)
+                             (put-u8 out (char->integer char))
                              result))))))
 
 ;;; Local Variables:

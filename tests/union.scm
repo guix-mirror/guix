@@ -26,6 +26,7 @@
   #:use-module ((guix build utils)
                 #:select (with-directory-excursion directory-exists?))
   #:use-module (distro packages bootstrap)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -93,7 +94,9 @@
   (let* ((inputs  (map (match-lambda
                         ((name package)
                          `(,name ,(package-derivation %store package))))
-                       %bootstrap-inputs))
+                       (delete-duplicates %bootstrap-inputs
+                                          (lambda (i1 i2)
+                                            (eq? (second i1) (second i2))))))
          (builder `(begin
                      (use-modules (guix build union))
                      (union-build (assoc-ref %outputs "out")

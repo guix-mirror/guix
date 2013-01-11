@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -167,7 +167,7 @@ check whether everything is alright."
                               (xz    (->store "xz"))
                               (mkdir (->store "mkdir"))
                               (bash  (->store "bash"))
-                              (guile (->store "guile-bootstrap-2.0.6.tar.xz"))
+                              (guile (->store "guile-2.0.7.tar.xz"))
                               (builder
                                (add-text-to-store store
                                                   "build-bootstrap-guile.sh"
@@ -205,15 +205,15 @@ $out/bin/guile --version~%"
                            (method url-fetch)
                            (uri (string-append
                                  %bootstrap-base-url "/"
-                                 system "/20121115/static-binaries.tar.xz"))
+                                 system "/20130105/static-binaries.tar.xz"))
                            (sha256
                             (match system
                               ("x86_64-linux"
                                (base32
-                                "0azisn8l2b3cvgni9k0ahzsxs5cxrj0hmf38zgpq3k6pggk3zbfm"))
+                                "0md23alzy6nc5f16pric7mkagczdzr8xbh074sb3rjzrls06j1ls"))
                               ("i686-linux"
                                (base32
-                                "16v60frbh0naccanwxcxz0z3444dd8salbg8p7cp7vwz8245nhfk"))))))
+                                "0nzj1lmm9b94g7k737cr4w1dv282w5nmhb53238ikax9r6pkc0yb"))))))
                         "true"                    ; the program to test
                         "Bootstrap binaries of Coreutils, Awk, etc."))
 
@@ -224,15 +224,15 @@ $out/bin/guile --version~%"
                            (method url-fetch)
                            (uri (string-append
                                  %bootstrap-base-url "/"
-                                 system "/20121115/binutils-2.22.tar.xz"))
+                                 system "/20130105/binutils-2.22.tar.xz"))
                            (sha256
                             (match system
                               ("x86_64-linux"
                                (base32
-                                "0ms6i035v40n7mhi91n4b8ivwv2qni3mcd5dj9sj9qmvgqb50r84"))
+                                "1ffmk2yy2pxvkqgzrkzp3s4jpn4qaaksyk3b5nsc5cjwfm7qkgzh"))
                               ("i686-linux"
                                (base32
-                                "193x62ach4l4x16rbzglrqa1d0a825z2as6czdiv9xjiizmcr0ad"))))))
+                                "1rafk6aq4sayvv3r3d2khn93nkyzf002xzh0xadlyci4mznr6b0a"))))))
                         "ld"                      ; the program to test
                         "Bootstrap binaries of the GNU Binutils"))
 
@@ -277,15 +277,15 @@ $out/bin/guile --version~%"
                       (origin
                        (method url-fetch)
                        (uri (string-append %bootstrap-base-url "/" system
-                                           "/20121115/glibc-2.16.0.tar.xz"))
+                                           "/20130105/glibc-2.17.tar.xz"))
                        (sha256
                         (match system
                           ("x86_64-linux"
                            (base32
-                            "1cz587p3scrrx0zgqnmp4nnfj0vvf01zdqdgkz445dnbfh64nl0v"))
+                            "18kv1z9d8dr1j3hm9w7663kchqw9p6rsx11n1m143jgba2jz6jy3"))
                           ("i686-linux"
                            (base32
-                            "0vzybz1577vflm0p0zg1slqj32carj5102b45k7iskkj46viy14z"))))))))))
+                            "08hv8i0axwnihrcgbz19x0a7s6zyv3yx38x8r29liwl8h82x9g88"))))))))))
     (synopsis "Bootstrap binaries and headers of the GNU C Library")
     (description #f)
     (home-page #f)))
@@ -348,15 +348,15 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                       (origin
                        (method url-fetch)
                        (uri (string-append %bootstrap-base-url "/" system
-                                           "/20121115/gcc-4.7.2.tar.xz"))
+                                           "/20130105/gcc-4.7.2.tar.xz"))
                        (sha256
                         (match system
                           ("x86_64-linux"
                            (base32
-                            "0fg65i2qcym8ls5ig3g1cc9ida5cxwwsd6zi95xi1d8dnfrja4zz"))
+                            "1x1p7han5crnbw906iwdifykr6grzm0w27dy9gz75j0q1b32i4px"))
                           ("i686-linux"
                            (base32
-                            "01hlz98qmc8yhqrxqajpg5kbkhpvqq6wjnbfvplys32n895avzxg"))))))))))
+                            "06wqs0xxnpw3hn0xjb4c9cs0899p1xwkcysa2rvzhvpra0c5vsg2"))))))))))
     (synopsis "Bootstrap binaries of the GNU Compiler Collection")
     (description #f)
     (home-page #f)))
@@ -367,6 +367,9 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
   `(("libc" ,%bootstrap-glibc)
     ("gcc" ,%bootstrap-gcc)
     ("binutils" ,%bootstrap-binutils)
-    ("coreutils&co" ,%bootstrap-coreutils&co)))
+    ("coreutils&co" ,%bootstrap-coreutils&co)
+
+    ;; In gnu-build-system.scm, we rely on the availability of Bash.
+    ("bash" ,%bootstrap-coreutils&co)))
 
 ;;; bootstrap.scm ends here
