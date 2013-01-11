@@ -55,6 +55,25 @@ argument to `dump-port'.  The progress report is written to LOG-PORT."
         (flush-output-port log-port)
         (cont))))
 
+(define* (uri-abbreviation uri #:optional (max-length 42))
+  "If URI's string representation is larger than MAX-LENGTH, return an
+abbreviation of URI showing the scheme, host, and basename of the file."
+  (define uri-as-string
+    (uri->string uri))
+
+  (define (elide-path)
+    (let ((path (uri-path uri)))
+      (string-append (symbol->string (uri-scheme uri))
+                     "://" (uri-host uri)
+                     (string-append "/.../" (basename path)))))
+
+  (if (> (string-length uri-as-string) max-length)
+      (let ((short (elide-path)))
+        (if (< (string-length short) (string-length uri-as-string))
+            short
+            uri-as-string))
+      uri-as-string))
+
 (define (ftp-fetch uri file)
   "Fetch data from URI and write it to FILE.  Return FILE on success."
   (let* ((conn (ftp-open (uri-host uri)))
@@ -65,7 +84,7 @@ argument to `dump-port'.  The progress report is written to LOG-PORT."
       (lambda (out)
         (dump-port in out
                    #:buffer-size 65536            ; don't flood the log
-                   #:progress (progress-proc (uri->string uri) size))))
+                   #:progress (progress-proc (uri-abbreviation uri) size))))
 
     (ftp-close conn))
     (newline)
@@ -150,7 +169,7 @@ which is not available during bootstrap."
                  (begin
                    (dump-port bv-or-port p
                               #:buffer-size 65536  ; don't flood the log
-                              #:progress (progress-proc (uri->string uri)
+                              #:progress (progress-proc (uri-abbreviation uri)
                                                         size))
                    (newline))
                  (put-bytevector p bv-or-port))))
