@@ -87,6 +87,7 @@ MODULES =					\
   distro/packages/make-bootstrap.scm		\
   distro/packages/mit-krb5.scm			\
   distro/packages/multiprecision.scm		\
+  distro/packages/mysql.scm			\
   distro/packages/nano.scm			\
   distro/packages/ncurses.scm			\
   distro/packages/nettle.scm			\
