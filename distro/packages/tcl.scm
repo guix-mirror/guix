@@ -46,7 +46,11 @@
                     ;; Private headers are needed by Expect.
                     (zero? (system* "make" "install-private-headers")))
                   %standard-phases))
-       #:tests? #f))                   ; FIXME: use #:test-target "test"
+
+       ;; XXX: There are a few test failures (related to HTTP, most
+       ;; likely related to name resolution), but that doesn't cause
+       ;; `make' to fail.
+       #:test-target "test"))
     (home-page "http://www.tcl.tk/")
     (synopsis "The Tcl scripting language")
     (description "The Tcl (Tool Command Language) scripting language.")
@@ -83,7 +87,9 @@
                             "/include")
              (string-append "--exec-prefix="
                             (assoc-ref %outputs "out")))
-       #:tests? #f))                   ; FIXME: use #:test-target "test"
+
+       ;; FIXME: There are test failures.
+       #:test-target "test"))
     (home-page "http://expect.nist.gov/")
     (synopsis
      "A tool for automating interactive applications")
