@@ -68,9 +68,10 @@
                     (let ((out    (assoc-ref outputs "out"))
                           (expect (assoc-ref inputs "expect")))
                       (substitute* (string-append out "/bin/runtest")
-                        (("expectbin=expect")
-                         (string-append "expectbin="
-                                        expect "/bin/expect")))))
+                        (("^mypath.*$" all)
+                         (string-append all
+                                        "export PATH="
+                                        expect "/bin:$PATH\n")))))
                   %standard-phases))))
     (home-page
      "http://www.gnu.org/software/dejagnu/")
