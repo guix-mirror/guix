@@ -173,11 +173,12 @@ providing the system administrator with some help in common tasks.")
      "util-linux is a random collection of utilities for the Linux kernel")
     (description
      "util-linux is a random collection of utilities for the Linux kernel.")
+
     ;; Note that util-linux doesn't use the same license for all the
-    ;; code. GPLv2+ is the default license for a code without an
+    ;; code.  GPLv2+ is the default license for a code without an
     ;; explicitly defined license.
-    (license '(gpl3+ gpl2+ gpl2 lgpl2.0+
-               bsd-4 public-domain))))
+    (license (list gpl3+ gpl2+ gpl2 lgpl2.0+
+                   bsd-4 public-domain))))
 
 (define-public procps
   (package
