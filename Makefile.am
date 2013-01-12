@@ -63,6 +63,7 @@ MODULES =					\
   distro/packages/ed.scm			\
   distro/packages/flex.scm			\
   distro/packages/gawk.scm			\
+  distro/packages/gdb.scm			\
   distro/packages/gdbm.scm			\
   distro/packages/gettext.scm			\
   distro/packages/global.scm			\
