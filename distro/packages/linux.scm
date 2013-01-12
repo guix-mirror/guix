@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -19,6 +19,7 @@
 
 (define-module (distro packages linux)
   #:use-module (guix licenses)
+  #:use-module (distro)
   #:use-module ((distro packages compression)
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (distro packages flex)
@@ -177,6 +178,62 @@ providing the system administrator with some help in common tasks.")
     ;; explicitly defined license.
     (license '(gpl3+ gpl2+ gpl2 lgpl2.0+
                bsd-4 public-domain))))
+
+(define-public procps
+  (package
+    (name "procps")
+    (version "3.2.8")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://procps.sourceforge.net/procps-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0d8mki0q4yamnkk4533kx8mc0jd879573srxhg6r2fs3lkc6iv8i"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)
+              ("patch/make-3.82" ,(search-patch "procps-make-3.82.patch"))))
+    (arguments
+     '(#:patches (list (assoc-ref %build-inputs "patch/make-3.82"))
+       #:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; No `configure', just a single Makefile.
+                   (let ((out (assoc-ref outputs "out")))
+                     (substitute* "Makefile"
+                       (("/usr/") "/")
+                       (("--(owner|group) 0") "")
+                       (("ldconfig") "true")
+                       (("^LDFLAGS[[:blank:]]*:=(.*)$" _ value)
+                        ;; Add libproc to the RPATH.
+                        (string-append "LDFLAGS := -Wl,-rpath="
+                                       out "/lib" value))))
+                   (setenv "CC" "gcc"))
+                 (alist-replace
+                  'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "out")))
+                      (and (zero?
+                            (system* "make" "install"
+                                     (string-append "DESTDIR=" out)))
+
+                           ;; Sanity check.
+                           (zero?
+                            (system* (string-append out "/bin/ps")
+                                     "--version")))))
+                  %standard-phases))
+
+       ;; What did you expect?  Tests?
+       #:tests? #f))
+    (home-page "http://procps.sourceforge.net/")
+    (synopsis
+     "Utilities that give information about processes using the /proc filesystem")
+    (description
+     "procps is the package that has a bunch of small useful utilities
+that give information about processes using the Linux /proc file system.
+The package includes the programs ps, top, vmstat, w, kill, free,
+slabtop, and skill.")
+    (license gpl2)))
 
 (define-public usbutils
   (package
