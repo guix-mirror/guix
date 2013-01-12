@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +26,8 @@
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (distro packages nettle)
   #:use-module (distro packages guile)
-  #:use-module (distro packages perl))
+  #:use-module (distro packages perl)
+  #:use-module (distro packages which))
 
 (define-public libtasn1
   (package
@@ -77,7 +78,8 @@ portable, and only require an ANSI C89 platform.")
        ("perl" ,perl)))
     (propagated-inputs
      `(("libtasn1" ,libtasn1)
-       ("nettle" ,nettle)))
+       ("nettle" ,nettle)
+       ("which" ,which)))
     (home-page "http://www.gnu.org/software/gnutls/")
     (synopsis
      "The GNU Transport Layer Security Library")
