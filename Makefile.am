@@ -58,6 +58,7 @@ MODULES =					\
   distro/packages/check.scm			\
   distro/packages/compression.scm		\
   distro/packages/cpio.scm			\
+  distro/packages/cyrus-sasl.scm		\
   distro/packages/dejagnu.scm			\
   distro/packages/ddrescue.scm			\
   distro/packages/ed.scm			\
