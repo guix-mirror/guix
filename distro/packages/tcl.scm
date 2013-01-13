@@ -88,7 +88,14 @@
              (string-append "--exec-prefix="
                             (assoc-ref %outputs "out")))
 
-       ;; FIXME: There are test failures.
+       #:phases (alist-cons-before
+                 'configure 'set-path-to-stty
+                 (lambda _
+                   (substitute* "configure"
+                     (("STTY_BIN=/bin/stty")
+                      (string-append "STTY_BIN=" (which "stty")))))
+                 %standard-phases)
+
        #:test-target "test"))
     (home-page "http://expect.nist.gov/")
     (synopsis
