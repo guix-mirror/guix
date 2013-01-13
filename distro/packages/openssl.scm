@@ -19,7 +19,7 @@
 (define-module (distro packages openssl)
   #:use-module (distro)
   #:use-module (distro packages perl)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -64,5 +64,5 @@
    (synopsis "OpenSSL, an SSL/TLS implementation")
    (description
     "OpenSSL is an implementation of SSL/TLS")
-   (license openssl)
+   (license license:openssl)
    (home-page "http://www.openssl.org/")))
