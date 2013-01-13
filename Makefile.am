@@ -61,6 +61,7 @@ MODULES =					\
   distro/packages/dejagnu.scm			\
   distro/packages/ddrescue.scm			\
   distro/packages/ed.scm			\
+  distro/packages/emacs.scm			\
   distro/packages/flex.scm			\
   distro/packages/gawk.scm			\
   distro/packages/gdb.scm			\
