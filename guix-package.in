@@ -462,7 +462,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
     ;; Create ~/.guix-profile if it doesn't exist yet.
     (when (and %user-environment-directory
                %current-profile
-               (not (file-exists? %user-environment-directory)))
+               (not (false-if-exception
+                     (lstat %user-environment-directory))))
       (symlink %current-profile %user-environment-directory))
 
     (with-error-handling
