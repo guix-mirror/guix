@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,6 +20,8 @@
 (define-module (distro packages algebra)
   #:use-module (distro)
   #:use-module (distro packages multiprecision)
+  #:use-module (distro packages perl)
+  #:use-module (distro packages readline)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -53,7 +55,6 @@ implemented. On the other hand, these comprise asymptotically fast
 multiplication routines such as Toom–Cook and the FFT. ")
    (license lgpl2.1+)
    (home-page "http://mpfrcx.multiprecision.org/")))
-
 
 (define-public fplll
   (package
@@ -101,3 +102,51 @@ as random number generators, special functions and least-squares
 fitting.  There are over 1000 functions in total with an
 extensive test suite.")
     (license gpl3+)))
+
+(define-public pari-gp
+  (package
+   (name "pari-gp")
+   (version "2.5.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "http://pari.math.u-bordeaux.fr/pub/pari/unix/pari-"
+                  version ".tar.gz"))
+            (sha256 (base32
+                     "0zsjccnnv00kwj2gk3ww2v530kjin1rgj8p8hbl4pwcnwc7m68gl"))))
+   (build-system gnu-build-system)
+   (inputs `(("gmp" ,gmp)
+             ("perl" ,perl)
+             ("readline" ,readline)))
+   (arguments
+    (lambda (system)
+      `(#:make-flags '("gp")
+;; FIXME: building the documentation requires tex; once this is available,
+;; replace "gp" by "all"
+        #:test-target "dobench"
+        #:phases
+        (alist-replace
+         'configure
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out"))
+                 (readline (assoc-ref inputs "readline"))
+                 (gmp (assoc-ref inputs "gmp")))
+             (zero?
+              (system* "./Configure"
+                       (string-append "--prefix=" out)
+                       (string-append "--with-readline=" readline)
+                       (string-append "--with-gmp=" gmp)))))
+;; FIXME: readline and gmp will be detected automatically in the next
+;; stable release
+         %standard-phases))))
+   (synopsis "PARI/GP, a computer algebra system for number theory")
+   (description
+    "PARI/GP is a widely used computer algebra system designed for fast
+computations in number theory (factorisations, algebraic number theory,
+elliptic curves...), but it also contains a large number of other useful
+functions to compute with mathematical entities such as matrices,
+polynomials, power series, algebraic numbers, etc., and a lot of
+transcendental functions.
+PARI is also available as a C library to allow for faster computations.")
+   (license gpl2+)
+   (home-page "http://pari.math.u-bordeaux.fr/")))
