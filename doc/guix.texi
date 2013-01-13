@@ -222,7 +222,7 @@ Bash syntax and the @code{shadow} commands):
 # for i in `seq 1 10`;
   do
     useradd -g guix-builder -d /var/empty -s `which nologin` \
-            -m "Guix build user $i" guix-builder$i;
+            -c "Guix build user $i" guix-builder$i;
   done
 @end example
 
@@ -534,7 +534,7 @@ deleted.  The set of garbage collector roots includes default user
 profiles, and may be augmented with @command{guix-build --root}, for
 example (@pxref{Invoking guix-build}).
 
-The @command{guix-gc} command has three mode of operations: it can be
+The @command{guix-gc} command has three modes of operations: it can be
 used to garbage-collect any dead files (the default), to delete specific
 files (the @code{--delete} option), or to print garbage-collector
 information.  The available options are listed below:
