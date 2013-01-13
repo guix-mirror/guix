@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -32,7 +33,7 @@
             ibmpl1.0
             lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
             mpl2.0
-            openssl
+            openldap2.8 openssl
             public-domain
             x11
             zlib))
@@ -188,6 +189,12 @@ which may be a file:// URI pointing the package's tree."
   (license "OpenSSL"
            "http://directory.fsf.org/wiki/License:OpenSSL"
            "https://www.gnu.org/licenses/license-list#OpenSSL"))
+
+(define openldap2.8
+  (license "OpenLDAPv2.8"
+           "http://directory.fsf.org/wiki/License:OpenLDAPv2.8"
+           "https://www.gnu.org/licenses/license-list#newOpenLDAP"))
+              ;; lists OpenLDAPv2.7, which is virtually identical
 
 (define public-domain
   (license "Public Domain"
