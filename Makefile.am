@@ -85,6 +85,7 @@ MODULES =					\
   distro/packages/lout.scm			\
   distro/packages/lsh.scm			\
   distro/packages/m4.scm			\
+  distro/packages/mailutils.scm			\
   distro/packages/make-bootstrap.scm		\
   distro/packages/mit-krb5.scm			\
   distro/packages/multiprecision.scm		\
