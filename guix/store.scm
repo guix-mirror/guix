@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -330,7 +330,8 @@
                     (let ((s (%make-nix-server s
                                                (protocol-major v)
                                                (protocol-minor v))))
-                      (process-stderr s)
+                      (let loop ((done? (process-stderr s)))
+                        (or done? (process-stderr s)))
                       s))))))))
 
 (define (close-connection server)
