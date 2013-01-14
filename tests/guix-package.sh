@@ -70,7 +70,7 @@ then
 fi
 
 # Make sure the `:' syntax works.
-guix-package --bootstrap -i "libsigsegv:lib" -n
+guix-package --bootstrap -i "binutils:lib" -p "$profile" -n
 
 # Check whether `--list-available' returns something sensible.
 guix-package -A 'gui.*e' | grep guile
