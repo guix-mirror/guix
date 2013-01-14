@@ -444,10 +444,22 @@ previous generations of the profile remain available, should the user
 want to roll back.
 
 For each user, a symlink to the user's default profile is automatically
-created in @file{$HOME/.guix-profile}.  This symlink always point to the
+created in @file{$HOME/.guix-profile}.  This symlink always points to the
 current generation of the user's default profile.  Thus, users can add
 @file{$HOME/.guix-profile/bin} to their @code{PATH} environment
 variable, and so on.
+
+In a multi-user setup, user profiles must be stored in a place
+registered as a @dfn{garbage-collector root}, which
+@file{$HOME/.guix-profile} points to (@pxref{Invoking guix-gc}).  That
+directory is normally
+@code{@var{localstatedir}/profiles/per-user/@var{user}}, where
+@var{localstatedir} is the value passed to @code{configure} as
+@code{--localstatedir}, and @var{user} is the user name.  It must be
+created by @code{root}, with @var{user} as the owner.  When it does not
+exist, @command{guix-package} emits an error about it.
+
+The @var{options} can be among the following:
 
 @table @code
 

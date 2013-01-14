@@ -36,6 +36,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix config)
+  #:use-module ((guix build utils) #:select (directory-exists? mkdir-p))
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
@@ -63,7 +64,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
          (cut string-append <> "/.guix-profile")))
 
 (define %profile-directory
-  (string-append %state-directory "/profiles/"
+  (string-append (or (getenv "NIX_STATE_DIR") %state-directory) "/profiles/"
                  (or (and=> (getenv "USER")
                             (cut string-append "per-user/" <>))
                      "default")))
@@ -330,6 +331,34 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (()
          (leave (_ "~a: package not found~%") request)))))
 
+  (define (ensure-default-profile)
+    ;; Ensure the default profile symlink and directory exist.
+
+    ;; Create ~/.guix-profile if it doesn't exist yet.
+    (when (and %user-environment-directory
+               %current-profile
+               (not (false-if-exception
+                     (lstat %user-environment-directory))))
+      (symlink %current-profile %user-environment-directory))
+
+    ;; Attempt to create /…/profiles/per-user/$USER if needed.
+    (unless (directory-exists? %profile-directory)
+      (catch 'system-error
+        (lambda ()
+          (mkdir-p %profile-directory))
+        (lambda args
+          ;; Often, we cannot create %PROFILE-DIRECTORY because its
+          ;; parent directory is root-owned and we're running
+          ;; unprivileged.
+          (format (current-error-port)
+                  (_ "error: while creating directory `~a': ~a~%")
+                  %profile-directory
+                  (strerror (system-error-errno args)))
+          (format (current-error-port)
+                  (_ "Please create the `~a' directory, with you as the owner.~%")
+                  %profile-directory)
+          (exit 1)))))
+
   (define (process-actions opts)
     ;; Process any install/remove/upgrade action from OPTS.
     (let* ((dry-run? (assoc-ref opts 'dry-run?))
@@ -355,7 +384,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                                   (package-name->name+version
                                                    (store-path-package-name
                                                     path))))
-                                     `(,name ,version #f ,path)))
+                                      `(,name ,version #f ,path)))
                                    (_ #f))
                                   opts)
                       (map (lambda (tuple drv)
@@ -381,6 +410,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                           (profile-manifest profile))
                                          remove)
                                    install*))))
+
+      (when (equal? (assoc-ref opts 'profile) %current-profile)
+        (ensure-default-profile))
 
       (show-what-to-build drv dry-run?)
 
@@ -458,14 +490,6 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (setvbuf (current-error-port) _IOLBF)
 
   (let ((opts (parse-options)))
-
-    ;; Create ~/.guix-profile if it doesn't exist yet.
-    (when (and %user-environment-directory
-               %current-profile
-               (not (false-if-exception
-                     (lstat %user-environment-directory))))
-      (symlink %current-profile %user-environment-directory))
-
     (with-error-handling
       (or (process-query opts)
           (parameterize ((%guile-for-build

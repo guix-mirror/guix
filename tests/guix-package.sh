@@ -25,10 +25,11 @@ guix-package --version
 profile="t-profile-$$"
 rm -f "$profile"
 
-trap 'rm "$profile" "$profile-"[0-9]*' EXIT
+trap 'rm "$profile" "$profile-"[0-9]* ; rm -rf t-home-'"$$" EXIT
 
-guix-package --bootstrap -p "$profile"						\
-    -i `guix-build -e '(@@ (distro packages base) %bootstrap-guile)'`
+boot_guile="`guix-build -e '(@ (distro packages bootstrap) %bootstrap-guile)'`"
+
+guix-package --bootstrap -p "$profile" -i "$boot_guile"
 test -L "$profile" && test -L "$profile-1-link"
 test -f "$profile/bin/guile"
 
@@ -75,3 +76,15 @@ guix-package --bootstrap -i "binutils:lib" -p "$profile" -n
 # Check whether `--list-available' returns something sensible.
 guix-package -A 'gui.*e' | grep guile
 
+# Try with the default profile.
+
+XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+export XDG_CACHE_HOME
+HOME="t-home-$$"
+export HOME
+
+mkdir -p "$HOME"
+
+guix-package --bootstrap -i "$boot_guile"
+test -L "$HOME/.guix-profile"
+test -f "$HOME/.guix-profile/bin/guile"
