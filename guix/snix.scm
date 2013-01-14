@@ -388,10 +388,12 @@ location of DERIVATION."
                         (list 'quasiquote inputs))))))
 
        (define (pretty-uri uri version)
-         (match (factorize-uri uri version)
-           ((items ...)
-            `(string-append ,@items))
-           (x x)))
+         (if version
+             (match (factorize-uri uri version)
+               ((items ...)
+                `(string-append ,@items))
+               (x x))
+             uri))
 
        (define (license-variable license)
          ;; Return the name of the (guix licenses) variable for LICENSE.
