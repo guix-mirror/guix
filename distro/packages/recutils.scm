@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +22,10 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (distro packages emacs)
+  #:use-module (distro packages check)
+  #:use-module (distro packages algebra))
 
 (define-public recutils
   (package
@@ -38,9 +41,9 @@
    (build-system gnu-build-system)
    (inputs `(;; TODO: Enable optional deps when they're packaged.
              ;; ("curl" ,(nixpkgs-derivation "curl"))
-             ;; ("emacs" ,(nixpkgs-derivation "emacs"))
-             ;; ("check" ,(nixpkgs-derivation "check"))
-             ;; ("bc" ,(nixpkgs-derivation "bc"))
+             ("emacs" ,emacs)
+             ("check" ,check)
+             ("bc" ,bc)
              ("patch/gets"
               ,(search-patch "diffutils-gets-undeclared.patch"))))
    (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
