@@ -30,15 +30,14 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://sourceforge/check/"
+      (uri (string-append "mirror://sourceforge/check/check/"
                           version "/check-" version ".tar.gz"))
       (sha256
        (base32
         "1jcahzrvxcnp5chdn2x46l0y4aba8d8yd70lljfin7h5knxrlyhs"))))
     (build-system gnu-build-system)
     (home-page "http://check.sourceforge.net/")
-    (synopsis
-     "Check, a unit testing framework for C")
+    (synopsis "Check, a unit testing framework for C")
     (description
      "Check is a unit testing framework for C. It features a simple
 interface for defining unit tests, putting little in the way of the
