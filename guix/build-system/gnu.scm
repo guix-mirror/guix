@@ -204,7 +204,7 @@ which could lead to gratuitous input divergence."
   (define builder
     `(begin
        (use-modules ,@modules)
-       (gnu-build #:source ,(if (derivation-path? source)
+       (gnu-build #:source ,(if (and source (derivation-path? source))
                                 (derivation-path->output-path source)
                                 source)
                   #:system ,system
@@ -239,7 +239,9 @@ which could lead to gratuitous input divergence."
 
   (build-expression->derivation store name system
                                 builder
-                                `(("source" ,source)
+                                `(,@(if source
+                                        `(("source" ,source))
+                                        '())
                                   ,@inputs
                                   ,@(if implicit-inputs?
                                         (parameterize ((%store store))
