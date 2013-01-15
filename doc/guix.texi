@@ -4,7 +4,6 @@
 @c %**start of header
 @setfilename guix.info
 @documentencoding UTF-8
-@documentlanguage en
 @settitle GNU Guix Reference Manual
 @c %**end of header
 
