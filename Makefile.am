@@ -51,13 +51,13 @@ MODULES =					\
   distro/packages/autotools.scm			\
   distro/packages/base.scm			\
   distro/packages/bash.scm			\
+  distro/packages/bdb.scm			\
   distro/packages/bdw-gc.scm			\
   distro/packages/bison.scm			\
   distro/packages/bootstrap.scm			\
   distro/packages/check.scm			\
   distro/packages/compression.scm		\
   distro/packages/cpio.scm			\
-  distro/packages/bdb.scm			\
   distro/packages/dejagnu.scm			\
   distro/packages/ddrescue.scm			\
   distro/packages/ed.scm			\
