@@ -52,7 +52,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:export (guix-package))
 
 (define %store
-  (open-connection))
+  (make-parameter #f))
 
 
 ;;;
@@ -277,7 +277,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (define (guile-missing?)
     ;; Return #t if %GUILE-FOR-BUILD is not available yet.
     (let ((out (derivation-path->output-path (%guile-for-build))))
-      (not (valid-path? %store out))))
+      (not (valid-path? (%store) out))))
 
   (define (show-what-to-build drv dry-run?)
     ;; Show what will/would be built in realizing the derivations listed
@@ -285,10 +285,11 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
     (let* ((req  (append-map (lambda (drv-path)
                                (let ((d (call-with-input-file drv-path
                                           read-derivation)))
-                                 (derivation-prerequisites-to-build %store d)))
+                                 (derivation-prerequisites-to-build
+                                  (%store) d)))
                              drv))
            (req* (delete-duplicates
-                  (append (remove (compose (cut valid-path? %store <>)
+                  (append (remove (compose (cute valid-path? (%store) <>)
                                            derivation-path->output-path)
                                   drv)
                           (map derivation-input-path req)))))
@@ -374,7 +375,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
            (drv      (filter-map (match-lambda
                                   ((name version sub-drv
                                          (? package? package))
-                                   (package-derivation %store package))
+                                   (package-derivation (%store) package))
                                   (_ #f))
                                  install))
            (install* (append
@@ -417,12 +418,12 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
       (show-what-to-build drv dry-run?)
 
       (or dry-run?
-          (and (build-derivations %store drv)
-               (let* ((prof-drv (profile-derivation %store packages))
+          (and (build-derivations (%store) drv)
+               (let* ((prof-drv (profile-derivation (%store) packages))
                       (prof     (derivation-path->output-path prof-drv))
                       (old-drv  (profile-derivation
-                                 %store (manifest-packages
-                                         (profile-manifest profile))))
+                                 (%store) (manifest-packages
+                                           (profile-manifest profile))))
                       (old-prof (derivation-path->output-path old-drv))
                       (number   (latest-profile-number profile))
                       (name     (format #f "~a/~a-~a-link"
@@ -436,7 +437,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                           (if (or verbose? (guile-missing?))
                                               (current-error-port)
                                               (%make-void-port "w"))))
-                            (build-derivations %store (list prof-drv)))
+                            (build-derivations (%store) (list prof-drv)))
                           (begin
                             (symlink prof name)
                             (when (file-exists? profile)
@@ -490,11 +491,12 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (setvbuf (current-error-port) _IOLBF)
 
   (let ((opts (parse-options)))
-    (with-error-handling
-      (or (process-query opts)
-          (parameterize ((%guile-for-build
-                          (package-derivation %store
-                                              (if (assoc-ref opts 'bootstrap?)
-                                                  %bootstrap-guile
-                                                  guile-final))))
-            (process-actions opts))))))
+    (parameterize ((%store (open-connection)))
+      (with-error-handling
+        (or (process-query opts)
+            (parameterize ((%guile-for-build
+                            (package-derivation (%store)
+                                                (if (assoc-ref opts 'bootstrap?)
+                                                    %bootstrap-guile
+                                                    guile-final))))
+              (process-actions opts)))))))
