@@ -1,0 +1,17 @@
+Patch shebangs in source that gets unpacked by `configure'.
+
+--- bigloo3.9a/gc/install-gc-7.2d	2013-01-14 15:24:01.000000000 +0100
++++ bigloo3.9a/gc/install-gc-7.2d	2013-01-14 15:23:51.000000000 +0100
+@@ -29,9 +29,11 @@ fi
+ # untar the two versions of the GC
+ $tar xfz $src -C ../gc || (echo "$tar xfz $src failed"; exit 1)
+ /bin/rm -rf "../gc/$gc"_fth
++find ../gc/gc-7.2 -perm /111 -type f | xargs sed -i -e"s|/bin/sh|`type -P bash`|g"
+ mv ../gc/gc-7.2 "../gc/$gc"_fth || (echo "mv gc-7.2 failed"; exit 1)
+ 
+ $tar xfz $src  -C ../gc || (echo "$tar xfz $src failed"; exit 1)
++find ../gc/gc-7.2 -perm /111 -type f | xargs sed -i -e"s|/bin/sh|`type -P bash`|g"
+ mv ../gc/gc-7.2 "../gc/$gc"
+ 
+ # general Bigloo patch
+

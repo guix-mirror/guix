@@ -119,9 +119,11 @@ nobase_dist_guilemodule_DATA = $(MODULES)
 
 patchdir = $(guilemoduledir)/distro/packages/patches
 dist_patch_DATA =						\
+  distro/packages/patches/bigloo-gc-shebangs.patch		\
   distro/packages/patches/binutils-ld-new-dtags.patch		\
   distro/packages/patches/cpio-gets-undeclared.patch		\
   distro/packages/patches/diffutils-gets-undeclared.patch	\
+  distro/packages/patches/emacs-configure-sh.patch		\
   distro/packages/patches/flex-bison-tests.patch		\
   distro/packages/patches/gawk-shell.patch			\
   distro/packages/patches/gettext-gets-undeclared.patch		\
@@ -140,6 +142,7 @@ dist_patch_DATA =						\
   distro/packages/patches/make-impure-dirs.patch		\
   distro/packages/patches/findutils-absolute-paths.patch	\
   distro/packages/patches/perl-no-sys-dirs.patch		\
+  distro/packages/patches/procps-make-3.82.patch		\
   distro/packages/patches/readline-link-ncurses.patch		\
   distro/packages/patches/shishi-gets-undeclared.patch		\
   distro/packages/patches/tar-gets-undeclared.patch
