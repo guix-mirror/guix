@@ -22,6 +22,7 @@
   #:use-module (distro packages multiprecision)
   #:use-module (distro packages perl)
   #:use-module (distro packages readline)
+  #:use-module (distro packages flex)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -150,3 +151,43 @@ transcendental functions.
 PARI is also available as a C library to allow for faster computations.")
    (license gpl2+)
    (home-page "http://pari.math.u-bordeaux.fr/")))
+
+(define-public bc
+  (package
+    (name "bc")
+    (version "1.06")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/bc/bc-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0cqf5jkwx6awgd2xc2a0mkpxilzcfmhncdcfg7c9439wgkqxkxjf"))))
+    (build-system gnu-build-system)
+    (inputs `(("readline" ,readline)
+              ("flex" ,flex)))
+    (arguments
+     '(#:phases
+       (alist-replace 'configure
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        ;; This old `configure' script doesn't support
+                        ;; variables passed as arguments.
+                        (let ((out (assoc-ref outputs "out")))
+                          (setenv "CONFIG_SHELL" (which "bash"))
+                          (zero?
+                           (system* "./configure"
+                                    (string-append "--prefix=" out)))))
+                      %standard-phases)))
+    (home-page "http://www.gnu.org/software/bc/")
+    (synopsis "GNU software calculator")
+    (description
+     "bc is an arbitrary precision numeric processing language. Syntax
+is similar to C, but differs in many substantial areas. It supports
+interactive execution of statements.  bc is a utility included in the
+POSIX P1003.2/D11 draft standard.
+
+Since the POSIX document does not specify how bc must be implemented,
+this version does not use the historical method of having bc be a
+compiler for the dc calculator.  This version has a single executable
+that both compiles the language and runs the resulting `byte code'. The
+byte code is not the dc language.")
+    (license gpl2+)))
