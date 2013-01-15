@@ -28,7 +28,11 @@
              (guix utils))
 
 (define %url-base
-  "http://www.fdn.fr/~lcourtes/software/guix/packages")
+  "http://alpha.gnu.org/gnu/guix/bootstrap"
+
+  ;; Alternately:
+  ;;"http://www.fdn.fr/~lcourtes/software/guix/packages"
+  )
 
 (define (file-name->uri file)
   "Return the URI for FILE."

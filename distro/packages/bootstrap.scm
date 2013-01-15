@@ -194,18 +194,19 @@ $out/bin/guile --version~%"
      (home-page #f)
      (license lgpl3+))))
 
-(define %bootstrap-base-url
+(define %bootstrap-base-urls
   ;; This is where the initial binaries come from.
-  "http://www.fdn.fr/~lcourtes/software/guix/packages")
+  '("http://alpha.gnu.org/gnu/guix/bootstrap"
+    "http://www.fdn.fr/~lcourtes/software/guix/packages"))
 
 (define %bootstrap-coreutils&co
   (package-from-tarball "bootstrap-binaries"
                         (lambda (system)
                           (origin
                            (method url-fetch)
-                           (uri (string-append
-                                 %bootstrap-base-url "/"
-                                 system "/20130105/static-binaries.tar.xz"))
+                           (uri (map (cut string-append <> "/" system
+                                          "/20130105/static-binaries.tar.xz")
+                                     %bootstrap-base-urls))
                            (sha256
                             (match system
                               ("x86_64-linux"
@@ -222,9 +223,9 @@ $out/bin/guile --version~%"
                         (lambda (system)
                           (origin
                            (method url-fetch)
-                           (uri (string-append
-                                 %bootstrap-base-url "/"
-                                 system "/20130105/binutils-2.22.tar.xz"))
+                           (uri (map (cut string-append <> "/" system
+                                          "/20130105/binutils-2.22.tar.xz")
+                                     %bootstrap-base-urls))
                            (sha256
                             (match system
                               ("x86_64-linux"
@@ -276,8 +277,9 @@ $out/bin/guile --version~%"
                      (bootstrap-origin
                       (origin
                        (method url-fetch)
-                       (uri (string-append %bootstrap-base-url "/" system
-                                           "/20130105/glibc-2.17.tar.xz"))
+                       (uri (map (cut string-append <> "/" system
+                                      "/20130105/glibc-2.17.tar.xz")
+                                 %bootstrap-base-urls))
                        (sha256
                         (match system
                           ("x86_64-linux"
@@ -347,8 +349,9 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                      (bootstrap-origin
                       (origin
                        (method url-fetch)
-                       (uri (string-append %bootstrap-base-url "/" system
-                                           "/20130105/gcc-4.7.2.tar.xz"))
+                       (uri (map (cut string-append <> "/" system
+                                      "/20130105/gcc-4.7.2.tar.xz")
+                                 %bootstrap-base-urls))
                        (sha256
                         (match system
                           ("x86_64-linux"
