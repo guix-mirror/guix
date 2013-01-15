@@ -66,12 +66,13 @@ MODULES =					\
   gnu/packages/emacs.scm			\
   gnu/packages/file.scm				\
   gnu/packages/flex.scm				\
-  gnu/packages/freetype.scm				\
+  gnu/packages/freetype.scm			\
   gnu/packages/gawk.scm				\
   gnu/packages/gdb.scm				\
   gnu/packages/gdbm.scm				\
   gnu/packages/gettext.scm			\
   gnu/packages/ghostscript.scm			\
+  gnu/packages/glib.scm				\
   gnu/packages/global.scm			\
   gnu/packages/gnupg.scm			\
   gnu/packages/gnutls.scm			\
