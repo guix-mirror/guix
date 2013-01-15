@@ -308,6 +308,10 @@
 
 (define* (open-connection #:optional (file %default-socket-path)
                           #:key (reserve-space? #t))
+  "Connect to the daemon over the Unix-domain socket at FILE.  When
+RESERVE-SPACE? is true, instruct it to reserve a little bit of extra
+space on the file system so that the garbage collector can still
+operate, should the disk become full.  Return a server object."
   (let ((s (with-fluids ((%default-port-encoding #f))
              ;; This trick allows use of the `scm_c_read' optimization.
              (socket PF_UNIX SOCK_STREAM 0)))
@@ -446,7 +450,9 @@ again until #t is returned or an error is raised."
 
 (define-operation (add-text-to-store (string name) (string text)
                                      (string-list references))
-  "Add TEXT under file NAME in the store."
+  "Add TEXT under file NAME in the store, and return its store path.
+REFERENCES is the list of store paths referred to by the resulting store
+path."
   store-path)
 
 (define-operation (add-to-store (string basename)

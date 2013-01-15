@@ -116,10 +116,10 @@ of its build and installation directories.  This is achieved by running
 build processes in dedicated ``chroots'', where only their explicit
 inputs are visible.
 
-@cindex package store
+@cindex store
 The result of package build functions is @dfn{cached} in the file
-system, in a special directory called the @dfn{package store}.  In
-practice, each package is installed in a directory of its own, in the
+system, in a special directory called @dfn{the store} (@pxref{The
+Store}).  Each package is installed in a directory of its own, in the
 store---by default under @file{/nix/store}.  The directory name contains
 a hash of all the inputs used to build that package; thus, changing an
 input yields a different directory name.
@@ -750,7 +750,58 @@ must be a connection to the daemon, which operates on the store
 @node The Store
 @section The Store
 
-@code{(guix store)}
+@cindex store
+@cindex store paths
+
+Conceptually, the @dfn{store} is where derivations that have been
+successfully built are stored---by default, under @file{/nix/store}.
+Sub-directories in the store are referred to as @dfn{store paths}.  The
+store has an associated database that contains information such has the
+store paths referred to by each store path, and the list of @emph{valid}
+store paths---paths that result from a successful build.
+
+The store is always accessed by the daemon on behalf of its clients
+(@pxref{Invoking guix-daemon}).  To manipulate the store, clients
+connect to the daemon over a Unix-domain socket, send it requests, and
+read the result---these are remote procedure calls, or RPCs.
+
+The @code{(guix store)} module provides procedures to connect to the
+daemon, and to perform RPCs.  These are described below.
+
+@deffn {Scheme Procedure} open-connection [@var{file}] [#:reserve-space? #t]
+Connect to the daemon over the Unix-domain socket at @var{file}.  When
+@var{reserve-space?} is true, instruct it to reserve a little bit of
+extra space on the file system so that the garbage collector can still
+operate, should the disk become full.  Return a server object.
+
+@var{file} defaults to @var{%default-socket-path}, which is the normal
+location given the options that were passed to @command{configure}.
+@end deffn
+
+@deffn {Scheme Procedure} close-connection @var{server}
+Close the connection to @var{server}.
+@end deffn
+
+@defvr {Scheme Variable} current-build-output-port
+This variable is bound to a SRFI-39 parameter, which refers to the port
+where build and error logs sent by the daemon should be written.
+@end defvr
+
+Procedures that make RPCs all take a server object as their first
+argument.
+
+@deffn {Scheme Procedure} valid-path? @var{server} @var{path}
+Return @code{#t} when @var{path} is a valid store path.
+@end deffn
+
+@deffn {Scheme Procedure} add-text-to-store @var{server} @var{name} @var{text} @var{references}
+Add @var{text} under file @var{name} in the store, and return its store
+path.  @var{references} is the list of store paths referred to by the
+resulting store path.
+@end deffn
+
+@c FIXME
+@i{This section is currently incomplete.}
 
 @node Derivations
 @section Derivations
