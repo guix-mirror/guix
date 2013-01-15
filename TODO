@@ -29,6 +29,12 @@ Like scripts/download-from-binary-cache.pl in Nix, but written in
 Scheme.  Substituters allow pre-built binaries to be downloaded when
 they are available from a trusted source.
 
+** MAYBE Add a substituter that uses the GNUnet DHT
+
+Would be neat if binaries could be pushed to and pulled from the GNUnet
+DHT.  Guix users would sign their binaries, and define which binaries
+they trust.
+
 ** Add a remote build hook
 
 Like scripts/build-remote.pl in Nix.
@@ -44,6 +50,12 @@ Guix to be used directly on Hydra.
 For a start, we may use the instance at hydra.nixos.org, generously
 provided by TU Delft.  However, in the future, we may want to setup our
 own instance at gnu.org.
+
+* user interface
+** Add a package.el (Emacs) back-end
+
+Unfortunately package.el is monolithic, so most likely we’d have to
+write a new one based on it, as opposed to actually using it.
 
 * extend <origin>
 ** add OpenPGP signatures:
@@ -89,6 +101,12 @@ Implement ‘package-cross-derivation’, and add the corresponding code in
 ‘gnu-build-system’.  Then, actually bootstrap a cross-compilation
 environment–e.g., a cross-GNU environment.
 
+* add a guildhall build system
+
+The Guildhall is Guile’s packaging system.  It should be easy to add a
+‘guildhall-build-system’ that does the right thing based on guildhall
+recipes.
+
 * gnu-build-system: produce a ‘debug’ derivation
 
 Set a .gnu_debuglink in the main derivations to point to the sibling
@@ -128,6 +146,10 @@ etc.
 ** Add equivalent to "rm -rf"
 ** Add equivalent to Nixpkgs's ‘wrapProgram’
 ** Add equivalent to chrpath, possibly using [[https://gitorious.org/guile-dlhacks/guile-dlhacks/][guile-dlhacks]]
+
+** Add a hash-rewriting thing for deep dependency replacement without rebuild
+
+See [[https://github.com/NixOS/nixpkgs/commit/d1662d715514e6ef9d3dc29f132f1b3d8e608a18][Shea Levy's `replace-dependency' in Nixpkgs]].
 
 * distro
 ** choose a name! (Jinn?)
