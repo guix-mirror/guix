@@ -99,6 +99,7 @@ MODULES =					\
   distro/packages/perl.scm			\
   distro/packages/pkg-config.scm		\
   distro/packages/pth.scm			\
+  distro/packages/python.scm			\
   distro/packages/readline.scm			\
   distro/packages/recutils.scm			\
   distro/packages/rsync.scm			\
