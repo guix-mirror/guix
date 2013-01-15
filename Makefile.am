@@ -101,6 +101,7 @@ MODULES =					\
   distro/packages/readline.scm			\
   distro/packages/recutils.scm			\
   distro/packages/rsync.scm			\
+  distro/packages/scheme.scm			\
   distro/packages/shishi.scm			\
   distro/packages/system.scm			\
   distro/packages/tcl.scm			\
