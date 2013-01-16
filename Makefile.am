@@ -75,6 +75,7 @@ MODULES =					\
   distro/packages/gsasl.scm			\
   distro/packages/guile.scm			\
   distro/packages/help2man.scm			\
+  distro/packages/icu4c.scm			\
   distro/packages/idutils.scm			\
   distro/packages/ld-wrapper.scm		\
   distro/packages/less.scm			\
