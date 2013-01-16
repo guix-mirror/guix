@@ -139,7 +139,7 @@ This section describes the software requirements of Guix, as well as how
 to install it and get ready to use it.
 
 The build procedure for Guix is the same as for other GNU software, and
-are not covered here.  Please see the files @file{README} and
+is not covered here.  Please see the files @file{README} and
 @file{INSTALL} in the Guix source tree for additional details.
 
 @menu
@@ -233,7 +233,7 @@ The @code{guix-daemon} program may then be run as @code{root} with:
 @end example
 
 Guix may also be used in a single-user setup, with @command{guix-daemon}
-running as a unprivileged user.  However, to maximize non-interference
+running as an unprivileged user.  However, to maximize non-interference
 of build processes, the daemon still needs to perform certain operations
 that are restricted to @code{root} on GNU/Linux: it should be able to
 run build processes in a chroot, and to run them under different UIDs.
@@ -330,8 +330,18 @@ processes to gain access to undeclared dependencies.
 @item --disable-log-compression
 Disable compression of the build logs.
 
+Unless @code{--lose-logs} is used, all the build logs are kept in the
+@var{localstatedir}.  To save space, the daemon automatically compresses
+them with bzip2 by default.  This option disables that.
+
 @item --disable-store-optimization
 Disable automatic file ``deduplication'' in the store.
+
+By default, files added to the store are automatically ``deduplicated'':
+if a newly added file is identical as another one found in the store,
+the daemon makes the new file a hard link to the other file.  This
+slightly increases the input/output load at the end of a build process.
+This option disables this.
 
 @item --impersonate-linux-2.6
 On Linux-based systems, impersonate Linux 2.6.  This means that the
@@ -545,7 +555,7 @@ deleted.  The set of garbage collector roots includes default user
 profiles, and may be augmented with @command{guix-build --root}, for
 example (@pxref{Invoking guix-build}).
 
-The @command{guix-gc} command has three modes of operations: it can be
+The @command{guix-gc} command has three modes of operation: it can be
 used to garbage-collect any dead files (the default), to delete specific
 files (the @code{--delete} option), or to print garbage-collector
 information.  The available options are listed below:
