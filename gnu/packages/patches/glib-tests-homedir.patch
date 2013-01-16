@@ -1,0 +1,59 @@
+`g_get_home_dir' looks at /etc/passwd first, which fails in chroot builds.
+The gdbus tests use it to lookup .dbus-keyrings, so they cannot run in our
+chroot build environment.  Thus, disable them.
+
+--- glib-2.34.3/gio/tests/gdbus-connection-flush.c	2013-01-16 17:29:46.000000000 +0100
++++ glib-2.34.3/gio/tests/gdbus-connection-flush.c	2013-01-16 17:29:47.000000000 +0100
+@@ -373,10 +373,6 @@ main (int   argc,
+   g_type_init ();
+   g_test_init (&argc, &argv, NULL);
+ 
+-  g_test_add ("/gdbus/connection/flush/busy", Fixture, NULL,
+-              setup, test_flush_busy, teardown);
+-  g_test_add ("/gdbus/connection/flush/idle", Fixture, NULL,
+-              setup, test_flush_idle, teardown);
+ 
+   ret = g_test_run();
+
+--- glib-2.34.3/gio/tests/gdbus-peer.c	2013-01-16 17:38:09.000000000 +0100
++++ glib-2.34.3/gio/tests/gdbus-peer.c	2013-01-16 17:38:12.000000000 +0100
+@@ -1828,11 +1828,6 @@ main (int   argc,
+ 
+   g_test_add_func ("/gdbus/peer-to-peer", test_peer);
+   g_test_add_func ("/gdbus/delayed-message-processing", delayed_message_processing);
+-  g_test_add_func ("/gdbus/nonce-tcp", test_nonce_tcp);
+-  g_test_add_func ("/gdbus/tcp-anonymous", test_tcp_anonymous);
+-  g_test_add_func ("/gdbus/credentials", test_credentials);
+-  g_test_add_func ("/gdbus/overflow", test_overflow);
+-  g_test_add_func ("/gdbus/codegen-peer-to-peer", codegen_test_peer);
+ 
+   ret = g_test_run();
+ 
+--- glib-2.34.3/gio/tests/gdbus-exit-on-close.c	2013-01-16 17:49:25.000000000 +0100
++++ glib-2.34.3/gio/tests/gdbus-exit-on-close.c	2013-01-16 17:49:30.000000000 +0100
+@@ -206,13 +206,6 @@ main (int   argc,
+   g_type_init ();
+   g_test_init (&argc, &argv, NULL);
+ 
+-  for (i = 0; cases[i].name != NULL; i++)
+-    {
+-      gchar *name = g_strdup_printf ("/gdbus/exit-on-close/%s", cases[i].name);
+-
+-      g_test_add_data_func (name, &cases[i], test_exit_on_close);
+-      g_free (name);
+-    }
+ 
+   return g_test_run();
+ }
+
+--- glib-2.34.3/gio/tests/gdbus-non-socket.c	2013-01-16 18:13:25.000000000 +0100
++++ glib-2.34.3/gio/tests/gdbus-non-socket.c	2013-01-16 18:13:27.000000000 +0100
+@@ -294,7 +294,6 @@ main (int   argc,
+   g_type_init ();
+   g_test_init (&argc, &argv, NULL);
+ 
+-  g_test_add_func ("/gdbus/non-socket", test_non_socket);
+ 
+   ret = g_test_run();
+ 
+

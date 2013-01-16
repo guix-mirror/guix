@@ -131,24 +131,27 @@ GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
 nobase_dist_guilemodule_DATA = $(MODULES)
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
-dist_patch_DATA =						\
+dist_patch_DATA =					\
   gnu/packages/patches/bigloo-gc-shebangs.patch		\
-  gnu/packages/patches/binutils-ld-new-dtags.patch		\
-  gnu/packages/patches/cpio-gets-undeclared.patch		\
+  gnu/packages/patches/binutils-ld-new-dtags.patch	\
+  gnu/packages/patches/cpio-gets-undeclared.patch	\
   gnu/packages/patches/diffutils-gets-undeclared.patch	\
   gnu/packages/patches/emacs-configure-sh.patch		\
   gnu/packages/patches/flex-bison-tests.patch		\
   gnu/packages/patches/gawk-shell.patch			\
-  gnu/packages/patches/gettext-gets-undeclared.patch		\
-  gnu/packages/patches/glibc-bootstrap-system.patch		\
-  gnu/packages/patches/glibc-no-ld-so-cache.patch		\
+  gnu/packages/patches/gettext-gets-undeclared.patch	\
+  gnu/packages/patches/glib-tests-desktop.patch		\
+  gnu/packages/patches/glib-tests-homedir.patch		\
+  gnu/packages/patches/glib-tests-timezone.patch	\
+  gnu/packages/patches/glibc-bootstrap-system.patch	\
+  gnu/packages/patches/glibc-no-ld-so-cache.patch	\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch		\
   gnu/packages/patches/guile-default-utf8.patch		\
   gnu/packages/patches/guile-relocatable.patch		\
   gnu/packages/patches/libtool-skip-tests.patch		\
   gnu/packages/patches/lsh-guile-compat.patch		\
   gnu/packages/patches/lsh-no-root-login.patch		\
-  gnu/packages/patches/lsh-pam-service-name.patch		\
+  gnu/packages/patches/lsh-pam-service-name.patch	\
   gnu/packages/patches/m4-gets-undeclared.patch		\
   gnu/packages/patches/m4-readlink-EINVAL.patch		\
   gnu/packages/patches/m4-s_isdir.patch			\
@@ -156,8 +159,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/findutils-absolute-paths.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch		\
   gnu/packages/patches/procps-make-3.82.patch		\
-  gnu/packages/patches/readline-link-ncurses.patch		\
-  gnu/packages/patches/shishi-gets-undeclared.patch		\
+  gnu/packages/patches/readline-link-ncurses.patch	\
+  gnu/packages/patches/shishi-gets-undeclared.patch	\
   gnu/packages/patches/tar-gets-undeclared.patch
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
