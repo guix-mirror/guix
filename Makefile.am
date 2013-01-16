@@ -112,6 +112,7 @@ MODULES =					\
   distro/packages/time.scm			\
   distro/packages/wget.scm			\
   distro/packages/which.scm			\
+  distro/packages/xml.scm			\
   distro/packages/zile.scm
 
 
