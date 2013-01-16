@@ -610,16 +610,20 @@ they can refer to each other."
                                        (env-vars '())
                                        (modules '())
                                        guile-for-build)
-  "Return a derivation that executes Scheme expression EXP as a builder for
-derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV) tuples;
-when SUB-DRV is omitted, \"out\" is assumed.  EXP is evaluated in an
-environment where %OUTPUT is bound to the main output path, %OUTPUTS is bound
-to a list of output/path pairs, and where %BUILD-INPUTS is bound to an alist
-of string/output-path pairs made from INPUTS.  Optionally, ENV-VARS is a list
-of string pairs specifying the name and value of environment variables
-visible to the builder.  The builder terminates by passing the result of EXP
-to `exit'; thus, when EXP returns #f, the build is considered to have
-failed.
+  "Return a derivation that executes Scheme expression EXP as a builder
+for derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV)
+tuples; when SUB-DRV is omitted, \"out\" is assumed.  MODULES is a list
+of names of Guile modules from the current search path to be copied in
+the store, compiled, and made available in the load path during the
+execution of EXP.
+
+EXP is evaluated in an environment where %OUTPUT is bound to the main
+output path, %OUTPUTS is bound to a list of output/path pairs, and where
+%BUILD-INPUTS is bound to an alist of string/output-path pairs made from
+INPUTS.  Optionally, ENV-VARS is a list of string pairs specifying the
+name and value of environment variables visible to the builder.  The
+builder terminates by passing the result of EXP to `exit'; thus, when
+EXP returns #f, the build is considered to have failed.
 
 EXP is built using GUILE-FOR-BUILD (a derivation).  When GUILE-FOR-BUILD is
 omitted or is #f, the value of the `%guile-for-build' fluid is used instead."

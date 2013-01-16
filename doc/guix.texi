@@ -730,7 +730,9 @@ These are keyword arguments (@pxref{Optional Arguments, keyword
 arguments in Guile,, guile, GNU Guile Reference Manual}).  They are
 passed to @var{gnu-build-system}, which interprets them as meaning ``do
 not run @code{make check}'', and ``run @file{configure} with the
-@code{--enable-silent-rules} flag''.
+@code{--enable-silent-rules} flag''.  The value of these keyword
+parameters is actually evaluated in the @dfn{build stratum}---i.e., by a
+Guile process launched by the daemon (@pxref{Derivations}).
 
 Once a package definition is in place@footnote{Simple package
 definitions like the one above may be automatically converted from the
@@ -809,13 +811,146 @@ path.  @var{references} is the list of store paths referred to by the
 resulting store path.
 @end deffn
 
+@deffn {Scheme Procedure} build-derivations @var{server} @var{derivations}
+Build @var{derivations} (a list of derivation paths), and return when
+the worker is done building them.  Return @code{#t} on success.
+@end deffn
+
 @c FIXME
 @i{This section is currently incomplete.}
 
 @node Derivations
 @section Derivations
 
-@code{(guix derivations)}
+@cindex derivations
+Low-level build actions and the environment in which they are performed
+are represented by @dfn{derivations}.  A derivation contain the
+following pieces of information:
+
+@itemize
+@item
+The outputs of the derivation---derivations produce at least one file or
+directory in the store, but may produce more.
+
+@item
+The inputs of the derivations, which may be other derivations or plain
+files in the store (patches, build scripts, etc.)
+
+@item
+The system type targeted by the derivation---e.g., @code{x86_64-linux}.
+
+@item
+The file name of a build script in the store, along with the arguments
+to be passed.
+
+@item
+A list of environment variables to be defined.
+
+@end itemize
+
+@cindex derivation path
+Derivations allow clients of the daemon to communicate build actions to
+the store.  They exist in two forms: as an in-memory representation,
+both on the client- and daemon-side, and as files in the store whose
+name end in @code{.drv}---these files are referred to as @dfn{derivation
+paths}.  Derivations paths can be passed to the @code{build-derivations}
+procedure to perform the build actions they prescribe (@pxref{The
+Store}).
+
+The @code{(guix derivations)} module provides a representation of
+derivations as Scheme objects, along with procedures to create and
+otherwise manipulate derivations.  The lowest-level primitive to create
+a derivation is the @code{derivation} procedure:
+
+@deffn {Scheme Procedure} derivation @var{store} @var{name} @var{system} @var{builder} @var{args} @var{env-vars} @var{inputs} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:hash-mode #f]
+Build a derivation with the given arguments.  Return the resulting store
+path and @code{<derivation>} object.
+
+When @var{hash}, @var{hash-algo}, and @var{hash-mode} are given, a
+@dfn{fixed-output derivation} is created---i.e., one whose result is
+known in advance, such as a file download.
+@end deffn
+
+@noindent
+Here's an example with a shell script as its builder, assuming
+@var{store} is an open connection to the daemon, and @var{bash} points
+to a Bash executable in the store:
+
+@lisp
+(use-modules (guix utils)
+             (guix store)
+             (guix derivations))
+
+(call-with-values
+  (lambda ()
+    (let ((builder   ; add the Bash script to the store
+           (add-text-to-store store "my-builder.sh"
+                              "echo hello world > $out\n" '())))
+      (derivation store "foo" (%current-system)
+                  bash `("-e" ,builder)
+                  '(("HOME" . "/homeless")) '())))
+  list)
+@result{} ("/nix/store/@dots{}-foo.drv" #<<derivation> @dots{}>)
+@end lisp
+
+As can be guessed, this primitive is cumbersome to use directly.  An
+improved variant is @code{build-expression->derivation}, which allows
+the caller to directly pass a Guile expression as the build script:
+
+@deffn {Scheme Procedure} build-expression->derivation @var{store} @var{name} @var{system} @var{exp} @var{inputs} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:env-vars '()] [#:modules '()] [#:guile-for-build #f]
+Return a derivation that executes Scheme expression @var{exp} as a
+builder for derivation @var{name}.  @var{inputs} must be a list of
+@code{(name drv-path sub-drv)} tuples; when @var{sub-drv} is omitted,
+@code{"out"} is assumed.  @var{modules} is a list of names of Guile
+modules from the current search path to be copied in the store,
+compiled, and made available in the load path during the execution of
+@var{exp}---e.g., @code{((guix build utils) (guix build
+gnu-build-system))}.
+
+@var{exp} is evaluated in an environment where @code{%outputs} is bound
+to a list of output/path pairs, and where @code{%build-inputs} is bound
+to a list of string/output-path pairs made from @var{inputs}.
+Optionally, @var{env-vars} is a list of string pairs specifying the name
+and value of environment variables visible to the builder.  The builder
+terminates by passing the result of @var{exp} to @code{exit}; thus, when
+@var{exp} returns @code{#f}, the build is considered to have failed.
+
+@var{exp} is built using @var{guile-for-build} (a derivation).  When
+@var{guile-for-build} is omitted or is @code{#f}, the value of the
+@code{%guile-for-build} fluid is used instead.
+@end deffn
+
+@noindent
+Here's an example of a single-output derivation that creates a directory
+containing one file:
+
+@lisp
+(let ((builder '(let ((out (assoc-ref %outputs "out")))
+                  (mkdir out)    ; create /nix/store/@dots{}-goo
+                  (call-with-output-file (string-append out "/test")
+                    (lambda (p)
+                      (display '(hello guix) p))))))
+  (build-expression->derivation store "goo" (%current-system)
+                                builder '()))
+
+@result{} "/nix/store/@dots{}-goo.drv"
+@result{} #<<derivation> @dots{}>
+@end lisp
+
+@cindex strata of code
+Remember that the build expression passed to
+@code{build-expression->derivation} is run by a separate Guile process
+than the one that calls @code{build-expression->derivation}: it is run
+by a Guile process launched by the daemon, typically in a chroot.  So,
+while there is a single language for both the @dfn{host} and the build
+side, there are really two @dfn{strata} of code: the host-side, and the
+build-side code@footnote{The term @dfn{stratum} in this context was
+coined by Manuel Serrano et al. in the context of their work on Hop.}.
+This distinction is important to keep in mind, notably when using
+higher-level constructs such as @var{gnu-build-system} (@pxref{Defining
+Packages}).  For this reason, Guix modules that are meant to be used in
+the build stratum are kept in the @code{(guix build @dots{})} name
+space.
 
 @c *********************************************************************
 @node Utilities
