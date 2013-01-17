@@ -82,6 +82,7 @@ MODULES =					\
   distro/packages/less.scm			\
   distro/packages/libffi.scm			\
   distro/packages/libidn.scm			\
+  distro/packages/libjpeg.scm			\
   distro/packages/libsigsegv.scm		\
   distro/packages/libunistring.scm		\
   distro/packages/libusb.scm			\
