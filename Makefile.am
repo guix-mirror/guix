@@ -1,5 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013 Andreas Enge <andreas@enge.fr>
 #
 # This file is part of GNU Guix.
 #
@@ -63,6 +64,7 @@ MODULES =					\
   distro/packages/ddrescue.scm			\
   distro/packages/ed.scm			\
   distro/packages/emacs.scm			\
+  distro/packages/file.scm			\
   distro/packages/flex.scm			\
   distro/packages/gawk.scm			\
   distro/packages/gdb.scm			\
