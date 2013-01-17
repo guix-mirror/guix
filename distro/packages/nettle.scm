@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,22 +27,18 @@
 (define-public nettle
   (package
     (name "nettle")
-    (version "2.5")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append
-            "mirror://gnu/nettle/nettle-"
-            version
-            ".tar.gz"))
-      (sha256
-       (base32
-        "0wicr7amx01l03rm0pzgr1qvw3f9blaw17vjsy1301dh13ll58aa"))))
+    (version "2.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/nettle/nettle-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0mminj3fg0vba8qx4q6dbf0xz6fskamli7z2r8rci5xrcd7n5pv0"))))
     (build-system gnu-build-system)
     (inputs `(("m4" ,m4)))
     (propagated-inputs `(("gmp" ,gmp)))
-    (home-page
-     "http://www.lysator.liu.se/~nisse/nettle/")
+    (home-page "http://www.lysator.liu.se/~nisse/nettle/")
     (synopsis "GNU Nettle, a cryptographic library")
     (description
      "Nettle is a cryptographic library that is designed to fit easily
