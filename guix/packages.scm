@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -93,9 +93,12 @@ representation."
     (syntax-case s ()
       ((_ str)
        (string? (syntax->datum #'str))
+       ;; A literal string: do the conversion at expansion time.
        (with-syntax ((bv (nix-base32-string->bytevector
                           (syntax->datum #'str))))
-         #''bv)))))
+         #''bv))
+      ((_ str)
+       #'(nix-base32-string->bytevector str)))))
 
 ;; A package.
 
