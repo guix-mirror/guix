@@ -53,7 +53,7 @@ portable, and only require an ANSI C89 platform.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.1.5")
+    (version "3.1.6")
     (source
      (origin
       (method url-fetch)
@@ -63,7 +63,7 @@ portable, and only require an ANSI C89 platform.")
             ".tar.xz"))
       (sha256
        (base32
-        "1lz05l19s64s5hmhc9fh48ip6izy80bdiv0pwkfg9fwwvn25j29g"))))
+        "0zsybr9plllk1phh83bx9bg7c5ccik427j4n3k1s9fiy4j69n0w3"))))
     (build-system gnu-build-system)
 
     ;; Build of the Guile bindings is not parallel-safe.  See
