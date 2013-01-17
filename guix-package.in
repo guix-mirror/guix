@@ -95,9 +95,9 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   (make-regexp (string-append "^" (regexp-quote (basename profile))
                               "-([0-9]+)")))
 
-(define (latest-profile-number profile)
-  "Return the identifying number of the latest generation of PROFILE.
-PROFILE is the name of the symlink to the current generation."
+(define (profile-numbers profile)
+  "Return the list of generation numbers of PROFILE, or '(0) if no
+former profiles were found."
   (define* (scandir name #:optional (select? (const #t))
                     (entry<? (@ (ice-9 i18n) string-locale<?)))
     ;; XXX: Bug-fix version introduced in Guile v2.0.6-62-g139ce19.
@@ -135,21 +135,35 @@ PROFILE is the name of the symlink to the current generation."
   (match (scandir (dirname profile)
                   (cute regexp-exec (profile-regexp profile) <>))
     (#f                                         ; no profile directory
-     0)
+     '(0))
     (()                                         ; no profiles
-     0)
+     '(0))
     ((profiles ...)                             ; former profiles around
-     (let ((numbers
-            (map (compose string->number
-                          (cut match:substring <> 1)
-                          (cut regexp-exec (profile-regexp profile) <>))
-                 profiles)))
-       (fold (lambda (number highest)
-               (if (> number highest)
-                   number
-                   highest))
-             0
-             numbers)))))
+     (map (compose string->number
+                   (cut match:substring <> 1)
+                   (cute regexp-exec (profile-regexp profile) <>))
+          profiles))))
+
+(define (latest-profile-number profile)
+  "Return the identifying number of the latest generation of PROFILE.
+PROFILE is the name of the symlink to the current generation."
+  (fold (lambda (number highest)
+          (if (> number highest)
+              number
+              highest))
+        0
+        (profile-numbers profile)))
+
+(define (previous-profile-number profile number)
+  "Return the number of the generation before generation NUMBER of
+PROFILE, or 0 if none exists.  It could be NUMBER - 1, but it's not the
+case when generations have been deleted (there are \"holes\")."
+  (fold (lambda (candidate highest)
+          (if (and (< candidate number) (> candidate highest))
+              candidate
+              highest))
+        0
+        (profile-numbers profile)))
 
 (define (profile-derivation store packages)
   "Return a derivation that builds a profile (a user environment) with
@@ -192,12 +206,12 @@ all of PACKAGES, a list of name/version/output/path tuples."
 (define (roll-back profile)
   "Roll back to the previous generation of PROFILE."
   ;; XXX: Get the previous generation number from the manifest?
-  (let* ((number (profile-number profile))
-         (previous-number (1- number))
+  (let* ((number           (profile-number profile))
+         (previous-number  (previous-profile-number profile number))
          (previous-profile (format #f "~a/~a-~a-link"
                                    (dirname profile) profile
                                    previous-number))
-         (manifest (string-append previous-profile "/manifest")))
+         (manifest         (string-append previous-profile "/manifest")))
 
     (define (switch-link)
       ;; Atomically switch PROFILE to the previous profile.
@@ -207,11 +221,14 @@ all of PACKAGES, a list of name/version/output/path tuples."
         (symlink previous-profile pivot)
         (rename-file pivot profile)))
 
-    (if (= number 0)
-        (leave (_ "error: `~a' is not a valid profile~%") profile)
-        (if (file-exists? previous-profile)
-            (switch-link)
-            (leave (_ "error: no previous profile; not rolling back~%"))))))
+    (cond ((zero? number)
+           (format (current-error-port)
+                   (_ "error: `~a' is not a valid profile~%")
+                   profile))
+          ((or (zero? previous-number)
+               (not (file-exists? previous-profile)))
+           (leave (_ "error: no previous profile; not rolling back~%")))
+          (else (switch-link)))))
 
 
 ;;;
