@@ -43,3 +43,15 @@ The included programs provide conversion between the JPEG format and
 image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
    (license ijg)
    (home-page "http://www.ijg.org/")))
+
+(define-public libjpeg-8
+  (package (inherit libjpeg)
+   (name "libjpeg-8")
+   (version "8d")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://www.ijg.org/files/jpegsrc.v"
+                   version ".tar.gz"))
+            (sha256 (base32
+                     "1cz0dy05mgxqdgjf52p54yxpyy95rgl30cnazdrfmw7hfca9n0h0"))))))
+
