@@ -86,6 +86,7 @@ MODULES =					\
   distro/packages/libidn.scm			\
   distro/packages/libjpeg.scm			\
   distro/packages/libsigsegv.scm		\
+  distro/packages/libtiff.scm		\
   distro/packages/libunistring.scm		\
   distro/packages/libusb.scm			\
   distro/packages/linux.scm			\
