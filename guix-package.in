@@ -13,6 +13,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 !#
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,13 +90,14 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
     (_
      (error "unsupported manifest format" manifest))))
 
+(define (profile-regexp profile)
+  "Return a regular expression that matches PROFILE's name and number."
+  (make-regexp (string-append "^" (regexp-quote (basename profile))
+                              "-([0-9]+)")))
+
 (define (latest-profile-number profile)
   "Return the identifying number of the latest generation of PROFILE.
 PROFILE is the name of the symlink to the current generation."
-  (define %profile-rx
-    (make-regexp (string-append "^" (regexp-quote (basename profile))
-                                "-([0-9]+)")))
-
   (define* (scandir name #:optional (select? (const #t))
                     (entry<? (@ (ice-9 i18n) string-locale<?)))
     ;; XXX: Bug-fix version introduced in Guile v2.0.6-62-g139ce19.
@@ -131,16 +133,17 @@ PROFILE is the name of the symlink to the current generation."
              (sort files entry<?))))
 
   (match (scandir (dirname profile)
-                  (cut regexp-exec %profile-rx <>))
+                  (cute regexp-exec (profile-regexp profile) <>))
     (#f                                         ; no profile directory
      0)
     (()                                         ; no profiles
      0)
     ((profiles ...)                             ; former profiles around
-     (let ((numbers (map (compose string->number
-                                  (cut match:substring <> 1)
-                                  (cut regexp-exec %profile-rx <>))
-                         profiles)))
+     (let ((numbers
+            (map (compose string->number
+                          (cut match:substring <> 1)
+                          (cut regexp-exec (profile-regexp profile) <>))
+                 profiles)))
        (fold (lambda (number highest)
                (if (> number highest)
                    number
@@ -179,6 +182,37 @@ all of PACKAGES, a list of name/version/output/path tuples."
                                      packages)
                                 #:modules '((guix build union))))
 
+(define (profile-number profile)
+  "Return PROFILE's number or 0.  An absolute file name must be used."
+  (or (and=> (false-if-exception (regexp-exec (profile-regexp profile)
+                                              (basename (readlink profile))))
+             (compose string->number (cut match:substring <> 1)))
+      0))
+
+(define (roll-back profile)
+  "Roll back to the previous generation of PROFILE."
+  ;; XXX: Get the previous generation number from the manifest?
+  (let* ((number (profile-number profile))
+         (previous-number (1- number))
+         (previous-profile (format #f "~a/~a-~a-link"
+                                   (dirname profile) profile
+                                   previous-number))
+         (manifest (string-append previous-profile "/manifest")))
+
+    (define (switch-link)
+      ;; Atomically switch PROFILE to the previous profile.
+      (let ((pivot (string-append previous-profile ".new")))
+        (format #t (_ "switching from generation ~a to ~a~%")
+                number previous-number)
+        (symlink previous-profile pivot)
+        (rename-file pivot profile)))
+
+    (if (= number 0)
+        (leave (_ "error: `~a' is not a valid profile~%") profile)
+        (if (file-exists? previous-profile)
+            (switch-link)
+            (leave (_ "error: no previous profile; not rolling back~%"))))))
+
 
 ;;;
 ;;; Command-line options.
@@ -197,6 +231,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   -r, --remove=PACKAGE   remove PACKAGE"))
   (display (_ "
   -u, --upgrade=REGEXP   upgrade all the installed packages matching REGEXP"))
+  (display (_ "
+      --roll-back        roll back to the previous generation"))
   (newline)
   (display (_ "
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
@@ -237,6 +273,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (option '(#\r "remove") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'remove arg result)))
+        (option '("roll-back") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'roll-back? #t result)))
         (option '(#\p "profile") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'profile arg
@@ -362,87 +401,96 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
 
   (define (process-actions opts)
     ;; Process any install/remove/upgrade action from OPTS.
-    (let* ((dry-run? (assoc-ref opts 'dry-run?))
-           (verbose? (assoc-ref opts 'verbose?))
-           (profile  (assoc-ref opts 'profile))
-           (install  (filter-map (match-lambda
-                                  (('install . (? store-path?))
-                                   #f)
-                                  (('install . package)
-                                   (find-package package))
-                                  (_ #f))
-                                 opts))
-           (drv      (filter-map (match-lambda
-                                  ((name version sub-drv
-                                         (? package? package))
-                                   (package-derivation (%store) package))
-                                  (_ #f))
-                                 install))
-           (install* (append
-                      (filter-map (match-lambda
-                                   (('install . (? store-path? path))
-                                    (let-values (((name version)
-                                                  (package-name->name+version
-                                                   (store-path-package-name
-                                                    path))))
-                                      `(,name ,version #f ,path)))
-                                   (_ #f))
-                                  opts)
-                      (map (lambda (tuple drv)
-                             (match tuple
-                               ((name version sub-drv _)
-                                (let ((output-path
-                                       (derivation-path->output-path
-                                        drv sub-drv)))
-                                  `(,name ,version ,sub-drv ,output-path)))))
-                           install drv)))
-           (remove   (filter-map (match-lambda
-                                  (('remove . package)
-                                   package)
-                                  (_ #f))
-                                 opts))
-           (packages (append install*
-                             (fold (lambda (package result)
-                                     (match package
-                                       ((name _ ...)
-                                        (alist-delete name result))))
-                                   (fold alist-delete
-                                         (manifest-packages
-                                          (profile-manifest profile))
-                                         remove)
-                                   install*))))
 
-      (when (equal? (assoc-ref opts 'profile) %current-profile)
-        (ensure-default-profile))
+    (define dry-run? (assoc-ref opts 'dry-run?))
+    (define verbose? (assoc-ref opts 'verbose?))
+    (define profile  (assoc-ref opts 'profile))
 
-      (show-what-to-build drv dry-run?)
+    ;; First roll back if asked to.
+    (if (and (assoc-ref opts 'roll-back?) (not dry-run?))
+        (begin
+          (roll-back profile)
+          (process-actions (alist-delete 'roll-back? opts)))
+        (let* ((install  (filter-map (match-lambda
+                                      (('install . (? store-path?))
+                                       #f)
+                                      (('install . package)
+                                       (find-package package))
+                                      (_ #f))
+                                     opts))
+               (drv      (filter-map (match-lambda
+                                      ((name version sub-drv
+                                             (? package? package))
+                                       (package-derivation (%store) package))
+                                      (_ #f))
+                                     install))
+               (install* (append
+                          (filter-map (match-lambda
+                                       (('install . (? store-path? path))
+                                        (let-values (((name version)
+                                                      (package-name->name+version
+                                                       (store-path-package-name
+                                                        path))))
+                                          `(,name ,version #f ,path)))
+                                       (_ #f))
+                                      opts)
+                          (map (lambda (tuple drv)
+                                 (match tuple
+                                   ((name version sub-drv _)
+                                    (let ((output-path
+                                           (derivation-path->output-path
+                                            drv sub-drv)))
+                                      `(,name ,version ,sub-drv ,output-path)))))
+                               install drv)))
+               (remove   (filter-map (match-lambda
+                                      (('remove . package)
+                                       package)
+                                      (_ #f))
+                                     opts))
+               (packages (append install*
+                                 (fold (lambda (package result)
+                                         (match package
+                                           ((name _ ...)
+                                            (alist-delete name result))))
+                                       (fold alist-delete
+                                             (manifest-packages
+                                              (profile-manifest profile))
+                                             remove)
+                                       install*))))
 
-      (or dry-run?
-          (and (build-derivations (%store) drv)
-               (let* ((prof-drv (profile-derivation (%store) packages))
-                      (prof     (derivation-path->output-path prof-drv))
-                      (old-drv  (profile-derivation
-                                 (%store) (manifest-packages
-                                           (profile-manifest profile))))
-                      (old-prof (derivation-path->output-path old-drv))
-                      (number   (latest-profile-number profile))
-                      (name     (format #f "~a/~a-~a-link"
-                                        (dirname profile)
-                                        (basename profile) (+ 1 number))))
-                 (if (string=? old-prof prof)
-                     (format (current-error-port) (_ "nothing to be done~%"))
-                     (and (parameterize ((current-build-output-port
-                                          ;; Output something when Guile
-                                          ;; needs to be built.
-                                          (if (or verbose? (guile-missing?))
-                                              (current-error-port)
-                                              (%make-void-port "w"))))
-                            (build-derivations (%store) (list prof-drv)))
-                          (begin
-                            (symlink prof name)
-                            (when (file-exists? profile)
-                              (delete-file profile))
-                            (symlink name profile)))))))))
+          (when (equal? profile %current-profile)
+            (ensure-default-profile))
+
+          (show-what-to-build drv dry-run?)
+
+          (or dry-run?
+              (and (build-derivations (%store) drv)
+                   (let* ((prof-drv (profile-derivation (%store) packages))
+                          (prof     (derivation-path->output-path prof-drv))
+                          (old-drv  (profile-derivation
+                                     (%store) (manifest-packages
+                                               (profile-manifest profile))))
+                          (old-prof (derivation-path->output-path old-drv))
+                          (number   (latest-profile-number profile))
+                          (name     (format #f "~a/~a-~a-link"
+                                            (dirname profile)
+                                            (basename profile) (+ 1 number))))
+                     (if (string=? old-prof prof)
+                         (when (or (pair? install) (pair? remove))
+                           (format (current-error-port)
+                                   (_ "nothing to be done~%")))
+                         (and (parameterize ((current-build-output-port
+                                              ;; Output something when Guile
+                                              ;; needs to be built.
+                                              (if (or verbose? (guile-missing?))
+                                                  (current-error-port)
+                                                  (%make-void-port "w"))))
+                                (build-derivations (%store) (list prof-drv)))
+                              (begin
+                                (symlink prof name)
+                                (when (file-exists? profile)
+                                  (delete-file profile))
+                                (symlink name profile))))))))))
 
   (define (process-query opts)
     ;; Process any query specified by OPTS.  Return #t when a query was

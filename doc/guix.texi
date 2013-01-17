@@ -490,6 +490,13 @@ Remove @var{package}.
 @itemx -u @var{regexp}
 Upgrade all the installed packages matching @var{regexp}.
 
+@item --roll-back
+Roll back to the previous @dfn{generation} of the profile---i.e., undo
+the last transaction.
+
+When combined with options such as @code{--install}, roll back occurs
+before any other actions.
+
 @item --profile=@var{profile}
 @itemx -p @var{profile}
 Use @var{profile} instead of the user's default profile.

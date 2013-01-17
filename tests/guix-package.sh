@@ -22,6 +22,11 @@
 
 guix-package --version
 
+readlink_base ()
+{
+    basename `readlink "$1"`
+}
+
 profile="t-profile-$$"
 rm -f "$profile"
 
@@ -34,8 +39,7 @@ test -L "$profile" && test -L "$profile-1-link"
 test -f "$profile/bin/guile"
 
 # Installing the same package a second time does nothing.
-guix-package --bootstrap -p "$profile"						\
-    -i `guix-build -e '(@@ (distro packages base) %bootstrap-guile)'`
+guix-package --bootstrap -p "$profile" -i "$boot_guile"
 test -L "$profile" && test -L "$profile-1-link"
 ! test -f "$profile-2-link"
 test -f "$profile/bin/guile"
@@ -43,8 +47,8 @@ test -f "$profile/bin/guile"
 # Check whether we have network access.
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
-    guix-package --bootstrap -p "$profile"						\
-	-i `guix-build -e '(@@ (distro packages base) gnu-make-boot0)'`
+    boot_make="`guix-build -e '(@@ (distro packages base) gnu-make-boot0)'`"
+    guix-package --bootstrap -p "$profile" -i "$boot_make"
     test -L "$profile-2-link"
     test -f "$profile/bin/make" && test -f "$profile/bin/guile"
 
@@ -68,6 +72,29 @@ then
     guix-package --bootstrap -p "$profile" -r "guile-bootstrap"
     test -L "$profile-3-link"
     test -f "$profile/bin/make" && ! test -f "$profile/bin/guile"
+
+    # Roll back.
+    guix-package --roll-back -p "$profile"
+    test "`readlink_base "$profile"`" = "$profile-2-link"
+    test -x "$profile/bin/guile" && test -x "$profile/bin/make"
+    guix-package --roll-back -p "$profile"
+    test "`readlink_base "$profile"`" = "$profile-1-link"
+    test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
+
+    # Failed attempt to roll back because there's no previous generation.
+    if guix-package --roll-back -p "$profile";
+    then false; else true; fi
+
+    # Reinstall after roll-back to generation 1.
+    guix-package --bootstrap -p "$profile" -i "$boot_make"
+    test "`readlink_base "$profile"`" = "$profile-4-link"
+    test -x "$profile/bin/guile" && test -x "$profile/bin/make"
+
+    # Roll-back to generation 3[*], and install---all at once.
+    # [*] FIXME: Eventually, this should roll-back to generation 1.
+    guix-package --bootstrap -p "$profile" --roll-back -i "$boot_guile"
+    test "`readlink_base "$profile"`" = "$profile-5-link"
+    test -x "$profile/bin/guile" && test -x "$profile/bin/make"
 fi
 
 # Make sure the `:' syntax works.
@@ -88,3 +115,7 @@ mkdir -p "$HOME"
 guix-package --bootstrap -i "$boot_guile"
 test -L "$HOME/.guix-profile"
 test -f "$HOME/.guix-profile/bin/guile"
+
+# Failed attempt to roll back.
+if guix-package --bootstrap --roll-back;
+then false; else true; fi
