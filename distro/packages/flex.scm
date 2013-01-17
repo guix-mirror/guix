@@ -23,7 +23,8 @@
   #:use-module (guix build-system gnu)
   #:use-module (distro)
   #:use-module (distro packages m4)
-  #:use-module (distro packages bison))
+  #:use-module (distro packages bison)
+  #:use-module (distro packages indent))
 
 (define-public flex
   (package
@@ -40,7 +41,8 @@
     (arguments
      '(#:patches (list (assoc-ref %build-inputs "patch/bison-tests"))))
     (inputs `(("patch/bison-tests" ,(search-patch "flex-bison-tests.patch"))
-              ("bison" ,bison)))
+              ("bison" ,bison)
+              ("indent" ,indent)))
     (propagated-inputs `(("m4" ,m4)))
     (home-page "http://flex.sourceforge.net/")
     (synopsis "A fast lexical analyser generator")
