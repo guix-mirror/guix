@@ -1,6 +1,6 @@
 -*- mode: org; coding: utf-8; -*-
 
-#+TITLE: Hacking GNU Guix and its incredible distro
+#+TITLE: Hacking GNU Guix and Its Incredible Distro
 
 Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 
@@ -8,6 +8,20 @@ Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
   are permitted in any medium without royalty provided the copyright
   notice and this notice are preserved.
 
+
+* Running Guix before it is installed
+
+Command-line tools can be used even if you have not run "make install".
+To do that, prefix each command with ‘./pre-inst-env’, as in:
+
+  ./pre-inst-env guix-build --help
+
+Similarly, for a Guile session using the Guix modules:
+
+  ./pre-inst-env guile -c '(use-modules (guix utils)) (pk (%current-system))'
+
+The ‘pre-inst-env’ script sets up all the environment variables
+necessary to support this.
 
 * Adding new packages
 
@@ -26,14 +40,14 @@ Package recipes in Guix look like this:
           (base32
             "0wicr7amx01l03rm0pzgr1qvw3f9blaw17vjsy1301dh13ll58aa"))))
     (build-system gnu-build-system)
-    (inputs `(("gnum4" ,gnum4)))
+    (inputs `(("m4" ,m4)))
     (propagated-inputs `(("gmp" ,gmp)))
     (home-page
       "http://www.lysator.liu.se/~nisse/nettle/")
     (synopsis "GNU Nettle, a cryptographic library")
     (description
       "Nettle is a cryptographic library...")
-    (license "GPLv2+"))
+    (license gpl2+))
 #+END_SRC
 
 Such a recipe can be written by hand, and then tested by running
