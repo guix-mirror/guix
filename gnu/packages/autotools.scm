@@ -19,7 +19,7 @@
 
 (define-module (gnu packages autotools)
   #:use-module (guix licenses)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages m4)
   #:use-module (guix packages)

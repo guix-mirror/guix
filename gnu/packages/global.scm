@@ -23,7 +23,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages autotools)
-  #:use-module (distro))
+  #:use-module (gnu packages))
 
 (define-public global                             ; a global variable
   (package

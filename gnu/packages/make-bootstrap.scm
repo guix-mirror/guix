@@ -22,7 +22,7 @@
   #:use-module (guix licenses)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
-  #:use-module ((distro) #:select (search-patch))
+  #:use-module ((gnu packages) #:select (search-patch))
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)

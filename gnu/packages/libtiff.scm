@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages libtiff)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (gnu packages file)
   #:use-module (gnu packages libjpeg)
   #:use-module (guix licenses)

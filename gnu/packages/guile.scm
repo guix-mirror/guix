@@ -18,7 +18,7 @@
 
 (define-module (gnu packages guile)
   #:use-module (guix licenses)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gperf)

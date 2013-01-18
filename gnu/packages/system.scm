@@ -21,7 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (gnu packages ncurses))
 
 (define-public pies

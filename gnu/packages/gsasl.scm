@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gsasl)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module ((gnu packages compression)
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (gnu packages gnutls)

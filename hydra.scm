@@ -24,7 +24,7 @@
 (use-modules (guix store)
              (guix packages)
              ((guix utils) #:select (%current-system))
-             (distro)
+             (gnu packages)
              (gnu packages base)
              (gnu packages guile)
              (srfi srfi-1)

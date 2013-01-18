@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages libidn)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)

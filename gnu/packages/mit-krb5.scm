@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages mit-krb5)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages perl)
   #:use-module (guix licenses)

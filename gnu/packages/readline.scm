@@ -18,7 +18,7 @@
 
 (define-module (gnu packages readline)
   #:use-module (guix licenses)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
   #:use-module (guix packages)
   #:use-module (guix download)

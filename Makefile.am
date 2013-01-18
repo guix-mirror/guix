@@ -44,7 +44,7 @@ MODULES =					\
   guix/packages.scm				\
   guix/snix.scm					\
   guix.scm					\
-  distro.scm					\
+  gnu/packages.scm				\
   gnu/packages/acl.scm				\
   gnu/packages/algebra.scm			\
   gnu/packages/aspell.scm			\

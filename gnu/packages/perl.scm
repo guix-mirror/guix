@@ -18,7 +18,7 @@
 
 (define-module (gnu packages perl)
   #:use-module (guix licenses)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)

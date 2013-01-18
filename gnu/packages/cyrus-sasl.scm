@@ -18,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages cyrus-sasl)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages mit-krb5)
   #:use-module (gnu packages openssl)

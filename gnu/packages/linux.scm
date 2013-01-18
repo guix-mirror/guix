@@ -19,7 +19,7 @@
 
 (define-module (gnu packages linux)
   #:use-module (guix licenses)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module ((gnu packages compression)
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (gnu packages flex)

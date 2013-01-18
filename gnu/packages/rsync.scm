@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages rsync)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages acl)
   #:use-module (guix licenses)

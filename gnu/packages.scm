@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (distro)
+(define-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (ice-9 ftw)
@@ -33,7 +33,7 @@
 ;;; Commentary:
 ;;;
 ;;; General utilities for the software distribution---i.e., the modules under
-;;; (distro ...).
+;;; (gnu packages ...).
 ;;;
 ;;; Code:
 
@@ -66,13 +66,14 @@
 
 (define %distro-module-directory
   ;; Absolute path of the (gnu packages ...) module root.
-  (string-append (dirname (search-path %load-path "distro.scm"))
-                 "/gnu/packages"))
+  (string-append (dirname (search-path %load-path "gnu/packages.scm"))
+                 "/packages"))
 
 (define (package-files)
   "Return the list of files that implement distro modules."
   (define prefix-len
-    (string-length (dirname (search-path %load-path "distro.scm"))))
+    (string-length
+     (dirname (dirname (search-path %load-path "gnu/packages.scm")))))
 
   (file-system-fold (const #t)                    ; enter?
                     (lambda (path stat result)    ; leaf

@@ -24,7 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-26)

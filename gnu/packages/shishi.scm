@@ -19,7 +19,7 @@
 
 (define-module (gnu packages shishi)
   #:use-module (guix licenses)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages gnupg)
   #:use-module ((gnu packages compression)

@@ -21,7 +21,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
-  #:use-module (distro))
+  #:use-module (gnu packages))
 
 (define-public idutils
   (package

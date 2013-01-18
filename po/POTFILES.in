@@ -1,5 +1,5 @@
 # List of source files which contain translatable strings.
-distro.scm
+gnu/packages.scm
 gnu/packages/base.scm
 gnu/packages/guile.scm
 gnu/packages/lout.scm

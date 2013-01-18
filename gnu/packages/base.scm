@@ -19,7 +19,7 @@
 
 (define-module (gnu packages base)
   #:use-module (guix licenses)
-  #:use-module (distro)
+  #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages bootstrap)
