@@ -27,11 +27,11 @@ if guix-build -e +;
 then false; else true; fi
 
 # Should fail because this is a source-less package.
-if guix-build -e '(@ (distro packages bootstrap) %bootstrap-glibc)' -S
+if guix-build -e '(@ (gnu packages bootstrap) %bootstrap-glibc)' -S
 then false; else true; fi
 
 # Should pass.
-guix-build -e '(@@ (distro packages base) %bootstrap-guile)' |	\
+guix-build -e '(@@ (gnu packages base) %bootstrap-guile)' |	\
     grep -e '-guile-'
 guix-build hello -d |				\
     grep -e '-hello-[0-9\.]\+\.drv$'
@@ -42,11 +42,11 @@ if guix-build hello-0.0.1 -n; then false; else true; fi
 # Keep a symlink to the result, registered as a root.
 result="t-result-$$"
 guix-build -r "$result"					\
-    -e '(@@ (distro packages base) %bootstrap-guile)'
+    -e '(@@ (gnu packages base) %bootstrap-guile)'
 test -x "$result/bin/guile"
 
 # Should fail, because $result already exists.
-if guix-build -r "$result" -e '(@@ (distro packages base) %bootstrap-guile)'
+if guix-build -r "$result" -e '(@@ (gnu packages base) %bootstrap-guile)'
 then false; else true; fi
 
 rm -f "$result"

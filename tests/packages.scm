@@ -25,8 +25,8 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (distro)
-  #:use-module (distro packages base)
-  #:use-module (distro packages bootstrap)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
@@ -130,7 +130,7 @@
 (test-assert "GNU Make, bootstrap"
   ;; GNU Make is the first program built during bootstrap; we choose it
   ;; here so that the test doesn't last for too long.
-  (let ((gnu-make (@@ (distro packages base) gnu-make-boot0)))
+  (let ((gnu-make (@@ (gnu packages base) gnu-make-boot0)))
     (and (package? gnu-make)
          (or (location? (package-location gnu-make))
              (not (package-location gnu-make)))

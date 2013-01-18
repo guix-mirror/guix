@@ -26,7 +26,7 @@
   #:use-module (guix base32)
   #:use-module (guix derivations)
   #:use-module ((guix packages) #:select (package-derivation))
-  #:use-module (distro packages bootstrap)
+  #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64))
@@ -48,7 +48,7 @@
        (map (match-lambda
              ((name package)
               (list name (package-derivation %store package))))
-            (@@ (distro packages base) %boot0-inputs))))
+            (@@ (gnu packages base) %boot0-inputs))))
 
 (define network-reachable?
   (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)))

@@ -32,7 +32,7 @@ rm -f "$profile"
 
 trap 'rm "$profile" "$profile-"[0-9]* ; rm -rf t-home-'"$$" EXIT
 
-boot_guile="`guix-build -e '(@ (distro packages bootstrap) %bootstrap-guile)'`"
+boot_guile="`guix-build -e '(@ (gnu packages bootstrap) %bootstrap-guile)'`"
 
 guix-package --bootstrap -p "$profile" -i "$boot_guile"
 test -L "$profile" && test -L "$profile-1-link"
@@ -47,7 +47,7 @@ test -f "$profile/bin/guile"
 # Check whether we have network access.
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
-    boot_make="`guix-build -e '(@@ (distro packages base) gnu-make-boot0)'`"
+    boot_make="`guix-build -e '(@@ (gnu packages base) gnu-make-boot0)'`"
     guix-package --bootstrap -p "$profile" -i "$boot_make"
     test -L "$profile-2-link"
     test -f "$profile/bin/make" && test -f "$profile/bin/guile"

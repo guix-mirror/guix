@@ -45,138 +45,138 @@ MODULES =					\
   guix/snix.scm					\
   guix.scm					\
   distro.scm					\
-  distro/packages/acl.scm			\
-  distro/packages/algebra.scm			\
-  distro/packages/aspell.scm			\
-  distro/packages/attr.scm			\
-  distro/packages/autotools.scm			\
-  distro/packages/base.scm			\
-  distro/packages/bash.scm			\
-  distro/packages/bdb.scm			\
-  distro/packages/bdw-gc.scm			\
-  distro/packages/bison.scm			\
-  distro/packages/bootstrap.scm			\
-  distro/packages/check.scm			\
-  distro/packages/compression.scm		\
-  distro/packages/cpio.scm			\
-  distro/packages/cyrus-sasl.scm		\
-  distro/packages/dejagnu.scm			\
-  distro/packages/ddrescue.scm			\
-  distro/packages/ed.scm			\
-  distro/packages/emacs.scm			\
-  distro/packages/file.scm			\
-  distro/packages/flex.scm			\
-  distro/packages/gawk.scm			\
-  distro/packages/gdb.scm			\
-  distro/packages/gdbm.scm			\
-  distro/packages/gettext.scm			\
-  distro/packages/global.scm			\
-  distro/packages/gnupg.scm			\
-  distro/packages/gnutls.scm			\
-  distro/packages/gperf.scm			\
-  distro/packages/gsasl.scm			\
-  distro/packages/guile.scm			\
-  distro/packages/help2man.scm			\
-  distro/packages/icu4c.scm			\
-  distro/packages/idutils.scm			\
-  distro/packages/indent.scm			\
-  distro/packages/ld-wrapper.scm		\
-  distro/packages/less.scm			\
-  distro/packages/libffi.scm			\
-  distro/packages/libidn.scm			\
-  distro/packages/libjpeg.scm			\
-  distro/packages/libsigsegv.scm		\
-  distro/packages/libtiff.scm		\
-  distro/packages/libunistring.scm		\
-  distro/packages/libusb.scm			\
-  distro/packages/linux.scm			\
-  distro/packages/lout.scm			\
-  distro/packages/lsh.scm			\
-  distro/packages/m4.scm			\
-  distro/packages/mailutils.scm			\
-  distro/packages/make-bootstrap.scm		\
-  distro/packages/mit-krb5.scm			\
-  distro/packages/multiprecision.scm		\
-  distro/packages/mysql.scm			\
-  distro/packages/nano.scm			\
-  distro/packages/ncurses.scm			\
-  distro/packages/nettle.scm			\
-  distro/packages/openssl.scm			\
-  distro/packages/perl.scm			\
-  distro/packages/pkg-config.scm		\
-  distro/packages/pth.scm			\
-  distro/packages/python.scm			\
-  distro/packages/readline.scm			\
-  distro/packages/recutils.scm			\
-  distro/packages/rsync.scm			\
-  distro/packages/scheme.scm			\
-  distro/packages/shishi.scm			\
-  distro/packages/system.scm			\
-  distro/packages/tcl.scm			\
-  distro/packages/texinfo.scm			\
-  distro/packages/time.scm			\
-  distro/packages/wget.scm			\
-  distro/packages/which.scm			\
-  distro/packages/xml.scm			\
-  distro/packages/zile.scm
+  gnu/packages/acl.scm				\
+  gnu/packages/algebra.scm			\
+  gnu/packages/aspell.scm			\
+  gnu/packages/attr.scm				\
+  gnu/packages/autotools.scm			\
+  gnu/packages/base.scm				\
+  gnu/packages/bash.scm				\
+  gnu/packages/bdb.scm				\
+  gnu/packages/bdw-gc.scm			\
+  gnu/packages/bison.scm			\
+  gnu/packages/bootstrap.scm			\
+  gnu/packages/check.scm			\
+  gnu/packages/compression.scm			\
+  gnu/packages/cpio.scm				\
+  gnu/packages/cyrus-sasl.scm			\
+  gnu/packages/dejagnu.scm			\
+  gnu/packages/ddrescue.scm			\
+  gnu/packages/ed.scm				\
+  gnu/packages/emacs.scm			\
+  gnu/packages/file.scm				\
+  gnu/packages/flex.scm				\
+  gnu/packages/gawk.scm				\
+  gnu/packages/gdb.scm				\
+  gnu/packages/gdbm.scm				\
+  gnu/packages/gettext.scm			\
+  gnu/packages/global.scm			\
+  gnu/packages/gnupg.scm			\
+  gnu/packages/gnutls.scm			\
+  gnu/packages/gperf.scm			\
+  gnu/packages/gsasl.scm			\
+  gnu/packages/guile.scm			\
+  gnu/packages/help2man.scm			\
+  gnu/packages/icu4c.scm			\
+  gnu/packages/idutils.scm			\
+  gnu/packages/indent.scm			\
+  gnu/packages/ld-wrapper.scm			\
+  gnu/packages/less.scm				\
+  gnu/packages/libffi.scm			\
+  gnu/packages/libidn.scm			\
+  gnu/packages/libjpeg.scm			\
+  gnu/packages/libsigsegv.scm			\
+  gnu/packages/libtiff.scm			\
+  gnu/packages/libunistring.scm			\
+  gnu/packages/libusb.scm			\
+  gnu/packages/linux.scm			\
+  gnu/packages/lout.scm				\
+  gnu/packages/lsh.scm				\
+  gnu/packages/m4.scm				\
+  gnu/packages/mailutils.scm			\
+  gnu/packages/make-bootstrap.scm		\
+  gnu/packages/mit-krb5.scm			\
+  gnu/packages/multiprecision.scm		\
+  gnu/packages/mysql.scm			\
+  gnu/packages/nano.scm				\
+  gnu/packages/ncurses.scm			\
+  gnu/packages/nettle.scm			\
+  gnu/packages/openssl.scm			\
+  gnu/packages/perl.scm				\
+  gnu/packages/pkg-config.scm			\
+  gnu/packages/pth.scm				\
+  gnu/packages/python.scm			\
+  gnu/packages/readline.scm			\
+  gnu/packages/recutils.scm			\
+  gnu/packages/rsync.scm			\
+  gnu/packages/scheme.scm			\
+  gnu/packages/shishi.scm			\
+  gnu/packages/system.scm			\
+  gnu/packages/tcl.scm				\
+  gnu/packages/texinfo.scm			\
+  gnu/packages/time.scm				\
+  gnu/packages/wget.scm				\
+  gnu/packages/which.scm			\
+  gnu/packages/xml.scm				\
+  gnu/packages/zile.scm
 
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
 
 nobase_dist_guilemodule_DATA = $(MODULES)
 
-patchdir = $(guilemoduledir)/distro/packages/patches
+patchdir = $(guilemoduledir)/gnu/packages/patches
 dist_patch_DATA =						\
-  distro/packages/patches/bigloo-gc-shebangs.patch		\
-  distro/packages/patches/binutils-ld-new-dtags.patch		\
-  distro/packages/patches/cpio-gets-undeclared.patch		\
-  distro/packages/patches/diffutils-gets-undeclared.patch	\
-  distro/packages/patches/emacs-configure-sh.patch		\
-  distro/packages/patches/flex-bison-tests.patch		\
-  distro/packages/patches/gawk-shell.patch			\
-  distro/packages/patches/gettext-gets-undeclared.patch		\
-  distro/packages/patches/glibc-bootstrap-system.patch		\
-  distro/packages/patches/glibc-no-ld-so-cache.patch		\
-  distro/packages/patches/guile-1.8-cpp-4.5.patch		\
-  distro/packages/patches/guile-default-utf8.patch		\
-  distro/packages/patches/guile-relocatable.patch		\
-  distro/packages/patches/libtool-skip-tests.patch		\
-  distro/packages/patches/lsh-guile-compat.patch		\
-  distro/packages/patches/lsh-no-root-login.patch		\
-  distro/packages/patches/lsh-pam-service-name.patch		\
-  distro/packages/patches/m4-gets-undeclared.patch		\
-  distro/packages/patches/m4-readlink-EINVAL.patch		\
-  distro/packages/patches/m4-s_isdir.patch			\
-  distro/packages/patches/make-impure-dirs.patch		\
-  distro/packages/patches/findutils-absolute-paths.patch	\
-  distro/packages/patches/perl-no-sys-dirs.patch		\
-  distro/packages/patches/procps-make-3.82.patch		\
-  distro/packages/patches/readline-link-ncurses.patch		\
-  distro/packages/patches/shishi-gets-undeclared.patch		\
-  distro/packages/patches/tar-gets-undeclared.patch
+  gnu/packages/patches/bigloo-gc-shebangs.patch		\
+  gnu/packages/patches/binutils-ld-new-dtags.patch		\
+  gnu/packages/patches/cpio-gets-undeclared.patch		\
+  gnu/packages/patches/diffutils-gets-undeclared.patch	\
+  gnu/packages/patches/emacs-configure-sh.patch		\
+  gnu/packages/patches/flex-bison-tests.patch		\
+  gnu/packages/patches/gawk-shell.patch			\
+  gnu/packages/patches/gettext-gets-undeclared.patch		\
+  gnu/packages/patches/glibc-bootstrap-system.patch		\
+  gnu/packages/patches/glibc-no-ld-so-cache.patch		\
+  gnu/packages/patches/guile-1.8-cpp-4.5.patch		\
+  gnu/packages/patches/guile-default-utf8.patch		\
+  gnu/packages/patches/guile-relocatable.patch		\
+  gnu/packages/patches/libtool-skip-tests.patch		\
+  gnu/packages/patches/lsh-guile-compat.patch		\
+  gnu/packages/patches/lsh-no-root-login.patch		\
+  gnu/packages/patches/lsh-pam-service-name.patch		\
+  gnu/packages/patches/m4-gets-undeclared.patch		\
+  gnu/packages/patches/m4-readlink-EINVAL.patch		\
+  gnu/packages/patches/m4-s_isdir.patch			\
+  gnu/packages/patches/make-impure-dirs.patch		\
+  gnu/packages/patches/findutils-absolute-paths.patch	\
+  gnu/packages/patches/perl-no-sys-dirs.patch		\
+  gnu/packages/patches/procps-make-3.82.patch		\
+  gnu/packages/patches/readline-link-ncurses.patch		\
+  gnu/packages/patches/shishi-gets-undeclared.patch		\
+  gnu/packages/patches/tar-gets-undeclared.patch
 
-bootstrapdir = $(guilemoduledir)/distro/packages/bootstrap
+bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
 bootstrap_i686_linuxdir = $(bootstrapdir)/i686-linux
 
 dist_bootstrap_x86_64_linux_DATA =		\
-  distro/packages/bootstrap/x86_64-linux/bash	\
-  distro/packages/bootstrap/x86_64-linux/mkdir	\
-  distro/packages/bootstrap/x86_64-linux/tar	\
-  distro/packages/bootstrap/x86_64-linux/xz
+  gnu/packages/bootstrap/x86_64-linux/bash	\
+  gnu/packages/bootstrap/x86_64-linux/mkdir	\
+  gnu/packages/bootstrap/x86_64-linux/tar	\
+  gnu/packages/bootstrap/x86_64-linux/xz
 
 dist_bootstrap_i686_linux_DATA =		\
-  distro/packages/bootstrap/i686-linux/bash	\
-  distro/packages/bootstrap/i686-linux/mkdir	\
-  distro/packages/bootstrap/i686-linux/tar	\
-  distro/packages/bootstrap/i686-linux/xz
+  gnu/packages/bootstrap/i686-linux/bash	\
+  gnu/packages/bootstrap/i686-linux/mkdir	\
+  gnu/packages/bootstrap/i686-linux/tar	\
+  gnu/packages/bootstrap/i686-linux/xz
 
 # Big bootstrap binaries are not included in the tarball.  Instead, they
 # are downloaded.
 nodist_bootstrap_x86_64_linux_DATA =					\
-  distro/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz
+  gnu/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz
 nodist_bootstrap_i686_linux_DATA =					\
-  distro/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz
+  gnu/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz
 
 # Those files must remain executable, so they remain executable once
 # imported into the store.
@@ -193,10 +193,10 @@ DOWNLOAD_FILE =								\
   $(GUILE) --no-auto-compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
            "$(top_srcdir)/build-aux/download.scm"
 
-distro/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz:
+gnu/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
 	$(DOWNLOAD_FILE) "$@" "bc43210dcd146d242bef4d354b0aeac12c4ef3118c07502d17ffa8d49e15aa2c"
-distro/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz:
+gnu/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
 	$(DOWNLOAD_FILE) "$@" "f9a7c6f4c556eaafa2a69bcf07d4ffbb6682ea831d4c9da9ba095aca3ccd217c"
 

@@ -1,9 +1,9 @@
 # List of source files which contain translatable strings.
 distro.scm
-distro/packages/base.scm
-distro/packages/guile.scm
-distro/packages/lout.scm
-distro/packages/recutils.scm
+gnu/packages/base.scm
+gnu/packages/guile.scm
+gnu/packages/lout.scm
+gnu/packages/recutils.scm
 guix/ui.scm
 guix-build.in
 guix-download.in

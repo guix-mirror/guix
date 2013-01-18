@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,12 +47,12 @@
 
 (define %patch-path
   (make-parameter
-   (map (cut string-append <>  "/distro/packages/patches")
+   (map (cut string-append <>  "/gnu/packages/patches")
         %load-path)))
 
 (define %bootstrap-binaries-path
   (make-parameter
-   (map (cut string-append <> "/distro/packages/bootstrap")
+   (map (cut string-append <> "/gnu/packages/bootstrap")
         %load-path)))
 
 (define (search-patch file-name)
@@ -65,9 +65,9 @@
                (string-append system "/" file-name)))
 
 (define %distro-module-directory
-  ;; Absolute path of the (distro ...) module root.
+  ;; Absolute path of the (gnu packages ...) module root.
   (string-append (dirname (search-path %load-path "distro.scm"))
-                 "/distro/packages"))
+                 "/gnu/packages"))
 
 (define (package-files)
   "Return the list of files that implement distro modules."

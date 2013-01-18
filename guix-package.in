@@ -48,8 +48,8 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
   #:use-module (distro)
-  #:use-module ((distro packages base) #:select (guile-final))
-  #:use-module ((distro packages bootstrap) #:select (%bootstrap-guile))
+  #:use-module ((gnu packages base) #:select (guile-final))
+  #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
   #:export (guix-package))
 
 (define %store

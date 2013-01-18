@@ -24,7 +24,7 @@
   #:use-module (guix base32)
   #:use-module ((guix packages) #:select (package-derivation))
   #:use-module ((distro) #:select (search-bootstrap-binary))
-  #:use-module (distro packages bootstrap)
+  #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)

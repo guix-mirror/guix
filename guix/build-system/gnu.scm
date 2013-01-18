@@ -159,8 +159,8 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
            (z
             (error "invalid standard input" z)))
 
-          ;; Resolve (distro packages base) lazily to hide circular dependency.
-          (let* ((distro (resolve-module '(distro packages base)))
+          ;; Resolve (gnu packages base) lazily to hide circular dependency.
+          (let* ((distro (resolve-module '(gnu packages base)))
                  (inputs (module-ref distro '%final-inputs)))
             (append inputs
                     (append-map (match-lambda
@@ -233,7 +233,7 @@ which could lead to gratuitous input divergence."
       ((and (? string?) (? derivation-path?))
        guile)
       (#f                                         ; the default
-       (let* ((distro (resolve-interface '(distro packages base)))
+       (let* ((distro (resolve-interface '(gnu packages base)))
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 

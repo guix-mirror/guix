@@ -21,7 +21,7 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix base32)
-  #:use-module (distro packages bootstrap)
+  #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)

@@ -118,7 +118,7 @@ must be a list of symbol/URL-list pairs."
       ((and (? string?) (? derivation-path?))
        guile)
       (#f                                         ; the default
-       (let* ((distro (resolve-interface '(distro packages base)))
+       (let* ((distro (resolve-interface '(gnu packages base)))
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 
