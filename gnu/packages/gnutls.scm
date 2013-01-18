@@ -65,15 +65,8 @@ portable, and only require an ANSI C89 platform.")
               (base32
                "0zsybr9plllk1phh83bx9bg7c5ccik427j4n3k1s9fiy4j69n0w3"))))
     (build-system gnu-build-system)
-
-    ;; Build of the Guile bindings is not parallel-safe.  See
-    ;; <http://git.savannah.gnu.org/cgit/gnutls.git/commit/?id=330995a920037b6030ec0282b51dde3f8b493cad>
-    ;; for the actual fix.
-    (arguments '(#:parallel-build? #f))
-
     (inputs
      `(("guile" ,guile-2.0)
-       ;; ("lzo" ,lzo)
        ("zlib" ,guix:zlib)
        ("perl" ,perl)))
     (propagated-inputs
@@ -81,8 +74,7 @@ portable, and only require an ANSI C89 platform.")
        ("nettle" ,nettle)
        ("which" ,which)))
     (home-page "http://www.gnu.org/software/gnutls/")
-    (synopsis
-     "The GNU Transport Layer Security Library")
+    (synopsis "The GNU Transport Layer Security Library")
     (description
      "GnuTLS is a project that aims to develop a library which provides
 a secure layer, over a reliable transport layer. Currently the GnuTLS
