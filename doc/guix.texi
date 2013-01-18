@@ -80,6 +80,7 @@ Documentation License.''
 * Package Management::          Package installation, upgrade, etc.
 * Programming Interface::       Using Guix in Scheme.
 * Utilities::                   Package management commands.
+* GNU Distribution::            Software for your friendly GNU system.
 
 * Acknowledgments::             Thanks!
 * GNU Free Documentation License::  The license of this manual.
@@ -130,6 +131,10 @@ garbage collection of packages (@pxref{Features}).
 Guix has a command-line interface allowing users to build, install,
 upgrade, and remove packages, as well as a Scheme programming interface.
 The remainder of this manual describes them.
+
+Last but not least, Guix is used to build a distribution of the GNU
+system, with many GNU and non-GNU free software packages.  @xref{GNU
+Distribution}.
 
 @c *********************************************************************
 @node Installation
@@ -427,7 +432,7 @@ Each @file{/nix/store} package directory name contains a hash of all the
 inputs that were used to build that package---compiler, libraries, build
 scripts, etc.  This direct correspondence allows users to make sure a
 given package installation matches the current state of their
-distribution.
+distribution, and helps maximize @dfn{reproducibility}.
 
 @c FIXME: Remove footnote when it's implemented.
 This foundation allows Guix to support @dfn{transparent binary/source
@@ -538,9 +543,9 @@ the store.
 
 @item --list-available[=@var{regexp}]
 @itemx -A [@var{regexp}]
-List packages currently available in the software distribution.  When
-@var{regexp} is specified, list only installed packages whose name
-matches @var{regexp}.
+List packages currently available in the software distribution
+(@pxref{GNU Distribution}).  When @var{regexp} is specified, list only
+installed packages whose name matches @var{regexp}.
 
 For each package, print the following items separated by tabs: its name,
 its version string, the parts of the package (@code{out} for the main
@@ -1057,6 +1062,48 @@ Behind the scenes, @command{guix-build} is essentially an interface to
 the @code{package-derivation} procedure of the @code{(guix packages)}
 module, and to the @code{build-derivations} procedure of the @code{(guix
 store)} module.
+
+@c *********************************************************************
+@node GNU Distribution
+@chapter GNU Distribution
+
+Guix comes with a distribution of free software@footnote{The term
+``free'' here refers to the
+@url{http://www.gnu.org/philosophy/free-sw.html,freedom provided to
+users of that software}.}  that form the basis of the GNU system.  This
+includes core GNU packages such as GNU libc, GCC, and Binutils, as well
+as many GNU and non-GNU applications.  The complete list of available
+packages can be seen by running @command{guix-package} (@pxref{Invoking
+guix-package}):
+
+@example
+guix-package --list-available
+@end example
+
+The package definitions of the distribution may are provided by Guile
+modules in the @code{(gnu packages ...)} name space---for instance, the
+@code{(gnu packages emacs)} module exports a variable named
+@code{emacs}, which is bound to a @code{<package>} object
+(@pxref{Defining Packages}).  The @code{(gnu packages)} module provides
+facilities for searching for packages.
+
+The distribution is fully @dfn{bootstrapped} and @dfn{self-contained}:
+each package is built based solely on other packages in the
+distribution.  The root of this dependency graph is a small set of
+@dfn{bootstrap binaries}, provided by the @code{(gnu packages
+bootstrap)} module.  These are statically-linked binaries of the core
+tools without which building anything at all would be impossible.
+
+
+Our goal is to build a practical 100% free software distribution of
+Linux-based and other variants of GNU, with a focus on the promotion and
+tight integration of GNU components, and an emphasis on programs and
+tools that help users exert that freedom.
+
+Building this distribution is a cooperative effort, and you are invited
+to join!  Please get in touch with us on @email{bug-guix@@gnu.org}.  We
+welcome ideas, bug reports, patches, and anything that may be helpful to
+the project.
 
 
 @c *********************************************************************
