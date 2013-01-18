@@ -54,16 +54,16 @@ portable, and only require an ANSI C89 platform.")
   (package
     (name "gnutls")
     (version "3.1.6")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append
-            "mirror://gnu/gnutls/gnutls-"
-            version
-            ".tar.xz"))
-      (sha256
-       (base32
-        "0zsybr9plllk1phh83bx9bg7c5ccik427j4n3k1s9fiy4j69n0w3"))))
+    (source (origin
+             (method url-fetch)
+             (uri
+              ;; Note: Releases are no longer on ftp.gnu.org since the
+              ;; schism (after version 3.1.5).
+              (string-append "mirror://gnupg/gnutls/v3.1/gnutls-"
+                             version ".tar.xz"))
+             (sha256
+              (base32
+               "0zsybr9plllk1phh83bx9bg7c5ccik427j4n3k1s9fiy4j69n0w3"))))
     (build-system gnu-build-system)
 
     ;; Build of the Guile bindings is not parallel-safe.  See
