@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,24 +37,21 @@
     (build-system gnu-build-system)
     (home-page
      "http://www.gnu.org/software/ddrescue/ddrescue.html")
-    (synopsis "GNU ddrescue, a data recovery tool")
+    (synopsis "GNU Ddrescue, a data recovery tool")
     (description
-     "GNU ddrescue is a data recovery tool.  It copies data from one
-file or block device (hard disc, cdrom, etc) to another, trying hard to
+     "GNU Ddrescue is a data recovery tool.  It copies data from one
+file or block device (e.g., hard disk, CD-ROM) to another, trying hard to
 rescue data in case of read errors.
 
-The basic operation of ddrescue is fully automatic.  That is, you don't
+The basic operation of Ddrescue is fully automatic.  That is, you don't
 have to wait for an error, stop the program, read the log, run it in
 reverse mode, etc.
 
-If you use the logfile feature of ddrescue, the data is rescued very
-efficiently (only the needed blocks are read).  Also you can interrupt
+If you use the logfile feature of Ddrescue, the data is rescued very
+efficiently (only the needed blocks are read).  Also, you can interrupt
 the rescue at any time and resume it later at the same point.
 
 Automatic merging of backups: If you have two or more damaged copies of
-a file, cdrom, etc, and run ddrescue on all of them, one at a time, with
-the same output file, you will probably obtain a complete and error-free
-file.  This is so because the probability of having damaged areas at the
-same places on different input files is very low.  Using the logfile,
-only the needed blocks are read from the second and successive copies.")
+a file and run Ddrescue on all of them, one at a time, with the same
+output file, you will probably obtain a complete and error-free file.")
     (license gpl3+)))
