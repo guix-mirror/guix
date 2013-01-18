@@ -109,14 +109,14 @@ development cycle.")
 (define-public bigloo
   (package
     (name "bigloo")
-    (version "3.9a")
+    (version "4.0a")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Bigloo/bigloo"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0v1q0gcbn38ackdzsnvpkdgaj6ydkfdya31l2hag21aig087px1y"))))
+               "03gzrgwn3all7pxa056xbks4szkbd4b95c0kap5s1v93dbxs2v7g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:patches (list (assoc-ref %build-inputs "patch/shebangs"))
