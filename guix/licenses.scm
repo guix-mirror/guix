@@ -35,6 +35,7 @@
             mpl2.0
             openldap2.8 openssl
             psfl public-domain
+            vim
             x11
             zlib))
 
@@ -205,6 +206,11 @@ which may be a file:// URI pointing the package's tree."
   (license "Public Domain"
            "http://directory.fsf.org/wiki/License:PublicDomain"
            "https://www.gnu.org/licenses/license-list#PublicDomain"))
+
+(define vim
+  (license "Vim"
+           "http://directory.fsf.org/wiki/License:Vim7.2"
+           "http://www.gnu.org/licenses/license-list.html#Vim"))
 
 (define x11
   (license "X11"
