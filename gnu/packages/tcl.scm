@@ -42,9 +42,17 @@
                    (chdir "unix"))
                  (alist-cons-after
                   'install 'install-private-headers
-                  (lambda _
+                  (lambda* (#:key outputs #:allow-other-keys)
                     ;; Private headers are needed by Expect.
-                    (zero? (system* "make" "install-private-headers")))
+                    (and (zero? (system* "make"
+                                         "install-private-headers"))
+                         (let ((bin (string-append (assoc-ref outputs "out")
+                                                   "/bin")))
+                           ;; Create a tclsh -> tclsh8.6 symlink.
+                           ;; Programs such as Ghostscript rely on it.
+                           (with-directory-excursion bin
+                             (symlink (car (find-files "." "tclsh"))
+                                      "tclsh")))))
                   %standard-phases))
 
        ;; XXX: There are a few test failures (related to HTTP, most
