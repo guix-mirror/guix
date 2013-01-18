@@ -102,6 +102,7 @@ MODULES =					\
   gnu/packages/ncurses.scm			\
   gnu/packages/nettle.scm			\
   gnu/packages/openssl.scm			\
+  gnu/packages/oggvorbis.scm			\
   gnu/packages/perl.scm				\
   gnu/packages/pkg-config.scm			\
   gnu/packages/pth.scm				\
