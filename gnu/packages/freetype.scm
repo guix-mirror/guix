@@ -18,7 +18,7 @@
 
 (define-module (gnu packages freetype)
   #:use-module (gnu packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -42,5 +42,5 @@ contents of font files. It provides a uniform interface to access font files.
 It supports both bitmap and scalable formats, including TrueType, OpenType,
 Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others. It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
-   (license freetype) ; some files have other licenses
+   (license license:freetype)           ; some files have other licenses
    (home-page "http://www.freetype.org/")))
