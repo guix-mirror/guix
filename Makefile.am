@@ -71,6 +71,7 @@ MODULES =					\
   gnu/packages/gdb.scm				\
   gnu/packages/gdbm.scm				\
   gnu/packages/gettext.scm			\
+  gnu/packages/ghostscript.scm			\
   gnu/packages/global.scm			\
   gnu/packages/gnupg.scm			\
   gnu/packages/gnutls.scm			\
