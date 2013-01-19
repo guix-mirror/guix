@@ -105,6 +105,7 @@ MODULES =					\
   gnu/packages/mysql.scm			\
   gnu/packages/nano.scm				\
   gnu/packages/ncurses.scm			\
+  gnu/packages/netpbm.scm			\
   gnu/packages/nettle.scm			\
   gnu/packages/openssl.scm			\
   gnu/packages/oggvorbis.scm			\
