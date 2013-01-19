@@ -28,6 +28,7 @@
             cpl1.0
             epl1.0
             expat
+            freetype
             gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
             ijg
             ibmpl1.0
@@ -110,6 +111,11 @@ which may be a file:// URI pointing the package's tree."
   (license "Expat"
            "http://directory.fsf.org/wiki/License:Expat"
            "https://www.gnu.org/licenses/license-list.html#Expat"))
+
+(define freetype
+  (license "Freetype"
+           "http://directory.fsf.org/wiki/License:Freetype"
+           "https://www.gnu.org/licenses/license-list.html#freetype"))
 
 (define gpl1
   (license "GPL 1"

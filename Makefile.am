@@ -66,6 +66,7 @@ MODULES =					\
   gnu/packages/emacs.scm			\
   gnu/packages/file.scm				\
   gnu/packages/flex.scm				\
+  gnu/packages/freetype.scm				\
   gnu/packages/gawk.scm				\
   gnu/packages/gdb.scm				\
   gnu/packages/gdbm.scm				\
