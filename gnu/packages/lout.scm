@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +21,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages ghostscript))
 
 (define-public lout
   ;; This one is a bit tricky, because it doesn't follow the GNU Build System
@@ -80,20 +81,15 @@
     (version "3.39")
     (source (origin
              (method url-fetch)
-             ;; FIXME: `http-get' doesn't follow redirects, hence the URL.
-             (uri (string-append
-                   "http://download-mirror.savannah.gnu.org/releases/lout/lout-"
-                   version ".tar.gz"))
+             (uri (string-append "mirror://savannah/lout/lout-"
+                                 version ".tar.gz"))
              (sha256
               (base32
                "12gkyqrn0kaa8xq7sc7v3wm407pz2fxg9ngc75aybhi5z825b9vq"))))
     (build-system gnu-build-system)               ; actually, just a makefile
     (outputs '("out" "doc"))
     (inputs
-     `(;; FIXME: Add dependency on Ghostscript.
-       ;; ("ghostscript" ,(lambda _
-       ;;                   (nixpkgs-derivation "ghostscript")))
-       ))
+     `(("ghostscript" ,ghostscript)))
     (arguments `(#:modules ((guix build utils)
                             (guix build gnu-build-system)
                             (srfi srfi-1))        ; we need SRFI-1
