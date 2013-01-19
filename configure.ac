@@ -65,6 +65,12 @@ if test "x$guix_build_daemon$NIX_INSTANTIATE$NIX_HASH" = "xno"; then
    AC_MSG_ERROR([Nix programs not found; please install Nix or use `--with-nix-prefix'.])
 fi
 
+if test "x$NIX_INSTANTIATE" = "x"; then
+   # This program is an optional dependency, so we just want it to be
+   # taken from $PATH if it's not available right now.
+   NIX_INSTANTIATE="nix-instantiate"
+fi
+
 AC_ARG_WITH([nixpkgs],
   [AS_HELP_STRING([--with-nixpkgs=DIR], [search for Nixpkgs in DIR])],
   [case "$withval" in
