@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,6 +18,9 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages xml)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module ((guix licenses)
                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
@@ -42,3 +46,24 @@
 stream-oriented parser in which an application registers handlers for
 things the parser might find in the XML document (like start tags).")
     (license license:expat)))
+
+(define-public libxml2
+  (package
+    (name "libxml2")
+    (version "2.9.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "ftp://xmlsoft.org/libxml2/libxml2-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "10ib8bpar2pl68aqksfinvfmqknwnk7i35ibq6yjl8dpb0cxj9dd"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.xmlsoft.org/")
+    (synopsis "libxml2, a C parser for XML")
+    (inputs `(("perl" ,perl)
+              ("python" ,python)))
+    (description
+     "Libxml2 is the XML C parser and toolkit developed for the Gnome project
+(but it is usable outside of the Gnome platform).")
+    (license license:x11)))
