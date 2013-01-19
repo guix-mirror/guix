@@ -18,9 +18,10 @@
 
 (define-module (gnu packages libtiff)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages file)
   #:use-module (gnu packages libjpeg)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:select (bsd-style))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -37,6 +38,7 @@
                      "0wj8d1iwk9vnpax2h29xqc2hwknxg3s0ay2d5pxkg59ihbifn6pa"))))
    (build-system gnu-build-system)
    (inputs `(("file" ,file)
+             ("zlib" ,zlib)
              ("libjpeg-8" ,libjpeg-8)))
              ;; currently does not compile with libjpeg version 9
    (arguments
