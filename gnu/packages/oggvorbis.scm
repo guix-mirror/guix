@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -71,6 +72,32 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
                        "See COPYING in the distribution."))
    (home-page "http://xiph.org/vorbis/")))
 
+(define-public speex
+  (package
+    (name "speex")
+    (version "1.2rc1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://downloads.xiph.org/releases/speex/speex-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "19mpkhbz3s08snvndn0h1dk2j139max6b0rr86nnsjmxazf30brl"))))
+    (build-system gnu-build-system)
+    (inputs `(("libogg" ,libogg)))
+    (home-page "https://gnu.org/software/speex")
+    (synopsis
+     "GNU Speex, a patent-free voice codec")
+    (description
+     "GNU Speex is a patent-free voice codec.  It is designed to
+compress voice at bitrates in the 2--45 kbps range.  Possible
+applications include VoIP, internet audio streaming, archiving of speech
+data (e.g., voice mail), and audio books.")
+    ;; 'src/getopt.c' is under LGPLv2+
+    (license (bsd-style "file://COPYING"
+                        "See COPYING in the distribution."))))
+
 (define-public vorbis-tools
   (package
    (name "vorbis-tools")
@@ -84,7 +111,8 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
               "1g12bnh5ah08v529y72kfdz5lhvy75iaz7f9jskyby23m9dkk2d3"))))
    (build-system gnu-build-system)
    (inputs `(("libogg" ,libogg)
-             ("libvorbis" ,libvorbis)))
+             ("libvorbis" ,libvorbis)
+             ("speex" ,speex)))
 ;; FIXME: Add more inputs, see the documentation:
 ;; All of the tools require libogg and libvorbis to be installed (along
 ;; with the header files).  Additionally, ogg123 requires libao, libcurl,
