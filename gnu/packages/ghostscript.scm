@@ -75,6 +75,48 @@ paper size.")
    (license license:gpl2)
    (home-page "http://packages.qa.debian.org/libp/libpaper.html")))
 
+(define-public psutils
+  (package
+   (name "psutils")
+   (version "17")
+   (source (origin
+            (method url-fetch)
+            (uri "ftp://ftp.knackered.org/pub/psutils/psutils.tar.gz")
+            (sha256 (base32
+                     "1r4ab1fvgganm02kmm70b2r1azwzbav2am41gbigpa2bb1wynlrq"))))
+   (build-system gnu-build-system)
+   (inputs `(("perl" ,perl)))
+   (arguments
+    `(#:tests? #f ; none provided
+      #:phases
+      (alist-replace
+       'configure
+       (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+        (let ((perl (assoc-ref inputs "perl"))
+              (out (assoc-ref outputs "out")))
+         (copy-file "Makefile.unix" "Makefile")
+         (substitute* "Makefile"
+           (("/usr/local/bin/perl") (string-append perl "/bin/perl")))
+         (substitute* "Makefile"
+           (("/usr/local") out))
+         ;; for the install phase
+         (substitute* "Makefile"
+           (("-mkdir") "mkdir -p"))
+         ;; drop installation of non-free files
+         (substitute* "Makefile"
+           ((" install.include") ""))))
+      %standard-phases)))
+   (synopsis "psutils, a collection of utilities for manipulating PostScript documents")
+   (description
+    "PSUtils is a collection of utilities for manipulating PostScript
+documents. Programs included are psnup, for placing out several logical pages
+on a single sheet of paper, psselect, for selecting pages from a document,
+pstops, for general imposition, psbook, for signature generation for booklet
+printing, and psresize, for adjusting page sizes.")
+   (license (license:bsd-style "file://LICENSE"
+                                "See LICENSE in the distribution."))
+   (home-page "http://knackered.org/angus/psutils/")))
+
 (define-public ghostscript
   (package
    (name "ghostscript")
