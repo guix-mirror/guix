@@ -1,1 +1,5 @@
-No news yet.
+-*- org -*-
+
+* Changes in 0.2 (since 0.1)
+
+** (guix download) now supports HTTPS, using GnuTLS
