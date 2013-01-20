@@ -85,6 +85,7 @@ MODULES =					\
   gnu/packages/indent.scm			\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
+  gnu/packages/libevent.scm			\
   gnu/packages/libffi.scm			\
   gnu/packages/libidn.scm			\
   gnu/packages/libjpeg.scm			\
