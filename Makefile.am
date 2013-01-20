@@ -122,6 +122,7 @@ MODULES =					\
   gnu/packages/tcl.scm				\
   gnu/packages/texinfo.scm			\
   gnu/packages/time.scm				\
+  gnu/packages/tor.scm				\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
   gnu/packages/xml.scm				\
