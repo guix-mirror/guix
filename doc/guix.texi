@@ -221,11 +221,14 @@ regarded as pure functions (@pxref{Introduction}).
 On a GNU/Linux system, a build user pool may be created like this (using
 Bash syntax and the @code{shadow} commands):
 
+@c See http://lists.gnu.org/archive/html/bug-guix/2013-01/msg00239.html
+@c for why `-G' is needed.
 @example
 # groupadd guix-builder
 # for i in `seq 1 10`;
   do
-    useradd -g guix-builder -d /var/empty -s `which nologin` \
+    useradd -g guix-builder -G guix-builder           \
+            -d /var/empty -s `which nologin`          \
             -c "Guix build user $i" guix-builder$i;
   done
 @end example
