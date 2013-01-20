@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,22 +43,35 @@
              ))
    (arguments
     (lambda (system)
-      `(#:tests? #f
-        #:phases
+      `(#:phases
         (alist-replace
          'unpack
          (lambda* (#:key source #:allow-other-keys)
-          (system* "echo" source)
           (let ((inner
                  (substring source
                             (string-index-right source #\k)
                             (string-index-right source #\-))))
-           (system* "echo" inner)
            (and (zero? (system* "tar" "xvf" source))
                 (zero? (system* "tar" "xvf" (string-append inner ".tar.gz")))
                 (chdir inner)
                 (chdir "src"))))
-          %standard-phases))))
+      (alist-replace
+       'check
+       (lambda* (#:key inputs #:allow-other-keys #:rest args)
+        (let ((perl (assoc-ref inputs "perl"))
+              (check (assoc-ref %standard-phases 'check)))
+          (substitute* "plugins/kdb/db2/libdb2/test/run.test"
+                       (("/bin/cat") (string-append perl "/bin/perl")))
+          (substitute* "plugins/kdb/db2/libdb2/test/run.test"
+                       (("D/bin/sh") (string-append "D" (which "bash"))))
+          (substitute* "plugins/kdb/db2/libdb2/test/run.test"
+                       (("bindir=/bin/.") (string-append "bindir=" perl "/bin")))
+           ;; use existing files and directories in test
+          (substitute* "tests/resolve/Makefile"
+                       (("-p telnet") "-p 23"))
+           ;; avoid service names since /etc/services is unavailable
+          (apply check args)))
+          %standard-phases)))))
    (synopsis "MIT Kerberos 5")
    (description
     "Massachusetts Institute of Technology implementation of Kerberos.
