@@ -90,6 +90,35 @@ abbreviation of URI showing the scheme, host, and basename of the file."
     (newline)
   file)
 
+;; Autoload GnuTLS so that this module can be used even when GnuTLS is
+;; not available.  At compile time, this yields "possibly unbound
+;; variable" warnings, but these are OK: we know that the variables will
+;; be bound if we need them, because (guix download) adds GnuTLS as an
+;; input in that case.
+
+;; XXX: Use this hack instead of #:autoload to avoid compilation errors.
+;; See <http://bugs.gnu.org/12202>.
+(module-autoload! (current-module)
+                  '(gnutls) '(make-session connection-end/client))
+
+(define (tls-wrap port)
+  "Return PORT wrapped in a TLS connection."
+  (define (log level str)
+    (format (current-error-port)
+            "gnutls: [~a|~a] ~a" (getpid) level str))
+
+  (let ((session (make-session connection-end/client)))
+    (set-session-transport-fd! session (fileno port))
+    (set-session-default-priority! session)
+    (set-session-credentials! session (make-certificate-credentials))
+
+    ;; Uncomment the following lines in case of debugging emergency.
+    ;;(set-log-level! 10)
+    ;;(set-log-procedure! log)
+
+    (handshake session)
+    (session-record-port session)))
+
 (define (open-connection-for-uri uri)
   "Return an open input/output port for a connection to URI.
 
@@ -100,6 +129,7 @@ which is not available during bootstrap."
     (let ((port (or (uri-port uri)
                     (case (uri-scheme uri)
                       ((http) 80)           ; /etc/services, not for me!
+                      ((https) 443)
                       (else
                        (error "unsupported URI scheme" uri))))))
       (delete-duplicates (getaddrinfo (uri-host uri)
@@ -122,7 +152,10 @@ which is not available during bootstrap."
           (setvbuf s _IOFBF)
           ;; Enlarge the receive buffer.
           (setsockopt s SOL_SOCKET SO_RCVBUF (* 12 1024))
-          s)
+
+          (if (eq? 'https (uri-scheme uri))
+              (tls-wrap s)
+              s))
         (lambda args
           ;; Connection failed, so try one of the other addresses.
           (close s)
@@ -229,8 +262,10 @@ on success."
     (format #t "starting download of `~a' from `~a'...~%"
             file (uri->string uri))
     (case (uri-scheme uri)
-      ((http)  (false-if-exception* (http-fetch uri file)))
-      ((ftp)   (false-if-exception* (ftp-fetch uri file)))
+      ((http https)
+       (false-if-exception* (http-fetch uri file)))
+      ((ftp)
+       (false-if-exception* (ftp-fetch uri file)))
       (else
        (format #t "skipping URI with unsupported scheme: ~s~%"
                uri)

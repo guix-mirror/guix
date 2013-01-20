@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +22,8 @@
   #:use-module (guix packages)
   #:use-module ((guix store) #:select (derivation-path?))
   #:use-module (guix utils)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:export (%mirrors
             url-fetch))
@@ -91,6 +93,11 @@
        "http://kernel.osuosl.org/pub/"
        "ftp://ftp.funet.fi/pub/mirrors/ftp.kernel.org/pub/"))))
 
+(define (gnutls-derivation store system)
+  "Return the GnuTLS derivation for SYSTEM."
+  (let* ((module (resolve-interface '(gnu packages gnutls)))
+         (gnutls (module-ref module 'gnutls)))
+    (package-derivation store gnutls system)))
 
 (define* (url-fetch store url hash-algo hash
                     #:optional name
@@ -129,13 +136,43 @@ must be a list of symbol/URL-list pairs."
       (_
        (basename url))))
 
-  (build-expression->derivation store (or name file-name) system
-                                builder '()
-                                #:hash-algo hash-algo
-                                #:hash hash
-                                #:modules '((guix build download)
-                                            (guix build utils)
-                                            (guix ftp-client))
-                                #:guile-for-build guile-for-build))
+  (define need-gnutls?
+    ;; True if any of the URLs need TLS support.
+    (let ((https? (cut string-prefix? "https://" <>)))
+      (match url
+        ((? string?)
+         (https? url))
+        ((url ...)
+         (any https? url)))))
+
+  (let*-values (((gnutls-drv-path gnutls-drv)
+                 (if need-gnutls?
+                     (gnutls-derivation store system)
+                     (values #f #f)))
+                ((gnutls)
+                 (and gnutls-drv
+                      (derivation-output-path
+                       (assoc-ref (derivation-outputs gnutls-drv)
+                                  "out"))))
+                ((env-vars)
+                 (if gnutls
+                     (let ((dir (string-append gnutls "/share/guile/site")))
+                       ;; XXX: `GUILE_LOAD_COMPILED_PATH' is overridden
+                       ;; by `build-expression->derivation', so we can't
+                       ;; set it here.
+                       `(("GUILE_LOAD_PATH" . ,dir)))
+                     '())))
+    (build-expression->derivation store (or name file-name) system
+                                  builder
+                                  (if gnutls-drv
+                                      `(("gnutls" ,gnutls-drv-path))
+                                      '())
+                                  #:hash-algo hash-algo
+                                  #:hash hash
+                                  #:modules '((guix build download)
+                                              (guix build utils)
+                                              (guix ftp-client))
+                                  #:guile-for-build guile-for-build
+                                  #:env-vars env-vars)))
 
 ;;; download.scm ends here
