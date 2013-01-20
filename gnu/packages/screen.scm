@@ -58,4 +58,4 @@ and off, copy text between windows, view the scrollback history, switch between
 windows, etc. All windows run their programs completely independent of each
 other. Programs continue to run when their window is currently not visible and
 even when the whole screen session is detached from the users terminal.")
-    (license "gpl2")))
+    (license gpl2+)))
