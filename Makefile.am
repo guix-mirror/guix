@@ -115,6 +115,7 @@ MODULES =					\
   gnu/packages/recutils.scm			\
   gnu/packages/rsync.scm			\
   gnu/packages/scheme.scm			\
+  gnu/packages/screen.scm 			\
   gnu/packages/shishi.scm			\
   gnu/packages/system.scm			\
   gnu/packages/tcl.scm				\
