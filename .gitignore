@@ -65,3 +65,14 @@ stamp-h[0-9]
 /test-env
 /nix/nix-setuid-helper/nix-setuid-helper.cc
 /guix-gc
+/doc/guix.aux
+/doc/guix.cp
+/doc/guix.cps
+/doc/guix.fn
+/doc/guix.fns
+/doc/guix.ky
+/doc/guix.pg
+/doc/guix.toc
+/doc/guix.tp
+/doc/guix.vr
+/doc/guix.vrs
