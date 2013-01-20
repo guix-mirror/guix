@@ -217,25 +217,34 @@ recursively."
   ;; Package to derivation-path mapping.
   (make-weak-key-hash-table 100))
 
-(define (cache package system drv)
-  "Memoize DRV as the derivation of PACKAGE on SYSTEM."
+(define (cache package system thunk)
+  "Memoize the return values of THUNK as the derivation of PACKAGE on
+SYSTEM."
+  (let ((vals (call-with-values thunk list)))
+    ;; Use `hashq-set!' instead of `hash-set!' because `hash' returns the
+    ;; same value for all structs (as of Guile 2.0.6), and because pointer
+    ;; equality is sufficient in practice.
+    (hashq-set! %derivation-cache package `((,system ,@vals)))
+    (apply values vals)))
 
-  ;; Use `hashq-set!' instead of `hash-set!' because `hash' returns the
-  ;; same value for all structs (as of Guile 2.0.6), and because pointer
-  ;; equality is sufficient in practice.
-  (hashq-set! %derivation-cache package `((,system . ,drv)))
-  drv)
-
-(define (cached-derivation package system)
-  "Return the cached derivation path of PACKAGE for SYSTEM, or #f."
-  (match (hashq-ref %derivation-cache package)
-    ((alist ...)
-     (assoc-ref alist system))
-    (#f #f)))
+(define-syntax-rule (cached package system body ...)
+  "Memoize the result of BODY for the arguments PACKAGE and SYSTEM.
+Return the cached result when available."
+  (let ((thunk (lambda () body ...)))
+    (match (hashq-ref %derivation-cache package)
+      ((alist (... ...))
+       (match (assoc-ref alist system)
+         ((vals (... ...))
+          (apply values vals))
+         (#f
+          (cache package system thunk))))
+      (#f
+       (cache package system thunk)))))
 
 (define* (package-derivation store package
                              #:optional (system (%current-system)))
-  "Return the derivation of PACKAGE for SYSTEM."
+  "Return the derivation path and corresponding <derivation> object of
+PACKAGE for SYSTEM."
   (define (intern file)
     ;; Add FILE to the store.  Set the `recursive?' bit to #t, so that
     ;; file permissions are preserved.
@@ -281,32 +290,28 @@ recursively."
                          (package package)
                          (input   x)))))))
 
-  (or (cached-derivation package system)
+  ;; Compute the derivation and cache the result.  Caching is important
+  ;; because some derivations, such as the implicit inputs of the GNU build
+  ;; system, will be queried many, many times in a row.
+  (cached package system
+          (match package
+            (($ <package> name version source (= build-system-builder builder)
+                args inputs propagated-inputs native-inputs self-native-input?
+                outputs)
+             ;; TODO: For `search-paths', add a builder prologue that calls
+             ;; `set-path-environment-variable'.
+             (let ((inputs (map expand-input
+                                (package-transitive-inputs package))))
 
-      ;; Compute the derivation and cache the result.  Caching is
-      ;; important because some derivations, such as the implicit inputs
-      ;; of the GNU build system, will be queried many, many times in a
-      ;; row.
-      (cache
-       package system
-       (match package
-         (($ <package> name version source (= build-system-builder builder)
-             args inputs propagated-inputs native-inputs self-native-input?
-             outputs)
-          ;; TODO: For `search-paths', add a builder prologue that calls
-          ;; `set-path-environment-variable'.
-          (let ((inputs (map expand-input
-                             (package-transitive-inputs package))))
-
-            (apply builder
-                   store (package-full-name package)
-                   (and source
-                        (package-source-derivation store source system))
-                   inputs
-                   #:outputs outputs #:system system
-                   (if (procedure? args)
-                       (args system)
-                       args))))))))
+               (apply builder
+                      store (package-full-name package)
+                      (and source
+                           (package-source-derivation store source system))
+                      inputs
+                      #:outputs outputs #:system system
+                      (if (procedure? args)
+                          (args system)
+                          args)))))))
 
 (define* (package-cross-derivation store package)
   ;; TODO

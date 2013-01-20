@@ -765,9 +765,8 @@ The build actions it prescribes may then be realized by using the
 @code{build-derivations} procedure (@pxref{The Store}).
 
 @deffn {Scheme Procedure} package-derivation @var{store} @var{package} [@var{system}]
-Return the derivation of @var{package} for @var{system}.  The result is
-the file name of the derivation---i.e., a @code{.drv} file under
-@code{/nix/store}.
+Return the derivation path and corresponding @code{<derivation>} object
+of @var{package} for @var{system} (@pxref{Derivations}).
 
 @var{package} must be a valid @code{<package>} object, and @var{system}
 must be a string denoting the target system type---e.g.,

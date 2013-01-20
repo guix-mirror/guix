@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,6 +27,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
@@ -70,7 +71,13 @@
                    ("d" ,d) ("d/x" "something.drv"))
                  (pk 'x (package-transitive-inputs e))))))
 
-(test-skip (if (not %store) 2 0))
+(test-skip (if (not %store) 3 0))
+
+(test-assert "return values"
+  (let-values (((drv-path drv)
+                (package-derivation %store (dummy-package "p"))))
+    (and (derivation-path? drv-path)
+         (derivation? drv))))
 
 (test-assert "trivial"
   (let* ((p (package (inherit (dummy-package "trivial"))
