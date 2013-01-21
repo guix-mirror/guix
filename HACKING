@@ -120,8 +120,8 @@ GCC, libc, etc. need to be built.  To that end, run the following
 commands:
 
 #+BEGIN_SRC sh
-  ./pre-inst-env guix-build                                         \
-      -e '(@ (distro packages make-bootstrap) bootstrap-tarballs)'  \
+  ./pre-inst-env guix-build -K                                    \
+      -e '(@ (gnu packages make-bootstrap) %bootstrap-tarballs)'  \
       --system=i686-linux
 
 #+END_SRC
