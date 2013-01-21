@@ -280,11 +280,7 @@ PACKAGE for SYSTEM."
       ;; package, then `transitive-inputs' and co. would need to be
       ;; adjusted.
       (let ((input (proc system)))
-        (if (or (string? input) (origin? input))
-            (expand-input (cons* name input sub-drv))
-            (raise (condition (&package-input-error
-                               (package package)
-                               (input   i)))))))
+        (expand-input (cons* name input sub-drv))))
      (x
       (raise (condition (&package-input-error
                          (package package)
