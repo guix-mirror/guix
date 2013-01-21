@@ -21,7 +21,6 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages base)
   #:use-module ((gnu packages compression)
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (gnu packages nettle)
