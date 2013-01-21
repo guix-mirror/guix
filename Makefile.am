@@ -77,6 +77,7 @@ MODULES =					\
   gnu/packages/gnupg.scm			\
   gnu/packages/gnutls.scm			\
   gnu/packages/gperf.scm			\
+  gnu/packages/groff.scm			\
   gnu/packages/gsasl.scm			\
   gnu/packages/guile.scm			\
   gnu/packages/help2man.scm			\
