@@ -1,0 +1,39 @@
+Skip tests that rely on the `amhello' tarball that comes with Automake.
+That tarball's `configure' uses #!/bin/sh, but we can't easily patch it.
+
+diff --git a/t/amhello-binpkg.sh b/t/amhello-binpkg.sh
+index fa88cc6..d988cee 100755
+--- a/t/amhello-binpkg.sh
++++ b/t/amhello-binpkg.sh
+@@ -17,6 +17,7 @@
+ # Test an example from the manual about the 'amhello' package:
+ # using DESTDIR to build simple, no-frills binary packages.
+ 
++exit 77
+ am_create_testdir=empty
+ . ./defs || exit 1
+ 
+diff --git a/t/amhello-cflags.sh b/t/amhello-cflags.sh
+index 666011f..2a95e3c 100755
+--- a/t/amhello-cflags.sh
++++ b/t/amhello-cflags.sh
+@@ -18,6 +18,7 @@
+ # using VPATH builds to configure the same package with different
+ # options.
+ 
++exit 77
+ am_create_testdir=empty
+ required=gcc
+ . ./defs || exit 1
+diff --git a/t/amhello-cross-compile.sh b/t/amhello-cross-compile.sh
+index 708abda..2ee4292 100755
+--- a/t/amhello-cross-compile.sh
++++ b/t/amhello-cross-compile.sh
+@@ -17,6 +17,7 @@
+ # Test an example from the manual about the 'amhello' package:
+ # cross-compiling a package from Linux/Unix to MinGW.
+ 
++exit 77
+ am_create_testdir=empty
+ required=i586-mingw32msvc-gcc
+ . ./defs || exit 1

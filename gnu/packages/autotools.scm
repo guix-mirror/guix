@@ -22,9 +22,12 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages m4)
+  #:use-module (gnu packages bash)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial))
 
 (define-public autoconf
   (package
@@ -59,31 +62,117 @@ file that lists the operating system features that the package
 can use, in the form of M4 macro calls.")
     (license gpl3+))) ; some files are under GPLv2+
 
+(define autoconf-wrapper
+  ;; An Autoconf wrapper that generates `configure' scripts that use our
+  ;; own Bash instead of /bin/sh in shebangs.  For that reason, it
+  ;; should only be used internally---users should not end up
+  ;; distributing `configure' files with a system-specific shebang.
+  (package (inherit autoconf)
+    (location (source-properties->location (current-source-location)))
+    (name (string-append (package-name autoconf) "-wrapper"))
+    (build-system trivial-build-system)
+    (inputs `(("guile"
+               ,(lambda _
+                  ;; XXX: Kludge to hide the circular dependency.
+                  (module-ref (resolve-interface '(gnu packages guile))
+                              'guile-2.0)))
+              ("autoconf" ,autoconf)
+              ("bash" ,bash)))
+    (arguments
+     '(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (let* ((out      (assoc-ref %outputs "out"))
+                (bin      (string-append out "/bin"))
+                (autoconf (string-append
+                           (assoc-ref %build-inputs "autoconf")
+                           "/bin/autoconf"))
+                (guile    (string-append
+                           (assoc-ref %build-inputs "guile")
+                           "/bin/guile"))
+                (sh       (string-append
+                           (assoc-ref %build-inputs "bash")
+                           "/bin/sh"))
+                (modules  ((compose dirname dirname dirname)
+                           (search-path %load-path
+                                        "guix/build/utils.scm"))))
+           (mkdir-p bin)
+
+           ;; Symlink all the binaries but `autoconf'.
+           (with-directory-excursion bin
+             (for-each (lambda (file)
+                         (unless (string=? (basename file) "autoconf")
+                           (symlink file (basename file))))
+                       (find-files (dirname autoconf) ".*")))
+
+           ;; Add an `autoconf' binary that wraps the real one.
+           (call-with-output-file (string-append bin "/autoconf")
+             (lambda (port)
+               ;; Shamefully, Guile can be used in shebangs only if a
+               ;; single argument is passed (-ds); otherwise it gets
+               ;; them all as a single argument and fails to parse them.
+               (format port "#!~a
+export GUILE_LOAD_PATH=\"~a\"
+export GUILE_LOAD_COMPILED_PATH=\"~a\"
+exec ~a --no-auto-compile \"$0\" \"$@\"
+!#~%"
+                       sh modules modules guile)
+               (write
+                `(begin
+                   (use-modules (guix build utils))
+                   (let ((result (apply system* ,autoconf
+                                        (cdr (command-line)))))
+                     (if (and (zero? result)
+                              (file-exists? "configure")
+                              (not (file-exists? "/bin/sh")))
+                         (begin
+                           (patch-shebang "configure")
+                           #t)
+                         (exit (status:exit-val result)))))
+                port)))
+           (chmod (string-append bin "/autoconf") #o555)))))))
+
 (define-public automake
   (package
     (name "automake")
     (version "1.12.6")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/automake/automake-"
-                          version ".tar.xz"))
-      (sha256
-       (base32
-        "1ynvca8z4aqcwr94rf7j1bfiid2w9w250y9qhnyj9vmi8lhsnd7q"))))
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/automake/automake-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1ynvca8z4aqcwr94rf7j1bfiid2w9w250y9qhnyj9vmi8lhsnd7q"))))
     (build-system gnu-build-system)
     (inputs
-     `(("autoconf" ,autoconf)
-       ("perl" ,perl)))
-    (home-page
-     "http://www.gnu.org/software/automake/")
+     `(("autoconf" ,autoconf-wrapper)
+       ("perl" ,perl)
+       ("patch/skip-amhello"
+        ,(search-patch "automake-skip-amhello-tests.patch"))))
+    (arguments
+     '(#:patches (list (assoc-ref %build-inputs "patch/skip-amhello"))
+       #:phases (alist-cons-before
+                 'patch-source-shebangs 'patch-tests-shebangs
+                 (lambda _
+                   (let ((sh (which "sh")))
+                     (substitute* (find-files "t" "\\.(sh|tap)$")
+                       (("#![[:blank:]]?/bin/sh")
+                        (string-append "#!" sh)))
+
+                     ;; Set these variables for all the `configure' runs
+                     ;; that occur during the test suite.
+                     (setenv "SHELL" sh)
+                     (setenv "CONFIG_SHELL" sh)))
+                 %standard-phases)))
+    (home-page "http://www.gnu.org/software/automake/")
     (synopsis
      "GNU Automake, a GNU standard-compliant makefile generator")
     (description
      "GNU Automake is a tool for automatically generating
 `Makefile.in' files compliant with the GNU Coding
 Standards.  Automake requires the use of Autoconf.")
-    (license gpl2+))) ; some files are under GPLv3+
+    (license gpl2+)))                      ; some files are under GPLv3+
 
 (define-public libtool
   (package
