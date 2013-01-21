@@ -46,7 +46,6 @@ image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
 
 (define-public libjpeg-8
   (package (inherit libjpeg)
-   (name "libjpeg-8")
    (version "8d")
    (source (origin
             (method url-fetch)
