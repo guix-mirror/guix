@@ -23,6 +23,23 @@ Similarly, for a Guile session using the Guix modules:
 The ‘pre-inst-env’ script sets up all the environment variables
 necessary to support this.
 
+* The Perfect Setup
+
+The Perfect Setup to hack on Guix is basically the perfect setup used
+for Guile hacking (info "(guile) Using Guile in Emacs").  First, you
+need more than an editor, you need [[http://www.gnu.org/software/emacs][Emacs]], empowered by the wonderful
+[[http://nongnu.org/geiser/][Geiser]].
+
+Geiser allows for interactive and incremental development from within
+Emacs: code compilation and evaluation from within buffers, access to
+on-line documentation (docstrings), context-sensitive completion, M-. to
+jump to an object definition, a REPL to try out your code, and more.
+
+To actually edit the code, Emacs already has a neat Scheme mode.  But in
+addition to that, you must not miss [[http://www.emacswiki.org/emacs/ParEdit][Paredit]].  It provides facilities to
+directly operate on the syntax tree, such as raising an s-expression or
+wrapping it, swallowing or rejecting the following s-expression, etc.
+
 * Adding new packages
 
 Package recipes in Guix look like this:
