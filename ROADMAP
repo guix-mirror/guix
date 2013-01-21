@@ -2,7 +2,7 @@
 
 #+TITLE: Tentative GNU Guix Road Map
 
-Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -20,7 +20,7 @@ The goals of the GNU Guix project are two-fold:
 This documents lists tentative milestones toward these goals.
 
 
-* GNU Guix 0.1: Dec. 2012
+* GNU Guix 0.1: Jan. 2013 (was: Dec. 2012)
 
 ** basic package management facilities
 
@@ -40,6 +40,11 @@ Including install, upgrade, remove, roll-back, and search.
   - user-environment hooks
   - sophisticated handling of collisions when building a union (package
     priorities, etc.)
+
+** [[file:TODO::*add%20guix-pull][guix-pull tool]] to quickly update Guix and GNU for normal users
+** support for fetching pre-built binaries
+
+  - this is known as the "binary-cache substituter" in Nix parlance
 
 ** auto-update facility available for GNU packages
 
