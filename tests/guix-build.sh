@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -50,3 +50,11 @@ if guix-build -r "$result" -e '(@@ (gnu packages base) %bootstrap-guile)'
 then false; else true; fi
 
 rm -f "$result"
+
+# Parsing package names and versions.
+guix-build -n time		# PASS
+guix-build -n time-1.7		# PASS, version found
+if guix-build -n time-3.2;	# FAIL, version not found
+then false; else true; fi
+if guix-build -n something-that-will-never-exist; # FAIL
+then false; else true; fi

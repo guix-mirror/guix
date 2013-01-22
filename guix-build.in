@@ -38,6 +38,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
@@ -195,6 +196,30 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                  root (strerror (system-error-errno args)))
          (exit 1)))))
 
+  (define (find-package request)
+    ;; Return a package matching REQUEST.  REQUEST may be a package
+    ;; name, or a package name followed by a hyphen and a version
+    ;; number.
+    (let-values (((name version)
+                  (package-name->name+version request)))
+      (match (find-packages-by-name name version)
+        ((p)                                      ; one match
+         p)
+        ((p _ ...)                                ; several matches
+         (format (current-error-port)
+                 (_ "warning: ambiguous package specification `~a'~%")
+                 request)
+         (format (current-error-port)
+                 (_ "warning: choosing ~a from ~a~%")
+                 (package-full-name p)
+                 (location->string (package-location p)))
+         p)
+        (_                                        ; no matches
+         (if version
+             (leave (_ "~A: package not found for version ~a~%")
+                    name version)
+             (leave (_ "~A: unknown package~%") name))))))
+
   (setlocale LC_ALL "")
   (textdomain "guix")
   (setvbuf (current-output-port) _IOLBF)
@@ -212,14 +237,12 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                                   (('argument . (? derivation-path? drv))
                                    drv)
                                   (('argument . (? string? x))
-                                   (match (find-packages-by-name x)
-                                     ((p _ ...)
-                                      (if src?
-                                          (let ((s (package-source p)))
-                                            (package-source-derivation (%store) s))
-                                          (package-derivation (%store) p sys)))
-                                     (_
-                                      (leave (_ "~A: unknown package~%") x))))
+                                   (let ((p (find-package x)))
+                                     (if src?
+                                         (let ((s (package-source p)))
+                                           (package-source-derivation
+                                            (%store) s))
+                                         (package-derivation (%store) p sys))))
                                   (_ #f))
                                  opts))
                (req  (append-map (lambda (drv-path)

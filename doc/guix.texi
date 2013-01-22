@@ -989,8 +989,9 @@ guix-build @var{options} @var{package-or-derivation}@dots{}
 @end example
 
 @var{package-or-derivation} may be either the name of a package found in
-the software distribution such as @code{coreutils}, or a derivation such
-as @file{/nix/store/xxx-coreutils-8.19.drv}.  Alternatively, the
+the software distribution such as @code{coreutils} or
+@code{coreutils-8.20}, or a derivation such as
+@file{/nix/store/@dots{}-coreutils-8.19.drv}.  Alternatively, the
 @code{--expression} option may be used to specify a Scheme expression
 that evaluates to a package; this is useful when disambiguation among
 several same-named packages or package variants is needed.
@@ -1003,7 +1004,7 @@ The @var{options} may be zero or more of the following:
 @itemx -e @var{expr}
 Build the package @var{expr} evaluates to.
 
-For example, @var{expr} may be @code{(@@ (distro packages guile)
+For example, @var{expr} may be @code{(@@ (gnu packages guile)
 guile-1.8)}, which unambiguously designates this specific variant of
 version 1.8 of Guile.
 
