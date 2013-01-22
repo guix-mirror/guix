@@ -150,7 +150,19 @@ printing, and psresize, for adjusting page sizes.")
             (("/bin/sh") (which "bash")))
           (substitute* "base/unixhead.mak"
             (("/bin/sh") (which "bash")))))
-      %standard-phases)))
+      (alist-replace
+       'build
+       (lambda* (#:key #:allow-other-keys #:rest args)
+        (let ((build (assoc-ref %standard-phases 'build)))
+          (apply build args)
+          (system* "make" "so")))
+      (alist-replace
+       'install
+       (lambda* (#:key #:allow-other-keys #:rest args)
+        (let ((install (assoc-ref %standard-phases 'install)))
+          (apply install args)
+          (system* "make" "install-so")))
+      %standard-phases)))))
    (synopsis "GNU Ghostscript, an interpreter for the PostScript language and for PDF")
    (description
     "GNU Ghostscript is an interpreter for PostScript and Portable Document
