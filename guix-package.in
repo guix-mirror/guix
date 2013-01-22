@@ -208,9 +208,8 @@ all of PACKAGES, a list of name/version/output/path tuples."
   ;; XXX: Get the previous generation number from the manifest?
   (let* ((number           (profile-number profile))
          (previous-number  (previous-profile-number profile number))
-         (previous-profile (format #f "~a/~a-~a-link"
-                                   (dirname profile) profile
-                                   previous-number))
+         (previous-profile (format #f "~a-~a-link"
+                                   profile previous-number))
          (manifest         (string-append previous-profile "/manifest")))
 
     (define (switch-link)

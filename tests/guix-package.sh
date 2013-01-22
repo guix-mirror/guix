@@ -109,7 +109,9 @@ guix-package --bootstrap -i "binutils:lib" -p "$profile" -n
 # Check whether `--list-available' returns something sensible.
 guix-package -A 'gui.*e' | grep guile
 
+#
 # Try with the default profile.
+#
 
 XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_CACHE_HOME
@@ -121,6 +123,18 @@ mkdir -p "$HOME"
 guix-package --bootstrap -i "$boot_guile"
 test -L "$HOME/.guix-profile"
 test -f "$HOME/.guix-profile/bin/guile"
+
+if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
+then
+    guix-package --bootstrap -i "$boot_make"
+    test -f "$HOME/.guix-profile/bin/make"
+    first_environment="`cd $HOME/.guix-profile ; pwd`"
+
+    guix-package --bootstrap --roll-back
+    test -f "$HOME/.guix-profile/bin/guile"
+    ! test -f "$HOME/.guix-profile/bin/make"
+    test "`cd $HOME/.guix-profile ; pwd`" = "$first_environment"
+fi
 
 # Failed attempt to roll back.
 if guix-package --bootstrap --roll-back;
