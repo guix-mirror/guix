@@ -982,8 +982,12 @@ space.
 @section Invoking @command{guix-build}
 
 The @command{guix-build} command builds packages or derivations and
-their dependencies, and prints the resulting store paths.  It is mainly
-useful for distribution developers.  The general syntax is:
+their dependencies, and prints the resulting store paths.  Note that it
+does not modify the user's profile---this is the job of the
+@command{guix-package} command (@pxref{Invoking guix-package}).  Thus,
+it is mainly useful for distribution developers.
+
+The general syntax is:
 
 @example
 guix-build @var{options} @var{package-or-derivation}@dots{}
@@ -1015,7 +1019,7 @@ Build the packages' source derivations, rather than the packages
 themselves.
 
 For instance, @code{guix-build -S gcc} returns something like
-@file{/nix/store/xxx-gcc-4.7.2.tar.bz2}, which is GCC's source tarball.
+@file{/nix/store/@dots{}-gcc-4.7.2.tar.bz2}, which is GCC's source tarball.
 
 @item --system=@var{system}
 @itemx -s @var{system}
