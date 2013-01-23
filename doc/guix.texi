@@ -396,24 +396,25 @@ own directory---something that resembles
 
 Instead of referring to these directories, users have their own
 @dfn{profile}, which points to the packages that they actually want to
-use.  That profile is normally stored in @code{$HOME/.guix-profile}, and
-each user has its own profile.
+use.  These profiles are stored within each user's home directory, at
+@code{$HOME/.guix-profile}.
 
-For example, if @code{alice} installed GCC 4.7.2, then
+For example, @code{alice} installs GCC 4.7.2.  As a result,
 @file{/home/alice/.guix-profile/bin/gcc} points to
-@file{/nix/store/xxx-gcc-4.7.2/bin/gcc}; on the same machine, @code{bob}
-may have installed GCC 4.8.0, in which case its profile refers to these
-particular package installation.  Both coexist, without any
-interference.
+@file{/nix/store/@dots{}-gcc-4.7.2/bin/gcc}.  Now, on the same machine,
+@code{bob} had already installed GCC 4.8.0.  The profile of @code{bob}
+simply continues to point to
+@file{/nix/store/@dots{}-gcc-4.8.0/bin/gcc}---i.e., both versions of GCC
+coexist on the same system without any interference.
 
 The @command{guix-package} command is the central tool to manage
-packages.  It operates on those per-user profiles, and can be used
-@emph{with normal user privileges}.
+packages (@pxref{Invoking guix-package}).  It operates on those per-user
+profiles, and can be used @emph{with normal user privileges}.
 
 The command provides the obvious install, remove, and upgrade
 operations.  Each invocation is actually a @emph{transaction}: either
 the specified operation succeeds, or nothing happens.  Thus, if the
-@command{guix-package} processed is terminated during the transaction,
+@command{guix-package} process is terminated during the transaction,
 or if a power outage occurs during the transaction, then the user's
 profile remains in its previous state, and remains usable.
 
