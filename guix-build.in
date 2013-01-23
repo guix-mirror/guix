@@ -205,7 +205,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
       (match (find-packages-by-name name version)
         ((p)                                      ; one match
          p)
-        ((p _ ...)                                ; several matches
+        ((p x ...)                                ; several matches
          (format (current-error-port)
                  (_ "warning: ambiguous package specification `~a'~%")
                  request)
