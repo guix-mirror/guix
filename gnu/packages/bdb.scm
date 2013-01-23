@@ -35,19 +35,18 @@
                      "1f2g2612lf8djbwbwhxsvmffmf9d7693kh2l20195pqp0f9jmnfx"))))
    (build-system gnu-build-system)
    (arguments
-    (lambda (system)
-      `(#:tests? #f ; no check target available
-        #:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out")))
-             (zero?
-              (system* "./dist/configure"
-                       (string-append "--prefix=" out)
-                       (string-append "CONFIG_SHELL=" (which "bash"))
-                       (string-append "SHELL=" (which "bash"))))))
-         %standard-phases))))
+    '(#:tests? #f                            ; no check target available
+      #:phases
+      (alist-replace
+       'configure
+       (lambda* (#:key outputs #:allow-other-keys)
+         (let ((out (assoc-ref outputs "out")))
+           (zero?
+            (system* "./dist/configure"
+                     (string-append "--prefix=" out)
+                     (string-append "CONFIG_SHELL=" (which "bash"))
+                     (string-append "SHELL=" (which "bash"))))))
+       %standard-phases)))
    (synopsis "db, the Berkeley database")
    (description
     "Berkeley DB is an embeddable database allowing developers the choice of

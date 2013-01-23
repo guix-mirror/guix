@@ -120,26 +120,25 @@ extensive test suite.")
              ("perl" ,perl)
              ("readline" ,readline)))
    (arguments
-    (lambda (system)
-      `(#:make-flags '("gp")
-;; FIXME: building the documentation requires tex; once this is available,
-;; replace "gp" by "all"
-        #:test-target "dobench"
-        #:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out"))
-                 (readline (assoc-ref inputs "readline"))
-                 (gmp (assoc-ref inputs "gmp")))
-             (zero?
-              (system* "./Configure"
-                       (string-append "--prefix=" out)
-                       (string-append "--with-readline=" readline)
-                       (string-append "--with-gmp=" gmp)))))
-;; FIXME: readline and gmp will be detected automatically in the next
-;; stable release
-         %standard-phases))))
+    '(#:make-flags '("gp")
+      ;; FIXME: building the documentation requires tex; once this is available,
+      ;; replace "gp" by "all"
+      #:test-target "dobench"
+      #:phases
+      (alist-replace
+       'configure
+       (lambda* (#:key inputs outputs #:allow-other-keys)
+         (let ((out (assoc-ref outputs "out"))
+               (readline (assoc-ref inputs "readline"))
+               (gmp (assoc-ref inputs "gmp")))
+           (zero?
+            (system* "./Configure"
+                     (string-append "--prefix=" out)
+                     (string-append "--with-readline=" readline)
+                     (string-append "--with-gmp=" gmp)))))
+       ;; FIXME: readline and gmp will be detected automatically in the next
+       ;; stable release
+       %standard-phases)))
    (synopsis "PARI/GP, a computer algebra system for number theory")
    (description
     "PARI/GP is a widely used computer algebra system designed for fast

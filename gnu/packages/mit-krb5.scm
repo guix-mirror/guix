@@ -42,36 +42,35 @@
              ("perl" ,perl)
              ))
    (arguments
-    (lambda (system)
-      `(#:phases
-        (alist-replace
-         'unpack
-         (lambda* (#:key source #:allow-other-keys)
-          (let ((inner
-                 (substring source
-                            (string-index-right source #\k)
-                            (string-index-right source #\-))))
+    '(#:phases
+      (alist-replace
+       'unpack
+       (lambda* (#:key source #:allow-other-keys)
+         (let ((inner
+                (substring source
+                           (string-index-right source #\k)
+                           (string-index-right source #\-))))
            (and (zero? (system* "tar" "xvf" source))
                 (zero? (system* "tar" "xvf" (string-append inner ".tar.gz")))
                 (chdir inner)
                 (chdir "src"))))
-      (alist-replace
-       'check
-       (lambda* (#:key inputs #:allow-other-keys #:rest args)
-        (let ((perl (assoc-ref inputs "perl"))
-              (check (assoc-ref %standard-phases 'check)))
-          (substitute* "plugins/kdb/db2/libdb2/test/run.test"
-                       (("/bin/cat") (string-append perl "/bin/perl")))
-          (substitute* "plugins/kdb/db2/libdb2/test/run.test"
-                       (("D/bin/sh") (string-append "D" (which "bash"))))
-          (substitute* "plugins/kdb/db2/libdb2/test/run.test"
-                       (("bindir=/bin/.") (string-append "bindir=" perl "/bin")))
-           ;; use existing files and directories in test
-          (substitute* "tests/resolve/Makefile"
-                       (("-p telnet") "-p 23"))
-           ;; avoid service names since /etc/services is unavailable
-          (apply check args)))
-          %standard-phases)))))
+       (alist-replace
+        'check
+        (lambda* (#:key inputs #:allow-other-keys #:rest args)
+          (let ((perl (assoc-ref inputs "perl"))
+                (check (assoc-ref %standard-phases 'check)))
+            (substitute* "plugins/kdb/db2/libdb2/test/run.test"
+              (("/bin/cat") (string-append perl "/bin/perl")))
+            (substitute* "plugins/kdb/db2/libdb2/test/run.test"
+              (("D/bin/sh") (string-append "D" (which "bash"))))
+            (substitute* "plugins/kdb/db2/libdb2/test/run.test"
+              (("bindir=/bin/.") (string-append "bindir=" perl "/bin")))
+            ;; use existing files and directories in test
+            (substitute* "tests/resolve/Makefile"
+              (("-p telnet") "-p 23"))
+            ;; avoid service names since /etc/services is unavailable
+            (apply check args)))
+        %standard-phases))))
    (synopsis "MIT Kerberos 5")
    (description
     "Massachusetts Institute of Technology implementation of Kerberos.

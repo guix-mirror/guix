@@ -37,30 +37,29 @@
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)))
    (arguments
-    (lambda (system)
-      `(#:parallel-build? #f
-        #:parallel-tests? #f
-        #:test-target "test"
-        #:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let ((out (assoc-ref outputs "out")))
-             (zero?
-              (system* "./config"
-                       "shared"                 ; build shared libraries
-                       "--libdir=lib"
-                       (string-append "--prefix=" out)))))
-         (alist-cons-before
-          'patch-source-shebangs 'patch-tests
-          (lambda* (#:key inputs #:allow-other-keys)
-            (let ((bash (assoc-ref inputs "bash")))
-             (substitute* (find-files "test" ".*")
-               (("/bin/sh")
-                (string-append bash "/bin/bash"))
-               (("/bin/rm")
-                "rm"))))
-          %standard-phases)))))
+    '(#:parallel-build? #f
+      #:parallel-tests? #f
+      #:test-target "test"
+      #:phases
+      (alist-replace
+       'configure
+       (lambda* (#:key outputs #:allow-other-keys)
+         (let ((out (assoc-ref outputs "out")))
+           (zero?
+            (system* "./config"
+                     "shared"                   ; build shared libraries
+                     "--libdir=lib"
+                     (string-append "--prefix=" out)))))
+       (alist-cons-before
+        'patch-source-shebangs 'patch-tests
+        (lambda* (#:key inputs #:allow-other-keys)
+          (let ((bash (assoc-ref inputs "bash")))
+            (substitute* (find-files "test" ".*")
+              (("/bin/sh")
+               (string-append bash "/bin/bash"))
+              (("/bin/rm")
+               "rm"))))
+        %standard-phases))))
    (synopsis "OpenSSL, an SSL/TLS implementation")
    (description
     "OpenSSL is an implementation of SSL/TLS")

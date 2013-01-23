@@ -38,32 +38,31 @@
                "15qxzba3a50c9nik5ydgyfp62x7h9vxxn12yd1jgl93hb1wj96km"))))
     (build-system gnu-build-system)
     (arguments
-     (lambda (system)
-       `(#:tests? #f
-         #:patches (list (assoc-ref %build-inputs "patch/no-sys-dirs"))
-         #:phases
-         (alist-replace
-          'configure
-          (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out  (assoc-ref outputs "out"))
-                  (libc (assoc-ref inputs "libc")))
-              ;; Use the right path for `pwd'.
-              (substitute* "dist/Cwd/Cwd.pm"
-                (("/bin/pwd")
-                 (which "pwd")))
+     '(#:tests? #f
+       #:patches (list (assoc-ref %build-inputs "patch/no-sys-dirs"))
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let ((out  (assoc-ref outputs "out"))
+                (libc (assoc-ref inputs "libc")))
+            ;; Use the right path for `pwd'.
+            (substitute* "dist/Cwd/Cwd.pm"
+              (("/bin/pwd")
+               (which "pwd")))
 
-              (zero?
-               (system* "./Configure"
-                        (string-append "-Dprefix=" out)
-                        (string-append "-Dman1dir=" out "/share/man/man1")
-                        (string-append "-Dman3dir=" out "/share/man/man3")
-                        "-de" "-Dcc=gcc"
-                        "-Uinstallusrbinperl"
-                        "-Dinstallstyle=lib/perl5"
-                        "-Duseshrplib"
-                        (string-append "-Dlocincpth=" libc "/include")
-                        (string-append "-Dloclibpth=" libc "/lib")))))
-          %standard-phases))))
+            (zero?
+             (system* "./Configure"
+                      (string-append "-Dprefix=" out)
+                      (string-append "-Dman1dir=" out "/share/man/man1")
+                      (string-append "-Dman3dir=" out "/share/man/man3")
+                      "-de" "-Dcc=gcc"
+                      "-Uinstallusrbinperl"
+                      "-Dinstallstyle=lib/perl5"
+                      "-Duseshrplib"
+                      (string-append "-Dlocincpth=" libc "/include")
+                      (string-append "-Dloclibpth=" libc "/lib")))))
+        %standard-phases)))
     (inputs `(("patch/no-sys-dirs" ,(search-patch "perl-no-sys-dirs.patch"))))
     (synopsis "Implementation of the Perl programming language")
     (description
