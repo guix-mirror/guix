@@ -108,6 +108,7 @@ MODULES =					\
   gnu/packages/ncurses.scm			\
   gnu/packages/netpbm.scm			\
   gnu/packages/nettle.scm			\
+  gnu/packages/ocaml.scm 			\
   gnu/packages/openssl.scm			\
   gnu/packages/oggvorbis.scm			\
   gnu/packages/perl.scm				\
