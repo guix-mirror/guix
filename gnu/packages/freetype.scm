@@ -18,6 +18,8 @@
 
 (define-module (gnu packages freetype)
   #:use-module (gnu packages)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -44,3 +46,33 @@ Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others. It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
    (home-page "http://www.freetype.org/")))
+
+(define-public fontconfig
+  (package
+   (name "fontconfig")
+   (version "2.10.91")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                   "http://www.freedesktop.org/software/fontconfig/release/fontconfig-"
+                   version ".tar.bz2"))
+            (sha256 (base32
+                     "1vk37q3zj8bjppj3l0pkby1psialpwl263jqf6pbih2hx5a7jwm4"))))
+   (build-system gnu-build-system)
+   (inputs `(("expat" ,expat)
+             ("freetype" ,freetype)
+             ("pkg-config" ,pkg-config)))
+   (synopsis "Fontconfig, a library for configuring and customising font access. ")
+   (description
+    "Fontconfig can discover new fonts when installed automatically;
+perform font name substitution, so that appropriate alternative fonts can
+be selected if fonts are missing;
+identify the set of fonts required to completely cover a set of languages;
+have GUI configuration tools built as it uses an XML-based configuration file;
+efficiently and quickly find needed fonts among the set of installed fonts;
+be used in concert with the X Render Extension and FreeType to implement
+high quality, anti-aliased and subpixel rendered text on a display.")
+   ; The exact license is more X11-style than BSD-style.
+   (license (license:bsd-style "file://COPYING"
+                       "See COPYING in the distribution."))
+   (home-page "http://www.freedesktop.org/wiki/Software/fontconfig")))
