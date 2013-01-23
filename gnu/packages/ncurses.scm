@@ -83,34 +83,30 @@
                 "0fsn7xis81za62afan0vvm38bvgzg5wfmv1m86flqcj0nj7jjilh"))))
      (build-system gnu-build-system)
      (arguments
-      (case-lambda
-        ((system)
-         `(#:configure-flags
-           `("--with-shared" "--without-debug" "--enable-widec"
+      `(#:configure-flags
+        `("--with-shared" "--without-debug" "--enable-widec"
 
-             ;; By default headers land in an `ncursesw' subdir, which is not
-             ;; what users expect.
-             ,(string-append "--includedir=" (assoc-ref %outputs "out")
-                             "/include")
+          ;; By default headers land in an `ncursesw' subdir, which is not
+          ;; what users expect.
+          ,(string-append "--includedir=" (assoc-ref %outputs "out")
+                          "/include")
 
-             ;; C++ bindings fail to build on
-             ;; `i386-pc-solaris2.11' with GCC 3.4.3:
-             ;; <http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=6395191>.
-             ,,@(if (string=? system "i686-solaris")
-                    '("--without-cxx-binding")
-                    '()))
-           #:tests? #f                            ; no "check" target
-           #:phases (alist-cons-after
-                     'install 'post-install ,post-install-phase
-                     (alist-cons-before
-                      'configure 'patch-makefile-SHELL
-                      ,patch-makefile-phase
-                      (alist-replace
-                       'configure
-                       ,configure-phase
-                       %standard-phases)))))
-        ((system cross-system)
-         (arguments cross-system))))
+          ;; C++ bindings fail to build on
+          ;; `i386-pc-solaris2.11' with GCC 3.4.3:
+          ;; <http://bugs.opensolaris.org/bugdatabase/view_bug.do?bug_id=6395191>.
+          ,,@(if (string=? (%current-system) "i686-solaris")
+                 '("--without-cxx-binding")
+                 '()))
+        #:tests? #f                               ; no "check" target
+        #:phases (alist-cons-after
+                  'install 'post-install ,post-install-phase
+                  (alist-cons-before
+                   'configure 'patch-makefile-SHELL
+                   ,patch-makefile-phase
+                   (alist-replace
+                    'configure
+                    ,configure-phase
+                    %standard-phases)))))
      (self-native-input? #t)
      (synopsis
       "GNU Ncurses, a free software emulation of curses in SVR4 and more")

@@ -52,17 +52,15 @@
   ;; without nscd, and with static NSS modules.
   (package (inherit glibc-final)
     (arguments
-     (lambda (system)
-       (substitute-keyword-arguments ((package-arguments glibc-final) system)
-         ((#:patches patches)
-          `(cons (assoc-ref %build-inputs "patch/system")
-                 ,patches))
-         ((#:configure-flags flags)
-          ;; Arrange so that getaddrinfo & co. do not contact the nscd,
-          ;; and can use statically-linked NSS modules.
-          `(cons* "--disable-nscd" "--disable-build-nscd"
-                  "--enable-static-nss"
-                  ,flags)))))
+     (substitute-keyword-arguments (package-arguments glibc-final)
+       ((#:patches patches)
+        `(cons (assoc-ref %build-inputs "patch/system") ,patches))
+       ((#:configure-flags flags)
+        ;; Arrange so that getaddrinfo & co. do not contact the nscd,
+        ;; and can use statically-linked NSS modules.
+        `(cons* "--disable-nscd" "--disable-build-nscd"
+                "--enable-static-nss"
+                ,flags))))
     (inputs
      `(("patch/system" ,(search-patch "glibc-bootstrap-system.patch"))
        ,@(package-inputs glibc-final)))))
@@ -119,19 +117,17 @@
                            %standard-phases)))))
         (gawk (package (inherit gawk)
                 (arguments
-                 (lambda (system)
-                   `(#:patches (list (assoc-ref %build-inputs "patch/sh"))
-                     ,@(substitute-keyword-arguments
-                           ((package-arguments gawk) system)
-                         ((#:phases phases)
-                          `(alist-cons-before
-                            'configure 'no-export-dynamic
-                            (lambda _
-                              ;; Since we use `-static', remove
-                              ;; `-export-dynamic'.
-                              (substitute* "configure"
-                                (("-export-dynamic") "")))
-                            ,phases))))))
+                 `(#:patches (list (assoc-ref %build-inputs "patch/sh"))
+                   ,@(substitute-keyword-arguments (package-arguments gawk)
+                       ((#:phases phases)
+                        `(alist-cons-before
+                          'configure 'no-export-dynamic
+                          (lambda _
+                            ;; Since we use `-static', remove
+                            ;; `-export-dynamic'.
+                            (substitute* "configure"
+                              (("-export-dynamic") "")))
+                          ,phases)))))
                 (inputs `(("patch/sh" ,(search-patch "gawk-shell.patch"))))))
         (finalize (lambda (p)
                     (static-package (package-with-explicit-inputs
@@ -332,29 +328,28 @@
    (package (inherit gcc-final)
      (name "gcc-static")
      (arguments
-      (lambda (system)
-        `(#:modules ((guix build utils)
-                     (guix build gnu-build-system)
-                     (srfi srfi-1)
-                     (srfi srfi-26)
-                     (ice-9 regex))
-          ,@(substitute-keyword-arguments ((package-arguments gcc-final) system)
-              ((#:guile _) #f)
-              ((#:implicit-inputs? _) #t)
-              ((#:configure-flags flags)
-               `(append (list
-                         "--disable-shared"
-                         "--disable-plugin"
-                         "--enable-languages=c"
-                         "--disable-libmudflap"
-                         "--disable-libgomp"
-                         "--disable-libssp"
-                         "--disable-libquadmath"
-                         "--disable-decimal-float")
-                        (remove (cut string-match "--(.*plugin|enable-languages)" <>)
-                                ,flags)))
-              ((#:make-flags flags)
-               `(cons "BOOT_LDFLAGS=-static" ,flags))))))
+      `(#:modules ((guix build utils)
+                   (guix build gnu-build-system)
+                   (srfi srfi-1)
+                   (srfi srfi-26)
+                   (ice-9 regex))
+        ,@(substitute-keyword-arguments (package-arguments gcc-final)
+            ((#:guile _) #f)
+            ((#:implicit-inputs? _) #t)
+            ((#:configure-flags flags)
+             `(append (list
+                       "--disable-shared"
+                       "--disable-plugin"
+                       "--enable-languages=c"
+                       "--disable-libmudflap"
+                       "--disable-libgomp"
+                       "--disable-libssp"
+                       "--disable-libquadmath"
+                       "--disable-decimal-float")
+                      (remove (cut string-match "--(.*plugin|enable-languages)" <>)
+                              ,flags)))
+            ((#:make-flags flags)
+             `(cons "BOOT_LDFLAGS=-static" ,flags)))))
      (inputs `(("gmp-source" ,(package-source gmp))
                ("mpfr-source" ,(package-source mpfr))
                ("mpc-source" ,(package-source mpc))
@@ -482,25 +477,25 @@
               ("xz" ,xz)
               ("input" ,pkg)))
     (arguments
-     (lambda (system)
-       (let ((name    (package-name pkg))
-             (version (package-version pkg)))
-         `(#:modules ((guix build utils))
-           #:builder
-           (begin
-             (use-modules (guix build utils))
-             (let ((out   (assoc-ref %outputs "out"))
-                   (input (assoc-ref %build-inputs "input"))
-                   (tar   (assoc-ref %build-inputs "tar"))
-                   (xz    (assoc-ref %build-inputs "xz")))
-               (mkdir out)
-               (set-path-environment-variable "PATH" '("bin") (list tar xz))
-               (with-directory-excursion input
-                 (zero? (system* "tar" "cJvf"
-                                 (string-append out "/"
-                                                ,name "-" ,version
-                                                "-" ,system ".tar.xz")
-                                 ".")))))))))))
+     (let ((name    (package-name pkg))
+           (version (package-version pkg)))
+       `(#:modules ((guix build utils))
+         #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((out   (assoc-ref %outputs "out"))
+                 (input (assoc-ref %build-inputs "input"))
+                 (tar   (assoc-ref %build-inputs "tar"))
+                 (xz    (assoc-ref %build-inputs "xz")))
+             (mkdir out)
+             (set-path-environment-variable "PATH" '("bin") (list tar xz))
+             (with-directory-excursion input
+               (zero? (system* "tar" "cJvf"
+                               (string-append out "/"
+                                              ,name "-" ,version
+                                              "-" ,(%current-system)
+                                              ".tar.xz")
+                               "."))))))))))
 
 (define %bootstrap-binaries-tarball
   ;; A tarball with the statically-linked bootstrap binaries.

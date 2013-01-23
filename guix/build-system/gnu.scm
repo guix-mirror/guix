@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -66,12 +66,8 @@ when GUILE is #f."
     (location (if (pair? loc) (source-properties->location loc) loc))
     (arguments
      (let ((args (package-arguments p)))
-       (if (procedure? args)
-           (lambda (system)
-             `(#:guile ,guile
-               #:implicit-inputs? #f ,@(args system)))
-           `(#:guile ,guile
-             #:implicit-inputs? #f ,@args))))
+       `(#:guile ,guile
+         #:implicit-inputs? #f ,@args)))
     (native-inputs (map rewritten-input
                         (filtered-inputs (package-native-inputs p))))
     (propagated-inputs (map rewritten-input
@@ -95,23 +91,19 @@ configure flags for VARIABLE, the associated value is augmented."
 
     (package (inherit p)
       (arguments
-       (lambda (system)
-         (let ((args (match (package-arguments p)
-                       ((? procedure? proc)
-                        (proc system))
-                       (x x))))
-          (substitute-keyword-arguments args
-            ((#:configure-flags flags)
-             (let* ((var= (string-append variable "="))
-                    (len  (string-length var=)))
-               `(cons ,(string-append var= value)
-                      (map (lambda (flag)
-                             (if (string-prefix? ,var= flag)
-                                 (string-append
-                                  ,(string-append var= value " ")
-                                  (substring flag ,len))
-                                 flag))
-                           ,flags))))))))
+       (let ((args (package-arguments p)))
+         (substitute-keyword-arguments args
+           ((#:configure-flags flags)
+            (let* ((var= (string-append variable "="))
+                   (len  (string-length var=)))
+              `(cons ,(string-append var= value)
+                     (map (lambda (flag)
+                            (if (string-prefix? ,var= flag)
+                                (string-append
+                                 ,(string-append var= value " ")
+                                 (substring flag ,len))
+                                flag))
+                          ,flags)))))))
       (inputs (rewritten-inputs (package-inputs p)))
       (propagated-inputs (rewritten-inputs (package-propagated-inputs p))))))
 
@@ -125,21 +117,14 @@ configure flags for VARIABLE, the associated value is augmented."
     (package (inherit p)
       (location (source-properties->location loc))
       (arguments
-       (let ((augment (lambda (args)
-                        (let ((a (default-keyword-arguments args
-                                   '(#:configure-flags '()
-                                     #:strip-flags #f))))
-                          (substitute-keyword-arguments a
-                            ((#:configure-flags flags)
-                             `(cons* "--disable-shared"
-                                     "LDFLAGS=-static"
-                                     ,flags))
-                            ((#:strip-flags _)
-                             ''("--strip-all")))))))
-         (if (procedure? args)
-             (lambda x
-               (augment (apply args x)))
-             (augment args)))))))
+       (let ((a (default-keyword-arguments args
+                  '(#:configure-flags '()
+                    #:strip-flags #f))))
+         (substitute-keyword-arguments a
+           ((#:configure-flags flags)
+            `(cons* "--disable-shared" "LDFLAGS=-static" ,flags))
+           ((#:strip-flags _)
+            ''("--strip-all"))))))))
 
 
 (define %store

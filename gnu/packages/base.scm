@@ -162,10 +162,10 @@ files (as archives).")
    (build-system gnu-build-system)
    (native-inputs '())                      ; FIXME: needs `ed' for the tests
    (arguments
-    (case-lambda
-      ((system) '(#:tests? #f))
-      ((system cross-system)
-       '(#:configure-flags '("ac_cv_func_strnlen_working=yes")))))
+    '(#:tests? #f)
+    ;; TODO: When cross-compiling, add this:
+    ;;  '(#:configure-flags '("ac_cv_func_strnlen_working=yes"))
+    )
    (synopsis "GNU Patch, a program to apply differences to files")
    (description
     "GNU Patch takes a patch file containing a difference listing produced by
@@ -235,14 +235,13 @@ You can use the sdiff command to merge two files interactively.")
     `(("patch/absolute-paths"
        ,(search-patch "findutils-absolute-paths.patch"))))
    (arguments
-    (case-lambda
-      ((system)
-       `(#:patches (list (assoc-ref %build-inputs "patch/absolute-paths"))))
-      ((system cross-system)
-       ;; Work around cross-compilation failure.
-       ;; See <http://savannah.gnu.org/bugs/?27299#comment1>.
-       `(#:configure-flags '("gl_cv_func_wcwidth_works=yes")
-         ,@(arguments cross-system)))))
+    `(#:patches (list (assoc-ref %build-inputs "patch/absolute-paths")))
+
+    ;; TODO: Work around cross-compilation failure.
+    ;; See <http://savannah.gnu.org/bugs/?27299#comment1>.
+    ;; `(#:configure-flags '("gl_cv_func_wcwidth_works=yes")
+    ;;   ,@(arguments cross-system))
+    )
    (synopsis "Basic directory searching utilities of the GNU operating
 system")
    (description
@@ -396,90 +395,89 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                ("mpfr" ,mpfr)
                ("mpc" ,mpc)))           ; TODO: libelf, ppl, cloog, zlib, etc.
      (arguments
-      (lambda (system)
-        `(#:out-of-source? #t
-          #:strip-binaries? ,stripped?
-          #:configure-flags
-          `("--enable-plugin"
-            "--enable-languages=c,c++"
-            "--disable-multilib"
+      `(#:out-of-source? #t
+        #:strip-binaries? ,stripped?
+        #:configure-flags
+        `("--enable-plugin"
+          "--enable-languages=c,c++"
+          "--disable-multilib"
 
-            "--with-local-prefix=/no-gcc-local-prefix"
+          "--with-local-prefix=/no-gcc-local-prefix"
 
-            ,(let ((libc (assoc-ref %build-inputs "libc")))
-               (if libc
-                   (string-append "--with-native-system-header-dir=" libc
-                                  "/include")
-                   "--without-headers")))
-          #:make-flags
-          (let ((libc (assoc-ref %build-inputs "libc")))
-            `(,@(if libc
-                    (list (string-append "LDFLAGS_FOR_BUILD="
-                                         "-L" libc "/lib "
-                                         "-Wl,-dynamic-linker "
-                                         "-Wl," libc
-                                         ,(glibc-dynamic-linker system)))
-                    '())
-              ,(string-append "BOOT_CFLAGS=-O2 "
-                              ,(if stripped? "-g0" "-g"))))
+          ,(let ((libc (assoc-ref %build-inputs "libc")))
+             (if libc
+                 (string-append "--with-native-system-header-dir=" libc
+                                "/include")
+                 "--without-headers")))
+        #:make-flags
+        (let ((libc (assoc-ref %build-inputs "libc")))
+          `(,@(if libc
+                  (list (string-append "LDFLAGS_FOR_BUILD="
+                                       "-L" libc "/lib "
+                                       "-Wl,-dynamic-linker "
+                                       "-Wl," libc
+                                       ,(glibc-dynamic-linker)))
+                  '())
+            ,(string-append "BOOT_CFLAGS=-O2 "
+                            ,(if stripped? "-g0" "-g"))))
 
-          #:tests? #f
-          #:phases
-          (alist-cons-before
-           'configure 'pre-configure
-           (lambda* (#:key inputs outputs #:allow-other-keys)
-             (let ((out  (assoc-ref outputs "out"))
-                   (libc (assoc-ref inputs "libc")))
-               (when libc
-                 ;; The following is not performed for `--without-headers'
-                 ;; cross-compiler builds.
+        #:tests? #f
+        #:phases
+        (alist-cons-before
+         'configure 'pre-configure
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let ((out  (assoc-ref outputs "out"))
+                 (libc (assoc-ref inputs "libc")))
+             (when libc
+               ;; The following is not performed for `--without-headers'
+               ;; cross-compiler builds.
 
-                 ;; Fix the dynamic linker's file name.
-                 (substitute* (find-files "gcc/config"
-                                          "^linux(64|-elf)?\\.h$")
-                   (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
-                    (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
-                            suffix
-                            (string-append libc ,(glibc-dynamic-linker system)))))
+               ;; Fix the dynamic linker's file name.
+               (substitute* (find-files "gcc/config"
+                                        "^linux(64|-elf)?\\.h$")
+                 (("#define GLIBC_DYNAMIC_LINKER([^ ]*).*$" _ suffix)
+                  (format #f "#define GLIBC_DYNAMIC_LINKER~a \"~a\"~%"
+                          suffix
+                          (string-append libc ,(glibc-dynamic-linker)))))
 
-                 ;; Tell where to find libstdc++, libc, and `?crt*.o', except
-                 ;; `crt{begin,end}.o', which come with GCC.
-                 (substitute* (find-files "gcc/config"
-                                          "^(gnu-user(64)?|linux-elf)\\.h$")
-                   (("#define LIB_SPEC (.*)$" _ suffix)
-                    ;; Note that with this "lib" spec, we may still add a
-                    ;; RUNPATH to GCC even when `libgcc_s' is not NEEDED.
-                    ;; There's not much that can be done to avoid it, though.
-                    (format #f "#define LIB_SPEC \"-L~a/lib %{!static:-rpath=~a/lib \
+               ;; Tell where to find libstdc++, libc, and `?crt*.o', except
+               ;; `crt{begin,end}.o', which come with GCC.
+               (substitute* (find-files "gcc/config"
+                                        "^(gnu-user(64)?|linux-elf)\\.h$")
+                 (("#define LIB_SPEC (.*)$" _ suffix)
+                  ;; Note that with this "lib" spec, we may still add a
+                  ;; RUNPATH to GCC even when `libgcc_s' is not NEEDED.
+                  ;; There's not much that can be done to avoid it, though.
+                  (format #f "#define LIB_SPEC \"-L~a/lib %{!static:-rpath=~a/lib \
 %{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib}} \" ~a~%"
-                            libc libc out out suffix))
-                   (("#define STARTFILE_SPEC.*$" line)
-                    (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
+                          libc libc out out suffix))
+                 (("#define STARTFILE_SPEC.*$" line)
+                  (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
 #define STANDARD_STARTFILE_PREFIX_2 \"\"
 ~a~%"
-                            libc line))))
+                          libc line))))
 
-               ;; Don't retain a dependency on the build-time sed.
-               (substitute* "fixincludes/fixincl.x"
-                 (("static char const sed_cmd_z\\[\\] =.*;")
-                  "static char const sed_cmd_z[] = \"sed\";"))))
+             ;; Don't retain a dependency on the build-time sed.
+             (substitute* "fixincludes/fixincl.x"
+               (("static char const sed_cmd_z\\[\\] =.*;")
+                "static char const sed_cmd_z[] = \"sed\";"))))
 
-           (alist-cons-after
-            'configure 'post-configure
-            (lambda _
-              ;; Don't store configure flags, to avoid retaining references to
-              ;; build-time dependencies---e.g., `--with-ppl=/nix/store/xxx'.
-              (substitute* "Makefile"
-                (("^TOPLEVEL_CONFIGURE_ARGUMENTS=(.*)$" _ rest)
-                 "TOPLEVEL_CONFIGURE_ARGUMENTS=\n")))
-            (alist-replace 'install
-                           (lambda* (#:key outputs #:allow-other-keys)
-                             (zero?
-                              (system* "make"
-                                       ,(if stripped?
-                                            "install-strip"
-                                            "install"))))
-                           %standard-phases))))))
+         (alist-cons-after
+          'configure 'post-configure
+          (lambda _
+            ;; Don't store configure flags, to avoid retaining references to
+            ;; build-time dependencies---e.g., `--with-ppl=/nix/store/xxx'.
+            (substitute* "Makefile"
+              (("^TOPLEVEL_CONFIGURE_ARGUMENTS=(.*)$" _ rest)
+               "TOPLEVEL_CONFIGURE_ARGUMENTS=\n")))
+          (alist-replace 'install
+                         (lambda* (#:key outputs #:allow-other-keys)
+                           (zero?
+                            (system* "make"
+                                     ,(if stripped?
+                                          "install-strip"
+                                          "install"))))
+                         %standard-phases)))))
 
      (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
      (synopsis "The GNU Compiler Collection")
@@ -653,7 +651,8 @@ with the Linux kernel.")
     ("findutils" ,findutils-boot0)
     ,@%bootstrap-inputs))
 
-(define* (nix-system->gnu-triplet system #:optional (vendor "unknown"))
+(define* (nix-system->gnu-triplet
+          #:optional (system (%current-system)) (vendor "unknown"))
   "Return an a guess of the GNU triplet corresponding to Nix system
 identifier SYSTEM."
   (let* ((dash (string-index system #\-))
@@ -665,10 +664,10 @@ identifier SYSTEM."
                        "linux-gnu"
                        os))))
 
-(define boot-triplet
+(define* (boot-triplet #:optional (system (%current-system)))
   ;; Return the triplet used to create the cross toolchain needed in the
   ;; first bootstrapping stage.
-  (cut nix-system->gnu-triplet <> "guix"))
+  (nix-system->gnu-triplet system "guix"))
 
 ;; Following Linux From Scratch, build a cross-toolchain in stage 0.  That
 ;; toolchain actually targets the same OS and arch, but it has the advantage
@@ -680,12 +679,11 @@ identifier SYSTEM."
    (package (inherit binutils)
      (name "binutils-cross-boot0")
      (arguments
-      (lambda (system)
-        `(#:guile ,%bootstrap-guile
-          #:implicit-inputs? #f
-          ,@(substitute-keyword-arguments (package-arguments binutils)
-              ((#:configure-flags cf)
-               `(list ,(string-append "--target=" (boot-triplet system))))))))
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
+        ,@(substitute-keyword-arguments (package-arguments binutils)
+            ((#:configure-flags cf)
+             `(list ,(string-append "--target=" (boot-triplet)))))))
      (inputs %boot0-inputs))))
 
 (define gcc-boot0
@@ -693,82 +691,80 @@ identifier SYSTEM."
    (package (inherit gcc-4.7)
      (name "gcc-cross-boot0")
      (arguments
-      (lambda (system)
-        `(#:guile ,%bootstrap-guile
-          #:implicit-inputs? #f
-          #:modules ((guix build gnu-build-system)
-                     (guix build utils)
-                     (ice-9 regex)
-                     (srfi srfi-1)
-                     (srfi srfi-26))
-          ,@(substitute-keyword-arguments ((package-arguments gcc-4.7) system)
-              ((#:configure-flags flags)
-               `(append (list ,(string-append "--target="
-                                              (boot-triplet system))
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
+        #:modules ((guix build gnu-build-system)
+                   (guix build utils)
+                   (ice-9 regex)
+                   (srfi srfi-1)
+                   (srfi srfi-26))
+        ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
+            ((#:configure-flags flags)
+             `(append (list ,(string-append "--target=" (boot-triplet))
 
-                              ;; No libc yet.
-                              "--without-headers"
+                            ;; No libc yet.
+                            "--without-headers"
 
-                              ;; Disable features not needed at this stage.
-                              "--disable-shared"
-                              "--enable-languages=c"
-                              "--disable-libmudflap"
-                              "--disable-libgomp"
-                              "--disable-libssp"
-                              "--disable-libquadmath"
-                              "--disable-decimal-float")
-                        (remove (cut string-match "--enable-languages.*" <>)
-                                ,flags)))
-              ((#:phases phases)
-               `(alist-cons-after
-                 'unpack 'unpack-gmp&co
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
-                         (mpfr (assoc-ref %build-inputs "mpfr-source"))
-                         (mpc  (assoc-ref %build-inputs "mpc-source")))
+                            ;; Disable features not needed at this stage.
+                            "--disable-shared"
+                            "--enable-languages=c"
+                            "--disable-libmudflap"
+                            "--disable-libgomp"
+                            "--disable-libssp"
+                            "--disable-libquadmath"
+                            "--disable-decimal-float")
+                      (remove (cut string-match "--enable-languages.*" <>)
+                              ,flags)))
+            ((#:phases phases)
+             `(alist-cons-after
+               'unpack 'unpack-gmp&co
+               (lambda* (#:key inputs #:allow-other-keys)
+                 (let ((gmp  (assoc-ref %build-inputs "gmp-source"))
+                       (mpfr (assoc-ref %build-inputs "mpfr-source"))
+                       (mpc  (assoc-ref %build-inputs "mpc-source")))
 
-                     ;; To reduce the set of pre-built bootstrap inputs, build
-                     ;; GMP & co. from GCC.
-                     (for-each (lambda (source)
-                                 (or (zero? (system* "tar" "xvf" source))
-                                     (error "failed to unpack tarball"
-                                            source)))
-                               (list gmp mpfr mpc))
+                   ;; To reduce the set of pre-built bootstrap inputs, build
+                   ;; GMP & co. from GCC.
+                   (for-each (lambda (source)
+                               (or (zero? (system* "tar" "xvf" source))
+                                   (error "failed to unpack tarball"
+                                          source)))
+                             (list gmp mpfr mpc))
 
-                     ;; Create symlinks like `gmp' -> `gmp-5.0.5'.
-                     ,@(map (lambda (lib)
-                              `(symlink ,(package-full-name lib)
-                                        ,(package-name lib)))
-                            (list gmp mpfr mpc))
+                   ;; Create symlinks like `gmp' -> `gmp-5.0.5'.
+                   ,@(map (lambda (lib)
+                            `(symlink ,(package-full-name lib)
+                                      ,(package-name lib)))
+                          (list gmp mpfr mpc))
 
-                     ;; MPFR headers/lib are found under $(MPFR)/src, but
-                     ;; `configure' wrongfully tells MPC too look under
-                     ;; $(MPFR), so fix that.
-                     (substitute* "configure"
-                       (("extra_mpc_mpfr_configure_flags(.+)--with-mpfr-include=([^/]+)/mpfr(.*)--with-mpfr-lib=([^ ]+)/mpfr"
-                         _ equals include middle lib)
-                        (string-append "extra_mpc_mpfr_configure_flags" equals
-                                       "--with-mpfr-include=" include
-                                       "/mpfr/src" middle
-                                       "--with-mpfr-lib=" lib
-                                       "/mpfr/src"))
-                       (("gmpinc='-I([^ ]+)/mpfr -I([^ ]+)/mpfr" _ a b)
-                        (string-append "gmpinc='-I" a "/mpfr/src "
-                                       "-I" b "/mpfr/src"))
-                       (("gmplibs='-L([^ ]+)/mpfr" _ a)
-                        (string-append "gmplibs='-L" a "/mpfr/src")))))
-                 (alist-cons-after
-                  'install 'symlink-libgcc_eh
-                  (lambda* (#:key outputs #:allow-other-keys)
-                    (let ((out (assoc-ref outputs "out")))
-                      ;; Glibc wants to link against libgcc_eh, so provide
-                      ;; it.
-                      (with-directory-excursion
-                          (string-append out "/lib/gcc/"
-                                         ,(boot-triplet system)
-                                         "/" ,(package-version gcc-4.7))
-                        (symlink "libgcc.a" "libgcc_eh.a"))))
-                  ,phases)))))))
+                   ;; MPFR headers/lib are found under $(MPFR)/src, but
+                   ;; `configure' wrongfully tells MPC too look under
+                   ;; $(MPFR), so fix that.
+                   (substitute* "configure"
+                     (("extra_mpc_mpfr_configure_flags(.+)--with-mpfr-include=([^/]+)/mpfr(.*)--with-mpfr-lib=([^ ]+)/mpfr"
+                       _ equals include middle lib)
+                      (string-append "extra_mpc_mpfr_configure_flags" equals
+                                     "--with-mpfr-include=" include
+                                     "/mpfr/src" middle
+                                     "--with-mpfr-lib=" lib
+                                     "/mpfr/src"))
+                     (("gmpinc='-I([^ ]+)/mpfr -I([^ ]+)/mpfr" _ a b)
+                      (string-append "gmpinc='-I" a "/mpfr/src "
+                                     "-I" b "/mpfr/src"))
+                     (("gmplibs='-L([^ ]+)/mpfr" _ a)
+                      (string-append "gmplibs='-L" a "/mpfr/src")))))
+               (alist-cons-after
+                'install 'symlink-libgcc_eh
+                (lambda* (#:key outputs #:allow-other-keys)
+                  (let ((out (assoc-ref outputs "out")))
+                    ;; Glibc wants to link against libgcc_eh, so provide
+                    ;; it.
+                    (with-directory-excursion
+                        (string-append out "/lib/gcc/"
+                                       ,(boot-triplet)
+                                       "/" ,(package-version gcc-4.7))
+                      (symlink "libgcc.a" "libgcc_eh.a"))))
+                ,phases))))))
 
      (inputs `(("gmp-source" ,(package-source gmp))
                ("mpfr-source" ,(package-source mpfr))
@@ -812,20 +808,19 @@ identifier SYSTEM."
    (package (inherit glibc)
      (name "glibc-intermediate")
      (arguments
-      (lambda (system)
-        `(#:guile ,%bootstrap-guile
-          #:implicit-inputs? #f
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
 
-          ,@(substitute-keyword-arguments (package-arguments glibc)
-              ((#:configure-flags flags)
-               `(append (list ,(string-append "--host=" (boot-triplet system))
-                              ,(string-append "--build="
-                                              (nix-system->gnu-triplet system))
+        ,@(substitute-keyword-arguments (package-arguments glibc)
+            ((#:configure-flags flags)
+             `(append (list ,(string-append "--host=" (boot-triplet))
+                            ,(string-append "--build="
+                                            (nix-system->gnu-triplet))
 
-                              ;; Build Sun/ONC RPC support.  In particular,
-                              ;; install rpc/*.h.
-                              "--enable-obsolete-rpc")
-                        ,flags))))))
+                            ;; Build Sun/ONC RPC support.  In particular,
+                            ;; install rpc/*.h.
+                            "--enable-obsolete-rpc")
+                      ,flags)))))
      (propagated-inputs `(("linux-headers" ,linux-libre-headers-boot0)))
      (inputs
       `( ;; A native GCC is needed to build `cross-rpcgen'.
@@ -847,40 +842,39 @@ that makes it available under the native tool names."
     (source #f)
     (build-system trivial-build-system)
     (arguments
-     (lambda (system)
-       `(#:guile ,%bootstrap-guile
-         #:modules ((guix build utils))
-         #:builder (begin
-                     (use-modules (guix build utils))
+     `(#:guile ,%bootstrap-guile
+       #:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
 
-                     (let* ((binutils (assoc-ref %build-inputs "binutils"))
-                            (gcc      (assoc-ref %build-inputs "gcc"))
-                            (libc     (assoc-ref %build-inputs "libc"))
-                            (bash     (assoc-ref %build-inputs "bash"))
-                            (out      (assoc-ref %outputs "out"))
-                            (bindir   (string-append out "/bin"))
-                            (triplet  ,(boot-triplet system)))
-                       (mkdir-p bindir)
-                       (with-directory-excursion bindir
-                         (for-each (lambda (tool)
-                                     (symlink (string-append binutils "/bin/"
-                                                             triplet "-" tool)
-                                              tool))
-                                   '("ar" "ranlib"))
+                   (let* ((binutils (assoc-ref %build-inputs "binutils"))
+                          (gcc      (assoc-ref %build-inputs "gcc"))
+                          (libc     (assoc-ref %build-inputs "libc"))
+                          (bash     (assoc-ref %build-inputs "bash"))
+                          (out      (assoc-ref %outputs "out"))
+                          (bindir   (string-append out "/bin"))
+                          (triplet  ,(boot-triplet)))
+                     (mkdir-p bindir)
+                     (with-directory-excursion bindir
+                       (for-each (lambda (tool)
+                                   (symlink (string-append binutils "/bin/"
+                                                           triplet "-" tool)
+                                            tool))
+                                 '("ar" "ranlib"))
 
-                         ;; GCC-BOOT0 is a libc-less cross-compiler, so it
-                         ;; needs to be told where to find the crt files and
-                         ;; the dynamic linker.
-                         (call-with-output-file "gcc"
-                           (lambda (p)
-                             (format p "#!~a/bin/bash
+                       ;; GCC-BOOT0 is a libc-less cross-compiler, so it
+                       ;; needs to be told where to find the crt files and
+                       ;; the dynamic linker.
+                       (call-with-output-file "gcc"
+                         (lambda (p)
+                           (format p "#!~a/bin/bash
 exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
-                                     bash
-                                     gcc triplet
-                                     libc libc
-                                     ,(glibc-dynamic-linker system))))
+                                   bash
+                                   gcc triplet
+                                   libc libc
+                                   ,(glibc-dynamic-linker))))
 
-                         (chmod "gcc" #o555)))))))
+                       (chmod "gcc" #o555))))))
     (native-inputs
      `(("binutils" ,binutils)
        ("gcc" ,gcc)
@@ -896,9 +890,8 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                   (car (assoc-ref %boot1-inputs "bash"))))
          (bash (package (inherit bash-light)
                  (arguments
-                  (lambda (system)
-                    `(#:guile ,%bootstrap-guile
-                      ,@(package-arguments bash-light)))))))
+                  `(#:guile ,%bootstrap-guile
+                    ,@(package-arguments bash-light))))))
     (package-with-bootstrap-guile
      (package-with-explicit-inputs (static-package bash)
                                    `(("gcc" ,gcc)
@@ -932,10 +925,9 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   (package-with-bootstrap-guile
    (package (inherit binutils)
      (arguments
-      (lambda (system)
-        `(#:guile ,%bootstrap-guile
-                  #:implicit-inputs? #f
-                  ,@(package-arguments binutils))))
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
+        ,@(package-arguments binutils)))
      (inputs %boot2-inputs))))
 
 (define-public gcc-final
@@ -943,23 +935,22 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   (package (inherit gcc-boot0)
     (name "gcc")
     (arguments
-     (lambda (system)
-       `(#:guile ,%bootstrap-guile
-         #:implicit-inputs? #f
+     `(#:guile ,%bootstrap-guile
+       #:implicit-inputs? #f
 
-         ;; Build again GMP & co. within GCC's build process, because it's hard
-         ;; to do outside (because GCC-BOOT0 is a cross-compiler, and thus
-         ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
-         ,@(substitute-keyword-arguments ((package-arguments gcc-boot0) system)
-             ((#:configure-flags boot-flags)
-              (let loop ((args ((package-arguments gcc-4.7) system)))
-                (match args
-                  ((#:configure-flags normal-flags _ ...)
-                   normal-flags)
-                  ((_ rest ...)
-                   (loop rest)))))
-             ((#:phases phases)
-              `(alist-delete 'symlink-libgcc_eh ,phases))))))
+       ;; Build again GMP & co. within GCC's build process, because it's hard
+       ;; to do outside (because GCC-BOOT0 is a cross-compiler, and thus
+       ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
+       ,@(substitute-keyword-arguments (package-arguments gcc-boot0)
+           ((#:configure-flags boot-flags)
+            (let loop ((args (package-arguments gcc-4.7)))
+              (match args
+                ((#:configure-flags normal-flags _ ...)
+                 normal-flags)
+                ((_ rest ...)
+                 (loop rest)))))
+           ((#:phases phases)
+            `(alist-delete 'symlink-libgcc_eh ,phases)))))
 
     (inputs `(("gmp-source" ,(package-source gmp))
               ("mpfr-source" ,(package-source mpfr))

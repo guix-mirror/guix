@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,34 +36,28 @@
              (base32
               "035r7ma272j2cwni2961jp22k6bn3n9xwn3b3qbcn2yrvlghql22"))))
    (build-system gnu-build-system)
-   (arguments (case-lambda
-                ((system)
-                 ;; XXX: Disable tests on those platforms with know issues.
-                 `(#:tests? ,(not (member system
-                                          '("x86_64-darwin"
-                                            "i686-cygwin"
-                                            "i686-sunos")))
-                   #:patches (list (assoc-ref %build-inputs "patch/s_isdir")
-                                   (assoc-ref %build-inputs
-                                              "patch/readlink-EINVAL")
-                                   (assoc-ref %build-inputs "patch/gets"))
-                   #:phases (alist-cons-before
-                             'check 'pre-check
-                             (lambda* (#:key inputs #:allow-other-keys)
-                               ;; Fix references to /bin/sh.
-                               (let ((bash (assoc-ref inputs "bash")))
-                                 (for-each patch-shebang
-                                           (find-files "tests" "\\.sh$"))
-                                 (substitute* (find-files "tests"
-                                                          "posix_spawn")
-                                   (("/bin/sh")
-                                    (format #f "~a/bin/bash" bash)))))
-                             %standard-phases)))
-                ((system cross-system)
-                 `(#:patches (list (assoc-ref %build-inputs "patch/s_isdir")
-                                   (assoc-ref %build-inputs
-                                              "patch/readlink-EINVAL")
-                                   (assoc-ref %build-inputs "patch/gets"))))))
+   (arguments
+    ;; XXX: Disable tests on those platforms with know issues.
+    `(#:tests? ,(not (member (%current-system)
+                             '("x86_64-darwin"
+                               "i686-cygwin"
+                               "i686-sunos")))
+      #:patches (list (assoc-ref %build-inputs "patch/s_isdir")
+                      (assoc-ref %build-inputs
+                                 "patch/readlink-EINVAL")
+                      (assoc-ref %build-inputs "patch/gets"))
+      #:phases (alist-cons-before
+                'check 'pre-check
+                (lambda* (#:key inputs #:allow-other-keys)
+                  ;; Fix references to /bin/sh.
+                  (let ((bash (assoc-ref inputs "bash")))
+                    (for-each patch-shebang
+                              (find-files "tests" "\\.sh$"))
+                    (substitute* (find-files "tests"
+                                             "posix_spawn")
+                      (("/bin/sh")
+                       (format #f "~a/bin/bash" bash)))))
+                %standard-phases)))
    (inputs `(("patch/s_isdir" ,(search-patch "m4-s_isdir.patch"))
              ("patch/readlink-EINVAL"
               ,(search-patch "m4-readlink-EINVAL.patch"))

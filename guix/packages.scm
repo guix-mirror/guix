@@ -110,7 +110,7 @@ representation."
   (source package-source)                 ; <origin> instance
   (build-system package-build-system)     ; build system
   (arguments package-arguments            ; arguments for the build method
-             (default '()))
+             (default '()) (thunked))
 
   (inputs package-inputs                  ; input packages or derivations
           (default '()))
@@ -290,24 +290,26 @@ PACKAGE for SYSTEM."
   ;; because some derivations, such as the implicit inputs of the GNU build
   ;; system, will be queried many, many times in a row.
   (cached package system
-          (match package
-            (($ <package> name version source (= build-system-builder builder)
-                args inputs propagated-inputs native-inputs self-native-input?
-                outputs)
-             ;; TODO: For `search-paths', add a builder prologue that calls
-             ;; `set-path-environment-variable'.
-             (let ((inputs (map expand-input
-                                (package-transitive-inputs package))))
 
-               (apply builder
-                      store (package-full-name package)
-                      (and source
-                           (package-source-derivation store source system))
-                      inputs
-                      #:outputs outputs #:system system
-                      (if (procedure? args)
-                          (args system)
-                          args)))))))
+          ;; Bind %CURRENT-SYSTEM so that thunked field values can refer
+          ;; to it.
+          (parameterize ((%current-system system))
+            (match package
+              (($ <package> name version source (= build-system-builder builder)
+                  args inputs propagated-inputs native-inputs self-native-input?
+                  outputs)
+               ;; TODO: For `search-paths', add a builder prologue that calls
+               ;; `set-path-environment-variable'.
+               (let ((inputs (map expand-input
+                                  (package-transitive-inputs package))))
+
+                 (apply builder
+                        store (package-full-name package)
+                        (and source
+                             (package-source-derivation store source system))
+                        inputs
+                        #:outputs outputs #:system system
+                        (args))))))))
 
 (define* (package-cross-derivation store package)
   ;; TODO
