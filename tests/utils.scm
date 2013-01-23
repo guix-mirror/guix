@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -122,6 +122,55 @@
      (and (match a (($ <foo> 77 42) #t))
           (match b (($ <foo> 1 2) #t))
           (equal? b c)))))
+
+(test-assert "define-record-type* & thunked"
+  (begin
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar)
+      (baz foo-baz (thunked)))
+
+    (let* ((calls 0)
+           (x     (foo (bar 2)
+                       (baz (begin (set! calls (1+ calls)) 3)))))
+      (and (zero? calls)
+           (equal? (foo-bar x) 2)
+           (equal? (foo-baz x) 3) (= 1 calls)
+           (equal? (foo-baz x) 3) (= 2 calls)))))
+
+(test-assert "define-record-type* & thunked & default"
+  (begin
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar)
+      (baz foo-baz (thunked) (default 42)))
+
+    (let ((mark (make-parameter #f)))
+      (let ((x (foo (bar 2) (baz (mark))))
+            (y (foo (bar 2))))
+        (and (equal? (foo-bar x) 2)
+             (parameterize ((mark (cons 'a 'b)))
+               (eq? (foo-baz x) (mark)))
+             (equal? (foo-bar y) 2)
+             (equal? (foo-baz y) 42))))))
+
+(test-assert "define-record-type* & thunked & inherited"
+  (begin
+    (define-record-type* <foo> foo make-foo
+      foo?
+      (bar foo-bar (thunked))
+      (baz foo-baz (thunked) (default 42)))
+
+    (let ((mark (make-parameter #f)))
+      (let* ((x (foo (bar 2) (baz (mark))))
+             (y (foo (inherit x) (bar (mark)))))
+        (and (equal? (foo-bar x) 2)
+             (parameterize ((mark (cons 'a 'b)))
+               (eq? (foo-baz x) (mark)))
+             (parameterize ((mark (cons 'a 'b)))
+               (eq? (foo-bar y) (mark)))
+             (parameterize ((mark (cons 'a 'b)))
+               (eq? (foo-baz y) (mark))))))))
 
 ;; This is actually in (guix store).
 (test-equal "store-path-package-name"
