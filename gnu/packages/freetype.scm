@@ -62,7 +62,7 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
    (inputs `(("expat" ,expat)
              ("freetype" ,freetype)
              ("pkg-config" ,pkg-config)))
-   (synopsis "Fontconfig, a library for configuring and customising font access. ")
+   (synopsis "Fontconfig, a library for configuring and customising font access.")
    (description
     "Fontconfig can discover new fonts when installed automatically;
 perform font name substitution, so that appropriate alternative fonts can
@@ -76,3 +76,32 @@ high quality, anti-aliased and subpixel rendered text on a display.")
    (license (license:bsd-style "file://COPYING"
                        "See COPYING in the distribution."))
    (home-page "http://www.freedesktop.org/wiki/Software/fontconfig")))
+
+(define-public t1lib
+  (package
+   (name "t1lib")
+   (version "5.1.2")
+   (source (origin
+            (method url-fetch)
+            (uri "ftp://sunsite.unc.edu/pub/Linux/libs/graphics/t1lib-5.1.2.tar.gz")
+            (sha256 (base32
+                     "0nbvjpnmcznib1nlgg8xckrmsw3haa154byds2h90y2g0nsjh4w2"))))
+   (build-system gnu-build-system)
+   (arguments
+    ;; Making the documentation requires latex, but t1lib is also an input
+    ;; for building texlive.
+    `(#:tests? #f ; no test target
+      #:make-flags
+      '("without_doc")))
+   (synopsis "T1lib, a library for generating bitmaps from type 1 fonts.")
+   (description
+    "T1lib is a library for generating/rasterising bitmaps from Type 1 fonts.
+It is based on the code of the X11 rasteriser of the X11 project.
+
+The bitmaps created by t1lib are returned in a data structure with type
+GLYPH. This special GLYPH-type is also used in the X11 window system to
+describe character bitmaps. It contains the bitmap data as well as some
+metric information. But t1lib is in itself entirely independent of the
+X11-system or any other graphical user interface. ")
+   (license license:gpl2)
+   (home-page "http://www.t1lib.org/")))
