@@ -124,9 +124,8 @@
                        (bash (assoc-ref %build-inputs "bash")))
                    (zero? (system* bash "-c"
                                    (format #f "echo hello > ~a" out))))))
-              (inputs `(("bash" ,(lambda (system)
-                                   (search-bootstrap-binary "bash"
-                                                            system)))))))
+              (inputs `(("bash" ,(search-bootstrap-binary "bash"
+                                                          (%current-system)))))))
          (d (package-derivation %store p)))
     (and (build-derivations %store (list d))
          (let ((p (pk 'drv d (derivation-path->output-path d))))

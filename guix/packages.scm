@@ -113,7 +113,7 @@ representation."
              (default '()) (thunked))
 
   (inputs package-inputs                  ; input packages or derivations
-          (default '()))
+          (default '()) (thunked))
   (propagated-inputs package-propagated-inputs    ; same, but propagated
                      (default '()))
   (native-inputs package-native-inputs    ; native input packages/derivations
@@ -272,15 +272,6 @@ PACKAGE for SYSTEM."
       (list name (intern file)))
      (((? string? name) (? origin? source))
       (list name (package-source-derivation store source system)))
-     ((and i ((? string? name) (? procedure? proc) sub-drv ...))
-      ;; This form allows PROC to make a SYSTEM-dependent choice.
-
-      ;; XXX: Currently PROC must return a .drv, a store path, a local
-      ;; file name, or an <origin>.  If it were allowed to return a
-      ;; package, then `transitive-inputs' and co. would need to be
-      ;; adjusted.
-      (let ((input (proc system)))
-        (expand-input (cons* name input sub-drv))))
      (x
       (raise (condition (&package-input-error
                          (package package)

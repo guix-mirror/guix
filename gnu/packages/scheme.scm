@@ -22,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module ((guix utils) #:select (%current-system))
   #:use-module (gnu packages m4)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages emacs)
@@ -69,33 +70,33 @@
        ("m4" ,m4)
 
        ("source"
-        ,(lambda (system)
-           ;; MIT/GNU Scheme is not bootstrappable, so it's recommended to
-           ;; compile from the architecture-specific tarballs, which contain
-           ;; pre-built binaries.  It leads to more efficient code than when
-           ;; building the tarball that contains generated C code instead of
-           ;; those binaries.
-           (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnu/mit-scheme/stable.pkg/"
-                                version "/mit-scheme-"
-                                version "-"
-                                (match system
-                                  ("x86_64-linux" "x86-64")
-                                  ("i686-linux" "i386")
-                                  (_ "c"))
-                                ".tar.gz"))
-            (sha256
-             (match system
-               ("x86_64-linux"
-                (base32
-                 "1wcxm9hyfc53myvlcn93fyqrnnn4scwkknl9hkbp1cphc6mp291x"))
-               ("i686-linux"
-                (base32
-                 "0vi760fy550d9db538m0vzbq1mpdncvw9g8bk4lswk0kcdira55z"))
-               (_
-                (base32
-                 "0pclakzwxbqgy6wqwvs6ml62wgby8ba8xzmwzdwhx1v8wv05yw1j")))))))))
+
+        ;; MIT/GNU Scheme is not bootstrappable, so it's recommended to
+        ;; compile from the architecture-specific tarballs, which contain
+        ;; pre-built binaries.  It leads to more efficient code than when
+        ;; building the tarball that contains generated C code instead of
+        ;; those binaries.
+        ,(origin
+          (method url-fetch)
+          (uri (string-append "mirror://gnu/mit-scheme/stable.pkg/"
+                              version "/mit-scheme-"
+                              version "-"
+                              (match (%current-system)
+                                ("x86_64-linux" "x86-64")
+                                ("i686-linux" "i386")
+                                (_ "c"))
+                              ".tar.gz"))
+          (sha256
+           (match (%current-system)
+             ("x86_64-linux"
+              (base32
+               "1wcxm9hyfc53myvlcn93fyqrnnn4scwkknl9hkbp1cphc6mp291x"))
+             ("i686-linux"
+              (base32
+               "0vi760fy550d9db538m0vzbq1mpdncvw9g8bk4lswk0kcdira55z"))
+             (_
+              (base32
+               "0pclakzwxbqgy6wqwvs6ml62wgby8ba8xzmwzdwhx1v8wv05yw1j"))))))))
     (home-page "http://www.gnu.org/software/mit-scheme/")
     (synopsis "MIT/GNU Scheme, a native code Scheme compiler")
     (description
