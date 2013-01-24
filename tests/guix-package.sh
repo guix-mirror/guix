@@ -139,3 +139,6 @@ fi
 # Failed attempt to roll back.
 if guix-package --bootstrap --roll-back;
 then false; else true; fi
+
+# Extraneous argument.
+! guix-package install foo-bar

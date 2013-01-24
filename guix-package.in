@@ -326,7 +326,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                (lambda (opt name arg result)
                  (leave (_ "~A: unrecognized option~%") name))
                (lambda (arg result)
-                 (alist-cons 'argument arg result))
+                 (leave (_ "~A: extraneous argument~%") arg))
                %default-options))
 
   (define (guile-missing?)
