@@ -1,0 +1,10 @@
+--- TECkit_2_5_1/source/Compiler.cpp	2008-04-07 16:21:12.000000000 +0200
++++ TECkit_2_5_1/source/Compiler.cpp	2013-01-26 00:33:18.000000000 +0100
+@@ -29,6 +29,7 @@
+ 
+ #include "Compiler.h"
+ 
++#include <cstdio>
+ #include <iostream>
+ #include <iomanip>
+ #include <algorithm>

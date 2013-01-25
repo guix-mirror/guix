@@ -18,6 +18,7 @@
 
 (define-module (gnu packages freetype)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:renamer (symbol-prefix-proc 'license:))
@@ -105,3 +106,42 @@ metric information. But t1lib is in itself entirely independent of the
 X11-system or any other graphical user interface. ")
    (license license:gpl2)
    (home-page "http://www.t1lib.org/")))
+
+(define-public teckit
+  (package
+   (name "teckit")
+   (version "2.5.1")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                   "http://scripts.sil.org/svn-view/teckit/TAGS/TECkit_"
+                   (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
+                   ".tar.gz"))
+            (sha256 (base32
+                     "0fjiwvic8mdxpkyccfp7zh26y9xnvkp0skqbyfkrjiacd191k82r"))))
+   (build-system gnu-build-system)
+   (inputs `(("patch/teckit" ,(search-patch "teckit-cstdio.patch"))
+             ("zlib" ,zlib)))
+   (arguments
+    `(#:patches (list (assoc-ref %build-inputs "patch/teckit"))))
+   (synopsis "TECkit, a toolkit for encoding conversions")
+   (description
+    "TECkit is a low-level toolkit intended to be used by other applications
+that need to perform encoding conversions (e.g., when importing legacy data
+into a Unicode-based application). The primary component of the TECkit
+package is therefore a library that performs conversions; this is the
+\"TECkit engine\". The engine relies on mapping tables in a specific binary
+format (for which documentation is available); there is a compiler that
+creates such tables from a human-readable mapping description (a simple
+text file).
+
+To facilitate the development and testing of mapping tables for TECkit,
+several applications are also included in the current package; these
+include simple tools for applying conversions to plain-text and Standard
+Format files, as well as both command-line and simple GUI versions of the
+TECkit compiler. However, it is not intended that these tools will be the
+primary means by which end users perform conversions, and they have not
+been designed, tested, and debugged to the extent that general-purpose
+applications should be.")
+   (license license:lgpl2.1+)
+   (home-page "http://scripts.sil.org/cms/scripts/page.php?cat_id=teckit")))
