@@ -207,7 +207,8 @@ which is not available during bootstrap."
                    (newline))
                  (put-bytevector p bv-or-port))))
          file))
-      ((302)                                      ; found (redirection)
+      ((301                                       ; moved permanently
+        302)                                      ; found (redirection)
        (let ((uri (response-location resp)))
          (format #t "following redirection to `~a'...~%"
                  (uri->string uri))
