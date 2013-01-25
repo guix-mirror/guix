@@ -60,14 +60,14 @@ multiplication routines such as Toom–Cook and the FFT. ")
 (define-public fplll
   (package
    (name "fplll")
-   (version "4.0.1")
+   (version "4.0.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://perso.ens-lyon.fr/damien.stehle/fplll/libfplll-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "122bpqdlikshhd7nmq0l5qfc0agyk7x21gvplv1l9hb77l8cy9rw"))))
+                     "0zkifm4s77cl2qib905lxpwvlwf6liy8q7bnmvfdfyz0fbgxl8z8"))))
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)
              ("mpfr" ,mpfr)))
