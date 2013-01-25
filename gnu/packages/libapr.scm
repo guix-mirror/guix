@@ -56,3 +56,36 @@ not identical behaviour regardless of the platform on which their software is
 built, relieving them of the need to code special-case conditions to work
 around or take advantage of platform-specific deficiencies or features.")
     (license asl2.0)))
+
+(define-public libaprutil
+  (package
+    (name "libaprutil")
+    (version "1.5.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://apache.crihan.fr/dist//apr/apr-util-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "0832cb90zd7zqhhdx0v3i8viw1rmn0d945qbk1zid3cnky9r0s19"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("libapr" ,libapr)))
+    (arguments
+     '(#:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out"))
+                (libapr (assoc-ref inputs "libapr")))
+            (setenv "CONFIG_SHELL" (which "bash"))
+            (zero?
+             (system* "./configure"
+                      (string-append "--prefix=" out)
+                      (string-append "--with-apr=" libapr)))))
+        %standard-phases)))
+    (home-page "http://apr.apache.org/")
+    (synopsis "One of the Apache Portable Runtime Library companions")
+    (description
+     "APR-util provides a number of helpful abstractions on top of APR.")
+    (license asl2.0)))
