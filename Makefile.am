@@ -86,6 +86,7 @@ MODULES =					\
   gnu/packages/indent.scm			\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
+  gnu/packages/libapr.scm 			\
   gnu/packages/libevent.scm			\
   gnu/packages/libffi.scm			\
   gnu/packages/libidn.scm			\
@@ -156,6 +157,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
   gnu/packages/patches/guile-default-utf8.patch			\
   gnu/packages/patches/guile-relocatable.patch			\
+  gnu/packages/patches/libapr-skip-getservbyname-test.patch 	\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/lsh-guile-compat.patch			\
