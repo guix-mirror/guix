@@ -123,6 +123,7 @@ MODULES =					\
   gnu/packages/scheme.scm			\
   gnu/packages/screen.scm 			\
   gnu/packages/shishi.scm			\
+  gnu/packages/sqlite.scm 			\
   gnu/packages/system.scm			\
   gnu/packages/tcl.scm				\
   gnu/packages/texinfo.scm			\
