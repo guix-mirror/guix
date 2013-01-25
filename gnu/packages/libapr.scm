@@ -31,7 +31,7 @@
     (version "1.4.6")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://mirrors.ircam.fr/pub/apache//apr/apr-"
+             (uri (string-append "mirror://apache/apr/apr-"
                                  version ".tar.bz2"))
              (sha256
               (base32
@@ -47,7 +47,7 @@
                ,(search-patch "libapr-skip-getservbyname-test.patch"))))
     (home-page "http://apr.apache.org/")
     (synopsis "The Apache Portable Runtime Library")
-    (description 
+    (description
      "The mission of the Apache Portable Runtime (APR) project is to create and
 maintain software libraries that provide a predictable and consistent interface
 to underlying platform-specific implementations. The primary goal is to provide
@@ -63,7 +63,7 @@ around or take advantage of platform-specific deficiencies or features.")
     (version "1.5.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://apache.crihan.fr/dist//apr/apr-util-"
+             (uri (string-append "mirror://apache/apr/apr-util-"
                                  version ".tar.bz2"))
              (sha256
               (base32

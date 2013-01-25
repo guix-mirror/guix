@@ -34,9 +34,8 @@
     (version "1.7.8")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "http://mirrors.ircam.fr/pub/apache/subversion/subversion-"
-                   version ".tar.bz2"))
+             (uri (string-append "mirror://apache/subversion/subversion-"
+                                 version ".tar.bz2"))
              (sha256
               (base32
                "11inl9n1riahfnbk1fax0dysm2swakzhzhpmm2zvga6fikcx90zw"))))
