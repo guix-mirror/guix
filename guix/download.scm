@@ -91,7 +91,14 @@
        "http://ramses.wh2.tu-dresden.de/pub/mirrors/kernel.org/"
        "http://linux-kernel.uio.no/pub/"
        "http://kernel.osuosl.org/pub/"
-       "ftp://ftp.funet.fi/pub/mirrors/ftp.kernel.org/pub/"))))
+       "ftp://ftp.funet.fi/pub/mirrors/ftp.kernel.org/pub/")
+      (apache             ; from http://www.apache.org/mirrors/dist.html
+       "http://www.eu.apache.org/dist/"
+       "http://www.us.apache.org/dist/"
+       "ftp://gd.tuwien.ac.at/pub/infosys/servers/http/apache/dist/"
+       "http://apache.belnet.be/"
+       "http://mirrors.ircam.fr/pub/apache/"
+       "http://apache-mirror.rbc.ru/pub/apache/"))))
 
 (define (gnutls-derivation store system)
   "Return the GnuTLS derivation for SYSTEM."
