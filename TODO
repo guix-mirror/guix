@@ -103,6 +103,15 @@ create a new ‘dir’.
       ("i3" ,p3)))
 #+END_SRC
 
+* synchronize package descriptions with the [[http://directory.fsf.org][FSD]] and/or the Womb
+
+Meta-data for GNU packages, including descriptions and synopses, can be
+dumped from the FSD:
+http://directory.fsf.org/wiki?title=GNU/Export&action=purge .
+We could periodically synchronize with that.
+
+The [[./guix/gnu-maintenance.scm][Womb]] also contains synopses for all the GNU packages.
+
 * support cross-compilation
 
 Implement ‘package-cross-derivation’, and add the corresponding code in
@@ -145,7 +154,6 @@ etc.
 
 * guix-package
 
-** add ‘--roll-back’
 ** add ‘--list-generations’, and ‘--delete-generations’
 ** add ‘--upgrade’
 ** add ‘--search’
@@ -153,9 +161,15 @@ etc.
 * guix build utils
 ** Add equivalent to "rm -rf"
 ** Add equivalent to Nixpkgs's ‘wrapProgram’
-** Add equivalent to chrpath, possibly using [[https://gitorious.org/guile-dlhacks/guile-dlhacks/][guile-dlhacks]]
+** Change ‘patch-shebang’ to DTRT for /usr/bin/env
 
-** Add a hash-rewriting thing for deep dependency replacement without rebuild
+I.e., replace “#!/usr/bin/env perl” by “#!/nix/store/…/bin/perl”.
+ 
+** MAYBE Change ‘ld-wrapper’ to add RPATH for libs passed by file name
+
+** MAYBE Add equivalent to chrpath, possibly using [[https://gitorious.org/guile-dlhacks/guile-dlhacks/][guile-dlhacks]]
+
+** MAYBE Add a hash-rewriting thing for deep dependency replacement without rebuild
 
 See [[https://github.com/NixOS/nixpkgs/commit/d1662d715514e6ef9d3dc29f132f1b3d8e608a18][Shea Levy's `replace-dependency' in Nixpkgs]].
 
