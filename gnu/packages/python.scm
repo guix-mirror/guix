@@ -21,7 +21,6 @@
   #:use-module ((guix licenses) #:select (psfl))
   #:use-module (gnu packages compression)
   #:use-module (gnu packages openssl)
-  #:use-module (gnu packages base)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
