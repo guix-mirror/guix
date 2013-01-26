@@ -111,8 +111,9 @@ MODULES =					\
   gnu/packages/netpbm.scm			\
   gnu/packages/nettle.scm			\
   gnu/packages/ocaml.scm 			\
-  gnu/packages/openssl.scm			\
   gnu/packages/oggvorbis.scm			\
+  gnu/packages/openldap.scm			\
+  gnu/packages/openssl.scm			\
   gnu/packages/pdf.scm				\
   gnu/packages/perl.scm				\
   gnu/packages/pkg-config.scm			\
