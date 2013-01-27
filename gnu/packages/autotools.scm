@@ -72,10 +72,9 @@ can use, in the form of M4 macro calls.")
     (name (string-append (package-name autoconf) "-wrapper"))
     (build-system trivial-build-system)
     (inputs `(("guile"
-               ,(lambda _
-                  ;; XXX: Kludge to hide the circular dependency.
-                  (module-ref (resolve-interface '(gnu packages guile))
-                              'guile-2.0)))
+               ;; XXX: Kludge to hide the circular dependency.
+               ,(module-ref (resolve-interface '(gnu packages guile))
+                            'guile-2.0))
               ("autoconf" ,autoconf)
               ("bash" ,bash)))
     (arguments
