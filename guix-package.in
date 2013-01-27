@@ -220,14 +220,26 @@ all of PACKAGES, a list of name/version/output/path tuples."
         (symlink previous-profile pivot)
         (rename-file pivot profile)))
 
-    (cond ((zero? number)
+    (cond ((not (file-exists? profile))           ; invalid profile
            (format (current-error-port)
-                   (_ "error: `~a' is not a valid profile~%")
+                   (_ "error: profile `~a' does not exist~%")
                    profile))
-          ((or (zero? previous-number)
+          ((zero? number)                         ; empty profile
+           (format (current-error-port)
+                   (_ "nothing to do: already at the empty profile~%")))
+          ((or (zero? previous-number)            ; going to emptiness
                (not (file-exists? previous-profile)))
-           (leave (_ "error: no previous profile; not rolling back~%")))
-          (else (switch-link)))))
+           (let*-values (((drv-path drv)
+                          (profile-derivation (%store) '()))
+                         ((prof)
+                          (derivation-output-path
+                           (assoc-ref (derivation-outputs drv) "out"))))
+             (when (not (build-derivations (%store) (list drv-path)))
+               (leave (_ "failed to build the empty profile~%")))
+
+             (symlink prof previous-profile)
+             (switch-link)))
+          (else (switch-link)))))                 ; anything else
 
 
 ;;;

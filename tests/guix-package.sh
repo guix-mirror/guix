@@ -81,9 +81,14 @@ then
     test "`readlink_base "$profile"`" = "$profile-1-link"
     test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
 
-    # Failed attempt to roll back because there's no previous generation.
-    if guix-package --roll-back -p "$profile";
-    then false; else true; fi
+    # Move to the empty profile.
+    for i in `seq 1 3`
+    do
+	guix-package --bootstrap --roll-back -p "$profile"
+	! test -f "$profile/bin"
+	! test -f "$profile/lib"
+	test "`readlink_base "$profile"`" = "$profile-0-link"
+    done
 
     # Reinstall after roll-back to generation 1.
     guix-package --bootstrap -p "$profile" -i "$boot_make"
@@ -136,9 +141,15 @@ then
     test "`cd $HOME/.guix-profile ; pwd`" = "$first_environment"
 fi
 
-# Failed attempt to roll back.
-if guix-package --bootstrap --roll-back;
-then false; else true; fi
+# Move to the empty profile.
+default_profile="`readlink "$HOME/.guix-profile"`"
+for i in `seq 1 3`
+do
+    guix-package --bootstrap --roll-back
+    ! test -f "$HOME/.guix-profile/bin"
+    ! test -f "$HOME/.guix-profile/lib"
+    test "`readlink "$default_profile"`" = "$default_profile-0-link"
+done
 
 # Extraneous argument.
 ! guix-package install foo-bar
