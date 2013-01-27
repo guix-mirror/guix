@@ -514,6 +514,10 @@ installed packages, the profile is made to point to the @dfn{empty
 profile}, also known as @dfn{profile zero}---i.e., it contains no files
 apart from its own meta-data.
 
+Installing, removing, or upgrading packages from a generation that has
+been rolled back to overwrites previous future generations.  Thus, the
+history of a profile's generations is always linear.
+
 @item --profile=@var{profile}
 @itemx -p @var{profile}
 Use @var{profile} instead of the user's default profile.

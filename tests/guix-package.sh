@@ -90,22 +90,26 @@ then
 	test "`readlink_base "$profile"`" = "$profile-0-link"
     done
 
-    # Reinstall after roll-back to generation 1.
+    # Reinstall after roll-back to the empty profile.
     guix-package --bootstrap -p "$profile" -i "$boot_make"
-    test "`readlink_base "$profile"`" = "$profile-4-link"
-    test -x "$profile/bin/guile" && test -x "$profile/bin/make"
+    test "`readlink_base "$profile"`" = "$profile-1-link"
+    test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
 
-    # Roll-back to generation 3[*], and install---all at once.
-    # [*] FIXME: Eventually, this should roll-back to generation 1.
+    # Roll-back to generation 0, and install---all at once.
     guix-package --bootstrap -p "$profile" --roll-back -i "$boot_guile"
-    test "`readlink_base "$profile"`" = "$profile-5-link"
+    test "`readlink_base "$profile"`" = "$profile-1-link"
+    test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
+
+    # Install Make.
+    guix-package --bootstrap -p "$profile" -i "$boot_make"
+    test "`readlink_base "$profile"`" = "$profile-2-link"
     test -x "$profile/bin/guile" && test -x "$profile/bin/make"
 
     # Make a "hole" in the list of generations, and make sure we can
     # roll back "over" it.
-    rm "$profile-4-link"
+    rm "$profile-1-link"
     guix-package --bootstrap -p "$profile" --roll-back
-    test "`readlink_base "$profile"`" = "$profile-3-link"
+    test "`readlink_base "$profile"`" = "$profile-0-link"
 fi
 
 # Make sure the `:' syntax works.

@@ -144,16 +144,6 @@ former profiles were found."
                    (cute regexp-exec (profile-regexp profile) <>))
           profiles))))
 
-(define (latest-profile-number profile)
-  "Return the identifying number of the latest generation of PROFILE.
-PROFILE is the name of the symlink to the current generation."
-  (fold (lambda (number highest)
-          (if (> number highest)
-              number
-              highest))
-        0
-        (profile-numbers profile)))
-
 (define (previous-profile-number profile number)
   "Return the number of the generation before generation NUMBER of
 PROFILE, or 0 if none exists.  It could be NUMBER - 1, but it's not the
@@ -203,9 +193,15 @@ all of PACKAGES, a list of name/version/output/path tuples."
              (compose string->number (cut match:substring <> 1)))
       0))
 
+(define (switch-symlinks link target)
+  "Atomically switch LINK, a symbolic link, to point to TARGET.  Works
+both when LINK already exists and when it does not."
+  (let ((pivot (string-append link ".new")))
+    (symlink target pivot)
+    (rename-file pivot link)))
+
 (define (roll-back profile)
   "Roll back to the previous generation of PROFILE."
-  ;; XXX: Get the previous generation number from the manifest?
   (let* ((number           (profile-number profile))
          (previous-number  (previous-profile-number profile number))
          (previous-profile (format #f "~a-~a-link"
@@ -214,11 +210,9 @@ all of PACKAGES, a list of name/version/output/path tuples."
 
     (define (switch-link)
       ;; Atomically switch PROFILE to the previous profile.
-      (let ((pivot (string-append previous-profile ".new")))
-        (format #t (_ "switching from generation ~a to ~a~%")
-                number previous-number)
-        (symlink previous-profile pivot)
-        (rename-file pivot profile)))
+      (format #t (_ "switching from generation ~a to ~a~%")
+              number previous-number)
+      (switch-symlinks profile previous-profile))
 
     (cond ((not (file-exists? profile))           ; invalid profile
            (format (current-error-port)
@@ -237,7 +231,7 @@ all of PACKAGES, a list of name/version/output/path tuples."
              (when (not (build-derivations (%store) (list drv-path)))
                (leave (_ "failed to build the empty profile~%")))
 
-             (symlink prof previous-profile)
+             (switch-symlinks previous-profile prof)
              (switch-link)))
           (else (switch-link)))))                 ; anything else
 
@@ -499,10 +493,13 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                      (%store) (manifest-packages
                                                (profile-manifest profile))))
                           (old-prof (derivation-path->output-path old-drv))
-                          (number   (latest-profile-number profile))
-                          (name     (format #f "~a/~a-~a-link"
-                                            (dirname profile)
-                                            (basename profile) (+ 1 number))))
+                          (number   (profile-number profile))
+
+                          ;; Always use NUMBER + 1 for the new profile,
+                          ;; possibly overwriting a "previous future
+                          ;; generation".
+                          (name     (format #f "~a-~a-link"
+                                            profile (+ 1 number))))
                      (if (string=? old-prof prof)
                          (when (or (pair? install) (pair? remove))
                            (format (current-error-port)
@@ -515,10 +512,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                                   (%make-void-port "w"))))
                                 (build-derivations (%store) (list prof-drv)))
                               (begin
-                                (symlink prof name)
-                                (when (file-exists? profile)
-                                  (delete-file profile))
-                                (symlink name profile))))))))))
+                                (switch-symlinks name prof)
+                                (switch-symlinks profile name))))))))))
 
   (define (process-query opts)
     ;; Process any query specified by OPTS.  Return #t when a query was
