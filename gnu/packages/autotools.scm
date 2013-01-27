@@ -135,14 +135,14 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
 (define-public automake
   (package
     (name "automake")
-    (version "1.12.6")
+    (version "1.13.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/automake/automake-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1ynvca8z4aqcwr94rf7j1bfiid2w9w250y9qhnyj9vmi8lhsnd7q"))))
+               "12yi1bzkipi7qdmkdy77pazljsa9z7q66hi6c4rq73p7hbv6rkbf"))))
     (build-system gnu-build-system)
     (inputs
      `(("autoconf" ,autoconf-wrapper)
