@@ -32,14 +32,14 @@
 (define-public gdb
   (package
     (name "gdb")
-    (version "7.5")
+    (version "7.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0chrws5ga90b50kp06yll6zy42fhnx9yr87r4i7swsc369fc8y6i"))))
+               "084xs90545an51biyy4qd53hsw6p1k6arviq2wlz1a4z526q02q7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
