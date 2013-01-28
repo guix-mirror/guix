@@ -23,6 +23,7 @@
 @title{GNU Guix Reference Manual}
 @subtitle{Using the GNU Guix Functional Package Manager}
 @author Ludovic Courtès
+@author Nikita Karetnikov
 
 @page
 @vskip 0pt plus 1filll
@@ -541,6 +542,14 @@ following options to query the current state of a profile, or the
 availability of packages:
 
 @table @option
+
+@item --search=@var{regexp}
+@itemx -s @var{regexp}
+List the available packages whose synopsis or description matches
+@var{regexp}.
+
+For each package, print the following items, separated by tabs: its
+name, version, and the source location of its definition.
 
 @item --list-installed[=@var{regexp}]
 @itemx -I [@var{regexp}]

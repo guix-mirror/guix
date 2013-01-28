@@ -1,5 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 #
 # This file is part of GNU Guix.
 #
@@ -67,6 +68,10 @@ then
     esac
 
     test "`guix-package -p "$profile" -I 'g.*e' | cut -f1`" = "guile-bootstrap"
+
+    # Search.
+    test "`guix-package -s "GNU Hello" | cut -f1`" = "hello"
+    test "`guix-package -s "n0t4r341p4ck4g3"`" = ""
 
     # Remove a package.
     guix-package --bootstrap -p "$profile" -r "guile-bootstrap"

@@ -235,6 +235,31 @@ both when LINK already exists and when it does not."
              (switch-link)))
           (else (switch-link)))))                 ; anything else
 
+(define (find-packages-by-description rx)
+  "Search in SYNOPSIS and DESCRIPTION using RX.  Return a list of
+matching packages."
+  (define (same-location? p1 p2)
+    ;; Compare locations of two packages.
+    (equal? (package-location p1) (package-location p2)))
+
+  (delete-duplicates
+   (sort
+    (fold-packages (lambda (package result)
+                     (define matches?
+                       (cut regexp-exec rx <>))
+
+                     (if (or (and=> (package-synopsis package)
+                                    (compose matches? gettext))
+                             (and=> (package-description package)
+                                    (compose matches? gettext)))
+                         (cons package result)
+                         result))
+                   '())
+    (lambda (p1 p2)
+      (string<? (package-name p1)
+                (package-name p2))))
+   same-location?))
+
 
 ;;;
 ;;; Command-line options.
@@ -265,6 +290,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
       --verbose          produce verbose output"))
   (newline)
+  (display (_ "
+  -s, --search=REGEXP    search in synopsis and description using REGEXP"))
   (display (_ "
   -I, --list-installed[=REGEXP]
                          list installed packages matching REGEXP"))
@@ -311,6 +338,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (option '("verbose") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'verbose? #t result)))
+        (option '(#\s "search") #t #f
+                (lambda (opt name arg result)
+                  (cons `(query search ,(or arg ""))
+                        result)))
         (option '(#\I "list-installed") #f #t
                 (lambda (opt name arg result)
                   (cons `(query list-installed ,(or arg ""))
@@ -532,6 +563,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                  name (or version "?") output path))))
                      installed)
            #t))
+
         (('list-available regexp)
          (let* ((regexp    (and regexp (make-regexp regexp)))
                 (available (fold-packages
@@ -553,6 +585,16 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                            (lambda (p1 p2)
                              (string<? (package-name p1)
                                        (package-name p2)))))
+           #t))
+
+        (('search regexp)
+         (let ((regexp (and regexp (make-regexp regexp))))
+           (for-each (lambda (p)
+                       (format #t "~a\t~a\t~a~%"
+                               (package-name p)
+                               (package-version p)
+                               (location->string (package-location p))))
+                     (find-packages-by-description regexp))
            #t))
         (_ #f))))
 
