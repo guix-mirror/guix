@@ -464,6 +464,25 @@ path."
 FIXED? is for backward compatibility with old Nix versions and must be #t."
   store-path)
 
+(define add-to-store/cached
+  ;; A memoizing version of `add-to-store'.  This is important because
+  ;; `add-to-store' leads to huge data transfers to the server, and
+  ;; because it's often called many times with the very same argument.
+  (let ((add-to-store add-to-store)
+        (cache        (make-weak-value-hash-table 500)))
+    (lambda (server basename fixed? recursive? hash-algo file-name)
+      "Add the contents of FILE-NAME under BASENAME to the store.  Note that
+FIXED? is for backward compatibility with old Nix versions and must be #t."
+      (let* ((st   (stat file-name #f))
+             (args `(,basename ,recursive? ,hash-algo ,st)))
+        (or (and st (hash-ref cache args))
+            (let ((path (add-to-store server basename fixed? recursive?
+                                      hash-algo file-name)))
+              (hash-set! cache args path)
+              path))))))
+
+(define add-to-store add-to-store/cached)
+
 (define-operation (build-derivations (string-list derivations))
   "Build DERIVATIONS, and return when the worker is done building them.
 Return #t on success."
