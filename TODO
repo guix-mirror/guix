@@ -156,7 +156,6 @@ etc.
 
 ** add ‘--list-generations’, and ‘--delete-generations’
 ** add ‘--upgrade’
-** add ‘--search’
 
 * guix build utils
 ** Add equivalent to "rm -rf"
