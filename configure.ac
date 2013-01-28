@@ -6,7 +6,7 @@ AC_INIT([GNU Guix], [0.2], [bug-guix@gnu.org], [guix],
   [http://gnu.org/software/guix/])
 AC_CONFIG_AUX_DIR([build-aux])
 
-AM_INIT_AUTOMAKE([1.11 gnu silent-rules subdir-objects \
+AM_INIT_AUTOMAKE([1.12 gnu silent-rules subdir-objects \
  color-tests parallel-tests])
 
 AC_CONFIG_SRCDIR([guix.scm])
