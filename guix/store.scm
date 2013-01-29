@@ -158,10 +158,13 @@
             (put-bytevector p zero 0 (- 8 m)))))))
 
 (define (write-string s p)
-  (let ((b (string->utf8 s)))
-    (write-int (bytevector-length b) p)
-    (put-bytevector p b)
-    (write-padding (bytevector-length b) p)))
+  (let* ((s (string->utf8 s))
+         (l (bytevector-length s))
+         (m (modulo l 8))
+         (b (make-bytevector (+ 8 l (if (zero? m) 0 (- 8 m))))))
+    (bytevector-u64-native-set! b 0 l)
+    (bytevector-copy! s 0 b 8 l)
+    (put-bytevector p b)))
 
 (define (read-string p)
   (let* ((len (read-int p))
