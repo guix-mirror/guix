@@ -134,7 +134,7 @@ and the hash of its contents.\n"))
                  (alist-cons 'argument arg result))
                %default-options))
 
-  (setlocale LC_ALL "")
+  (install-locale)
   (textdomain "guix")
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)

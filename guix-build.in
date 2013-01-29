@@ -220,7 +220,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                     name version)
              (leave (_ "~A: unknown package~%") name))))))
 
-  (setlocale LC_ALL "")
+  (install-locale)
   (textdomain "guix")
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)

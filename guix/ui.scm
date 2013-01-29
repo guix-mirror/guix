@@ -26,6 +26,7 @@
   #:use-module (ice-9 match)
   #:export (_
             N_
+            install-locale
             leave
             show-version-and-exit
             show-bug-report-information
@@ -44,6 +45,16 @@
 
 (define _ (cut gettext <> %gettext-domain))
 (define N_ (cut ngettext <> <> <> %gettext-domain))
+
+(define (install-locale)
+  "Install the current locale settings."
+  (catch 'system-error
+    (lambda _
+      (setlocale LC_ALL ""))
+    (lambda args
+      (format (current-error-port)
+              (_ "warning: failed to install locale: ~a~%")
+              (strerror (system-error-errno args))))))
 
 (define-syntax-rule (leave fmt args ...)
   "Format FMT and ARGS to the error port and exit."

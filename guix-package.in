@@ -598,7 +598,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
            #t))
         (_ #f))))
 
-  (setlocale LC_ALL "")
+  (install-locale)
   (textdomain "guix")
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)
