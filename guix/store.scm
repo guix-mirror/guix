@@ -293,7 +293,7 @@
 
 (define-record-type <nix-server>
   (%make-nix-server socket major minor
-                    ats-cache)
+                    ats-cache atts-cache)
   nix-server?
   (socket nix-server-socket)
   (major  nix-server-major-version)
@@ -302,7 +302,8 @@
   ;; Caches.  We keep them per-connection, because store paths build
   ;; during the session are temporary GC roots kept for the duration of
   ;; the session.
-  (ats-cache nix-server-add-to-store-cache))
+  (ats-cache  nix-server-add-to-store-cache)
+  (atts-cache nix-server-add-text-to-store-cache))
 
 (define-condition-type &nix-error &error
   nix-error?)
@@ -340,6 +341,7 @@ operate, should the disk become full.  Return a server object."
                     (let ((s (%make-nix-server s
                                                (protocol-major v)
                                                (protocol-minor v)
+                                               (make-hash-table)
                                                (make-hash-table))))
                       (let loop ((done? (process-stderr s)))
                         (or done? (process-stderr s)))
@@ -462,6 +464,22 @@ REFERENCES is the list of store paths referred to by the resulting store
 path."
   store-path)
 
+(define add-text-to-store/cached
+  (let ((add-text-to-store add-text-to-store))
+    (lambda (server name text references)
+      "Add TEXT under file NAME in the store, and return its store path.
+REFERENCES is the list of store paths referred to by the resulting store
+path."
+      (let ((args  `(,name ,text ,references))
+            (cache (nix-server-add-text-to-store-cache server)))
+        (or (hash-ref cache args)
+            (let ((path (add-text-to-store server name text
+                                           references)))
+              (hash-set! cache args path)
+              path))))))
+
+(set! add-text-to-store add-text-to-store/cached)
+
 (define-operation (add-to-store (string basename)
                                 (boolean fixed?)  ; obsolete, must be #t
                                 (boolean recursive?)
@@ -488,7 +506,7 @@ FIXED? is for backward compatibility with old Nix versions and must be #t."
               (hash-set! cache args path)
               path))))))
 
-(define add-to-store add-to-store/cached)
+(set! add-to-store add-to-store/cached)
 
 (define-operation (build-derivations (string-list derivations))
   "Build DERIVATIONS, and return when the worker is done building them.
