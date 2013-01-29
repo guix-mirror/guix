@@ -292,11 +292,17 @@
 ;; remote-store.cc
 
 (define-record-type <nix-server>
-  (%make-nix-server socket major minor)
+  (%make-nix-server socket major minor
+                    ats-cache)
   nix-server?
   (socket nix-server-socket)
   (major  nix-server-major-version)
-  (minor  nix-server-minor-version))
+  (minor  nix-server-minor-version)
+
+  ;; Caches.  We keep them per-connection, because store paths build
+  ;; during the session are temporary GC roots kept for the duration of
+  ;; the session.
+  (ats-cache nix-server-add-to-store-cache))
 
 (define-condition-type &nix-error &error
   nix-error?)
@@ -333,7 +339,8 @@ operate, should the disk become full.  Return a server object."
                         (write-int (if reserve-space? 1 0) s))
                     (let ((s (%make-nix-server s
                                                (protocol-major v)
-                                               (protocol-minor v))))
+                                               (protocol-minor v)
+                                               (make-hash-table))))
                       (let loop ((done? (process-stderr s)))
                         (or done? (process-stderr s)))
                       s))))))))
@@ -468,13 +475,13 @@ FIXED? is for backward compatibility with old Nix versions and must be #t."
   ;; A memoizing version of `add-to-store'.  This is important because
   ;; `add-to-store' leads to huge data transfers to the server, and
   ;; because it's often called many times with the very same argument.
-  (let ((add-to-store add-to-store)
-        (cache        (make-weak-value-hash-table 500)))
+  (let ((add-to-store add-to-store))
     (lambda (server basename fixed? recursive? hash-algo file-name)
       "Add the contents of FILE-NAME under BASENAME to the store.  Note that
 FIXED? is for backward compatibility with old Nix versions and must be #t."
-      (let* ((st   (stat file-name #f))
-             (args `(,basename ,recursive? ,hash-algo ,st)))
+      (let* ((st    (stat file-name #f))
+             (args  `(,basename ,recursive? ,hash-algo ,st))
+             (cache (nix-server-add-to-store-cache server)))
         (or (and st (hash-ref cache args))
             (let ((path (add-to-store server basename fixed? recursive?
                                       hash-algo file-name)))
