@@ -155,9 +155,8 @@ DRV and not already available in STORE, recursively."
                      inputs)
                 (map derivation-input-sub-derivations inputs))))))
 
-(define (read-derivation drv-port)
-  "Read the derivation from DRV-PORT and return the corresponding
-<derivation> object."
+(define (%read-derivation drv-port)
+  ;; Actually read derivation from DRV-PORT.
 
   (define comma (string->symbol ","))
 
@@ -221,6 +220,20 @@ DRV and not already available in STORE, recursively."
       (_
        (loop (read drv-port)
              (cons (ununquote exp) result))))))
+
+(define read-derivation
+  (let ((cache (make-weak-value-hash-table 200)))
+    (lambda (drv-port)
+      "Read the derivation from DRV-PORT and return the corresponding
+<derivation> object."
+      ;; Memoize that operation because `%read-derivation' is quite expensive,
+      ;; and because the same argument is read more than 15 times on average
+      ;; during something like (package-derivation s gdb).
+      (let ((file (and=> (port-filename drv-port) basename)))
+        (or (and file (hash-ref cache file))
+            (let ((drv (%read-derivation drv-port)))
+              (hash-set! cache file drv)
+              drv))))))
 
 (define (write-derivation drv port)
   "Write the ATerm-like serialization of DRV to PORT.  See Section 2.4 of
