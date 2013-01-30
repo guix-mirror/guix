@@ -344,8 +344,8 @@ operate, should the disk become full.  Return a server object."
                     (let ((s (%make-nix-server s
                                                (protocol-major v)
                                                (protocol-minor v)
-                                               (make-hash-table)
-                                               (make-hash-table))))
+                                               (make-hash-table 100)
+                                               (make-hash-table 100))))
                       (let loop ((done? (process-stderr s)))
                         (or done? (process-stderr s)))
                       s))))))))
@@ -478,7 +478,7 @@ again until #t is returned or an error is raised."
       "Add TEXT under file NAME in the store, and return its store path.
 REFERENCES is the list of store paths referred to by the resulting store
 path."
-      (let ((args  `(,name ,text ,references))
+      (let ((args  `(,text ,name ,references))
             (cache (nix-server-add-text-to-store-cache server)))
         (or (hash-ref cache args)
             (let ((path (add-text-to-store server name text references)))
@@ -503,7 +503,7 @@ FILE-NAME are added recursively; if FILE-NAME designates a flat file and
 RECURSIVE? is true, its contents are added, and its permission bits are
 kept.  HASH-ALGO must be a string such as \"sha256\"."
       (let* ((st    (stat file-name #f))
-             (args  `(,basename ,recursive? ,hash-algo ,st))
+             (args  `(,st ,basename ,recursive? ,hash-algo))
              (cache (nix-server-add-to-store-cache server)))
         (or (and st (hash-ref cache args))
             (let ((path (add-to-store server basename #t recursive?
