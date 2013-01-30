@@ -496,14 +496,17 @@ path."
                                                (file file-name))
                                  #f
                                  store-path)))
-    (lambda (server basename fixed? recursive? hash-algo file-name)
-      "Add the contents of FILE-NAME under BASENAME to the store.  Note that
-FIXED? is for backward compatibility with old Nix versions and must be #t."
+    (lambda (server basename recursive? hash-algo file-name)
+      "Add the contents of FILE-NAME under BASENAME to the store.  When
+RECURSIVE? is true and FILE-NAME designates a directory, the contents of
+FILE-NAME are added recursively; if FILE-NAME designates a flat file and
+RECURSIVE? is true, its contents are added, and its permission bits are
+kept.  HASH-ALGO must be a string such as \"sha256\"."
       (let* ((st    (stat file-name #f))
              (args  `(,basename ,recursive? ,hash-algo ,st))
              (cache (nix-server-add-to-store-cache server)))
         (or (and st (hash-ref cache args))
-            (let ((path (add-to-store server basename fixed? recursive?
+            (let ((path (add-to-store server basename #t recursive?
                                       hash-algo file-name)))
               (hash-set! cache args path)
               path))))))

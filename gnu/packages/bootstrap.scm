@@ -154,7 +154,7 @@ check whether everything is alright."
               (description "Raw build system with direct store access")
               (build (lambda* (store name source inputs #:key outputs system)
                        (define (->store file)
-                         (add-to-store store file #t #t "sha256"
+                         (add-to-store store file #t "sha256"
                                        (or (search-bootstrap-binary file
                                                                     system)
                                            (error "bootstrap binary not found"

@@ -458,7 +458,7 @@ known in advance, such as a file download."
                            ((input . _)
                             (let ((path (add-to-store store
                                                       (basename input)
-                                                      #t #t "sha256" input)))
+                                                      #t "sha256" input)))
                               (make-derivation-input path '()))))
                           (delete-duplicates inputs)))
          (env-vars   (env-vars-with-empty-outputs))
@@ -519,7 +519,7 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
   (let* ((files   (map (match-lambda
                         ((final-path . file-name)
                          (list final-path
-                               (add-to-store store (basename final-path) #t #f
+                               (add-to-store store (basename final-path) #f
                                              "sha256" file-name))))
                        files))
          (builder

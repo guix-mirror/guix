@@ -68,7 +68,7 @@ store path."
               (fetch temp))))
        (close port)
        (and result
-            (add-to-store store name #t #f "sha256" temp))))))
+            (add-to-store store name #f "sha256" temp))))))
 
 ;;;
 ;;; Command-line options.
@@ -148,7 +148,7 @@ and the hash of its contents.\n"))
          (path  (case (uri-scheme uri)
                   ((file)
                    (add-to-store store (basename (uri-path uri))
-                                 #t #f "sha256" (uri-path uri)))
+                                 #f "sha256" (uri-path uri)))
                   (else
                    (fetch-and-store store
                                     (cut url-fetch arg <>

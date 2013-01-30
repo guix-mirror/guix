@@ -248,8 +248,7 @@ PACKAGE for SYSTEM."
   (define (intern file)
     ;; Add FILE to the store.  Set the `recursive?' bit to #t, so that
     ;; file permissions are preserved.
-    (add-to-store store (basename file)
-                  #t #t "sha256" file))
+    (add-to-store store (basename file) #t "sha256" file))
 
   (define expand-input
     ;; Expand the given input tuple such that it contains only

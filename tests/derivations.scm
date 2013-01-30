@@ -51,7 +51,7 @@
 (define %bash
   (let ((bash (search-bootstrap-binary "bash" (%current-system))))
     (and %store
-         (add-to-store %store "bash" #t #t "sha256" bash))))
+         (add-to-store %store "bash" #t "sha256" bash))))
 
 (define (directory-contents dir)
   "Return an alist representing the contents of DIR."
@@ -86,7 +86,7 @@
 
 (test-assert "add-to-store, flat"
   (let* ((file (search-path %load-path "language/tree-il/spec.scm"))
-         (drv  (add-to-store %store "flat-test" #t #f "sha256" file)))
+         (drv  (add-to-store %store "flat-test" #f "sha256" file)))
     (and (eq? 'regular (stat:type (stat drv)))
          (valid-path? %store drv)
          (equal? (call-with-input-file file get-bytevector-all)
@@ -94,7 +94,7 @@
 
 (test-assert "add-to-store, recursive"
   (let* ((dir (dirname (search-path %load-path "language/tree-il/spec.scm")))
-         (drv (add-to-store %store "dir-tree-test" #t #t "sha256" dir)))
+         (drv (add-to-store %store "dir-tree-test" #t "sha256" dir)))
     (and (eq? 'directory (stat:type (stat drv)))
          (valid-path? %store drv)
          (equal? (directory-contents dir)
@@ -145,7 +145,7 @@
                                     ;; name to the builder.
                                     . ,(add-to-store %store
                                                      (basename input)
-                                                     #t #t "sha256"
+                                                     #t "sha256"
                                                      input)))
                                  `((,builder)
                                    (,input)))))   ; ← local file name
