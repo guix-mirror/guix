@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages oggvorbis)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages pkg-config)
   #:use-module (guix licenses)
   #:use-module (guix packages)
@@ -151,8 +152,11 @@ OpenBSD's sndio.")
              (base32
               "1g12bnh5ah08v529y72kfdz5lhvy75iaz7f9jskyby23m9dkk2d3"))))
    (build-system gnu-build-system)
-   (inputs `(("libogg" ,libogg)
+   (inputs `(("ao" ,ao)
+             ("curl" ,curl)
+             ("libogg" ,libogg)
              ("libvorbis" ,libvorbis)
+             ("pkg-config" ,pkg-config)
              ("speex" ,speex)))
 ;; FIXME: Add more inputs, see the documentation:
 ;; All of the tools require libogg and libvorbis to be installed (along
