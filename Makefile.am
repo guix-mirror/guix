@@ -59,6 +59,7 @@ MODULES =					\
   gnu/packages/check.scm			\
   gnu/packages/compression.scm			\
   gnu/packages/cpio.scm				\
+  gnu/packages/curl.scm				\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/dejagnu.scm			\
   gnu/packages/ddrescue.scm			\
