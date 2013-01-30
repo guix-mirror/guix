@@ -18,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages oggvorbis)
-  #:use-module (gnu packages)
+  #:use-module (gnu packages pkg-config)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -97,6 +97,47 @@ data (e.g., voice mail), and audio books.")
     ;; 'src/getopt.c' is under LGPLv2+
     (license (bsd-style "file://COPYING"
                         "See COPYING in the distribution."))))
+
+(define-public ao
+  (package
+    (name "ao")
+    (version "1.1.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://downloads.xiph.org/releases/ao/libao-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "1m0v2y6bhr4iwsgdkc7b3y0qgpvpv1ifbxsy8n8ahsvjn6wmppi9"))))
+    (build-system gnu-build-system)
+    ;; FIXME: Add further backends, see the summary printed after configure.
+    (inputs `(("pkg-config" ,pkg-config)))
+    (synopsis
+     "libao, a cross platform audio library")
+    (description
+     "Libao is a cross-platform audio library that allows programs to
+output audio using a simple API on a wide variety of platforms.
+It currently supports:
+Null output (handy for testing without a sound device),
+WAV files,
+AU files,
+RAW files,
+OSS (Open Sound System, used on Linux and FreeBSD),
+ALSA (Advanced Linux Sound Architecture),
+aRts (Analog RealTime Synth, used by KDE),
+PulseAudio (next generation GNOME sound server),
+esd (EsounD or Enlightened Sound Daemon),
+Mac OS X,
+Windows (98 and later),
+AIX,
+Sun/NetBSD/OpenBSD,
+IRIX,
+NAS (Network Audio Server),
+RoarAudio (Modern, multi-OS, networked Sound System),
+OpenBSD's sndio.")
+    (license gpl2+)
+    (home-page "http://www.xiph.org/ao/")))
 
 (define-public vorbis-tools
   (package
