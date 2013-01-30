@@ -438,10 +438,11 @@ again until #t is returned or an error is raised."
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))
 
-(define-syntax define-operation
+(define-syntax operation
   (syntax-rules ()
+    "Define a client-side RPC stub for the given operation."
     ((_ (name (type arg) ...) docstring return ...)
-     (define (name server arg ...)
+     (lambda (server arg ...)
        docstring
        (let ((s (nix-server-socket server)))
          (write-int (operation-id name) s)
@@ -452,6 +453,11 @@ again until #t is returned or an error is raised."
            (or done? (loop (process-stderr server))))
          (values (read-arg return s) ...))))))
 
+(define-syntax-rule (define-operation (name args ...)
+                      docstring return ...)
+  (define name
+    (operation (name args ...) docstring return ...)))
+
 (define-operation (valid-path? (string path))
   "Return #t when PATH is a valid store path."
   boolean)
@@ -460,15 +466,14 @@ again until #t is returned or an error is raised."
   "Return the SHA256 hash of PATH as a bytevector."
   base16)
 
-(define-operation (add-text-to-store (string name) (string text)
-                                     (string-list references))
-  "Add TEXT under file NAME in the store, and return its store path.
-REFERENCES is the list of store paths referred to by the resulting store
-path."
-  store-path)
-
-(define add-text-to-store/cached
-  (let ((add-text-to-store add-text-to-store))
+(define add-text-to-store
+  ;; A memoizing version of `add-to-store', to avoid repeated RPCs with
+  ;; the very same arguments during a given session.
+  (let ((add-text-to-store
+         (operation (add-text-to-store (string name) (string text)
+                                       (string-list references))
+                    #f
+                    store-path)))
     (lambda (server name text references)
       "Add TEXT under file NAME in the store, and return its store path.
 REFERENCES is the list of store paths referred to by the resulting store
@@ -476,27 +481,21 @@ path."
       (let ((args  `(,name ,text ,references))
             (cache (nix-server-add-text-to-store-cache server)))
         (or (hash-ref cache args)
-            (let ((path (add-text-to-store server name text
-                                           references)))
+            (let ((path (add-text-to-store server name text references)))
               (hash-set! cache args path)
               path))))))
 
-(set! add-text-to-store add-text-to-store/cached)
-
-(define-operation (add-to-store (string basename)
-                                (boolean fixed?)  ; obsolete, must be #t
-                                (boolean recursive?)
-                                (string hash-algo)
-                                (file file-name))
-  "Add the contents of FILE-NAME under BASENAME to the store.  Note that
-FIXED? is for backward compatibility with old Nix versions and must be #t."
-  store-path)
-
-(define add-to-store/cached
+(define add-to-store
   ;; A memoizing version of `add-to-store'.  This is important because
   ;; `add-to-store' leads to huge data transfers to the server, and
   ;; because it's often called many times with the very same argument.
-  (let ((add-to-store add-to-store))
+  (let ((add-to-store (operation (add-to-store (string basename)
+                                               (boolean fixed?) ; obsolete, must be #t
+                                               (boolean recursive?)
+                                               (string hash-algo)
+                                               (file file-name))
+                                 #f
+                                 store-path)))
     (lambda (server basename fixed? recursive? hash-algo file-name)
       "Add the contents of FILE-NAME under BASENAME to the store.  Note that
 FIXED? is for backward compatibility with old Nix versions and must be #t."
@@ -508,8 +507,6 @@ FIXED? is for backward compatibility with old Nix versions and must be #t."
                                       hash-algo file-name)))
               (hash-set! cache args path)
               path))))))
-
-(set! add-to-store add-to-store/cached)
 
 (define-operation (build-derivations (string-list derivations))
   "Build DERIVATIONS, and return when the worker is done building them.
