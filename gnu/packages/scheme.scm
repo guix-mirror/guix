@@ -117,7 +117,7 @@ development cycle.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "03gzrgwn3all7pxa056xbks4szkbd4b95c0kap5s1v93dbxs2v7g"))))
+               "1771z43nmf9awjvlvrpjfhzcfxsbw2qipir8g9r47sygf2vn59yl"))))
     (build-system gnu-build-system)
     (arguments
      '(#:patches (list (assoc-ref %build-inputs "patch/shebangs"))
