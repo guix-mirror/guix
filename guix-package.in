@@ -604,9 +604,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (setvbuf (current-error-port) _IOLBF)
 
   (let ((opts (parse-options)))
-    (parameterize ((%store (open-connection)))
-      (with-error-handling
-        (or (process-query opts)
+    (or (process-query opts)
+        (parameterize ((%store (open-connection)))
+          (with-error-handling
             (parameterize ((%guile-for-build
                             (package-derivation (%store)
                                                 (if (assoc-ref opts 'bootstrap?)
