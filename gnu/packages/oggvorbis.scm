@@ -140,6 +140,34 @@ OpenBSD's sndio.")
     (license gpl2+)
     (home-page "http://www.xiph.org/ao/")))
 
+(define-public flac
+  (package
+   (name "flac")
+   (version "1.2.1")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://downloads.xiph.org/releases/flac/flac-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "1pry5lgzfg57pga1zbazzdd55fkgk3v5qy4axvrbny5lrr5s8dcn"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:parallel-tests? #f
+      #:patches (list (assoc-ref %build-inputs
+                                 "patch/memcmp"))))
+   ;; FIXME: configure also looks for xmms, input could be added once it exists
+   (inputs `(("libogg" ,libogg)
+             ("patch/memcmp"
+                 ,(search-patch "flac-fix-memcmp-not-declared.patch"))))
+   (synopsis "flac free lossless audio codec")
+   (description
+"FLAC stands for Free Lossless Audio Codec, an audio format that is lossless,
+meaning that audio is compressed in FLAC without any loss in quality.")
+   (license (bsd-style "file://COPYING"
+                       "See COPYING in the distribution.")) ; and LGPL and GPL
+   (home-page "http://xiph.org/flac/")))
+
 (define-public vorbis-tools
   (package
    (name "vorbis-tools")

@@ -153,6 +153,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
   gnu/packages/patches/emacs-configure-sh.patch			\
+  gnu/packages/patches/findutils-absolute-paths.patch		\
+  gnu/packages/patches/flac-fix-memcmp-not-declared.patch	\
   gnu/packages/patches/flex-bison-tests.patch			\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gettext-gets-undeclared.patch		\
@@ -174,7 +176,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/m4-readlink-EINVAL.patch			\
   gnu/packages/patches/m4-s_isdir.patch				\
   gnu/packages/patches/make-impure-dirs.patch			\
-  gnu/packages/patches/findutils-absolute-paths.patch		\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/procps-make-3.82.patch			\
   gnu/packages/patches/readline-link-ncurses.patch		\
