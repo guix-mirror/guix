@@ -175,6 +175,14 @@
         (get-bytevector-n p (- 8 m)))
     str))
 
+(define (read-latin1-string p)
+  (let* ((len (read-int p))
+         (m   (modulo len 8))
+         (str (get-string-n p len)))
+    (or (zero? m)
+        (get-bytevector-n p (- 8 m)))
+    str))
+
 (define (write-string-list l p)
   (write-int (length l) p)
   (for-each (cut write-string <> p) l))
@@ -362,7 +370,11 @@ operate, should the disk become full.  Return a server object."
   "Read standard output and standard error from SERVER, writing it to
 CURRENT-BUILD-OUTPUT-PORT.  Return #t when SERVER is done sending data, and
 #f otherwise; in the latter case, the caller should call `process-stderr'
-again until #t is returned or an error is raised."
+again until #t is returned or an error is raised.
+
+Since the build process's output cannot be assumed to be UTF-8, we
+conservatively consider it to be Latin-1, thereby avoiding possible
+encoding conversion errors."
   (define p
     (nix-server-socket server))
 
@@ -375,18 +387,18 @@ again until #t is returned or an error is raised."
 
   (let ((k (read-int p)))
     (cond ((= k %stderr-write)
-           (read-string p)
+           (read-latin1-string p)
            #f)
           ((= k %stderr-read)
            (let ((len (read-int p)))
-             (read-string p)                      ; FIXME: what to do?
+             (read-latin1-string p)               ; FIXME: what to do?
              #f))
           ((= k %stderr-next)
-           (let ((s (read-string p)))
+           (let ((s (read-latin1-string p)))
              (display s (current-build-output-port))
              #f))
           ((= k %stderr-error)
-           (let ((error  (read-string p))
+           (let ((error  (read-latin1-string p))
                  (status (if (>= (nix-server-minor-version server) 8)
                              (read-int p)
                              1)))
