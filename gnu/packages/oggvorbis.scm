@@ -18,9 +18,15 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages oggvorbis)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages libpng)
   #:use-module (gnu packages pkg-config)
-  #:use-module (guix licenses)
+  #:use-module (gnu packages python)
+  #:use-module ((guix licenses)
+                #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -44,8 +50,8 @@ format, which encapsulates raw compressed data and allows the interleaving of
 audio and video data. In addition to encapsulation and interleaving of
 multiple data streams, ogg provides packet framing, error detection, and
 periodic timestamps for seeking.")
-   (license (bsd-style "file://COPYING"
-                       "See COPYING in the distribution."))
+   (license (license:bsd-style "file://COPYING"
+                               "See COPYING in the distribution."))
    (home-page "http://xiph.org/ogg/")))
 
 (define-public libvorbis
@@ -69,8 +75,8 @@ a fully open, non-proprietary, patent-and-royalty-free, general-purpose
 compressed audio format for mid to high quality (8kHz-48.0kHz, 16+ bit,
 polyphonic) audio and music at fixed and variable bitrates from 16 to
 128 kbps/channel.")
-   (license (bsd-style "file://COPYING"
-                       "See COPYING in the distribution."))
+   (license (license:bsd-style "file://COPYING"
+                               "See COPYING in the distribution."))
    (home-page "http://xiph.org/vorbis/")))
 
 (define-public speex
@@ -96,8 +102,8 @@ compress voice at bitrates in the 2--45 kbps range.  Possible
 applications include VoIP, internet audio streaming, archiving of speech
 data (e.g., voice mail), and audio books.")
     ;; 'src/getopt.c' is under LGPLv2+
-    (license (bsd-style "file://COPYING"
-                        "See COPYING in the distribution."))))
+    (license (license:bsd-style "file://COPYING"
+                                "See COPYING in the distribution."))))
 
 (define-public ao
   (package
@@ -137,7 +143,7 @@ IRIX,
 NAS (Network Audio Server),
 RoarAudio (Modern, multi-OS, networked Sound System),
 OpenBSD's sndio.")
-    (license gpl2+)
+    (license license:gpl2+)
     (home-page "http://www.xiph.org/ao/")))
 
 (define-public flac
@@ -164,9 +170,44 @@ OpenBSD's sndio.")
    (description
 "FLAC stands for Free Lossless Audio Codec, an audio format that is lossless,
 meaning that audio is compressed in FLAC without any loss in quality.")
-   (license (bsd-style "file://COPYING"
-                       "See COPYING in the distribution.")) ; and LGPL and GPL
+   (license (license:bsd-style "file://COPYING"
+                               "See COPYING in the distribution.")) ; and LGPL and GPL
    (home-page "http://xiph.org/flac/")))
+
+(define-public libkate
+  (package
+   (name "libkate")
+   (version "0.4.1")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://libkate.googlecode.com/files/libkate-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "0s3vr2nxfxlf1k75iqpp4l78yf4gil3f0v778kvlngbchvaq23n4"))))
+   (build-system gnu-build-system)
+   ;; FIXME: Add optional inputs doxygen (for documentation) and liboggz
+   (inputs `(("bison" ,bison)
+             ("libogg" ,libogg)
+             ("libpng" ,libpng)
+             ("pkg-config" ,pkg-config)
+             ("python" ,python)
+             ("zlib" ,zlib)))
+   (synopsis "kate, a karaoke and text codec for embedding in ogg")
+   (description
+    "Kate is an overlay codec, originally designed for karaoke and text,
+that can be multiplixed in Ogg. Text and images can be carried by a Kate
+stream, and animated. Most of the time, this would be multiplexed with
+audio/video to carry subtitles, song lyrics (with or without karaoke data),
+etc., but doesn't have to be.
+
+Series of curves (splines, segments, etc.) may be attached to various
+properties (text position, font size, etc.) to create animated overlays.
+This allows scrolling or fading text to be defined. This can even be used
+to draw arbitrary shapes, so hand drawing can also be represented by a
+Kate stream.")
+   (license license:bsd-3)
+   (home-page "http://code.google.com/p/libkate/")))
 
 (define-public vorbis-tools
   (package
@@ -182,18 +223,12 @@ meaning that audio is compressed in FLAC without any loss in quality.")
    (build-system gnu-build-system)
    (inputs `(("ao" ,ao)
              ("curl" ,curl)
+             ("flac" ,flac)
+             ("libkate" ,libkate)
              ("libogg" ,libogg)
              ("libvorbis" ,libvorbis)
              ("pkg-config" ,pkg-config)
              ("speex" ,speex)))
-;; FIXME: Add more inputs, see the documentation:
-;; All of the tools require libogg and libvorbis to be installed (along
-;; with the header files).  Additionally, ogg123 requires libao, libcurl,
-;; and a POSIX-compatible thread library.  Ogg123 can optionally compiled
-;; to use libFLAC, and libspeex.  Oggenc can be optionally compiled with
-;; libFLAC, and libkate.  The libraries libogg, libvorbis, and libao are
-;; all available at
-;;   http://www.vorbis.com/download.psp
    (synopsis "ogg vorbis tools")
    (description
     "Ogg vorbis is a non-proprietary, patent-and-royalty-free,
@@ -205,5 +240,5 @@ oggenc,  the ogg vorbis encoder;
 oggdec,  a simple, portable command line decoder (to wav and raw);
 ogginfo, to obtain information (tags, bitrate, length, etc.) about
          an ogg vorbis file.")
-   (license gpl2)
+   (license license:gpl2)
    (home-page "http://xiph.org/vorbis/")))
