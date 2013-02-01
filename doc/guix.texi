@@ -546,10 +546,21 @@ availability of packages:
 @item --search=@var{regexp}
 @itemx -s @var{regexp}
 List the available packages whose synopsis or description matches
-@var{regexp}.
+@var{regexp}.  Print all the meta-data of matching packages in
+@code{recutils} format (@pxref{Top, GNU recutils databases,, recutils,
+GNU recutils manual}).
 
-For each package, print the following items, separated by tabs: its
-name, version, and the source location of its definition.
+This allows specific fields to be extracted using the @command{recsel}
+command, for instance:
+
+@example
+$ guix-package -s malloc | recsel -p name,version
+name: glibc
+version: 2.17
+
+name: libgc
+version: 7.2alpha6
+@end example
 
 @item --list-installed[=@var{regexp}]
 @itemx -I [@var{regexp}]

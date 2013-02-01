@@ -234,6 +234,7 @@ TESTS =						\
   tests/base32.scm				\
   tests/builders.scm				\
   tests/derivations.scm				\
+  tests/ui.scm					\
   tests/utils.scm				\
   tests/build-utils.scm				\
   tests/packages.scm				\

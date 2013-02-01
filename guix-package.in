@@ -597,11 +597,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
 
         (('search regexp)
          (let ((regexp (and regexp (make-regexp regexp))))
-           (for-each (lambda (p)
-                       (format #t "~a\t~a\t~a~%"
-                               (package-name p)
-                               (package-version p)
-                               (location->string (package-location p))))
+           (for-each (cute package->recutils <> (current-output-port))
                      (find-packages-by-description regexp))
            #t))
         (_ #f))))

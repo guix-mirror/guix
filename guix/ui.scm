@@ -21,6 +21,9 @@
   #:use-module (guix store)
   #:use-module (guix config)
   #:use-module (guix packages)
+  #:use-module ((guix licenses) #:select (license? license-name))
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (ice-9 match)
@@ -32,7 +35,10 @@
             show-bug-report-information
             call-with-error-handling
             with-error-handling
-            location->string))
+            location->string
+            fill-paragraph
+            string->recutils
+            package->recutils))
 
 ;;; Commentary:
 ;;;
@@ -109,5 +115,99 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
     (#f (_ "<unknown location>"))
     (($ <location> file line column)
      (format #f "~a:~a:~a" file line column))))
+
+(define* (fill-paragraph str width #:optional (column 0))
+  "Fill STR such that each line contains at most WIDTH characters, assuming
+that the first character is at COLUMN.
+
+When STR contains a single line break surrounded by other characters, it is
+converted to a space; sequences of more than one line break are preserved."
+  (define (maybe-break chr result)
+    (match result
+      ((column newlines chars)
+       (case chr
+         ((#\newline)
+          `(,column ,(+ 1 newlines) ,chars))
+         (else
+          (let ((chars  (case newlines
+                          ((0) chars)
+                          ((1) (cons #\space chars))
+                          (else
+                           (append (make-list newlines #\newline) chars))))
+                (column (case newlines
+                          ((0) column)
+                          ((1) (+ 1 column))
+                          (else 0))))
+            (let ((chars  (cons chr chars))
+                  (column (+ 1 column)))
+              (if (> column width)
+                  (let*-values (((before after)
+                                 (break (cut eqv? #\space <>) chars))
+                                ((len)
+                                 (length before)))
+                    (if (<= len width)
+                        `(,len
+                          0
+                          ,(if (null? after)
+                               before
+                               (append before (cons #\newline (cdr after)))))
+                        `(,column 0 ,chars)))     ; unbreakable
+                  `(,column 0 ,chars)))))))))
+
+  (match (string-fold maybe-break
+                      `(,column 0 ())
+                      str)
+    ((_ _ chars)
+     (list->string (reverse chars)))))
+
+(define (string->recutils str)
+  "Return a version of STR where newlines have been replaced by newlines
+followed by \"+ \", which makes for a valid multi-line field value in the
+`recutils' syntax."
+  (list->string
+   (string-fold-right (lambda (chr result)
+                        (if (eqv? chr #\newline)
+                            (cons* chr #\+ #\space result)
+                            (cons chr result)))
+                      '()
+                      str)))
+
+(define* (package->recutils p port
+                            #:optional (width (or (and=> (getenv "WIDTH")
+                                                         string->number)
+                                                  80)))
+  "Write to PORT a `recutils' record of package P, arranging to fit within
+WIDTH columns."
+  (define (description->recutils str)
+    (let ((str (_ str)))
+      (string->recutils
+       (fill-paragraph str width
+                       (string-length "description: ")))))
+
+  ;; Note: Don't i18n field names so that people can post-process it.
+  (format port "name: ~a~%" (package-name p))
+  (format port "version: ~a~%" (package-version p))
+  (format port "location: ~a~%"
+          (or (and=> (package-location p) location->string)
+              (_ "unknown")))
+  (format port "home-page: ~a~%" (package-home-page p))
+  (format port "license: ~a~%"
+          (match (package-license p)
+            (((? license? licenses) ...)
+             (string-join (map license-name licenses)
+                          ", "))
+            ((? license? license)
+             (license-name license))
+            (x
+             (_ "unknown"))))
+  (format port "synopsis: ~a~%"
+          (string-map (match-lambda
+                       (#\newline #\space)
+                       (chr       chr))
+                      (or (and=> (package-synopsis p) _)
+                          "")))
+  (format port "description: ~a~%"
+          (and=> (package-description p) description->recutils))
+  (newline port))
 
 ;;; ui.scm ends here
