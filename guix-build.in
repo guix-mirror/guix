@@ -301,7 +301,3 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                                              (derivation-path->output-paths drv)))
                                       drv)
                                  roots)))))))))
-
-;; Local Variables:
-;; eval: (put 'guard 'scheme-indent-function 1)
-;; End:

@@ -168,7 +168,5 @@
 (exit (= (test-runner-fail-count (test-runner-current)) 0))
 
 ;;; Local Variables:
-;;; eval: (put 'test-equal 'scheme-indent-function 2)
-;;; eval: (put 'test-assert 'scheme-indent-function 1)
 ;;; eval: (put 'dummy-package 'scheme-indent-function 1)
 ;;; End:

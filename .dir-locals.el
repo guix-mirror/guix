@@ -6,6 +6,10 @@
  (scheme-mode
   .
   ((indent-tabs-mode . nil)
+   (eval . (put 'test-assert 'scheme-indent-function 1))
+   (eval . (put 'test-equal 'scheme-indent-function 1))
+   (eval . (put 'call-with-input-string 'scheme-indent-function 1))
+   (eval . (put 'guard 'scheme-indent-function 1))
    (eval . (put 'lambda* 'scheme-indent-function 1))
    (eval . (put 'substitute* 'scheme-indent-function 1))
    (eval . (put 'with-directory-excursion 'scheme-indent-function 1))
