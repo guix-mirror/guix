@@ -106,6 +106,7 @@ MODULES =					\
   gnu/packages/mailutils.scm			\
   gnu/packages/make-bootstrap.scm		\
   gnu/packages/mit-krb5.scm			\
+  gnu/packages/mp3.scm				\
   gnu/packages/multiprecision.scm		\
   gnu/packages/mysql.scm			\
   gnu/packages/nano.scm				\
