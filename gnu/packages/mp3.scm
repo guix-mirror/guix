@@ -20,6 +20,7 @@
   #:use-module ((guix licenses)
                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages oggvorbis)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -56,6 +57,27 @@ All three audio layers — Layer I, Layer II, and Layer III (i.e. MP3) — are
 fully implemented.
 
 This package contains the library.")
+   (license license:gpl2+)
+   (home-page "http://www.underbit.com/products/mad/")))
+
+(define-public libid3tag
+  (package
+   (name "libid3tag")
+   (version "0.15.1b")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/mad/libid3tag/"
+                                version "/libid3tag-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "0lb1w883dc46dajbdvnia5870brl5lvnlk7g7y58y9wpg5p4znk3"))))
+   (build-system gnu-build-system)
+   (inputs `(("zlib" ,zlib)))
+   (synopsis "libid3tag, a library for reading ID3 tags")
+   (description
+    "libid3tag is a library for reading ID3 tags, both ID3v1 and the various
+versions of ID3v2")
    (license license:gpl2+)
    (home-page "http://www.underbit.com/products/mad/")))
 
