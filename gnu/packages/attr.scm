@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -74,4 +74,4 @@
      "Library and tools for manipulating extended attributes")
     (description
      "Portable library and tools for manipulating extended attributes.")
-    (license '(gpl2+ lgpl2.1+))))
+    (license (list gpl2+ lgpl2.1+))))

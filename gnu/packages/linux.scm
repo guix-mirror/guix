@@ -80,7 +80,7 @@
        #:tests? #f))
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")
-    (license "GPLv2")
+    (license gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
 (define-public linux-pam

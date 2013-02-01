@@ -55,4 +55,4 @@ subdirectories, many #ifdef and many main() functions.  It is similar
 to ctags or etags but is different from them at the point of
 independence of any editor.  It runs on a UNIX (POSIX) compatible
 operating system like GNU and BSD.")
-    (license "GPLv3+")))
+    (license gpl3+)))

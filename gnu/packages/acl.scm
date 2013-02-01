@@ -63,4 +63,4 @@
      "Library and tools for manipulating access control lists")
     (description
      "Library and tools for manipulating access control lists.")
-    (license '(gpl2+ lgpl2.1+))))
+    (license (list gpl2+ lgpl2.1+))))

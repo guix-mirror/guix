@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -171,7 +171,7 @@ been modified quite a lot to be suitable for XZ Utils.  The primary
 compression algorithm is currently LZMA2, which is used inside the .xz
 container format.  With typical files, XZ Utils create 30 % smaller output
 than gzip and 15 % smaller output than bzip2.")
-   (license '(license:gpl2+ license:lgpl2.1+))              ; bits of both
+   (license (list license:gpl2+ license:lgpl2.1+)) ; bits of both
    (home-page "http://tukaani.org/xz/")))
 
 (define-public lzo
