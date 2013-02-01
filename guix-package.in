@@ -596,7 +596,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
            #t))
 
         (('search regexp)
-         (let ((regexp (and regexp (make-regexp regexp))))
+         (let ((regexp (make-regexp regexp regexp/icase)))
            (for-each (cute package->recutils <> (current-output-port))
                      (find-packages-by-description regexp))
            #t))
