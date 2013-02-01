@@ -19,6 +19,7 @@
 
 (define-module (gnu packages xml)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module ((guix licenses)
@@ -66,4 +67,26 @@ things the parser might find in the XML document (like start tags).")
     (description
      "Libxml2 is the XML C parser and toolkit developed for the Gnome project
 (but it is usable outside of the Gnome platform).")
+    (license license:x11)))
+
+(define-public libxslt
+  (package
+    (name "libxslt")
+    (version "1.1.28")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "ftp://xmlsoft.org/libxslt/libxslt-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "13029baw9kkyjgr7q3jccw2mz38amq7mmpr5p3bh775qawd1bisz"))))
+    (build-system gnu-build-system)
+    (home-page "http://xmlsoft.org/XSLT/index.html")
+    (synopsis "libxslt, a C library for applying XSLT stylesheets to XML documents")
+    (inputs `(("libgcrypt" ,libgcrypt)
+              ("libxml2" ,libxml2)
+              ("python" ,python)))
+    (description
+     "Libxslt is an XSLT C library developed for the GNOME project. It is
+based on libxml for XML parsing, tree manipulation and XPath support.")
     (license license:x11)))
