@@ -120,6 +120,13 @@ fi
 # Make sure the `:' syntax works.
 guix-package --bootstrap -i "binutils:lib" -p "$profile" -n
 
+# Make sure nonexistent outputs are reported.
+guix-package --bootstrap -i "guile-bootstrap:out" -p "$profile" -n
+if guix-package --bootstrap -i "guile-bootstrap:does-not-exist" -p "$profile" -n;
+then false; else true; fi
+if guix-package --bootstrap -i "guile-bootstrap:does-not-exist" -p "$profile";
+then false; else true; fi
+
 # Check whether `--list-available' returns something sensible.
 guix-package -A 'gui.*e' | grep guile
 
@@ -161,4 +168,5 @@ do
 done
 
 # Extraneous argument.
-! guix-package install foo-bar
+if guix-package install foo-bar;
+then false; else true; fi
