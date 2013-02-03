@@ -134,7 +134,7 @@
 (test-assert "derivation with local file as input"
   (let* ((builder    (add-text-to-store
                       %store "my-builder.sh"
-                      "(while read line ; do echo $line ; done) < $in > $out"
+                      "(while read line ; do echo \"$line\" ; done) < $in > $out"
                       '()))
          (input      (search-path %load-path "ice-9/boot-9.scm"))
          (drv-path   (derivation %store "derivation-with-input-file"
@@ -150,9 +150,9 @@
                                  `((,builder)
                                    (,input)))))   ; ← local file name
     (and (build-derivations %store (list drv-path))
-         (let ((p (derivation-path->output-path drv-path)))
-           (and (call-with-input-file p get-bytevector-all)
-                (call-with-input-file input get-bytevector-all))))))
+         ;; Note: we can't compare the files because the above trick alters
+         ;; the contents.
+         (valid-path? %store (derivation-path->output-path drv-path)))))
 
 (test-assert "fixed-output derivation"
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
