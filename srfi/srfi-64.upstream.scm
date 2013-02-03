@@ -314,7 +314,9 @@
                                  (guile-2
                                   (with-fluids ((%default-port-encoding
                                                  "UTF-8"))
-                                    (open-output-file log-file-name)))
+                                    (let ((p (open-output-file log-file-name)))
+                                      (setvbuf p _IOLBF)
+                                      p)))
 				 (else (open-output-file log-file-name)))))
 	      (display "%%%% Starting test " log-file)
 	      (display suite-name log-file)
