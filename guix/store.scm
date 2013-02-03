@@ -66,7 +66,7 @@
             derivation-path?
             store-path-package-name))
 
-(define %protocol-version #x10b)
+(define %protocol-version #x10c)
 
 (define %worker-magic-1 #x6e697863)
 (define %worker-magic-2 #x6478696f)
@@ -103,14 +103,18 @@
   (query-deriver 18)
   (set-options 19)
   (collect-garbage 20)
-  (query-substitutable-path-info 21)
+  ;;(query-substitutable-path-info 21)  ; obsolete as of #x10c
   (query-derivation-outputs 22)
-  (query-valid-paths 23)
+  (query-all-valid-paths 23)
   (query-failed-paths 24)
   (clear-failed-paths 25)
   (query-path-info 26)
   (import-paths 27)
-  (query-derivation-output-names 28))
+  (query-derivation-output-names 28)
+  (query-path-from-hash-part 29)
+  (query-substitutable-path-infos 30)
+  (query-valid-paths 31)
+  (query-substitutable-paths 32))
 
 (define-enumerate-type hash-algo
   ;; hash.hh
@@ -423,7 +427,8 @@ encoding conversion errors."
                             (log-type 0)
                             (print-build-trace #t)
                             (build-cores 1)
-                            (use-substitutes? #t))
+                            (use-substitutes? #t)
+                            (binary-caches '())) ; client "untrusted" cache URLs
   ;; Must be called after `open-connection'.
 
   (define socket
@@ -447,6 +452,13 @@ encoding conversion errors."
         (send (integer build-cores)))
     (if (>= (nix-server-minor-version server) 10)
         (send (boolean use-substitutes?)))
+    (if (>= (nix-server-minor-version server) 12)
+        (send (string-list (fold-right (lambda (pair result)
+                                         (match pair
+                                           ((h . t)
+                                            (cons* h t result))))
+                                       '()
+                                       binary-caches))))
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))
 
@@ -474,7 +486,7 @@ encoding conversion errors."
   "Return #t when PATH is a valid store path."
   boolean)
 
-(define-operation (query-path-hash (string path))
+(define-operation (query-path-hash (store-path path))
   "Return the SHA256 hash of PATH as a bytevector."
   base16)
 
