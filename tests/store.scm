@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,8 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix base32)
+  #:use-module (guix packages)
+  #:use-module (guix derivations)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -76,6 +78,17 @@
       (and (equal? paths (list p))
            (> freed 0)
            (not (file-exists? p))))))
+
+(test-assert "no substitutes"
+  (let* ((s  (open-connection))
+         (d1 (package-derivation s %bootstrap-guile (%current-system)))
+         (d2 (package-derivation s %bootstrap-glibc (%current-system)))
+         (o  (map derivation-path->output-path (list d1 d2))))
+    (set-build-options s #:use-substitutes? #f)
+    (and (not (has-substitutes? s d1))
+         (not (has-substitutes? s d2))
+         (null? (substitutable-paths s o))
+         (null? (substitutable-path-info s o)))))
 
 (test-end "store")
 

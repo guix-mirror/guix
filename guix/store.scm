@@ -54,6 +54,16 @@
             add-temp-root
             add-indirect-root
 
+            substitutable?
+            substitutable-path
+            substitutable-deriver
+            substitutable-references
+            substitutable-download-size
+            substitutable-nar-size
+            has-substitutes?
+            substitutable-paths
+            substitutable-path-info
+
             live-paths
             dead-paths
             collect-garbage
@@ -268,6 +278,30 @@
          (error "ENOSYS")))
       (write-string ")" p))))
 
+;; Information about a substitutable store path.
+(define-record-type <substitutable>
+  (substitutable path deriver refs dl-size nar-size)
+  substitutable?
+  (path      substitutable-path)
+  (deriver   substitutable-deriver)
+  (refs      substitutable-references)
+  (dl-size   substitutable-download-size)
+  (nar-size  substitutable-nar-size))
+
+(define (read-substitutable-path-list p)
+  (let loop ((len    (read-int p))
+             (result '()))
+    (if (zero? len)
+        (reverse result)
+        (let ((path     (read-store-path p))
+              (deriver  (read-store-path p))
+              (refs     (read-store-path-list p))
+              (dl-size  (read-long-long p))
+              (nar-size (read-long-long p)))
+          (loop (- len 1)
+                (cons (substitutable path deriver refs dl-size nar-size)
+                      result))))))
+
 (define-syntax write-arg
   (syntax-rules (integer boolean file string string-list
                  store-path store-path-list base16)
@@ -289,7 +323,8 @@
      (write-string (bytevector->base16-string arg) p))))
 
 (define-syntax read-arg
-  (syntax-rules (integer boolean string store-path store-path-list base16)
+  (syntax-rules (integer boolean string store-path store-path-list
+                 substitutable-path-list base16)
     ((_ integer p)
      (read-int p))
     ((_ boolean p)
@@ -300,7 +335,9 @@
      (read-store-path p))
     ((_ store-path-list p)
      (read-store-path-list p))
-    ((_ hash p)
+    ((_ substitutable-path-list p)
+     (read-substitutable-path-list p))
+    ((_ base16 p)
      (base16-string->bytevector (read-string p)))))
 
 
@@ -551,6 +588,22 @@ can be anywhere on the file system, but it must be an absolute file
 name--it is the caller's responsibility to ensure that it is an absolute
 file name.  Return #t on success."
   boolean)
+
+(define-operation (has-substitutes? (store-path path))
+  "Return #t if binary substitutes are available for PATH, and #f otherwise."
+  boolean)
+
+(define substitutable-paths
+  (operation (query-substitutable-paths (store-path-list paths))
+             "Return the subset of PATHS that is substitutable."
+             store-path-list))
+
+(define substitutable-path-info
+  (operation (query-substitutable-paths (store-path-list paths))
+             "Return information about the subset of PATHS that is
+substitutable.  For each substitutable path, a `substitutable?' object is
+returned."
+             substitutable-path-list))
 
 (define (run-gc server action to-delete min-freed)
   "Perform the garbage-collector operation ACTION, one of the
