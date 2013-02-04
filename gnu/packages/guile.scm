@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +29,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages ncurses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -193,5 +194,44 @@ many readers as needed).")
 (define-public guile-reader/guile-2.0
   ;; Guile-Reader built against Guile 2.0.
   (guile-reader guile-2.0))
+
+(define-public guile-ncurses
+  (package
+    (name "guile-ncurses")
+    (version "1.3")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/guile-ncurses/guile-ncurses-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0chvfjrlmg99db98ra9vzwjmbypqx7d4ssm8q0kvzi0n0p9irszi"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)
+              ("guile" ,guile-2.0)))
+    (arguments
+     '(#:configure-flags (list (string-append "--with-guilesitedir="
+                                              (assoc-ref %outputs "out")
+                                              "/share/guile/site"))
+       #:phases (alist-cons-after
+                 'install 'post-install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out   (assoc-ref outputs "out"))
+                          (dir   (string-append out "/share/guile/site/"))
+                          (files (find-files dir ".scm")))
+                    (substitute* files
+                      (("\"libguile-ncurses\"")
+                       (format #f "\"~a/lib/libguile-ncurses\""
+                               out)))))
+                 %standard-phases)))
+    (home-page "http://www.gnu.org/software/guile-ncurses/")
+    (synopsis
+     "GNU Guile-Ncurses, Scheme interface to the NCurses libraries")
+    (description
+     "GNU Guile-Ncurses is a library for the Guile Scheme interpreter that
+provides functions for creating text user interfaces.  The text user interface
+functionality is built on the ncurses libraries: curses, form, panel, and
+menu.")
+    (license lgpl3+)))
 
 ;;; guile.scm ends here
