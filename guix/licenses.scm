@@ -39,7 +39,8 @@
             qpl
             vim
             x11
-            zlib))
+            zlib
+            fsf-free))
 
 (define-record-type <license>
   (license name uri comment)
@@ -233,5 +234,12 @@ which may be a file:// URI pointing the package's tree."
   (license "Zlib"
            "http://www.gzip.org/zlib/zlib_license.html"
            "https://www.gnu.org/licenses/license-list#ZLib"))
+
+(define* (fsf-free uri #:optional (comment ""))
+  "Return a license that does not fit any of the ones above or a collection
+of licenses, approved as free by the FSF.  More details can be found at URI."
+  (license "FSF-free"
+           uri
+           comment))
 
 ;;; licenses.scm ends here
