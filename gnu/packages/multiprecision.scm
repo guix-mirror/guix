@@ -82,7 +82,7 @@ faster algorithms.")
             (sha256 (base32
                      "0ym1ylcq803n52qrggxqmkz66gbn8ncc3ybawal31v5y5p1srma9"))))
    (build-system gnu-build-system)
-   (inputs `(("gmp" ,gmp)))
+   (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
    (synopsis "GNU MPFR, a library for multiple-precision floating-point
 arithmetic")
    (description
@@ -108,8 +108,8 @@ double-precision floating-point arithmetic (53-bit mantissa).")
             (sha256 (base32
                      "1zq0fidp1jii2j5k5n9hmx55a6wwid33gjzhimvxq9d5zrf82npd"))))
    (build-system gnu-build-system)
-   (inputs `(("gmp" ,gmp)
-             ("mpfr" ,mpfr)))
+   (propagated-inputs `(("gmp" ,gmp)              ; <mpc.h> refers to both
+                        ("mpfr" ,mpfr)))
    (synopsis "GNU MPC, a library for multiprecision complex arithmetic
 with exact rounding")
    (description
