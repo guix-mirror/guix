@@ -22,6 +22,8 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages oggvorbis)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages pkg-config)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -80,4 +82,62 @@ This package contains the library.")
 versions of ID3v2")
    (license license:gpl2+)
    (home-page "http://www.underbit.com/products/mad/")))
+
+(define-public libmp3splt
+  (package
+   (name "libmp3splt")
+   (version "0.8.1a")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/mp3splt/libmp3splt/"
+                                version "/libmp3splt-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "0d20r1bd4fgp9kp7w3qixjgll34czck9dgw59mx2kbhb0mhh00d8"))))
+   (build-system gnu-build-system)
+   (inputs `(("libid3tag" ,libid3tag)
+             ("libmad" ,libmad)
+             ("libogg" ,libogg)
+             ("libtool" ,libtool)
+             ("libvorbid" ,libvorbis)
+             ("pkg-config" ,pkg-config)
+             ("pcre" ,pcre)))
+   (synopsis "libmp3splt, a library for splitting mp3 and ogg vorbis files")
+   (description
+    "Mp3splt is a utility to split mp3 and ogg vorbis files selecting a begin
+and an end time position, without decoding. For splitting an album, one may
+select split points and filenames manually or obtain them automatically from
+CDDB (internet or a local file) or from .cue files. The tool also supports
+automatic silence split, that can be used also to adjust cddb/cue splitpoints.
+
+This package contains the library.")
+   (license license:gpl2+)
+   (home-page "http://mp3splt.sourceforge.net/mp3splt_page/home.php")))
+
+(define-public mp3splt
+  (package
+   (name "mp3splt")
+   (version "2.5.1")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/mp3splt/mp3splt/"
+                                version "/mp3splt-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "106dnka56prlc9nsfh300f8841am2lmkwlzgl9lkr25mgnc35wwh"))))
+   (build-system gnu-build-system)
+   (inputs `(("libmp3splt" ,libmp3splt)))
+   (synopsis "mp3splt, a utiliy for splitting mp3 and ogg vorbis files")
+   (description
+    "Mp3splt is a utility to split mp3 and ogg vorbis files selecting a begin
+and an end time position, without decoding. For splitting an album, one may
+select split points and filenames manually or obtain them automatically from
+CDDB (internet or a local file) or from .cue files. The tool also supports
+automatic silence split, that can be used also to adjust cddb/cue splitpoints.
+
+This package contains the binary.")
+   (license license:gpl2+)
+   (home-page "http://mp3splt.sourceforge.net/mp3splt_page/home.php")))
 
