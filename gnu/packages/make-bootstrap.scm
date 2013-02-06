@@ -249,7 +249,9 @@
 (define %binutils-static-stripped
   ;; The subset of Binutils that we need.
   (package (inherit %binutils-static)
+    (name (string-append (package-name %binutils-static) "-stripped"))
     (build-system trivial-build-system)
+    (outputs '("out"))
     (arguments
      `(#:modules ((guix build utils))
        #:builder
