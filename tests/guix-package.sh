@@ -33,14 +33,12 @@ rm -f "$profile"
 
 trap 'rm "$profile" "$profile-"[0-9]* ; rm -rf t-home-'"$$" EXIT
 
-boot_guile="`guix-build -e '(@ (gnu packages bootstrap) %bootstrap-guile)'`"
-
-guix-package --bootstrap -p "$profile" -i "$boot_guile"
+guix-package --bootstrap -p "$profile" -i guile-bootstrap
 test -L "$profile" && test -L "$profile-1-link"
 test -f "$profile/bin/guile"
 
 # Installing the same package a second time does nothing.
-guix-package --bootstrap -p "$profile" -i "$boot_guile"
+guix-package --bootstrap -p "$profile" -i guile-bootstrap
 test -L "$profile" && test -L "$profile-1-link"
 ! test -f "$profile-2-link"
 test -f "$profile/bin/guile"
@@ -101,7 +99,7 @@ then
     test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
 
     # Roll-back to generation 0, and install---all at once.
-    guix-package --bootstrap -p "$profile" --roll-back -i "$boot_guile"
+    guix-package --bootstrap -p "$profile" --roll-back -i guile-bootstrap
     test "`readlink_base "$profile"`" = "$profile-1-link"
     test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
 
@@ -141,7 +139,7 @@ export HOME
 
 mkdir -p "$HOME"
 
-guix-package --bootstrap -i "$boot_guile"
+guix-package --bootstrap -i guile-bootstrap
 test -L "$HOME/.guix-profile"
 test -f "$HOME/.guix-profile/bin/guile"
 
