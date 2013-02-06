@@ -150,8 +150,9 @@ the DIRECTORIES."
 
   (mkdir output)
   (let loop ((tree (delete-duplicate-leaves
-                    (tree-union (append-map (compose tree-leaves file-tree)
-                                            directories))
+                    (cons "."
+                          (tree-union (append-map (compose tree-leaves file-tree)
+                                                  directories)))
                     leaf=?
                     resolve-collision))
              (dir  '()))
@@ -165,8 +166,9 @@ the DIRECTORIES."
          (symlink tree target)))
       (((? string? subdir) leaves ...)
        ;; A sub-directory: create it in OUTPUT, and iterate over LEAVES.
-       (let ((dir (string-join dir "/")))
-         (mkdir (string-append output "/" dir "/" subdir)))
+       (unless (string=? subdir ".")
+         (let ((dir (string-join dir "/")))
+           (mkdir (string-append output "/" dir "/" subdir))))
        (for-each (cute loop <> `(,@dir ,subdir))
                  leaves))
       ((leaves ...)
