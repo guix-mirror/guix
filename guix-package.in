@@ -80,13 +80,22 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   (let ((manifest (string-append profile "/manifest")))
     (if (file-exists? manifest)
         (call-with-input-file manifest read)
-        '(manifest (version 0) (packages ())))))
+        '(manifest (version 1) (packages ())))))
 
 (define (manifest-packages manifest)
   "Return the packages listed in MANIFEST."
   (match manifest
-    (('manifest ('version 0) ('packages packages))
+    (('manifest ('version 0)
+                ('packages ((name version output path) ...)))
+     (zip name version output path
+          (make-list (length name) '())))
+
+    ;; Version 1 adds a list of propagated inputs to the
+    ;; name/version/output/path tuples.
+    (('manifest ('version 1)
+                ('packages (packages ...)))
      packages)
+
     (_
      (error "unsupported manifest format" manifest))))
 
@@ -157,7 +166,7 @@ case when generations have been deleted (there are \"holes\")."
 
 (define (profile-derivation store packages)
   "Return a derivation that builds a profile (a user environment) with
-all of PACKAGES, a list of name/version/output/path tuples."
+all of PACKAGES, a list of name/version/output/path/deps tuples."
   (define builder
     `(begin
        (use-modules (ice-9 pretty-print)
@@ -173,17 +182,18 @@ all of PACKAGES, a list of name/version/output/path tuples."
          (union-build output inputs)
          (call-with-output-file (string-append output "/manifest")
            (lambda (p)
-             (pretty-print '(manifest (version 0)
+             (pretty-print '(manifest (version 1)
                                       (packages ,packages))
                            p))))))
 
   (build-expression->derivation store "user-environment"
                                 (%current-system)
                                 builder
-                                (map (match-lambda
-                                      ((name version output path)
-                                       `(,name ,path)))
-                                     packages)
+                                (append-map (match-lambda
+                                             ((name version output path deps)
+                                              `((,name ,path)
+                                                ,@deps)))
+                                            packages)
                                 #:modules '((guix build union))))
 
 (define (profile-number profile)
@@ -259,6 +269,20 @@ matching packages."
       (string<? (package-name p1)
                 (package-name p2))))
    same-location?))
+
+(define (input->name+path input)
+  "Convert the name/package/sub-drv tuple INPUT to a name/store-path tuple."
+  (let loop ((input input))
+    (match input
+      ((name package)
+       (loop `(,name ,package "out")))
+      ((name package sub-drv)
+       (let*-values (((_ drv)
+                      (package-derivation (%store) package))
+                     ((out)
+                      (derivation-output-path
+                       (assoc-ref (derivation-outputs drv) sub-drv))))
+         `(,name ,out))))))
 
 
 ;;;
@@ -419,7 +443,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                    (package-name->name+version name)))
       (match (find-packages-by-name name version)
         ((p)
-         (list name (package-version p) sub-drv (ensure-output p sub-drv)))
+         (list name (package-version p) sub-drv (ensure-output p sub-drv)
+               (package-transitive-propagated-inputs p)))
         ((p p* ...)
          (format (current-error-port)
                  (_ "warning: ambiguous package specification `~a'~%")
@@ -428,7 +453,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                  (_ "warning: choosing ~a from ~a~%")
                  (package-full-name p)
                  (location->string (package-location p)))
-         (list name (package-version p) sub-drv (ensure-output p sub-drv)))
+         (list name (package-version p) sub-drv (ensure-output p sub-drv)
+               (package-transitive-propagated-inputs p)))
         (()
          (leave (_ "~a: package not found~%") request)))))
 
@@ -467,6 +493,18 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
     (define verbose? (assoc-ref opts 'verbose?))
     (define profile  (assoc-ref opts 'profile))
 
+    (define (canonicalize-deps deps)
+      ;; Remove duplicate entries from DEPS, a list of propagated inputs,
+      ;; where each input is a name/path tuple.
+      (define (same? d1 d2)
+        (match d1
+          ((_ path1)
+           (match d2
+             ((_ path2)
+              (string=? path1 path2))))))
+
+      (delete-duplicates (map input->name+path deps) same?))
+
     ;; First roll back if asked to.
     (if (and (assoc-ref opts 'roll-back?) (not dry-run?))
         (begin
@@ -481,7 +519,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                      opts))
                (drv      (filter-map (match-lambda
                                       ((name version sub-drv
-                                             (? package? package))
+                                             (? package? package)
+                                             (deps ...))
                                        (package-derivation (%store) package))
                                       (_ #f))
                                      install))
@@ -492,16 +531,17 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                                       (package-name->name+version
                                                        (store-path-package-name
                                                         path))))
-                                          `(,name ,version #f ,path)))
+                                          `(,name ,version #f ,path ())))
                                        (_ #f))
                                       opts)
                           (map (lambda (tuple drv)
                                  (match tuple
-                                   ((name version sub-drv _)
+                                   ((name version sub-drv _ (deps ...))
                                     (let ((output-path
                                            (derivation-path->output-path
                                             drv sub-drv)))
-                                      `(,name ,version ,sub-drv ,output-path)))))
+                                      `(,name ,version ,sub-drv ,output-path
+                                              ,(canonicalize-deps deps))))))
                                install drv)))
                (remove   (filter-map (match-lambda
                                       (('remove . package)
@@ -564,7 +604,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                 (manifest  (profile-manifest profile))
                 (installed (manifest-packages manifest)))
            (for-each (match-lambda
-                      ((name version output path)
+                      ((name version output path _)
                        (when (or (not regexp)
                                  (regexp-exec regexp name))
                          (format #t "~a\t~a\t~a\t~a~%"
