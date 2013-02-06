@@ -115,16 +115,15 @@ m4_include([config-daemon.ac])
 
 AC_CONFIG_FILES([Makefile
                  po/Makefile.in
-		 guix/config.scm
-		 guix-build
+		 guix/config.scm])
+
+AC_CONFIG_FILES([guix-build
 		 guix-download
 		 guix-import
 		 guix-package
 		 guix-gc
 		 pre-inst-env
-		 test-env])
-
-AC_CONFIG_COMMANDS([commands-exec],
+		 test-env],
   [chmod +x guix-build guix-download guix-import guix-package guix-gc \
             pre-inst-env test-env])
 
