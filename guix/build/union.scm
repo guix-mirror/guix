@@ -137,13 +137,20 @@ the DIRECTORIES."
 
   (define (resolve-collision leaves)
     ;; LEAVES all have the same basename, so choose one of them.
-    (format (current-error-port) "warning: collision encountered: ~{~a ~}~%"
-            leaves)
+    (match (delete-duplicates leaves string=?)
+      ((one-and-the-same)
+       ;; LEAVES all actually point to the same file, so nothing to worry
+       ;; about.
+       one-and-the-same)
+      ((and lst (head _ ...))
+       ;; A real collision.
+       (format (current-error-port) "warning: collision encountered: ~{~a ~}~%"
+               lst)
 
-    ;; TODO: Implement smarter strategies.
-    (format (current-error-port) "warning: arbitrarily choosing ~a~%"
-            (car leaves))
-    (car leaves))
+       ;; TODO: Implement smarter strategies.
+       (format (current-error-port) "warning: arbitrarily choosing ~a~%"
+               head)
+       head)))
 
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)
