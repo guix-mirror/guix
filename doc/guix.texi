@@ -495,6 +495,16 @@ such as @code{guile-1.8.8}.  In addition, @var{package} may contain a
 colon, followed by the name of one of the outputs of the package, as in
 @code{gcc:doc} or @code{binutils-2.22:lib}.
 
+@cindex propagated inputs
+Sometimes packages have @dfn{propagated inputs}: these are dependencies
+that automatically get installed along with the required package.
+
+An example is the GNU MPC library: its C header files refer to those of
+the GNU MPFR library, which in turn refer to those of the GMP library.
+Thus, when installing MPC, the MPFR and GMP libraries also get installed
+in the profile; removing MPC also removes MPFR and GMP---unless they had
+also been explicitly installed independently.
+
 @item --remove=@var{package}
 @itemx -r @var{package}
 Remove @var{package}.
