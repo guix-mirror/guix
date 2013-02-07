@@ -58,17 +58,21 @@
                 ;; Insert a phase before `configure' to patch things up.
                 #:phases (alist-cons-before
                            'configure
-                           'patch-loader-search-path
+                           'patch-stuff
                            (lambda* (#:key outputs #:allow-other-keys)
                              ;; Add a call to `lt_dladdsearchdir' so that
                              ;; `libguile-readline.so' & co. are in the
                              ;; loader's search path.
                              (substitute* "libguile/dynl.c"
-                                          (("lt_dlinit.*$" match)
-                                           (format #f
-                                                   "  ~a~%  lt_dladdsearchdir(\"~a/lib\");~%"
-                                                   match
-                                                   (assoc-ref outputs "out")))))
+                               (("lt_dlinit.*$" match)
+                                (format #f
+                                        "  ~a~%  lt_dladdsearchdir(\"~a/lib\");~%"
+                                        match
+                                        (assoc-ref outputs "out"))))
+
+                             ;; The usual /bin/sh...
+                             (substitute* "ice-9/popen.scm"
+                               (("/bin/sh") (which "sh"))))
                            %standard-phases)))
    (inputs `(("patch/snarf" ,(search-patch "guile-1.8-cpp-4.5.patch"))
              ("gawk" ,gawk)
