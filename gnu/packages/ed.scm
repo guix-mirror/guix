@@ -26,17 +26,14 @@
 (define-public ed
   (package
     (name "ed")
-    (version "1.5")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append
-            "mirror://gnu/ed/ed-"
-            version
-            ".tar.gz"))
-      (sha256
-       (base32
-        "18gvhyhwpabmgv4lh21lg8vl3z7acdyhh2mr2kj9g75wksj39pcp"))))
+    (version "1.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/ed/ed-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0rcay0wci2kiwil2h505b674cblmn4nq8pqw9g9pgqmaqjq6f711"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("CC=gcc")
