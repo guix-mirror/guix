@@ -139,6 +139,7 @@ MODULES =					\
   gnu/packages/subversion.scm 			\
   gnu/packages/system.scm			\
   gnu/packages/tcl.scm				\
+  gnu/packages/tcsh.scm 			\
   gnu/packages/texinfo.scm			\
   gnu/packages/texlive.scm			\
   gnu/packages/time.scm				\
@@ -191,6 +192,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/shishi-gets-undeclared.patch		\
   gnu/packages/patches/tar-gets-undeclared.patch		\
+  gnu/packages/patches/tcsh-fix-autotest.patch 			\
   gnu/packages/patches/teckit-cstdio.patch
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
