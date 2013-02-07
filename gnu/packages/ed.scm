@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,7 +38,13 @@
        (base32
         "18gvhyhwpabmgv4lh21lg8vl3z7acdyhh2mr2kj9g75wksj39pcp"))))
     (build-system gnu-build-system)
-    (arguments '(#:configure-flags '("CC=gcc")))
+    (arguments
+     '(#:configure-flags '("CC=gcc")
+       #:phases (alist-cons-before 'patch-source-shebangs 'patch-test-suite
+                                   (lambda _
+                                     (substitute* "testsuite/check.sh"
+                                       (("/bin/sh") (which "sh"))))
+                                   %standard-phases)))
     (home-page "http://www.gnu.org/software/ed/")
     (synopsis
      "GNU ed, an implementation of the standard Unix editor")
