@@ -30,6 +30,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages ed)
+  #:use-module (gnu packages which)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -237,5 +239,33 @@ provides functions for creating text user interfaces.  The text user interface
 functionality is built on the ncurses libraries: curses, form, panel, and
 menu.")
     (license lgpl3+)))
+
+(define-public mcron
+  (package
+    (name "mcron")
+    (version "1.0.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/mcron/mcron-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0yvrfzzdy2m7fbqkr61fw01wd9r2jpnbyabxhcsfivgxywknl0fy"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:patches (list (assoc-ref %build-inputs "patch/install"))))
+    (inputs
+     `(("ed" ,ed) ("which" ,which) ("guile" ,guile-1.8)
+       ("patch/install" ,(search-patch "mcron-install.patch"))))
+    (home-page "http://www.gnu.org/software/mcron/")
+    (synopsis
+     "GNU mcron, a flexible implementation of `cron' in Guile")
+    (description
+     "The GNU package mcron (Mellor's cron) is a 100% compatible replacement
+for Vixie cron.  It is written in pure Guile, and allows configuration files
+to be written in scheme (as well as Vixie's original format) for infinite
+flexibility in specifying when jobs should be run.  Mcron was written by Dale
+Mellor.")
+    (license gpl3+)))
 
 ;;; guile.scm ends here
