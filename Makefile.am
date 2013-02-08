@@ -279,8 +279,11 @@ EXTRA_DIST =					\
 
 CLEANFILES = $(GOBJECTS) *.log
 
+# XXX: Use the C locale for when Guile lacks
+# <http://git.sv.gnu.org/cgit/guile.git/commit/?h=stable-2.0&id=e2c6bf3866d1186c60bacfbd4fe5037087ee5e3f>.
 .scm.go:
 	$(MKDIR_P) `dirname "$@"`
+	LC_ALL=C							\
 	$(top_builddir)/pre-inst-env					\
 	$(GUILD) compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
 	  -Wformat -Wunbound-variable -Warity-mismatch			\
