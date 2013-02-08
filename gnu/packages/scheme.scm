@@ -151,9 +151,10 @@ development cycle.")
                       (("/bin/mv") (which "mv"))))
                   %standard-phases))))
     (inputs
-     `(("gmp" ,gmp)
-       ("emacs" ,emacs)
+     `(("emacs" ,emacs)
        ("patch/shebangs" ,(search-patch "bigloo-gc-shebangs.patch"))))
+    (propagated-inputs
+     `(("gmp" ,gmp)))                             ; bigloo.h refers to gmp.h
     (home-page "http://www-sop.inria.fr/indes/fp/Bigloo/")
     (synopsis "Bigloo, an efficient Scheme compiler")
     (description
