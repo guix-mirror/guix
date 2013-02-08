@@ -78,9 +78,9 @@ when GUILE is #f."
                      (filtered-inputs (package-inputs p)))))))
 
 (define (package-with-extra-configure-variable p variable value)
-  "Return a version of P with VARIABLE=VALUE specified as an extra
-`configure' flag.  An example is LDFLAGS=-static.  If P already has
-configure flags for VARIABLE, the associated value is augmented."
+  "Return a version of P with VARIABLE=VALUE specified as an extra `configure'
+flag, recursively.  An example is LDFLAGS=-static.  If P already has configure
+flags for VARIABLE, the associated value is augmented."
   (let loop ((p p))
     (define (rewritten-inputs inputs)
       (map (match-lambda
