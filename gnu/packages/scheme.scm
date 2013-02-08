@@ -27,6 +27,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages patchelf)
   #:use-module (gnu packages which)
   #:use-module (ice-9 match))
 
@@ -183,17 +184,52 @@ between Scheme and C# programs.")
                "04fhy5jp9lq12fmdqfjzj1w32f7nxc80fagbj7pfci7xh86nm2c5"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key inputs outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     (zero?
-                      (system* "./configure"
-                               (string-append"--prefix=" out)))))
-                 %standard-phases)
-       #:tests? #f))                              ; no test suite
+     '(#:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out")))
+            (zero?
+             (system* "./configure"
+                      (string-append"--prefix=" out)))))
+        (alist-cons-after
+         'strip 'patch-rpath
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; Patch the RPATH of every installed library to point to $out/lib
+           ;; instead of $TMPDIR.  Note that "patchelf --set-rpath" produces
+           ;; invalid binaries when used before stripping.
+           (let ((out    (assoc-ref outputs "out"))
+                 (tmpdir (getcwd)))
+             (every (lambda (lib)
+                      (let* ((in    (open-pipe* OPEN_READ "patchelf"
+                                                "--print-rpath" lib))
+                             (rpath (read-line in)))
+                        (and (zero? (close-pipe in))
+                             (let ((rpath* (regexp-substitute/global
+                                            #f (regexp-quote tmpdir) rpath
+                                            'pre out 'post)))
+                               (or (equal? rpath rpath*)
+                                   (begin
+                                     (format #t "~a: changing RPATH from `~a' to `~a'~%"
+                                             lib rpath rpath*)
+                                     (zero?
+                                      (system* "patchelf" "--set-rpath"
+                                               rpath* lib))))))))
+                    (append (find-files (string-append out "/bin")
+                                        ".*")
+                            (find-files (string-append out "/lib")
+                                        "\\.so$")))))
+         %standard-phases))
+       #:tests? #f                                ; no test suite
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 popen)
+                  (ice-9 regex)
+                  (ice-9 rdelim)
+                  (srfi srfi-1))))
     (inputs `(("bigloo" ,bigloo)
-              ("which" ,which)))
+              ("which" ,which)
+              ("patchelf" ,patchelf)))
     (home-page "http://hop.inria.fr/")
     (synopsis "A multi-tier programming language for the Web 2.0")
     (description
