@@ -27,6 +27,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages which)
   #:use-module (ice-9 match))
 
 (define-public mit-scheme
@@ -167,4 +168,38 @@ compiles Scheme modules.  It delivers small and fast stand alone
 binary executables.  Bigloo enables full connections between
 Scheme and C programs, between Scheme and Java programs, and
 between Scheme and C# programs.")
+    (license gpl2+)))
+
+(define-public hop
+  (package
+    (name "hop")
+    (version "2.4.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "ftp://ftp-sop.inria.fr/indes/fp/Hop/hop-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "04fhy5jp9lq12fmdqfjzj1w32f7nxc80fagbj7pfci7xh86nm2c5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (zero?
+                      (system* "./configure"
+                               (string-append"--prefix=" out)))))
+                 %standard-phases)
+       #:tests? #f))                              ; no test suite
+    (inputs `(("bigloo" ,bigloo)
+              ("which" ,which)))
+    (home-page "http://hop.inria.fr/")
+    (synopsis "A multi-tier programming language for the Web 2.0")
+    (description
+     "HOP is a multi-tier programming language for the Web 2.0 and the
+so-called diffuse Web.  It is designed for programming interactive web
+applications in many fields such as multimedia (web galleries, music players,
+...), ubiquitous and house automation (SmartPhones, personal appliance),
+mashups, office (web agendas, mail clients, ...), etc.")
     (license gpl2+)))
