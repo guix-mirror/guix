@@ -124,6 +124,7 @@ MODULES =					\
   gnu/packages/pkg-config.scm			\
   gnu/packages/pth.scm				\
   gnu/packages/python.scm			\
+  gnu/packages/qemu.scm				\
   gnu/packages/readline.scm			\
   gnu/packages/recutils.scm			\
   gnu/packages/rsync.scm			\
