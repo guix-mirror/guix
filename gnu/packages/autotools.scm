@@ -62,7 +62,7 @@ file that lists the operating system features that the package
 can use, in the form of M4 macro calls.")
     (license gpl3+))) ; some files are under GPLv2+
 
-(define autoconf-wrapper
+(define-public autoconf-wrapper
   ;; An Autoconf wrapper that generates `configure' scripts that use our
   ;; own Bash instead of /bin/sh in shebangs.  For that reason, it
   ;; should only be used internally---users should not end up
