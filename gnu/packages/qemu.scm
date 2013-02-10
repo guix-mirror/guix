@@ -19,7 +19,7 @@
 (define-module (gnu packages qemu)
   #:use-module (guix download)
   #:use-module (guix packages)
-  #:use-module ((guix licenses) #:renamer (symbol-prefix-proc 'license:))
+  #:use-module ((guix licenses) #:select (gpl2))
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
@@ -76,6 +76,14 @@
        ("attr" ,attr)))
     (home-page "http://www.linux-kvm.org/")
     (synopsis
-     "A full virtualization solution for Linux on x86 hardware containing virtualization extensions")
-    (description #f)
-    (license #f)))
+     "Virtualization for Linux on x86 hardware containing virtualization extensions")
+    (description
+     "KVM (for Kernel-based Virtual Machine) is a full virtualization solution
+for Linux on x86 hardware containing virtualization extensions (Intel VT or
+AMD-V).  It consists of a loadable kernel module, kvm.ko, that provides the
+core virtualization infrastructure and a processor specific module,
+kvm-intel.ko or kvm-amd.ko. KVM also requires a modified QEMU although work is
+underway to get the required changes upstream.")
+
+    ;; Many files are GPLv2+, but some are GPLv2-only---e.g., `memory.c'.
+    (license gpl2)))
