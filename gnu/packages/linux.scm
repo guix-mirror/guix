@@ -257,3 +257,42 @@ slabtop, and skill.")
     (description
      "Tools for working with USB devices, such as lsusb.")
     (license gpl2+)))
+
+(define-public e2fsprogs
+  (package
+    (name "e2fsprogs")
+    (version "1.42.7")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/e2fsprogs/e2fsprogs-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0ibkkvp6kan0hn0d1anq4n2md70j5gcm7mwna515w82xwyr02rfw"))))
+    (build-system gnu-build-system)
+    (inputs `(("util-linux" ,util-linux)
+              ("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:phases (alist-cons-before
+                 'configure 'patch-shells
+                 (lambda _
+                   (substitute* "configure"
+                     (("/bin/sh (.*)parse-types.sh" _ dir)
+                      (string-append (which "sh") " " dir
+                                     "parse-types.sh")))
+                   (substitute* (find-files "." "^Makefile.in$")
+                     (("#!/bin/sh")
+                      (string-append "#!" (which "sh")))))
+                 %standard-phases)
+
+       ;; FIXME: Tests work by comparing the stdout/stderr of programs, that
+       ;; they fail because we get an extra line that says "Can't check if
+       ;; filesystem is mounted due to missing mtab file".
+       #:tests? #f))
+    (home-page "http://e2fsprogs.sourceforge.net/")
+    (synopsis "Tools for creating and checking ext2/ext3/ext4 filesystems")
+    (description
+     "This package provides tools for manipulating ext2/ext3/ext4 file systems.")
+    (license (list gpl2                           ; programs
+                   lgpl2.0                        ; libext2fs
+                   x11))))                        ; libuuid
