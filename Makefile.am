@@ -81,6 +81,7 @@ MODULES =					\
   gnu/packages/gperf.scm			\
   gnu/packages/gprolog.scm			\
   gnu/packages/groff.scm			\
+  gnu/packages/grub.scm				\
   gnu/packages/gsasl.scm			\
   gnu/packages/guile.scm			\
   gnu/packages/help2man.scm			\
@@ -171,6 +172,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/glib-tests-timezone.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-no-ld-so-cache.patch		\
+  gnu/packages/patches/grub-gets-undeclared.patch		\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
   gnu/packages/patches/guile-default-utf8.patch			\
   gnu/packages/patches/guile-relocatable.patch			\
