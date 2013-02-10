@@ -20,7 +20,6 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages ghostscript))
 

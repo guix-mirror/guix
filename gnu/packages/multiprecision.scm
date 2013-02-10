@@ -22,7 +22,6 @@
   #:use-module (gnu packages m4)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix utils)
   #:use-module (guix build-system gnu))
 
 (define-public gmp

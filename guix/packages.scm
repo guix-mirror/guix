@@ -26,6 +26,7 @@
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
+  #:re-export (%current-system)
   #:export (origin
             origin?
             origin-uri
