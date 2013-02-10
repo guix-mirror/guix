@@ -56,6 +56,7 @@ MODULES =					\
   gnu/packages/bdw-gc.scm			\
   gnu/packages/bison.scm			\
   gnu/packages/bootstrap.scm			\
+  gnu/packages/cdrom.scm			\
   gnu/packages/check.scm			\
   gnu/packages/compression.scm			\
   gnu/packages/cpio.scm				\
