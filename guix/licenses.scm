@@ -30,6 +30,7 @@
             expat
             freetype
             gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
+            isc
             ijg
             ibmpl1.0
             lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
@@ -148,6 +149,11 @@ which may be a file:// URI pointing the package's tree."
   (license "GPL 3+"
            "https://www.gnu.org/licenses/gpl.html"
            "https://www.gnu.org/licenses/license-list#GNUGPLv3"))
+
+(define isc
+  (license "ISC"
+           "http://directory.fsf.org/wiki/License:ISC"
+           "https://www.gnu.org/licenses/license-list.html#ISC"))
 
 (define ijg
   (license "IJG"

@@ -143,6 +143,7 @@ MODULES =					\
   gnu/packages/texinfo.scm			\
   gnu/packages/texlive.scm			\
   gnu/packages/time.scm				\
+  gnu/packages/tmux.scm 			\
   gnu/packages/tor.scm				\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
