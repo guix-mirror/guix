@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -31,6 +31,12 @@ export GUILE_LOAD_COMPILED_PATH GUILE_LOAD_PATH
 
 PATH="@abs_top_builddir@:$PATH"
 export PATH
+
+# Daemon helpers.
+
+NIX_ROOT_FINDER="@abs_top_builddir@/nix/scripts/list-runtime-roots"
+NIX_SETUID_HELPER="@abs_top_builddir@/nix-setuid-helper"
+export NIX_ROOT_FINDER NIX_SETUID_HELPER
 
 # The following variables need only be defined when compiling Guix
 # modules, but we define them to be on the safe side in case of
