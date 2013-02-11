@@ -175,3 +175,29 @@ statically-linked; the bootstrap Guile must be relocatable (see patch in
 the Guix distro); the static-binaries tarball must contain the same
 programs (Coreutils, Grep, sed, Awk, etc.); and so on.
 
+* Commit Access
+
+Development is done using the Git distributed version control system.  Thus,
+access to the repository is not strictly necessary.  We welcome contributions
+in the form of patches as produced by ‘git format-patch’ sent to
+bug-guix@gnu.org.
+
+However, for frequent contributors, having write access to the repository is
+convenient.  When you get commit access, please make sure to follow the policy
+below (discussions of the policy can take place on bug-guix@gnu.org.)
+
+Non-trivial patches should always be posted to bug-guix@gnu.org (trivial
+patches include fixing typos, etc.)
+
+For patches that just add a new package, and a simple one, it’s OK to commit,
+if you’re confident (which means you successfully built it in a chroot setup.)
+Likewise for package upgrades.  We have a mailing list for commit
+notifications (guix-commits@gnu.org), so people can notice.  Before pushing
+your changes, make sure to run ‘git pull --rebase’.
+
+For anything else, please post to bug-guix@gnu.org and leave time for a
+review, without committing anything.  If you didn’t receive any reply
+after two weeks, and if you’re confident, it’s OK to commit.
+
+That last part is subject to being adjusted, allowing individuals to commit
+directly on non-controversial changes on parts they’re familiar with.
