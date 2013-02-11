@@ -83,6 +83,45 @@
     (license gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
+(define-public module-init-tools
+  (package
+    (name "module-init-tools")
+    (version "3.16")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://kernel.org/linux/utils/kernel/module-init-tools/module-init-tools-"
+                   version ".tar.bz2"))
+             (sha256
+              (base32
+               "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))))
+    (build-system gnu-build-system)
+    (inputs
+     ;; The upstream tarball lacks man pages, and building them would require
+     ;; DocBook & co.  Thus, use Gentoo's pre-built man pages.
+     `(("man-pages"
+        ,(origin
+          (method url-fetch)
+          (uri (string-append
+                "http://distfiles.gentoo.org/distfiles/module-init-tools-" version
+                "-man.tar.bz2"))
+          (sha256
+           (base32
+            "1j1nzi87kgsh4scl645fhwhjvljxj83cmdasa4n4p5krhasgw358"))))))
+    (arguments
+     '(#:phases (alist-cons-before
+                 'unpack 'unpack-man-pages
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((man-pages (assoc-ref inputs "man-pages")))
+                     (zero? (system* "tar" "xvf" man-pages))))
+                 %standard-phases)))
+    (home-page "http://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
+    (synopsis "Tools for loading and managing Linux kernel modules")
+    (description
+     "Tools for loading and managing Linux kernel modules, such as `modprobe',
+`insmod', `lsmod', and more.")
+    (license gpl2+)))
+
 (define-public linux-pam
   (package
     (name "linux-pam")
