@@ -155,6 +155,16 @@ specifications are building blocks of S/MIME and TLS.")
        ("libgpg-error" ,libgpg-error)
        ("zlib" ,guix:zlib)
        ("readline" ,readline)))
+   (arguments
+    `(#:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key #:allow-other-keys #:rest args)
+         (let ((configure (assoc-ref %standard-phases 'configure)))
+           (substitute* "tests/openpgp/Makefile.in"
+             (("/bin/sh") (which "bash")))
+           (apply configure args)))
+       %standard-phases)))
     (home-page "http://gnupg.org/")
     (synopsis
      "GNU Privacy Guard (GnuPG), GNU Project's implementation of the OpenPGP standard")
