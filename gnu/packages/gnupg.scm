@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +19,9 @@
 
 (define-module (gnu packages gnupg)
   #:use-module (guix licenses)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pth)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module ((gnu packages compression)
                 #:renamer (symbol-prefix-proc 'guix:))
@@ -166,3 +169,50 @@ applications.  A wealth of frontend applications and libraries
 are available.  Version 2 of GnuPG also provides support for
 S/MIME.")
     (license gpl3+)))
+
+(define-public pius
+  (package
+   (name "pius")
+   (version "2.0.9")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/pgpius/pius/"
+                                version "/pius-"
+                                version ".tar.bz2"))
+            (sha256 (base32
+                     "1g1jly3wl4ks6h8ydkygyl2c4i7v3z91rg42005m6vm70y1d8b3d"))))
+   (build-system gnu-build-system)
+   (inputs `(("perl" ,perl)
+             ("python" ,python)))
+   (arguments
+    `(#:tests? #f
+      #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key #:allow-other-keys) #t)
+       (alist-replace
+        'build
+        (lambda* (#:key #:allow-other-keys) #t)
+       (alist-replace
+        'install
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out")))
+            (mkdir out)
+            (mkdir (string-append out "/bin"))
+            (for-each
+              (lambda (filename)
+                (copy-file filename (string-append out "/bin/" filename)))
+              '("pius" "pius-keyring-mgr" "pius-party-worksheet"))))
+       %standard-phases)))))
+   (synopsis "programs to simplify gnupg key signing")
+   (description
+    "Pius (PGP Individual UID Signer) helps attendees of PGP keysigning
+parties. It is the main utility and makes it possible to quickly and easily
+sign each UID on a set of PGP keys. It is designed to take the pain out of
+the sign-all-the-keys part of PGP Keysigning Party while adding security
+to the process.
+
+pius-keyring-mgr and pius-party-worksheet help organisers of
+PGP keysigning parties.")
+   (license gpl2)
+   (home-page "http://www.phildev.net/pius/index.shtml")))
