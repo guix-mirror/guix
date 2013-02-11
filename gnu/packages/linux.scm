@@ -122,6 +122,69 @@
 `insmod', `lsmod', and more.")
     (license gpl2+)))
 
+(define-public linux-libre
+  (let* ((version* "3.3.8")
+         (build-phase
+          '(lambda* (#:key system #:allow-other-keys #:rest args)
+             (let ((arch (car (string-split system #\-))))
+               (setenv "ARCH"
+                       (cond ((string=? arch "i686") "i386")
+                             (else arch)))
+               (format #t "`ARCH' set to `~a'~%" (getenv "ARCH")))
+
+             (let ((build (assoc-ref %standard-phases 'build)))
+               (and (zero? (system* "make" "allmodconfig"))
+
+                    ;; Call the default `build' phase so `-j' is correctly
+                    ;; passed.
+                    (apply build #:make-flags "all" args)))))
+         (install-phase
+          `(lambda* (#:key inputs outputs #:allow-other-keys)
+             (let* ((out    (assoc-ref outputs "out"))
+                    (moddir (string-append out "/lib/modules"))
+                    (mit    (assoc-ref inputs "module-init-tools")))
+               (mkdir-p moddir)
+               (for-each (lambda (file)
+                           (copy-file file
+                                      (string-append out "/" (basename file))))
+                         (find-files "." "^(bzImage|System\\.map)$"))
+               (copy-file ".config" (string-append out "/config"))
+               (zero? (system* "make"
+                               (string-append "DEPMOD=" mit "/sbin/depmod")
+                               (string-append "MODULE_DIR=" moddir)
+                               (string-append "INSTALL_PATH=" out)
+                               (string-append "INSTALL_MOD_PATH=" out)
+                               "modules_install"))))))
+   (package
+    (name "linux-libre")
+    (version version*)
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://linux-libre.fsfla.org/pub/linux-libre/releases/3.3.8-gnu/linux-libre-"
+                   version "-gnu.tar.xz"))
+             (sha256
+              (base32
+               "0jkfh0z1s6izvdnc3njm39dhzp1cg8i06jv06izwqz9w9qsprvnl"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("perl" ,perl)
+                     ("module-init-tools" ,module-init-tools)))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (ice-9 match))
+       #:phases (alist-replace
+                 'build ,build-phase
+                 (alist-replace
+                  'install ,install-phase
+                  (alist-delete 'configure %standard-phases)))
+       #:tests? #f))
+    (synopsis "GNU Linux-Libre kernel")
+    (description "Linux-Libre operating system kernel.")
+    (license gpl2)
+    (home-page "http://www.gnu.org/software/linux-libre/"))))
+
 (define-public linux-pam
   (package
     (name "linux-pam")
