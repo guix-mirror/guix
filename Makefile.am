@@ -101,6 +101,7 @@ MODULES =					\
   gnu/packages/libtiff.scm			\
   gnu/packages/libunistring.scm			\
   gnu/packages/libusb.scm			\
+  gnu/packages/libunwind.scm			\
   gnu/packages/linux.scm			\
   gnu/packages/lout.scm				\
   gnu/packages/lsh.scm				\
