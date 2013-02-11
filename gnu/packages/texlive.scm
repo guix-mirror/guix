@@ -32,6 +32,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages tcsh)
   #:use-module (gnu packages zip))
 
 (define texlive-extra-src
@@ -68,9 +69,10 @@
              ("perl" ,perl)
              ("poppler" ,poppler)
              ("pkg-config" ,pkg-config)
-             ;; FIXME: Add interpreters csh, fontforge and ruby,
+             ;; FIXME: Add interpreters fontforge and ruby,
              ;; once they are available.
              ("python" ,python)
+             ("tcsh" ,tcsh)
              ("teckit" ,teckit)
              ("t1lib" ,t1lib)
              ("zlib" ,zlib)
