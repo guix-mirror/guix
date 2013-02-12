@@ -132,6 +132,7 @@ MODULES =					\
   gnu/packages/readline.scm			\
   gnu/packages/recutils.scm			\
   gnu/packages/rsync.scm			\
+  gnu/packages/samba.scm			\
   gnu/packages/scheme.scm			\
   gnu/packages/screen.scm 			\
   gnu/packages/shishi.scm			\
