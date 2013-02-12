@@ -22,6 +22,7 @@
   #:use-module (guix utils)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 vlist)
+  #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-39)
@@ -30,7 +31,8 @@
             %patch-directory
             %bootstrap-binaries-path
             fold-packages
-            find-packages-by-name))
+            find-packages-by-name
+            find-newest-available-packages))
 
 ;;; Commentary:
 ;;;
@@ -153,3 +155,25 @@ then only return packages whose version is equal to VERSION."
                        (cons package result)
                        result))
                  '()))
+
+(define (find-newest-available-packages)
+  "Return a vhash keyed by package names, and with
+associated values of the form
+
+  (newest-version newest-package ...)
+
+where the preferred package is listed first."
+
+  ;; FIXME: Currently, the preferred package is whichever one
+  ;; was found last by 'fold-packages'.  Find a better solution.
+  (fold-packages (lambda (p r)
+                   (let ((name    (package-name p))
+                         (version (package-version p)))
+                     (match (vhash-assoc name r)
+                       ((_ newest-so-far . pkgs)
+                        (case (version-compare version newest-so-far)
+                          ((>) (vhash-cons name `(,version ,p) r))
+                          ((=) (vhash-cons name `(,version ,p ,@pkgs) r))
+                          ((<) r)))
+                       (#f (vhash-cons name `(,version ,p) r)))))
+                 vlist-null))

@@ -13,6 +13,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 !#
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,12 +38,14 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:use-module (guix utils)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
-  #:autoload   (gnu packages) (find-packages-by-name)
+  #:autoload   (gnu packages) (find-packages-by-name
+                               find-newest-available-packages)
   #:export (guix-build))
 
 (define %store
@@ -196,13 +199,24 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                  root (strerror (system-error-errno args)))
          (exit 1)))))
 
+  (define newest-available-packages
+    (memoize find-newest-available-packages))
+
+  (define (find-best-packages-by-name name version)
+    (if version
+        (find-packages-by-name name version)
+        (match (vhash-assoc name (newest-available-packages))
+          ((_ version pkgs ...) pkgs)
+          (#f '()))))
+
   (define (find-package request)
     ;; Return a package matching REQUEST.  REQUEST may be a package
     ;; name, or a package name followed by a hyphen and a version
-    ;; number.
+    ;; number.  If the version number is not present, return the
+    ;; preferred newest version.
     (let-values (((name version)
                   (package-name->name+version request)))
-      (match (find-packages-by-name name version)
+      (match (find-best-packages-by-name name version)
         ((p)                                      ; one match
          p)
         ((p x ...)                                ; several matches
