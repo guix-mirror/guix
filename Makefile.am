@@ -24,6 +24,10 @@ bin_SCRIPTS =					\
   guix-package					\
   guix-gc
 
+nodist_noinst_SCRIPTS =				\
+  pre-inst-env					\
+  test-env
+
 MODULES =					\
   guix/base32.scm				\
   guix/utils.scm				\
