@@ -227,3 +227,107 @@ pius-keyring-mgr and pius-party-worksheet help organisers of
 PGP keysigning parties.")
    (license gpl2)
    (home-page "http://www.phildev.net/pius/index.shtml")))
+
+(define-public signing-party
+  (package
+   (name "signing-party")
+   (version "1.1.4")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://ftp.debian.org/debian/pool/main/s/signing-party/signing-party_"
+                                version ".orig.tar.gz"))
+            (sha256 (base32
+                     "188gp0prbh8qs29lq3pbf0qibfd6jq4fk7i0pfrybl8aahvm84rx"))))
+   (build-system gnu-build-system)
+   (inputs `(("perl" ,perl)))
+   (arguments
+    `(#:tests? #f
+      #:phases
+      (alist-replace
+       'unpack
+       (lambda* (#:key #:allow-other-keys #:rest args)
+         (let ((unpack (assoc-ref %standard-phases 'unpack)))
+           (apply unpack args)
+           ;; remove spurious symlink
+           (delete-file "keyanalyze/pgpring/depcomp")))
+      (alist-replace
+       'configure
+       (lambda* (#:key outputs #:allow-other-keys)
+         (let ((out (assoc-ref outputs "out")))
+           (substitute* "keyanalyze/Makefile"
+             (("LDLIBS") (string-append "CC=" (which "gcc") "\nLDLIBS")))
+           (substitute* "keyanalyze/Makefile"
+             (("./configure") (string-append "./configure --prefix=" out)))
+           (substitute* "keyanalyze/pgpring/configure"
+             (("/bin/sh") (which "bash")))
+           (substitute* "gpgwrap/Makefile"
+             (("\\} clean") (string-append "} clean\ninstall:\n\tinstall -D bin/gpgwrap "
+                                      out "/bin/gpgwrap\n")))
+           (substitute* '("gpgsigs/Makefile" "keyanalyze/Makefile"
+                          "keylookup/Makefile" "sig2dot/Makefile"
+                          "springgraph/Makefile")
+             (("/usr") out))))
+       (alist-replace
+        'install
+        (lambda* (#:key outputs #:allow-other-keys #:rest args)
+          (let ((out (assoc-ref outputs "out"))
+                (install (assoc-ref %standard-phases 'install)))
+            (apply install args)
+            (for-each
+              (lambda (dir file)
+                (copy-file (string-append dir "/" file)
+                           (string-append out "/bin/" file)))
+              '("caff" "caff" "caff" "gpgdir" "gpg-key2ps"
+                "gpglist" "gpg-mailkeys" "gpgparticipants")
+              '("caff" "pgp-clean" "pgp-fixkey" "gpgdir" "gpg-key2ps"
+                "gpglist" "gpg-mailkeys" "gpgparticipants"))
+            (for-each
+              (lambda (dir file)
+                (copy-file (string-append dir "/" file)
+                           (string-append out "/share/man/man1/" file)))
+              '("caff" "caff" "caff" "gpgdir"
+                "gpg-key2ps" "gpglist" "gpg-mailkeys"
+                "gpgparticipants" "gpgsigs" "gpgwrap/doc"
+                "keyanalyze" "keyanalyze/pgpring" "keyanalyze")
+              '("caff.1" "pgp-clean.1" "pgp-fixkey.1" "gpgdir.1"
+                "gpg-key2ps.1" "gpglist.1" "gpg-mailkeys.1"
+                "gpgparticipants.1" "gpgsigs.1" "gpgwrap.1"
+                "process_keys.1" "pgpring.1" "keyanalyze.1"))))
+      %standard-phases)))))
+   (synopsis "collection of scripts for simplifying gnupg key signing")
+   (description
+    "signing-party is a collection for all kinds of PGP/GnuPG related things,
+including tools for signing keys, keyring analysis, and party preparation.
+
+ * caff: CA - Fire and Forget signs and mails a key
+ 
+ * pgp-clean: removes all non-self signatures from key
+
+ * pgp-fixkey: removes broken packets from keys
+
+ * gpg-mailkeys: simply mail out a signed key to its owner
+
+ * gpg-key2ps: generate PostScript file with fingerprint paper strips
+
+ * gpgdir: recursive directory encryption tool
+
+ * gpglist: show who signed which of your UIDs
+
+ * gpgsigs: annotates list of GnuPG keys with already done signatures
+
+ * gpgparticipants: create list of party participants for the organiser
+
+ * gpgwrap: a passphrase wrapper
+
+ * keyanalyze: minimum signing distance (MSD) analysis on keyrings
+
+ * keylookup: ncurses wrapper around gpg --search
+
+ * sig2dot: converts a list of GnuPG signatures to a .dot file
+
+ * springgraph: creates a graph from a .dot file")
+   ;; gpl2+ for almost all programs, except for keyanalyze: gpl2
+   ;; and caff and gpgsigs: bsd-3, see
+   ;; http://packages.debian.org/changelogs/pool/main/s/signing-party/current/copyright
+   (license gpl2)
+   (home-page "http://pgp-tools.alioth.debian.org/")))
