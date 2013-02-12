@@ -28,6 +28,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (system foreign)
   #:use-module (guix ftp-client)
+  #:use-module (guix utils)
   #:export (official-gnu-packages
             releases
             latest-release
@@ -156,21 +157,12 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
                                files)
                    result)))))))
 
-(define version-string>?
-  (let ((strverscmp
-         (let ((sym (or (dynamic-func "strverscmp" (dynamic-link))
-                        (error "could not find `strverscmp' (from GNU libc)"))))
-           (pointer->procedure int sym (list '* '*)))))
-    (lambda (a b)
-      "Return #t when B denotes a newer version than A."
-      (> (strverscmp (string->pointer a) (string->pointer b)) 0))))
-
 (define (latest-release project)
   "Return (\"FOO-X.Y\" . \"/bar/foo\") or #f."
   (let ((releases (releases project)))
     (and (not (null? releases))
          (fold (lambda (release latest)
-                 (if (version-string>? (car release) (car latest))
+                 (if (version>? (car release) (car latest))
                      release
                      latest))
                '("" . "")

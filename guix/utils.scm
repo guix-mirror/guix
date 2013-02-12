@@ -57,6 +57,8 @@
 
             gnu-triplet->nix-system
             %current-system
+            version-compare
+            version>?
             package-name->name+version))
 
 
@@ -421,6 +423,24 @@ returned by `config.guess'."
   ;; System type as expected by Nix, usually ARCHITECTURE-KERNEL.
   ;; By default, this is equal to (gnu-triplet->nix-system %host-type).
   (make-parameter %system))
+
+(define version-compare
+  (let ((strverscmp
+         (let ((sym (or (dynamic-func "strverscmp" (dynamic-link))
+                        (error "could not find `strverscmp' (from GNU libc)"))))
+           (pointer->procedure int sym (list '* '*)))))
+    (lambda (a b)
+      "Return '> when A denotes a newer version than B,
+'< when A denotes a older version than B,
+or '= when they denote equal versions."
+      (let ((result (strverscmp (string->pointer a) (string->pointer b))))
+        (cond ((positive? result) '>)
+              ((negative? result) '<)
+              (else '=))))))
+
+(define (version>? a b)
+  "Return #t when A denotes a newer version than B."
+  (eq? '> (version-compare a b)))
 
 (define (package-name->name+version name)
   "Given NAME, a package name like \"foo-0.9.1b\", return two values:
