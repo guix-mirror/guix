@@ -14,6 +14,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -42,6 +43,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -346,6 +348,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (option '(#\r "remove") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'remove arg result)))
+        (option '(#\u "upgrade") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'upgrade arg result)))
         (option '("roll-back") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'roll-back? #t result)))
@@ -421,9 +426,20 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                       (length req*))
                   (null? req*) req*))))
 
+  (define newest-available-packages
+    (memoize find-newest-available-packages))
+
+  (define (find-best-packages-by-name name version)
+    (if version
+        (find-packages-by-name name version)
+        (match (vhash-assoc name (newest-available-packages))
+          ((_ version pkgs ...) pkgs)
+          (#f '()))))
+
   (define (find-package name)
     ;; Find the package NAME; NAME may contain a version number and a
-    ;; sub-derivation name.
+    ;; sub-derivation name.  If the version number is not present,
+    ;; return the preferred newest version.
     (define request name)
 
     (define (ensure-output p sub-drv)
@@ -441,7 +457,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                     (substring name (+ 1 colon))))))
                   ((name version)
                    (package-name->name+version name)))
-      (match (find-packages-by-name name version)
+      (match (find-best-packages-by-name name version)
         ((p)
          (list name (package-version p) sub-drv (ensure-output p sub-drv)
                (package-transitive-propagated-inputs p)))
@@ -457,6 +473,21 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                (package-transitive-propagated-inputs p)))
         (()
          (leave (_ "~a: package not found~%") request)))))
+
+  (define (upgradeable? name current-version current-path)
+    ;; Return #t if there's a version of package NAME newer than
+    ;; CURRENT-VERSION, or if the newest available version is equal to
+    ;; CURRENT-VERSION but would have an output path different than
+    ;; CURRENT-PATH.
+    (match (vhash-assoc name (newest-available-packages))
+      ((_ candidate-version pkg . rest)
+       (case (version-compare candidate-version current-version)
+         ((>) #t)
+         ((<) #f)
+         ((=) (let ((candidate-path (derivation-path->output-path
+                                     (package-derivation (%store) pkg))))
+                (not (string=? current-path candidate-path))))))
+      (#f #f)))
 
   (define (ensure-default-profile)
     ;; Ensure the default profile symlink and directory exist.
@@ -510,13 +541,32 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (begin
           (roll-back profile)
           (process-actions (alist-delete 'roll-back? opts)))
-        (let* ((install  (filter-map (match-lambda
-                                      (('install . (? store-path?))
-                                       #f)
-                                      (('install . package)
-                                       (find-package package))
-                                      (_ #f))
-                                     opts))
+        (let* ((installed (manifest-packages (profile-manifest profile)))
+               (upgrade-regexps (filter-map (match-lambda
+                                             (('upgrade . regexp)
+                                              (make-regexp regexp))
+                                             (_ #f))
+                                            opts))
+               (upgrade  (if (null? upgrade-regexps)
+                             '()
+                             (let ((newest (find-newest-available-packages)))
+                               (filter-map (match-lambda
+                                            ((name version output path _)
+                                             (and (any (cut regexp-exec <> name)
+                                                       upgrade-regexps)
+                                                  (upgradeable? name version path)
+                                                  (find-package name)))
+                                            (_ #f))
+                                           installed))))
+               (install  (append
+                          upgrade
+                          (filter-map (match-lambda
+                                       (('install . (? store-path?))
+                                        #f)
+                                       (('install . package)
+                                        (find-package package))
+                                       (_ #f))
+                                      opts)))
                (drv      (filter-map (match-lambda
                                       ((name version sub-drv
                                              (? package? package)
@@ -553,10 +603,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                          (match package
                                            ((name _ ...)
                                             (alist-delete name result))))
-                                       (fold alist-delete
-                                             (manifest-packages
-                                              (profile-manifest profile))
-                                             remove)
+                                       (fold alist-delete installed remove)
                                        install*))))
 
           (when (equal? profile %current-profile)
