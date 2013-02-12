@@ -27,18 +27,15 @@
 (define-public gmp
   (package
    (name "gmp")
-   (version "5.1.0")
+   (version "5.1.1")
    (source (origin
             (method url-fetch)
             (uri
-             ;; Note: this version is not available from GNU mirrors
-             ;; because it was made with an Automake affected by
-             ;; CVE-2012-3386.
-             (string-append "ftp://ftp.gmplib.org/pub/gmp-"
-                            version "/gmp-" version ".tar.bz2"))
+             (string-append "mirror://gnu/gmp/gmp-"
+                            version ".tar.xz"))
             (sha256
              (base32
-              "15n7xxgasbxdch8ii8z9ic6fxc2ysk3q8iavf55abjp5iylspnfz"))))
+              "1hili06lcf0clg5qfvz7knm6pmj6ab54yhsvskp1mdny5xw4vmjb"))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (arguments `(#:configure-flags
