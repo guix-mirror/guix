@@ -150,7 +150,15 @@ development cycle.")
                                        (find-files "gc" "^install-gc"))
                       (("/bin/rm") (which "rm"))
                       (("/bin/mv") (which "mv"))))
-                  %standard-phases))))
+                  (alist-cons-after
+                   'install 'install-emacs-modes
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let* ((out (assoc-ref outputs "out"))
+                            (dir (string-append out "/share/emacs/site-lisp")))
+                       (zero? (system* "make" "-C" "bmacs" "all" "install"
+                                       (string-append "EMACSBRAND=emacs24")
+                                       (string-append "EMACSDIR=" dir)))))
+                   %standard-phases)))))
     (inputs
      `(("emacs" ,emacs)
        ("patch/shebangs" ,(search-patch "bigloo-gc-shebangs.patch"))))
