@@ -25,7 +25,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages bison)
   #:use-module ((gnu packages gettext) #:renamer (symbol-prefix-proc 'gnu:))
-  #:use-module (gnu packages freetype)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages qemu)
   #:use-module (gnu packages ncurses)
