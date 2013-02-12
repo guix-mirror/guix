@@ -19,6 +19,8 @@
 
 (define-module (gnu packages gnupg)
   #:use-module (guix licenses)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pth)
   #:use-module (gnu packages python)
@@ -142,17 +144,16 @@ specifications are building blocks of S/MIME and TLS.")
         "08n636sfffs5qvg9ppiprvsh00q0dmdw425psg3m3nssja53m8pg"))))
     (build-system gnu-build-system)
     (inputs
-     `(;; TODO: Add missing optional deps.
-       ;; ("curl" ,curl)
-       ;; ("libusb" ,libusb)
-       ;; ("openldap" ,openldap)
-
+     `(;; TODO: Add missing optional dep libusb.
+;;        ("libusb" ,libusb)
        ("bzip2" ,guix:bzip2)
+       ("curl" ,curl)
        ("libassuan" ,libassuan)
        ("libgcrypt" ,libgcrypt)
+       ("libgpg-error" ,libgpg-error)
        ("libksba" ,libksba)
        ("pth" ,pth)
-       ("libgpg-error" ,libgpg-error)
+       ("openldap" ,openldap)
        ("zlib" ,guix:zlib)
        ("readline" ,readline)))
    (arguments
