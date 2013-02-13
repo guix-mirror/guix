@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (ice-9 ftw)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-39)
@@ -106,20 +108,34 @@
                   (false-if-exception (resolve-interface name))))
               (package-files)))
 
+(define (fold2 f seed1 seed2 lst)
+  (if (null? lst)
+      (values seed1 seed2)
+      (call-with-values
+          (lambda () (f (car lst) seed1 seed2))
+        (lambda (seed1 seed2)
+          (fold2 f seed1 seed2 (cdr lst))))))
+
 (define (fold-packages proc init)
   "Call (PROC PACKAGE RESULT) for each available package, using INIT as
-the initial value of RESULT."
-  (fold (lambda (module result)
-          (fold (lambda (var result)
-                  (if (package? var)
-                      (proc var result)
-                      result))
-                result
-                (module-map (lambda (sym var)
-                              (false-if-exception (variable-ref var)))
-                            module)))
-        init
-        (package-modules)))
+the initial value of RESULT.  It is guaranteed to never traverse the
+same package twice."
+  (identity   ; discard second return value
+   (fold2 (lambda (module result seen)
+            (fold2 (lambda (var result seen)
+                     (if (and (package? var)
+                              (not (vhash-assq var seen)))
+                         (values (proc var result)
+                                 (vhash-consq var #t seen))
+                         (values result seen)))
+                   result
+                   seen
+                   (module-map (lambda (sym var)
+                                 (false-if-exception (variable-ref var)))
+                               module)))
+          init
+          vlist-null
+          (package-modules))))
 
 (define* (find-packages-by-name name #:optional version)
   "Return the list of packages with the given NAME.  If VERSION is not #f,
