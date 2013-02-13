@@ -152,6 +152,7 @@ MODULES =					\
   gnu/packages/time.scm				\
   gnu/packages/tmux.scm 			\
   gnu/packages/tor.scm				\
+  gnu/packages/vim.scm 				\
   gnu/packages/wdiff.scm			\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
