@@ -111,20 +111,24 @@ flags for VARIABLE, the associated value is augmented."
   "A version of P linked with `-static-gcc'."
   (package-with-extra-configure-variable p "LDFLAGS" "-static-libgcc"))
 
-(define* (static-package p #:optional (loc (current-source-location)))
-  "Return a statically-linked version of package P."
+(define* (static-package p #:optional (loc (current-source-location))
+                         #:key (strip-all? #t))
+  "Return a statically-linked version of package P.  If STRIP-ALL? is true,
+use `--strip-all' as the arguments to `strip'."
   (let ((args (package-arguments p)))
     (package (inherit p)
       (location (source-properties->location loc))
       (arguments
        (let ((a (default-keyword-arguments args
                   '(#:configure-flags '()
-                    #:strip-flags #f))))
+                    #:strip-flags '("--strip-debug")))))
          (substitute-keyword-arguments a
            ((#:configure-flags flags)
             `(cons* "--disable-shared" "LDFLAGS=-static" ,flags))
-           ((#:strip-flags _)
-            ''("--strip-all"))))))))
+           ((#:strip-flags flags)
+            (if strip-all?
+                ''("--strip-all")
+                flags))))))))
 
 
 (define %store
