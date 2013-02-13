@@ -35,6 +35,7 @@
              (base32
               "05jwadjbrv8pr7z9cb4miskicxqpxm0pca4h2rg5cgbpajr2bx7b"))))
    (build-system gnu-build-system)
+   ;; TODO: Build with -DUSE_LIBC_PRIVATES (see make-bootstrap.scm).
    (synopsis "The Boehm-Demers-Weiser conservative garbage collector
 for C and C++")
    (description

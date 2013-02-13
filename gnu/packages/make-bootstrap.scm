@@ -28,6 +28,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages multiprecision)
   #:use-module (ice-9 match)
@@ -399,44 +400,54 @@
   ;; A statically-linked Guile that is relocatable--i.e., it can search
   ;; .scm and .go files relative to its installation directory, rather
   ;; than in hard-coded configure-time paths.
-  (let ((guile (package (inherit guile-2.0)
-                 (inputs
-                  `(("patch/relocatable"
-                     ,(search-patch "guile-relocatable.patch"))
-                    ("patch/utf8"
-                     ,(search-patch "guile-default-utf8.patch"))
-                    ,@(package-inputs guile-2.0)))
-                 (arguments
-                  `(;; When `configure' checks for ltdl availability, it
-                    ;; doesn't try to link using libtool, and thus fails
-                    ;; because of a missing -ldl.  Work around that.
-                    #:configure-flags '("LDFLAGS=-ldl")
+  (let* ((libgc (package (inherit libgc)
+                  (arguments
+                   ;; Make it so that we don't rely on /proc.  This is
+                   ;; especially useful in an initrd run before /proc is
+                   ;; mounted.
+                   '(#:configure-flags '("CPPFLAGS=-DUSE_LIBC_PRIVATES")))))
+         (guile (package (inherit guile-2.0)
+                  (inputs
+                   `(("patch/relocatable"
+                      ,(search-patch "guile-relocatable.patch"))
+                     ("patch/utf8"
+                      ,(search-patch "guile-default-utf8.patch"))
+                     ,@(package-inputs guile-2.0)))
+                  (propagated-inputs
+                   `(("bdw-gc" ,libgc)
+                     ,@(alist-delete "bdw-gc"
+                                     (package-propagated-inputs guile-2.0))))
+                  (arguments
+                   `(;; When `configure' checks for ltdl availability, it
+                     ;; doesn't try to link using libtool, and thus fails
+                     ;; because of a missing -ldl.  Work around that.
+                     #:configure-flags '("LDFLAGS=-ldl")
 
-                    #:phases (alist-cons-before
-                              'configure 'static-guile
-                              (lambda _
-                                (substitute* "libguile/Makefile.in"
-                                  ;; Create a statically-linked `guile'
-                                  ;; executable.
-                                  (("^guile_LDFLAGS =")
-                                   "guile_LDFLAGS = -all-static")
+                     #:phases (alist-cons-before
+                               'configure 'static-guile
+                               (lambda _
+                                 (substitute* "libguile/Makefile.in"
+                                   ;; Create a statically-linked `guile'
+                                   ;; executable.
+                                   (("^guile_LDFLAGS =")
+                                    "guile_LDFLAGS = -all-static")
 
-                                  ;; Add `-ldl' *after* libguile-2.0.la.
-                                  (("^guile_LDADD =(.*)$" _ ldadd)
-                                   (string-append "guile_LDADD = "
-                                                  (string-trim-right ldadd)
-                                                  " -ldl\n"))))
-                              %standard-phases)
+                                   ;; Add `-ldl' *after* libguile-2.0.la.
+                                   (("^guile_LDADD =(.*)$" _ ldadd)
+                                    (string-append "guile_LDADD = "
+                                                   (string-trim-right ldadd)
+                                                   " -ldl\n"))))
+                               %standard-phases)
 
-                    ;; Allow Guile to be relocated, as is needed during
-                    ;; bootstrap.
-                    #:patches
-                    (list (assoc-ref %build-inputs "patch/relocatable")
-                          (assoc-ref %build-inputs "patch/utf8"))
+                     ;; Allow Guile to be relocated, as is needed during
+                     ;; bootstrap.
+                     #:patches
+                     (list (assoc-ref %build-inputs "patch/relocatable")
+                           (assoc-ref %build-inputs "patch/utf8"))
 
-                    ;; There are uses of `dynamic-link' in
-                    ;; {foreign,coverage}.test that don't fly here.
-                    #:tests? #f)))))
+                     ;; There are uses of `dynamic-link' in
+                     ;; {foreign,coverage}.test that don't fly here.
+                     #:tests? #f)))))
     (package-with-explicit-inputs (static-package guile)
                                   %standard-inputs-with-relocatable-glibc
                                   (current-source-location))))
