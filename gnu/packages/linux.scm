@@ -133,7 +133,13 @@
                (format #t "`ARCH' set to `~a'~%" (getenv "ARCH")))
 
              (let ((build (assoc-ref %standard-phases 'build)))
-               (and (zero? (system* "make" "allmodconfig"))
+               (and (zero? (system* "make" "defconfig"))
+                    (begin
+                      (format #t "enabling additional modules...~%")
+                      (substitute* ".config"
+                        (("^# CONFIG_CIFS.*$")
+                         "CONFIG_CIFS=m\n"))
+                      (zero? (system* "make" "oldconfig")))
 
                     ;; Call the default `build' phase so `-j' is correctly
                     ;; passed.
