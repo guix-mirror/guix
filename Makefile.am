@@ -186,6 +186,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/grub-gets-undeclared.patch		\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
   gnu/packages/patches/guile-default-utf8.patch			\
+  gnu/packages/patches/guile-linux-syscalls.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
   gnu/packages/patches/libapr-skip-getservbyname-test.patch 	\
   gnu/packages/patches/libevent-dns-tests.patch			\
