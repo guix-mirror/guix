@@ -23,7 +23,7 @@
 set -e
 
 guix-daemon --version
-guix-build --version
+guix build --version
 
-guix-build -e '(@ (gnu packages bootstrap) %bootstrap-guile)'
-guix-build coreutils -n
+guix build -e '(@ (gnu packages bootstrap) %bootstrap-guile)'
+guix build coreutils -n

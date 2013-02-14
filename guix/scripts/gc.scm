@@ -1,16 +1,3 @@
-#!/bin/sh
-# aside from this initial boilerplate, this is actually -*- scheme -*- code
-
-prefix="@prefix@"
-datarootdir="@datarootdir@"
-
-GUILE_LOAD_COMPILED_PATH="@guilemoduledir@:$GUILE_LOAD_COMPILED_PATH"
-export GUILE_LOAD_COMPILED_PATH
-
-main='(module-ref (resolve-interface '\''(guix-gc)) '\'guix-gc')'
-exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
-         -c "(apply $main (cdr (command-line)))" "$@"
-!#
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
@@ -29,7 +16,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix-gc)
+(define-module (guix scripts gc)
   #:use-module (guix ui)
   #:use-module (guix store)
   #:use-module (ice-9 match)
@@ -48,7 +35,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
   `((action . collect-garbage)))
 
 (define (show-help)
-  (display (_ "Usage: guix-gc [OPTION]... PATHS...
+  (display (_ "Usage: guix gc [OPTION]... PATHS...
 Invoke the garbage collector.\n"))
   (display (_ "
   -C, --collect-garbage[=MIN]
@@ -154,11 +141,6 @@ interpreted."
                (lambda (arg result)
                  (alist-cons 'argument arg result))
                %default-options))
-
-  (install-locale)
-  (textdomain "guix")
-  (setvbuf (current-output-port) _IOLBF)
-  (setvbuf (current-error-port) _IOLBF)
 
   (with-error-handling
     (let ((opts  (parse-options))

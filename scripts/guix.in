@@ -1,0 +1,56 @@
+#!@GUILE@ -s
+-*- scheme -*-
+!#
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
+;;;
+;;; This file is part of GNU Guix.
+;;;
+;;; GNU Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+;; IMPORTANT: We must avoid loading any modules from Guix here,
+;; because we need to adjust the guile load paths first.
+;; It's okay to import modules from core Guile though.
+(use-modules (ice-9 regex))
+
+(let ()
+  (define-syntax-rule (push! elt v) (set! v (cons elt v)))
+
+  (define config-lookup
+    (let ((config '(("prefix"         . "@prefix@")
+                    ("datarootdir"    . "@datarootdir@")
+                    ("guilemoduledir" . "@guilemoduledir@")))
+          (var-ref-regexp (make-regexp "\\$\\{([a-z]+)\\}")))
+      (define (expand-var-ref match)
+        (lookup (match:substring match 1)))
+      (define (expand str)
+        (regexp-substitute/global #f var-ref-regexp str
+                                  'pre expand-var-ref 'post))
+      (define (lookup name)
+        (expand (assoc-ref config name)))
+      lookup))
+
+  (define (maybe-augment-load-paths!)
+    (unless (getenv "GUIX_UNINSTALLED")
+      (let ((module-dir (config-lookup "guilemoduledir")))
+        (push! module-dir %load-path)
+        (push! module-dir %load-compiled-path))))
+
+  (define (run-guix-main)
+    (let ((guix-main (module-ref (resolve-interface '(guix ui))
+                                 'guix-main)))
+      (apply guix-main (command-line))))
+
+  (maybe-augment-load-paths!)
+  (run-guix-main))

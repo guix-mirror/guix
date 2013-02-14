@@ -17,38 +17,38 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-# Test the `guix-gc' command-line utility.
+# Test the `guix gc' command-line utility.
 #
 
-guix-gc --version
+guix gc --version
 
 trap "rm -f guix-gc-root" EXIT
 rm -f guix-gc-root
 
 # Add then reclaim a .drv file.
-drv="`guix-build idutils -d`"
+drv="`guix build idutils -d`"
 test -f "$drv"
 
-guix-gc --list-dead | grep "$drv"
-guix-gc --delete "$drv"
+guix gc --list-dead | grep "$drv"
+guix gc --delete "$drv"
 ! test -f "$drv"
 
 # Add a .drv, register it as a root.
-drv="`guix-build --root=guix-gc-root lsh -d`"
+drv="`guix build --root=guix-gc-root lsh -d`"
 test -f "$drv" && test -L guix-gc-root
 
-guix-gc --list-live | grep "$drv"
-if guix-gc --delete "$drv";
+guix gc --list-live | grep "$drv"
+if guix gc --delete "$drv";
 then false; else true; fi
 
 rm guix-gc-root
-guix-gc --list-dead | grep "$drv"
-guix-gc --delete "$drv"
+guix gc --list-dead | grep "$drv"
+guix gc --delete "$drv"
 ! test -f "$drv"
 
 # Try a random collection.
-guix-gc -C 1KiB
+guix gc -C 1KiB
 
 # Check trivial error cases.
-if guix-gc --delete /dev/null;
+if guix gc --delete /dev/null;
 then false; else true; fi

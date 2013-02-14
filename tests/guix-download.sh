@@ -17,20 +17,20 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-# Test the `guix-download' command-line utility.
+# Test the `guix download' command-line utility.
 #
 
-guix-download --version
+guix download --version
 
 # Make sure it fails here.
-if guix-download http://does.not/exist
+if guix download http://does.not/exist
 then false; else true; fi
 
-if guix-download unknown://some/where;
+if guix download unknown://some/where;
 then false; else true; fi
 
-if guix-download not/a/uri;
+if guix download not/a/uri;
 then false; else true; fi
 
 # This one should succeed.
-guix-download "file://$abs_top_srcdir/README"
+guix download "file://$abs_top_srcdir/README"

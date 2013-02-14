@@ -1,16 +1,3 @@
-#!/bin/sh
-# aside from this initial boilerplate, this is actually -*- scheme -*- code
-
-prefix="@prefix@"
-datarootdir="@datarootdir@"
-
-GUILE_LOAD_COMPILED_PATH="@guilemoduledir@:$GUILE_LOAD_COMPILED_PATH"
-export GUILE_LOAD_COMPILED_PATH
-
-main='(module-ref (resolve-interface '\''(guix-import)) '\'guix-import')'
-exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
-         -c "(apply $main (cdr (command-line)))" "$@"
-!#
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
@@ -29,7 +16,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix-import)
+(define-module (guix scripts import)
   #:use-module (guix ui)
   #:use-module (guix snix)
   #:use-module (guix utils)
@@ -81,7 +68,7 @@ rather than \\n."
   '())
 
 (define (show-help)
-  (display (_ "Usage: guix-import NIXPKGS ATTRIBUTE
+  (display (_ "Usage: guix import NIXPKGS ATTRIBUTE
 Import and convert the Nix expression ATTRIBUTE of NIXPKGS.\n"))
   (display (_ "
   -h, --help             display this help and exit"))

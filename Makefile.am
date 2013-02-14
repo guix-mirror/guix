@@ -18,17 +18,18 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 bin_SCRIPTS =					\
-  guix-build					\
-  guix-download					\
-  guix-import					\
-  guix-package					\
-  guix-gc
+  scripts/guix
 
 nodist_noinst_SCRIPTS =				\
   pre-inst-env					\
   test-env
 
 MODULES =					\
+  guix/scripts/build.scm			\
+  guix/scripts/download.scm			\
+  guix/scripts/import.scm			\
+  guix/scripts/package.scm			\
+  guix/scripts/gc.scm				\
   guix/base32.scm				\
   guix/utils.scm				\
   guix/derivations.scm				\

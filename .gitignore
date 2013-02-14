@@ -34,7 +34,6 @@ config.cache
 /po/remove-potcdate.sin
 /po/stamp-po
 /po/guix.pot
-/guix-build
 /tests/*.trs
 /INSTALL
 /m4/*
@@ -44,12 +43,9 @@ config.cache
 /doc/guix.pdf
 /doc/stamp-vti
 /doc/version.texi
-/guix-download
 /gnu/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz
 /gnu/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz
-/guix-package
 /guix/config.scm
-/guix-import
 /nix/nix-daemon/nix-daemon.cc
 /nix/config.h
 /nix/config.h.in
@@ -64,7 +60,7 @@ stamp-h[0-9]
 /nix/scripts/list-runtime-roots
 /test-env
 /nix/nix-setuid-helper/nix-setuid-helper.cc
-/guix-gc
+/scripts/guix
 /doc/guix.aux
 /doc/guix.cp
 /doc/guix.cps
