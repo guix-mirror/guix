@@ -1,16 +1,3 @@
-#!/bin/sh
-# aside from this initial boilerplate, this is actually -*- scheme -*- code
-
-prefix="@prefix@"
-datarootdir="@datarootdir@"
-
-GUILE_LOAD_COMPILED_PATH="@guilemoduledir@:$GUILE_LOAD_COMPILED_PATH"
-export GUILE_LOAD_COMPILED_PATH
-
-main='(module-ref (resolve-interface '\''(guix-package)) '\'guix-package')'
-exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
-         -c "(apply $main (cdr (command-line)))" "$@"
-!#
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
@@ -31,7 +18,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix-package)
+(define-module (guix scripts package)
   #:use-module (guix ui)
   #:use-module (guix store)
   #:use-module (guix derivations)
@@ -296,7 +283,7 @@ matching packages."
   `((profile . ,%current-profile)))
 
 (define (show-help)
-  (display (_ "Usage: guix-package [OPTION]... PACKAGES...
+  (display (_ "Usage: guix package [OPTION]... PACKAGES...
 Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -i, --install=PACKAGE  install PACKAGE"))

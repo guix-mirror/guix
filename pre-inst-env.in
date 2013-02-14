@@ -27,9 +27,9 @@ GUILE_LOAD_COMPILED_PATH="@abs_top_builddir@${GUILE_LOAD_COMPILED_PATH:+:}$GUILE
 GUILE_LOAD_PATH="@abs_top_builddir@:@abs_top_srcdir@${GUILE_LOAD_PATH:+:}:$GUILE_LOAD_PATH"
 export GUILE_LOAD_COMPILED_PATH GUILE_LOAD_PATH
 
-# Define $PATH so that `guix-build' and friends are easily found.
+# Define $PATH so that `guix' and friends are easily found.
 
-PATH="@abs_top_builddir@:$PATH"
+PATH="@abs_top_builddir@/scripts:@abs_top_builddir@:$PATH"
 export PATH
 
 # Daemon helpers.
@@ -43,7 +43,12 @@ export NIX_ROOT_FINDER NIX_SETUID_HELPER
 # auto-compilation.
 
 NIX_HASH="@NIX_HASH@"
-
 export NIX_HASH
+
+# Define $GUIX_UNINSTALLED to prevent `guix' from
+# prepending @guilemoduledir@ to the Guile load paths.
+
+GUIX_UNINSTALLED=1
+export GUIX_UNINSTALLED
 
 exec "$@"

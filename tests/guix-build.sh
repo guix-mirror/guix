@@ -17,44 +17,44 @@
 # along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 #
-# Test the `guix-build' command-line utility.
+# Test the `guix build' command-line utility.
 #
 
-guix-build --version
+guix build --version
 
 # Should fail.
-if guix-build -e +;
+if guix build -e +;
 then false; else true; fi
 
 # Should fail because this is a source-less package.
-if guix-build -e '(@ (gnu packages bootstrap) %bootstrap-glibc)' -S
+if guix build -e '(@ (gnu packages bootstrap) %bootstrap-glibc)' -S
 then false; else true; fi
 
 # Should pass.
-guix-build -e '(@@ (gnu packages base) %bootstrap-guile)' |	\
+guix build -e '(@@ (gnu packages base) %bootstrap-guile)' |	\
     grep -e '-guile-'
-guix-build hello -d |				\
+guix build hello -d |				\
     grep -e '-hello-[0-9\.]\+\.drv$'
 
 # Should fail because the name/version combination could not be found.
-if guix-build hello-0.0.1 -n; then false; else true; fi
+if guix build hello-0.0.1 -n; then false; else true; fi
 
 # Keep a symlink to the result, registered as a root.
 result="t-result-$$"
-guix-build -r "$result"					\
+guix build -r "$result"					\
     -e '(@@ (gnu packages base) %bootstrap-guile)'
 test -x "$result/bin/guile"
 
 # Should fail, because $result already exists.
-if guix-build -r "$result" -e '(@@ (gnu packages base) %bootstrap-guile)'
+if guix build -r "$result" -e '(@@ (gnu packages base) %bootstrap-guile)'
 then false; else true; fi
 
 rm -f "$result"
 
 # Parsing package names and versions.
-guix-build -n time		# PASS
-guix-build -n time-1.7		# PASS, version found
-if guix-build -n time-3.2;	# FAIL, version not found
+guix build -n time		# PASS
+guix build -n time-1.7		# PASS, version found
+if guix build -n time-3.2;	# FAIL, version not found
 then false; else true; fi
-if guix-build -n something-that-will-never-exist; # FAIL
+if guix build -n something-that-will-never-exist; # FAIL
 then false; else true; fi

@@ -13,9 +13,9 @@
 @dircategory Package management
 @direntry
 * guix: (guix).       Guix, the functional package manager.
-* guix-package: (guix)Invoking guix-package
+* guix package: (guix)Invoking guix package
                       Managing packages with Guix.
-* guix-build: (guix)Invoking guix-build
+* guix build: (guix)Invoking guix build
                       Building packages with Guix.
 @end direntry
 
@@ -196,7 +196,7 @@ are all performed by a specialized process, the @dfn{Guix daemon}, on
 behalf of clients.  Only the daemon may access the store and its
 associated database.  Thus, any operation that manipulates the store
 goes through the daemon.  For instance, command-line tools such as
-@command{guix-package} and @command{guix-build} communicate with the
+@command{guix package} and @command{guix build} communicate with the
 daemon (@i{via} remote procedure calls) to instruct it what to do.
 
 In a standard multi-user setup, Guix and its daemon---the
@@ -302,8 +302,8 @@ Use @var{n} CPU cores to build each derivation; @code{0} means as many
 as available.
 
 The default value is @code{1}, but it may be overridden by clients, such
-as the @code{--cores} option of @command{guix-build} (@pxref{Invoking
-guix-build}).
+as the @code{--cores} option of @command{guix build} (@pxref{Invoking
+guix build}).
 
 The effect is to define the @code{NIX_BUILD_CORES} environment variable
 in the build process, which can then use it to exploit internal
@@ -319,7 +319,7 @@ Produce debugging output.
 
 This is useful to debug daemon start-up issues, but then it may be
 overridden by clients, for example the @code{--verbosity} option of
-@command{guix-build} (@pxref{Invoking guix-build}).
+@command{guix build} (@pxref{Invoking guix build}).
 
 @item --chroot-directory=@var{dir}
 Add @var{dir} to the build chroot.
@@ -384,8 +384,8 @@ management tools it provides.
 
 @menu
 * Features::                    How Guix will make your life brighter.
-* Invoking guix-package::       Package installation, removal, etc.
-* Invoking guix-gc::            Running the garbage collector.
+* Invoking guix package::       Package installation, removal, etc.
+* Invoking guix gc::            Running the garbage collector.
 @end menu
 
 @node Features
@@ -408,14 +408,14 @@ simply continues to point to
 @file{/nix/store/@dots{}-gcc-4.8.0/bin/gcc}---i.e., both versions of GCC
 coexist on the same system without any interference.
 
-The @command{guix-package} command is the central tool to manage
-packages (@pxref{Invoking guix-package}).  It operates on those per-user
+The @command{guix package} command is the central tool to manage
+packages (@pxref{Invoking guix package}).  It operates on those per-user
 profiles, and can be used @emph{with normal user privileges}.
 
 The command provides the obvious install, remove, and upgrade
 operations.  Each invocation is actually a @emph{transaction}: either
 the specified operation succeeds, or nothing happens.  Thus, if the
-@command{guix-package} process is terminated during the transaction,
+@command{guix package} process is terminated during the transaction,
 or if a power outage occurs during the transaction, then the user's
 profile remains in its previous state, and remains usable.
 
@@ -427,7 +427,7 @@ of their profile, which was known to work well.
 All those packages in the package store may be @emph{garbage-collected}.
 Guix can determine which packages are still referenced by the user
 profiles, and remove those that are provably no longer referenced
-(@pxref{Invoking guix-gc}).  Users may also explicitly remove old
+(@pxref{Invoking guix gc}).  Users may also explicitly remove old
 generations of their profile so that the packages they refer to can be
 collected.
 
@@ -447,17 +447,17 @@ details.}.  When a pre-built binary for a @file{/nix/store} path is
 available from an external source, Guix just downloads it; otherwise, it
 builds the package from source, locally.
 
-@node Invoking guix-package
-@section Invoking @command{guix-package}
+@node Invoking guix package
+@section Invoking @command{guix package}
 
-The @command{guix-package} command is the tool that allows users to
+The @command{guix package} command is the tool that allows users to
 install, upgrade, and remove packages, as well as rolling back to
 previous configurations.  It operates only on the user's own profile,
 and works with normal user privileges (@pxref{Features}).  Its syntax
 is:
 
 @example
-guix-package @var{options}
+guix package @var{options}
 @end example
 
 Primarily, @var{options} specifies the operations to be performed during
@@ -473,13 +473,13 @@ variable, and so on.
 
 In a multi-user setup, user profiles must be stored in a place
 registered as a @dfn{garbage-collector root}, which
-@file{$HOME/.guix-profile} points to (@pxref{Invoking guix-gc}).  That
+@file{$HOME/.guix-profile} points to (@pxref{Invoking guix gc}).  That
 directory is normally
 @code{@var{localstatedir}/profiles/per-user/@var{user}}, where
 @var{localstatedir} is the value passed to @code{configure} as
 @code{--localstatedir}, and @var{user} is the user name.  It must be
 created by @code{root}, with @var{user} as the owner.  When it does not
-exist, @command{guix-package} emits an error about it.
+exist, @command{guix package} emits an error about it.
 
 The @var{options} can be among the following:
 
@@ -548,7 +548,7 @@ useful to distribution developers.
 
 @end table
 
-In addition to these actions @command{guix-package} supports the
+In addition to these actions @command{guix package} supports the
 following options to query the current state of a profile, or the
 availability of packages:
 
@@ -565,7 +565,7 @@ This allows specific fields to be extracted using the @command{recsel}
 command, for instance:
 
 @example
-$ guix-package -s malloc | recsel -p name,version
+$ guix package -s malloc | recsel -p name,version
 name: glibc
 version: 2.17
 
@@ -599,22 +599,22 @@ source location of its definition.
 @end table
 
 
-@node Invoking guix-gc
-@section Invoking @command{guix-gc}
+@node Invoking guix gc
+@section Invoking @command{guix gc}
 
 @cindex garbage collector
 Packages that are installed but not used may be @dfn{garbage-collected}.
-The @command{guix-gc} command allows users to explicitly run the garbage
+The @command{guix gc} command allows users to explicitly run the garbage
 collector to reclaim space from the @file{/nix/store} directory.
 
 The garbage collector has a set of known @dfn{roots}: any file under
 @file{/nix/store} reachable from a root is considered @dfn{live} and
 cannot be deleted; any other file is considered @dfn{dead} and may be
 deleted.  The set of garbage collector roots includes default user
-profiles, and may be augmented with @command{guix-build --root}, for
-example (@pxref{Invoking guix-build}).
+profiles, and may be augmented with @command{guix build --root}, for
+example (@pxref{Invoking guix build}).
 
-The @command{guix-gc} command has three modes of operation: it can be
+The @command{guix gc} command has three modes of operation: it can be
 used to garbage-collect any dead files (the default), to delete specific
 files (the @code{--delete} option), or to print garbage-collector
 information.  The available options are listed below:
@@ -737,7 +737,7 @@ The @code{sha256} field specifies the expected SHA256 hash of the file
 being downloaded.  It is mandatory, and allows Guix to check the
 integrity of the file.  The @code{(base32 @dots{})} form introduces the
 base32 representation of the hash.  A convenient way to obtain this
-information is with the @code{guix-download} tool.
+information is with the @code{guix download} tool.
 
 @item
 @cindex GNU Build System
@@ -795,9 +795,9 @@ Guile process launched by the daemon (@pxref{Derivations}).
 
 Once a package definition is in place@footnote{Simple package
 definitions like the one above may be automatically converted from the
-Nixpkgs distribution using the @command{guix-import} command.}, the
-package may actually be built using the @code{guix-build} command-line
-tool (@pxref{Invoking guix-build}).
+Nixpkgs distribution using the @command{guix import} command.}, the
+package may actually be built using the @code{guix build} command-line
+tool (@pxref{Invoking guix build}).
 
 Behind the scenes, a derivation corresponding to the @code{<package>}
 object is first computed by the @code{package-derivation} procedure.
@@ -1015,22 +1015,22 @@ space.
 @chapter Utilities
 
 @menu
-* Invoking guix-build:: Building packages from the command line.
+* Invoking guix build:: Building packages from the command line.
 @end menu
 
-@node Invoking guix-build
-@section Invoking @command{guix-build}
+@node Invoking guix build
+@section Invoking @command{guix build}
 
-The @command{guix-build} command builds packages or derivations and
+The @command{guix build} command builds packages or derivations and
 their dependencies, and prints the resulting store paths.  Note that it
 does not modify the user's profile---this is the job of the
-@command{guix-package} command (@pxref{Invoking guix-package}).  Thus,
+@command{guix package} command (@pxref{Invoking guix package}).  Thus,
 it is mainly useful for distribution developers.
 
 The general syntax is:
 
 @example
-guix-build @var{options} @var{package-or-derivation}@dots{}
+guix build @var{options} @var{package-or-derivation}@dots{}
 @end example
 
 @var{package-or-derivation} may be either the name of a package found in
@@ -1058,7 +1058,7 @@ version 1.8 of Guile.
 Build the packages' source derivations, rather than the packages
 themselves.
 
-For instance, @code{guix-build -S gcc} returns something like
+For instance, @code{guix build -S gcc} returns something like
 @file{/nix/store/@dots{}-gcc-4.7.2.tar.bz2}, which is GCC's source tarball.
 
 @item --system=@var{system}
@@ -1106,7 +1106,7 @@ may be helpful when debugging setup issues with the build daemon.
 
 @end table
 
-Behind the scenes, @command{guix-build} is essentially an interface to
+Behind the scenes, @command{guix build} is essentially an interface to
 the @code{package-derivation} procedure of the @code{(guix packages)}
 module, and to the @code{build-derivations} procedure of the @code{(guix
 store)} module.
@@ -1121,11 +1121,11 @@ Guix comes with a distribution of free software@footnote{The term
 users of that software}.}  that form the basis of the GNU system.  This
 includes core GNU packages such as GNU libc, GCC, and Binutils, as well
 as many GNU and non-GNU applications.  The complete list of available
-packages can be seen by running @command{guix-package} (@pxref{Invoking
-guix-package}):
+packages can be seen by running @command{guix package} (@pxref{Invoking
+guix package}):
 
 @example
-guix-package --list-available
+guix package --list-available
 @end example
 
 The package definitions of the distribution may are provided by Guile

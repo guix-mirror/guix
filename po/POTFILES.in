@@ -4,8 +4,8 @@ gnu/packages/base.scm
 gnu/packages/guile.scm
 gnu/packages/lout.scm
 gnu/packages/recutils.scm
+guix/scripts/build.scm
+guix/scripts/download.scm
+guix/scripts/package.scm
+guix/scripts/gc.scm
 guix/ui.scm
-guix-build.in
-guix-download.in
-guix-package.in
-guix-gc.in

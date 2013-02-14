@@ -1,16 +1,3 @@
-#!/bin/sh
-# aside from this initial boilerplate, this is actually -*- scheme -*- code
-
-prefix="@prefix@"
-datarootdir="@datarootdir@"
-
-GUILE_LOAD_COMPILED_PATH="@guilemoduledir@:$GUILE_LOAD_COMPILED_PATH"
-export GUILE_LOAD_COMPILED_PATH
-
-main='(module-ref (resolve-interface '\''(guix-download)) '\'guix-download')'
-exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
-         -c "(apply $main (cdr (command-line)))" "$@"
-!#
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
@@ -29,7 +16,7 @@ exec ${GUILE-@GUILE@} -L "@guilemoduledir@" -l "$0"    \
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix-download)
+(define-module (guix scripts download)
   #:use-module (guix ui)
   #:use-module (guix store)
   #:use-module (guix utils)
@@ -79,7 +66,7 @@ store path."
   `((format . ,bytevector->nix-base32-string)))
 
 (define (show-help)
-  (display (_ "Usage: guix-download [OPTION]... URL
+  (display (_ "Usage: guix download [OPTION]... URL
 Download the file at URL, add it to the store, and print its store path
 and the hash of its contents.\n"))
   (format #t (_ "

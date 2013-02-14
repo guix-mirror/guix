@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,6 +31,7 @@
   #:export (_
             N_
             install-locale
+            initialize-guix
             leave
             show-version-and-exit
             show-bug-report-information
@@ -38,7 +40,9 @@
             location->string
             fill-paragraph
             string->recutils
-            package->recutils))
+            package->recutils
+            run-guix-command
+            guix-main))
 
 ;;; Commentary:
 ;;;
@@ -61,6 +65,12 @@
       (format (current-error-port)
               (_ "warning: failed to install locale: ~a~%")
               (strerror (system-error-errno args))))))
+
+(define (initialize-guix)
+  (install-locale)
+  (textdomain "guix")
+  (setvbuf (current-output-port) _IOLBF)
+  (setvbuf (current-error-port) _IOLBF))
 
 (define-syntax-rule (leave fmt args ...)
   "Format FMT and ARGS to the error port and exit."
@@ -209,5 +219,31 @@ WIDTH columns."
   (format port "description: ~a~%"
           (and=> (package-description p) description->recutils))
   (newline port))
+
+(define (show-guix-usage)
+  ;; TODO: Dynamically generate a summary of available commands.
+  (format (current-error-port)
+          (_ "Usage: guix COMMAND ARGS...~%")))
+
+(define (run-guix-command command . args)
+  ;; TODO: Gracefully report errors
+  (let* ((module (resolve-interface `(guix scripts ,command)))
+         (command-main (module-ref module
+                                   (symbol-append 'guix- command))))
+    (apply command-main args)))
+
+(define (guix-main arg0 . args)
+  (initialize-guix)
+  (let ()
+    (define (option? str) (string-prefix? "-" str))
+    (match args
+      (() (show-guix-usage) (exit 1))
+      (("--help") (show-guix-usage))
+      (("--version") (show-version-and-exit "guix"))
+      (((? option? arg1) args ...) (show-guix-usage) (exit 1))
+      ((command args ...)
+       (apply run-guix-command
+              (string->symbol command)
+              args)))))
 
 ;;; ui.scm ends here
