@@ -412,6 +412,8 @@
                       ,(search-patch "guile-relocatable.patch"))
                      ("patch/utf8"
                       ,(search-patch "guile-default-utf8.patch"))
+                     ("patch/syscalls"
+                      ,(search-patch "guile-linux-syscalls.patch"))
                      ,@(package-inputs guile-2.0)))
                   (propagated-inputs
                    `(("bdw-gc" ,libgc)
@@ -443,7 +445,8 @@
                      ;; bootstrap.
                      #:patches
                      (list (assoc-ref %build-inputs "patch/relocatable")
-                           (assoc-ref %build-inputs "patch/utf8"))
+                           (assoc-ref %build-inputs "patch/utf8")
+                           (assoc-ref %build-inputs "patch/syscalls"))
 
                      ;; There are uses of `dynamic-link' in
                      ;; {foreign,coverage}.test that don't fly here.
