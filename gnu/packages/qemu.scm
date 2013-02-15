@@ -32,6 +32,7 @@
   #:use-module (gnu packages libjpeg)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages samba)
   #:use-module (gnu packages perl))
 
 (define-public qemu-kvm
@@ -52,14 +53,17 @@
                  (lambda* (#:key inputs outputs #:allow-other-keys)
                    ;; The `configure' script doesn't understand some of the
                    ;; GNU options.  Thus, add a new phase that's compatible.
-                   (let ((out (assoc-ref outputs "out")))
+                   (let ((out   (assoc-ref outputs "out"))
+                         (samba (assoc-ref inputs "samba")))
                      (setenv "SHELL" (which "bash"))
 
                      ;; The binaries need to be linked against -lrt.
                      (setenv "LDFLAGS" "-lrt")
                      (zero?
                       (system* "./configure"
-                               (string-append "--prefix=" out)))))
+                               (string-append "--prefix=" out)
+                               (string-append "--smbd=" samba
+                                              "/sbin/smbd")))))
                  %standard-phases)))
     (inputs                                       ; TODO: Add optional inputs.
      `(;; ("mesa" ,mesa)
@@ -76,7 +80,8 @@
        ;; ("alsa-lib" ,alsa-lib)
        ;; ("SDL" ,SDL)
        ("zlib" ,zlib)
-       ("attr" ,attr)))
+       ("attr" ,attr)
+       ("samba" ,samba)))                         ; an optional dependency
     (home-page "http://www.linux-kvm.org/")
     (synopsis
      "Virtualization for Linux on x86 hardware containing virtualization extensions")
