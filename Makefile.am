@@ -124,6 +124,7 @@ MODULES =					\
   gnu/packages/oggvorbis.scm			\
   gnu/packages/openldap.scm			\
   gnu/packages/openssl.scm			\
+  gnu/packages/parted.scm			\
   gnu/packages/patchelf.scm			\
   gnu/packages/pcre.scm				\
   gnu/packages/pdf.scm				\
