@@ -1,10 +1,13 @@
 This patch adds bindings to Linux syscalls for which glibc has symbols.
 
+Using the FFI would have been nice, but that's not an option when using
+a statically-linked Guile in an initrd that doesn't have libc.so around.
+
 diff --git a/libguile/posix.c b/libguile/posix.c
-index 324f21b..ace5211 100644
+index 324f21b..cbee94d 100644
 --- a/libguile/posix.c
 +++ b/libguile/posix.c
-@@ -2286,6 +2286,227 @@ scm_init_popen (void)
+@@ -2286,6 +2286,266 @@ scm_init_popen (void)
  }
  #endif
  
@@ -89,6 +92,45 @@ index 324f21b..ace5211 100644
 +    }
 +
 +  return SCM_UNSPECIFIED;
++}
++#undef FUNC_NAME
++
++/* Rebooting, halting, and all that.  */
++
++#include <sys/reboot.h>
++
++SCM_VARIABLE_INIT (flag_RB_AUTOBOOT, "RB_AUTOBOOT",
++		   scm_from_int (RB_AUTOBOOT));
++SCM_VARIABLE_INIT (flag_RB_HALT_SYSTEM, "RB_HALT_SYSTEM",
++		   scm_from_int (RB_HALT_SYSTEM));
++SCM_VARIABLE_INIT (flag_RB_ENABLE_CAD, "RB_ENABLE_CAD",
++		   scm_from_int (RB_ENABLE_CAD));
++SCM_VARIABLE_INIT (flag_RB_DISABLE_CAD, "RB_DISABLE_CAD",
++		   scm_from_int (RB_DISABLE_CAD));
++SCM_VARIABLE_INIT (flag_RB_POWER_OFF, "RB_POWER_OFF",
++		   scm_from_int (RB_POWER_OFF));
++SCM_VARIABLE_INIT (flag_RB_SW_SUSPEND, "RB_SW_SUSPEND",
++		   scm_from_int (RB_SW_SUSPEND));
++SCM_VARIABLE_INIT (flag_RB_KEXEC, "RB_KEXEC",
++		   scm_from_int (RB_KEXEC));
++
++SCM_DEFINE (scm_reboot, "reboot", 0, 1, 0,
++	    (SCM command),
++	    "Reboot the system.  @var{command} must be one of the @code{RB_} "
++	    "constants; if omitted, @var{RB_AUTOBOOT} is used, thus "
++	    "performing a hard reset.")
++#define FUNC_NAME s_scm_reboot
++{
++  int c_command;
++
++  if (SCM_UNBNDP (command))
++    c_command = RB_AUTOBOOT;
++  else
++    c_command = scm_to_int (command);
++
++  reboot (c_command);
++
++  return SCM_UNSPECIFIED;			  /* likely unreached */
 +}
 +#undef FUNC_NAME
 +
