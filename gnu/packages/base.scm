@@ -449,7 +449,7 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                   ;; RUNPATH to GCC even when `libgcc_s' is not NEEDED.
                   ;; There's not much that can be done to avoid it, though.
                   (format #f "#define LIB_SPEC \"-L~a/lib %{!static:-rpath=~a/lib \
-%{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib}} \" ~a~%"
+%{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib}} \" ~a"
                           libc libc out out suffix))
                  (("#define STARTFILE_SPEC.*$" line)
                   (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
