@@ -407,6 +407,7 @@
                    ;; mounted.
                    '(#:configure-flags '("CPPFLAGS=-DUSE_LIBC_PRIVATES")))))
          (guile (package (inherit guile-2.0)
+                  (name (string-append (package-name guile-2.0) "-static"))
                   (inputs
                    `(("patch/relocatable"
                       ,(search-patch "guile-relocatable.patch"))
