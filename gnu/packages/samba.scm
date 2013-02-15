@@ -27,6 +27,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages patchelf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python))
 
@@ -103,10 +104,45 @@ anywhere.")
                "1phl6mmrc72jyvbyrw6cv6b92cxq3v2pbn1fh97nnb4hild1fnjg"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before 'configure 'chdir
-                                   (lambda _
-                                     (chdir "source3"))
-                                   %standard-phases)
+     '(#:phases (alist-cons-before
+                 'configure 'chdir
+                 (lambda _
+                   (chdir "source3"))
+                 (alist-cons-after
+                  'strip 'add-lib-to-runpath
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (define (file-rpath file)
+                      ;; Return the RPATH of FILE.
+                      (let* ((p (open-pipe* OPEN_READ "patchelf"
+                                            "--print-rpath" file))
+                             (l (read-line p)))
+                        (and (zero? (close-pipe p)) l)))
+
+                    (define (augment-rpath file dir)
+                      ;; Add DIR to the RPATH of FILE.
+                      (let* ((rpath  (file-rpath file))
+                             (rpath* (if rpath
+                                         (string-append dir ":" rpath)
+                                         dir)))
+                        (format #t "~a: changing RPATH from `~a' to `~a'~%"
+                                file (or rpath "") rpath*)
+                        (zero? (system* "patchelf" "--set-rpath"
+                                        rpath* file))))
+
+                    (let* ((out (assoc-ref outputs "out"))
+                           (lib (string-append out "/lib")))
+                      ;; Add LIB to the RUNPATH of all the executables.
+                      (with-directory-excursion out
+                        (for-each (cut augment-rpath <> lib)
+                                  (append (find-files "bin" ".*")
+                                          (find-files "sbin" ".*"))))))
+                  %standard-phases))
+
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (ice-9 popen)
+                  (ice-9 rdelim)
+                  (srfi srfi-26))
 
        ;; This flag is required to allow for "make test".
        #:configure-flags '("--enable-socket-wrapper")
@@ -126,7 +162,8 @@ anywhere.")
        ("popt" ,popt)
        ("openldap" ,openldap)
        ("linux-pam" ,linux-pam)
-       ("readline" ,readline)))
+       ("readline" ,readline)
+       ("patchelf" ,patchelf)))
     (native-inputs                                ; for the test suite
      `(("perl" ,perl)
        ("python" ,python)))
