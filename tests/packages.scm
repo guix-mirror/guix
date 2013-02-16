@@ -71,13 +71,20 @@
                    ("d" ,d) ("d/x" "something.drv"))
                  (pk 'x (package-transitive-inputs e))))))
 
-(test-skip (if (not %store) 3 0))
+(test-skip (if (not %store) 4 0))
 
 (test-assert "return values"
   (let-values (((drv-path drv)
                 (package-derivation %store (dummy-package "p"))))
     (and (derivation-path? drv-path)
          (derivation? drv))))
+
+(test-assert "package-output"
+  (let* ((package  (dummy-package "p"))
+         (drv-path (package-derivation %store package)))
+    (and (derivation-path? drv-path)
+         (string=? (derivation-path->output-path drv-path)
+                   (package-output %store package "out")))))
 
 (test-assert "trivial"
   (let* ((p (package (inherit (dummy-package "trivial"))
