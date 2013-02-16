@@ -202,6 +202,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/procps-make-3.82.patch			\
+  gnu/packages/patches/qemu-multiple-smb-shares.patch		\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/shishi-gets-undeclared.patch		\
   gnu/packages/patches/tar-gets-undeclared.patch		\
