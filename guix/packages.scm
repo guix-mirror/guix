@@ -20,10 +20,12 @@
   #:use-module (guix utils)
   #:use-module (guix store)
   #:use-module (guix base32)
+  #:use-module (guix derivations)
   #:use-module (guix build-system)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:re-export (%current-system)
@@ -62,6 +64,7 @@
             package-source-derivation
             package-derivation
             package-cross-derivation
+            package-output
 
             &package-error
             package-error?
@@ -305,3 +308,13 @@ PACKAGE for SYSTEM."
 (define* (package-cross-derivation store package)
   ;; TODO
   #f)
+
+(define* (package-output store package output
+                         #:optional (system (%current-system)))
+  "Return the output path of PACKAGE's OUTPUT for SYSTEM---where OUTPUT is the
+symbolic output name, such as \"out\".  Note that this procedure calls
+`package-derivation', which is costly."
+  (let-values (((_ drv)
+                (package-derivation store package system)))
+    (derivation-output-path
+     (assoc-ref (derivation-outputs drv) output))))
