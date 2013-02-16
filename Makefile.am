@@ -107,6 +107,7 @@ MODULES =					\
   gnu/packages/libusb.scm			\
   gnu/packages/libunwind.scm			\
   gnu/packages/linux.scm			\
+  gnu/packages/linux-initrd.scm			\
   gnu/packages/lout.scm				\
   gnu/packages/lsh.scm				\
   gnu/packages/m4.scm				\
