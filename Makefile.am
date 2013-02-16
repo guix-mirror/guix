@@ -160,7 +160,8 @@ MODULES =					\
   gnu/packages/which.scm			\
   gnu/packages/xml.scm				\
   gnu/packages/zile.scm				\
-  gnu/packages/zip.scm
+  gnu/packages/zip.scm				\
+  gnu/system/vm.scm
 
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
