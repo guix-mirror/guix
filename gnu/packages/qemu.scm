@@ -22,6 +22,7 @@
   #:use-module (guix utils)
   #:use-module ((guix licenses) #:select (gpl2))
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
@@ -95,6 +96,18 @@ underway to get the required changes upstream.")
 
     ;; Many files are GPLv2+, but some are GPLv2-only---e.g., `memory.c'.
     (license gpl2)))
+
+(define-public qemu-kvm/smb-shares
+  ;; A patched QEMU-KVM where `-net smb' yields two shares instead of one: one
+  ;; for the store, and another one for exchanges with the host.
+  (package (inherit qemu-kvm)
+    (name "qemu-kvm-with-multiple-smb-shares")
+    (inputs `(,@(package-inputs qemu-kvm)
+              ("patch/smb-shares"
+               ,(search-patch "qemu-multiple-smb-shares.patch"))))
+    (arguments
+     `(#:patches (list (assoc-ref %build-inputs "patch/smb-shares"))
+       ,@(package-arguments qemu-kvm)))))
 
 (define-public qemu
   ;; The real one, with a complete target list.
