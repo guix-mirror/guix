@@ -162,7 +162,7 @@ call interface, and powerful string processing.")
   "Build Guile-Reader against GUILE, a package of some version of Guile 1.8
 or 2.0."
   (package
-   (name (string-append "guile-reader-for-guile-" (package-version guile)))
+   (name (string-append "guile-reader-for-guile_" (package-version guile)))
    (version "0.6")
    (source  (origin
              (method url-fetch)
