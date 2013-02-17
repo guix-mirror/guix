@@ -221,11 +221,6 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                     name version)
              (leave (_ "~A: unknown package~%") name))))))
 
-  (install-locale)
-  (textdomain "guix")
-  (setvbuf (current-output-port) _IOLBF)
-  (setvbuf (current-error-port) _IOLBF)
-
   (with-error-handling
     (let ((opts (parse-options)))
       (parameterize ((%store (open-connection)))

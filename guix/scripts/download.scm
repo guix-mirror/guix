@@ -121,11 +121,6 @@ and the hash of its contents.\n"))
                  (alist-cons 'argument arg result))
                %default-options))
 
-  (install-locale)
-  (textdomain "guix")
-  (setvbuf (current-output-port) _IOLBF)
-  (setvbuf (current-error-port) _IOLBF)
-
   (let* ((opts  (parse-options))
          (store (open-connection))
          (arg   (assq-ref opts 'argument))

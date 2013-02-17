@@ -30,8 +30,6 @@
   #:use-module (ice-9 match)
   #:export (_
             N_
-            install-locale
-            initialize-guix
             leave
             show-version-and-exit
             show-bug-report-information
@@ -67,6 +65,7 @@
               (strerror (system-error-errno args))))))
 
 (define (initialize-guix)
+  "Perform the usual initialization for stand-alone Guix commands."
   (install-locale)
   (textdomain "guix")
   (setvbuf (current-output-port) _IOLBF)
