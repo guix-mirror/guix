@@ -51,7 +51,7 @@ For a start, we may use the instance at hydra.nixos.org, generously
 provided by TU Delft.  However, in the future, we may want to setup our
 own instance at gnu.org.
 
-* add guix-pull
+* add guix pull
 
 A tool that fetches the latest code from [[http://git.savannah.gnu.org/cgit/guix.git/snapshot/guix-master.tar.gz][cgit]], builds a derivation that
 unpacks it, copies only .scm files (this excludes guix/config.in) and
@@ -152,10 +152,9 @@ Support sophisticated collision handling when building a union: check
 whether the colliding files are identical, honor per-package priorities,
 etc.
 
-* guix-package
+* guix package
 
 ** add ‘--list-generations’, and ‘--delete-generations’
-** add ‘--upgrade’
 
 * guix build utils
 ** Add equivalent to "rm -rf"
