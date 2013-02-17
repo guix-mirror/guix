@@ -164,6 +164,9 @@ MODULES =					\
   gnu/packages/zip.scm				\
   gnu/system/vm.scm
 
+# Because of the autoload hack in (guix build download), we must build it
+# first to avoid errors on systems where (gnutls) is unavailable.
+guix/scripts/download.go: guix/build/download.go
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
 
