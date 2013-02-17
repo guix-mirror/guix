@@ -85,7 +85,7 @@ Import and convert the Nix expression ATTRIBUTE of NIXPKGS.\n"))
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version-and-exit "guix-import")))))
+                  (show-version-and-exit "guix import")))))
 
 
 ;;;

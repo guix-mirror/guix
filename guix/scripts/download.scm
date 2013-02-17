@@ -104,7 +104,7 @@ and the hash of its contents.\n"))
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version-and-exit "guix-download")))))
+                  (show-version-and-exit "guix download")))))
 
 
 ;;;
