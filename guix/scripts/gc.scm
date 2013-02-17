@@ -97,7 +97,7 @@ interpreted."
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version-and-exit "guix-gc")))
+                  (show-version-and-exit "guix gc")))
 
         (option '(#\C "collect-garbage") #f #t
                 (lambda (opt name arg result)

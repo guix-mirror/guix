@@ -105,7 +105,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version-and-exit "guix-build")))
+                  (show-version-and-exit "guix build")))
 
         (option '(#\S "source") #f #f
                 (lambda (opt name arg result)

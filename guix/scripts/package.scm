@@ -327,7 +327,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version-and-exit "guix-package")))
+                  (show-version-and-exit "guix package")))
 
         (option '(#\i "install") #t #f
                 (lambda (opt name arg result)
