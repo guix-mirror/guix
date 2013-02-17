@@ -102,11 +102,6 @@ Import and convert the Nix expression ATTRIBUTE of NIXPKGS.\n"))
                  (alist-cons 'argument arg result))
                %default-options))
 
-  (install-locale)
-  (textdomain "guix")
-  (setvbuf (current-output-port) _IOLBF)
-  (setvbuf (current-error-port) _IOLBF)
-
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda
                             (('argument . value)

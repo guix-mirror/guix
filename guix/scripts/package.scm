@@ -676,11 +676,6 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
            #t))
         (_ #f))))
 
-  (install-locale)
-  (textdomain "guix")
-  (setvbuf (current-output-port) _IOLBF)
-  (setvbuf (current-error-port) _IOLBF)
-
   (let ((opts (parse-options)))
     (or (process-query opts)
         (parameterize ((%store (open-connection)))
