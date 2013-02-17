@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,28 +22,26 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages ncurses))
 
 (define-public texinfo
   (package
     (name "texinfo")
-    (version "4.13a")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append
-            "mirror://gnu/texinfo/texinfo-"
-            version
-            ".tar.lzma"))
-      (sha256
-       (base32
-        "1rf9ckpqwixj65bw469i634897xwlgkm5i9g2hv3avl6mv7b0a3d"))))
+    (version "5.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/texinfo/texinfo-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1p34f68h9ggfj6ckgj0p62qlj7pmz3ha3vc91kh4hr44pnwm1pla"))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses) ("xz" ,xz)))
-    (home-page
-     "http://www.gnu.org/software/texinfo/")
-    (synopsis
-     "GNU Texinfo, the GNU documentation system")
+    (inputs `(("perl" ,perl)                      ; yuck!
+              ("ncurses" ,ncurses)
+              ("xz" ,xz)))
+    (home-page "http://www.gnu.org/software/texinfo/")
+    (synopsis "GNU Texinfo, the GNU documentation system")
     (description
      "Texinfo is the official documentation format of the GNU project.
 It was invented by Richard Stallman and Bob Chassell many years
