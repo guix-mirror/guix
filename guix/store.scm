@@ -31,7 +31,9 @@
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 regex)
-  #:export (nix-server?
+  #:export (%daemon-socket-file
+
+            nix-server?
             nix-server-major-version
             nix-server-minor-version
             nix-server-socket
@@ -142,6 +144,12 @@
 (define %default-socket-path
   (string-append (or (getenv "NIX_STATE_DIR") %state-directory)
                  "/daemon-socket/socket"))
+
+(define %daemon-socket-file
+  ;; File name of the socket the daemon listens too.
+  (make-parameter (or (getenv "GUIX_DAEMON_SOCKET")
+                      %default-socket-path)))
+
 
 
 ;; serialize.cc
@@ -365,7 +373,7 @@
   (message nix-protocol-error-message)
   (status  nix-protocol-error-status))
 
-(define* (open-connection #:optional (file %default-socket-path)
+(define* (open-connection #:optional (file (%daemon-socket-file))
                           #:key (reserve-space? #t))
   "Connect to the daemon over the Unix-domain socket at FILE.  When
 RESERVE-SPACE? is true, instruct it to reserve a little bit of extra
