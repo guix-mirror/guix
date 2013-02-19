@@ -31,18 +31,22 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
+(define (system->linux-architecture arch)
+  (let ((arch (car (string-split arch #\-))))
+    (cond ((string=? arch "i686") "i386")
+          ((string-prefix? "mips" arch) "mips")
+          (else arch))))
+
 (define-public linux-libre-headers
   (let* ((version* "3.3.8")
          (build-phase
-          '(lambda* (#:key system #:allow-other-keys)
-             (let ((arch (car (string-split system #\-))))
-               (setenv "ARCH"
-                       (cond ((string=? arch "i686") "i386")
-                             (else arch)))
-               (format #t "`ARCH' set to `~a'~%" (getenv "ARCH")))
+          (lambda (arch)
+            `(lambda _
+               (setenv "ARCH" ,(system->linux-architecture arch))
+               (format #t "`ARCH' set to `~a'~%" (getenv "ARCH"))
 
-             (and (zero? (system* "make" "defconfig"))
-                  (zero? (system* "make" "mrproper" "headers_check")))))
+               (and (zero? (system* "make" "defconfig"))
+                    (zero? (system* "make" "mrproper" "headers_check"))))))
          (install-phase
           `(lambda* (#:key outputs #:allow-other-keys)
              (let ((out (assoc-ref outputs "out")))
@@ -73,7 +77,7 @@
                   (guix build utils)
                   (srfi srfi-1))
        #:phases (alist-replace
-                 'build ,build-phase
+                 'build ,(build-phase (%current-system))
                  (alist-replace
                   'install ,install-phase
                   (alist-delete 'configure %standard-phases)))
