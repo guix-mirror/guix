@@ -367,6 +367,13 @@ Do not keep build logs.  By default they are kept under
 Assume @var{system} as the current system type.  By default it is the
 architecture/kernel pair found at configure time, such as
 @code{x86_64-linux}.
+
+@item --listen=@var{socket}
+Listen for connections on @var{socket}, the file name of a Unix-domain
+socket.  The default socket is
+@file{@var{localstatedir}/daemon-socket/socket}.  This option is only
+useful in exceptional circumstances, such as if you need to run several
+daemons on the same machine.
 @end table
 
 

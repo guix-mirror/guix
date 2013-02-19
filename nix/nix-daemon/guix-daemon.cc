@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2012  Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -64,6 +64,7 @@ builds derivations on behalf of its clients.";
 #define GUIX_OPT_IMPERSONATE_LINUX_26 8
 #define GUIX_OPT_DEBUG 9
 #define GUIX_OPT_CHROOT_DIR 10
+#define GUIX_OPT_LISTEN 11
 
 static const struct argp_option options[] =
   {
@@ -103,6 +104,8 @@ static const struct argp_option options[] =
       " (this option has no effect in this configuration)"
 #endif
     },
+    { "listen", GUIX_OPT_LISTEN, "SOCKET", 0,
+      "Listen for connections on SOCKET" },
     { "debug", GUIX_OPT_DEBUG, 0, 0,
       "Produce debugging output" },
     { 0, 0, 0, 0, 0 }
@@ -137,6 +140,17 @@ parse_opt (int key, char *arg, struct argp_state *state)
       break;
     case GUIX_OPT_LOSE_LOGS:
       settings.keepLog = false;
+      break;
+    case GUIX_OPT_LISTEN:
+      try
+	{
+	  settings.nixDaemonSocketFile = canonPath (arg);
+	}
+      catch (std::exception &e)
+	{
+	  fprintf (stderr, "error: %s\n", e.what ());
+	  exit (EXIT_FAILURE);
+	}
       break;
     case GUIX_OPT_DEBUG:
       verbosity = lvlDebug;
@@ -206,6 +220,9 @@ main (int argc, char *argv[])
 	    }
 	}
 #endif
+
+      printMsg (lvlDebug,
+		format ("listening on `%1%'") % settings.nixDaemonSocketFile);
 
       run (nothing);
     }
