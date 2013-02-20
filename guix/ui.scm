@@ -36,6 +36,8 @@
             call-with-error-handling
             with-error-handling
             location->string
+            call-with-temporary-output-file
+            switch-symlinks
             fill-paragraph
             string->recutils
             package->recutils
@@ -124,6 +126,28 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
     (#f (_ "<unknown location>"))
     (($ <location> file line column)
      (format #f "~a:~a:~a" file line column))))
+
+(define (call-with-temporary-output-file proc)
+  "Call PROC with a name of a temporary file and open output port to that
+file; close the file and delete it when leaving the dynamic extent of this
+call."
+  (let* ((template (string-copy "guix-file.XXXXXX"))
+         (out      (mkstemp! template)))
+    (dynamic-wind
+      (lambda ()
+        #t)
+      (lambda ()
+        (proc template out))
+      (lambda ()
+        (false-if-exception (close out))
+        (false-if-exception (delete-file template))))))
+
+(define (switch-symlinks link target)
+  "Atomically switch LINK, a symbolic link, to point to TARGET.  Works
+both when LINK already exists and when it does not."
+  (let ((pivot (string-append link ".new")))
+    (symlink target pivot)
+    (rename-file pivot link)))
 
 (define* (fill-paragraph str width #:optional (column 0))
   "Fill STR such that each line contains at most WIDTH characters, assuming
