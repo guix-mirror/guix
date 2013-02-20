@@ -37,9 +37,10 @@
               (base32
                "1p34f68h9ggfj6ckgj0p62qlj7pmz3ha3vc91kh4hr44pnwm1pla"))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)                      ; yuck!
-              ("ncurses" ,ncurses)
+    (inputs `(("ncurses" ,ncurses)
               ("xz" ,xz)))
+    ;; TODO: Remove Perl from here when 'patch-shebang' DTRT with /usr/bin/env.
+    (propagated-inputs `(("perl" ,perl)))         ; yuck!
     (home-page "http://www.gnu.org/software/texinfo/")
     (synopsis "GNU Texinfo, the GNU documentation system")
     (description
