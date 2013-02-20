@@ -558,9 +558,10 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
 (define* (imported-modules store modules
                            #:key (name "module-import")
                            (system (%current-system))
-                           (guile (%guile-for-build)))
+                           (guile (%guile-for-build))
+                           (module-path %load-path))
   "Return a derivation that contains the source files of MODULES, a list of
-module names such as `(ice-9 q)'.  All of MODULES must be in the current
+module names such as `(ice-9 q)'.  All of MODULES must be in the MODULE-PATH
 search path."
   ;; TODO: Determine the closure of MODULES, build the `.go' files,
   ;; canonicalize the source files through read/write, etc.
@@ -568,7 +569,7 @@ search path."
                       (let ((f (string-append
                                 (string-join (map symbol->string m) "/")
                                 ".scm")))
-                        (cons f (search-path %load-path f))))
+                        (cons f (search-path module-path f))))
                     modules)))
     (imported-files store files #:name name #:system system
                     #:guile guile)))
@@ -576,13 +577,15 @@ search path."
 (define* (compiled-modules store modules
                            #:key (name "module-import-compiled")
                            (system (%current-system))
-                           (guile (%guile-for-build)))
+                           (guile (%guile-for-build))
+                           (module-path %load-path))
   "Return a derivation that builds a tree containing the `.go' files
 corresponding to MODULES.  All the MODULES are built in a context where
 they can refer to each other."
   (let* ((module-drv (imported-modules store modules
                                        #:system system
-                                       #:guile guile))
+                                       #:guile guile
+                                       #:module-path module-path))
          (module-dir (derivation-path->output-path module-drv))
          (files      (map (lambda (m)
                             (let ((f (string-join (map symbol->string m)
