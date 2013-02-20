@@ -33,17 +33,6 @@
   #:use-module (rnrs io ports)
   #:export (guix-download))
 
-(define (call-with-temporary-output-file proc)
-  (let* ((template (string-copy "guix-download.XXXXXX"))
-         (out      (mkstemp! template)))
-    (dynamic-wind
-      (lambda ()
-        #t)
-      (lambda ()
-        (proc template out))
-      (lambda ()
-        (false-if-exception (delete-file template))))))
-
 (define (fetch-and-store store fetch name)
   "Call FETCH for URI, and pass it the name of a file to write to; eventually,
 copy data from that port to STORE, under NAME.  Return the resulting
