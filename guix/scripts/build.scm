@@ -241,31 +241,12 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                                          (package-derivation (%store) p sys))))
                                   (_ #f))
                                  opts))
-               (req  (append-map (lambda (drv-path)
-                                   (let ((d (call-with-input-file drv-path
-                                              read-derivation)))
-                                     (derivation-prerequisites-to-build (%store) d)))
-                                 drv))
-               (req* (delete-duplicates
-                      (append (remove (compose (cut valid-path? (%store) <>)
-                                               derivation-path->output-path)
-                                      drv)
-                              (map derivation-input-path req))))
                (roots (filter-map (match-lambda
                                    (('gc-root . root) root)
                                    (_ #f))
                                   opts)))
-          (if (assoc-ref opts 'dry-run?)
-              (format (current-error-port)
-                      (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
-                          "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
-                          (length req*))
-                      (null? req*) req*)
-              (format (current-error-port)
-                      (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
-                          "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
-                          (length req*))
-                      (null? req*) req*))
+
+          (show-what-to-build (%store) drv (assoc-ref opts 'dry-run?))
 
           ;; TODO: Add more options.
           (set-build-options (%store)

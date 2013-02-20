@@ -22,17 +22,20 @@
   #:use-module (guix store)
   #:use-module (guix config)
   #:use-module (guix packages)
+  #:use-module (guix derivations)
   #:use-module ((guix licenses) #:select (license? license-name))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:export (_
             N_
             leave
             show-version-and-exit
             show-bug-report-information
+            show-what-to-build
             call-with-error-handling
             with-error-handling
             location->string
@@ -111,6 +114,32 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
              (leave (_ "error: build failed: ~a~%")
                     (nix-protocol-error-message c))))
     (thunk)))
+
+(define* (show-what-to-build store drv #:optional dry-run?)
+  "Show what will or would (depending on DRY-RUN?) be built in realizing the
+derivations listed in DRV."
+  (let* ((req  (append-map (lambda (drv-path)
+                             (let ((d (call-with-input-file drv-path
+                                        read-derivation)))
+                               (derivation-prerequisites-to-build
+                                store d)))
+                           drv))
+         (req* (delete-duplicates
+                (append (remove (compose (cute valid-path? store <>)
+                                         derivation-path->output-path)
+                                drv)
+                        (map derivation-input-path req)))))
+    (if dry-run?
+        (format (current-error-port)
+                (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
+                    "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
+                    (length req*))
+                (null? req*) req*)
+        (format (current-error-port)
+                (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
+                    "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
+                    (length req*))
+                (null? req*) req*))))
 
 (define-syntax with-error-handling
   (syntax-rules ()
