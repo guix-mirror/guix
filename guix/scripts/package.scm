@@ -380,32 +380,6 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
     (let ((out (derivation-path->output-path (%guile-for-build))))
       (not (valid-path? (%store) out))))
 
-  (define (show-what-to-build drv dry-run?)
-    ;; Show what will/would be built in realizing the derivations listed
-    ;; in DRV.
-    (let* ((req  (append-map (lambda (drv-path)
-                               (let ((d (call-with-input-file drv-path
-                                          read-derivation)))
-                                 (derivation-prerequisites-to-build
-                                  (%store) d)))
-                             drv))
-           (req* (delete-duplicates
-                  (append (remove (compose (cute valid-path? (%store) <>)
-                                           derivation-path->output-path)
-                                  drv)
-                          (map derivation-input-path req)))))
-      (if dry-run?
-          (format (current-error-port)
-                  (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
-                      "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
-                      (length req*))
-                  (null? req*) req*)
-          (format (current-error-port)
-                  (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
-                      "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
-                      (length req*))
-                  (null? req*) req*))))
-
   (define newest-available-packages
     (memoize find-newest-available-packages))
 
@@ -589,7 +563,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
           (when (equal? profile %current-profile)
             (ensure-default-profile))
 
-          (show-what-to-build drv dry-run?)
+          (show-what-to-build (%store) drv dry-run?)
 
           (or dry-run?
               (and (build-derivations (%store) drv)
