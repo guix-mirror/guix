@@ -178,17 +178,26 @@ which is not available during bootstrap."
 (define (http-fetch uri file)
   "Fetch data from URI and write it to FILE.  Return FILE on success."
 
+  (define post-2.0.7?
+    (or (string>? (major-version) "2")
+        (string>? (minor-version) "0")
+        (string>? (micro-version) "7")
+        (string>? (version) "2.0.7")))
+
   (let*-values (((connection)
                  (open-connection-for-uri uri))
                 ((resp bv-or-port)
-                 ;; XXX: `http-get*' was introduced in 2.0.7.  We know
-                 ;; we're using it within the chroot, but
-                 ;; `guix-download' might be using a different version.
-                 ;; So keep this compatibility hack for now.
-                 (if (module-defined? (resolve-interface '(web client))
-                                      'http-get*)
-                     (http-get* uri #:port connection #:decode-body? #f)
-                     (http-get uri #:port connection #:decode-body? #f)))
+                 ;; XXX: `http-get*' was introduced in 2.0.7, and replaced by
+                 ;; #:streaming? in 2.0.8.  We know we're using it within the
+                 ;; chroot, but `guix-download' might be using a different
+                 ;; version.  So keep this compatibility hack for now.
+                 (if post-2.0.7?
+                     (http-get uri #:port connection #:decode-body? #f
+                               #:streaming? #t)
+                     (if (module-defined? (resolve-interface '(web client))
+                                          'http-get*)
+                         (http-get* uri #:port connection #:decode-body? #f)
+                         (http-get uri #:port connection #:decode-body? #f))))
                 ((code)
                  (response-code resp))
                 ((size)
