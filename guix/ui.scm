@@ -41,6 +41,7 @@
             location->string
             call-with-temporary-output-file
             switch-symlinks
+            config-directory
             fill-paragraph
             string->recutils
             package->recutils
@@ -177,6 +178,26 @@ both when LINK already exists and when it does not."
   (let ((pivot (string-append link ".new")))
     (symlink target pivot)
     (rename-file pivot link)))
+
+(define (config-directory)
+  "Return the name of the configuration directory, after making sure that it
+exists.  Honor the XDG specs,
+<http://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html>."
+  (let ((dir (and=> (or (getenv "XDG_CONFIG_HOME")
+                        (and=> (getenv "HOME")
+                               (cut string-append <> "/.config")))
+                    (cut string-append <> "/guix"))))
+    (catch 'system-error
+      (lambda ()
+        (mkdir dir)
+        dir)
+      (lambda args
+        (match (system-error-errno args)
+          ((or EEXIST 0)
+           dir)
+          (err
+           (leave (_ "failed to create configuration directory `~a': ~a~%")
+                  dir (strerror err))))))))
 
 (define* (fill-paragraph str width #:optional (column 0))
   "Fill STR such that each line contains at most WIDTH characters, assuming
