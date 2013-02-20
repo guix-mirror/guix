@@ -20,8 +20,8 @@
 @end direntry
 
 @titlepage
-@title{GNU Guix Reference Manual}
-@subtitle{Using the GNU Guix Functional Package Manager}
+@title GNU Guix Reference Manual
+@subtitle Using the GNU Guix Functional Package Manager
 @author Ludovic Courtès
 @author Nikita Karetnikov
 
