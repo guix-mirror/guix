@@ -8,4 +8,5 @@ guix/scripts/build.scm
 guix/scripts/download.scm
 guix/scripts/package.scm
 guix/scripts/gc.scm
+guix/scripts/pull.scm
 guix/ui.scm

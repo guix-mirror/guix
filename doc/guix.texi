@@ -393,6 +393,7 @@ management tools it provides.
 * Features::                    How Guix will make your life brighter.
 * Invoking guix package::       Package installation, removal, etc.
 * Invoking guix gc::            Running the garbage collector.
+* Invoking guix pull::          Fetching the latest Guix and distribution.
 @end menu
 
 @node Features
@@ -520,6 +521,11 @@ Remove @var{package}.
 @item --upgrade=@var{regexp}
 @itemx -u @var{regexp}
 Upgrade all the installed packages matching @var{regexp}.
+
+Note that this upgrades package to the latest version of packages found
+in the distribution currently installed.  To update your distribution,
+you should regularly run @command{guix pull} (@pxref{Invoking guix
+pull}).
 
 @item --roll-back
 Roll back to the previous @dfn{generation} of the profile---i.e., undo
@@ -653,6 +659,33 @@ store---i.e., files and directories no longer reachable from any root.
 Show the list of live store files and directories.
 @end table
 
+
+@node Invoking guix pull
+@section Invoking @command{guix pull}
+
+Packages are installed or upgraded to the latest version available in
+the distribution currently available on your local machine.  To update
+that distribution, along with the Guix tools, you must run @command{guix
+pull}: the command downloads the latest Guix source code and package
+descriptions, and deploys it.
+
+On completion, @command{guix package} will use packages and package
+versions from this just-retrieved copy of Guix.  Not only that, but all
+the Guix commands and Scheme modules will also be taken from that latest
+version.  New @command{guix} sub-commands added by the update also
+become available.
+
+The @command{guix pull} command is usually invoked with no arguments,
+but it supports the following options:
+
+@table @code
+@item --verbose
+Produce verbose output, writing build logs to the standard error output.
+
+@item --bootstrap
+Use the bootstrap Guile to build the latest Guix.  This option is only
+useful to Guix developers.
+@end table
 
 @c *********************************************************************
 @node Programming Interface

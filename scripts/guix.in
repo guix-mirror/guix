@@ -22,7 +22,8 @@
 ;; IMPORTANT: We must avoid loading any modules from Guix here,
 ;; because we need to adjust the guile load paths first.
 ;; It's okay to import modules from core Guile though.
-(use-modules (ice-9 regex))
+(use-modules (ice-9 regex)
+             (srfi srfi-26))
 
 (let ()
   (define-syntax-rule (push! elt v) (set! v (cons elt v)))
@@ -45,7 +46,14 @@
     (unless (getenv "GUIX_UNINSTALLED")
       (let ((module-dir (config-lookup "guilemoduledir")))
         (push! module-dir %load-path)
-        (push! module-dir %load-compiled-path))))
+        (push! module-dir %load-compiled-path))
+      (let ((updates-dir (and=> (or (getenv "XDG_CONFIG_HOME")
+                                    (and=> (getenv "HOME")
+                                           (cut string-append <> "/.config")))
+                                (cut string-append <> "/guix/latest"))))
+        (when (file-exists? updates-dir)
+          (push! updates-dir %load-path)
+          (push! updates-dir %load-compiled-path)))))
 
   (define (run-guix-main)
     (let ((guix-main (module-ref (resolve-interface '(guix ui))
