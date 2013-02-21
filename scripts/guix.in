@@ -51,7 +51,7 @@
                                     (and=> (getenv "HOME")
                                            (cut string-append <> "/.config")))
                                 (cut string-append <> "/guix/latest"))))
-        (when (file-exists? updates-dir)
+        (when (and updates-dir (file-exists? updates-dir))
           (push! updates-dir %load-path)
           (push! updates-dir %load-compiled-path)))))
 
