@@ -118,7 +118,8 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
 
 (define* (show-what-to-build store drv #:optional dry-run?)
   "Show what will or would (depending on DRY-RUN?) be built in realizing the
-derivations listed in DRV."
+derivations listed in DRV.  Return #t if there's something to build, #f
+otherwise."
   (let* ((req  (append-map (lambda (drv-path)
                              (let ((d (call-with-input-file drv-path
                                         read-derivation)))
@@ -140,7 +141,8 @@ derivations listed in DRV."
                 (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
                     "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
                     (length req*))
-                (null? req*) req*))))
+                (null? req*) req*))
+    (pair? req*)))
 
 (define-syntax with-error-handling
   (syntax-rules ()
