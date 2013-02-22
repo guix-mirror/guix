@@ -123,7 +123,12 @@ files."
                          (compile-file file
                                        #:output-file go
                                        #:opts %auto-compilation-options))))
-                   (find-files out "\\.scm"))
+
+                   ;; XXX: Because of the autoload hack in (guix build
+                   ;; download), we must build it first to avoid errors since
+                   ;; (gnutls) is unavailable.
+                   (cons (string-append out "/guix/build/download.scm")
+                         (find-files out "\\.scm")))
 
          ;; Remove the "fake" (guix config).
          (delete-file (string-append out "/guix/config.scm"))
