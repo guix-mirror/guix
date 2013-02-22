@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -51,7 +52,7 @@
             fold-port-matches
             remove-store-references))
 
-
+
 ;;;
 ;;; Directories.
 ;;;
@@ -426,7 +427,7 @@ bytes transferred and the continuation of the transfer as a thunk."
          (stat:mtimensec stat)))
 
 (define patch-shebang
-  (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]+)(.*)$")))
+  (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]+)[[:blank:]]*([[:graph:]]*)(.*)$")))
     (lambda* (file
               #:optional
               (path (search-path-as-string->list (getenv "PATH")))
@@ -465,16 +466,27 @@ FILE are kept unchanged."
                (let ((line (false-if-exception (read-line p))))
                  (and=> (and line (regexp-exec shebang-rx line))
                         (lambda (m)
-                          (let* ((cmd (match:substring m 1))
-                                 (bin (search-path path (basename cmd))))
+                          (let* ((interp (match:substring m 1))
+                                 (arg1 (match:substring m 2))
+                                 (rest (match:substring m 3))
+                                 (has-env (string-suffix? "/env" interp))
+                                 (cmd (if has-env arg1 (basename interp)))
+                                 (bin (search-path path cmd)))
                             (if bin
-                                (if (string=? bin cmd)
+                                (if (string=? bin interp)
                                     #f            ; nothing to do
-                                    (begin
-                                      (format (current-error-port)
-                                              "patch-shebang: ~a: changing `~a' to `~a'~%"
-                                              file cmd bin)
-                                      (patch p bin (match:substring m 2))))
+                                    (if has-env
+                                        (begin
+                                          (format (current-error-port)
+                                                  "patch-shebang: ~a: changing `~a' to `~a'~%"
+                                                  file (string-append interp " " arg1) bin)
+                                          (patch p bin rest))
+                                      (begin 
+                                        (format (current-error-port)
+                                                "patch-shebang: ~a: changing `~a' to `~a'~%"
+                                                file interp bin)
+                                        (patch p bin
+                                               (string-append " " arg1 rest)))))
                                 (begin
                                   (format (current-error-port)
                                           "patch-shebang: ~a: warning: no binary for interpreter `~a' found in $PATH~%"
