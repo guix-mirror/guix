@@ -166,6 +166,7 @@ MODULES =					\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
   gnu/packages/xml.scm				\
+  gnu/packages/xorg.scm				\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
   gnu/system/vm.scm
