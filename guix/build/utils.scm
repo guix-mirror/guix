@@ -486,7 +486,9 @@ FILE are kept unchanged."
                                                 "patch-shebang: ~a: changing `~a' to `~a'~%"
                                                 file interp bin)
                                         (patch p bin
-                                               (string-append " " arg1 rest)))))
+                                               (if (string-null? arg1)
+                                                   ""
+                                                   (string-append " " arg1 rest))))))
                                 (begin
                                   (format (current-error-port)
                                           "patch-shebang: ~a: warning: no binary for interpreter `~a' found in $PATH~%"
