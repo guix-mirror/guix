@@ -35,7 +35,8 @@
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xml))
 
 (define-public applewmproto
   (package
@@ -81,8 +82,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public bigreqsproto
   (package
     (name "bigreqsproto")
@@ -103,8 +104,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public compositeproto
   (package
     (name "compositeproto")
@@ -127,8 +128,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public damageproto
   (package
     (name "damageproto")
@@ -149,8 +150,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public dmxproto
   (package
     (name "dmxproto")
@@ -171,8 +172,29 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
+(define-public dri2proto
+  (package
+    (name "dri2proto")
+    (version "2.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/dri2proto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
 (define-public encodings
   (package
     (name "encodings")
@@ -193,8 +215,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public fixesproto
   (package
     (name "fixesproto")
@@ -217,8 +239,113 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
+(define-public font-adobe-100dpi
+  (package
+    (name "font-adobe-100dpi")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-adobe-100dpi-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public font-adobe-75dpi
+  (package
+    (name "font-adobe-75dpi")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-adobe-75dpi-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public font-adobe-utopia-100dpi
+  (package
+    (name "font-adobe-utopia-100dpi")
+    (version "1.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-adobe-utopia-100dpi-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public font-adobe-utopia-75dpi
+  (package
+    (name "font-adobe-utopia-75dpi")
+    (version "1.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-adobe-utopia-75dpi-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public font-adobe-utopia-type1
+  (package
+    (name "font-adobe-utopia-type1")
+    (version "1.0.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-adobe-utopia-type1-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
 (define-public font-alias
   (package
     (name "font-alias")
@@ -239,8 +366,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-arabic-misc
   (package
     (name "font-arabic-misc")
@@ -264,11 +391,95 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public font-bh-ttf
+
+
+(define-public font-bh-100dpi
   (package
-    (name "font-bh-ttf")
+    (name "font-bh-100dpi")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-bh-100dpi-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public font-bh-75dpi
+  (package
+    (name "font-bh-75dpi")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-bh-75dpi-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public font-bh-lucidatypewriter-100dpi
+  (package
+    (name "font-bh-lucidatypewriter-100dpi")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-bh-lucidatypewriter-100dpi-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public font-bh-lucidatypewriter-75dpi
+  (package
+    (name "font-bh-lucidatypewriter-75dpi")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-bh-lucidatypewriter-75dpi-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public font-bh-type1
+  (package
+    (name "font-bh-type1")
     (version "1.0.3")
     (source
       (origin
@@ -289,8 +500,83 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
+(define-public font-bitstream-100dpi
+  (package
+    (name "font-bitstream-100dpi")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-bh-ttf-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0pyjmc0ha288d4i4j0si4dh3ncf3jiwwjljvddrb0k8v4xiyljqv"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("mkfontscale" ,mkfontscale)
+        ("mkfontdir" ,mkfontdir)
+        ("pkg-config" ,pkg-config)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public font-bitstream-75dpi
+  (package
+    (name "font-bitstream-75dpi")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-bh-ttf-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0pyjmc0ha288d4i4j0si4dh3ncf3jiwwjljvddrb0k8v4xiyljqv"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("mkfontscale" ,mkfontscale)
+        ("mkfontdir" ,mkfontdir)
+        ("pkg-config" ,pkg-config)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public font-bitstream-type1
+  (package
+    (name "font-bitstream-type1")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-bh-ttf-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0pyjmc0ha288d4i4j0si4dh3ncf3jiwwjljvddrb0k8v4xiyljqv"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("mkfontscale" ,mkfontscale)
+        ("mkfontdir" ,mkfontdir)
+        ("pkg-config" ,pkg-config)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
 (define-public font-cronyx-cyrillic
   (package
     (name "font-cronyx-cyrillic")
@@ -314,8 +600,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-cursor-misc
   (package
     (name "font-cursor-misc")
@@ -340,8 +626,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-daewoo-misc
   (package
     (name "font-daewoo-misc")
@@ -365,8 +651,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-dec-misc
   (package
     (name "font-dec-misc")
@@ -390,8 +676,33 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
+(define-public font-ibm-type1
+  (package
+    (name "font-ibm-type1")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/font-cronyx-cyrillic-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("mkfontdir" ,mkfontdir)
+        ("bdftopcf" ,bdftopcf)
+        ("pkg-config" ,pkg-config)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
 (define-public font-isas-misc
   (package
     (name "font-isas-misc")
@@ -415,8 +726,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-jis-misc
   (package
     (name "font-jis-misc")
@@ -440,8 +751,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-micro-misc
   (package
     (name "font-micro-misc")
@@ -465,8 +776,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-misc-cyrillic
   (package
     (name "font-misc-cyrillic")
@@ -490,8 +801,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-misc-ethiopic
   (package
     (name "font-misc-ethiopic")
@@ -515,8 +826,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-misc-meltho
   (package
     (name "font-misc-meltho")
@@ -540,8 +851,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-misc-misc
   (package
     (name "font-misc-misc")
@@ -567,8 +878,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-mutt-misc
   (package
     (name "font-mutt-misc")
@@ -592,8 +903,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-schumacher-misc
   (package
     (name "font-schumacher-misc")
@@ -619,8 +930,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-screen-cyrillic
   (package
     (name "font-screen-cyrillic")
@@ -644,8 +955,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-sony-misc
   (package
     (name "font-sony-misc")
@@ -669,30 +980,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public fontsproto
-  (package
-    (name "fontsproto")
-    (version "2.1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/fontsproto-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1ab8mbqxdwvdz4k5x4xb9c4n5w7i1xw276cbpk4z7a1nlpjrg746"))))
-    (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
+
+
 (define-public font-sun-misc
   (package
     (name "font-sun-misc")
@@ -716,8 +1005,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-util
   (package
     (name "font-util")
@@ -738,8 +1027,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public font-winitzki-cyrillic
   (package
     (name "font-winitzki-cyrillic")
@@ -763,30 +1052,51 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public gccmakedep
+
+
+(define-public font-xfree86-type1
   (package
-    (name "gccmakedep")
-    (version "1.0.2")
+    (name "font-xfree86-type1")
+    (version "1.0.4")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/util/gccmakedep-"
+               "mirror://xorg/X11R7.7/src/everything/font-xfree86-type1-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "04dfamx3fvkvqfgs6xy2a6yqbxjrj4777ylxp38g60hhbdl4jg86"))))
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public fontsproto
+  (package
+    (name "fontsproto")
+    (version "2.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/fontsproto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1ab8mbqxdwvdz4k5x4xb9c4n5w7i1xw276cbpk4z7a1nlpjrg746"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
     (home-page #f)
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public glproto
   (package
     (name "glproto")
@@ -795,7 +1105,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/proto/glproto-"
+               "mirror://xorg/X11R7.7/src/everything/glproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -807,8 +1117,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public iceauth
   (package
     (name "iceauth")
@@ -826,37 +1136,14 @@
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
-        ("libICE" ,libICE)
+        ("libice" ,libice)
         ("pkg-config" ,pkg-config)))
     (home-page #f)
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public imake
-  (package
-    (name "imake")
-    (version "1.0.5")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/util/imake-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1h8ww97aymm10l9qn21n1b9x5ypjrqr10qpf48jjcbc9fg77gklr"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto) ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
+
+
 (define-public inputproto
   (package
     (name "inputproto")
@@ -877,8 +1164,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public kbproto
   (package
     (name "kbproto")
@@ -899,11 +1186,11 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public libAppleWM
+
+
+(define-public libapplewm
   (package
-    (name "libAppleWM")
+    (name "libapplewm")
     (version "1.4.1")
     (source
       (origin
@@ -926,11 +1213,11 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public libFS
+
+
+(define-public libfs
   (package
-    (name "libFS")
+    (name "libfs")
     (version "1.0.4")
     (source
       (origin
@@ -952,11 +1239,11 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public libICE
+
+
+(define-public libice
   (package
-    (name "libICE")
+    (name "libice")
     (version "1.0.8")
     (source
       (origin
@@ -977,11 +1264,11 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public libSM
+
+
+(define-public libsm
   (package
-    (name "libSM")
+    (name "libsm")
     (version "1.2.1")
     (source
       (origin
@@ -998,19 +1285,19 @@
       `(("xtrans" ,xtrans)
         ("xproto" ,xproto)
         ("util-linux" ,util-linux)
-        ("libICE" ,libICE)
+        ("libice" ,libice)
         ("pkg-config" ,pkg-config)))
     (propagated-inputs
-      `(("libICE" ,libICE)))
+      `(("libice" ,libice)))
     (home-page #f)
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public libWindowsWM
+
+
+(define-public libwindowswm
   (package
-    (name "libWindowsWM")
+    (name "libwindowswm")
     (version "1.0.1")
     (source
       (origin
@@ -1033,17 +1320,38 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public libxScrnSaver
+
+
+(define-public libx11
   (package
-    (name "libxScrnSaver")
+    (name "libx11")
+    (version "1.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libX11-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public libxscrnsaver
+  (package
+    (name "libxscrnsaver")
     (version "1.2.2")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxScrnSaver-"
+               "mirror://xorg/X11R7.7/src/everything/libXScrnSaver-"
                version
                ".tar.bz2"))
         (sha256
@@ -1060,8 +1368,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxau
   (package
     (name "libxau")
@@ -1070,7 +1378,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxau-"
+               "mirror://xorg/X11R7.7/src/everything/libXau-"
                version
                ".tar.bz2"))
         (sha256
@@ -1083,8 +1391,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxaw
   (package
     (name "libxaw")
@@ -1093,7 +1401,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxaw-"
+               "mirror://xorg/X11R7.7/src/everything/libXaw-"
                version
                ".tar.bz2"))
         (sha256
@@ -1115,8 +1423,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxcomposite
   (package
     (name "libxcomposite")
@@ -1125,7 +1433,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxcomposite-"
+               "mirror://xorg/X11R7.7/src/everything/libXcomposite-"
                version
                ".tar.bz2"))
         (sha256
@@ -1144,8 +1452,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxcursor
   (package
     (name "libxcursor")
@@ -1154,7 +1462,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxcursor-"
+               "mirror://xorg/X11R7.7/src/everything/libXcursor-"
                version
                ".tar.bz2"))
         (sha256
@@ -1172,8 +1480,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxdamage
   (package
     (name "libxdamage")
@@ -1182,7 +1490,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxdamage-"
+               "mirror://xorg/X11R7.7/src/everything/libXdamage-"
                version
                ".tar.bz2"))
         (sha256
@@ -1201,8 +1509,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxdmcp
   (package
     (name "libxdmcp")
@@ -1211,7 +1519,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxdmcp-"
+               "mirror://xorg/X11R7.7/src/everything/libXdmcp-"
                version
                ".tar.bz2"))
         (sha256
@@ -1224,8 +1532,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxext
   (package
     (name "libxext")
@@ -1234,7 +1542,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxext-"
+               "mirror://xorg/X11R7.7/src/everything/libXext-"
                version
                ".tar.bz2"))
         (sha256
@@ -1253,8 +1561,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxfixes
   (package
     (name "libxfixes")
@@ -1263,7 +1571,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxfixes-"
+               "mirror://xorg/X11R7.7/src/everything/libXfixes-"
                version
                ".tar.bz2"))
         (sha256
@@ -1280,8 +1588,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxfont
   (package
     (name "libxfont")
@@ -1290,7 +1598,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxfont-"
+               "mirror://xorg/X11R7.7/src/everything/libXfont-"
                version
                ".tar.bz2"))
         (sha256
@@ -1309,8 +1617,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxft
   (package
     (name "libxft")
@@ -1319,7 +1627,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxft-"
+               "mirror://xorg/X11R7.7/src/everything/libXft-"
                version
                ".tar.bz2"))
         (sha256
@@ -1344,8 +1652,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxi
   (package
     (name "libxi")
@@ -1354,7 +1662,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxi-"
+               "mirror://xorg/X11R7.7/src/everything/libXi-"
                version
                ".tar.bz2"))
         (sha256
@@ -1372,8 +1680,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxinerama
   (package
     (name "libxinerama")
@@ -1382,7 +1690,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxinerama-"
+               "mirror://xorg/X11R7.7/src/everything/libXinerama-"
                version
                ".tar.bz2"))
         (sha256
@@ -1399,8 +1707,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxmu
   (package
     (name "libxmu")
@@ -1409,7 +1717,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxmu-"
+               "mirror://xorg/X11R7.7/src/everything/libXmu-"
                version
                ".tar.bz2"))
         (sha256
@@ -1427,8 +1735,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxp
   (package
     (name "libxp")
@@ -1437,7 +1745,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/lib/libxp-"
+               "mirror://xorg/X11R7.7/src/everything/libXp-"
                version
                ".tar.bz2"))
         (sha256
@@ -1449,14 +1757,14 @@
         ("libxext" ,libxext)
         ("libxau" ,libxau)
         ("libx11" ,libx11)
-        ("printproto" ,printproto)
+;;        ("printproto" ,printproto)
         ("pkg-config" ,pkg-config)))
     (home-page #f)
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxpm
   (package
     (name "libxpm")
@@ -1465,7 +1773,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxpm-"
+               "mirror://xorg/X11R7.7/src/everything/libXpm-"
                version
                ".tar.bz2"))
         (sha256
@@ -1483,8 +1791,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxrandr
   (package
     (name "libxrandr")
@@ -1493,7 +1801,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/lib/libxrandr-"
+               "mirror://xorg/XqqR7.7/src/everything/libXrandr-"
                version
                ".tar.bz2"))
         (sha256
@@ -1513,8 +1821,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxrender
   (package
     (name "libxrender")
@@ -1523,7 +1831,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxrender-"
+               "mirror://xorg/X11R7.7/src/everything/libXrender-"
                version
                ".tar.bz2"))
         (sha256
@@ -1539,8 +1847,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxres
   (package
     (name "libxres")
@@ -1549,7 +1857,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxres-"
+               "mirror://xorg/X11R7.7/src/everything/libXres-"
                version
                ".tar.bz2"))
         (sha256
@@ -1567,8 +1875,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxt
   (package
     (name "libxt")
@@ -1577,7 +1885,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxt-"
+               "mirror://xorg/X11R7.7/src/everything/libXt-"
                version
                ".tar.bz2"))
         (sha256
@@ -1587,18 +1895,18 @@
     (inputs
       `(("xproto" ,xproto)
         ("libx11" ,libx11)
-        ("libSM" ,libSM)
+        ("libsm" ,libsm)
         ("kbproto" ,kbproto)
-        ("libICE" ,libICE)
+        ("libice" ,libice)
         ("pkg-config" ,pkg-config)))
     (propagated-inputs
-      `(("libSM" ,libSM)))
+      `(("libsm" ,libsm)))
     (home-page #f)
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxtst
   (package
     (name "libxtst")
@@ -1607,7 +1915,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxtst-"
+               "mirror://xorg/X11R7.7/src/everything/libXtst-"
                version
                ".tar.bz2"))
         (sha256
@@ -1626,8 +1934,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxv
   (package
     (name "libxv")
@@ -1636,7 +1944,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxv-"
+               "mirror://xorg/X11R7.7/src/everything/libXv-"
                version
                ".tar.bz2"))
         (sha256
@@ -1654,17 +1962,17 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public libxvMC
+
+
+(define-public libxvmc
   (package
-    (name "libxvMC")
+    (name "libxvmc")
     (version "1.0.7")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxvMC-"
+               "mirror://xorg/X11R7.7/src/everything/libXvMC-"
                version
                ".tar.bz2"))
         (sha256
@@ -1683,8 +1991,50 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
+(define-public libxxf86dga
+  (package
+    (name "libxxf86dga")
+    (version "1.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXxf86dga-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public libxxf86vm
+  (package
+    (name "libxxf86vm")
+    (version "1.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXxf86vm-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
 (define-public libdmx
   (package
     (name "libdmx")
@@ -1710,8 +2060,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libfontenc
   (package
     (name "libfontenc")
@@ -1735,8 +2085,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libpciaccess
   (package
     (name "libpciaccess")
@@ -1758,8 +2108,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libpthread-stubs
   (package
     (name "libpthread-stubs")
@@ -1780,8 +2130,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxcb
   (package
     (name "libxcb")
@@ -1790,7 +2140,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/xcb/libxcb-"
+               "mirror://xorg/X11R7.7/src/everything/libxcb-"
                version
                ".tar.bz2"))
         (sha256
@@ -1810,8 +2160,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public libxkbfile
   (package
     (name "libxkbfile")
@@ -1835,31 +2185,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public lndir
-  (package
-    (name "lndir")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/util/lndir-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0pdngiy8zdhsiqx2am75yfcl36l7kd7d7nl0rss8shcdvsqgmx29"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto) ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
+
+
 (define-public luit
   (package
     (name "luit")
@@ -1882,8 +2209,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public makedepend
   (package
     (name "makedepend")
@@ -1905,8 +2232,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public mkfontdir
   (package
     (name "mkfontdir")
@@ -1927,8 +2254,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public mkfontscale
   (package
     (name "mkfontscale")
@@ -1954,54 +2281,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public pixman
-  (package
-    (name "pixman")
-    (version "0.26.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/lib/pixman-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0z34jb75wpbyj3gxn34icd8j81fk5d6s6qnwp2ncz7m8icf6afqr"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("pkg-config" ,pkg-config) ("perl" ,perl)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
-(define-public printproto
-  (package
-    (name "printproto")
-    (version "1.0.5")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/proto/printproto-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "06liap8n4s25sgp27d371cc7yg9a08dxcr3pmdjp761vyin3360j"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libxau" ,libxau) ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
+
+
 (define-public randrproto
   (package
     (name "randrproto")
@@ -2010,7 +2291,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/proto/randrproto-"
+               "mirror://xorg/X11R7.7/src/everything/randrproto-"
                version
                ".tar.bz2"))
         (sha256
@@ -2022,8 +2303,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public recordproto
   (package
     (name "recordproto")
@@ -2044,8 +2325,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public renderproto
   (package
     (name "renderproto")
@@ -2066,8 +2347,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public resourceproto
   (package
     (name "resourceproto")
@@ -2088,8 +2369,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public scrnsaverproto
   (package
     (name "scrnsaverproto")
@@ -2110,8 +2391,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public sessreg
   (package
     (name "sessreg")
@@ -2133,8 +2414,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public setxkbmap
   (package
     (name "setxkbmap")
@@ -2158,8 +2439,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public smproxy
   (package
     (name "smproxy")
@@ -2178,47 +2459,15 @@
     (inputs
       `(("libxt" ,libxt)
         ("libxmu" ,libxmu)
-        ("libSM" ,libSM)
-        ("libICE" ,libICE)
+        ("libsm" ,libsm)
+        ("libice" ,libice)
         ("pkg-config" ,pkg-config)))
     (home-page #f)
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public twm
-  (package
-    (name "twm")
-    (version "1.0.7")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/twm-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0i6dbf5vafi5hm4bcmnj6r412cncjlv9hkkbr6bzlh15qvg56p8g"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libxt" ,libxt)
-        ("xproto" ,xproto)
-        ("libxmu" ,libxmu)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("libSM" ,libSM)
-        ("libICE" ,libICE)
-        ("pkg-config" ,pkg-config)
-        ("flex" ,flex)
-        ("bison" ,bison)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
+
+
 (define-public util-macros
   (package
     (name "util-macros")
@@ -2239,8 +2488,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public videoproto
   (package
     (name "videoproto")
@@ -2261,8 +2510,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public windowswmproto
   (package
     (name "windowswmproto")
@@ -2283,8 +2532,29 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
+(define-public x11perf
+  (package
+    (name "x11perf")
+    (version "1.5.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/x11perf-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
 (define-public xauth
   (package
     (name "xauth")
@@ -2310,8 +2580,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xbacklight
   (package
     (name "xbacklight")
@@ -2320,7 +2590,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/app/xbacklight-"
+               "mirror://xorg/X11R7.7/src/everything/xbacklight-"
                version
                ".tar.bz2"))
         (sha256
@@ -2329,15 +2599,15 @@
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
-        ("xcb-util" ,xcb-util)
+;;        ("xcb-util" ,xcb-util)
         ("libxcb" ,libxcb)
         ("pkg-config" ,pkg-config)))
     (home-page #f)
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xbitmaps
   (package
     (name "xbitmaps")
@@ -2358,8 +2628,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xcb-proto
   (package
     (name "xcb-proto")
@@ -2368,7 +2638,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/xcb/xcb-proto-"
+               "mirror://xorg/X11R7.7/src/everything/xcb-proto-"
                version
                ".tar.bz2"))
         (sha256
@@ -2381,174 +2651,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public xcb-util
-  (package
-    (name "xcb-util")
-    (version "0.3.9")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/xcb/xcb-util-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1i0qbhqkcdlbbsj7ifkyjsffl61whj24d3zlg5pxf3xj1af2a4f6"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("libxcb" ,libxcb)
-        ("gperf" ,gperf)
-        ("m4" ,m4)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
-(define-public xcb-util-image
-  (package
-    (name "xcb-util-image")
-    (version "0.3.9")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/xcb/xcb-util-image-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1pr1l1nkg197gyl9d0fpwmn72jqpxjfgn9y13q4gawg1m873qnnk"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("xcb-util" ,xcb-util)
-        ("libxcb" ,libxcb)
-        ("m4" ,m4)
-        ("gperf" ,gperf)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
-(define-public xcb-util-keysyms
-  (package
-    (name "xcb-util-keysyms")
-    (version "0.3.9")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/xcb/xcb-util-keysyms-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0vjwk7vrcfnlhiadv445c6skfxmdrg5v4qf81y8s2s5xagqarqbv"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("libxcb" ,libxcb)
-        ("m4" ,m4)
-        ("gperf" ,gperf)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
-(define-public xcb-util-renderutil
-  (package
-    (name "xcb-util-renderutil")
-    (version "0.3.8")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/xcb/xcb-util-renderutil-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0lkl9ij9b447c0br2qc5qsynjn09c4fdz7sd6yp7pyi8az2sb2cp"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("libxcb" ,libxcb)
-        ("m4" ,m4)
-        ("gperf" ,gperf)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
-(define-public xcb-util-wm
-  (package
-    (name "xcb-util-wm")
-    (version "0.3.9")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/xcb/xcb-util-wm-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0c30fj33gvwzwhyz1dhsfwni0ai16bxpvxb4l6c6s7vvj7drp3q3"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("libxcb" ,libxcb)
-        ("m4" ,m4)
-        ("gperf" ,gperf)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
-(define-public xclock
-  (package
-    (name "xclock")
-    (version "1.0.6")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/xclock-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1l1zxr69p0734fnx9rdqw79ahr273hr050sm8xdc0n51n1bnzfr1"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libxt" ,libxt)
-        ("libxrender" ,libxrender)
-        ("libxmu" ,libxmu)
-        ("libxkbfile" ,libxkbfile)
-        ("libxft" ,libxft)
-        ("libxaw" ,libxaw)
-        ("libx11" ,libx11)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
+
+
 (define-public xcmiscproto
   (package
     (name "xcmiscproto")
@@ -2569,8 +2673,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xcmsdb
   (package
     (name "xcmsdb")
@@ -2593,8 +2697,32 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
+(define-public xcursor-themes
+  (package
+    (name "xcursor-themes")
+    (version "1.0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xcursor-themes-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1is4bak0qkkhv63mfa5l7492r475586y52yzfxyv3psppn662ilr"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("libxcursor" ,libxcursor)
+        ("pkg-config" ,pkg-config)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
 (define-public xcursorgen
   (package
     (name "xcursorgen")
@@ -2619,65 +2747,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public xcursor-themes
-  (package
-    (name "xcursor-themes")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xcursor-themes-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1is4bak0qkkhv63mfa5l7492r475586y52yzfxyv3psppn662ilr"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libxcursor" ,libxcursor)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
-(define-public xdm
-  (package
-    (name "xdm")
-    (version "1.1.11")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/xdm-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0iqw11977lpr9nk1is4fca84d531vck0mq7jldwl44m0vrnl5nnl"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libxt" ,libxt)
-        ("libxpm" ,libxpm)
-        ("libxmu" ,libxmu)
-        ("libxinerama" ,libxinerama)
-        ("libxft" ,libxft)
-        ("libxext" ,libxext)
-        ("libxdmcp" ,libxdmcp)
-        ("libxaw" ,libxaw)
-        ("libxau" ,libxau)
-        ("libx11" ,libx11)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
+
+
 (define-public xdpyinfo
   (package
     (name "xdpyinfo")
@@ -2695,7 +2766,7 @@
     (build-system gnu-build-system)
     (inputs
       `(("libxxf86vm" ,libxxf86vm)
-        ("libxxf86misc" ,libxxf86misc)
+;;         ("libxxf86misc" ,libxxf86misc)
         ("libxxf86dga" ,libxxf86dga)
         ("libxtst" ,libxtst)
         ("libxrender" ,libxrender)
@@ -2711,8 +2782,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xdriinfo
   (package
     (name "xdriinfo")
@@ -2729,7 +2800,7 @@
             "076bjix941znyjmh3j5jjsnhp2gv2iq53d0ks29mvvv87cyy9iim"))))
     (build-system gnu-build-system)
     (inputs
-      `(("mesa" ,mesa)
+      `(;;("mesa" ,mesa)
         ("glproto" ,glproto)
         ("libx11" ,libx11)
         ("glproto" ,glproto)
@@ -2738,8 +2809,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xev
   (package
     (name "xev")
@@ -2765,8 +2836,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xextproto
   (package
     (name "xextproto")
@@ -2787,62 +2858,890 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public xeyes
+
+
+(define-public xf86-input-evdev
   (package
-    (name "xeyes")
+    (name "xf86-input-evdev")
+    (version "2.7.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-input-evdev-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-input-joystick
+  (package
+    (name "xf86-input-joystick")
+    (version "1.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-input-joystick-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-input-keyboard
+  (package
+    (name "xf86-input-keyboard")
+    (version "1.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-input-keyboard-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-input-mouse
+  (package
+    (name "xf86-input-mouse")
+    (version "1.7.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-input-mouse-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-input-synaptics
+  (package
+    (name "xf86-input-synaptics")
+    (version "1.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-input-synaptics-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-input-vmmouse
+  (package
+    (name "xf86-input-vmmouse")
+    (version "12.8.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-input-vmmouse-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-input-void
+  (package
+    (name "xf86-input-void")
+    (version "1.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-input-void-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-ark
+  (package
+    (name "xf86-video-ark")
+    (version "0.7.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-ark-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-ast
+  (package
+    (name "xf86-video-ast")
+    (version "0.93.10")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-ast-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-ati
+  (package
+    (name "xf86-video-ati")
+    (version "6.14.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-ati-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-cirrus
+  (package
+    (name "xf86-video-cirrus")
+    (version "1.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-cirrus-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-dummy
+  (package
+    (name "xf86-video-dummy")
+    (version "0.3.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-dummy-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-fbdev
+  (package
+    (name "xf86-video-fbdev")
+    (version "0.4.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-fbdev-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-geode
+  (package
+    (name "xf86-video-geode")
+    (version "2.11.13")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-geode-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-glide
+  (package
+    (name "xf86-video-glide")
+    (version "1.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-glide"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-glint
+  (package
+    (name "xf86-video-glint")
+    (version "1.2.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-glint-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-i128
+  (package
+    (name "xf86-video-i128")
+    (version "1.3.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-i128-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-intel
+  (package
+    (name "xf86-video-intel")
+    (version "2.19.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-intel-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-mach64
+  (package
+    (name "xf86-video-mach64")
+    (version "6.9.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-mach64-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-mga
+  (package
+    (name "xf86-video-mga")
+    (version "1.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-mga-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-neomagic
+  (package
+    (name "xf86-video-neomagic")
+    (version "1.2.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-neomagic-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-newport
+  (package
+    (name "xf86-video-newport")
+    (version "0.2.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-newport-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-nv
+  (package
+    (name "xf86-video-nv")
+    (version "2.1.18")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-nv-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-openchrome
+  (package
+    (name "xf86-video-openchrome")
+    (version "0.2.906")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-openchrome-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-r128
+  (package
+    (name "xf86-video-r128")
+    (version "6.8.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-r128-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-savage
+  (package
+    (name "xf86-video-savage")
+    (version "2.3.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-savage-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-siliconmotion
+  (package
+    (name "xf86-video-siliconmotion")
+    (version "1.7.6")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-siliconmotion-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-sis
+  (package
+    (name "xf86-video-sis")
+    (version "0.10.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-sis-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-suncg6
+  (package
+    (name "xf86-video-suncg6")
     (version "1.1.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/app/xeyes-"
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-suncg6-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "08d5x2kar5kg4yammw6hhk10iva6jmh8cqq176a1z7nm1il9hplp"))))
+            "0000000000000000000000000000000000000000000000000000"))))
     (build-system gnu-build-system)
-    (inputs
-      `(("libxt" ,libxt)
-        ("libxrender" ,libxrender)
-        ("libxmu" ,libxmu)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("pkg-config" ,pkg-config)))
     (home-page #f)
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public xfs
+
+
+(define-public xf86-video-sunffb
   (package
-    (name "xfs")
-    (version "1.1.2")
+    (name "xf86-video-sunffb")
+    (version "1.2.1")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/app/xfs-"
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-sunffb-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "17g34yq789grnic83cqj5khq0knda1w2rgabhjflsyw9wg663shd"))))
+            "0000000000000000000000000000000000000000000000000000"))))
     (build-system gnu-build-system)
-    (inputs
-      `(("xtrans" ,xtrans)
-        ("xproto" ,xproto)
-        ("libxfont" ,libxfont)
-        ("pkg-config" ,pkg-config)))
     (home-page #f)
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
+(define-public xf86-video-tdfx
+  (package
+    (name "xf86-video-tdfx")
+    (version "1.4.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-tdfx-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-tga
+  (package
+    (name "xf86-video-tga")
+    (version "1.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-tga-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-trident
+  (package
+    (name "xf86-video-trident")
+    (version "1.3.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-trident-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-v4l
+  (package
+    (name "xf86-video-v4l")
+    (version "0.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-v4l-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-vesa
+  (package
+    (name "xf86-video-vesa")
+    (version "2.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-vesa-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-vmware
+  (package
+    (name "xf86-video-vmware")
+    (version "12.0.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-vmware-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-voodoo
+  (package
+    (name "xf86-video-voodoo")
+    (version "1.2.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-voodoo-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86-video-wsfb
+  (package
+    (name "xf86-video-wsfb")
+    (version "0.4.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-wsfb-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86bigfontproto
+  (package
+    (name "xf86bigfontproto")
+    (version "1.2.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86bigfontproto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86dgaproto
+  (package
+    (name "xf86dgaproto")
+    (version "2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86dgaproto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86driproto
+  (package
+    (name "xf86driproto")
+    (version "2.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86driproto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
+(define-public xf86vidmodeproto
+  (package
+    (name "xf86vidmodeproto")
+    (version "2.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xf86vidmodeproto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0000000000000000000000000000000000000000000000000000"))))
+    (build-system gnu-build-system)
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license #f)))
+
+
 (define-public xgamma
   (package
     (name "xgamma")
@@ -2866,8 +3765,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xhost
   (package
     (name "xhost")
@@ -2892,8 +3791,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xineramaproto
   (package
     (name "xineramaproto")
@@ -2914,34 +3813,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public xinit
-  (package
-    (name "xinit")
-    (version "1.3.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/xinit-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0d821rlqwyn2js7bkzicyp894n9gqv1hahxs285pas1zm3d7z1m1"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libx11" ,libx11)
-        ("pkg-config" ,pkg-config)))
-    (propagated-inputs
-      `(("xauth" ,xauth)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
+
+
 (define-public xinput
   (package
     (name "xinput")
@@ -2970,8 +3843,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xkbcomp
   (package
     (name "xkbcomp")
@@ -2996,8 +3869,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xkbevd
   (package
     (name "xkbevd")
@@ -3021,8 +3894,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xkbutils
   (package
     (name "xkbutils")
@@ -3049,8 +3922,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xkeyboard-config
   (package
     (name "xkeyboard-config")
@@ -3071,8 +3944,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xkill
   (package
     (name "xkill")
@@ -3096,8 +3969,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xlsatoms
   (package
     (name "xlsatoms")
@@ -3119,8 +3992,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xlsclients
   (package
     (name "xlsclients")
@@ -3142,33 +4015,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public xmessage
-  (package
-    (name "xmessage")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/app/xmessage-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0nrxidff0pcd1ampfzj91ai74j6mx613j5kqk3j0c4xdshx5v8yg"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libxt" ,libxt)
-        ("libxaw" ,libxaw)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
+
+
 (define-public xmodmap
   (package
     (name "xmodmap")
@@ -3192,30 +4040,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
-(define-public xorg-cf-files
-  (package
-    (name "xorg-cf-files")
-    (version "1.0.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/individual/util/xorg-cf-files-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0s86h66b3w4623m88fg2csp41cnr08qc8i3gkj85k3wpwj1wxs9n"))))
-    (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-  
-  
+
+
 (define-public xorg-docs
   (package
     (name "xorg-docs")
@@ -3236,8 +4062,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xorg-server
   (package
     (name "xorg-server")
@@ -3246,7 +4072,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/individual/xserver/xorg-server-"
+               "mirror://xorg/X11R7.7/src/everything/xorg-server-"
                version
                ".tar.bz2"))
         (sha256
@@ -3259,7 +4085,7 @@
         ("xcmiscproto" ,xcmiscproto)
         ("damageproto" ,damageproto)
         ("libxfont" ,libxfont)
-        ("pixman" ,pixman)
+;;         ("pixman" ,pixman)
         ("libxext" ,libxext)
         ("recordproto" ,recordproto)
         ("xf86vidmodeproto" ,xf86vidmodeproto)
@@ -3274,8 +4100,8 @@
         ("glproto" ,glproto)
         ("xf86bigfontproto" ,xf86bigfontproto)
         ("dbus" ,dbus)
-        ("mesa" ,mesa)
-        ("systemd" ,systemd)
+;;         ("mesa" ,mesa)
+;;        ("systemd" ,systemd)
         ("zlib" ,zlib)
         ("libxv" ,libxv)
         ("libxt" ,libxt)
@@ -3290,7 +4116,7 @@
         ("libxau" ,libxau)
         ("libx11" ,libx11)
         ("openssl" ,openssl)
-        ("libdrm" ,libdrm)
+;;         ("libdrm" ,libdrm)
         ("renderproto" ,renderproto)
         ("pkg-config" ,pkg-config)))
     (propagated-inputs
@@ -3304,8 +4130,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xorg-sgml-doctools
   (package
     (name "xorg-sgml-doctools")
@@ -3326,8 +4152,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xpr
   (package
     (name "xpr")
@@ -3352,8 +4178,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xprop
   (package
     (name "xprop")
@@ -3377,8 +4203,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xproto
   (package
     (name "xproto")
@@ -3399,8 +4225,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xrandr
   (package
     (name "xrandr")
@@ -3426,8 +4252,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xrdb
   (package
     (name "xrdb")
@@ -3451,8 +4277,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xrefresh
   (package
     (name "xrefresh")
@@ -3475,8 +4301,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xset
   (package
     (name "xset")
@@ -3493,7 +4319,7 @@
             "1s61mvscd0h7y6anljarj7nkii6plhs8ndx1fm8b1f1h00a1qdv1"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxxf86misc" ,libxxf86misc)
+      `(;;("libxxf86misc" ,libxxf86misc)
         ("xproto" ,xproto)
         ("libxmu" ,libxmu)
         ("libxext" ,libxext)
@@ -3503,8 +4329,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xsetroot
   (package
     (name "xsetroot")
@@ -3530,8 +4356,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xtrans
   (package
     (name "xtrans")
@@ -3552,8 +4378,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xvinfo
   (package
     (name "xvinfo")
@@ -3578,8 +4404,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xwd
   (package
     (name "xwd")
@@ -3604,8 +4430,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xwininfo
   (package
     (name "xwininfo")
@@ -3630,8 +4456,8 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
-  
+
+
 (define-public xwud
   (package
     (name "xwud")
@@ -3655,4 +4481,3 @@
     (synopsis #f)
     (description #f)
     (license #f)))
-  
