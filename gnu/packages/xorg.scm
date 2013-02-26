@@ -187,7 +187,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "02drlfqvjm2q7dvkkwli3fs2crb6rdb3kyd13vwx7z0rijrc10md"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -254,7 +254,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0m60f5bd0caambrk8ksknb5dks7wzsg7g7xaf0j21jxmx8rq9h5j"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -275,7 +275,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "02advcv9lyxpvrjv8bjh1b797lzg6jvhipclz49z8r8y98g4l0n6"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -296,7 +296,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "19dd9znam1ah72jmdh7i6ny2ss2r6m21z9v0l43xvikw48zmwvyi"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -317,7 +317,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "152wigpph5wvl4k9m3l4mchxxisgsnzlx033mn5iqrpkc6f72cl7"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -338,7 +338,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0xw0pdnzj5jljsbbhakc6q9ha2qnca1jr81zk7w70yl9bw83b54p"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -406,7 +406,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "10cl4gm38dw68jzln99ijix730y7cbx8np096gmpjjwff1i73h13"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -427,7 +427,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "073jmhf0sr2j1l8da97pzsqj805f7mf9r2gy92j4diljmi8sm1il"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -448,7 +448,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "1fqzckxdzjv4802iad2fdrkpaxl4w0hhs9lxlkyraq2kq9ik7a32"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -469,7 +469,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0cfbxdp5m12cm7jsh3my0lym9328cgm7fa9faz2hqj05wbxnmhaa"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -691,7 +691,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "1pyjll4adch3z5cg663s6vhi02k8m6488f0mrasg81ssvg9jinzx"))))
     (build-system gnu-build-system)
     (inputs
       `(("mkfontdir" ,mkfontdir)
@@ -1067,7 +1067,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0jp3zc0qfdaqfkgzrb44vi9vi0a8ygb35wp082yz7rvvxhmg9sya"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -1100,7 +1100,7 @@
 (define-public glproto
   (package
     (name "glproto")
-    (version "1.4.16")
+    (version "1.4.15")
     (source
       (origin
         (method url-fetch)
@@ -1110,7 +1110,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "13arnb4bz5pn89bxbh3shr8gihkhyznpjnq3zzr05msygwx6dpal"))))
+            "0wf1vq9g4pyzahb23ywx554pm5bpax49lz188fk6m5p8wbmmc0wr"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
     (home-page #f)
@@ -1333,7 +1333,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "11jdpl15bxwpwv0knpkh990s8jvlybng3dx477pkrz1bx7byz0n3"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -1992,7 +1992,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "15291ddhyr54sribwbg8hxx2psgzm5gh0pgkw5yrf3zgvdsa67sm"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -2013,7 +2013,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "117w92xz39rcqcahspi48nc04cc9110x1dycpf3vbcb6p0pifr55"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -2533,7 +2533,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "111iwpxhnxjiq44w96zf0kszg5zpgv1g3ayx18v4nhdzl9bqivi4"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -2859,7 +2859,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "1ivf5n821chckrgp89mpb18zi00v1hyrkc1hr82q0x6g1kpgxq9y"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -2880,7 +2880,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "1xgpkdmfw4ahjlva97gs9sllzw8nlpa8mxj59g28fxhak67mvv8x"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -2901,7 +2901,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "1hwc1bjw5mxv186xbrxiky0agfglwqg8fsxqdh4br1vzgxpck7ma"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -2922,7 +2922,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0fs1lwnycyv3d0m6l2wrnlgvbs8qw66d93hwlnmrsswfq5bp6ark"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -2943,7 +2943,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0g5b1s6q1dg38l8y47cwg7cs5nivwj0agmp71g273ws0lfg4bc8s"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -2964,7 +2964,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "16l65mnjb1xxav6c5q0xhhqih81bzify2c5qrhqc2j3waq5yr9m8"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -2985,7 +2985,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "01bmk324fq48wydvy1qrnxbw6qz0fjd0i80g0n4cqr1c4mjmif9a"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3006,7 +3006,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "194zc35ivfh3vcxcilf9nbi88c2di8kbh84x535cljlpiajdnk5x"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3027,7 +3027,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "1q64z8qqa0ix3cymqiwk1s3sphd1fvvz30lvyxhgkgciygz6dm69"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3048,7 +3048,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "11gg6xn65vym75769hzgzpkjsyhlkrw4zw3ncngriq7vz1g47zjg"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3069,7 +3069,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0blnbspj4936wy46lp346s4b08dfcray6yicsxvv5b4699fzl1rb"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3090,7 +3090,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0pyr50kqh7g84r4p0x09ay5kxax20dip9sh8h3cbd4xv8cswdbfm"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3111,7 +3111,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "1mc23w0bfmak5216411xh58nrs93jlxmi6l412hmqzhxnjs73clk"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3132,7 +3132,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "1mc23w0bfmak5216411xh58nrs93jlxmi6l412hmqzhxnjs73clk"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3153,7 +3153,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0byapm9mnpqk3wijfnnan3d22ii5cw6dmg4xn1625iiz89j5vs1l"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3174,7 +3174,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0nf36jryabpncqq4m6sfsnmzk00f7gvfmjnl8l8sfy7w6sa6iacs"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3195,7 +3195,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "1sik8ck410hb2885vy7rlc590hw5br8lr2fzxgmv55jyawgfpv9y"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3216,7 +3216,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "1g742szymajh88a5dw08sxcr45bmxgc4w3m6hddv9qscn5hks4rj"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3237,7 +3237,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0kl3kvpc2ny48z89313i9fi4cxzwb2pllvxcr9j5ly680ygx8slz"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3258,7 +3258,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "03l3wz5kz0hmxmzqqbkgn7pf9d956jlag04rb701a0fr1mw3v66a"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3279,7 +3279,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "124qci48xrk0w2jy91n7vqs7s6q397zyiqqszhmkx6ld7six57mi"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3300,7 +3300,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "1yafmp23jrfdmc094i6a4dsizapsc9v0pl65cpc8w1kvn7343k4i"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3321,7 +3321,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "05glbi9jc7j9nm4sf4qvl3z87s48ibm3i283lqz85kbphg62dxvc"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3342,7 +3342,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0hgzn1r7ig94xbr9dvq0bp1nxqlfp2ki8823jca3f22a2kf8wmg7"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3363,7 +3363,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "1c84x40k9qz9dnf5qs6nnjcgz7px6mpc3rbk8mj62zhp7mf16hbv"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3384,7 +3384,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0jdy4wv3k3ylx3lajjcbsg37z2hf6366a1jvv16sv1ln6dk6lris"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3405,7 +3405,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "01sdl6ky1vmvmfgx2d44i35rqafi0z07xdy40cvindcr2k91p7x5"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3426,7 +3426,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "03diq0l93lfsipmwkpdb2ysgbxxryl6yakpghzc3fksjxa01112f"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3447,7 +3447,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "07w0hm63fiy5l3cpcjsl0ig8z84z9r36xm0cmnpiv3g75dy6q8fi"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3468,7 +3468,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "04byax4sc1fn183vyyq0q11q730k16h2by4ggjky7s36wgv7ldzx"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3489,7 +3489,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "124gsi30rj547jjd7gvv7xykfnwlyrxw0gcacamby7pvl3g33fg0"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3510,7 +3510,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0mdqrn02zzkdnmhg4vh9djaawg6b2p82g5qbj66z8b30yr77b93h"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3531,7 +3531,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "02y5pzdp0a1c12jr8gghbrzgbyfbgq67x7kd7n4f323pmf8x1csb"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3552,7 +3552,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0pcjc75hgbih3qvhpsx8d4fljysfk025slxcqyyhr45dzch93zyb"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3573,7 +3573,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0wqms28kkz2fvghqhqwp6w8zj7k5cgwnhzvkc7j4v268bf6h78g4"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3594,7 +3594,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0isiwx516gww8hfk3vy7js83yziyjym9mq2zjadyq1a8v5gqf9y8"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3615,7 +3615,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0ha748yz92yzn6hp2rhin3il8f4j2rs4vkgdvqkagnv1ryxkh0ph"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3636,7 +3636,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0hr8397wpd0by1hc47fqqrnaw3qdqd8aqgwgzv38w5k3l3jy6p4p"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3657,7 +3657,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0j0n7sj5xfjpmmgx6n5x556rw21hdd18fwmavp95wps7qki214ms"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3678,7 +3678,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0l4hx48207mx0hp09026r6gy9nl3asbq0c75hri19wp1118zcpmc"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3699,7 +3699,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "07v69m0g2dfzb653jni4x656jlr7l84c1k39j8qc8vfb45r8sjww"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
@@ -3720,7 +3720,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "0000000000000000000000000000000000000000000000000000"))))
+            "0w47d7gfa8zizh2bshdr2rffvbr4jqjv019mdgyh6cmplyd4kna5"))))
     (build-system gnu-build-system)
     (home-page #f)
     (synopsis #f)
