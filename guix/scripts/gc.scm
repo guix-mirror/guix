@@ -20,6 +20,7 @@
   #:use-module (guix ui)
   #:use-module (guix store)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
@@ -46,6 +47,11 @@ Invoke the garbage collector.\n"))
       --list-dead        list dead paths"))
   (display (_ "
       --list-live        list live paths"))
+  (newline)
+  (display (_ "
+      --references       list the references of PATHS"))
+  (display (_ "
+      --referrers        list the referrers of PATHS"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -125,6 +131,14 @@ interpreted."
         (option '("list-live") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'list-live
+                              (alist-delete 'action result))))
+        (option '("references") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'action 'list-references
+                              (alist-delete 'action result))))
+        (option '("referrers") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'action 'list-referrers
                               (alist-delete 'action result))))))
 
 
@@ -142,9 +156,37 @@ interpreted."
                  (alist-cons 'argument arg result))
                %default-options))
 
+  (define (symlink-target file)
+    (let ((s (false-if-exception (lstat file))))
+      (if (and s (eq? 'symlink (stat:type s)))
+          (symlink-target (readlink file))
+          file)))
+
+  (define (store-directory file)
+    ;; Return the store directory that holds FILE if it's in the store,
+    ;; otherwise return FILE.
+    (or (and=> (string-match (string-append "^" (regexp-quote (%store-prefix))
+                                            "/([^/]+)")
+                             file)
+               (compose (cut string-append (%store-prefix) "/" <>)
+                        (cut match:substring <> 1)))
+        file))
+
   (with-error-handling
-    (let ((opts  (parse-options))
-          (store (open-connection)))
+    (let* ((opts  (parse-options))
+           (store (open-connection))
+           (paths (filter-map (match-lambda
+                               (('argument . arg) arg)
+                               (_ #f))
+                              opts)))
+      (define (list-relatives relatives)
+        (for-each (compose (lambda (path)
+                             (for-each (cut simple-format #t "~a~%" <>)
+                                       (relatives store path)))
+                           store-directory
+                           symlink-target)
+                  paths))
+
       (case (assoc-ref opts 'action)
         ((collect-garbage)
          (let ((min-freed (assoc-ref opts 'min-freed)))
@@ -152,11 +194,11 @@ interpreted."
                (collect-garbage store min-freed)
                (collect-garbage store))))
         ((delete)
-         (let ((paths (filter-map (match-lambda
-                                   (('argument . arg) arg)
-                                   (_ #f))
-                                  opts)))
-           (delete-paths store paths)))
+         (delete-paths store paths))
+        ((list-references)
+         (list-relatives references))
+        ((list-referrers)
+         (list-relatives referrers))
         ((list-dead)
          (for-each (cut simple-format #t "~a~%" <>)
                    (dead-paths store)))

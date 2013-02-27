@@ -657,6 +657,18 @@ store---i.e., files and directories no longer reachable from any root.
 
 @item --list-live
 Show the list of live store files and directories.
+
+@end table
+
+In addition, the references among existing store files can be queried:
+
+@table @code
+
+@item --references
+@itemx --referrers
+List the references (respectively, the referrers) of store files given
+as arguments.
+
 @end table
 
 
