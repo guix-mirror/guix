@@ -134,6 +134,7 @@ check whether everything is alright."
   "Return the name of Glibc's dynamic linker for SYSTEM."
   (cond ((string=? system "x86_64-linux") "/lib/ld-linux-x86-64.so.2")
         ((string=? system "i686-linux") "/lib/ld-linux.so.2")
+        ((string=? system "mips64el-linux") "/lib/ld.so.1")
         (else (error "dynamic linker name not known for this system"
                      system))))
 

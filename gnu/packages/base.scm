@@ -412,8 +412,8 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
         #:make-flags
         (let ((libc (assoc-ref %build-inputs "libc")))
           `(,@(if libc
-                  (list (string-append "LDFLAGS_FOR_BUILD="
-                                       "-L" libc "/lib "
+                  (list (string-append "LDFLAGS_FOR_TARGET="
+                                       "-B" libc "/lib "
                                        "-Wl,-dynamic-linker "
                                        "-Wl," libc
                                        ,(glibc-dynamic-linker)))

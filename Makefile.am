@@ -66,6 +66,7 @@ MODULES =					\
   gnu/packages/check.scm			\
   gnu/packages/compression.scm			\
   gnu/packages/cpio.scm				\
+  gnu/packages/cross-base.scm			\
   gnu/packages/curl.scm				\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/dejagnu.scm			\
@@ -185,6 +186,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/flac-fix-memcmp-not-declared.patch	\
   gnu/packages/patches/flex-bison-tests.patch			\
   gnu/packages/patches/gawk-shell.patch				\
+  gnu/packages/patches/gcc-cross-environment-variables.patch	\
   gnu/packages/patches/gettext-gets-undeclared.patch		\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
