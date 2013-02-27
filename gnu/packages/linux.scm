@@ -31,10 +31,13 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
-(define (system->linux-architecture arch)
+(define-public (system->linux-architecture arch)
+  "Return the Linux architecture name for ARCH, a Guix system name such as
+\"x86_64-linux\"."
   (let ((arch (car (string-split arch #\-))))
     (cond ((string=? arch "i686") "i386")
           ((string-prefix? "mips" arch) "mips")
+          ((string-prefix? "arm" arch) "arm")
           (else arch))))
 
 (define-public linux-libre-headers
