@@ -177,7 +177,7 @@
 (define-public dri2proto
   (package
     (name "dri2proto")
-    (version "2.3.1")
+    (version "2.6")
     (source
       (origin
         (method url-fetch)
@@ -1496,7 +1496,7 @@
 ;; (define-public libxcb
 ;;   (package
 ;;     (name "libxcb")
-;;     (version "1.9")
+;;     (version "1.8.1")
 ;;     (source
 ;;       (origin
 ;;         (method url-fetch)
@@ -1883,7 +1883,7 @@
 (define-public libxrandr
   (package
     (name "libxrandr")
-    (version "1.4.0")
+    (version "1.3.2")
     (source
       (origin
         (method url-fetch)
@@ -1893,7 +1893,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "1hzm2ndra4nf8xxzm4lzd225zj05hzbzcq464q2znah15ynd0fh3"))))
+            "10cvv78ws8jznma4s45dzqz0ldcxk30qgsqrc4wxfcsjmcba5b3y"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
@@ -2246,7 +2246,7 @@
 (define-public randrproto
   (package
     (name "randrproto")
-    (version "1.4.0")
+    (version "1.3.2")
     (source
       (origin
         (method url-fetch)
@@ -2256,7 +2256,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "1kq9h93qdnniiivry8jmhlgwn9fbx9xp5r9cmzfihlx5cs62xi45"))))
+            "0wfwcq85wbm0g5r0snc7prgki1wi3kxrxhcxinyr54n45ihh03fr"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
     (home-page #f)
@@ -2545,7 +2545,7 @@
 (define-public xbacklight
   (package
     (name "xbacklight")
-    (version "1.2.0")
+    (version "1.1.2")
     (source
       (origin
         (method url-fetch)
@@ -2555,7 +2555,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "199n9qszjiz82nbjz6ychh0xl15igm535mv0830wk4m59w9xclji"))))
+            "02b5jfys2msla2yvg5s0knzyxg2104r25czkwd49i8g8kp804bxg"))))
     (build-system gnu-build-system)
     (inputs
       `(("libxrender" ,libxrender)
@@ -2594,7 +2594,7 @@
 ;; (define-public xcb-proto
 ;;   (package
 ;;     (name "xcb-proto")
-;;     (version "1.8")
+;;     (version "1.7.1")
 ;;     (source
 ;;       (origin
 ;;         (method url-fetch)
@@ -4030,7 +4030,7 @@
 (define-public xorg-server
   (package
     (name "xorg-server")
-    (version "1.12.4")
+    (version "1.12.2")
     (source
       (origin
         (method url-fetch)
@@ -4040,7 +4040,7 @@
                ".tar.bz2"))
         (sha256
           (base32
-            "1xscr6rf0q15hv3hmm51xhwk0c0rx7a2swkj14ygp8vb60sprh4a"))))
+            "1xf57hcq6r17zxyfnx9r1wd0ir1bw13ff8bsiszwrw9jyhi9x7ya"))))
     (build-system gnu-build-system)
     (inputs
       `(("bigreqsproto" ,bigreqsproto)
