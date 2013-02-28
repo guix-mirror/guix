@@ -57,7 +57,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
   
   
 (define-public bdftopcf
@@ -81,7 +81,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public bigreqsproto
@@ -103,7 +103,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public compositeproto
@@ -127,7 +127,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public damageproto
@@ -149,7 +149,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public dmxproto
@@ -171,7 +171,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public dri2proto
@@ -192,7 +192,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public encodings
@@ -214,7 +214,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:public-domain)))
 
 
 (define-public fixesproto
@@ -238,7 +238,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public font-adobe-100dpi
@@ -259,7 +259,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public font-adobe-75dpi
@@ -280,70 +280,70 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
-(define-public font-adobe-utopia-100dpi
-  (package
-    (name "font-adobe-utopia-100dpi")
-    (version "1.0.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-adobe-utopia-100dpi-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "19dd9znam1ah72jmdh7i6ny2ss2r6m21z9v0l43xvikw48zmwvyi"))))
-    (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public font-adobe-utopia-75dpi
-  (package
-    (name "font-adobe-utopia-75dpi")
-    (version "1.0.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-adobe-utopia-75dpi-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "152wigpph5wvl4k9m3l4mchxxisgsnzlx033mn5iqrpkc6f72cl7"))))
-    (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public font-adobe-utopia-type1
-  (package
-    (name "font-adobe-utopia-type1")
-    (version "1.0.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-adobe-utopia-type1-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0xw0pdnzj5jljsbbhakc6q9ha2qnca1jr81zk7w70yl9bw83b54p"))))
-    (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+;; (define-public font-adobe-utopia-100dpi
+;;   (package
+;;     (name "font-adobe-utopia-100dpi")
+;;     (version "1.0.4")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-adobe-utopia-100dpi-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "19dd9znam1ah72jmdh7i6ny2ss2r6m21z9v0l43xvikw48zmwvyi"))))
+;;     (build-system gnu-build-system)
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
+;; 
+;; 
+;; (define-public font-adobe-utopia-75dpi
+;;   (package
+;;     (name "font-adobe-utopia-75dpi")
+;;     (version "1.0.4")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-adobe-utopia-75dpi-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "152wigpph5wvl4k9m3l4mchxxisgsnzlx033mn5iqrpkc6f72cl7"))))
+;;     (build-system gnu-build-system)
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
+;; 
+;; 
+;; (define-public font-adobe-utopia-type1
+;;   (package
+;;     (name "font-adobe-utopia-type1")
+;;     (version "1.0.4")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-adobe-utopia-type1-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0xw0pdnzj5jljsbbhakc6q9ha2qnca1jr81zk7w70yl9bw83b54p"))))
+;;     (build-system gnu-build-system)
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
 
 
 (define-public font-alias
@@ -365,7 +365,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public font-arabic-misc
@@ -390,166 +390,166 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
-(define-public font-bh-100dpi
-  (package
-    (name "font-bh-100dpi")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-bh-100dpi-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "10cl4gm38dw68jzln99ijix730y7cbx8np096gmpjjwff1i73h13"))))
-    (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public font-bh-75dpi
-  (package
-    (name "font-bh-75dpi")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-bh-75dpi-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "073jmhf0sr2j1l8da97pzsqj805f7mf9r2gy92j4diljmi8sm1il"))))
-    (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public font-bh-lucidatypewriter-100dpi
-  (package
-    (name "font-bh-lucidatypewriter-100dpi")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-bh-lucidatypewriter-100dpi-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1fqzckxdzjv4802iad2fdrkpaxl4w0hhs9lxlkyraq2kq9ik7a32"))))
-    (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public font-bh-lucidatypewriter-75dpi
-  (package
-    (name "font-bh-lucidatypewriter-75dpi")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-bh-lucidatypewriter-75dpi-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0cfbxdp5m12cm7jsh3my0lym9328cgm7fa9faz2hqj05wbxnmhaa"))))
-    (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public font-bh-type1
-  (package
-    (name "font-bh-type1")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-bh-ttf-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0pyjmc0ha288d4i4j0si4dh3ncf3jiwwjljvddrb0k8v4xiyljqv"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("mkfontscale" ,mkfontscale)
-        ("mkfontdir" ,mkfontdir)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public font-bitstream-100dpi
-  (package
-    (name "font-bitstream-100dpi")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-bh-ttf-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0pyjmc0ha288d4i4j0si4dh3ncf3jiwwjljvddrb0k8v4xiyljqv"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("mkfontscale" ,mkfontscale)
-        ("mkfontdir" ,mkfontdir)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public font-bitstream-75dpi
-  (package
-    (name "font-bitstream-75dpi")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-bh-ttf-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0pyjmc0ha288d4i4j0si4dh3ncf3jiwwjljvddrb0k8v4xiyljqv"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("mkfontscale" ,mkfontscale)
-        ("mkfontdir" ,mkfontdir)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+;; (define-public font-bh-100dpi
+;;   (package
+;;     (name "font-bh-100dpi")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-bh-100dpi-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "10cl4gm38dw68jzln99ijix730y7cbx8np096gmpjjwff1i73h13"))))
+;;     (build-system gnu-build-system)
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
+;; 
+;; 
+;; (define-public font-bh-75dpi
+;;   (package
+;;     (name "font-bh-75dpi")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-bh-75dpi-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "073jmhf0sr2j1l8da97pzsqj805f7mf9r2gy92j4diljmi8sm1il"))))
+;;     (build-system gnu-build-system)
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
+;; 
+;; 
+;; (define-public font-bh-lucidatypewriter-100dpi
+;;   (package
+;;     (name "font-bh-lucidatypewriter-100dpi")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-bh-lucidatypewriter-100dpi-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "1fqzckxdzjv4802iad2fdrkpaxl4w0hhs9lxlkyraq2kq9ik7a32"))))
+;;     (build-system gnu-build-system)
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
+;; 
+;; 
+;; (define-public font-bh-lucidatypewriter-75dpi
+;;   (package
+;;     (name "font-bh-lucidatypewriter-75dpi")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-bh-lucidatypewriter-75dpi-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0cfbxdp5m12cm7jsh3my0lym9328cgm7fa9faz2hqj05wbxnmhaa"))))
+;;     (build-system gnu-build-system)
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
+;; 
+;; 
+;; (define-public font-bh-type1
+;;   (package
+;;     (name "font-bh-type1")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-bh-ttf-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0pyjmc0ha288d4i4j0si4dh3ncf3jiwwjljvddrb0k8v4xiyljqv"))))
+;;     (build-system gnu-build-system)
+;;     (inputs
+;;       `(("mkfontscale" ,mkfontscale)
+;;         ("mkfontdir" ,mkfontdir)
+;;         ("pkg-config" ,pkg-config)))
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
+;;
+;;
+;; (define-public font-bitstream-100dpi
+;;   (package
+;;     (name "font-bitstream-100dpi")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-bh-ttf-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0pyjmc0ha288d4i4j0si4dh3ncf3jiwwjljvddrb0k8v4xiyljqv"))))
+;;     (build-system gnu-build-system)
+;;     (inputs
+;;       `(("mkfontscale" ,mkfontscale)
+;;         ("mkfontdir" ,mkfontdir)
+;;         ("pkg-config" ,pkg-config)))
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
+;;
+;;
+;; (define-public font-bitstream-75dpi
+;;   (package
+;;     (name "font-bitstream-75dpi")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-bh-ttf-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0pyjmc0ha288d4i4j0si4dh3ncf3jiwwjljvddrb0k8v4xiyljqv"))))
+;;     (build-system gnu-build-system)
+;;     (inputs
+;;       `(("mkfontscale" ,mkfontscale)
+;;         ("mkfontdir" ,mkfontdir)
+;;         ("pkg-config" ,pkg-config)))
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
 
 
 (define-public font-bitstream-type1
@@ -574,7 +574,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public font-cronyx-cyrillic
@@ -599,58 +599,58 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
-(define-public font-cursor-misc
-  (package
-    (name "font-cursor-misc")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-cursor-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0dd6vfiagjc4zmvlskrbjz85jfqhf060cpys8j0y1qpcbsrkwdhp"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("mkfontscale" ,mkfontscale)
-        ("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public font-daewoo-misc
-  (package
-    (name "font-daewoo-misc")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-daewoo-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1s2bbhizzgbbbn5wqs3vw53n619cclxksljvm759h9p1prqdwrdw"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+;; (define-public font-cursor-misc
+;;   (package
+;;     (name "font-cursor-misc")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-cursor-misc-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0dd6vfiagjc4zmvlskrbjz85jfqhf060cpys8j0y1qpcbsrkwdhp"))))
+;;     (build-system gnu-build-system)
+;;     (inputs
+;;       `(("mkfontscale" ,mkfontscale)
+;;         ("mkfontdir" ,mkfontdir)
+;;         ("bdftopcf" ,bdftopcf)
+;;         ("pkg-config" ,pkg-config)))
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license none)))
+;; 
+;; 
+;; (define-public font-daewoo-misc
+;;   (package
+;;     (name "font-daewoo-misc")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-daewoo-misc-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "1s2bbhizzgbbbn5wqs3vw53n619cclxksljvm759h9p1prqdwrdw"))))
+;;     (build-system gnu-build-system)
+;;     (inputs
+;;       `(("mkfontdir" ,mkfontdir)
+;;         ("bdftopcf" ,bdftopcf)
+;;         ("pkg-config" ,pkg-config)))
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
 
 
 (define-public font-dec-misc
@@ -675,32 +675,32 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
-(define-public font-ibm-type1
-  (package
-    (name "font-ibm-type1")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-cronyx-cyrillic-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1pyjll4adch3z5cg663s6vhi02k8m6488f0mrasg81ssvg9jinzx"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+;; (define-public font-ibm-type1
+;;   (package
+;;     (name "font-ibm-type1")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-cronyx-cyrillic-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "1pyjll4adch3z5cg663s6vhi02k8m6488f0mrasg81ssvg9jinzx"))))
+;;     (build-system gnu-build-system)
+;;     (inputs
+;;       `(("mkfontdir" ,mkfontdir)
+;;         ("bdftopcf" ,bdftopcf)
+;;         ("pkg-config" ,pkg-config)))
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
 
 
 (define-public font-isas-misc
@@ -725,32 +725,32 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
-(define-public font-jis-misc
-  (package
-    (name "font-jis-misc")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-jis-misc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0rdc3xdz12pnv951538q6wilx8mrdndpkphpbblszsv7nc8cw61b"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("bdftopcf" ,bdftopcf)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+;; (define-public font-jis-misc
+;;   (package
+;;     (name "font-jis-misc")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-jis-misc-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0rdc3xdz12pnv951538q6wilx8mrdndpkphpbblszsv7nc8cw61b"))))
+;;     (build-system gnu-build-system)
+;;     (inputs
+;;       `(("mkfontdir" ,mkfontdir)
+;;         ("bdftopcf" ,bdftopcf)
+;;         ("pkg-config" ,pkg-config)))
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
 
 
 (define-public font-micro-misc
@@ -775,7 +775,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:public-domain)))
 
 
 (define-public font-misc-cyrillic
@@ -800,7 +800,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public font-misc-ethiopic
@@ -825,32 +825,32 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
-(define-public font-misc-meltho
-  (package
-    (name "font-misc-meltho")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-misc-meltho-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "148793fqwzrc3bmh2vlw5fdiwjc2n7vs25cic35gfp452czk489p"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("mkfontscale" ,mkfontscale)
-        ("mkfontdir" ,mkfontdir)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+;; (define-public font-misc-meltho
+;;   (package
+;;     (name "font-misc-meltho")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-misc-meltho-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "148793fqwzrc3bmh2vlw5fdiwjc2n7vs25cic35gfp452czk489p"))))
+;;     (build-system gnu-build-system)
+;;     (inputs
+;;       `(("mkfontscale" ,mkfontscale)
+;;         ("mkfontdir" ,mkfontdir)
+;;         ("pkg-config" ,pkg-config)))
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
 
 
 (define-public font-misc-misc
@@ -877,7 +877,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:public-domain)))
 
 
 (define-public font-mutt-misc
@@ -902,7 +902,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public font-schumacher-misc
@@ -929,7 +929,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public font-screen-cyrillic
@@ -954,7 +954,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public font-sony-misc
@@ -979,7 +979,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public font-sun-misc
@@ -1004,7 +1004,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public font-util
@@ -1026,7 +1026,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public font-winitzki-cyrillic
@@ -1051,7 +1051,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:public-domain)))
 
 
 (define-public font-xfree86-type1
@@ -1072,7 +1072,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public fontsproto
@@ -1094,7 +1094,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public glproto
@@ -1116,7 +1116,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public iceauth
@@ -1141,7 +1141,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public inputproto
@@ -1163,7 +1163,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public kbproto
@@ -1185,7 +1185,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libapplewm
@@ -1212,7 +1212,59 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
+
+
+(define-public libdmx
+  (package
+    (name "libdmx")
+    (version "1.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libdmx-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1fiq73sfxcbyjval118ialwrzxhzb08xsxmg69adcs47i9j0p1x7"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("xextproto" ,xextproto)
+        ("libxext" ,libxext)
+        ("libx11" ,libx11)
+        ("dmxproto" ,dmxproto)
+        ("pkg-config" ,pkg-config)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license license:x11)))
+
+
+(define-public libfontenc
+  (package
+    (name "libfontenc")
+    (version "1.1.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libfontenc-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0zq1483xy31sssq0h3xxf8y1v4q14cp8rv164ayn7fsn30pq2wny"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("zlib" ,zlib)
+        ("xproto" ,xproto)
+        ("pkg-config" ,pkg-config)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license license:x11)))
 
 
 (define-public libfs
@@ -1238,7 +1290,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libice
@@ -1263,7 +1315,53 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
+
+
+(define-public libpciaccess
+  (package
+    (name "libpciaccess")
+    (version "0.13.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libpciaccess-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "11509lkgd5j4g5wy0g13z4sf31h50hqx3jfwb2i4q6k98pv6iar7"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("zlib" ,zlib) ("pkg-config" ,pkg-config)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license license:x11)))
+
+
+;; file referenced, but not present on servers
+;; (define-public libpthread-stubs
+;;   (package
+;;     (name "libpthread-stubs")
+;;     (version "0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/libpthread-stubs-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "16bjv3in19l84hbri41iayvvg4ls9gv1ma0x0qlbmwy67i7dbdim"))))
+;;     (build-system gnu-build-system)
+;;     (inputs `(("pkg-config" ,pkg-config)))
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license license:???)))
 
 
 (define-public libsm
@@ -1290,7 +1388,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libwindowswm
@@ -1317,7 +1415,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libx11
@@ -1338,34 +1436,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
-
-
-(define-public libxscrnsaver
-  (package
-    (name "libxscrnsaver")
-    (version "1.2.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXScrnSaver-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "07ff4r20nkkrj7h08f9fwamds9b3imj8jz5iz6y38zqw6jkyzwcg"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xextproto" ,xextproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("scrnsaverproto" ,scrnsaverproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxau
@@ -1388,7 +1459,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxaw
@@ -1418,7 +1489,38 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
+
+
+;; file referenced, but not present on servers
+;; (define-public libxcb
+;;   (package
+;;     (name "libxcb")
+;;     (version "1.9")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/libxcb-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "15icn78x610dvvgnji6b3pyn8nd88lz68hq0w73pcadf78mycmw8"))))
+;;     (build-system gnu-build-system)
+;;     (inputs
+;;       `(("xproto" ,xproto)
+;;         ("libxdmcp" ,libxdmcp)
+;;         ("xcb-proto" ,xcb-proto)
+;;         ("libxau" ,libxau)
+;;         ("libpthread-stubs" ,libpthread-stubs)
+;;         ("libxslt" ,libxslt)
+;;         ("pkg-config" ,pkg-config)
+;;         ("python" ,python)))
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license license:???)))
 
 
 (define-public libxcomposite
@@ -1445,7 +1547,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxcursor
@@ -1473,7 +1575,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxdamage
@@ -1502,7 +1604,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxdmcp
@@ -1525,7 +1627,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxext
@@ -1552,7 +1654,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxfixes
@@ -1579,7 +1681,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxfont
@@ -1608,7 +1710,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxft
@@ -1639,7 +1741,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxi
@@ -1667,7 +1769,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxinerama
@@ -1694,7 +1796,32 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
+
+
+(define-public libxkbfile
+  (package
+    (name "libxkbfile")
+    (version "1.0.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libxkbfile-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0flg5arw6n3njagmsi4i4l0zl5bfx866a1h9ydc3bi1pqlclxaca"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("libx11" ,libx11)
+        ("kbproto" ,kbproto)
+        ("pkg-config" ,pkg-config)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license license:x11)))
 
 
 (define-public libxmu
@@ -1722,35 +1849,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
-
-
-(define-public libxp
-  (package
-    (name "libxp")
-    (version "1.0.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXp-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1lj3cjg9ygbmclxvayy5v88kkndpy9jq6y68p13dc5jn01hg5lbi"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xextproto" ,xextproto)
-        ("libxext" ,libxext)
-        ("libxau" ,libxau)
-        ("libx11" ,libx11)
-;;        ("printproto" ,printproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxpm
@@ -1778,7 +1877,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxrandr
@@ -1808,7 +1907,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxrender
@@ -1834,7 +1933,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxres
@@ -1862,7 +1961,34 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
+
+
+(define-public libxscrnsaver
+  (package
+    (name "libxscrnsaver")
+    (version "1.2.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXScrnSaver-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "07ff4r20nkkrj7h08f9fwamds9b3imj8jz5iz6y38zqw6jkyzwcg"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("xextproto" ,xextproto)
+        ("libxext" ,libxext)
+        ("libx11" ,libx11)
+        ("scrnsaverproto" ,scrnsaverproto)
+        ("pkg-config" ,pkg-config)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license license:x11)))
 
 
 (define-public libxt
@@ -1890,7 +2016,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxtst
@@ -1919,7 +2045,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxv
@@ -1947,7 +2073,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxvmc
@@ -1976,7 +2102,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxxf86dga
@@ -1997,7 +2123,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public libxxf86vm
@@ -2018,159 +2144,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
-
-
-(define-public libdmx
-  (package
-    (name "libdmx")
-    (version "1.1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libdmx-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1fiq73sfxcbyjval118ialwrzxhzb08xsxmg69adcs47i9j0p1x7"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xextproto" ,xextproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("dmxproto" ,dmxproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public libfontenc
-  (package
-    (name "libfontenc")
-    (version "1.1.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libfontenc-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0zq1483xy31sssq0h3xxf8y1v4q14cp8rv164ayn7fsn30pq2wny"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("zlib" ,zlib)
-        ("xproto" ,xproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public libpciaccess
-  (package
-    (name "libpciaccess")
-    (version "0.13.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libpciaccess-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "11509lkgd5j4g5wy0g13z4sf31h50hqx3jfwb2i4q6k98pv6iar7"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("zlib" ,zlib) ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public libpthread-stubs
-  (package
-    (name "libpthread-stubs")
-    (version "0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libpthread-stubs-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "16bjv3in19l84hbri41iayvvg4ls9gv1ma0x0qlbmwy67i7dbdim"))))
-    (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public libxcb
-  (package
-    (name "libxcb")
-    (version "1.9")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxcb-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "15icn78x610dvvgnji6b3pyn8nd88lz68hq0w73pcadf78mycmw8"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("libxdmcp" ,libxdmcp)
-        ("xcb-proto" ,xcb-proto)
-        ("libxau" ,libxau)
-        ("libpthread-stubs" ,libpthread-stubs)
-        ("libxslt" ,libxslt)
-        ("pkg-config" ,pkg-config)
-        ("python" ,python)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
-
-
-(define-public libxkbfile
-  (package
-    (name "libxkbfile")
-    (version "1.0.8")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxkbfile-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0flg5arw6n3njagmsi4i4l0zl5bfx866a1h9ydc3bi1pqlclxaca"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libx11" ,libx11)
-        ("kbproto" ,kbproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public luit
@@ -2194,7 +2168,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public makedepend
@@ -2217,7 +2191,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public mkfontdir
@@ -2239,7 +2213,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public mkfontscale
@@ -2266,7 +2240,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public randrproto
@@ -2288,7 +2262,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public recordproto
@@ -2310,7 +2284,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public renderproto
@@ -2332,7 +2306,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public resourceproto
@@ -2354,7 +2328,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public scrnsaverproto
@@ -2376,7 +2350,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public sessreg
@@ -2399,7 +2373,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public setxkbmap
@@ -2424,7 +2398,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public smproxy
@@ -2451,7 +2425,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public util-macros
@@ -2473,7 +2447,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public videoproto
@@ -2495,7 +2469,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public windowswmproto
@@ -2517,7 +2491,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public x11perf
@@ -2538,7 +2512,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xauth
@@ -2565,7 +2539,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xbacklight
@@ -2586,12 +2560,12 @@
     (inputs
       `(("libxrender" ,libxrender)
 ;;        ("xcb-util" ,xcb-util)
-        ("libxcb" ,libxcb)
+;;        ("libxcb" ,libxcb)
         ("pkg-config" ,pkg-config)))
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xbitmaps
@@ -2613,30 +2587,31 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
-(define-public xcb-proto
-  (package
-    (name "xcb-proto")
-    (version "1.8")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xcb-proto-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1c11652h9sjynw3scm1pn5z3a6ci888pq7hij8q5n8qrl33icg93"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("pkg-config" ,pkg-config) ("python" ,python)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+;; file referenced, but not present on servers
+;; (define-public xcb-proto
+;;   (package
+;;     (name "xcb-proto")
+;;     (version "1.8")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/xcb-proto-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "1c11652h9sjynw3scm1pn5z3a6ci888pq7hij8q5n8qrl33icg93"))))
+;;     (build-system gnu-build-system)
+;;     (inputs
+;;       `(("pkg-config" ,pkg-config) ("python" ,python)))
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license license:x11)))
 
 
 (define-public xcmiscproto
@@ -2658,7 +2633,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xcmsdb
@@ -2682,7 +2657,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xcursor-themes
@@ -2706,7 +2681,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xcursorgen
@@ -2732,7 +2707,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xdpyinfo
@@ -2760,14 +2735,14 @@
         ("libxi" ,libxi)
         ("libxext" ,libxext)
         ("libxcomposite" ,libxcomposite)
-        ("libxcb" ,libxcb)
+;;        ("libxcb" ,libxcb)
         ("libx11" ,libx11)
         ("libdmx" ,libdmx)
         ("pkg-config" ,pkg-config)))
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xdriinfo
@@ -2794,7 +2769,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xev
@@ -2821,7 +2796,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xextproto
@@ -2843,7 +2818,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-input-evdev
@@ -2864,7 +2839,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-input-joystick
@@ -2885,7 +2860,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-input-keyboard
@@ -2906,7 +2881,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-input-mouse
@@ -2927,7 +2902,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-input-synaptics
@@ -2948,7 +2923,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-input-vmmouse
@@ -2969,7 +2944,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-input-void
@@ -2990,7 +2965,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-ark
@@ -3011,7 +2986,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-ast
@@ -3032,7 +3007,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-ati
@@ -3053,7 +3028,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-cirrus
@@ -3074,28 +3049,28 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
-(define-public xf86-video-dummy
-  (package
-    (name "xf86-video-dummy")
-    (version "0.3.5")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-dummy-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0pyr50kqh7g84r4p0x09ay5kxax20dip9sh8h3cbd4xv8cswdbfm"))))
-    (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+;; (define-public xf86-video-dummy
+;;   (package
+;;     (name "xf86-video-dummy")
+;;     (version "0.3.5")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/xf86-video-dummy-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0pyr50kqh7g84r4p0x09ay5kxax20dip9sh8h3cbd4xv8cswdbfm"))))
+;;     (build-system gnu-build-system)
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license non-free)))
 
 
 (define-public xf86-video-fbdev
@@ -3116,7 +3091,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-geode
@@ -3137,7 +3112,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-glide
@@ -3158,7 +3133,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-glint
@@ -3179,7 +3154,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-i128
@@ -3200,7 +3175,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-intel
@@ -3221,7 +3196,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-mach64
@@ -3242,7 +3217,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-mga
@@ -3263,7 +3238,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-neomagic
@@ -3284,7 +3259,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-newport
@@ -3305,7 +3280,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-nv
@@ -3326,7 +3301,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-openchrome
@@ -3347,7 +3322,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-r128
@@ -3368,7 +3343,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-savage
@@ -3389,7 +3364,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-siliconmotion
@@ -3410,7 +3385,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-sis
@@ -3431,7 +3406,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:bsd-3)))
 
 
 (define-public xf86-video-suncg6
@@ -3452,7 +3427,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-sunffb
@@ -3473,7 +3448,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-tdfx
@@ -3494,7 +3469,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-tga
@@ -3515,7 +3490,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-trident
@@ -3536,28 +3511,28 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
-(define-public xf86-video-v4l
-  (package
-    (name "xf86-video-v4l")
-    (version "0.2.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-v4l-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0pcjc75hgbih3qvhpsx8d4fljysfk025slxcqyyhr45dzch93zyb"))))
-    (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+;; (define-public xf86-video-v4l
+;;   (package
+;;     (name "xf86-video-v4l")
+;;     (version "0.2.0")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/xf86-video-v4l-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0pcjc75hgbih3qvhpsx8d4fljysfk025slxcqyyhr45dzch93zyb"))))
+;;     (build-system gnu-build-system)
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license none)))
 
 
 (define-public xf86-video-vesa
@@ -3578,7 +3553,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-vmware
@@ -3599,7 +3574,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-voodoo
@@ -3620,7 +3595,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86-video-wsfb
@@ -3641,7 +3616,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:bsd-2)))
 
 
 (define-public xf86bigfontproto
@@ -3662,7 +3637,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86dgaproto
@@ -3683,7 +3658,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86driproto
@@ -3704,7 +3679,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xf86vidmodeproto
@@ -3725,7 +3700,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xgamma
@@ -3750,7 +3725,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xhost
@@ -3776,7 +3751,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xineramaproto
@@ -3798,7 +3773,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xinput
@@ -3828,7 +3803,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xkbcomp
@@ -3854,7 +3829,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xkbevd
@@ -3879,7 +3854,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xkbutils
@@ -3907,7 +3882,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xkeyboard-config
@@ -3929,7 +3904,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xkill
@@ -3954,7 +3929,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xlsatoms
@@ -3973,11 +3948,12 @@
             "1y9nfl8s7njxbnci8c20j986xixharasgg40vdw92y593j6dk2rv"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxcb" ,libxcb) ("pkg-config" ,pkg-config)))
+      `(;("libxcb" ,libxcb)
+        ("pkg-config" ,pkg-config)))
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xlsclients
@@ -3996,11 +3972,12 @@
             "1l97j15mg4wfzpm81wlpzagfjff7v4fwn7s2z2rpksk3gfcg7r8w"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxcb" ,libxcb) ("pkg-config" ,pkg-config)))
+      `(;("libxcb" ,libxcb)
+        ("pkg-config" ,pkg-config)))
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xmodmap
@@ -4025,29 +4002,29 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
-(define-public xorg-docs
-  (package
-    (name "xorg-docs")
-    (version "1.7")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xorg-docs-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0prphdba6kgr1bxk7r07wxxx6x6pqjw6prr5qclypsb5sf5r3cdr"))))
-    (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
-    (license #f)))
+;; (define-public xorg-docs
+;;   (package
+;;     (name "xorg-docs")
+;;     (version "1.7")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/xorg-docs-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0prphdba6kgr1bxk7r07wxxx6x6pqjw6prr5qclypsb5sf5r3cdr"))))
+;;     (build-system gnu-build-system)
+;;     (inputs `(("pkg-config" ,pkg-config)))
+;;     (home-page #f)
+;;     (synopsis #f)
+;;     (description #f)
+;;     (license none)))
 
 
 (define-public xorg-server
@@ -4114,7 +4091,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xorg-sgml-doctools
@@ -4136,7 +4113,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xpr
@@ -4162,7 +4139,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xprop
@@ -4187,7 +4164,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xproto
@@ -4209,7 +4186,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xrandr
@@ -4236,7 +4213,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xrdb
@@ -4261,7 +4238,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xrefresh
@@ -4285,7 +4262,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xset
@@ -4304,7 +4281,7 @@
             "1s61mvscd0h7y6anljarj7nkii6plhs8ndx1fm8b1f1h00a1qdv1"))))
     (build-system gnu-build-system)
     (inputs
-      `(;;("libxxf86misc" ,libxxf86misc)
+      `(;("libxxf86misc" ,libxxf86misc)
         ("xproto" ,xproto)
         ("libxmu" ,libxmu)
         ("libxext" ,libxext)
@@ -4313,7 +4290,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xsetroot
@@ -4340,7 +4317,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xtrans
@@ -4362,7 +4339,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xvinfo
@@ -4388,7 +4365,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xwd
@@ -4414,7 +4391,7 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xwininfo
@@ -4434,13 +4411,13 @@
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
-        ("libxcb" ,libxcb)
+;;        ("libxcb" ,libxcb)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
 
 
 (define-public xwud
@@ -4465,4 +4442,4 @@
     (home-page #f)
     (synopsis #f)
     (description #f)
-    (license #f)))
+    (license license:x11)))
