@@ -266,26 +266,6 @@ matching packages."
                        (assoc-ref (derivation-outputs drv) sub-drv))))
          `(,name ,out))))))
 
-(define (read/eval-package-expression str)
-  "Read and evaluate STR and return the package it refers to, or exit an
-error."
-  (let ((exp (catch #t
-               (lambda ()
-                 (call-with-input-string str read))
-               (lambda args
-                 (leave (_ "failed to read expression ~s: ~s~%")
-                        str args)))))
-    (let ((p (catch #t
-               (lambda ()
-                 (eval exp the-scm-module))
-               (lambda args
-                 (leave (_ "failed to evaluate expression `~a': ~s~%")
-                        exp args)))))
-      (if (package? p)
-          p
-          (leave (_ "expression `~s' does not evaluate to a package~%")
-                 exp)))))
-
 
 ;;;
 ;;; Command-line options.

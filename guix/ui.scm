@@ -38,6 +38,7 @@
             show-what-to-build
             call-with-error-handling
             with-error-handling
+            read/eval-package-expression
             location->string
             call-with-temporary-output-file
             switch-symlinks
@@ -115,6 +116,26 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
              (leave (_ "error: build failed: ~a~%")
                     (nix-protocol-error-message c))))
     (thunk)))
+
+(define (read/eval-package-expression str)
+  "Read and evaluate STR and return the package it refers to, or exit an
+error."
+  (let ((exp (catch #t
+               (lambda ()
+                 (call-with-input-string str read))
+               (lambda args
+                 (leave (_ "failed to read expression ~s: ~s~%")
+                        str args)))))
+    (let ((p (catch #t
+               (lambda ()
+                 (eval exp the-scm-module))
+               (lambda args
+                 (leave (_ "failed to evaluate expression `~a': ~s~%")
+                        exp args)))))
+      (if (package? p)
+          p
+          (leave (_ "expression `~s' does not evaluate to a package~%")
+                 exp)))))
 
 (define* (show-what-to-build store drv #:optional dry-run?)
   "Show what will or would (depending on DRY-RUN?) be built in realizing the
