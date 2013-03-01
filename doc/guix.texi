@@ -514,6 +514,19 @@ Thus, when installing MPC, the MPFR and GMP libraries also get installed
 in the profile; removing MPC also removes MPFR and GMP---unless they had
 also been explicitly installed independently.
 
+@item --install-from-expression=@var{exp}
+@itemx -e @var{exp}
+Install the package @var{exp} evaluates to.
+
+@var{exp} must be a Scheme expression that evaluates to a
+@code{<package>} object.  This option is notably useful to disambiguate
+between same-named variants of a package, with expressions such as
+@code{(@@ (gnu packages base) guile-final)}.
+
+Note that this option installs the first output of the specified
+package, which may be insufficient when needing a specific output of a
+multiple-output package.
+
 @item --remove=@var{package}
 @itemx -r @var{package}
 Remove @var{package}.

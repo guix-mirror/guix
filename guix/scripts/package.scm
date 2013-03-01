@@ -266,6 +266,26 @@ matching packages."
                        (assoc-ref (derivation-outputs drv) sub-drv))))
          `(,name ,out))))))
 
+(define (read/eval-package-expression str)
+  "Read and evaluate STR and return the package it refers to, or exit an
+error."
+  (let ((exp (catch #t
+               (lambda ()
+                 (call-with-input-string str read))
+               (lambda args
+                 (leave (_ "failed to read expression ~s: ~s~%")
+                        str args)))))
+    (let ((p (catch #t
+               (lambda ()
+                 (eval exp the-scm-module))
+               (lambda args
+                 (leave (_ "failed to evaluate expression `~a': ~s~%")
+                        exp args)))))
+      (if (package? p)
+          p
+          (leave (_ "expression `~s' does not evaluate to a package~%")
+                 exp)))))
+
 
 ;;;
 ;;; Command-line options.
@@ -280,6 +300,9 @@ matching packages."
 Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -i, --install=PACKAGE  install PACKAGE"))
+  (display (_ "
+  -e, --install-from-expression=EXP
+                         install the package EXP evaluates to"))
   (display (_ "
   -r, --remove=PACKAGE   remove PACKAGE"))
   (display (_ "
@@ -325,6 +348,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (option '(#\i "install") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'install arg result)))
+        (option '(#\e "install-from-expression") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'install (read/eval-package-expression arg)
+                              result)))
         (option '(#\r "remove") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'remove arg result)))
@@ -490,6 +517,19 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
 
       (delete-duplicates (map input->name+path deps) same?))
 
+    (define (package->tuple p)
+      (let ((path (package-derivation (%store) p))
+            (deps (package-transitive-propagated-inputs p)))
+        `(,(package-name p)
+          ,(package-version p)
+
+          ;; When given a package via `-e', install the first of its
+          ;; outputs (XXX).
+          ,(car (package-outputs p))
+
+          ,path
+          ,(canonicalize-deps deps))))
+
     ;; First roll back if asked to.
     (if (and (assoc-ref opts 'roll-back?) (not dry-run?))
         (begin
@@ -515,6 +555,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                (install  (append
                           upgrade
                           (filter-map (match-lambda
+                                       (('install . (? package? p))
+                                        #f)
                                        (('install . (? store-path?))
                                         #f)
                                        (('install . package)
@@ -530,6 +572,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                      install))
                (install* (append
                           (filter-map (match-lambda
+                                       (('install . (? package? p))
+                                        (package->tuple p))
                                        (('install . (? store-path? path))
                                         (let-values (((name version)
                                                       (package-name->name+version
