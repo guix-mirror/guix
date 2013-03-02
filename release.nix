@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2012  Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012, 2013  Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -26,6 +26,15 @@ let
   succeedOnFailure = true;
   keepBuildDirectory = true;
 
+  # Run the given derivation in outside of a chroot.  This hack is used on
+  # hydra.gnu.org where we want Guix derivations to run in a chroot that lacks
+  # /bin, whereas Nixpkgs relies on /bin/sh.
+  unchroot =
+    let pkgs = import nixpkgs {}; in
+      drv: pkgs.lib.overrideDerivation drv (args: {
+        __noChroot = true;
+      });
+
   # The Guile used to bootstrap the whole thing.  It's normally
   # downloaded by the build system, but here we download it via a
   # fixed-output derivation and stuff it into the build tree.
@@ -44,7 +53,8 @@ let
 
   jobs = {
     tarball =
-      let pkgs = import nixpkgs {}; in
+      unchroot
+      (let pkgs = import nixpkgs {}; in
       pkgs.releaseTools.sourceTarball {
         name = "guix-tarball";
         src = <guix>;
@@ -55,12 +65,13 @@ let
           [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
             "--localstatedir=/nix/var"
           ];
-      };
+      });
 
     build =
       { system ? builtins.currentSystem }:
 
-      let pkgs = import nixpkgs { inherit system; }; in
+      unchroot
+      (let pkgs = import nixpkgs { inherit system; }; in
       pkgs.releaseTools.nixBuild {
         name = "guix";
         buildInputs = with pkgs; [ guile sqlite bzip2 libgcrypt ];
@@ -83,13 +94,14 @@ let
 
         inherit succeedOnFailure keepBuildDirectory
           buildOutOfSourceTree;
-      };
+      });
 
 
     build_disable_daemon =
       { system ? builtins.currentSystem }:
 
-      let
+      unchroot
+      (let
         pkgs = import nixpkgs { inherit system; };
         build = jobs.build { inherit system; };
       in
@@ -101,7 +113,7 @@ let
           # the chroot.
           preConfigure = "export NIX_REMOTE=daemon";
           __noChroot = true;
-        });
+        }));
 
     # Jobs to test the distro.
     distro = {
