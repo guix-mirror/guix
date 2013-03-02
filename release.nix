@@ -71,7 +71,17 @@ let
       pkgs.releaseTools.sourceTarball {
         name = "guix-tarball";
         src = <guix>;
-        buildInputs = with pkgs; [ guile sqlite bzip2 git libgcrypt ];
+        buildInputs =
+          let git_light = pkgs.git.override {
+              # Minimal Git to avoid building too many dependencies.
+              withManual = false;
+              pythonSupport = false;
+              svnSupport = false;
+              guiSupport = false;
+            };
+          in
+            [ git_light ] ++
+            (with pkgs; [ guile sqlite bzip2 libgcrypt ]);
         buildNativeInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
         preAutoconf = ''git config submodule.nix.url "${<nix>}"'';
         configureFlags =
