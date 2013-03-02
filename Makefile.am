@@ -98,6 +98,7 @@ MODULES =					\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
   gnu/packages/libapr.scm 			\
+  gnu/packages/libdaemon.scm			\
   gnu/packages/libevent.scm			\
   gnu/packages/libffi.scm			\
   gnu/packages/libidn.scm			\
