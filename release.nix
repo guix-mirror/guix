@@ -30,10 +30,23 @@ let
   # hydra.gnu.org where we want Guix derivations to run in a chroot that lacks
   # /bin, whereas Nixpkgs relies on /bin/sh.
   unchroot =
-    let pkgs = import nixpkgs {}; in
-      drv: pkgs.lib.overrideDerivation drv (args: {
-        __noChroot = true;
-      });
+    let
+      pkgs = import nixpkgs {};
+
+      # XXX: The `python' derivation contains a `modules' attribute that makes
+      # `overrideDerivation' fail with "cannot coerce an attribute set (except
+      # a derivation) to a string", so just remove it.
+      pythonKludge = drv: removeAttrs drv [ "modules" ];
+    in
+      drv:
+        if builtins.isAttrs drv
+        then pkgs.lib.overrideDerivation (pythonKludge drv) (args: {
+          __noChroot = true;
+          buildNativeInputs = map unchroot args.buildNativeInputs;
+          propagatedBuildNativeInputs =
+            map unchroot args.propagatedBuildNativeInputs;
+        })
+        else drv;
 
   # The Guile used to bootstrap the whole thing.  It's normally
   # downloaded by the build system, but here we download it via a
