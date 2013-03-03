@@ -26,7 +26,8 @@
                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl))
 
 (define-public expat
   (package
@@ -90,3 +91,34 @@ things the parser might find in the XML document (like start tags).")
      "Libxslt is an XSLT C library developed for the GNOME project. It is
 based on libxml for XML parsing, tree manipulation and XPath support.")
     (license license:x11)))
+
+(define-public perl-xml-parser
+  (package
+    (name "perl-xml-parser")
+    (version "2.41")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/M/MS/MSERGEANT/XML-Parser-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1sadi505g5qmxr36lgcbrcrqh3a5gcdg32b405gnr8k54b6rg0dl"))))
+    (build-system perl-build-system)
+    (arguments `(#:make-maker-flags
+                 (let ((expat (assoc-ref %build-inputs "expat")))
+                   (list (string-append "EXPATLIBPATH=" expat "/lib")
+                         (string-append "EXPATINCPATH=" expat "/include")))))
+    (inputs `(("expat" ,expat)))
+    (license (package-license perl))
+    (synopsis "Perl bindings to the Expat XML parsing library")
+    (description
+     "This module provides ways to parse XML documents.  It is built on top of
+XML::Parser::Expat, which is a lower level interface to James Clark's expat
+library.  Each call to one of the parsing methods creates a new instance of
+XML::Parser::Expat which is then used to parse the document.  Expat options
+may be provided when the XML::Parser object is created.  These options are
+then passed on to the Expat object on each parse call.  They can also be given
+as extra arguments to the parse methods, in which case they override options
+given at XML::Parser creation time.")
+    (home-page "http://search.cpan.org/~toddr/XML-Parser-2.41/Parser.pm")))
