@@ -21,13 +21,13 @@
   #:use-module (guix utils)
   #:use-module (guix derivations)
   #:use-module (guix build-system)
-  #:use-module (guix build-system gnu)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-39)
   #:use-module (ice-9 match)
   #:export (gnu-build
             gnu-build-system
+            standard-inputs
             package-with-explicit-inputs
             package-with-extra-configure-variable
             static-libgcc-package

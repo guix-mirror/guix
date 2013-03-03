@@ -39,12 +39,14 @@ MODULES =					\
   guix/licenses.scm				\
   guix/build-system.scm				\
   guix/build-system/gnu.scm			\
+  guix/build-system/perl.scm			\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
   guix/store.scm				\
   guix/ui.scm					\
   guix/build/download.scm			\
   guix/build/gnu-build-system.scm		\
+  guix/build/perl-build-system.scm		\
   guix/build/utils.scm				\
   guix/build/union.scm				\
   guix/packages.scm				\
