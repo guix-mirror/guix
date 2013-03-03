@@ -54,9 +54,9 @@
             "1zi4p07mp6jmk030p4gmglwxcwp0lzs5mi31y1b4rp8lsqxdxizw"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
   
   
@@ -78,9 +78,9 @@
     (inputs
       `(("libxfont" ,libxfont)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -100,9 +100,9 @@
             "07hvfm84scz8zjw14riiln2v4w03jlhp756ypwhq27g48jmic8a6"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -124,9 +124,9 @@
     (inputs
       `(("fixesproto" ,fixesproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -146,9 +146,9 @@
             "0nzwr5pv9hg7c21n995pdiv0zqhs91yz3r8rn3aska4ykcp12z2w"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -168,9 +168,9 @@
             "02b5x9dkgajizm8dqyx2w6hmqx3v25l67mgf35nj6sz0lgk52877"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -189,9 +189,9 @@
           (base32
             "02drlfqvjm2q7dvkkwli3fs2crb6rdb3kyd13vwx7z0rijrc10md"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -211,9 +211,9 @@
             "0ffmaw80vmfwdgvdkp6495xgsqszb6s0iira5j0j6pd4i0lk3mnf"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:public-domain)))
 
 
@@ -235,9 +235,9 @@
     (inputs
       `(("xextproto" ,xextproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -256,9 +256,9 @@
           (base32
             "0m60f5bd0caambrk8ksknb5dks7wzsg7g7xaf0j21jxmx8rq9h5j"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -277,9 +277,9 @@
           (base32
             "02advcv9lyxpvrjv8bjh1b797lzg6jvhipclz49z8r8y98g4l0n6"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -298,9 +298,9 @@
 ;;           (base32
 ;;             "19dd9znam1ah72jmdh7i6ny2ss2r6m21z9v0l43xvikw48zmwvyi"))))
 ;;     (build-system gnu-build-system)
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 ;; 
 ;; 
@@ -319,9 +319,9 @@
 ;;           (base32
 ;;             "152wigpph5wvl4k9m3l4mchxxisgsnzlx033mn5iqrpkc6f72cl7"))))
 ;;     (build-system gnu-build-system)
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 ;; 
 ;; 
@@ -340,9 +340,9 @@
 ;;           (base32
 ;;             "0xw0pdnzj5jljsbbhakc6q9ha2qnca1jr81zk7w70yl9bw83b54p"))))
 ;;     (build-system gnu-build-system)
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 
 
@@ -362,9 +362,9 @@
             "16ic8wfwwr3jicaml7b5a0sk6plcgc1kg84w02881yhwmqm3nicb"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -387,9 +387,9 @@
       `(("mkfontdir" ,mkfontdir)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -408,9 +408,9 @@
 ;;           (base32
 ;;             "10cl4gm38dw68jzln99ijix730y7cbx8np096gmpjjwff1i73h13"))))
 ;;     (build-system gnu-build-system)
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 ;; 
 ;; 
@@ -429,9 +429,9 @@
 ;;           (base32
 ;;             "073jmhf0sr2j1l8da97pzsqj805f7mf9r2gy92j4diljmi8sm1il"))))
 ;;     (build-system gnu-build-system)
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 ;; 
 ;; 
@@ -450,9 +450,9 @@
 ;;           (base32
 ;;             "1fqzckxdzjv4802iad2fdrkpaxl4w0hhs9lxlkyraq2kq9ik7a32"))))
 ;;     (build-system gnu-build-system)
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 ;; 
 ;; 
@@ -471,9 +471,9 @@
 ;;           (base32
 ;;             "0cfbxdp5m12cm7jsh3my0lym9328cgm7fa9faz2hqj05wbxnmhaa"))))
 ;;     (build-system gnu-build-system)
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 ;; 
 ;; 
@@ -496,9 +496,9 @@
 ;;       `(("mkfontscale" ,mkfontscale)
 ;;         ("mkfontdir" ,mkfontdir)
 ;;         ("pkg-config" ,pkg-config)))
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 ;;
 ;;
@@ -521,9 +521,9 @@
 ;;       `(("mkfontscale" ,mkfontscale)
 ;;         ("mkfontdir" ,mkfontdir)
 ;;         ("pkg-config" ,pkg-config)))
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 ;;
 ;;
@@ -546,9 +546,9 @@
 ;;       `(("mkfontscale" ,mkfontscale)
 ;;         ("mkfontdir" ,mkfontdir)
 ;;         ("pkg-config" ,pkg-config)))
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 
 
@@ -571,9 +571,9 @@
       `(("mkfontscale" ,mkfontscale)
         ("mkfontdir" ,mkfontdir)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -596,9 +596,9 @@
       `(("mkfontdir" ,mkfontdir)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -622,9 +622,9 @@
 ;;         ("mkfontdir" ,mkfontdir)
 ;;         ("bdftopcf" ,bdftopcf)
 ;;         ("pkg-config" ,pkg-config)))
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license none)))
 ;; 
 ;; 
@@ -647,9 +647,9 @@
 ;;       `(("mkfontdir" ,mkfontdir)
 ;;         ("bdftopcf" ,bdftopcf)
 ;;         ("pkg-config" ,pkg-config)))
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 
 
@@ -672,9 +672,9 @@
       `(("mkfontdir" ,mkfontdir)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -697,9 +697,9 @@
 ;;       `(("mkfontdir" ,mkfontdir)
 ;;         ("bdftopcf" ,bdftopcf)
 ;;         ("pkg-config" ,pkg-config)))
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 
 
@@ -722,9 +722,9 @@
       `(("mkfontdir" ,mkfontdir)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -747,9 +747,9 @@
 ;;       `(("mkfontdir" ,mkfontdir)
 ;;         ("bdftopcf" ,bdftopcf)
 ;;         ("pkg-config" ,pkg-config)))
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 
 
@@ -772,9 +772,9 @@
       `(("mkfontdir" ,mkfontdir)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:public-domain)))
 
 
@@ -797,9 +797,9 @@
       `(("mkfontdir" ,mkfontdir)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -822,9 +822,9 @@
       `(("mkfontscale" ,mkfontscale)
         ("mkfontdir" ,mkfontdir)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -847,9 +847,9 @@
 ;;       `(("mkfontscale" ,mkfontscale)
 ;;         ("mkfontdir" ,mkfontdir)
 ;;         ("pkg-config" ,pkg-config)))
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 
 
@@ -874,9 +874,9 @@
         ("font-util" ,font-util)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:public-domain)))
 
 
@@ -899,9 +899,9 @@
       `(("mkfontdir" ,mkfontdir)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -926,9 +926,9 @@
         ("font-util" ,font-util)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -951,9 +951,9 @@
       `(("mkfontdir" ,mkfontdir)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -976,9 +976,9 @@
       `(("mkfontdir" ,mkfontdir)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1001,9 +1001,9 @@
       `(("mkfontdir" ,mkfontdir)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1023,9 +1023,9 @@
             "15cijajwhjzpy3ydc817zz8x5z4gbkyv3fps687jbq544mbfbafz"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1048,9 +1048,9 @@
       `(("mkfontdir" ,mkfontdir)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:public-domain)))
 
 
@@ -1069,9 +1069,9 @@
           (base32
             "0jp3zc0qfdaqfkgzrb44vi9vi0a8ygb35wp082yz7rvvxhmg9sya"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1091,9 +1091,9 @@
             "1ab8mbqxdwvdz4k5x4xb9c4n5w7i1xw276cbpk4z7a1nlpjrg746"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1113,9 +1113,9 @@
             "0wf1vq9g4pyzahb23ywx554pm5bpax49lz188fk6m5p8wbmmc0wr"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1138,9 +1138,9 @@
       `(("xproto" ,xproto)
         ("libice" ,libice)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1160,9 +1160,9 @@
             "1c5wqamfsd8g5i8kya5pjfmcac8q5zq1l3vclh6p96f24nmicxfy"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1182,9 +1182,9 @@
             "0yal11hhpiisy3w8wmacsdzzzcnc3xwnswxz8k7zri40xc5aqz03"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1209,9 +1209,9 @@
         ("libx11" ,libx11)
         ("applewmproto" ,applewmproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1236,9 +1236,9 @@
         ("libx11" ,libx11)
         ("dmxproto" ,dmxproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1261,9 +1261,9 @@
       `(("zlib" ,zlib)
         ("xproto" ,xproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1287,9 +1287,9 @@
         ("xproto" ,xproto)
         ("fontsproto" ,fontsproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1312,9 +1312,9 @@
       `(("xtrans" ,xtrans)
         ("xproto" ,xproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1335,9 +1335,9 @@
     (build-system gnu-build-system)
     (inputs
       `(("zlib" ,zlib) ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1357,9 +1357,9 @@
             "16bjv3in19l84hbri41iayvvg4ls9gv1ma0x0qlbmwy67i7dbdim"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1384,9 +1384,9 @@
         ("util-linux" ,util-linux)
         ("libice" ,libice)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1411,9 +1411,9 @@
         ("libx11" ,libx11)
         ("windowswmproto" ,windowswmproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1432,9 +1432,9 @@
           (base32
             "11jdpl15bxwpwv0knpkh990s8jvlybng3dx477pkrz1bx7byz0n3"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1455,9 +1455,9 @@
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto) ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1485,9 +1485,9 @@
         ("libxext" ,libxext)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1515,9 +1515,9 @@
         ("libxslt" ,libxslt)
         ("pkg-config" ,pkg-config)
         ("python" ,python)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1542,9 +1542,9 @@
         ("libx11" ,libx11)
         ("compositeproto" ,compositeproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1570,9 +1570,9 @@
         ("libx11" ,libx11)
         ("fixesproto" ,fixesproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1599,9 +1599,9 @@
         ("fixesproto" ,fixesproto)
         ("damageproto" ,damageproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1622,9 +1622,9 @@
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto) ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1649,9 +1649,9 @@
         ("xextproto" ,xextproto)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1676,9 +1676,9 @@
         ("libx11" ,libx11)
         ("fixesproto" ,fixesproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1705,9 +1705,9 @@
         ("fontsproto" ,fontsproto)
         ("libfontenc" ,libfontenc)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1736,9 +1736,9 @@
         ("freetype" ,freetype)
         ("fontconfig" ,fontconfig)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1764,9 +1764,9 @@
         ("libx11" ,libx11)
         ("inputproto" ,inputproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1791,9 +1791,9 @@
         ("libxext" ,libxext)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1816,9 +1816,9 @@
       `(("libx11" ,libx11)
         ("kbproto" ,kbproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1844,9 +1844,9 @@
         ("libxext" ,libxext)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1872,9 +1872,9 @@
         ("libxext" ,libxext)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1902,9 +1902,9 @@
         ("renderproto" ,renderproto)
         ("randrproto" ,randrproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1928,9 +1928,9 @@
         ("libx11" ,libx11)
         ("renderproto" ,renderproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1956,9 +1956,9 @@
         ("libx11" ,libx11)
         ("resourceproto" ,resourceproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -1983,9 +1983,9 @@
         ("libx11" ,libx11)
         ("scrnsaverproto" ,scrnsaverproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2011,9 +2011,9 @@
         ("kbproto" ,kbproto)
         ("libice" ,libice)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2040,9 +2040,9 @@
         ("recordproto" ,recordproto)
         ("inputproto" ,inputproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2068,9 +2068,9 @@
         ("libx11" ,libx11)
         ("videoproto" ,videoproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2097,9 +2097,9 @@
         ("libx11" ,libx11)
         ("videoproto" ,videoproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2118,9 +2118,9 @@
           (base32
             "15291ddhyr54sribwbg8hxx2psgzm5gh0pgkw5yrf3zgvdsa67sm"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2139,9 +2139,9 @@
           (base32
             "117w92xz39rcqcahspi48nc04cc9110x1dycpf3vbcb6p0pifr55"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2163,9 +2163,9 @@
     (inputs
       `(("libfontenc" ,libfontenc)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2186,9 +2186,9 @@
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto) ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2208,9 +2208,9 @@
             "0c3563kw9fg15dpgx4dwvl12qz6sdqdns1pxa574hc7i5m42mman"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2235,9 +2235,9 @@
         ("freetype" ,freetype)
         ("libfontenc" ,libfontenc)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2257,9 +2257,9 @@
             "0wfwcq85wbm0g5r0snc7prgki1wi3kxrxhcxinyr54n45ihh03fr"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2279,9 +2279,9 @@
             "0w3kgr1zabwf79bpc28dcnj0fpni6r53rpi82ngjbalj5s6m8xx7"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2301,9 +2301,9 @@
             "0dr5xw6s0qmqg0q5pdkb4jkdhaja0vbfqla79qh5j1xjj9dmlwq6"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2323,9 +2323,9 @@
             "0638iyfiiyjw1hg3139pai0j6m65gkskrvd9684zgc6ydcx00riw"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2345,9 +2345,9 @@
             "0rfdbfwd35d761xkfifcscx56q0n56043ixlmv70r4v4l66hmdwb"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2368,9 +2368,9 @@
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto) ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2393,9 +2393,9 @@
       `(("libxkbfile" ,libxkbfile)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2420,9 +2420,9 @@
         ("libsm" ,libsm)
         ("libice" ,libice)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2442,9 +2442,9 @@
             "1vbmrcn5n3wp4pyw0n4c3pyvzlc4yf7jzgngavfdq5zwfbgfsybx"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2464,9 +2464,9 @@
             "0nk3i6gwkqq1w8zwn7bxz344pi1dwcjrmf6hr330h7hxjcj6viry"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2486,9 +2486,9 @@
             "0syjxgy4m8l94qrm03nvn5k6bkxc8knnlld1gbllym97nvnv0ny0"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2507,9 +2507,9 @@
           (base32
             "111iwpxhnxjiq44w96zf0kszg5zpgv1g3ayx18v4nhdzl9bqivi4"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2534,9 +2534,9 @@
         ("libxau" ,libxau)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2560,9 +2560,9 @@
 ;;        ("xcb-util" ,xcb-util)
 ;;        ("libxcb" ,libxcb)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2582,9 +2582,9 @@
             "178ym90kwidia6nas4qr5n5yqh698vv8r02js0r4vg3b6lsb0w9n"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2605,9 +2605,9 @@
     (build-system gnu-build-system)
     (inputs
       `(("pkg-config" ,pkg-config) ("python" ,python)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2627,9 +2627,9 @@
             "1pyjv45wivnwap2wvsbrzdvjc5ql8bakkbkrvcv6q9bjjf33ccmi"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2651,9 +2651,9 @@
     (inputs
       `(("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2675,9 +2675,9 @@
     (inputs
       `(("libxcursor" ,libxcursor)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2701,9 +2701,9 @@
         ("libx11" ,libx11)
         ("libpng" ,libpng)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2736,9 +2736,9 @@
         ("libx11" ,libx11)
         ("libdmx" ,libdmx)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2763,9 +2763,9 @@
         ("libx11" ,libx11)
         ("glproto" ,glproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2790,9 +2790,9 @@
         ("xproto" ,xproto)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2812,9 +2812,9 @@
             "06kdanbnprxvgl56l5h0lqj4b0f1fbb1ndha33mv5wvy802v2lvw"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2833,9 +2833,9 @@
           (base32
             "1ivf5n821chckrgp89mpb18zi00v1hyrkc1hr82q0x6g1kpgxq9y"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2854,9 +2854,9 @@
           (base32
             "1xgpkdmfw4ahjlva97gs9sllzw8nlpa8mxj59g28fxhak67mvv8x"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2875,9 +2875,9 @@
           (base32
             "1hwc1bjw5mxv186xbrxiky0agfglwqg8fsxqdh4br1vzgxpck7ma"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2896,9 +2896,9 @@
           (base32
             "0fs1lwnycyv3d0m6l2wrnlgvbs8qw66d93hwlnmrsswfq5bp6ark"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2917,9 +2917,9 @@
           (base32
             "0g5b1s6q1dg38l8y47cwg7cs5nivwj0agmp71g273ws0lfg4bc8s"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2938,9 +2938,9 @@
           (base32
             "16l65mnjb1xxav6c5q0xhhqih81bzify2c5qrhqc2j3waq5yr9m8"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2959,9 +2959,9 @@
           (base32
             "01bmk324fq48wydvy1qrnxbw6qz0fjd0i80g0n4cqr1c4mjmif9a"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -2980,9 +2980,9 @@
           (base32
             "194zc35ivfh3vcxcilf9nbi88c2di8kbh84x535cljlpiajdnk5x"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3001,9 +3001,9 @@
           (base32
             "1q64z8qqa0ix3cymqiwk1s3sphd1fvvz30lvyxhgkgciygz6dm69"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3022,9 +3022,9 @@
           (base32
             "11gg6xn65vym75769hzgzpkjsyhlkrw4zw3ncngriq7vz1g47zjg"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3043,9 +3043,9 @@
           (base32
             "0blnbspj4936wy46lp346s4b08dfcray6yicsxvv5b4699fzl1rb"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3064,9 +3064,9 @@
 ;;           (base32
 ;;             "0pyr50kqh7g84r4p0x09ay5kxax20dip9sh8h3cbd4xv8cswdbfm"))))
 ;;     (build-system gnu-build-system)
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
 
 
@@ -3085,9 +3085,9 @@
           (base32
             "1mc23w0bfmak5216411xh58nrs93jlxmi6l412hmqzhxnjs73clk"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3106,9 +3106,9 @@
           (base32
             "1mc23w0bfmak5216411xh58nrs93jlxmi6l412hmqzhxnjs73clk"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3127,9 +3127,9 @@
           (base32
             "0byapm9mnpqk3wijfnnan3d22ii5cw6dmg4xn1625iiz89j5vs1l"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3148,9 +3148,9 @@
           (base32
             "0nf36jryabpncqq4m6sfsnmzk00f7gvfmjnl8l8sfy7w6sa6iacs"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3169,9 +3169,9 @@
           (base32
             "1sik8ck410hb2885vy7rlc590hw5br8lr2fzxgmv55jyawgfpv9y"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3190,9 +3190,9 @@
           (base32
             "1g742szymajh88a5dw08sxcr45bmxgc4w3m6hddv9qscn5hks4rj"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3211,9 +3211,9 @@
           (base32
             "0kl3kvpc2ny48z89313i9fi4cxzwb2pllvxcr9j5ly680ygx8slz"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3232,9 +3232,9 @@
           (base32
             "03l3wz5kz0hmxmzqqbkgn7pf9d956jlag04rb701a0fr1mw3v66a"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3253,9 +3253,9 @@
           (base32
             "124qci48xrk0w2jy91n7vqs7s6q397zyiqqszhmkx6ld7six57mi"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3274,9 +3274,9 @@
           (base32
             "1yafmp23jrfdmc094i6a4dsizapsc9v0pl65cpc8w1kvn7343k4i"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3295,9 +3295,9 @@
           (base32
             "05glbi9jc7j9nm4sf4qvl3z87s48ibm3i283lqz85kbphg62dxvc"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3316,9 +3316,9 @@
           (base32
             "0hgzn1r7ig94xbr9dvq0bp1nxqlfp2ki8823jca3f22a2kf8wmg7"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3337,9 +3337,9 @@
           (base32
             "1c84x40k9qz9dnf5qs6nnjcgz7px6mpc3rbk8mj62zhp7mf16hbv"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3358,9 +3358,9 @@
           (base32
             "0jdy4wv3k3ylx3lajjcbsg37z2hf6366a1jvv16sv1ln6dk6lris"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3379,9 +3379,9 @@
           (base32
             "01sdl6ky1vmvmfgx2d44i35rqafi0z07xdy40cvindcr2k91p7x5"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3400,9 +3400,9 @@
           (base32
             "03diq0l93lfsipmwkpdb2ysgbxxryl6yakpghzc3fksjxa01112f"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:bsd-3)))
 
 
@@ -3421,9 +3421,9 @@
           (base32
             "07w0hm63fiy5l3cpcjsl0ig8z84z9r36xm0cmnpiv3g75dy6q8fi"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3442,9 +3442,9 @@
           (base32
             "04byax4sc1fn183vyyq0q11q730k16h2by4ggjky7s36wgv7ldzx"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3463,9 +3463,9 @@
           (base32
             "124gsi30rj547jjd7gvv7xykfnwlyrxw0gcacamby7pvl3g33fg0"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3484,9 +3484,9 @@
           (base32
             "0mdqrn02zzkdnmhg4vh9djaawg6b2p82g5qbj66z8b30yr77b93h"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3505,9 +3505,9 @@
           (base32
             "02y5pzdp0a1c12jr8gghbrzgbyfbgq67x7kd7n4f323pmf8x1csb"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3526,9 +3526,9 @@
 ;;           (base32
 ;;             "0pcjc75hgbih3qvhpsx8d4fljysfk025slxcqyyhr45dzch93zyb"))))
 ;;     (build-system gnu-build-system)
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license none)))
 
 
@@ -3547,9 +3547,9 @@
           (base32
             "0wqms28kkz2fvghqhqwp6w8zj7k5cgwnhzvkc7j4v268bf6h78g4"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3568,9 +3568,9 @@
           (base32
             "0isiwx516gww8hfk3vy7js83yziyjym9mq2zjadyq1a8v5gqf9y8"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3589,9 +3589,9 @@
           (base32
             "0ha748yz92yzn6hp2rhin3il8f4j2rs4vkgdvqkagnv1ryxkh0ph"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3610,9 +3610,9 @@
           (base32
             "0hr8397wpd0by1hc47fqqrnaw3qdqd8aqgwgzv38w5k3l3jy6p4p"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:bsd-2)))
 
 
@@ -3631,9 +3631,9 @@
           (base32
             "0j0n7sj5xfjpmmgx6n5x556rw21hdd18fwmavp95wps7qki214ms"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3652,9 +3652,9 @@
           (base32
             "0l4hx48207mx0hp09026r6gy9nl3asbq0c75hri19wp1118zcpmc"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3673,9 +3673,9 @@
           (base32
             "07v69m0g2dfzb653jni4x656jlr7l84c1k39j8qc8vfb45r8sjww"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3694,9 +3694,9 @@
           (base32
             "0w47d7gfa8zizh2bshdr2rffvbr4jqjv019mdgyh6cmplyd4kna5"))))
     (build-system gnu-build-system)
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3719,9 +3719,9 @@
       `(("libxxf86vm" ,libxxf86vm)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3745,9 +3745,9 @@
         ("libxau" ,libxau)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3767,9 +3767,9 @@
             "0ns8abd27x7gbp4r44z3wc5k9zqxxj8zjnazqpcyr4n17nxp8xcp"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3797,9 +3797,9 @@
         ("libx11" ,libx11)
         ("inputproto" ,inputproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3823,9 +3823,9 @@
         ("libxkbfile" ,libxkbfile)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3848,9 +3848,9 @@
       `(("libxkbfile" ,libxkbfile)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3876,9 +3876,9 @@
         ("libx11" ,libx11)
         ("inputproto" ,inputproto)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3898,9 +3898,9 @@
             "1nmb7ma8rqryicc5xqrn2hm5pwp5lkf7nj28bwbf63mz2r0mk892"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3923,9 +3923,9 @@
       `(("libxmu" ,libxmu)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3947,9 +3947,9 @@
     (inputs
       `(;("libxcb" ,libxcb)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3971,9 +3971,9 @@
     (inputs
       `(;("libxcb" ,libxcb)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -3996,9 +3996,9 @@
       `(("xproto" ,xproto)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4018,9 +4018,9 @@
 ;;             "0prphdba6kgr1bxk7r07wxxx6x6pqjw6prr5qclypsb5sf5r3cdr"))))
 ;;     (build-system gnu-build-system)
 ;;     (inputs `(("pkg-config" ,pkg-config)))
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license none)))
 
 
@@ -4085,9 +4085,9 @@
         ("xineramaproto" ,xineramaproto)
         ("xtrans" ,xtrans)
         ("zlib" ,zlib)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4107,9 +4107,9 @@
             "0k5pffyi5bx8dmfn033cyhgd3gf6viqj3x769fqixifwhbgy2777"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4133,9 +4133,9 @@
         ("libxmu" ,libxmu)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4158,9 +4158,9 @@
       `(("xproto" ,xproto)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4180,9 +4180,9 @@
             "17lkmi12f89qvg4jj5spqzwzc24fmsqq68dv6kpy7r7b944lmq5d"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4207,9 +4207,9 @@
         ("xproto" ,xproto)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4232,9 +4232,9 @@
       `(("libxmu" ,libxmu)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4256,9 +4256,9 @@
     (inputs
       `(("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4284,9 +4284,9 @@
         ("libxext" ,libxext)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4311,9 +4311,9 @@
         ("xbitmaps" ,xbitmaps)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4333,9 +4333,9 @@
             "19p1bw3qyn0ia1znx6q3gx92rr9rl88ylrfijjclm8vhpa8i30bz"))))
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4359,9 +4359,9 @@
         ("libxv" ,libxv)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4385,9 +4385,9 @@
         ("xproto" ,xproto)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4411,9 +4411,9 @@
 ;;        ("libxcb" ,libxcb)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
 
@@ -4436,7 +4436,7 @@
       `(("xproto" ,xproto)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
-    (home-page #f)
-    (synopsis #f)
-    (description #f)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
