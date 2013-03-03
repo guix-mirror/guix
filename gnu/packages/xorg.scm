@@ -2558,7 +2558,7 @@
     (inputs
       `(("libxrender" ,libxrender)
 ;;        ("xcb-util" ,xcb-util)
-;;        ("libxcb" ,libxcb)
+        ("libxcb" ,libxcb)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
@@ -2732,7 +2732,7 @@
         ("libxi" ,libxi)
         ("libxext" ,libxext)
         ("libxcomposite" ,libxcomposite)
-;;        ("libxcb" ,libxcb)
+        ("libxcb" ,libxcb)
         ("libx11" ,libx11)
         ("libdmx" ,libdmx)
         ("pkg-config" ,pkg-config)))
@@ -3945,7 +3945,7 @@
             "1y9nfl8s7njxbnci8c20j986xixharasgg40vdw92y593j6dk2rv"))))
     (build-system gnu-build-system)
     (inputs
-      `(;("libxcb" ,libxcb)
+      `(("libxcb" ,libxcb)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
@@ -3969,7 +3969,7 @@
             "1l97j15mg4wfzpm81wlpzagfjff7v4fwn7s2z2rpksk3gfcg7r8w"))))
     (build-system gnu-build-system)
     (inputs
-      `(;("libxcb" ,libxcb)
+      `(("libxcb" ,libxcb)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
@@ -4408,7 +4408,7 @@
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)
-;;        ("libxcb" ,libxcb)
+        ("libxcb" ,libxcb)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
