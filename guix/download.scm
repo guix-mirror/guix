@@ -130,7 +130,20 @@
        "ftp://ftp.kaist.ac.kr/x.org/"
        "ftp://mirrors.go-part.com/xorg/"
        "http://x.cs.pu.edu.tw/"
-       "ftp://ftp.is.co.za/pub/x.org")))) ; South Africa
+       "ftp://ftp.is.co.za/pub/x.org")            ; South Africa
+      (cpan                              ; from http://www.cpan.org/SITES.html
+       "http://cpan.enstimac.fr/"
+       "ftp://ftp.ciril.fr/pub/cpan/"
+       "ftp://artfiles.org/cpan.org/"
+       "http://www.cpan.org/"
+       "ftp://cpan.rinet.ru/pub/mirror/CPAN/"
+       "http://cpan.cu.be/"
+       "ftp://cpan.inode.at/"
+       "ftp://cpan.iht.co.il/"
+       "ftp://ftp.osuosl.org/pub/CPAN/"
+       "ftp://ftp.nara.wide.ad.jp/pub/CPAN/"
+       "http://mirrors.163.com/cpan/"
+       "ftp://cpan.mirror.ac.za/"))))
 
 (define (gnutls-derivation store system)
   "Return the GnuTLS derivation for SYSTEM."
