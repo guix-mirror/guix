@@ -1341,27 +1341,26 @@
     (license license:x11)))
 
 
-;; file referenced, but not present on servers
-;; (define-public libpthread-stubs
-;;   (package
-;;     (name "libpthread-stubs")
-;;     (version "0.3")
-;;     (source
-;;       (origin
-;;         (method url-fetch)
-;;         (uri (string-append
-;;                "mirror://xorg/X11R7.7/src/everything/libpthread-stubs-"
-;;                version
-;;                ".tar.bz2"))
-;;         (sha256
-;;           (base32
-;;             "16bjv3in19l84hbri41iayvvg4ls9gv1ma0x0qlbmwy67i7dbdim"))))
-;;     (build-system gnu-build-system)
-;;     (inputs `(("pkg-config" ,pkg-config)))
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
-;;     (license license:???)))
+(define-public libpthread-stubs
+  (package
+    (name "libpthread-stubs")
+    (version "0.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libpthread-stubs-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "16bjv3in19l84hbri41iayvvg4ls9gv1ma0x0qlbmwy67i7dbdim"))))
+    (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license license:x11)))
 
 
 (define-public libsm
@@ -1492,35 +1491,34 @@
     (license license:x11)))
 
 
-;; file referenced, but not present on servers
-;; (define-public libxcb
-;;   (package
-;;     (name "libxcb")
-;;     (version "1.8.1")
-;;     (source
-;;       (origin
-;;         (method url-fetch)
-;;         (uri (string-append
-;;                "mirror://xorg/X11R7.7/src/everything/libxcb-"
-;;                version
-;;                ".tar.bz2"))
-;;         (sha256
-;;           (base32
-;;             "15icn78x610dvvgnji6b3pyn8nd88lz68hq0w73pcadf78mycmw8"))))
-;;     (build-system gnu-build-system)
-;;     (inputs
-;;       `(("xproto" ,xproto)
-;;         ("libxdmcp" ,libxdmcp)
-;;         ("xcb-proto" ,xcb-proto)
-;;         ("libxau" ,libxau)
-;;         ("libpthread-stubs" ,libpthread-stubs)
-;;         ("libxslt" ,libxslt)
-;;         ("pkg-config" ,pkg-config)
-;;         ("python" ,python)))
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
-;;     (license license:???)))
+(define-public libxcb
+  (package
+    (name "libxcb")
+    (version "1.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libxcb-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "03gspxcdl8r7jwbwg7fyp4cc6zic9z91amp4g5z0wwahx48nix6j"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("xproto" ,xproto)
+        ("libxdmcp" ,libxdmcp)
+        ("xcb-proto" ,xcb-proto)
+        ("libxau" ,libxau)
+        ("libpthread-stubs" ,libpthread-stubs)
+        ("libxslt" ,libxslt)
+        ("pkg-config" ,pkg-config)
+        ("python" ,python)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license license:x11)))
 
 
 (define-public libxcomposite
@@ -2590,28 +2588,27 @@
     (license license:x11)))
 
 
-;; file referenced, but not present on servers
-;; (define-public xcb-proto
-;;   (package
-;;     (name "xcb-proto")
-;;     (version "1.7.1")
-;;     (source
-;;       (origin
-;;         (method url-fetch)
-;;         (uri (string-append
-;;                "mirror://xorg/X11R7.7/src/everything/xcb-proto-"
-;;                version
-;;                ".tar.bz2"))
-;;         (sha256
-;;           (base32
-;;             "1c11652h9sjynw3scm1pn5z3a6ci888pq7hij8q5n8qrl33icg93"))))
-;;     (build-system gnu-build-system)
-;;     (inputs
-;;       `(("pkg-config" ,pkg-config) ("python" ,python)))
-;;     (home-page #f)
-;;     (synopsis #f)
-;;     (description #f)
-;;     (license license:x11)))
+(define-public xcb-proto
+  (package
+    (name "xcb-proto")
+    (version "1.7.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xcb-proto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0ds4qg6slidrzyz6q9ckq0a19hn6blzpnvciy4brh741gn49jpdd"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("pkg-config" ,pkg-config) ("python" ,python)))
+    (home-page #f)
+    (synopsis #f)
+    (description #f)
+    (license license:x11)))
 
 
 (define-public xcmiscproto
