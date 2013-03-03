@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,7 +50,8 @@
             patch-shebang
             patch-makefile-SHELL
             fold-port-matches
-            remove-store-references))
+            remove-store-references
+            wrap-program))
 
 
 ;;;
@@ -604,6 +606,70 @@ known as `nuke-refs' in Nixpkgs."
                            (lambda (char result)
                              (put-u8 out (char->integer char))
                              result))))))
+
+(define* (wrap-program prog #:rest vars)
+  "Rename PROG to .PROG-real and make PROG a wrapper.  VARS should look like
+this:
+
+  '(VARIABLE DELIMITER POSITION LIST-OF-DIRECTORIES)
+
+where DELIMITER is optional.  ':' will be used if DELIMITER is not given.
+
+For example, this command:
+
+  (wrap-program \"foo\"
+                '(\"PATH\" \":\" = (\"/nix/.../bar/bin\"))
+                '(\"CERT_PATH\" suffix (\"/nix/.../baz/certs\"
+                                        \"/qux/certs\")))
+
+will copy 'foo' to '.foo-real' and create the file 'foo' with the following
+contents:
+
+  #!location/of/bin/bash
+  export PATH=\"/nix/.../bar/bin\"
+  export CERT_PATH=\"$CERT_PATH${CERT_PATH:+:}/nix/.../baz/certs:/qux/certs\"
+  exec location/of/.foo-real
+
+This is useful for scripts that expect particular programs to be in $PATH, for
+programs that expect particular shared libraries to be in $LD_LIBRARY_PATH, or
+modules in $GUILE_LOAD_PATH, etc."
+  (let ((prog-real (string-append "." prog "-real"))
+        (prog-tmp  (string-append "." prog "-tmp")))
+    (define (export-variable lst)
+      ;; Return a string that exports an environment variable.
+      (match lst
+        ((var sep '= rest)
+         (format #f "export ~a=\"~a\""
+                 var (string-join rest sep)))
+        ((var sep 'prefix rest)
+         (format #f "export ~a=\"~a${~a~a+~a}$~a\""
+                 var (string-join rest sep) var sep sep var))
+        ((var sep 'suffix rest)
+         (format #f "export ~a=\"$~a${~a~a+~a}~a\""
+                 var var var sep sep (string-join rest sep)))
+        ((var '= rest)
+         (format #f "export ~a=\"~a\""
+                 var (string-join rest ":")))
+        ((var 'prefix rest)
+         (format #f "export ~a=\"~a${~a:+:}$~a\""
+                 var (string-join rest ":") var var))
+        ((var 'suffix rest)
+         (format #f "export ~a=\"$~a${~a:+:}~a\""
+                 var var var (string-join rest ":")))))
+
+    (copy-file prog prog-real)
+
+    (with-output-to-file prog-tmp
+      (lambda ()
+        (format #t
+                "#!~a~%~a~%exec ~a~%"
+                (which "bash")
+                (string-join (map export-variable vars)
+                             "\n")
+                (canonicalize-path prog-real))))
+
+    (chmod prog-tmp #o755)
+    (rename-file prog-tmp prog)))
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)
