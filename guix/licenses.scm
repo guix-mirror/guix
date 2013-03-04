@@ -39,7 +39,7 @@
             psfl public-domain
             qpl
             vim
-            x11
+            x11 x11-style
             zlib
             fsf-free))
 
@@ -235,6 +235,16 @@ which may be a file:// URI pointing the package's tree."
   (license "X11"
            "http://directory.fsf.org/wiki/License:X11"
            "https://www.gnu.org/licenses/license-list#X11License"))
+
+(define* (x11-style uri #:optional (comment ""))
+  "Return an X11-style license, whose full text can be found at URI,
+which may be a file:// URI pointing the package's tree."
+  (license "X11-style"
+           uri
+           (string-append
+            "This is an X11-style, non-copyleft free software license.  "
+            "Check the URI for details.  "
+            comment)))
 
 (define zlib
   (license "Zlib"
