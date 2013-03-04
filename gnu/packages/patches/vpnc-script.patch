@@ -1,0 +1,15 @@
+This patch adapts the vpnc script to newer kernel versions, see
+   https://lkml.org/lkml/2011/3/24/645
+
+diff -u a/vpnc-script.in b/vpnc-script.in
+--- a/vpnc-script.in	2013-03-03 13:55:16.000000000 +0100
++++ b/vpnc-script.in	2013-03-03 13:56:11.000000000 +0100
+@@ -116,7 +116,7 @@
+ 
+ if [ -n "$IPROUTE" ]; then
+ 	fix_ip_get_output () {
+-		sed 's/cache//;s/metric \?[0-9]\+ [0-9]\+//g;s/hoplimit [0-9]\+//g'
++		sed 's/cache//;s/metric \?[0-9]\+ [0-9]\+//g;s/hoplimit [0-9]\+//g;s/ipid 0x....//g'
+ 	}
+ 
+ 	set_vpngateway_route() {

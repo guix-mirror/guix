@@ -27,15 +27,15 @@
 (define-public libpng
   (package
    (name "libpng")
-   (version "1.5.13")
+   (version "1.5.14")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "http://downloads.sourceforge.net/project/libpng/libpng15/"
                    version "/libpng-"
-                   version ".tar.gz"))
+                   version ".tar.xz"))
             (sha256 (base32
-                     "0dbh332qjhm3pa8m4ac73rk7dbbmigbqd3ch084m24ggg9qq4k0d"))))
+                     "0m3vz3gig7s63zanq5b1dgb5ph12qm0cylw4g4fbxlsq3f74hn8l"))))
    (build-system gnu-build-system)
    (inputs `(("zlib" ,zlib)))
    (synopsis "Libpng, a library for handling PNG files")

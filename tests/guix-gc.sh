@@ -25,6 +25,18 @@ guix gc --version
 trap "rm -f guix-gc-root" EXIT
 rm -f guix-gc-root
 
+# Check the references of a .drv.
+drv="`guix build guile-bootstrap -d`"
+out="`guix build guile-bootstrap`"
+test -f "$drv" && test -d "$out"
+
+guix gc --references "$drv" | grep -e -bash
+guix gc --references "$out"
+guix gc --references "$out/bin/guile"
+
+if guix gc --references /dev/null;
+then false; else true; fi
+
 # Add then reclaim a .drv file.
 drv="`guix build idutils -d`"
 test -f "$drv"

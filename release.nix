@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2012  Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012, 2013  Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -26,6 +26,28 @@ let
   succeedOnFailure = true;
   keepBuildDirectory = true;
 
+  # Run the given derivation in outside of a chroot.  This hack is used on
+  # hydra.gnu.org where we want Guix derivations to run in a chroot that lacks
+  # /bin, whereas Nixpkgs relies on /bin/sh.
+  unchroot =
+    let
+      pkgs = import nixpkgs {};
+
+      # XXX: The `python' derivation contains a `modules' attribute that makes
+      # `overrideDerivation' fail with "cannot coerce an attribute set (except
+      # a derivation) to a string", so just remove it.
+      pythonKludge = drv: removeAttrs drv [ "modules" ];
+    in
+      drv:
+        if builtins.isAttrs drv
+        then pkgs.lib.overrideDerivation (pythonKludge drv) (args: {
+          __noChroot = true;
+          buildNativeInputs = map unchroot args.buildNativeInputs;
+          propagatedBuildNativeInputs =
+            map unchroot args.propagatedBuildNativeInputs;
+        })
+        else drv;
+
   # The Guile used to bootstrap the whole thing.  It's normally
   # downloaded by the build system, but here we download it via a
   # fixed-output derivation and stuff it into the build tree.
@@ -44,23 +66,35 @@ let
 
   jobs = {
     tarball =
-      let pkgs = import nixpkgs {}; in
+      unchroot
+      (let pkgs = import nixpkgs {}; in
       pkgs.releaseTools.sourceTarball {
         name = "guix-tarball";
         src = <guix>;
-        buildInputs = with pkgs; [ guile sqlite bzip2 git libgcrypt ];
+        buildInputs =
+          let git_light = pkgs.git.override {
+              # Minimal Git to avoid building too many dependencies.
+              withManual = false;
+              pythonSupport = false;
+              svnSupport = false;
+              guiSupport = false;
+            };
+          in
+            [ git_light ] ++
+            (with pkgs; [ guile sqlite bzip2 libgcrypt ]);
         buildNativeInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
         preAutoconf = ''git config submodule.nix.url "${<nix>}"'';
         configureFlags =
           [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
             "--localstatedir=/nix/var"
           ];
-      };
+      });
 
     build =
       { system ? builtins.currentSystem }:
 
-      let pkgs = import nixpkgs { inherit system; }; in
+      unchroot
+      (let pkgs = import nixpkgs { inherit system; }; in
       pkgs.releaseTools.nixBuild {
         name = "guix";
         buildInputs = with pkgs; [ guile sqlite bzip2 libgcrypt ];
@@ -83,13 +117,14 @@ let
 
         inherit succeedOnFailure keepBuildDirectory
           buildOutOfSourceTree;
-      };
+      });
 
 
     build_disable_daemon =
       { system ? builtins.currentSystem }:
 
-      let
+      unchroot
+      (let
         pkgs = import nixpkgs { inherit system; };
         build = jobs.build { inherit system; };
       in
@@ -101,7 +136,7 @@ let
           # the chroot.
           preConfigure = "export NIX_REMOTE=daemon";
           __noChroot = true;
-        });
+        }));
 
     # Jobs to test the distro.
     distro = {

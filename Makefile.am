@@ -39,12 +39,14 @@ MODULES =					\
   guix/licenses.scm				\
   guix/build-system.scm				\
   guix/build-system/gnu.scm			\
+  guix/build-system/perl.scm			\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
   guix/store.scm				\
   guix/ui.scm					\
   guix/build/download.scm			\
   guix/build/gnu-build-system.scm		\
+  guix/build/perl-build-system.scm		\
   guix/build/utils.scm				\
   guix/build/union.scm				\
   guix/packages.scm				\
@@ -99,6 +101,7 @@ MODULES =					\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
   gnu/packages/libapr.scm 			\
+  gnu/packages/libdaemon.scm			\
   gnu/packages/libevent.scm			\
   gnu/packages/libffi.scm			\
   gnu/packages/libidn.scm			\
@@ -158,6 +161,7 @@ MODULES =					\
   gnu/packages/tmux.scm 			\
   gnu/packages/tor.scm				\
   gnu/packages/vim.scm 				\
+  gnu/packages/vpn.scm				\
   gnu/packages/wdiff.scm			\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
@@ -216,7 +220,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/shishi-gets-undeclared.patch		\
   gnu/packages/patches/tar-gets-undeclared.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch 			\
-  gnu/packages/patches/teckit-cstdio.patch
+  gnu/packages/patches/teckit-cstdio.patch			\
+  gnu/packages/patches/vpnc-script.patch
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux

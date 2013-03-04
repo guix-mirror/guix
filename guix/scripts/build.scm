@@ -38,21 +38,18 @@
 (define %store
   (make-parameter #f))
 
-(define (derivations-from-package-expressions exp system source?)
-  "Eval EXP and return the corresponding derivation path for SYSTEM.
+(define (derivations-from-package-expressions str system source?)
+  "Read/eval STR and return the corresponding derivation path for SYSTEM.
 When SOURCE? is true, return the derivations of the package sources."
-  (let ((p (eval exp (current-module))))
-    (if (package? p)
-        (if source?
-            (let ((source (package-source p))
-                  (loc    (package-location p)))
-              (if source
-                  (package-source-derivation (%store) source)
-                  (leave (_ "~a: error: package `~a' has no source~%")
-                         (location->string loc) (package-name p))))
-            (package-derivation (%store) p system))
-        (leave (_ "expression `~s' does not evaluate to a package~%")
-               exp))))
+  (let ((p (read/eval-package-expression str)))
+    (if source?
+        (let ((source (package-source p))
+              (loc    (package-location p)))
+          (if source
+              (package-source-derivation (%store) source)
+              (leave (_ "~a: error: package `~a' has no source~%")
+                     (location->string loc) (package-name p))))
+        (package-derivation (%store) p system))))
 
 
 ;;;
@@ -119,9 +116,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                   (alist-cons 'derivations-only? #t result)))
         (option '(#\e "expression") #t #f
                 (lambda (opt name arg result)
-                  (alist-cons 'expression
-                              (call-with-input-string arg read)
-                              result)))
+                  (alist-cons 'expression arg result)))
         (option '(#\K "keep-failed") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'keep-failed? #t result)))
@@ -227,8 +222,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
         (let* ((src? (assoc-ref opts 'source?))
                (sys  (assoc-ref opts 'system))
                (drv  (filter-map (match-lambda
-                                  (('expression . exp)
-                                   (derivations-from-package-expressions exp sys
+                                  (('expression . str)
+                                   (derivations-from-package-expressions str sys
                                                                          src?))
                                   (('argument . (? derivation-path? drv))
                                    drv)

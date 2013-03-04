@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -98,7 +99,51 @@
        "ftp://gd.tuwien.ac.at/pub/infosys/servers/http/apache/dist/"
        "http://apache.belnet.be/"
        "http://mirrors.ircam.fr/pub/apache/"
-       "http://apache-mirror.rbc.ru/pub/apache/"))))
+       "http://apache-mirror.rbc.ru/pub/apache/")
+      (xorg               ; from http://www.x.org/wiki/Releases/Download
+       "http://xorg.freedesktop.org/releases/" ; main mirrors
+       "http://www.x.org/pub/"
+       "ftp://mirror.csclub.uwaterloo.ca/x.org/" ; North America
+       "ftp://xorg.mirrors.pair.com/"
+       "http://mirror.csclub.uwaterloo.ca/x.org/"
+       "http://xorg.mirrors.pair.com/"
+       "http://mirror.us.leaseweb.net/xorg/"
+       "ftp://artfiles.org/x.org/" ; Europe
+       "ftp://ftp.chg.ru/pub/X11/x.org/"
+       "ftp://ftp.fu-berlin.de/unix/X11/FTP.X.ORG/"
+       "ftp://ftp.gwdg.de/pub/x11/x.org/"
+       "ftp://ftp.mirrorservice.org/sites/ftp.x.org/"
+       "ftp://ftp.ntua.gr/pub/X11/"
+       "ftp://ftp.piotrkosoft.net/pub/mirrors/ftp.x.org/"
+       "ftp://ftp.portal-to-web.de/pub/mirrors/x.org/"
+       "ftp://ftp.solnet.ch/mirror/x.org/"
+       "ftp://ftp.sunet.se/pub/X11/"
+       "ftp://gd.tuwien.ac.at/X11/"
+       "ftp://mi.mirror.garr.it/mirrors/x.org/"
+       "ftp://mirror.cict.fr/x.org/"
+       "ftp://mirror.switch.ch/mirror/X11/"
+       "ftp://mirrors.ircam.fr/pub/x.org/"
+       "ftp://x.mirrors.skynet.be/pub/ftp.x.org/"
+       "ftp://ftp.cs.cuhk.edu.hk/pub/X11" ; East Asia
+       "ftp://ftp.u-aizu.ac.jp/pub/x11/x.org/"
+       "ftp://ftp.yz.yamagata-u.ac.jp/pub/X11/x.org/"
+       "ftp://ftp.kaist.ac.kr/x.org/"
+       "ftp://mirrors.go-part.com/xorg/"
+       "http://x.cs.pu.edu.tw/"
+       "ftp://ftp.is.co.za/pub/x.org")            ; South Africa
+      (cpan                              ; from http://www.cpan.org/SITES.html
+       "http://cpan.enstimac.fr/"
+       "ftp://ftp.ciril.fr/pub/cpan/"
+       "ftp://artfiles.org/cpan.org/"
+       "http://www.cpan.org/"
+       "ftp://cpan.rinet.ru/pub/mirror/CPAN/"
+       "http://cpan.cu.be/"
+       "ftp://cpan.inode.at/"
+       "ftp://cpan.iht.co.il/"
+       "ftp://ftp.osuosl.org/pub/CPAN/"
+       "ftp://ftp.nara.wide.ad.jp/pub/CPAN/"
+       "http://mirrors.163.com/cpan/"
+       "ftp://cpan.mirror.ac.za/"))))
 
 (define (gnutls-derivation store system)
   "Return the GnuTLS derivation for SYSTEM."

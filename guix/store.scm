@@ -66,6 +66,10 @@
             substitutable-paths
             substitutable-path-info
 
+            references
+            referrers
+            valid-derivers
+            query-derivation-outputs
             live-paths
             dead-paths
             collect-garbage
@@ -126,7 +130,8 @@
   (query-path-from-hash-part 29)
   (query-substitutable-path-infos 30)
   (query-valid-paths 31)
-  (query-substitutable-paths 32))
+  (query-substitutable-paths 32)
+  (query-valid-derivers 33))
 
 (define-enumerate-type hash-algo
   ;; hash.hh
@@ -596,6 +601,27 @@ can be anywhere on the file system, but it must be an absolute file
 name--it is the caller's responsibility to ensure that it is an absolute
 file name.  Return #t on success."
   boolean)
+
+(define references
+  (operation (query-references (store-path path))
+             "Return the list of references of PATH."
+             store-path-list))
+
+(define referrers
+  (operation (query-referrers (store-path path))
+             "Return the list of path that refer to PATH."
+             store-path-list))
+
+(define valid-derivers
+  (operation (query-valid-derivers (store-path path))
+             "Return the list of valid \"derivers\" of PATH---i.e., all the
+.drv present in the store that have PATH among their outputs."
+             store-path-list))
+
+(define query-derivation-outputs  ; avoid name clash with `derivation-outputs'
+  (operation (query-derivation-outputs (store-path path))
+             "Return the list of outputs of PATH, a .drv file."
+             store-path-list))
 
 (define-operation (has-substitutes? (store-path path))
   "Return #t if binary substitutes are available for PATH, and #f otherwise."

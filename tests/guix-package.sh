@@ -33,6 +33,10 @@ rm -f "$profile"
 
 trap 'rm "$profile" "$profile-"[0-9]* ; rm -rf t-home-'"$$" EXIT
 
+# Use `-e' with a non-package expression.
+if guix package --bootstrap -e +;
+then false; else true; fi
+
 guix package --bootstrap -p "$profile" -i guile-bootstrap
 test -L "$profile" && test -L "$profile-1-link"
 test -f "$profile/bin/guile"
@@ -46,8 +50,9 @@ test -f "$profile/bin/guile"
 # Check whether we have network access.
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
-    boot_make="`guix build -e '(@@ (gnu packages base) gnu-make-boot0)'`"
-    guix package --bootstrap -p "$profile" -i "$boot_make"
+    boot_make="(@@ (gnu packages base) gnu-make-boot0)"
+    boot_make_drv="`guix build -e "$boot_make"`"
+    guix package --bootstrap -p "$profile" -i "$boot_make_drv"
     test -L "$profile-2-link"
     test -f "$profile/bin/make" && test -f "$profile/bin/guile"
 
@@ -94,7 +99,7 @@ then
     done
 
     # Reinstall after roll-back to the empty profile.
-    guix package --bootstrap -p "$profile" -i "$boot_make"
+    guix package --bootstrap -p "$profile" -e "$boot_make"
     test "`readlink_base "$profile"`" = "$profile-1-link"
     test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
 
@@ -104,7 +109,7 @@ then
     test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
 
     # Install Make.
-    guix package --bootstrap -p "$profile" -i "$boot_make"
+    guix package --bootstrap -p "$profile" -e "$boot_make"
     test "`readlink_base "$profile"`" = "$profile-2-link"
     test -x "$profile/bin/guile" && test -x "$profile/bin/make"
 
@@ -145,7 +150,7 @@ test -f "$HOME/.guix-profile/bin/guile"
 
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
-    guix package --bootstrap -i "$boot_make"
+    guix package --bootstrap -e "$boot_make"
     test -f "$HOME/.guix-profile/bin/make"
     first_environment="`cd $HOME/.guix-profile ; pwd`"
 

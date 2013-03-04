@@ -31,7 +31,7 @@
     (version "4.0.3")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://ftp.gnu.org/gnu/screen/screen-"
+             (uri (string-append "mirror://gnu/screen/screen-"
                                  version ".tar.gz"))
              (sha256
               (base32 "0xvckv1ia5pjxk7fs4za6gz2njwmfd54sc464n8ab13096qxbw3q"))))

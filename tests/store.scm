@@ -23,6 +23,7 @@
   #:use-module (guix base32)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -78,6 +79,31 @@
       (and (equal? paths (list p))
            (> freed 0)
            (not (file-exists? p))))))
+
+(test-assert "references"
+  (let* ((t1 (add-text-to-store %store "random1"
+                                (random-text) '()))
+         (t2 (add-text-to-store %store "random2"
+                                (random-text) (list t1))))
+    (and (equal? (list t1) (references %store t2))
+         (equal? (list t2) (referrers %store t1))
+         (null? (references %store t1))
+         (null? (referrers %store t2)))))
+
+(test-assert "derivers"
+  (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
+         (s (add-to-store %store "bash" #t "sha256"
+                          (search-bootstrap-binary "bash"
+                                                   (%current-system))))
+         (d (derivation %store "the-thing" (%current-system)
+                        s `("-e" ,b) `(("foo" . ,(random-text)))
+                        `((,b) (,s))))
+         (o (derivation-path->output-path d)))
+    (and (build-derivations %store (list d))
+         (equal? (query-derivation-outputs %store d)
+                 (list o))
+         (equal? (valid-derivers %store o)
+                 (list d)))))
 
 (test-assert "no substitutes"
   (let* ((s  (open-connection))
