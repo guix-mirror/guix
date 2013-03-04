@@ -73,7 +73,8 @@
   ;; FIXME: Eventually move this to the `search-paths' field of the
   ;; `pkg-config' package.
   (set-path-environment-variable "PKG_CONFIG_PATH"
-                                 '("lib/pkgconfig" "lib64/pkgconfig")
+                                 '("lib/pkgconfig" "lib64/pkgconfig"
+                                   "share/pkgconfig")
                                  (relevant-input-directories "PKG_CONFIG_PATH"))
 
   ;; Dump the environment variables as a shell script, for handy debugging.
