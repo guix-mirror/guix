@@ -163,6 +163,7 @@ MODULES =					\
   gnu/packages/tor.scm				\
   gnu/packages/vim.scm 				\
   gnu/packages/vpn.scm				\
+  gnu/packages/w3m.scm				\
   gnu/packages/wdiff.scm			\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
@@ -221,7 +222,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/tar-gets-undeclared.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch 			\
   gnu/packages/patches/teckit-cstdio.patch			\
-  gnu/packages/patches/vpnc-script.patch
+  gnu/packages/patches/vpnc-script.patch			\
+  gnu/packages/patches/w3m-fix-compile.patch
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
