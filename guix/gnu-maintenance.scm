@@ -134,43 +134,45 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
     (let ((end (string-contains tarball ".tar")))
       (substring tarball 0 end)))
 
+  (define (release-file file)
+    ;; Return #f if FILE is not a release tarball, otherwise return
+    ;; PACKAGE-VERSION.
+    (and (not (string-suffix? ".sig" file))
+         (regexp-exec release-rx file)
+         (not (regexp-exec alpha-rx file))
+         (let ((s (sans-extension file)))
+           (and (regexp-exec %package-name-rx s) s))))
+
   (let-values (((server directory) (ftp-server/directory project)))
     (define conn (ftp-open server))
 
     (let loop ((directories (list directory))
                (result      '()))
-      (if (null? directories)
-          (begin
-            (ftp-close conn)
-            result)
-          (let* ((directory (car directories))
-                 (files     (ftp-list conn directory))
-                 (subdirs   (filter-map (lambda (file)
-                                          (match file
-                                            ((name 'directory . _) name)
-                                            (_ #f)))
-                                        files)))
-            (loop (append (map (cut string-append directory "/" <>)
-                               subdirs)
-                          (cdr directories))
-                  (append
-                   ;; Filter out signatures, deltas, and files which
-                   ;; are potentially not releases of PROJECT--e.g.,
-                   ;; in /gnu/guile, filter out guile-oops and
-                   ;; guile-www; in mit-scheme, filter out binaries.
-                   (filter-map (lambda (file)
-                                 (match file
-                                   ((file 'file . _)
-                                    (and (not (string-suffix? ".sig" file))
-                                         (regexp-exec release-rx file)
-                                         (not (regexp-exec alpha-rx file))
-                                         (let ((s (sans-extension file)))
-                                           (and (regexp-exec
-                                                 %package-name-rx s)
-                                                (cons s directory)))))
-                                   (_ #f)))
-                               files)
-                   result)))))))
+      (match directories
+        (()
+         (ftp-close conn)
+         result)
+        ((directory rest ...)
+         (let* ((files   (ftp-list conn directory))
+                (subdirs (filter-map (match-lambda
+                                      ((name 'directory . _) name)
+                                      (_ #f))
+                                     files)))
+           (loop (append (map (cut string-append directory "/" <>)
+                              subdirs)
+                         rest)
+                 (append
+                  ;; Filter out signatures, deltas, and files which
+                  ;; are potentially not releases of PROJECT--e.g.,
+                  ;; in /gnu/guile, filter out guile-oops and
+                  ;; guile-www; in mit-scheme, filter out binaries.
+                  (filter-map (match-lambda
+                                ((file 'file . _)
+                                 (and=> (release-file file)
+                                        (cut cons <> directory)))
+                                (_ #f))
+                              files)
+                  result))))))))
 
 (define (latest-release project)
   "Return (\"FOO-X.Y\" . \"/bar/foo\") or #f."
