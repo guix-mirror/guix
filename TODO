@@ -157,12 +157,7 @@ etc.
 ** add ‘--list-generations’, and ‘--delete-generations’
 
 * guix build utils
-** Add equivalent to "rm -rf"
 ** Add equivalent to Nixpkgs's ‘wrapProgram’
-** Change ‘patch-shebang’ to DTRT for /usr/bin/env
-
-I.e., replace “#!/usr/bin/env perl” by “#!/nix/store/…/bin/perl”.
- 
 ** MAYBE Change ‘ld-wrapper’ to add RPATH for libs passed by file name
 
 ** MAYBE Add equivalent to chrpath, possibly using [[https://gitorious.org/guile-dlhacks/guile-dlhacks/][guile-dlhacks]]
