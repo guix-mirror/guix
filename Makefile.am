@@ -58,6 +58,7 @@ MODULES =					\
   gnu/packages/aspell.scm			\
   gnu/packages/attr.scm				\
   gnu/packages/autotools.scm			\
+  gnu/packages/avahi.scm			\
   gnu/packages/base.scm				\
   gnu/packages/bash.scm				\
   gnu/packages/bdb.scm				\
