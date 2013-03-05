@@ -514,6 +514,12 @@ Thus, when installing MPC, the MPFR and GMP libraries also get installed
 in the profile; removing MPC also removes MPFR and GMP---unless they had
 also been explicitly installed independently.
 
+@c XXX: keep me up-to-date
+Besides, when installing a GNU package, the tool reports the
+availability of a newer upstream version.  In the future, it may provide
+the option of installing directly from the upstream version, even if
+that version is not yet in the distribution.
+
 @item --install-from-expression=@var{exp}
 @itemx -e @var{exp}
 Install the package @var{exp} evaluates to.

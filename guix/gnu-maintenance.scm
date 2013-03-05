@@ -29,7 +29,9 @@
   #:use-module (system foreign)
   #:use-module (guix ftp-client)
   #:use-module (guix utils)
+  #:use-module (guix packages)
   #:export (official-gnu-packages
+            gnu-package?
             releases
             latest-release
             gnu-package-name->name+version))
@@ -74,6 +76,18 @@
                   (and=> (regexp-exec %package-line-rx line)
                          (cut match:substring <> 1)))
                 lst)))
+
+(define gnu-package?
+  (memoize
+   (lambda (package)
+     "Return true if PACKAGE is a GNU package.  This procedure may access the
+network to check in GNU's database."
+     ;; TODO: Find a way to determine that a package is non-GNU without going
+     ;; through the network.
+     (let ((url (origin-uri (package-source package))))
+       (or (string-prefix? "mirror://gnu" url)
+           (member (package-name package) (official-gnu-packages)))))))
+
 
 ;;;
 ;;; Latest release.

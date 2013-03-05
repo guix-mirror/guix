@@ -39,6 +39,7 @@
   #:use-module (gnu packages)
   #:use-module ((gnu packages base) #:select (guile-final))
   #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
+  #:use-module (guix gnu-maintenance)
   #:export (guix-package))
 
 (define %store
@@ -265,6 +266,38 @@ matching packages."
                       (derivation-output-path
                        (assoc-ref (derivation-outputs drv) sub-drv))))
          `(,name ,out))))))
+
+(define-syntax-rule (waiting exp fmt rest ...)
+  "Display the given message while EXP is being evaluated."
+  (let* ((message (format #f fmt rest ...))
+         (blank   (make-string (string-length message) #\space)))
+    (display message (current-error-port))
+    (force-output (current-error-port))
+    (let ((result exp))
+      ;; Clear the line.
+      (display #\cr (current-error-port))
+      (display blank (current-error-port))
+      (display #\cr (current-error-port))
+      (force-output (current-error-port))
+      exp)))
+
+(define (check-package-freshness package)
+  "Check whether PACKAGE has a newer version available upstream, and report
+it."
+  ;; TODO: Automatically inject the upstream version when desired.
+  (when (gnu-package? package)
+    (let ((name      (package-name package))
+          (full-name (package-full-name package)))
+      (match (waiting (latest-release name)
+                      (_ "looking for the latest release of GNU ~a...") name)
+        ((latest-version . _)
+         (when (version>? latest-version full-name)
+           (format (current-error-port)
+                   (_ "~a: note: using ~a \
+but ~a is available upstream~%")
+                   (location->string (package-location package))
+                   full-name latest-version)))
+        (_ #t)))))
 
 
 ;;;
@@ -547,6 +580,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                       ((name version sub-drv
                                              (? package? package)
                                              (deps ...))
+                                       (check-package-freshness package)
                                        (package-derivation (%store) package))
                                       (_ #f))
                                      install))
