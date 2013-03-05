@@ -84,9 +84,10 @@
 network to check in GNU's database."
      ;; TODO: Find a way to determine that a package is non-GNU without going
      ;; through the network.
-     (let ((url (origin-uri (package-source package))))
-       (or (string-prefix? "mirror://gnu" url)
-           (member (package-name package) (official-gnu-packages)))))))
+     (let ((url (and=> (package-source package) origin-uri)))
+       (or (and (string? url) (string-prefix? "mirror://gnu" url))
+           (and (member (package-name package) (official-gnu-packages))
+                #t))))))
 
 
 ;;;
