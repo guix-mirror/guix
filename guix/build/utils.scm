@@ -122,8 +122,11 @@ return values of applying PROC to the port."
       (() #t))))
 
 (define* (copy-recursively source destination
-                           #:optional (log (current-output-port)))
-  "Copy SOURCE directory to DESTINATION."
+                           #:key
+                           (log (current-output-port))
+                           (follow-symlinks? #f))
+  "Copy SOURCE directory to DESTINATION.  Follow symlinks if FOLLOW-SYMLINKS?
+is true; otherwise, just preserve them.  Write verbose output to the LOG port."
   (define strip-source
     (let ((len (string-length source)))
       (lambda (file)
@@ -134,7 +137,12 @@ return values of applying PROC to the port."
                       (let ((dest (string-append destination
                                                  (strip-source file))))
                         (format log "`~a' -> `~a'~%" file dest)
-                        (copy-file file dest)))
+                        (case (stat:type stat)
+                          ((symlink)
+                           (let ((target (readlink file)))
+                             (symlink target dest)))
+                          (else
+                           (copy-file file dest)))))
                     (lambda (dir stat result)     ; down
                       (mkdir-p (string-append destination
                                               (strip-source dir))))
@@ -146,7 +154,11 @@ return values of applying PROC to the port."
                               file (strerror errno))
                       #f)
                     #t
-                    source))
+                    source
+
+                    (if follow-symlinks?
+                        stat
+                        lstat)))
 
 (define (delete-file-recursively dir)
   "Delete DIR recursively, like `rm -rf', without following symlinks.  Report
