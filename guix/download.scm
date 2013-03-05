@@ -67,6 +67,11 @@
        "ftp://trumpetti.atm.tut.fi/gcrypt/"
        "ftp://mirror.cict.fr/gnupg/"
        "ftp://ftp.strasbourg.linuxfr.org/pub/gnupg/")
+      (gnome
+       "http://ftp.belnet.be/ftp.gnome.org/"
+       "http://ftp.linux.org.uk/mirrors/ftp.gnome.org/"
+       "http://ftp.gnome.org/pub/GNOME/"
+       "http://mirror.yandex.ru/mirrors/ftp.gnome.org/")
       (savannah
        "http://download.savannah.gnu.org/releases/"
        "ftp://ftp.twaren.net/Unix/NonGNU/"

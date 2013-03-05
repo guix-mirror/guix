@@ -18,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages glib)
-  #:use-module ((guix licenses) #:select (lgpl2.0+ gpl2+))
+  #:use-module ((guix licenses) #:select (lgpl2.0+ gpl2+ gpl2))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -124,3 +124,52 @@ and interfaces for such runtime functionality as an event loop, threads,
 dynamic loading, and an object system.")
    (home-page "http://developer.gnome.org/glib/")
    (license lgpl2.0+)))                        ; some files are under lgpl2.1+
+
+(define-public intltool
+  (package
+    (name "intltool")
+    (version "0.40.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://gnome/sources/intltool/0.40/intltool-"
+                   version
+                   ".tar.bz2"))
+             (sha256
+              (base32
+               "0r1vkvy5xzqk01yl6a0xlrry39bra24alkrx6279b77hc62my7jd"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'configure 'set-perl-path
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; FIXME: Remove this phase when proper support for search
+                   ;; paths is available.
+                   (let ((xml-parser (assoc-ref inputs "perl-xml-parser")))
+                     (setenv "PERL5LIB"
+                             (string-append xml-parser
+                                            "/lib/perl5/site_perl"))
+                     #t))
+                 %standard-phases)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("gettext" ,guix:gettext)
+       ("perl-xml-parser" ,xml:perl-xml-parser)
+       ("perl" ,perl)))
+    (home-page "http://freedesktop.org/wiki/Software/intltool")
+    (synopsis "Tools to centralize translation of many different file formats")
+    (description
+     "intltool is a set of tools to centralize translation of many different
+file formats using GNU gettext-compatible PO files.
+
+The intltool collection can be used to do these things:
+
+    Extract translatable strings from various source files (.xml.in,
+    glade, .desktop.in, .server.in, .oaf.in).
+
+    Collect the extracted strings together with messages from traditional
+    source files (.c, .h) in po/$(PACKAGE).pot.
+
+    Merge back the translations from .po files into .xml, .desktop and
+    oaf files. This merge step will happen at build resp. installation time.")
+    (license gpl2)))
