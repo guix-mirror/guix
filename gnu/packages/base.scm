@@ -508,13 +508,28 @@ used in the GNU system including the GNU/Linux variant.")
    ;; users should automatically pull Linux headers as well.
    (propagated-inputs `(("linux-headers" ,linux-libre-headers)))
 
+   ;; Store the locales separately (~100 MiB).  Note that "out" retains a
+   ;; reference to them anyway, so there's no space savings here.
+   ;; TODO: Eventually we may want to add a $LOCALE_ARCHIVE search path like
+   ;; Nixpkgs does.
+   (outputs '("out" "locales"))
+
    (arguments
     `(#:out-of-source? #t
       #:patches (list (assoc-ref %build-inputs "patch/ld.so.cache"))
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"
-            "--localedir=/var/run/current-system/sw/lib/locale" ; XXX
+            (string-append "--localedir=" (assoc-ref %outputs "locales")
+                           "/share/locale")
+
+            ;; `--localedir' is not honored, so work around it.
+            ;; See <http://sourceware.org/ml/libc-alpha/2013-03/msg00093.html>.
+            (string-append "libc_cv_localedir="
+                           (assoc-ref %outputs "locales")
+                           "/share/locale")
+
+
             (string-append "--with-headers="
                            (assoc-ref %build-inputs "linux-headers")
                            "/include")
@@ -580,7 +595,12 @@ used in the GNU system including the GNU/Linux variant.")
                     (substitute* "libio/iopopen.c"
                       (("/bin/sh")
                        (string-append out "/bin/bash")))))
-                %standard-phases)))
+                (alist-cons-after
+                 'install 'install-locales
+                 (lambda _
+                   (zero? (system* "make" "localedata/install-locales")))
+                 %standard-phases))))
+
    (inputs `(("patch/ld.so.cache"
               ,(search-patch "glibc-no-ld-so-cache.patch"))
              ("static-bash" ,(static-package bash-light))))
