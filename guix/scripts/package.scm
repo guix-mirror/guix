@@ -285,19 +285,28 @@ matching packages."
   "Check whether PACKAGE has a newer version available upstream, and report
 it."
   ;; TODO: Automatically inject the upstream version when desired.
-  (when (gnu-package? package)
-    (let ((name      (package-name package))
-          (full-name (package-full-name package)))
-      (match (waiting (latest-release name)
-                      (_ "looking for the latest release of GNU ~a...") name)
-        ((latest-version . _)
-         (when (version>? latest-version full-name)
-           (format (current-error-port)
-                   (_ "~a: note: using ~a \
+
+  (catch #t
+    (lambda ()
+      (when (gnu-package? package)
+        (let ((name      (package-name package))
+              (full-name (package-full-name package)))
+          (match (waiting (latest-release name)
+                          (_ "looking for the latest release of GNU ~a...") name)
+            ((latest-version . _)
+             (when (version>? latest-version full-name)
+               (format (current-error-port)
+                       (_ "~a: note: using ~a \
 but ~a is available upstream~%")
-                   (location->string (package-location package))
-                   full-name latest-version)))
-        (_ #t)))))
+                       (location->string (package-location package))
+                       full-name latest-version)))
+            (_ #t)))))
+    (lambda (key . args)
+      ;; Silently ignore networking errors rather than preventing
+      ;; installation.
+      (case key
+        ((getaddrinfo-error ftp-error) #f)
+        (else (apply throw key args))))))
 
 
 ;;;
