@@ -32,6 +32,7 @@
             with-directory-excursion
             mkdir-p
             copy-recursively
+            delete-file-recursively
             find-files
 
             set-path-environment-variable
@@ -146,6 +147,26 @@ return values of applying PROC to the port."
                       #f)
                     #t
                     source))
+
+(define (delete-file-recursively dir)
+  "Delete DIR recursively, like `rm -rf', without following symlinks.  Report
+but ignore errors."
+  (file-system-fold (const #t)                    ; enter?
+                    (lambda (file stat result)    ; leaf
+                      (delete-file file))
+                    (const #t)                    ; down
+                    (lambda (dir stat result)     ; up
+                      (rmdir dir))
+                    (const #t)                    ; skip
+                    (lambda (file stat errno result)
+                      (format (current-error-port)
+                              "warning: failed to delete ~a: ~a~%"
+                              file (strerror errno)))
+                    #t
+                    dir
+
+                    ;; Don't follow symlinks.
+                    lstat))
 
 (define (find-files dir regexp)
   "Return the list of files under DIR whose basename matches REGEXP."
