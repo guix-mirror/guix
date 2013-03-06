@@ -27,6 +27,8 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
+  #:use-module ((gnu packages gettext)
+                #:renamer (symbol-prefix-proc 'gnu:))
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages libpng)
@@ -37,6 +39,13 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml))
+
+
+
+;; packages without propagated input
+;; (rationale for this separation: The packages in PROPAGATED_INPUTS need to
+;; be defined first, the split makes book-keeping easier.)
+
 
 (define-public applewmproto
   (package
@@ -210,40 +219,18 @@
           (base32
             "0ffmaw80vmfwdgvdkp6495xgsqszb6s0iira5j0j6pd4i0lk3mnf"))))
     (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+      `(("mkfontscale" ,mkfontscale)
+        ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
     (license license:public-domain)))
 
 
-(define-public fixesproto
+(define-public font-adobe100dpi
   (package
-    (name "fixesproto")
-    (version "5.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/fixesproto-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1ki4wiq2iivx5g4w5ckzbjbap759kfqd72yg18m3zpbb4hqkybxs"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xextproto" ,xextproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public font-adobe-100dpi
-  (package
-    (name "font-adobe-100dpi")
+    (name "font-adobe100dpi")
     (version "1.0.3")
     (source
       (origin
@@ -262,9 +249,9 @@
     (license license:x11)))
 
 
-(define-public font-adobe-75dpi
+(define-public font-adobe75dpi
   (package
-    (name "font-adobe-75dpi")
+    (name "font-adobe75dpi")
     (version "1.0.3")
     (source
       (origin
@@ -283,9 +270,9 @@
     (license license:x11)))
 
 
-;; (define-public font-adobe-utopia-100dpi
+;; (define-public font-adobe-utopia100dpi
 ;;   (package
-;;     (name "font-adobe-utopia-100dpi")
+;;     (name "font-adobe-utopia100dpi")
 ;;     (version "1.0.4")
 ;;     (source
 ;;       (origin
@@ -304,9 +291,9 @@
 ;;     (license non-free)))
 ;; 
 ;; 
-;; (define-public font-adobe-utopia-75dpi
+;; (define-public font-adobe-utopia75dpi
 ;;   (package
-;;     (name "font-adobe-utopia-75dpi")
+;;     (name "font-adobe-utopia75dpi")
 ;;     (version "1.0.4")
 ;;     (source
 ;;       (origin
@@ -393,9 +380,9 @@
     (license license:x11)))
 
 
-;; (define-public font-bh-100dpi
+;; (define-public font-bh100dpi
 ;;   (package
-;;     (name "font-bh-100dpi")
+;;     (name "font-bh100dpi")
 ;;     (version "1.0.3")
 ;;     (source
 ;;       (origin
@@ -414,9 +401,9 @@
 ;;     (license non-free)))
 ;; 
 ;; 
-;; (define-public font-bh-75dpi
+;; (define-public font-bh75dpi
 ;;   (package
-;;     (name "font-bh-75dpi")
+;;     (name "font-bh75dpi")
 ;;     (version "1.0.3")
 ;;     (source
 ;;       (origin
@@ -435,9 +422,9 @@
 ;;     (license non-free)))
 ;; 
 ;; 
-;; (define-public font-bh-lucidatypewriter-100dpi
+;; (define-public font-bh-lucidatypewriter100dpi
 ;;   (package
-;;     (name "font-bh-lucidatypewriter-100dpi")
+;;     (name "font-bh-lucidatypewriter100dpi")
 ;;     (version "1.0.3")
 ;;     (source
 ;;       (origin
@@ -456,9 +443,9 @@
 ;;     (license non-free)))
 ;; 
 ;; 
-;; (define-public font-bh-lucidatypewriter-75dpi
+;; (define-public font-bh-lucidatypewriter75dpi
 ;;   (package
-;;     (name "font-bh-lucidatypewriter-75dpi")
+;;     (name "font-bh-lucidatypewriter75dpi")
 ;;     (version "1.0.3")
 ;;     (source
 ;;       (origin
@@ -502,9 +489,9 @@
 ;;     (license non-free)))
 ;;
 ;;
-;; (define-public font-bitstream-100dpi
+;; (define-public font-bitstream100dpi
 ;;   (package
-;;     (name "font-bitstream-100dpi")
+;;     (name "font-bitstream100dpi")
 ;;     (version "1.0.3")
 ;;     (source
 ;;       (origin
@@ -527,9 +514,9 @@
 ;;     (license non-free)))
 ;;
 ;;
-;; (define-public font-bitstream-75dpi
+;; (define-public font-bitstream75dpi
 ;;   (package
-;;     (name "font-bitstream-75dpi")
+;;     (name "font-bitstream75dpi")
 ;;     (version "1.0.3")
 ;;     (source
 ;;       (origin
@@ -1069,6 +1056,9 @@
           (base32
             "0jp3zc0qfdaqfkgzrb44vi9vi0a8ygb35wp082yz7rvvxhmg9sya"))))
     (build-system gnu-build-system)
+    (inputs
+      `(("mkfontdir" ,mkfontdir)
+        ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -1293,31 +1283,6 @@
     (license license:x11)))
 
 
-(define-public libice
-  (package
-    (name "libice")
-    (version "1.0.8")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libICE-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "07mp13pb3s73kj7y490gnx619znzwk91mlf8kdw0rzq29ll93a94"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xtrans" ,xtrans)
-        ("xproto" ,xproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
 (define-public libpciaccess
   (package
     (name "libpciaccess")
@@ -1417,110 +1382,6 @@
     (license license:x11)))
 
 
-(define-public libx11
-  (package
-    (name "libx11")
-    (version "1.5.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libX11-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "11jdpl15bxwpwv0knpkh990s8jvlybng3dx477pkrz1bx7byz0n3"))))
-    (build-system gnu-build-system)
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public libxau
-  (package
-    (name "libxau")
-    (version "1.0.7")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXau-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "12d4f7sdv2pjxhk0lcay0pahccddszkw579dc59daqi37r8bllvi"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto) ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public libxaw
-  (package
-    (name "libxaw")
-    (version "1.0.11")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXaw-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "14ll7ndf5njc30hz2w197qvwp7fqj7y14wq4p1cyxlbipfn79a47"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libxt" ,libxt)
-        ("xproto" ,xproto)
-        ("libxpm" ,libxpm)
-        ("libxmu" ,libxmu)
-        ("xextproto" ,xextproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public libxcb
-  (package
-    (name "libxcb")
-    (version "1.8.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxcb-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "03gspxcdl8r7jwbwg7fyp4cc6zic9z91amp4g5z0wwahx48nix6j"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("libxdmcp" ,libxdmcp)
-        ("xcb-proto" ,xcb-proto)
-        ("libxau" ,libxau)
-        ("libpthread-stubs" ,libpthread-stubs)
-        ("libxslt" ,libxslt)
-        ("pkg-config" ,pkg-config)
-        ("python" ,python)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
 (define-public libxcomposite
   (package
     (name "libxcomposite")
@@ -1541,34 +1402,6 @@
         ("libxfixes" ,libxfixes)
         ("libx11" ,libx11)
         ("compositeproto" ,compositeproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public libxcursor
-  (package
-    (name "libxcursor")
-    (version "1.1.13")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXcursor-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "13xd1dyb06gwdwb0bxb22fkgdlmis6wrljm2xk6fhz0v9bg2g27p"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libxrender" ,libxrender)
-        ("xproto" ,xproto)
-        ("libxfixes" ,libxfixes)
-        ("libx11" ,libx11)
-        ("fixesproto" ,fixesproto)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
@@ -1628,89 +1461,6 @@
     (license license:x11)))
 
 
-(define-public libxext
-  (package
-    (name "libxext")
-    (version "1.3.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXext-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0ng8clhn7srbkadxjc7ih3z3v27v9ny0aa0dqkgddgxpgrhrq8jn"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libxau" ,libxau)
-        ("xproto" ,xproto)
-        ("xextproto" ,xextproto)
-        ("libx11" ,libx11)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public libxfixes
-  (package
-    (name "libxfixes")
-    (version "5.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXfixes-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1qx2rmwhmca2n7rgafy0arp15k5vwhdhhh6v6mx76hlj29328yjk"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("xextproto" ,xextproto)
-        ("libx11" ,libx11)
-        ("fixesproto" ,fixesproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public libxfont
-  (package
-    (name "libxfont")
-    (version "1.4.5")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXfont-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0w3irg00k6b6mziddnacln9q2rkf5848b04nvjqwv5bb1fw6zydv"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("zlib" ,zlib)
-        ("xtrans" ,xtrans)
-        ("xproto" ,xproto)
-        ("freetype" ,freetype)
-        ("fontsproto" ,fontsproto)
-        ("libfontenc" ,libfontenc)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
 (define-public libxft
   (package
     (name "libxft")
@@ -1763,33 +1513,6 @@
         ("libxext" ,libxext)
         ("libx11" ,libx11)
         ("inputproto" ,inputproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public libxinerama
-  (package
-    (name "libxinerama")
-    (version "1.1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXinerama-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1b3aq1762hxzchd9ndavdjlksq93991s0g2z6spf8wl3v0pprrx4"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xineramaproto" ,xineramaproto)
-        ("xextproto" ,xextproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
@@ -1866,67 +1589,12 @@
             "0dd737ch4q9gr151wff1m3q2j7wf3pip4y81601xdrsh8wipxnx6"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxt" ,libxt)
+      `(("gettext" ,gnu:gettext)
+        ("libxt" ,libxt)
         ("xproto" ,xproto)
         ("xextproto" ,xextproto)
         ("libxext" ,libxext)
         ("libx11" ,libx11)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public libxrandr
-  (package
-    (name "libxrandr")
-    (version "1.3.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/XqqR7.7/src/everything/libXrandr-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "10cvv78ws8jznma4s45dzqz0ldcxk30qgsqrc4wxfcsjmcba5b3y"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libxrender" ,libxrender)
-        ("xproto" ,xproto)
-        ("xextproto" ,xextproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("renderproto" ,renderproto)
-        ("randrproto" ,randrproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public libxrender
-  (package
-    (name "libxrender")
-    (version "0.9.7")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXrender-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1rmvja2gkf5v0k2n1bcghw8v98m2kfn3af0rbmsda5dwr69npd7r"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("libx11" ,libx11)
-        ("renderproto" ,renderproto)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
@@ -1982,63 +1650,6 @@
         ("libxext" ,libxext)
         ("libx11" ,libx11)
         ("scrnsaverproto" ,scrnsaverproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public libxt
-  (package
-    (name "libxt")
-    (version "1.1.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXt-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1g85gwnhs7lg5f01gfi1cpb916xc3spm1fjlv2f4xz2zzk1r7dcd"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("libx11" ,libx11)
-        ("libsm" ,libsm)
-        ("kbproto" ,kbproto)
-        ("libice" ,libice)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public libxtst
-  (package
-    (name "libxtst")
-    (version "1.2.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXtst-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1q750hjplq1rfyxkr4545z1y2a1wfnc828ynvbws7b4jwdk3xsky"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libxi" ,libxi)
-        ("xextproto" ,xextproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("recordproto" ,recordproto)
-        ("inputproto" ,inputproto)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
@@ -2118,6 +1729,11 @@
           (base32
             "15291ddhyr54sribwbg8hxx2psgzm5gh0pgkw5yrf3zgvdsa67sm"))))
     (build-system gnu-build-system)
+    (inputs
+      `(("libx11" ,libx11)
+        ("libxext" ,libxext)
+        ("pkg-config" ,pkg-config)
+        ("xf86dgaproto" ,xf86dgaproto)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2139,6 +1755,11 @@
           (base32
             "117w92xz39rcqcahspi48nc04cc9110x1dycpf3vbcb6p0pifr55"))))
     (build-system gnu-build-system)
+    (inputs
+      `(("libx11" ,libx11)
+        ("libxext" ,libxext)
+        ("pkg-config" ,pkg-config)
+        ("xf86vidmodeproto" ,xf86vidmodeproto)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2186,28 +1807,6 @@
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto) ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public mkfontdir
-  (package
-    (name "mkfontdir")
-    (version "1.0.7")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/mkfontdir-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0c3563kw9fg15dpgx4dwvl12qz6sdqdns1pxa574hc7i5m42mman"))))
-    (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2507,6 +2106,12 @@
           (base32
             "111iwpxhnxjiq44w96zf0kszg5zpgv1g3ayx18v4nhdzl9bqivi4"))))
     (build-system gnu-build-system)
+    (inputs
+      `(("libx11" ,libx11)
+        ("libxft" ,libxft)
+        ("libxmu" ,libxmu)
+        ("libxrender" ,libxrender)
+        ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2556,8 +2161,9 @@
             "02b5jfys2msla2yvg5s0knzyxg2104r25czkwd49i8g8kp804bxg"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxrender" ,libxrender)
-;;        ("xcb-util" ,xcb-util)
+      `(("libx11" ,libx11)
+        ("libxrandr" ,libxrandr)
+        ("libxrender" ,libxrender)
         ("libxcb" ,libxcb)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -2674,7 +2280,8 @@
     (build-system gnu-build-system)
     (inputs
       `(("libxcursor" ,libxcursor)
-        ("pkg-config" ,pkg-config)))
+        ("pkg-config" ,pkg-config)
+        ("xcursorgen" ,xcursorgen)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2723,7 +2330,8 @@
             "0gypsvpmay3lsh3b1dg29pjxv95pkrr21d4w6ys02mrbld24kvi3"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libxxf86vm" ,libxxf86vm)
+      `(("inputproto" ,inputproto)
+        ("libxxf86vm" ,libxxf86vm)
 ;;         ("libxxf86misc" ,libxxf86misc)
         ("libxxf86dga" ,libxxf86dga)
         ("libxtst" ,libxtst)
@@ -2833,6 +2441,7 @@
           (base32
             "1ivf5n821chckrgp89mpb18zi00v1hyrkc1hr82q0x6g1kpgxq9y"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2854,6 +2463,7 @@
           (base32
             "1xgpkdmfw4ahjlva97gs9sllzw8nlpa8mxj59g28fxhak67mvv8x"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2875,6 +2485,7 @@
           (base32
             "1hwc1bjw5mxv186xbrxiky0agfglwqg8fsxqdh4br1vzgxpck7ma"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2896,6 +2507,7 @@
           (base32
             "0fs1lwnycyv3d0m6l2wrnlgvbs8qw66d93hwlnmrsswfq5bp6ark"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2917,6 +2529,7 @@
           (base32
             "0g5b1s6q1dg38l8y47cwg7cs5nivwj0agmp71g273ws0lfg4bc8s"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2938,6 +2551,7 @@
           (base32
             "16l65mnjb1xxav6c5q0xhhqih81bzify2c5qrhqc2j3waq5yr9m8"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2959,6 +2573,7 @@
           (base32
             "01bmk324fq48wydvy1qrnxbw6qz0fjd0i80g0n4cqr1c4mjmif9a"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2980,6 +2595,7 @@
           (base32
             "194zc35ivfh3vcxcilf9nbi88c2di8kbh84x535cljlpiajdnk5x"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3001,6 +2617,7 @@
           (base32
             "1q64z8qqa0ix3cymqiwk1s3sphd1fvvz30lvyxhgkgciygz6dm69"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3022,6 +2639,7 @@
           (base32
             "11gg6xn65vym75769hzgzpkjsyhlkrw4zw3ncngriq7vz1g47zjg"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3043,6 +2661,7 @@
           (base32
             "0blnbspj4936wy46lp346s4b08dfcray6yicsxvv5b4699fzl1rb"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3064,6 +2683,7 @@
 ;;           (base32
 ;;             "0pyr50kqh7g84r4p0x09ay5kxax20dip9sh8h3cbd4xv8cswdbfm"))))
 ;;     (build-system gnu-build-system)
+;;     (inputs `(("pkg-config" ,pkg-config)))
 ;;     (home-page "http://www.x.org/wiki/")
 ;;     (synopsis "xorg implementation of the X Window System")
 ;;     (description "X.org provides an implementation of the X Window System")
@@ -3085,6 +2705,7 @@
           (base32
             "1mc23w0bfmak5216411xh58nrs93jlxmi6l412hmqzhxnjs73clk"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3106,6 +2727,7 @@
           (base32
             "1mc23w0bfmak5216411xh58nrs93jlxmi6l412hmqzhxnjs73clk"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3127,6 +2749,7 @@
           (base32
             "0byapm9mnpqk3wijfnnan3d22ii5cw6dmg4xn1625iiz89j5vs1l"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3148,6 +2771,7 @@
           (base32
             "0nf36jryabpncqq4m6sfsnmzk00f7gvfmjnl8l8sfy7w6sa6iacs"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3169,6 +2793,7 @@
           (base32
             "1sik8ck410hb2885vy7rlc590hw5br8lr2fzxgmv55jyawgfpv9y"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3190,6 +2815,7 @@
           (base32
             "1g742szymajh88a5dw08sxcr45bmxgc4w3m6hddv9qscn5hks4rj"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3211,6 +2837,7 @@
           (base32
             "0kl3kvpc2ny48z89313i9fi4cxzwb2pllvxcr9j5ly680ygx8slz"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3232,6 +2859,7 @@
           (base32
             "03l3wz5kz0hmxmzqqbkgn7pf9d956jlag04rb701a0fr1mw3v66a"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3253,6 +2881,7 @@
           (base32
             "124qci48xrk0w2jy91n7vqs7s6q397zyiqqszhmkx6ld7six57mi"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3274,6 +2903,7 @@
           (base32
             "1yafmp23jrfdmc094i6a4dsizapsc9v0pl65cpc8w1kvn7343k4i"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3295,6 +2925,7 @@
           (base32
             "05glbi9jc7j9nm4sf4qvl3z87s48ibm3i283lqz85kbphg62dxvc"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3316,6 +2947,7 @@
           (base32
             "0hgzn1r7ig94xbr9dvq0bp1nxqlfp2ki8823jca3f22a2kf8wmg7"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3337,6 +2969,7 @@
           (base32
             "1c84x40k9qz9dnf5qs6nnjcgz7px6mpc3rbk8mj62zhp7mf16hbv"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3358,6 +2991,7 @@
           (base32
             "0jdy4wv3k3ylx3lajjcbsg37z2hf6366a1jvv16sv1ln6dk6lris"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3379,6 +3013,7 @@
           (base32
             "01sdl6ky1vmvmfgx2d44i35rqafi0z07xdy40cvindcr2k91p7x5"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3400,6 +3035,7 @@
           (base32
             "03diq0l93lfsipmwkpdb2ysgbxxryl6yakpghzc3fksjxa01112f"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3421,6 +3057,7 @@
           (base32
             "07w0hm63fiy5l3cpcjsl0ig8z84z9r36xm0cmnpiv3g75dy6q8fi"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3442,6 +3079,7 @@
           (base32
             "04byax4sc1fn183vyyq0q11q730k16h2by4ggjky7s36wgv7ldzx"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3463,6 +3101,7 @@
           (base32
             "124gsi30rj547jjd7gvv7xykfnwlyrxw0gcacamby7pvl3g33fg0"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3484,6 +3123,7 @@
           (base32
             "0mdqrn02zzkdnmhg4vh9djaawg6b2p82g5qbj66z8b30yr77b93h"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3505,6 +3145,7 @@
           (base32
             "02y5pzdp0a1c12jr8gghbrzgbyfbgq67x7kd7n4f323pmf8x1csb"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3526,6 +3167,7 @@
 ;;           (base32
 ;;             "0pcjc75hgbih3qvhpsx8d4fljysfk025slxcqyyhr45dzch93zyb"))))
 ;;     (build-system gnu-build-system)
+;;     (inputs `(("pkg-config" ,pkg-config)))
 ;;     (home-page "http://www.x.org/wiki/")
 ;;     (synopsis "xorg implementation of the X Window System")
 ;;     (description "X.org provides an implementation of the X Window System")
@@ -3547,6 +3189,7 @@
           (base32
             "0wqms28kkz2fvghqhqwp6w8zj7k5cgwnhzvkc7j4v268bf6h78g4"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3568,6 +3211,7 @@
           (base32
             "0isiwx516gww8hfk3vy7js83yziyjym9mq2zjadyq1a8v5gqf9y8"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3589,6 +3233,7 @@
           (base32
             "0ha748yz92yzn6hp2rhin3il8f4j2rs4vkgdvqkagnv1ryxkh0ph"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3610,6 +3255,7 @@
           (base32
             "0hr8397wpd0by1hc47fqqrnaw3qdqd8aqgwgzv38w5k3l3jy6p4p"))))
     (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3897,7 +3543,10 @@
           (base32
             "1nmb7ma8rqryicc5xqrn2hm5pwp5lkf7nj28bwbf63mz2r0mk892"))))
     (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+      `(("libx11" ,libx11)
+        ("pkg-config" ,pkg-config)
+        ("xkbcomp" ,xkbcomp)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -4164,28 +3813,6 @@
     (license license:x11)))
 
 
-(define-public xproto
-  (package
-    (name "xproto")
-    (version "7.0.23")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xproto-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "17lkmi12f89qvg4jj5spqzwzc24fmsqq68dv6kpy7r7b944lmq5d"))))
-    (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
 (define-public xrandr
   (package
     (name "xrandr")
@@ -4440,3 +4067,497 @@
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
+
+
+
+;; packages of height 1 in the propagated-inputs tree
+
+(define-public fixesproto
+  (package
+    (name "fixesproto")
+    (version "5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/fixesproto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1ki4wiq2iivx5g4w5ckzbjbap759kfqd72yg18m3zpbb4hqkybxs"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("xextproto" ,xextproto)))
+    (inputs
+      `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxext
+  (package
+    (name "libxext")
+    (version "1.3.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXext-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0ng8clhn7srbkadxjc7ih3z3v27v9ny0aa0dqkgddgxpgrhrq8jn"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("xextproto" ,xextproto)))
+    (inputs
+      `(("libxau" ,libxau)
+        ("xproto" ,xproto)
+        ("libx11" ,libx11)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxinerama
+  (package
+    (name "libxinerama")
+    (version "1.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXinerama-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1b3aq1762hxzchd9ndavdjlksq93991s0g2z6spf8wl3v0pprrx4"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("xineramaproto" ,xineramaproto)))
+    (inputs
+      `(("xextproto" ,xextproto)
+        ("libxext" ,libxext)
+        ("libx11" ,libx11)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxrender
+  (package
+    (name "libxrender")
+    (version "0.9.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXrender-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1rmvja2gkf5v0k2n1bcghw8v98m2kfn3af0rbmsda5dwr69npd7r"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("renderproto" ,renderproto)))
+    (inputs
+      `(("xproto" ,xproto)
+        ("libx11" ,libx11)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxtst
+  (package
+    (name "libxtst")
+    (version "1.2.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXtst-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1q750hjplq1rfyxkr4545z1y2a1wfnc828ynvbws7b4jwdk3xsky"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("recordproto" ,recordproto)))
+    (inputs
+      `(("libxi" ,libxi)
+        ("xextproto" ,xextproto)
+        ("libxext" ,libxext)
+        ("libx11" ,libx11)
+        ("inputproto" ,inputproto)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public mkfontdir
+  (package
+    (name "mkfontdir")
+    (version "1.0.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/mkfontdir-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0c3563kw9fg15dpgx4dwvl12qz6sdqdns1pxa574hc7i5m42mman"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("mkfontscale" ,mkfontscale)))
+    (inputs
+      `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public xproto
+  (package
+    (name "xproto")
+    (version "7.0.23")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xproto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "17lkmi12f89qvg4jj5spqzwzc24fmsqq68dv6kpy7r7b944lmq5d"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("util-macros" ,util-macros))) ; to get util-macros in (almost?) all package inputs
+    (inputs
+      `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+
+;; packages of height 2 in the propagated-inputs tree
+
+(define-public libice
+  (package
+    (name "libice")
+    (version "1.0.8")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libICE-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "07mp13pb3s73kj7y490gnx619znzwk91mlf8kdw0rzq29ll93a94"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("xproto" ,xproto)))
+    (inputs
+      `(("xtrans" ,xtrans)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxau
+  (package
+    (name "libxau")
+    (version "1.0.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXau-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "12d4f7sdv2pjxhk0lcay0pahccddszkw579dc59daqi37r8bllvi"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("xproto" ,xproto)))
+    (inputs
+      `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxaw
+  (package
+    (name "libxaw")
+    (version "1.0.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXaw-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "14ll7ndf5njc30hz2w197qvwp7fqj7y14wq4p1cyxlbipfn79a47"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libxext" ,libxext)
+        ("libxmu" ,libxmu)
+        ("libxpm" ,libxpm)))
+    (inputs
+      `(("libxt" ,libxt)
+        ("xproto" ,xproto)
+        ("xextproto" ,xextproto)
+        ("libx11" ,libx11)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxfixes
+  (package
+    (name "libxfixes")
+    (version "5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXfixes-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1qx2rmwhmca2n7rgafy0arp15k5vwhdhhh6v6mx76hlj29328yjk"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("fixesproto" ,fixesproto)))
+    (inputs
+      `(("xproto" ,xproto)
+        ("xextproto" ,xextproto)
+        ("libx11" ,libx11)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxfont
+  (package
+    (name "libxfont")
+    (version "1.4.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXfont-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0w3irg00k6b6mziddnacln9q2rkf5848b04nvjqwv5bb1fw6zydv"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("fontsproto" ,fontsproto)
+        ("freetype" ,freetype)
+        ("libfontenc" ,libfontenc)
+        ("xproto" ,xproto)))
+    (inputs
+      `(("zlib" ,zlib)
+        ("xtrans" ,xtrans)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxrandr
+  (package
+    (name "libxrandr")
+    (version "1.3.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/XqqR7.7/src/everything/libXrandr-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "10cvv78ws8jznma4s45dzqz0ldcxk30qgsqrc4wxfcsjmcba5b3y"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libxext" ,libxext)
+        ("randrproto" ,randrproto)))
+    (inputs
+      `(("libxrender" ,libxrender)
+        ("xproto" ,xproto)
+        ("xextproto" ,xextproto)
+        ("libx11" ,libx11)
+        ("renderproto" ,renderproto)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+
+;; packages of height 3 in the propagated-inputs tree
+
+(define-public libxcb
+  (package
+    (name "libxcb")
+    (version "1.8.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libxcb-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "03gspxcdl8r7jwbwg7fyp4cc6zic9z91amp4g5z0wwahx48nix6j"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libpthread-stubs" ,libpthread-stubs)
+        ("libxau" ,libxau)
+        ("libxdmcp" ,libxdmcp)))
+    (inputs
+      `(("xcb-proto" ,xcb-proto)
+        ("libxslt" ,libxslt)
+        ("pkg-config" ,pkg-config)
+        ("python" ,python)
+        ("xproto" ,xproto)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+;; packages of height 4 in the propagated-inputs tree
+
+(define-public libx11
+  (package
+    (name "libx11")
+    (version "1.5.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libX11-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "11jdpl15bxwpwv0knpkh990s8jvlybng3dx477pkrz1bx7byz0n3"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("kbproto" ,kbproto)
+        ("libxcb" ,libxcb)))
+    (inputs
+      `(("inputproto" ,inputproto)
+        ("libxcb" ,libxcb)
+        ("pkg-config" ,pkg-config)
+        ("xextproto" ,xextproto)
+        ("xtrans" ,xtrans)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+;; packages of height 5 in the propagated-inputs tree
+
+(define-public libxcursor
+  (package
+    (name "libxcursor")
+    (version "1.1.13")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXcursor-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "13xd1dyb06gwdwb0bxb22fkgdlmis6wrljm2xk6fhz0v9bg2g27p"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libx11" ,libx11)
+        ("libxrender" ,libxrender)
+        ("libxfixes" ,libxfixes)
+        ("xproto" ,xproto)))
+    (inputs
+      `(("fixesproto" ,fixesproto)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxt
+  (package
+    (name "libxt")
+    (version "1.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXt-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1g85gwnhs7lg5f01gfi1cpb916xc3spm1fjlv2f4xz2zzk1r7dcd"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libx11" ,libx11)
+        ("libice" ,libice)
+        ("libsm" ,libsm)))
+    (inputs
+      `(("xproto" ,xproto)
+        ("libx11" ,libx11)
+        ("kbproto" ,kbproto)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
