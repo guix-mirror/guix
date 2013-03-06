@@ -71,6 +71,38 @@ rasterisation.")
     (license license:x11)))
 
 
+(define-public libdrm
+  (package
+    (name "libdrm")
+    (version "2.4.42")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "http://dri.freedesktop.org/libdrm/libdrm-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1qbnpi64hyqzd650hj6jki1d50pzypdhj3rw9m3whwbqly110rz0"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("libpciaccess" ,libpciaccess)
+        ("libpthread-stubs" ,libpthread-stubs)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://dri.freedesktop.org/wiki/")
+    (synopsis "libdrm, direct rendering userspace library")
+    (description "The Direct Rendering Infrastructure, also known as the DRI,
+is a framework for allowing direct access to graphics hardware under the
+X Window System in a safe and efficient manner. It includes changes to the
+X server, to several client libraries, and to the kernel (DRM, Direct
+Rendering Manager). The most important use for the DRI is to create fast
+OpenGL implementations providing hardware acceleration for Mesa.
+Several 3D accelerated drivers have been written to the DRI specification,
+including drivers for chipsets produced by 3DFX, AMD (formerly ATI), Intel
+and Matrox.")
+    (license license:x11)))
+
 
 
 ;; packages without propagated input
