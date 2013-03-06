@@ -3120,7 +3120,7 @@
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-glide"
+               "mirror://xorg/X11R7.7/src/everything/xf86-video-glide-"
                version
                ".tar.bz2"))
         (sha256
