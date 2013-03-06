@@ -47,26 +47,27 @@
 ;; be defined first, the split makes book-keeping easier.)
 
 
-(define-public applewmproto
-  (package
-    (name "applewmproto")
-    (version "1.4.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/applewmproto-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1zi4p07mp6jmk030p4gmglwxcwp0lzs5mi31y1b4rp8lsqxdxizw"))))
-    (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
+;; compiles only on macos
+;; (define-public applewmproto
+;;   (package
+;;     (name "applewmproto")
+;;     (version "1.4.2")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/applewmproto-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "1zi4p07mp6jmk030p4gmglwxcwp0lzs5mi31y1b4rp8lsqxdxizw"))))
+;;     (build-system gnu-build-system)
+;;     (inputs `(("pkg-config" ,pkg-config)))
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
+;;     (license license:x11)))
   
   
 (define-public bdftopcf
@@ -1178,31 +1179,32 @@
     (license license:x11)))
 
 
-(define-public libapplewm
-  (package
-    (name "libapplewm")
-    (version "1.4.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libAppleWM-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0r8x28n45q89x91mz8mv0zkkcxi8wazkac886fyvflhiv2y8ap2y"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xextproto" ,xextproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("applewmproto" ,applewmproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
+;; requires applewmproto, which compiles only on macos
+;; (define-public libapplewm
+;;   (package
+;;     (name "libapplewm")
+;;     (version "1.4.1")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/libAppleWM-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0r8x28n45q89x91mz8mv0zkkcxi8wazkac886fyvflhiv2y8ap2y"))))
+;;     (build-system gnu-build-system)
+;;     (inputs
+;;       `(("xextproto" ,xextproto)
+;;         ("libxext" ,libxext)
+;;         ("libx11" ,libx11)
+;;         ("applewmproto" ,applewmproto)
+;;         ("pkg-config" ,pkg-config)))
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
+;;     (license license:x11)))
 
 
 (define-public libdmx
