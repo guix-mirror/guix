@@ -42,6 +42,37 @@
 
 
 
+;; packages outside the x.org system proper
+
+(define-public pixman
+  (package
+    (name "pixman")
+    (version "0.28.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "http://cairographics.org/releases/pixman-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "0mcvxd5gx3w1wzgph91l2vaiic91jmx7s01hi2igphyvd80ckyia"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("libpng" ,libpng)
+        ("pkg-config" ,pkg-config)
+        ("zlib" ,zlib)))
+    (home-page "http://www.pixman.org/")
+    (synopsis "pixman, a low-level pixel manipulation library")
+    (description "Pixman is a low-level software library for pixel
+manipulation, providing features such as image compositing and trapezoid
+rasterisation.")
+    (license license:x11)))
+
+
+
+
 ;; packages without propagated input
 ;; (rationale for this separation: The packages in PROPAGATED_INPUTS need to
 ;; be defined first, the split makes book-keeping easier.)
@@ -3719,7 +3750,7 @@
         ("libxv" ,libxv)
 ;;        ("mesa" ,mesa)
         ("openssl" ,openssl)
-;;        ("pixman" ,pixman)
+        ("pixman" ,pixman)
         ("pkg-config" ,pkg-config)
         ("recordproto" ,recordproto)
         ("randrproto" ,randrproto)
