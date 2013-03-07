@@ -194,9 +194,9 @@ Download and deploy the latest version of Guix.\n"))
                  (leave (_ "~A: unexpected argument~%") arg))
                %default-options))
 
-  (let ((opts  (parse-options))
-        (store (open-connection)))
-    (with-error-handling
+  (with-error-handling
+    (let ((opts  (parse-options))
+          (store (open-connection)))
       (let ((tarball (download-and-store store)))
         (unless tarball
           (leave (_ "failed to download up-to-date source, exiting\n")))

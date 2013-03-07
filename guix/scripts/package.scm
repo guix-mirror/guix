@@ -712,8 +712,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
 
   (let ((opts (parse-options)))
     (or (process-query opts)
-        (parameterize ((%store (open-connection)))
-          (with-error-handling
+        (with-error-handling
+          (parameterize ((%store (open-connection)))
             (parameterize ((%guile-for-build
                             (package-derivation (%store)
                                                 (if (assoc-ref opts 'bootstrap?)

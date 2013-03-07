@@ -39,6 +39,9 @@
             nix-server-socket
 
             &nix-error nix-error?
+            &nix-connection-error nix-connection-error?
+            nix-connection-error-file
+            nix-connection-error-code
             &nix-protocol-error nix-protocol-error?
             nix-protocol-error-message
             nix-protocol-error-status
@@ -373,6 +376,11 @@
 (define-condition-type &nix-error &error
   nix-error?)
 
+(define-condition-type &nix-connection-error &nix-error
+  nix-connection-error?
+  (file   nix-connection-error-file)
+  (errno  nix-connection-error-code))
+
 (define-condition-type &nix-protocol-error &nix-error
   nix-protocol-error?
   (message nix-protocol-error-message)
@@ -392,7 +400,15 @@ operate, should the disk become full.  Return a server object."
     ;; Enlarge the receive buffer.
     (setsockopt s SOL_SOCKET SO_RCVBUF (* 12 1024))
 
-    (connect s a)
+    (catch 'system-error
+      (cut connect s a)
+      (lambda args
+        ;; Translate the error to something user-friendly.
+        (let ((errno (system-error-errno args)))
+          (raise (condition (&nix-connection-error
+                             (file file)
+                             (errno errno)))))))
+
     (write-int %worker-magic-1 s)
     (let ((r (read-int s)))
       (and (eqv? r %worker-magic-2)

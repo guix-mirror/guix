@@ -111,6 +111,10 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
                (leave (_ "~a:~a:~a: error: package `~a' has an invalid input: ~s~%")
                       file line column
                       (package-full-name package) input)))
+            ((nix-connection-error? c)
+             (leave (_ "error: failed to connect to `~a': ~a~%")
+                    (nix-connection-error-file c)
+                    (strerror (nix-connection-error-code c))))
             ((nix-protocol-error? c)
              ;; FIXME: Server-provided error messages aren't i18n'd.
              (leave (_ "error: build failed: ~a~%")
