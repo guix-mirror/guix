@@ -24,7 +24,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages fontutils)
   #:use-module ((gnu packages gettext)
@@ -1467,35 +1466,6 @@ and Matrox.")
         ("libxfixes" ,libxfixes)
         ("libx11" ,libx11)
         ("compositeproto" ,compositeproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
-(define-public libxdamage
-  (package
-    (name "libxdamage")
-    (version "1.1.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXdamage-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1a678bwap74sqczbr2z4y4fvbr35km3inkm8bi1igjyk4v46jqdw"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("libxfixes" ,libxfixes)
-        ("xextproto" ,xextproto)
-        ("libx11" ,libx11)
-        ("fixesproto" ,fixesproto)
-        ("damageproto" ,damageproto)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
@@ -4156,6 +4126,36 @@ and Matrox.")
       `(("xextproto" ,xextproto)))
     (inputs
       `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxdamage
+  (package
+    (name "libxdamage")
+    (version "1.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXdamage-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1a678bwap74sqczbr2z4y4fvbr35km3inkm8bi1igjyk4v46jqdw"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("damageproto" ,damageproto)))
+    (inputs
+      `(("xproto" ,xproto)
+        ("libxfixes" ,libxfixes)
+        ("xextproto" ,xextproto)
+        ("libx11" ,libx11)
+        ("fixesproto" ,fixesproto)
+        ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
