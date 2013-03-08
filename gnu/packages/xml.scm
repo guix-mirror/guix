@@ -19,6 +19,7 @@
 
 (define-module (gnu packages xml)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -64,7 +65,21 @@ things the parser might find in the XML document (like start tags).")
     (home-page "http://www.xmlsoft.org/")
     (synopsis "libxml2, a C parser for XML")
     (inputs `(("perl" ,perl)
-              ("python" ,python)))
+              ("python" ,python)
+              ("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+        (alist-replace
+         'install
+         (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+          (let ((install (assoc-ref %standard-phases 'install))
+                (glibc (assoc-ref inputs "libc"))
+                (out (assoc-ref outputs "out")))
+            (apply install args)
+            (chdir "python")
+            (substitute* "setup.py" (("/opt/include") (string-append glibc "/include")))
+            (system* "python" "setup.py" "install" (string-append "--prefix=" out))))
+        %standard-phases)))
     (description
      "Libxml2 is the XML C parser and toolkit developed for the Gnome project
 (but it is usable outside of the Gnome platform).")
