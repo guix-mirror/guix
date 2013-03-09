@@ -103,6 +103,90 @@ and Matrox.")
     (license license:x11)))
 
 
+;; old version, required by old mesa, see
+;; http://www.mail-archive.com/nouveau@lists.freedesktop.org/msg10098.html
+(define-public libdrm-2.4.33
+  (package (inherit libdrm)
+    (version "2.4.33")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "http://dri.freedesktop.org/libdrm/libdrm-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1slgi61n4dlsfli47ql354fd1ppj7n40jd94wvnsdqx0mna9syrd"))))
+    (arguments
+      `(#:configure-flags
+         ;; create libdrm_nouveau.so, needed by mesa, see
+         ;; http://comments.gmane.org/gmane.linux.lfs.beyond.support/43261
+         `("--enable-nouveau-experimental-api")))))
+
+
+(define-public mesa
+  (package
+    (name "mesa")
+    ;; In newer versions (9.0.5 and 9.1 tested), "make" results in an
+    ;; infinite configure loop, see
+    ;; https://bugs.freedesktop.org/show_bug.cgi?id=61527
+    (version "8.0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "ftp://ftp.freedesktop.org/pub/mesa/" version
+               "/MesaLib-" version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0pjs8x51c0i6mawgd4w03lxpyx5fnx7rc8plr8jfsscf9yiqs6si"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("bison" ,bison)
+        ("dri2proto" ,dri2proto)
+        ("expat" ,expat)
+        ("glproto" ,glproto)
+        ("flex" ,flex)
+        ("libdrm" ,libdrm-2.4.33)
+        ("libx11" ,libx11)
+        ("libxdamage" ,libxdamage)
+        ("libxext" ,libxext)
+        ("libxfixes" ,libxfixes)
+        ("libxml2" ,libxml2)
+        ("libxxf86vm" ,libxxf86vm)
+        ("makedepend" ,makedepend)
+        ("pkg-config" ,pkg-config)
+        ("python" ,python)))
+    (arguments
+      `(#:configure-flags
+         `("--with-gallium-drivers=r600,svga,swrast") ; drop r300 from the default list as it requires llvm
+        #:phases
+         (alist-cons-after
+          'unpack 'remove-symlink
+          (lambda* (#:key #:allow-other-keys)
+            ;; remove dangling symlink to /usr/include/wine/windows
+            (delete-file "src/gallium/state_trackers/d3d1x/w32api"))
+         (alist-replace
+          'configure
+          (lambda* (#:key inputs #:allow-other-keys #:rest args)
+            (let ((configure (assoc-ref %standard-phases 'configure))
+                  (libxml2 (assoc-ref inputs "libxml2")))
+              ;; FIXME: This should be done more centrally.
+              (setenv "PYTHONPATH" (string-append libxml2 "/lib/python2.7/site-packages"))
+              (apply configure args)))
+         %standard-phases))))
+    (home-page "http://mesa3d.org/")
+    (synopsis "Mesa, an OpenGL implementation")
+    (description "Mesa is a free implementation of the OpenGL specification -
+a system for rendering interactive 3D graphics. A variety of device drivers
+allows Mesa to be used in many different environments ranging from software
+emulation to complete hardware acceleration for modern GPUs.")
+    (license license:x11)))
+
+
+
 
 ;; packages without propagated input
 ;; (rationale for this separation: The packages in PROPAGATED_INPUTS need to
