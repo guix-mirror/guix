@@ -126,7 +126,7 @@ based on libxml for XML parsing, tree manipulation and XPath support.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/M/MS/MSERGEANT/XML-Parser-"
+                   "mirror://cpan/authors/id/T/TO/TODDR/XML-Parser-"
                    version ".tar.gz"))
              (sha256
               (base32
@@ -149,3 +149,41 @@ then passed on to the Expat object on each parse call.  They can also be given
 as extra arguments to the parse methods, in which case they override options
 given at XML::Parser creation time.")
     (home-page "http://search.cpan.org/~toddr/XML-Parser-2.41/Parser.pm")))
+
+(define-public intltool
+  (package
+    (name "intltool")
+    (version "0.50.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://launchpad.net/intltool/trunk/"
+                                 version "/+download/intltool-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "01j4yd7i84n9nk4ccs6yifg84pp68nr9by57jdbhj7dpdxf5rwk7"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("perl" ,perl)
+       ("perl-xml-parser" ,perl-xml-parser)))
+    (arguments
+      `(#:phases
+         (alist-replace
+          'configure
+          (lambda* (#:key inputs #:allow-other-keys #:rest args)
+            (let ((configure (assoc-ref %standard-phases 'configure))
+                  (perl-xml-parser (assoc-ref inputs "perl-xml-parser")))
+              ;; FIXME: This should be done more centrally.
+              (setenv "PERL5LIB" (string-append perl-xml-parser "/lib/perl5/site_perl"))
+              (apply configure args)))
+         %standard-phases)))
+    (home-page "https://launchpad.net/intltool/+download")
+    (synopsis "Utility scripts for internationalising xml")
+    (description
+     "intltool automatically extracts translatable strings from oaf, glade,
+bonobo ui, nautilus theme and other XML files into the po files.
+It automatically merges translations from po files back into .oaf files
+(encoding to be 7-bit clean). The merging mechanism can also be extended to
+support other types of XML files.")
+    (license license:gpl2+)))
+
