@@ -125,69 +125,6 @@ and Matrox.")
          `("--enable-nouveau-experimental-api")))))
 
 
-(define-public mesa
-  (package
-    (name "mesa")
-    ;; In newer versions (9.0.5 and 9.1 tested), "make" results in an
-    ;; infinite configure loop, see
-    ;; https://bugs.freedesktop.org/show_bug.cgi?id=61527
-    (version "8.0.5")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "ftp://ftp.freedesktop.org/pub/mesa/" version
-               "/MesaLib-" version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0pjs8x51c0i6mawgd4w03lxpyx5fnx7rc8plr8jfsscf9yiqs6si"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("bison" ,bison)
-        ("dri2proto" ,dri2proto)
-        ("expat" ,expat)
-        ("glproto" ,glproto)
-        ("flex" ,flex)
-        ("libdrm" ,libdrm-2.4.33)
-        ("libx11" ,libx11)
-        ("libxdamage" ,libxdamage)
-        ("libxext" ,libxext)
-        ("libxfixes" ,libxfixes)
-        ("libxml2" ,libxml2)
-        ("libxxf86vm" ,libxxf86vm)
-        ("makedepend" ,makedepend)
-        ("pkg-config" ,pkg-config)
-        ("python" ,python)))
-    (arguments
-      `(#:configure-flags
-         `("--with-gallium-drivers=r600,svga,swrast") ; drop r300 from the default list as it requires llvm
-        #:phases
-         (alist-cons-after
-          'unpack 'remove-symlink
-          (lambda* (#:key #:allow-other-keys)
-            ;; remove dangling symlink to /usr/include/wine/windows
-            (delete-file "src/gallium/state_trackers/d3d1x/w32api"))
-         (alist-replace
-          'configure
-          (lambda* (#:key inputs #:allow-other-keys #:rest args)
-            (let ((configure (assoc-ref %standard-phases 'configure))
-                  (libxml2 (assoc-ref inputs "libxml2")))
-              ;; FIXME: This should be done more centrally.
-              (setenv "PYTHONPATH" (string-append libxml2 "/lib/python2.7/site-packages"))
-              (apply configure args)))
-         %standard-phases))))
-    (home-page "http://mesa3d.org/")
-    (synopsis "Mesa, an OpenGL implementation")
-    (description "Mesa is a free implementation of the OpenGL specification -
-a system for rendering interactive 3D graphics. A variety of device drivers
-allows Mesa to be used in many different environments ranging from software
-emulation to complete hardware acceleration for modern GPUs.")
-    (license license:x11)))
-
-
-
-
 ;; packages without propagated input
 ;; (rationale for this separation: The packages in PROPAGATED_INPUTS need to
 ;; be defined first, the split makes book-keeping easier.)
@@ -3833,7 +3770,6 @@ emulation to complete hardware acceleration for modern GPUs.")
         ("inputproto" ,inputproto)
         ("kbproto" ,kbproto)
         ("libdmx" ,libdmx)
-;;        ("libdrm" ,libdrm)
         ("libpciaccess" ,libpciaccess)
         ("libx11" ,libx11)
         ("libxau" ,libxau)
@@ -3849,16 +3785,17 @@ emulation to complete hardware acceleration for modern GPUs.")
         ("libxres" ,libxres)
         ("libxt" ,libxt)
         ("libxv" ,libxv)
-;;        ("mesa" ,mesa)
+        ("mesa" ,mesa)
         ("openssl" ,openssl)
         ("pixman" ,pixman)
         ("pkg-config" ,pkg-config)
-        ("recordproto" ,recordproto)
+        ("python" ,python)
         ("randrproto" ,randrproto)
+        ("recordproto" ,recordproto)
         ("renderproto" ,renderproto)
         ("resourceproto" ,resourceproto)
         ("scrnsaverproto" ,scrnsaverproto)
-;;        ("systemd" ,systemd)
+        ("videoproto" ,videoproto)
         ("xcmiscproto" ,xcmiscproto)
         ("xextproto" ,xextproto)
         ("xf86bigfontproto" ,xf86bigfontproto)
@@ -3866,6 +3803,9 @@ emulation to complete hardware acceleration for modern GPUs.")
         ("xf86driproto" ,xf86driproto)
         ("xf86vidmodeproto" ,xf86vidmodeproto)
         ("xineramaproto" ,xineramaproto)
+;;        ("xkbcomp" ,xkbcomp)
+;;        ("xkbutils" ,xkbutils)
+;;        ("xkeyboard-config" ,xkeyboard-config)
         ("xtrans" ,xtrans)
         ("zlib" ,zlib)))
     (home-page "http://www.x.org/wiki/")
@@ -4421,6 +4361,71 @@ emulation to complete hardware acceleration for modern GPUs.")
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+
+;; package outside the x.org system proper of height 2
+
+(define-public mesa
+  (package
+    (name "mesa")
+    ;; In newer versions (9.0.5 and 9.1 tested), "make" results in an
+    ;; infinite configure loop, see
+    ;; https://bugs.freedesktop.org/show_bug.cgi?id=61527
+    (version "8.0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "ftp://ftp.freedesktop.org/pub/mesa/" version
+               "/MesaLib-" version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0pjs8x51c0i6mawgd4w03lxpyx5fnx7rc8plr8jfsscf9yiqs6si"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libdrm" ,libdrm-2.4.33)
+        ("libxdamage" ,libxdamage)))
+    (inputs
+      `(("bison" ,bison)
+        ("dri2proto" ,dri2proto)
+        ("expat" ,expat)
+        ("glproto" ,glproto)
+        ("flex" ,flex)
+        ("libx11" ,libx11)
+        ("libxext" ,libxext)
+        ("libxfixes" ,libxfixes)
+        ("libxml2" ,libxml2)
+        ("libxxf86vm" ,libxxf86vm)
+        ("makedepend" ,makedepend)
+        ("pkg-config" ,pkg-config)
+        ("python" ,python)))
+    (arguments
+      `(#:configure-flags
+         `("--with-gallium-drivers=r600,svga,swrast") ; drop r300 from the default list as it requires llvm
+        #:phases
+         (alist-cons-after
+          'unpack 'remove-symlink
+          (lambda* (#:key #:allow-other-keys)
+            ;; remove dangling symlink to /usr/include/wine/windows
+            (delete-file "src/gallium/state_trackers/d3d1x/w32api"))
+         (alist-replace
+          'configure
+          (lambda* (#:key inputs #:allow-other-keys #:rest args)
+            (let ((configure (assoc-ref %standard-phases 'configure))
+                  (libxml2 (assoc-ref inputs "libxml2")))
+              ;; FIXME: This should be done more centrally.
+              (setenv "PYTHONPATH" (string-append libxml2 "/lib/python2.7/site-packages"))
+              (apply configure args)))
+         %standard-phases))))
+    (home-page "http://mesa3d.org/")
+    (synopsis "Mesa, an OpenGL implementation")
+    (description "Mesa is a free implementation of the OpenGL specification -
+a system for rendering interactive 3D graphics. A variety of device drivers
+allows Mesa to be used in many different environments ranging from software
+emulation to complete hardware acceleration for modern GPUs.")
     (license license:x11)))
 
 
