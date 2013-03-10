@@ -43,6 +43,33 @@
 
 ;; packages outside the x.org system proper
 
+(define-public xeyes
+  (package
+    (name "xeyes")
+    (version "1.0.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "http://xeyes.sourcearchive.com/downloads/1.0.1/xeyes_"
+               version
+               ".orig.tar.gz"))
+        (sha256
+          (base32
+            "04c3md570j67g55h3bix1qbngcslnq91skli51k3g1avki88zkm9"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("libx11" ,libx11)
+        ("libxext" ,libxext)
+        ("libxmu" ,libxmu)
+        ("libxt" ,libxt)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://xeyes.sourcearchive.com/")
+    (synopsis "")
+    (description "")
+    (license license:x11)))
+
+
 (define-public pixman
   (package
     (name "pixman")
