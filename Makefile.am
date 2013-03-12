@@ -67,6 +67,7 @@ MODULES =					\
   gnu/packages/bootstrap.scm			\
   gnu/packages/cdrom.scm			\
   gnu/packages/check.scm			\
+  gnu/packages/cmake.scm			\
   gnu/packages/compression.scm			\
   gnu/packages/cpio.scm				\
   gnu/packages/curl.scm				\
@@ -187,6 +188,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
+  gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
   gnu/packages/patches/emacs-configure-sh.patch			\
