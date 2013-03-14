@@ -31,14 +31,14 @@
 (define-public emacs
   (package
     (name "emacs")
-    (version "24.2")
+    (version "24.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/emacs/emacs-"
-                                 version ".tar.bz2"))
+                                 version ".tar.xz"))
              (sha256
               (base32
-               "13wbjfjmz13qpjwssy44nw2230lllmkkgjsy0rqfm6am2cf87n3k"))))
+               "1385qzs3bsa52s5rcncbrkxlydkw0ajzrvfxgv8rws5fx512kakh"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags

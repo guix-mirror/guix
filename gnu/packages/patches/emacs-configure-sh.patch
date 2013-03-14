@@ -1,14 +1,13 @@
 Make sure the right shell is used when creating src/epaths.h.
 
---- emacs-24.2/configure	2013-01-13 17:01:53.000000000 +0100
-+++ emacs-24.2/configure	2013-01-13 17:01:57.000000000 +0100
-@@ -24135,7 +24135,7 @@ done
+--- emacs-24.3/configure	2013-03-14 17:42:26.000000000 +0100
++++ emacs-24.3/configure	2013-03-14 17:42:58.000000000 +0100
+@@ -26463,7 +26463,7 @@ done
   ;;
      "epaths":C)
  echo creating src/epaths.h
--${MAKE-make} epaths-force
-+${MAKE-make} epaths-force SHELL="$CONFIG_SHELL"
+-${MAKE-make} MAKEFILE_NAME=do-not-make-Makefile epaths-force
++${MAKE-make} MAKEFILE_NAME=do-not-make-Makefile epaths-force SHELL="$CONFIG_SHELL"
   ;;
      "gdbinit":C)
  if test ! -f src/.gdbinit && test -f $srcdir/src/.gdbinit; then
-
