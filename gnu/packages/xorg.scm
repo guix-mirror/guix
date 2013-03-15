@@ -1426,7 +1426,7 @@ and Matrox.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libpthread-stubs-"
+               "http://xcb.freedesktop.org/dist/libpthread-stubs-"
                version
                ".tar.bz2"))
         (sha256
@@ -2285,7 +2285,7 @@ and Matrox.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xcb-proto-"
+               "http://xcb.freedesktop.org/dist/xcb-proto-"
                version
                ".tar.bz2"))
         (sha256
@@ -4641,7 +4641,7 @@ emulation to complete hardware acceleration for modern GPUs.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libxcb-"
+               "http://xcb.freedesktop.org/dist/libxcb-"
                version
                ".tar.bz2"))
         (sha256
