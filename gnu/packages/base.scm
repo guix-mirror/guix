@@ -88,14 +88,14 @@ lines.")
 (define-public sed
   (package
    (name "sed")
-   (version "4.2.1")
+   (version "4.2.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sed/sed-" version
                                 ".tar.bz2"))
             (sha256
              (base32
-              "13wlsb4sf5d5a82xjhxqmdvrrn36rmw5f0pl9qyb9zkvldnb7hra"))))
+              "1myvrmh99jsvk7v3d7crm0gcrq51hmmm1r2kjyyci152in1x2j7h"))))
    (build-system gnu-build-system)
    (synopsis "GNU sed, a batch stream editor")
    (arguments
@@ -263,14 +263,14 @@ The tools supplied with this package are:
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.20")
+   (version "8.21")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1cly97xdy3v4nbbx631k43smqw0nnpn651kkprs0yyl2cj3pkjyv"))))
+              "064f512185iysqqcvhnhaf3bfmzrvcgs7n405qsyp99zmfyl9amd"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)
              ("gmp"  ,gmp)
