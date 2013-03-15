@@ -342,14 +342,14 @@ that it is possible to use Make to build and install the program.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.22")
+   (version "2.23.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "1a9w66v5dwvbnawshjwqcgz7km6kw6ihkzp6sswv9ycc3knzhykc"))))
+              "06bs5v5ndb4g5qx96d52lc818gkbskd1m0sz57314v887sqfbcia"))))
    (build-system gnu-build-system)
 
    ;; Split Binutils in several outputs, mostly to avoid collisions in
@@ -367,7 +367,11 @@ that it is possible to use Make to build and install the program.")
                           "LDFLAGS=-static-libgcc"
 
                           ;; Don't search under /usr/lib & co.
-                          "--with-lib-path=/no-ld-lib-path")))
+                          "--with-lib-path=/no-ld-lib-path"
+
+                          ;; Glibc 2.17 has a "comparison of unsigned
+                          ;; expression >= 0 is always true" in wchar.h.
+                          "--disable-werror")))
 
    (synopsis "GNU Binutils, tools for manipulating binaries (linker,
 assembler, etc.)")
@@ -703,7 +707,8 @@ identifier SYSTEM."
         #:implicit-inputs? #f
         ,@(substitute-keyword-arguments (package-arguments binutils)
             ((#:configure-flags cf)
-             `(list ,(string-append "--target=" (boot-triplet)))))))
+             `(cons ,(string-append "--target=" (boot-triplet))
+                    ,cf)))))
      (inputs %boot0-inputs))))
 
 (define gcc-boot0
