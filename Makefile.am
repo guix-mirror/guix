@@ -118,6 +118,7 @@ MODULES =					\
   gnu/packages/lout.scm				\
   gnu/packages/lsh.scm				\
   gnu/packages/lsof.scm				\
+  gnu/packages/lua.scm				\
   gnu/packages/m4.scm				\
   gnu/packages/mailutils.scm			\
   gnu/packages/make-bootstrap.scm		\
