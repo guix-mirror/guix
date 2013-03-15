@@ -56,7 +56,20 @@
                 (response-code resp)))
     (case code
       ((200)
-       data)
+       (if data
+           data
+           (begin
+             ;; XXX: Guile 2.0.5 and earlier did not support chunked transfer
+             ;; encoding, which is required when fetching %PACKAGE-LIST-URL
+             ;; (see <http://lists.gnu.org/archive/html/guile-devel/2011-09/msg00089.html>).
+             ;; Since users may still be using these versions, warn them and
+             ;; bail out.
+             (format (current-error-port)
+                     "warning: using Guile ~a, which does not support HTTP ~s encoding~%"
+                     (version)
+                     (response-transfer-encoding resp))
+             (error "download failed; use a newer Guile"
+                    uri resp))))
       (else
        (error "download failed:" uri code
               (response-reason-phrase resp))))))

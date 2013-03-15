@@ -288,7 +288,7 @@ it."
 
   (catch #t
     (lambda ()
-      (when (gnu-package? package)
+      (when (false-if-exception (gnu-package? package))
         (let ((name      (package-name package))
               (full-name (package-full-name package)))
           (match (waiting (latest-release name)
