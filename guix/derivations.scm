@@ -741,14 +741,21 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
                       (unsetenv "LD_LIBRARY_PATH")))
          (builder  (add-text-to-store store
                                       (string-append name "-guile-builder")
-                                      (string-append
-                                       (object->string prologue)
-                                       (object->string
-                                        `(exit
-                                          ,(match exp
-                                             ((_ ...)
-                                              (remove module-form? exp))
-                                             (_ `(,exp))))))
+
+                                      ;; Explicitly use UTF-8 for determinism,
+                                      ;; and also because UTF-8 output is faster.
+                                      (with-fluids ((%default-port-encoding
+                                                     "UTF-8"))
+                                        (call-with-output-string
+                                         (lambda (port)
+                                           (write prologue port)
+                                           (write
+                                            `(exit
+                                              ,(match exp
+                                                 ((_ ...)
+                                                  (remove module-form? exp))
+                                                 (_ `(,exp))))
+                                            port))))
 
                                       ;; The references don't really matter
                                       ;; since the builder is always used in
