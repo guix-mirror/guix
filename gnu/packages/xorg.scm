@@ -2450,7 +2450,7 @@ and Matrox.")
             "076bjix941znyjmh3j5jjsnhp2gv2iq53d0ks29mvvv87cyy9iim"))))
     (build-system gnu-build-system)
     (inputs
-      `(;;("mesa" ,mesa)
+      `(("mesa" ,mesa)
         ("glproto" ,glproto)
         ("libx11" ,libx11)
         ("glproto" ,glproto)
