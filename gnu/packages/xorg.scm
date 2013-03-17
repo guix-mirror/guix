@@ -65,8 +65,9 @@
         ("libxt" ,libxt)
         ("pkg-config" ,pkg-config)))
     (home-page "http://xeyes.sourcearchive.com/")
-    (synopsis "")
-    (description "")
+    (synopsis "A follow the mouse X demo")
+    (description "Xeyes is a demo program for x.org. It shows eyes
+following the mouse.")
     (license license:x11)))
 
 
@@ -2524,7 +2525,8 @@ and Matrox.")
           (base32
             "1ivf5n821chckrgp89mpb18zi00v1hyrkc1hr82q0x6g1kpgxq9y"))))
     (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("xorg-server" ,xorg-server)
+              ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -3771,76 +3773,6 @@ and Matrox.")
 ;;     (license none)))
 
 
-(define-public xorg-server
-  (package
-    (name "xorg-server")
-    (version "1.12.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xorg-server-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "1xf57hcq6r17zxyfnx9r1wd0ir1bw13ff8bsiszwrw9jyhi9x7ya"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("bigreqsproto" ,bigreqsproto)
-        ("compositeproto" ,compositeproto)
-        ("damageproto" ,damageproto)
-        ("dbus" ,dbus)
-        ("dmxproto" ,dmxproto)
-        ("dri2proto" ,dri2proto)
-        ("glproto" ,glproto)
-        ("inputproto" ,inputproto)
-        ("kbproto" ,kbproto)
-        ("libdmx" ,libdmx)
-        ("libpciaccess" ,libpciaccess)
-        ("libx11" ,libx11)
-        ("libxau" ,libxau)
-        ("libxaw" ,libxaw)
-        ("libxdmcp" ,libxdmcp)
-        ("libxext" ,libxext)
-        ("libxfixes" ,libxfixes)
-        ("libxfont" ,libxfont)
-        ("libxkbfile" ,libxkbfile)
-        ("libxmu" ,libxmu)
-        ("libxpm" ,libxpm)
-        ("libxrender" ,libxrender)
-        ("libxres" ,libxres)
-        ("libxt" ,libxt)
-        ("libxv" ,libxv)
-        ("mesa" ,mesa)
-        ("openssl" ,openssl)
-        ("pixman" ,pixman)
-        ("pkg-config" ,pkg-config)
-        ("python" ,python)
-        ("randrproto" ,randrproto)
-        ("recordproto" ,recordproto)
-        ("renderproto" ,renderproto)
-        ("resourceproto" ,resourceproto)
-        ("scrnsaverproto" ,scrnsaverproto)
-        ("videoproto" ,videoproto)
-        ("xcmiscproto" ,xcmiscproto)
-        ("xextproto" ,xextproto)
-        ("xf86bigfontproto" ,xf86bigfontproto)
-        ("xf86dgaproto" ,xf86dgaproto)
-        ("xf86driproto" ,xf86driproto)
-        ("xf86vidmodeproto" ,xf86vidmodeproto)
-        ("xineramaproto" ,xineramaproto)
-;;        ("xkbcomp" ,xkbcomp)
-;;        ("xkbutils" ,xkbutils)
-;;        ("xkeyboard-config" ,xkeyboard-config)
-        ("xtrans" ,xtrans)
-        ("zlib" ,zlib)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
 (define-public xorg-sgml-doctools
   (package
     (name "xorg-sgml-doctools")
@@ -4607,7 +4539,7 @@ emulation to complete hardware acceleration for modern GPUs.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/XqqR7.7/src/everything/libXrandr-"
+               "mirror://xorg/X11R7.7/src/everything/libXrandr-"
                version
                ".tar.bz2"))
         (sha256
@@ -4624,6 +4556,81 @@ emulation to complete hardware acceleration for modern GPUs.")
         ("libx11" ,libx11)
         ("renderproto" ,renderproto)
         ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public xorg-server
+  (package
+    (name "xorg-server")
+    (version "1.12.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/xorg-server-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1xf57hcq6r17zxyfnx9r1wd0ir1bw13ff8bsiszwrw9jyhi9x7ya"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("dri2proto" ,dri2proto)
+        ("fontsproto" ,fontsproto)
+        ("inputproto" ,inputproto)
+        ("kbproto" ,kbproto)
+        ("libpciaccess" ,libpciaccess)
+        ("pixman" ,pixman)
+        ("randrproto" ,randrproto)
+        ("renderproto" ,renderproto)
+        ("videoproto" ,videoproto)
+        ("xextproto" ,xextproto)
+        ("xineramaproto" ,xineramaproto)
+        ("xproto" ,xproto)))
+    (inputs
+      `(("bigreqsproto" ,bigreqsproto)
+        ("compositeproto" ,compositeproto)
+        ("damageproto" ,damageproto)
+        ("dbus" ,dbus)
+        ("dmxproto" ,dmxproto)
+        ("glproto" ,glproto)
+        ("libdmx" ,libdmx)
+        ("libx11" ,libx11)
+        ("libxau" ,libxau)
+        ("libxaw" ,libxaw)
+        ("libxdmcp" ,libxdmcp)
+        ("libxext" ,libxext)
+        ("libxfixes" ,libxfixes)
+        ("libxfont" ,libxfont)
+        ("libxkbfile" ,libxkbfile)
+        ("libxmu" ,libxmu)
+        ("libxpm" ,libxpm)
+        ("libxrender" ,libxrender)
+        ("libxres" ,libxres)
+        ("libxt" ,libxt)
+        ("libxv" ,libxv)
+        ("mesa" ,mesa)
+        ("openssl" ,openssl)
+        ("pkg-config" ,pkg-config)
+        ("python" ,python)
+        ("recordproto" ,recordproto)
+        ("resourceproto" ,resourceproto)
+        ("scrnsaverproto" ,scrnsaverproto)
+        ("xcmiscproto" ,xcmiscproto)
+        ("xf86bigfontproto" ,xf86bigfontproto)
+        ("xf86dgaproto" ,xf86dgaproto)
+        ("xf86driproto" ,xf86driproto)
+        ("xf86vidmodeproto" ,xf86vidmodeproto)
+;;        ("xkbcomp" ,xkbcomp)
+;;        ("xkbutils" ,xkbutils)
+;;        ("xkeyboard-config" ,xkeyboard-config)
+        ("xtrans" ,xtrans)
+        ("zlib" ,zlib)))
+;;     (arguments
+;;      `(#:tests? #f))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
