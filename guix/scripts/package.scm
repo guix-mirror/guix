@@ -552,6 +552,44 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
           ,path
           ,(canonicalize-deps deps))))
 
+    (define (show-what-to-remove/install remove install dry-run?)
+      ;; Tell the user what's going to happen in high-level terms.
+      ;; TODO: Report upgrades more clearly.
+      (match remove
+        (((name version _ path _) ..1)
+         (let ((len    (length name))
+               (remove (map (cut format #f "  ~a-~a\t~a" <> <> <>)
+                            name version path)))
+           (if dry-run?
+               (format (current-error-port)
+                       (N_ "The following package would be removed:~% ~{~a~%~}~%"
+                           "The following packages would be removed:~% ~{~a~%~}~%"
+                           len)
+                       remove)
+               (format (current-error-port)
+                       (N_ "The following package will be removed:~% ~{~a~%~}~%"
+                           "The following packages will be removed:~% ~{~a~%~}~%"
+                           len)
+                       remove))))
+        (_ #f))
+      (match install
+        (((name version _ path _) ..1)
+         (let ((len     (length name))
+               (install (map (cut format #f "  ~a-~a\t~a" <> <> <>)
+                             name version path)))
+           (if dry-run?
+               (format (current-error-port)
+                       (N_ "The following package would be installed:~% ~{~a~%~}~%"
+                           "The following packages would be installed:~% ~{~a~%~}~%"
+                           len)
+                       install)
+               (format (current-error-port)
+                       (N_ "The following package will be installed:~% ~{~a~%~}~%"
+                           "The following packages will be installed:~% ~{~a~%~}~%"
+                           len)
+                       install))))
+        (_ #f)))
+
     ;; First roll back if asked to.
     (if (and (assoc-ref opts 'roll-back?) (not dry-run?))
         (begin
@@ -619,6 +657,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                        package)
                                       (_ #f))
                                      opts))
+               (remove*  (filter-map (cut assoc <> installed) remove))
                (packages (append install*
                                  (fold (lambda (package result)
                                          (match package
@@ -630,6 +669,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
           (when (equal? profile %current-profile)
             (ensure-default-profile))
 
+          (show-what-to-remove/install remove* install* dry-run?)
           (show-what-to-build (%store) drv dry-run?)
 
           (or dry-run?
