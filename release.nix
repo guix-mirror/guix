@@ -42,9 +42,9 @@ let
         if builtins.isAttrs drv
         then pkgs.lib.overrideDerivation (pythonKludge drv) (args: {
           __noChroot = true;
-          buildNativeInputs = map unchroot args.buildNativeInputs;
-          propagatedBuildNativeInputs =
-            map unchroot args.propagatedBuildNativeInputs;
+          nativeBuildInputs = map unchroot args.nativeBuildInputs;
+          propagatedNativeBuildInputs =
+            map unchroot args.propagatedNativeBuildInputs;
         })
         else drv;
 
@@ -82,7 +82,7 @@ let
           in
             [ git_light ] ++
             (with pkgs; [ guile sqlite bzip2 libgcrypt ]);
-        buildNativeInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
+        nativeBuildInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
         preAutoconf = ''git config submodule.nix.url "${<nix>}"'';
         configureFlags =
           [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
@@ -98,7 +98,7 @@ let
       pkgs.releaseTools.nixBuild {
         name = "guix";
         buildInputs = with pkgs; [ guile sqlite bzip2 libgcrypt ];
-        buildNativeInputs = [ pkgs.pkgconfig ];
+        nativeBuildInputs = [ pkgs.pkgconfig ];
         src = jobs.tarball;
         configureFlags =
           [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
