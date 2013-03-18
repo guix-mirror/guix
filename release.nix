@@ -48,6 +48,17 @@ let
         })
         else drv;
 
+  # Return a Nixpkgs with some derivations "unchrooted".
+  unchrootedNixpkgs = system:
+    import nixpkgs {
+      # XXX: Hack to make sure these ones also get "unchrooted".
+      config.packageOverrides = pkgs: {
+        zlib = unchroot pkgs.zlib;
+        libunistring = unchroot pkgs.libunistring;
+      };
+      inherit system;
+    };
+
   # The Guile used to bootstrap the whole thing.  It's normally
   # downloaded by the build system, but here we download it via a
   # fixed-output derivation and stuff it into the build tree.
@@ -67,7 +78,7 @@ let
   jobs = {
     tarball =
       unchroot
-      (let pkgs = import nixpkgs {}; in
+      (let pkgs = unchrootedNixpkgs builtins.currentSystem; in
       pkgs.releaseTools.sourceTarball {
         name = "guix-tarball";
         src = <guix>;
@@ -94,7 +105,7 @@ let
       { system ? builtins.currentSystem }:
 
       unchroot
-      (let pkgs = import nixpkgs { inherit system; }; in
+      (let pkgs = unchrootedNixpkgs system; in
       pkgs.releaseTools.nixBuild {
         name = "guix";
         buildInputs = with pkgs; [ guile sqlite bzip2 libgcrypt ];
@@ -125,7 +136,7 @@ let
 
       unchroot
       (let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = unchrootedNixpkgs system;
         build = jobs.build { inherit system; };
       in
         pkgs.lib.overrideDerivation build ({ configureFlags, ... }: {
@@ -144,7 +155,7 @@ let
         { system ? builtins.currentSystem }:
 
         let
-          pkgs = import nixpkgs { inherit system; };
+          pkgs = unchrootedNixpkgs system;
           guix = jobs.build { inherit system; };
         in
           # XXX: We have no way to tell the Nix code to swallow the .drv
