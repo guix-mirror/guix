@@ -34,6 +34,11 @@
   ;;"http://www.fdn.fr/~lcourtes/software/guix/packages"
   )
 
+;; XXX: Work around <http://bugs.gnu.org/13095>, present in Guile
+;; up to 2.0.7.
+(module-define! (resolve-module '(web client))
+                'shutdown (const #f))
+
 (define (file-name->uri file)
   "Return the URI for FILE."
   (match (string-tokenize file (char-set-complement (char-set #\/)))
