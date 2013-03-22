@@ -70,13 +70,13 @@ faster algorithms.")
 (define-public mpfr
   (package
    (name "mpfr")
-   (version "3.1.1")
+   (version "3.1.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/mpfr/mpfr-" version
                                 ".tar.xz"))
             (sha256 (base32
-                     "0ym1ylcq803n52qrggxqmkz66gbn8ncc3ybawal31v5y5p1srma9"))))
+                     "0fs501qi8l523gs3cpy4jjcnvwxggyfbklcys80wq236xx3hz79r"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
    (synopsis "GNU MPFR, a library for multiple-precision floating-point
