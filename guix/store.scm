@@ -234,8 +234,17 @@
 (define write-store-path-list write-string-list)
 (define read-store-path-list read-string-list)
 
-(define (write-contents file p)
-  "Write the contents of FILE to output port P."
+(define (write-contents file p size)
+  "Write SIZE bytes from FILE to output port P."
+  (define (call-with-binary-input-file file proc)
+    ;; Open FILE as a binary file.  This avoids scan-for-encoding, and thus
+    ;; avoids any initial buffering.
+    (let ((port (open-file file "rb")))
+      (catch #t (cut proc port)
+        (lambda args
+          (close-port port)
+          (apply throw args)))))
+
   (define (dump in size)
     (define buf-size 65536)
     (define buf (make-bytevector buf-size))
@@ -250,13 +259,14 @@
                   (put-bytevector p buf 0 read)
                   (loop (- left read))))))))
 
-  (let ((size (stat:size (lstat file))))
-    (write-string "contents" p)
-    (write-long-long size p)
-    (call-with-input-file file
-      (lambda (p)
-        (dump p size)))
-    (write-padding size p)))
+  (write-string "contents" p)
+  (write-long-long size p)
+  (call-with-binary-input-file file
+    ;; Use `sendfile' when available (Guile 2.0.8+).
+    (if (compile-time-value (defined? 'sendfile))
+        (cut sendfile p <> size 0)
+        (cut dump <> size)))
+  (write-padding size p))
 
 (define (write-file f p)
   (define %archive-version-1 "nix-archive-1")
@@ -274,7 +284,7 @@
              (begin
                (write-string "executable" p)
                (write-string "" p)))
-         (write-contents f p))
+         (write-contents f p (stat:size s)))
         ((directory)
          (write-string "type" p)
          (write-string "directory" p)
