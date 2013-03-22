@@ -238,12 +238,14 @@
   "Write SIZE bytes from FILE to output port P."
   (define (call-with-binary-input-file file proc)
     ;; Open FILE as a binary file.  This avoids scan-for-encoding, and thus
-    ;; avoids any initial buffering.
-    (let ((port (open-file file "rb")))
-      (catch #t (cut proc port)
-        (lambda args
-          (close-port port)
-          (apply throw args)))))
+    ;; avoids any initial buffering.  Disable file name canonicalization to
+    ;; avoid stat'ing like crazy.
+    (with-fluids ((%file-port-name-canonicalization #f))
+      (let ((port (open-file file "rb")))
+        (catch #t (cut proc port)
+          (lambda args
+            (close-port port)
+            (apply throw args))))))
 
   (define (dump in size)
     (define buf-size 65536)

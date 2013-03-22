@@ -61,14 +61,12 @@
 
 (define (search-patch file-name)
   "Search the patch FILE-NAME."
-  (with-fluids ((%file-port-name-canonicalization #f))
-    (search-path (%patch-path) file-name)))
+  (search-path (%patch-path) file-name))
 
 (define (search-bootstrap-binary file-name system)
   "Search the bootstrap binary FILE-NAME for SYSTEM."
-  (with-fluids ((%file-port-name-canonicalization #f))
-    (search-path (%bootstrap-binaries-path)
-                 (string-append system "/" file-name))))
+  (search-path (%bootstrap-binaries-path)
+               (string-append system "/" file-name)))
 
 (define %distro-module-directory
   ;; Absolute path of the (gnu packages ...) module root.
