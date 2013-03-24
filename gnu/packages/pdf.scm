@@ -25,6 +25,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages libjpeg)
+  #:use-module (gnu packages libpng)
   #:use-module (gnu packages libtiff)
   #:use-module (gnu packages pkg-config))
 
@@ -40,15 +41,25 @@
                      "1rmrspavldlpqi6g76fijcmshy80m0kxd01nc1dmy4id3h4las44"))))
    (build-system gnu-build-system)
    ;; FIXME: more dependencies could  be added
+   ;;  cairo output:       no (requires cairo >= 1.10.0)
+   ;;  qt4 wrapper:        no
+   ;;  glib wrapper:       no (requires cairo output)
+   ;;    introspection:    no
+   ;;  use gtk-doc:        no
+   ;;  use libcurl:        no
+   ;;  use libopenjpeg:    no
    (inputs `(("fontconfig" ,fontconfig)
              ("freetype" ,freetype)
              ("libjpeg-8" ,libjpeg-8)
+             ("libpng" ,libpng)
              ("libtiff" ,libtiff)
              ("pkg-config" ,pkg-config)
              ("zlib" ,zlib)))
    (arguments
     `(#:tests? #f ; no test data provided with the tarball
-      #:configure-flags '("--enable-xpdf-headers"))) ; to install header files
+      #:configure-flags
+       '("--enable-xpdf-headers" ; to install header files
+         "--enable-zlib")))
    (synopsis "Poppler, a pdf rendering library")
    (description
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
