@@ -70,6 +70,7 @@ MODULES =					\
   gnu/packages/cmake.scm			\
   gnu/packages/compression.scm			\
   gnu/packages/cpio.scm				\
+  gnu/packages/cppi.scm				\
   gnu/packages/curl.scm				\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/dejagnu.scm			\
