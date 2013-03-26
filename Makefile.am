@@ -66,6 +66,7 @@ MODULES =					\
   gnu/packages/bison.scm			\
   gnu/packages/bootstrap.scm			\
   gnu/packages/cdrom.scm			\
+  gnu/packages/cflow.scm			\
   gnu/packages/check.scm			\
   gnu/packages/cmake.scm			\
   gnu/packages/compression.scm			\
