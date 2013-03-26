@@ -38,6 +38,7 @@ MODULES =					\
   guix/gnu-maintenance.scm			\
   guix/licenses.scm				\
   guix/build-system.scm				\
+  guix/build-system/cmake.scm			\
   guix/build-system/gnu.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/trivial.scm			\
@@ -45,6 +46,7 @@ MODULES =					\
   guix/store.scm				\
   guix/ui.scm					\
   guix/build/download.scm			\
+  guix/build/cmake-build-system.scm		\
   guix/build/gnu-build-system.scm		\
   guix/build/perl-build-system.scm		\
   guix/build/utils.scm				\
