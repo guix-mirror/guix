@@ -8,12 +8,6 @@ Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 
 * integrate needed Nix code
 
-Guix uses Nix’s daemon (‘nix-worker’, later renamed to ‘nix-daemon’) to
-actually perform builds, scheduling, substitution of pre-built binaries,
-and GC-related tasks.  The daemon mainly uses ‘libstore’ from Nix.
-Integrating it in Guix itself will make Guix self-contained, thereby
-simplifying our users’ lives.
-
 ** Remove dependency on OpenSSL
 
 The ‘openssl’ command-line tool is used in libstore to sign store paths
@@ -50,14 +44,6 @@ Guix to be used directly on Hydra.
 For a start, we may use the instance at hydra.nixos.org, generously
 provided by TU Delft.  However, in the future, we may want to setup our
 own instance at gnu.org.
-
-* add guix pull
-
-A tool that fetches the latest code from [[http://git.savannah.gnu.org/cgit/guix.git/snapshot/guix-master.tar.gz][cgit]], builds a derivation that
-unpacks it, copies only .scm files (this excludes guix/config.in) and
-compiles it, and then links to it from ~/.local/guix/latest .  Change
-guix-build and guix-package to have that directory first in their load
-path.
 
 * user interface
 ** Add a package.el (Emacs) back-end
@@ -157,12 +143,7 @@ etc.
 ** add ‘--list-generations’, and ‘--delete-generations’
 
 * guix build utils
-** Add equivalent to "rm -rf"
 ** Add equivalent to Nixpkgs's ‘wrapProgram’
-** Change ‘patch-shebang’ to DTRT for /usr/bin/env
-
-I.e., replace “#!/usr/bin/env perl” by “#!/nix/store/…/bin/perl”.
- 
 ** MAYBE Change ‘ld-wrapper’ to add RPATH for libs passed by file name
 
 ** MAYBE Add equivalent to chrpath, possibly using [[https://gitorious.org/guile-dlhacks/guile-dlhacks/][guile-dlhacks]]
@@ -172,7 +153,6 @@ I.e., replace “#!/usr/bin/env perl” by “#!/nix/store/…/bin/perl”.
 See [[https://github.com/NixOS/nixpkgs/commit/d1662d715514e6ef9d3dc29f132f1b3d8e608a18][Shea Levy's `replace-dependency' in Nixpkgs]].
 
 * distro
-** choose a name! (Jinn?)
 ** port to new GNU/Linux platforms, notably ‘mipsel64-linux’
 ** port to GNU/Hurd, aka. ‘i686-gnu’
 
