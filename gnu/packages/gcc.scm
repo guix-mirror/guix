@@ -26,6 +26,10 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
 
+(define %gcc-infrastructure
+  ;; Base URL for GCC's infrastructure.
+  "ftp://gcc.gnu.org/pub/gcc/infrastructure/")
+
 (define-public gcc-4.7
   (let ((stripped? #t))                         ; TODO: make this a parameter
     (package
@@ -138,3 +142,72 @@ GCC development is a part of the GNU Project, aiming to improve the compiler
 used in the GNU system including the GNU/Linux variant.")
      (license gpl3+)
      (home-page "http://gcc.gnu.org/"))))
+
+(define-public isl
+  (package
+    (name "isl")
+    (version "0.11.1")
+    (source (origin
+             (method url-fetch)
+             (uri (list (string-append
+                         "ftp://ftp.linux.student.kuleuven.be/pub/people/skimo/isl/isl-"
+                         version
+                         ".tar.bz2")
+                        (string-append %gcc-infrastructure
+                                       name "-" version ".tar.gz")))
+             (sha256
+              (base32
+               "13d9cqa5rzhbjq0xf0b2dyxag7pqa72xj9dhsa03m8ccr1a4npq9"))))
+    (build-system gnu-build-system)
+    (inputs `(("gmp" ,gmp)))
+    (home-page "http://www.kotnet.org/~skimo/isl/")
+    (synopsis
+     "A library for manipulating sets and relations of integer points bounded
+by linear constraints")
+    (description
+     "isl is a library for manipulating sets and relations of integer points
+bounded by linear constraints. Supported operations on sets include
+intersection, union, set difference, emptiness check, convex hull, (integer)
+affine hull, integer projection, computing the lexicographic minimum using
+parametric integer programming, coalescing and parametric vertex
+enumeration. It also includes an ILP solver based on generalized basis
+reduction, transitive closures on maps (which may encode infinite graphs),
+dependence analysis and bounds on piecewise step-polynomials.")
+    (license lgpl2.1+)))
+
+(define-public cloog
+  (package
+    (name "cloog")
+    (version "0.18.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (list (string-append
+                  "http://www.bastoul.net/cloog/pages/download/count.php3?url=cloog-"
+                  version
+                  ".tar.gz")
+                 (string-append %gcc-infrastructure
+                                name "-" version ".tar.gz")))
+      (sha256
+       (base32
+        "0a12rwfwp22zd0nlld0xyql11cj390rrq1prw35yjsw8wzfshjhw"))
+      (file-name (string-append name "-" version ".tar.gz"))))
+    (build-system gnu-build-system)
+    (inputs `(("gmp" ,gmp)
+              ("isl" ,isl)))
+    (arguments '(#:configure-flags '("--with-isl=system")))
+    (home-page "http://www.cloog.org/")
+    (synopsis "A library to generate code for scanning Z-polyhedra")
+    (description
+     "CLooG is a free software library to generate code for scanning
+Z-polyhedra.  That is, it finds a code (e.g., in C, FORTRAN...) that
+reaches each integral point of one or more parameterized polyhedra.
+CLooG has been originally written to solve the code generation problem
+for optimizing compilers based on the polytope model.  Nevertheless it
+is used now in various area e.g., to build control automata for
+high-level synthesis or to find the best polynomial approximation of a
+function.  CLooG may help in any situation where scanning polyhedra
+matters.  While the user has full control on generated code quality,
+CLooG is designed to avoid control overhead and to produce a very
+effective code.")
+    (license gpl2+)))
