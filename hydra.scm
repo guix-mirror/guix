@@ -23,6 +23,12 @@
 
 ;; Attempt to use our very own Guix modules.
 (eval-when (compile load eval)
+
+  ;; Ignore any available .go, and force recompilation.  This is because our
+  ;; checkout in the store has mtime set to the epoch, and thus .go files look
+  ;; newer, even though they may not correspond.
+  (set! %fresh-auto-compile #t)
+
   (and=> (assoc-ref (current-source-location) 'filename)
          (lambda (file)
            (let ((dir (dirname file)))
