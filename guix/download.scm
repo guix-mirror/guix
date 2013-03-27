@@ -43,7 +43,6 @@
             "http://ftpmirror.gnu.org/"
 
             "ftp://ftp.cs.tu-berlin.de/pub/gnu/"
-            "ftp://ftp.chg.ru/pub/gnu/"
             "ftp://ftp.funet.fi/pub/mirrors/ftp.gnu.org/gnu/"
 
             ;; This one is the master repository, and thus it's always
