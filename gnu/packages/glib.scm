@@ -76,7 +76,7 @@ shared NFS home directories.")
    (version "2.34.3")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://ftp.gnome.org/pub/gnome/sources/"
+            (uri (string-append "mirror://gnome/sources/"
                                 name "/2.34/"
                                 name "-" version ".tar.xz"))
             (sha256
@@ -99,11 +99,14 @@ shared NFS home directories.")
       ("patch/tests-homedir"
        ,(search-patch "glib-tests-homedir.patch"))
       ("patch/tests-desktop"
-       ,(search-patch "glib-tests-desktop.patch"))))
+       ,(search-patch "glib-tests-desktop.patch"))
+      ("patch/tests-prlimit"
+       ,(search-patch "glib-tests-prlimit.patch"))))
    (arguments
     '(#:patches (list (assoc-ref %build-inputs "patch/tests-tzdata")
                       (assoc-ref %build-inputs "patch/tests-homedir")
-                      (assoc-ref %build-inputs "patch/tests-desktop"))
+                      (assoc-ref %build-inputs "patch/tests-desktop")
+                      (assoc-ref %build-inputs "patch/tests-prlimit"))
       #:phases (alist-cons-before
                 'build 'pre-build
                 (lambda* (#:key inputs outputs #:allow-other-keys)

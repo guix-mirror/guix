@@ -201,6 +201,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/gettext-gets-undeclared.patch		\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
+  gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glib-tests-timezone.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-no-ld-so-cache.patch		\
@@ -209,7 +210,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-default-utf8.patch			\
   gnu/packages/patches/guile-linux-syscalls.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
-  gnu/packages/patches/libapr-skip-getservbyname-test.patch 	\
+  gnu/packages/patches/libapr-skip-getservbyname-test.patch	\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/lsh-guile-compat.patch			\
@@ -226,7 +227,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/shishi-gets-undeclared.patch		\
   gnu/packages/patches/tar-gets-undeclared.patch		\
-  gnu/packages/patches/tcsh-fix-autotest.patch 			\
+  gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/w3m-fix-compile.patch
