@@ -83,6 +83,7 @@ MODULES =					\
   gnu/packages/flex.scm				\
   gnu/packages/fontutils.scm			\
   gnu/packages/gawk.scm				\
+  gnu/packages/gcc.scm				\
   gnu/packages/gdb.scm				\
   gnu/packages/gdbm.scm				\
   gnu/packages/gettext.scm			\
