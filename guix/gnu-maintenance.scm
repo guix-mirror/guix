@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2010, 2011, 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +22,7 @@
   #:use-module (web client)
   #:use-module (web response)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 rdelim)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -30,8 +31,22 @@
   #:use-module (guix ftp-client)
   #:use-module (guix utils)
   #:use-module (guix packages)
-  #:export (official-gnu-packages
+  #:export (gnu-package-name
+            gnu-package-mundane-name
+            gnu-package-copyright-holder
+            gnu-package-savannah
+            gnu-package-fsd
+            gnu-package-language
+            gnu-package-logo
+            gnu-package-doc-category
+            gnu-package-doc-summary
+            gnu-package-doc-urls
+            gnu-package-download-url
+
+            official-gnu-packages
+            find-packages
             gnu-package?
+
             releases
             latest-release
             gnu-package-name->name+version))
@@ -49,29 +64,32 @@
 ;;;
 
 (define (http-fetch uri)
-  "Return a string containing the textual data at URI, a string."
+  "Return an input port containing the textual data at URI, a string."
   (let*-values (((resp data)
                 (http-get (string->uri uri)))
                ((code)
                 (response-code resp)))
     (case code
       ((200)
-       (if data
-           data
-           (begin
-             ;; XXX: Guile 2.0.5 and earlier did not support chunked transfer
-             ;; encoding, which is required when fetching %PACKAGE-LIST-URL
-             ;; (see <http://lists.gnu.org/archive/html/guile-devel/2011-09/msg00089.html>).
-             ;; Since users may still be using these versions, warn them and
-             ;; bail out.
-             (format (current-error-port)
-                     "warning: using Guile ~a, which does not support HTTP ~s encoding~%"
-                     (version)
-                     (response-transfer-encoding resp))
-             (error "download failed; use a newer Guile"
-                    uri resp))))
+       (cond ((string<=? (version) "2.0.5")
+              (begin
+                ;; XXX: Guile 2.0.5 and earlier did not support chunked transfer
+                ;; encoding, which is required when fetching %PACKAGE-LIST-URL
+                ;; (see <http://lists.gnu.org/archive/html/guile-devel/2011-09/msg00089.html>).
+                ;; Since users may still be using these versions, warn them and
+                ;; bail out.
+                (format (current-error-port)
+                        "warning: using Guile ~a, ~a ~s encoding~%"
+                        (version)
+                        "which does not support HTTP"
+                        (response-transfer-encoding resp))
+                (error "download failed; use a newer Guile"
+                       uri resp)))
+             ((string<=? (version) "2.0.7")
+              (open-input-string data))
+             (else data)))
       (else
-       (error "download failed:" uri code
+       (error "download failed" uri code
               (response-reason-phrase resp))))))
 
 (define %package-list-url
@@ -79,16 +97,100 @@
                  "viewvc/*checkout*/gnumaint/"
                  "gnupackages.txt?root=womb"))
 
-(define (official-gnu-packages)
-  "Return a list of GNU packages."
-  (define %package-line-rx
-    (make-regexp "^package: (.+)$"))
+(define-record-type* <gnu-package-descriptor>
+  gnu-package-descriptor
+  make-gnu-package-descriptor
 
-  (let ((lst (string-split (http-fetch %package-list-url) #\nl)))
-    (filter-map (lambda (line)
-                  (and=> (regexp-exec %package-line-rx line)
-                         (cut match:substring <> 1)))
-                lst)))
+  gnu-package-descriptor?
+
+  (name             gnu-package-name)
+  (mundane-name     gnu-package-mundane-name)
+  (copyright-holder gnu-package-copyright-holder)
+  (savannah         gnu-package-savannah)
+  (fsd              gnu-package-fsd)
+  (language         gnu-package-language)
+  (logo             gnu-package-logo)
+  (doc-category     gnu-package-doc-category)
+  (doc-summary      gnu-package-doc-summary)
+  (doc-urls         gnu-package-doc-urls)
+  (download-url     gnu-package-download-url))
+
+(define (official-gnu-packages)
+  "Return a list of records, which are GNU packages."
+  (define (group-package-fields port state)
+    ;; Return a list of alists.  Each alist contains fields of a GNU
+    ;; package.
+    (let ((line        (read-line port))
+          (field-rx    (make-regexp "^([[:graph:]]+): (.*)$"))
+          (doc-urls-rx (make-regexp "^doc-url: (.*)$"))
+          (end-rx      (make-regexp "^# End. .+Do not remove this line.+")))
+
+      (define (match-field str)
+        ;; Packages are separated by empty strings.  If STR is an
+        ;; empty string, create a new list to store fields of a
+        ;; different package.  Otherwise, match and create a key-value
+        ;; pair.
+        (match str
+          (""
+           (group-package-fields port (cons '() state)))
+          (str
+           (cond ((regexp-exec doc-urls-rx str)
+                  =>
+                  (lambda (match)
+                    (if (equal? (assoc-ref (first state) "doc-urls") #f)
+                        (group-package-fields
+                         port (cons (cons (cons "doc-urls"
+                                                (list
+                                                 (match:substring match 1)))
+                                          (first state))
+                                    (drop state 1)))
+                        (group-package-fields
+                         port (cons (cons (cons "doc-urls"
+                                                (cons (match:substring match 1)
+                                                      (assoc-ref (first state)
+                                                                 "doc-urls")))
+                                          (assoc-remove! (first state)
+                                                         "doc-urls"))
+                                    (drop state 1))))))
+                 ((regexp-exec field-rx str)
+                  =>
+                  (lambda (match)
+                    (group-package-fields
+                     port (cons (cons (cons (match:substring match 1)
+                                            (match:substring match 2))
+                                      (first state))
+                                (drop state 1)))))
+                 (else (group-package-fields port state))))))
+
+      (if (or (eof-object? line)
+              (regexp-exec end-rx line)) ; don't include dummy fields
+          (remove null-list? state)
+          (match-field line))))
+
+  (define (alist->record alist make keys)
+    ;; Apply MAKE, which should be a syntactic constructor, to the
+    ;; values associated with KEYS in ALIST.
+    (let ((args (map (cut assoc-ref alist <>) keys)))
+      (apply make args)))
+
+  (reverse
+   (map (lambda (alist)
+          (alist->record alist
+                         make-gnu-package-descriptor
+                         (list "package" "mundane-name" "copyright-holder"
+                               "savannah" "fsd" "language" "logo"
+                               "doc-category" "doc-summary" "doc-urls"
+                               "download-url")))
+        (group-package-fields (http-fetch %package-list-url)
+                              '(())))))
+
+(define (find-packages regexp)
+  "Find GNU packages which satisfy REGEXP."
+  (let ((name-rx (make-regexp regexp)))
+    (filter (lambda (package)
+              (false-if-exception
+               (regexp-exec name-rx (gnu-package-name package))))
+            (official-gnu-packages))))
 
 (define gnu-package?
   (memoize
@@ -97,9 +199,10 @@
 network to check in GNU's database."
      ;; TODO: Find a way to determine that a package is non-GNU without going
      ;; through the network.
-     (let ((url (and=> (package-source package) origin-uri)))
+     (let ((url  (and=> (package-source package) origin-uri))
+           (name (package-name package)))
        (or (and (string? url) (string-prefix? "mirror://gnu" url))
-           (and (member (package-name package) (official-gnu-packages))
+           (and (member name (map gnu-package-name (official-gnu-packages)))
                 #t))))))
 
 
