@@ -277,7 +277,7 @@ ATTRIBUTE is true, only that attribute is considered."
              %nix-instantiate "--strict" "--eval-only" "--xml"
 
              ;; Pass a dummy `crossSystem' argument so that `buildInputs' and
-             ;; `buildNativeInputs' are not coalesced.
+             ;; `nativeBuildInputs' are not coalesced.
              ;; XXX: This is hacky and has other problems.
              ;"--arg" "crossSystem" cross-system
 
@@ -423,12 +423,15 @@ location of DERIVATION."
              (build-system gnu-build-system)
 
              ;; When doing a native Nixpkgs build, `buildInputs' is empty and
-             ;; everything is in `buildNativeInputs'.  So we can't distinguish
+             ;; everything is in `nativeBuildInputs'.  So we can't distinguish
              ;; between both, here.
+             ;;
+             ;; Note that `nativeBuildInputs' was renamed from
+             ;; `buildNativeInputs' in Nixpkgs sometime around March 2013.
              ,@(maybe-inputs 'inputs
-                             (convert-inputs "buildNativeInputs"))
+                             (convert-inputs "nativeBuildInputs"))
              ,@(maybe-inputs 'propagated-inputs
-                             (convert-inputs "propagatedBuildNativeInputs"))
+                             (convert-inputs "propagatedNativeBuildInputs"))
 
              (home-page ,(and=> (find-attribute-by-name "homepage" meta)
                                 attribute-value))
