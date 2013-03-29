@@ -104,7 +104,8 @@ check whether everything is alright."
        ("tarball" ,(bootstrap-origin (source* (%current-system))))))
     (synopsis description*)
     (description #f)
-    (home-page #f)))
+    (home-page #f)
+    (license #f)))
 
 (define package-with-bootstrap-guile
   (memoize
@@ -285,7 +286,8 @@ $out/bin/guile --version~%"
                           "08hv8i0axwnihrcgbz19x0a7s6zyv3yx38x8r29liwl8h82x9g88")))))))))
     (synopsis "Bootstrap binaries and headers of the GNU C Library")
     (description #f)
-    (home-page #f)))
+    (home-page #f)
+    (license lgpl2.1+)))
 
 (define %bootstrap-gcc
   ;; The initial GCC.  Uses binaries from a tarball typically built by
@@ -352,7 +354,8 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                           "06wqs0xxnpw3hn0xjb4c9cs0899p1xwkcysa2rvzhvpra0c5vsg2")))))))))
     (synopsis "Bootstrap binaries of the GNU Compiler Collection")
     (description #f)
-    (home-page #f)))
+    (home-page #f)
+    (license gpl3+)))
 
 (define %bootstrap-inputs
   ;; The initial, pre-built inputs.  From now on, we can start building our

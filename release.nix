@@ -42,11 +42,22 @@ let
         if builtins.isAttrs drv
         then pkgs.lib.overrideDerivation (pythonKludge drv) (args: {
           __noChroot = true;
-          buildNativeInputs = map unchroot args.buildNativeInputs;
-          propagatedBuildNativeInputs =
-            map unchroot args.propagatedBuildNativeInputs;
+          nativeBuildInputs = map unchroot args.nativeBuildInputs;
+          propagatedNativeBuildInputs =
+            map unchroot args.propagatedNativeBuildInputs;
         })
         else drv;
+
+  # Return a Nixpkgs with some derivations "unchrooted".
+  unchrootedNixpkgs = system:
+    import nixpkgs {
+      # XXX: Hack to make sure these ones also get "unchrooted".
+      config.packageOverrides = pkgs: {
+        zlib = unchroot pkgs.zlib;
+        libunistring = unchroot pkgs.libunistring;
+      };
+      inherit system;
+    };
 
   # The Guile used to bootstrap the whole thing.  It's normally
   # downloaded by the build system, but here we download it via a
@@ -67,7 +78,7 @@ let
   jobs = {
     tarball =
       unchroot
-      (let pkgs = import nixpkgs {}; in
+      (let pkgs = unchrootedNixpkgs builtins.currentSystem; in
       pkgs.releaseTools.sourceTarball {
         name = "guix-tarball";
         src = <guix>;
@@ -82,7 +93,7 @@ let
           in
             [ git_light ] ++
             (with pkgs; [ guile sqlite bzip2 libgcrypt ]);
-        buildNativeInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
+        nativeBuildInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
         preAutoconf = ''git config submodule.nix.url "${<nix>}"'';
         configureFlags =
           [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
@@ -94,11 +105,11 @@ let
       { system ? builtins.currentSystem }:
 
       unchroot
-      (let pkgs = import nixpkgs { inherit system; }; in
+      (let pkgs = unchrootedNixpkgs system; in
       pkgs.releaseTools.nixBuild {
         name = "guix";
         buildInputs = with pkgs; [ guile sqlite bzip2 libgcrypt ];
-        buildNativeInputs = [ pkgs.pkgconfig ];
+        nativeBuildInputs = [ pkgs.pkgconfig ];
         src = jobs.tarball;
         configureFlags =
           [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
@@ -125,7 +136,7 @@ let
 
       unchroot
       (let
-        pkgs = import nixpkgs { inherit system; };
+        pkgs = unchrootedNixpkgs system;
         build = jobs.build { inherit system; };
       in
         pkgs.lib.overrideDerivation build ({ configureFlags, ... }: {
@@ -144,7 +155,7 @@ let
         { system ? builtins.currentSystem }:
 
         let
-          pkgs = import nixpkgs { inherit system; };
+          pkgs = unchrootedNixpkgs system;
           guix = jobs.build { inherit system; };
         in
           # XXX: We have no way to tell the Nix code to swallow the .drv

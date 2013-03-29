@@ -110,26 +110,27 @@ and the hash of its contents.\n"))
                  (alist-cons 'argument arg result))
                %default-options))
 
-  (let* ((opts  (parse-options))
-         (store (open-connection))
-         (arg   (assq-ref opts 'argument))
-         (uri   (or (string->uri arg)
-                    (leave (_ "guix-download: ~a: failed to parse URI~%")
-                           arg)))
-         (path  (case (uri-scheme uri)
-                  ((file)
-                   (add-to-store store (basename (uri-path uri))
-                                 #f "sha256" (uri-path uri)))
-                  (else
-                   (fetch-and-store store
-                                    (cut url-fetch arg <>
-                                         #:mirrors %mirrors)
-                                    (basename (uri-path uri))))))
-         (hash  (call-with-input-file
-                    (or path
-                        (leave (_ "guix-download: ~a: download failed~%")
-                               arg))
-                  (compose sha256 get-bytevector-all)))
-         (fmt   (assq-ref opts 'format)))
-    (format #t "~a~%~a~%" path (fmt hash))
-    #t))
+  (with-error-handling
+    (let* ((opts  (parse-options))
+           (store (open-connection))
+           (arg   (assq-ref opts 'argument))
+           (uri   (or (string->uri arg)
+                      (leave (_ "guix-download: ~a: failed to parse URI~%")
+                             arg)))
+           (path  (case (uri-scheme uri)
+                    ((file)
+                     (add-to-store store (basename (uri-path uri))
+                                   #f "sha256" (uri-path uri)))
+                    (else
+                     (fetch-and-store store
+                                      (cut url-fetch arg <>
+                                           #:mirrors %mirrors)
+                                      (basename (uri-path uri))))))
+           (hash  (call-with-input-file
+                      (or path
+                          (leave (_ "guix-download: ~a: download failed~%")
+                                 arg))
+                    (compose sha256 get-bytevector-all)))
+           (fmt   (assq-ref opts 'format)))
+      (format #t "~a~%~a~%" path (fmt hash))
+      #t)))

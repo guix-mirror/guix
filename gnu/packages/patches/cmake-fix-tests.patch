@@ -1,0 +1,45 @@
+--- Tests/CMakeLists.txt	2013-03-20 22:57:13.000000000 +0100
++++ Tests/CMakeLists.txt	2013-03-20 22:58:02.000000000 +0100
+@@ -1706,16 +1706,17 @@
+     PASS_REGULAR_EXPRESSION "Could not find executable"
+     FAIL_REGULAR_EXPRESSION "SegFault")
+ 
+-  configure_file(
+-    "${CMake_SOURCE_DIR}/Tests/CTestTestUpload/test.cmake.in"
+-    "${CMake_BINARY_DIR}/Tests/CTestTestUpload/test.cmake"
+-    @ONLY ESCAPE_QUOTES)
+-  add_test(CTestTestUpload ${CMAKE_CTEST_COMMAND}
+-    -S "${CMake_BINARY_DIR}/Tests/CTestTestUpload/test.cmake" -V
+-    --output-log "${CMake_BINARY_DIR}/Tests/CTestTestUpload/testOut.log"
+-    )
+-  set_tests_properties(CTestTestUpload PROPERTIES
+-    PASS_REGULAR_EXPRESSION "Upload\\.xml")
++# This test requires network connectivity: skip it.
++#  configure_file(
++#    "${CMake_SOURCE_DIR}/Tests/CTestTestUpload/test.cmake.in"
++#    "${CMake_BINARY_DIR}/Tests/CTestTestUpload/test.cmake"
++#    @ONLY ESCAPE_QUOTES)
++#  add_test(CTestTestUpload ${CMAKE_CTEST_COMMAND}
++#    -S "${CMake_BINARY_DIR}/Tests/CTestTestUpload/test.cmake" -V
++#    --output-log "${CMake_BINARY_DIR}/Tests/CTestTestUpload/testOut.log"
++#    )
++#  set_tests_properties(CTestTestUpload PROPERTIES
++#    PASS_REGULAR_EXPRESSION "Upload\\.xml")
+ 
+   configure_file(
+     "${CMake_SOURCE_DIR}/Tests/CTestTestConfigFileInBuildDir/test1.cmake.in"
+--- Utilities/cmcurl/CMakeLists.txt	2013-03-20 22:57:13.000000000 +0100
++++ Utilities/cmcurl/CMakeLists.txt	2013-03-20 23:08:41.000000000 +0100
+@@ -729,8 +729,9 @@
+ ADD_EXECUTABLE(LIBCURL Testing/curltest.c)
+ TARGET_LINK_LIBRARIES(LIBCURL cmcurl ${CMAKE_DL_LIBS})
+ 
+-IF(CMAKE_CURL_TEST_URL)
+-  ADD_TEST(curl LIBCURL ${CMAKE_CURL_TEST_URL})
+-ENDIF(CMAKE_CURL_TEST_URL)
++# This test requires network connectivity: skip it.
++#IF(CMAKE_CURL_TEST_URL)
++#  ADD_TEST(curl LIBCURL ${CMAKE_CURL_TEST_URL})
++#ENDIF(CMAKE_CURL_TEST_URL)
+ 
+ INSTALL(FILES COPYING DESTINATION ${CMake_DOC_DEST}/cmcurl)

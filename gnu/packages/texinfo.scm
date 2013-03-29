@@ -28,14 +28,14 @@
 (define-public texinfo
   (package
     (name "texinfo")
-    (version "5.0")
+    (version "5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/texinfo/texinfo-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1p34f68h9ggfj6ckgj0p62qlj7pmz3ha3vc91kh4hr44pnwm1pla"))))
+               "0864v5i488x3mb3v5p6nhy2kw0mqkzpa3b0453iibj81zlpq078q"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("xz" ,xz)))

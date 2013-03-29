@@ -135,7 +135,7 @@ representation."
 
   (synopsis package-synopsis)                    ; one-line description
   (description package-description)              ; one or two paragraphs
-  (license package-license (default '()))
+  (license package-license)
   (home-page package-home-page)
   (platforms package-platforms (default '()))
   (maintainers package-maintainers (default '()))

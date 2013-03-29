@@ -38,6 +38,7 @@ MODULES =					\
   guix/gnu-maintenance.scm			\
   guix/licenses.scm				\
   guix/build-system.scm				\
+  guix/build-system/cmake.scm			\
   guix/build-system/gnu.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/trivial.scm			\
@@ -45,6 +46,7 @@ MODULES =					\
   guix/store.scm				\
   guix/ui.scm					\
   guix/build/download.scm			\
+  guix/build/cmake-build-system.scm		\
   guix/build/gnu-build-system.scm		\
   guix/build/perl-build-system.scm		\
   guix/build/utils.scm				\
@@ -58,6 +60,7 @@ MODULES =					\
   gnu/packages/aspell.scm			\
   gnu/packages/attr.scm				\
   gnu/packages/autotools.scm			\
+  gnu/packages/avahi.scm			\
   gnu/packages/base.scm				\
   gnu/packages/bash.scm				\
   gnu/packages/bdb.scm				\
@@ -65,9 +68,12 @@ MODULES =					\
   gnu/packages/bison.scm			\
   gnu/packages/bootstrap.scm			\
   gnu/packages/cdrom.scm			\
+  gnu/packages/cflow.scm			\
   gnu/packages/check.scm			\
+  gnu/packages/cmake.scm			\
   gnu/packages/compression.scm			\
   gnu/packages/cpio.scm				\
+  gnu/packages/cppi.scm				\
   gnu/packages/cross-base.scm			\
   gnu/packages/curl.scm				\
   gnu/packages/cyrus-sasl.scm			\
@@ -75,10 +81,12 @@ MODULES =					\
   gnu/packages/ddrescue.scm			\
   gnu/packages/ed.scm				\
   gnu/packages/emacs.scm			\
+  gnu/packages/fdisk.scm			\
   gnu/packages/file.scm				\
   gnu/packages/flex.scm				\
   gnu/packages/fontutils.scm			\
   gnu/packages/gawk.scm				\
+  gnu/packages/gcc.scm				\
   gnu/packages/gdb.scm				\
   gnu/packages/gdbm.scm				\
   gnu/packages/gettext.scm			\
@@ -116,6 +124,8 @@ MODULES =					\
   gnu/packages/linux-initrd.scm			\
   gnu/packages/lout.scm				\
   gnu/packages/lsh.scm				\
+  gnu/packages/lsof.scm				\
+  gnu/packages/lua.scm				\
   gnu/packages/m4.scm				\
   gnu/packages/mailutils.scm			\
   gnu/packages/make-bootstrap.scm		\
@@ -162,6 +172,7 @@ MODULES =					\
   gnu/packages/tor.scm				\
   gnu/packages/vim.scm 				\
   gnu/packages/vpn.scm				\
+  gnu/packages/w3m.scm				\
   gnu/packages/wdiff.scm			\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
@@ -183,6 +194,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
+  gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
   gnu/packages/patches/emacs-configure-sh.patch			\
@@ -194,6 +206,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/gettext-gets-undeclared.patch		\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
+  gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glib-tests-timezone.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-no-ld-so-cache.patch		\
@@ -202,7 +215,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-default-utf8.patch			\
   gnu/packages/patches/guile-linux-syscalls.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
-  gnu/packages/patches/libapr-skip-getservbyname-test.patch 	\
+  gnu/packages/patches/libapr-skip-getservbyname-test.patch	\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/lsh-guile-compat.patch			\
@@ -219,9 +232,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/shishi-gets-undeclared.patch		\
   gnu/packages/patches/tar-gets-undeclared.patch		\
-  gnu/packages/patches/tcsh-fix-autotest.patch 			\
+  gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
-  gnu/packages/patches/vpnc-script.patch
+  gnu/packages/patches/vpnc-script.patch			\
+  gnu/packages/patches/w3m-fix-compile.patch
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux

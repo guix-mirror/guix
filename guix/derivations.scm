@@ -235,6 +235,32 @@ DRV and not already available in STORE, recursively."
               (hash-set! cache file drv)
               drv))))))
 
+(define-inlinable (write-sequence lst write-item port)
+  ;; Write each element of LST with WRITE-ITEM to PORT, separating them with a
+  ;; comma.
+  (match lst
+    (()
+     #t)
+    ((prefix (... ...) last)
+     (for-each (lambda (item)
+                 (write-item item port)
+                 (display "," port))
+               prefix)
+     (write-item last port))))
+
+(define-inlinable (write-list lst write-item port)
+  ;; Write LST as a derivation list to PORT, using WRITE-ITEM to write each
+  ;; element.
+  (display "[" port)
+  (write-sequence lst write-item port)
+  (display "]" port))
+
+(define-inlinable (write-tuple lst write-item port)
+  ;; Same, but write LST as a tuple.
+  (display "(" port)
+  (write-sequence lst write-item port)
+  (display ")" port))
+
 (define (write-derivation drv port)
   "Write the ATerm-like serialization of DRV to PORT.  See Section 2.4 of
 Eelco Dolstra's PhD dissertation for an overview of a previous version of
@@ -243,11 +269,8 @@ that form."
   ;; Make sure we're using the faster implementation.
   (define format simple-format)
 
-  (define (list->string lst)
-    (string-append "[" (string-join lst ",") "]"))
-
-  (define (write-list lst)
-    (display (list->string lst) port))
+  (define (write-string-list lst)
+    (write-list lst write port))
 
   (define (coalesce-duplicate-inputs inputs)
     ;; Return a list of inputs, such that when INPUTS contains the same DRV
@@ -272,6 +295,34 @@ that form."
           '()
           inputs))
 
+  (define (write-output output port)
+    (match output
+     ((name . ($ <derivation-output> path hash-algo hash))
+      (write-tuple (list name path
+                         (or (and=> hash-algo symbol->string) "")
+                         (or (and=> hash bytevector->base16-string)
+                             ""))
+                   write
+                   port))))
+
+  (define (write-input input port)
+    (match input
+      (($ <derivation-input> path sub-drvs)
+       (display "(" port)
+       (write path port)
+       (display "," port)
+       (write-string-list (sort sub-drvs string<?))
+       (display ")" port))))
+
+  (define (write-env-var env-var port)
+    (match env-var
+      ((name . value)
+       (display "(" port)
+       (write name port)
+       (display "," port)
+       (write value port)
+       (display ")" port))))
+
   ;; Note: lists are sorted alphabetically, to conform with the behavior of
   ;; C++ `std::map' in Nix itself.
 
@@ -279,37 +330,28 @@ that form."
     (($ <derivation> outputs inputs sources
         system builder args env-vars)
      (display "Derive(" port)
-     (write-list (map (match-lambda
-                       ((name . ($ <derivation-output> path hash-algo hash))
-                        (format #f "(~s,~s,~s,~s)"
-                                name path
-                                (or (and=> hash-algo symbol->string) "")
-                                (or (and=> hash bytevector->base16-string)
-                                    ""))))
-                      (sort outputs
-                            (lambda (o1 o2)
-                              (string<? (car o1) (car o2))))))
+     (write-list (sort outputs
+                       (lambda (o1 o2)
+                         (string<? (car o1) (car o2))))
+                 write-output
+                 port)
      (display "," port)
-     (write-list (map (match-lambda
-                       (($ <derivation-input> path sub-drvs)
-                        (format #f "(~s,~a)" path
-                                (list->string (map object->string
-                                                   (sort sub-drvs string<?))))))
-                      (sort (coalesce-duplicate-inputs inputs)
-                            (lambda (i1 i2)
-                              (string<? (derivation-input-path i1)
-                                        (derivation-input-path i2))))))
+     (write-list (sort (coalesce-duplicate-inputs inputs)
+                       (lambda (i1 i2)
+                         (string<? (derivation-input-path i1)
+                                   (derivation-input-path i2))))
+                 write-input
+                 port)
      (display "," port)
-     (write-list (map object->string (sort sources string<?)))
+     (write-string-list (sort sources string<?))
      (format port ",~s,~s," system builder)
-     (write-list (map object->string args))
+     (write-string-list args)
      (display "," port)
-     (write-list (map (match-lambda
-                       ((name . value)
-                        (format #f "(~s,~s)" name value)))
-                      (sort env-vars
-                            (lambda (e1 e2)
-                              (string<? (car e1) (car e2))))))
+     (write-list (sort env-vars
+                       (lambda (e1 e2)
+                         (string<? (car e1) (car e2))))
+                 write-env-var
+                 port)
      (display ")" port))))
 
 (define derivation-path->output-path
@@ -699,14 +741,21 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
                       (unsetenv "LD_LIBRARY_PATH")))
          (builder  (add-text-to-store store
                                       (string-append name "-guile-builder")
-                                      (string-append
-                                       (object->string prologue)
-                                       (object->string
-                                        `(exit
-                                          ,(match exp
-                                             ((_ ...)
-                                              (remove module-form? exp))
-                                             (_ `(,exp))))))
+
+                                      ;; Explicitly use UTF-8 for determinism,
+                                      ;; and also because UTF-8 output is faster.
+                                      (with-fluids ((%default-port-encoding
+                                                     "UTF-8"))
+                                        (call-with-output-string
+                                         (lambda (port)
+                                           (write prologue port)
+                                           (write
+                                            `(exit
+                                              ,(match exp
+                                                 ((_ ...)
+                                                  (remove module-form? exp))
+                                                 (_ `(,exp))))
+                                            port))))
 
                                       ;; The references don't really matter
                                       ;; since the builder is always used in

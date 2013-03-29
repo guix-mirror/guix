@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -57,15 +57,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.5.0")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
-                          version ".tar.bz2"))
-      (sha256
-       (base32
-        "1ykkh7dm0gyndz7bbpvn3agijj8xb2h02m02f42hm504c18zqqjb"))))
+    (version "1.5.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "09z5zbxhvg6c7n8qcm8h9ygr28qli2n83hfq1f69jsg711cb37md"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))

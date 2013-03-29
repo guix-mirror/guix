@@ -23,8 +23,14 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
+  #:use-module ((gnu packages gettext)
+                #:renamer (symbol-prefix-proc 'gnu:))
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xml))
 
 (define-public vpnc
   (package
@@ -64,3 +70,45 @@ shared-secret IPSec authentication with Xauth, AES (256, 192, 128), 3DES,
 Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
    (license license:gpl2+) ; some file are bsd-2, see COPYING
    (home-page "http://www.unix-ag.uni-kl.de/~massar/vpnc/")))
+
+
+(define-public openconnect
+  (package
+   (name "openconnect")
+   (version "4.99")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "ftp://ftp.infradead.org/pub/openconnect/openconnect-"
+                                version ".tar.gz"))
+            (sha256 (base32
+                     "1rd8pap455wzkx19i0sy3cqap524b6fwcjvqynxp6lhm01di4bd6"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("gettext" ,gnu:gettext)
+      ("libxml2" ,libxml2)
+      ("openssl" ,openssl)
+      ("pkg-config" ,pkg-config)
+      ("vpnc" ,vpnc)
+      ("zlib" ,zlib)))
+   (arguments
+    `(#:phases
+      (alist-replace
+       'configure
+       (lambda* (#:key inputs #:allow-other-keys #:rest args)
+         (let ((vpnc (assoc-ref inputs "vpnc"))
+               (configure (assoc-ref %standard-phases 'configure)))
+           (apply configure
+                  (append args
+                          (list '#:configure-flags
+                                (list (string-append "--with-vpnc-script="
+                                                     vpnc
+                                                     "/etc/vpnc/vpnc-script")))))))
+       %standard-phases)))
+   (synopsis "client for cisco vpn")
+   (description
+    "OpenConnect is a client for Cisco's AnyConnect SSL VPN, which is
+supported by the ASA5500 Series, by IOS 12.4(9)T or later on Cisco SR500,
+870, 880, 1800, 2800, 3800, 7200 Series and Cisco 7301 Routers,
+and probably others.")
+   (license license:lgpl2.1)
+   (home-page "http://www.infradead.org/openconnect/")))

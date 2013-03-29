@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +20,21 @@
 ;;; This file defines build jobs for the Hydra continuation integration
 ;;; tool.
 ;;;
+
+;; Attempt to use our very own Guix modules.
+(eval-when (compile load eval)
+
+  ;; Ignore any available .go, and force recompilation.  This is because our
+  ;; checkout in the store has mtime set to the epoch, and thus .go files look
+  ;; newer, even though they may not correspond.
+  (set! %fresh-auto-compile #t)
+
+  (and=> (assoc-ref (current-source-location) 'filename)
+         (lambda (file)
+           (let ((dir (dirname file)))
+             (format (current-error-port) "prepending ~s to the load path~%"
+                     dir)
+             (set! %load-path (cons dir %load-path))))))
 
 (use-modules (guix store)
              (guix packages)

@@ -27,6 +27,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages linux)

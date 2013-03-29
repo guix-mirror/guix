@@ -52,7 +52,7 @@ portable, and only require an ANSI C89 platform.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.1.6")
+    (version "3.1.9.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -62,7 +62,7 @@ portable, and only require an ANSI C89 platform.")
                              version ".tar.xz"))
              (sha256
               (base32
-               "0zsybr9plllk1phh83bx9bg7c5ccik427j4n3k1s9fiy4j69n0w3"))))
+               "0gkwhz7sypfy39jfj2yzrngbxq5j9l9smqc89mqlqsh25spc8009"))))
     (build-system gnu-build-system)
     (inputs
      `(("guile" ,guile-2.0)

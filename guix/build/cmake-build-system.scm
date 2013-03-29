@@ -1,0 +1,63 @@
+;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;;
+;;; This file is part of GNU Guix.
+;;;
+;;; GNU Guix is free software; you can redistribute it and/or modify it
+;;; under the terms of the GNU General Public License as published by
+;;; the Free Software Foundation; either version 3 of the License, or (at
+;;; your option) any later version.
+;;;
+;;; GNU Guix is distributed in the hope that it will be useful, but
+;;; WITHOUT ANY WARRANTY; without even the implied warranty of
+;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;; GNU General Public License for more details.
+;;;
+;;; You should have received a copy of the GNU General Public License
+;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
+
+(define-module (guix build cmake-build-system)
+  #:use-module ((guix build gnu-build-system)
+                #:renamer (symbol-prefix-proc 'gnu:))
+  #:use-module (guix build utils)
+  #:use-module (ice-9 match)
+  #:export (%standard-phases
+            cmake-build))
+
+;; Commentary:
+;;
+;; Builder-side code of the standard cmake build procedure.
+;;
+;; Code:
+
+(define* (configure #:key outputs (configure-flags '())
+                    #:allow-other-keys)
+  "Configure the given package."
+  (let ((out (assoc-ref outputs "out")))
+    (if (file-exists? "CMakeLists.txt")
+        (let ((args `(,(string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                      ,@configure-flags)))
+          (format #t "running 'cmake' with arguments ~s~%" args)
+          (zero? (apply system* "cmake" args)))
+        (error "no CMakeLists.txt found"))))
+
+(define* (check #:key (tests? #t) (parallel-tests? #t) (test-target "test")
+                #:allow-other-keys)
+  (let ((gnu-check (assoc-ref gnu:%standard-phases 'check)))
+    (gnu-check #:tests? tests? #:test-target test-target
+              #:parallel-tests? parallel-tests?)))
+
+(define %standard-phases
+  ;; Everything is as with the GNU Build System except for the `configure'
+  ;; and 'check' phases.
+  (alist-replace 'configure configure
+    (alist-replace 'check check
+                   gnu:%standard-phases)))
+
+(define* (cmake-build #:key inputs (phases %standard-phases)
+                      #:allow-other-keys #:rest args)
+  "Build the given package, applying all of PHASES in order."
+  (apply gnu:gnu-build #:inputs inputs #:phases phases args))
+
+;;; cmake-build-system.scm ends here

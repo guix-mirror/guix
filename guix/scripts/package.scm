@@ -39,6 +39,7 @@
   #:use-module (gnu packages)
   #:use-module ((gnu packages base) #:select (guile-final))
   #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
+  #:use-module (guix gnu-maintenance)
   #:export (guix-package))
 
 (define %store
@@ -265,6 +266,47 @@ matching packages."
                       (derivation-output-path
                        (assoc-ref (derivation-outputs drv) sub-drv))))
          `(,name ,out))))))
+
+(define-syntax-rule (waiting exp fmt rest ...)
+  "Display the given message while EXP is being evaluated."
+  (let* ((message (format #f fmt rest ...))
+         (blank   (make-string (string-length message) #\space)))
+    (display message (current-error-port))
+    (force-output (current-error-port))
+    (let ((result exp))
+      ;; Clear the line.
+      (display #\cr (current-error-port))
+      (display blank (current-error-port))
+      (display #\cr (current-error-port))
+      (force-output (current-error-port))
+      exp)))
+
+(define (check-package-freshness package)
+  "Check whether PACKAGE has a newer version available upstream, and report
+it."
+  ;; TODO: Automatically inject the upstream version when desired.
+
+  (catch #t
+    (lambda ()
+      (when (false-if-exception (gnu-package? package))
+        (let ((name      (package-name package))
+              (full-name (package-full-name package)))
+          (match (waiting (latest-release name)
+                          (_ "looking for the latest release of GNU ~a...") name)
+            ((latest-version . _)
+             (when (version>? latest-version full-name)
+               (format (current-error-port)
+                       (_ "~a: note: using ~a \
+but ~a is available upstream~%")
+                       (location->string (package-location package))
+                       full-name latest-version)))
+            (_ #t)))))
+    (lambda (key . args)
+      ;; Silently ignore networking errors rather than preventing
+      ;; installation.
+      (case key
+        ((getaddrinfo-error ftp-error) #f)
+        (else (apply throw key args))))))
 
 
 ;;;
@@ -510,6 +552,44 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
           ,path
           ,(canonicalize-deps deps))))
 
+    (define (show-what-to-remove/install remove install dry-run?)
+      ;; Tell the user what's going to happen in high-level terms.
+      ;; TODO: Report upgrades more clearly.
+      (match remove
+        (((name version _ path _) ..1)
+         (let ((len    (length name))
+               (remove (map (cut format #f "  ~a-~a\t~a" <> <> <>)
+                            name version path)))
+           (if dry-run?
+               (format (current-error-port)
+                       (N_ "The following package would be removed:~% ~{~a~%~}~%"
+                           "The following packages would be removed:~% ~{~a~%~}~%"
+                           len)
+                       remove)
+               (format (current-error-port)
+                       (N_ "The following package will be removed:~% ~{~a~%~}~%"
+                           "The following packages will be removed:~% ~{~a~%~}~%"
+                           len)
+                       remove))))
+        (_ #f))
+      (match install
+        (((name version _ path _) ..1)
+         (let ((len     (length name))
+               (install (map (cut format #f "  ~a-~a\t~a" <> <> <>)
+                             name version path)))
+           (if dry-run?
+               (format (current-error-port)
+                       (N_ "The following package would be installed:~% ~{~a~%~}~%"
+                           "The following packages would be installed:~% ~{~a~%~}~%"
+                           len)
+                       install)
+               (format (current-error-port)
+                       (N_ "The following package will be installed:~% ~{~a~%~}~%"
+                           "The following packages will be installed:~% ~{~a~%~}~%"
+                           len)
+                       install))))
+        (_ #f)))
+
     ;; First roll back if asked to.
     (if (and (assoc-ref opts 'roll-back?) (not dry-run?))
         (begin
@@ -547,6 +627,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                       ((name version sub-drv
                                              (? package? package)
                                              (deps ...))
+                                       (check-package-freshness package)
                                        (package-derivation (%store) package))
                                       (_ #f))
                                      install))
@@ -576,6 +657,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                        package)
                                       (_ #f))
                                      opts))
+               (remove*  (filter-map (cut assoc <> installed) remove))
                (packages (append install*
                                  (fold (lambda (package result)
                                          (match package
@@ -587,6 +669,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
           (when (equal? profile %current-profile)
             (ensure-default-profile))
 
+          (show-what-to-remove/install remove* install* dry-run?)
           (show-what-to-build (%store) drv dry-run?)
 
           (or dry-run?
@@ -669,8 +752,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
 
   (let ((opts (parse-options)))
     (or (process-query opts)
-        (parameterize ((%store (open-connection)))
-          (with-error-handling
+        (with-error-handling
+          (parameterize ((%store (open-connection)))
             (parameterize ((%guile-for-build
                             (package-derivation (%store)
                                                 (if (assoc-ref opts 'bootstrap?)
