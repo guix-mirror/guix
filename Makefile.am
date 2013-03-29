@@ -100,6 +100,7 @@ MODULES =					\
   gnu/packages/irssi.scm 			\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
+  gnu/packages/lesstif.scm			\
   gnu/packages/libapr.scm 			\
   gnu/packages/libdaemon.scm			\
   gnu/packages/libevent.scm			\
