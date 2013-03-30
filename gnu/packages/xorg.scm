@@ -1767,32 +1767,6 @@ and Matrox.")
     (license license:x11)))
 
 
-(define-public libxxf86vm
-  (package
-    (name "libxxf86vm")
-    (version "1.1.2")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXxf86vm-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "117w92xz39rcqcahspi48nc04cc9110x1dycpf3vbcb6p0pifr55"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("libx11" ,libx11)
-        ("libxext" ,libxext)
-        ("pkg-config" ,pkg-config)
-        ("xf86vidmodeproto" ,xf86vidmodeproto)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
 (define-public luit
   (package
     (name "luit")
@@ -4628,6 +4602,34 @@ emulation to complete hardware acceleration for modern GPUs.")
         ("libxext" ,libxext)
         ("libx11" ,libx11)
         ("videoproto" ,videoproto)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxxf86vm
+  (package
+    (name "libxxf86vm")
+    (version "1.1.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXxf86vm-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "117w92xz39rcqcahspi48nc04cc9110x1dycpf3vbcb6p0pifr55"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libxext" ,libxext)
+        ("xf86vidmodeproto" ,xf86vidmodeproto)))
+    (inputs
+      `(("libx11" ,libx11)
+        ("libxext" ,libxext)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
