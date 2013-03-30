@@ -380,6 +380,11 @@ tracking.")
           (base32
             "0m60f5bd0caambrk8ksknb5dks7wzsg7g7xaf0j21jxmx8rq9h5j"))))
     (build-system gnu-build-system)
+    (inputs
+      `(("bdftopcf" ,bdftopcf)
+        ("font-util", font-util)
+        ("mkfontdir" ,mkfontdir)
+        ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -401,6 +406,11 @@ tracking.")
           (base32
             "02advcv9lyxpvrjv8bjh1b797lzg6jvhipclz49z8r8y98g4l0n6"))))
     (build-system gnu-build-system)
+    (inputs
+      `(("bdftopcf" ,bdftopcf)
+        ("font-util", font-util)
+        ("mkfontdir" ,mkfontdir)
+        ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
