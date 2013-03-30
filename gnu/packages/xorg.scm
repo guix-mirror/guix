@@ -2731,28 +2731,28 @@ and Matrox.")
     (license license:x11)))
 
 
-;; FIXME: Compilation errors
-(define-public xf86-video-geode
-  (package
-    (name "xf86-video-geode")
-    (version "2.11.13")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-geode-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "09p2cjd2fb7h32k9qs4wp7qvhfn2zv454spv5mfplv7w2jis4863"))))
-    (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)
-              ("xorg-server" ,xorg-server)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
+;; Compilation errors: Assembler messages operand size mismatch etc.
+;; (define-public xf86-video-geode
+;;   (package
+;;     (name "xf86-video-geode")
+;;     (version "2.11.13")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/xf86-video-geode-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "09p2cjd2fb7h32k9qs4wp7qvhfn2zv454spv5mfplv7w2jis4863"))))
+;;     (build-system gnu-build-system)
+;;     (inputs `(("pkg-config" ,pkg-config)
+;;               ("xorg-server" ,xorg-server)))
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
+;;     (license license:x11)))
 
 
 ;; Driver for obsolete graphics cards, depends on libglide:
