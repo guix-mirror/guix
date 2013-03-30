@@ -1741,34 +1741,6 @@ and Matrox.")
     (license license:x11)))
 
 
-(define-public libxv
-  (package
-    (name "libxv")
-    (version "1.0.7")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXv-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "044hllz013afhzywwpxz007l4zjy99bv9im065rqd30zckmllrjx"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("xextproto" ,xextproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("videoproto" ,videoproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
 (define-public libxxf86dga
   (package
     (name "libxxf86dga")
@@ -4315,29 +4287,28 @@ and Matrox.")
     (license license:x11)))
 
 
-(define-public libxvmc
+(define-public libxv
   (package
-    (name "libxvmc")
+    (name "libxv")
     (version "1.0.7")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXvMC-"
+               "mirror://xorg/X11R7.7/src/everything/libXv-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "18yf6ysc01pqkbk9704914ghalq1sl2hfdjmwggxm8qqhpy8bw18"))))
+            "044hllz013afhzywwpxz007l4zjy99bv9im065rqd30zckmllrjx"))))
     (build-system gnu-build-system)
     (propagated-inputs
-      `(("libxv" ,libxv)))
+     `(("videoproto" ,videoproto)))
     (inputs
       `(("xproto" ,xproto)
         ("xextproto" ,xextproto)
         ("libxext" ,libxext)
         ("libx11" ,libx11)
-        ("videoproto" ,videoproto)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
@@ -4627,6 +4598,36 @@ emulation to complete hardware acceleration for modern GPUs.")
         ("xextproto" ,xextproto)
         ("libx11" ,libx11)
         ("renderproto" ,renderproto)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxvmc
+  (package
+    (name "libxvmc")
+    (version "1.0.7")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXvMC-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "18yf6ysc01pqkbk9704914ghalq1sl2hfdjmwggxm8qqhpy8bw18"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libxv" ,libxv)))
+    (inputs
+      `(("xproto" ,xproto)
+        ("xextproto" ,xextproto)
+        ("libxext" ,libxext)
+        ("libx11" ,libx11)
+        ("videoproto" ,videoproto)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
