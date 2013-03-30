@@ -153,7 +153,32 @@ and Matrox.")
          `("--enable-nouveau-experimental-api")))))
 
 
-;; packages without propagated input
+(define-public mtdev
+  (package
+    (name "mtdev")
+    (version "1.1.3")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "http://bitmath.org/code/mtdev/mtdev-"
+               version ".tar.bz2"))
+        (sha256
+          (base32
+            "159ndzwfpw0xr8mw4lhl47w9c2krshlfrscs7k6n186vknv2hk3d"))))
+    (build-system gnu-build-system)
+    (home-page "http://bitmath.org/code/mtdev/")
+    (synopsis "Multitouch protocol translation library")
+    (description "Mtdev is a stand-alone library which transforms all
+variants of kernel MT events to the slotted type B protocol.  The events
+put into mtdev may be from any MT device, specifically type A without
+contact tracking, type A with contact tracking, or type B with contact
+tracking.")
+    (license license:x11)))
+
+
+
+    ;; packages without propagated input
 ;; (rationale for this separation: The packages in PROPAGATED_INPUTS need to
 ;; be defined first, the split makes book-keeping easier.)
 
@@ -1576,34 +1601,6 @@ and Matrox.")
     (license license:x11)))
 
 
-(define-public libxi
-  (package
-    (name "libxi")
-    (version "1.6.1")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXi-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "029ihw4jq8mng8rx7a3jdvq64jm1zdkqidca93zmxv4jf9yn5qzj"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("xproto" ,xproto)
-        ("xextproto" ,xextproto)
-        ("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("inputproto" ,inputproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
 (define-public libxkbfile
   (package
     (name "libxkbfile")
@@ -2536,8 +2533,10 @@ and Matrox.")
           (base32
             "0g5b1s6q1dg38l8y47cwg7cs5nivwj0agmp71g273ws0lfg4bc8s"))))
     (build-system gnu-build-system)
-    ;; FIXME: Add required input mtdev.
-    (inputs `(("pkg-config" ,pkg-config)
+    (inputs `(("libx11" ,libx11)
+              ("libxi" ,libxi)
+              ("mtdev" ,mtdev)
+              ("pkg-config" ,pkg-config)
               ("xorg-server" ,xorg-server)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
@@ -4478,6 +4477,35 @@ and Matrox.")
     (inputs
       `(("zlib" ,zlib)
         ("xtrans" ,xtrans)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+(define-public libxi
+  (package
+    (name "libxi")
+    (version "1.6.1")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXi-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "029ihw4jq8mng8rx7a3jdvq64jm1zdkqidca93zmxv4jf9yn5qzj"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libxext" ,libxext)))
+    (inputs
+      `(("xproto" ,xproto)
+        ("xextproto" ,xextproto)
+        ("libx11" ,libx11)
+        ("inputproto" ,inputproto)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
