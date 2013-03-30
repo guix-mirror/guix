@@ -159,7 +159,9 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
 
 (define* (gnu-build store name source inputs
                     #:key (guile #f)
-                    (outputs '("out")) (configure-flags ''())
+                    (outputs '("out"))
+                    (search-paths '())
+                    (configure-flags ''())
                     (make-flags ''())
                     (patches ''()) (patch-flags ''("--batch" "-p1"))
                     (out-of-source? #f)
@@ -189,6 +191,21 @@ the builder's environment, from the host.  Note that we distinguish
 between both, because for Guile's own modules like (ice-9 foo), we want
 to use GUILE's own version of it, rather than import the user's one,
 which could lead to gratuitous input divergence."
+  (define implicit-inputs
+    (and implicit-inputs?
+         (parameterize ((%store store))
+           (standard-inputs system))))
+
+  (define implicit-search-paths
+    (if implicit-inputs?
+        (append-map (match-lambda
+                     ((_ (? package? p) _ ...)
+                      (package-native-search-paths p))
+                     (_
+                      '()))
+                    implicit-inputs)
+        '()))
+
   (define builder
     `(begin
        (use-modules ,@modules)
@@ -198,6 +215,9 @@ which could lead to gratuitous input divergence."
                   #:system ,system
                   #:outputs %outputs
                   #:inputs %build-inputs
+                  #:search-paths ',(map search-path-specification->sexp
+                                        (append implicit-search-paths
+                                                search-paths))
                   #:patches ,patches
                   #:patch-flags ,patch-flags
                   #:phases ,phases
@@ -231,8 +251,7 @@ which could lead to gratuitous input divergence."
                                         '())
                                   ,@inputs
                                   ,@(if implicit-inputs?
-                                        (parameterize ((%store store))
-                                          (standard-inputs system))
+                                        implicit-inputs
                                         '()))
                                 #:outputs outputs
                                 #:modules imported-modules

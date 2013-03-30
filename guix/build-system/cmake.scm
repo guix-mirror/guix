@@ -38,6 +38,7 @@
 (define* (cmake-build store name source inputs
                      #:key (guile #f)
                      (outputs '("out")) (configure-flags ''())
+                     (search-paths '())
                      (make-flags ''())
                      (patches ''()) (patch-flags ''("--batch" "-p1"))
                      (cmake (@ (gnu packages cmake) cmake))
@@ -70,6 +71,8 @@ provides a 'CMakeLists.txt' file as its build system."
                     #:system ,system
                     #:outputs %outputs
                     #:inputs %build-inputs
+                    #:search-paths ',(map search-path-specification->sexp
+                                          search-paths)
                     #:patches ,patches
                     #:patch-flags ,patch-flags
                     #:phases ,phases

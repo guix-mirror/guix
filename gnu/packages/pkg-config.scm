@@ -36,6 +36,11 @@
               "05wc5nwkqz7saj2v33ydmz1y6jdg659dll4jjh91n41m63gx0qsg"))))
    (build-system gnu-build-system)
    (arguments `(#:configure-flags '("--with-internal-glib")))
+   (native-search-paths
+    (list (search-path-specification
+           (variable "PKG_CONFIG_PATH")
+           (directories '("lib/pkgconfig" "lib64/pkgconfig"
+                          "share/pkgconfig")))))
    (home-page "http://www.freedesktop.org/wiki/Software/pkg-config")
    (license gpl2+)
    (synopsis "a helper tool used when compiling applications and

@@ -48,26 +48,22 @@
                     #f
                     dir))
 
-(define* (set-paths #:key inputs
+(define* (set-paths #:key inputs (search-paths '())
                     #:allow-other-keys)
   (define input-directories
     (match inputs
       (((_ . dir) ...)
        dir)))
 
-  (set-path-environment-variable "PATH" '("bin")
-                                 input-directories)
-  (set-path-environment-variable "CPATH" '("include")
-                                 input-directories)
-  (set-path-environment-variable "LIBRARY_PATH" '("lib" "lib64")
+  (set-path-environment-variable "PATH" '("bin" "sbin")
                                  input-directories)
 
-  ;; FIXME: Eventually move this to the `search-paths' field of the
-  ;; `pkg-config' package.
-  (set-path-environment-variable "PKG_CONFIG_PATH"
-                                 '("lib/pkgconfig" "lib64/pkgconfig"
-                                   "share/pkgconfig")
-                                 input-directories)
+  (for-each (match-lambda
+             ((env-var (directories ...) separator)
+              (set-path-environment-variable env-var directories
+                                             input-directories
+                                             #:separator separator)))
+            search-paths)
 
   ;; Dump the environment variables as a shell script, for handy debugging.
   (system "export > environment-variables"))

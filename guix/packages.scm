@@ -37,6 +37,11 @@
             origin-file-name
             base32
 
+            <search-path-specification>
+            search-path-specification
+            search-path-specification?
+            search-path-specification->sexp
+
             package
             package?
             package-name
@@ -49,6 +54,7 @@
             package-native-inputs
             package-propagated-inputs
             package-outputs
+            package-native-search-paths
             package-search-paths
             package-synopsis
             package-description
@@ -104,8 +110,22 @@ representation."
       ((_ str)
        #'(nix-base32-string->bytevector str)))))
 
-;; A package.
+;; The specification of a search path.
+(define-record-type* <search-path-specification>
+  search-path-specification make-search-path-specification
+  search-path-specification?
+  (variable     search-path-specification-variable)
+  (directories  search-path-specification-directories)
+  (separator    search-path-specification-separator (default ":")))
 
+(define (search-path-specification->sexp spec)
+  "Return an sexp representing SPEC, a <search-path-specification>.  The sexp
+corresponds to the arguments expected by `set-path-environment-variable'."
+  (match spec
+    (($ <search-path-specification> variable directories separator)
+     `(,variable ,directories ,separator))))
+
+;; A package.
 (define-record-type* <package>
   package make-package
   package?
@@ -128,10 +148,13 @@ representation."
 
   (outputs package-outputs                ; list of strings
            (default '("out")))
-  (search-paths package-search-paths      ; list of (ENV-VAR (DIRS ...))
-                (default '()))            ; tuples; see
-                                          ; `set-path-environment-variable'
-                                          ; (aka. "setup-hook")
+
+                                                  ; lists of
+                                                  ; <search-path-specification>,
+                                                  ; for native and cross
+                                                  ; inputs
+  (native-search-paths package-native-search-paths (default '()))
+  (search-paths package-search-paths (default '()))
 
   (synopsis package-synopsis)                    ; one-line description
   (description package-description)              ; one or two paragraphs
@@ -292,16 +315,22 @@ PACKAGE for SYSTEM."
               (($ <package> name version source (= build-system-builder builder)
                   args inputs propagated-inputs native-inputs self-native-input?
                   outputs)
-               ;; TODO: For `search-paths', add a builder prologue that calls
-               ;; `set-path-environment-variable'.
-               (let ((inputs (map expand-input
-                                  (package-transitive-inputs package))))
+               (let* ((inputs     (package-transitive-inputs package))
+                      (input-drvs (map expand-input inputs))
+                      (paths      (delete-duplicates
+                                   (append-map (match-lambda
+                                                ((_ (? package? p) _ ...)
+                                                 (package-native-search-paths
+                                                  p))
+                                                (_ '()))
+                                               inputs))))
 
                  (apply builder
                         store (package-full-name package)
                         (and source
                              (package-source-derivation store source system))
-                        inputs
+                        input-drvs
+                        #:search-paths paths
                         #:outputs outputs #:system system
                         (args))))))))
 

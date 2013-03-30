@@ -131,6 +131,14 @@
                                           "install"))))
                          %standard-phases)))))
 
+     (native-search-paths
+      (list (search-path-specification
+             (variable "CPATH")
+             (directories '("include")))
+            (search-path-specification
+             (variable "LIBRARY_PATH")
+             (directories '("lib" "lib64")))))
+
      (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
      (synopsis "The GNU Compiler Collection")
      (description

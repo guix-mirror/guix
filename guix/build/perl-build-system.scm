@@ -50,10 +50,6 @@
 (define* (perl-build #:key inputs (phases %standard-phases)
                      #:allow-other-keys #:rest args)
   "Build the given Perl package, applying all of PHASES in order."
-  (set-path-environment-variable "PERL5LIB" '("lib/perl5/site_perl")
-                                 (match inputs
-                                   (((_ . path) ...)
-                                    path)))
   (apply gnu:gnu-build
          #:inputs inputs #:phases phases
          args))

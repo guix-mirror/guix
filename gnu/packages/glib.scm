@@ -142,18 +142,6 @@ dynamic loading, and an object system.")
               (base32
                "0r1vkvy5xzqk01yl6a0xlrry39bra24alkrx6279b77hc62my7jd"))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'set-perl-path
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; FIXME: Remove this phase when proper support for search
-                   ;; paths is available.
-                   (let ((xml-parser (assoc-ref inputs "perl-xml-parser")))
-                     (setenv "PERL5LIB"
-                             (string-append xml-parser
-                                            "/lib/perl5/site_perl"))
-                     #t))
-                 %standard-phases)))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("gettext" ,guix:gettext)

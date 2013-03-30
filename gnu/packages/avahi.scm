@@ -48,19 +48,7 @@
                            "--disable-xmltoman"
                            "--enable-tests"
                            "--disable-qt3" "--disable-qt4"
-                           "--disable-gtk" "--disable-gtk3")
-       #:phases (alist-cons-before
-                 'configure 'set-perl-path
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; FIXME: Remove this phase when proper support for search
-                   ;; paths is available.
-                   (let ((xml-parser (assoc-ref inputs
-                                                "intltool/perl-xml-parser")))
-                     (setenv "PERL5LIB"
-                             (string-append xml-parser
-                                            "/lib/perl5/site_perl"))
-                     #t))
-                 %standard-phases)))
+                           "--disable-gtk" "--disable-gtk3")))
     (inputs
      `(("expat" ,expat)
        ("glib" ,glib)
