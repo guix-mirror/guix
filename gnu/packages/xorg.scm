@@ -2755,28 +2755,30 @@ and Matrox.")
     (license license:x11)))
 
 
-;; FIXME: Add required input "glide"
-(define-public xf86-video-glide
-  (package
-    (name "xf86-video-glide")
-    (version "1.2.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-glide-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0byapm9mnpqk3wijfnnan3d22ii5cw6dmg4xn1625iiz89j5vs1l"))))
-    (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)
-              ("xorg-server" ,xorg-server)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
+;; Driver for obsolete graphics cards, depends on libglide:
+;; http://sourceforge.net/projects/glide/ ,
+;; last updated in 2003, and which does not compile out of the box any more.
+;; (define-public xf86-video-glide
+;;   (package
+;;     (name "xf86-video-glide")
+;;     (version "1.2.0")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/xf86-video-glide-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0byapm9mnpqk3wijfnnan3d22ii5cw6dmg4xn1625iiz89j5vs1l"))))
+;;     (build-system gnu-build-system)
+;;     (inputs `(("pkg-config" ,pkg-config)
+;;               ("xorg-server" ,xorg-server)))
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
+;;     (license license:x11)))
 
 
 (define-public xf86-video-glint
