@@ -42,7 +42,6 @@
                      (patches ''()) (patch-flags ''("--batch" "-p1"))
                      (cmake (@ (gnu packages cmake) cmake))
                      (out-of-source? #f)
-                     (path-exclusions ''())
                      (tests? #t)
                      (test-target "test")
                      (parallel-build? #t) (parallel-tests? #f)
@@ -77,7 +76,6 @@ provides a 'CMakeLists.txt' file as its build system."
                     #:configure-flags ,configure-flags
                     #:make-flags ,make-flags
                     #:out-of-source? ,out-of-source?
-                    #:path-exclusions ,path-exclusions
                     #:tests? ,tests?
                     #:test-target ,test-target
                     #:parallel-build? ,parallel-build?
