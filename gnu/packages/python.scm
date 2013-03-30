@@ -43,6 +43,10 @@
      `(("zlib" ,zlib)
        ("openssl" ,openssl)
        ("bzip2" ,bzip2)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "PYTHONPATH")
+            (directories '("lib/python2.7/site-packages")))))
     (home-page "http://python.org")
     (synopsis
      "Python, a high-level dynamically-typed programming language")

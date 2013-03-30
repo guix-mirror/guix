@@ -88,6 +88,11 @@
    ;; When cross-compiling, a native version of Guile itself is needed.
    (self-native-input? #t)
 
+   (native-search-paths
+    (list (search-path-specification
+           (variable "GUILE_LOAD_PATH")
+           (directories '("share/guile/site")))))
+
    (synopsis "GNU Guile 1.8, an embeddable Scheme interpreter")
    (description
 "GNU Guile 1.8 is an interpreter for the Scheme programming language,
@@ -136,6 +141,14 @@ extensible.  It supports many SRFIs.")
                       (("/bin/sh")
                        (string-append bash "/bin/bash")))))
                 %standard-phases)))
+
+   (native-search-paths
+    (list (search-path-specification
+           (variable "GUILE_LOAD_PATH")
+           (directories '("share/guile/site/2.0")))
+          (search-path-specification
+           (variable "GUILE_LOAD_COMPILED_PATH")
+           (directories '("share/guile/site/2.0")))))
 
    (synopsis "GNU Guile 2.0, an embeddable Scheme implementation")
    (description

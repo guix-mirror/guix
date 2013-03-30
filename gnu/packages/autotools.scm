@@ -164,6 +164,11 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                      (setenv "SHELL" sh)
                      (setenv "CONFIG_SHELL" sh)))
                  %standard-phases)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "ACLOCAL_PATH")
+            (directories '("share/aclocal")))))
+
     (home-page "http://www.gnu.org/software/automake/")
     (synopsis
      "GNU Automake, a GNU standard-compliant makefile generator")
