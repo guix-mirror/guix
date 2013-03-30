@@ -115,7 +115,7 @@ libstore_a_CPPFLAGS =				\
   -DNIX_BIN_DIR=\"$(bindir)\"			\
   -DOPENSSL_PATH="\"openssl\""
 
-libstore_a_CFLAGS =				\
+libstore_a_CXXFLAGS =				\
   $(SQLITE3_CFLAGS) $(LIBGCRYPT_CFLAGS)
 
 bin_PROGRAMS = guix-daemon
