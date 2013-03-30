@@ -3311,28 +3311,28 @@ and Matrox.")
     (license license:x11)))
 
 
-;; FIXME: Add input providing dev/wscons/wsconsio.h; only relevant for BSD?
-(define-public xf86-video-wsfb
-  (package
-    (name "xf86-video-wsfb")
-    (version "0.4.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-wsfb-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0hr8397wpd0by1hc47fqqrnaw3qdqd8aqgwgzv38w5k3l3jy6p4p"))))
-    (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)
-              ("xorg-server" ,xorg-server)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:bsd-2)))
+;; Only relevant for the frame buffer on BSD systems.
+;; (define-public xf86-video-wsfb
+;;   (package
+;;     (name "xf86-video-wsfb")
+;;     (version "0.4.0")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/xf86-video-wsfb-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0hr8397wpd0by1hc47fqqrnaw3qdqd8aqgwgzv38w5k3l3jy6p4p"))))
+;;     (build-system gnu-build-system)
+;;     (inputs `(("pkg-config" ,pkg-config)
+;;               ("xorg-server" ,xorg-server)))
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "xorg implementation of the X Window System")
+;;     (description "X.org provides an implementation of the X Window System")
+;;     (license license:bsd-2)))
 
 
 (define-public xf86bigfontproto
