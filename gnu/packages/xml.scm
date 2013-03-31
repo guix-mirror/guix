@@ -99,7 +99,7 @@ based on libxml for XML parsing, tree manipulation and XPath support.")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "mirror://cpan/authors/id/M/MS/MSERGEANT/XML-Parser-"
+                   "mirror://cpan/authors/id/T/TO/TODDR/XML-Parser-"
                    version ".tar.gz"))
              (sha256
               (base32
