@@ -1848,6 +1848,29 @@ tracking.")
     (license license:x11)))
 
 
+;; The package is missing from X11R7.7.
+(define-public printproto
+  (package
+    (name "printproto")
+    (version "1.0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/proto/printproto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "06liap8n4s25sgp27d371cc7yg9a08dxcr3pmdjp761vyin3360j"))))
+    (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
 (define-public randrproto
   (package
     (name "randrproto")
@@ -4208,6 +4231,34 @@ tracking.")
       `(("xextproto" ,xextproto)
         ("libxext" ,libxext)
         ("libx11" ,libx11)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+;; The package is missing from X11R7.7.
+(define-public libxp
+  (package
+    (name "libxp")
+    (version "1.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/lib/libXp-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1blwrr5zhmwwy87j0svmhv3hc13acyn5j14n5rv0anz81iav2r3y"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("printproto" ,printproto)))
+    (inputs
+      `(("libx11" ,libx11)
+        ("libxext" ,libxext)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
