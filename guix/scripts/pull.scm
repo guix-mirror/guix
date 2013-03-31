@@ -34,8 +34,8 @@
   #:export (guix-pull))
 
 (define %snapshot-url
-  "http://hydra.gnu.org/job/guix/master/tarball/latest/download"
-  ;;"http://git.savannah.gnu.org/cgit/guix.git/snapshot/guix-master.tar.gz"
+  ;; "http://hydra.gnu.org/job/guix/master/tarball/latest/download"
+  "http://git.savannah.gnu.org/cgit/guix.git/snapshot/guix-master.tar.gz"
   )
 
 (define (download-and-store store)
