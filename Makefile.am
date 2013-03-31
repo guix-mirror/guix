@@ -223,7 +223,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/tar-gets-undeclared.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch 			\
   gnu/packages/patches/teckit-cstdio.patch			\
-  gnu/packages/patches/vpnc-script.patch
+  gnu/packages/patches/vpnc-script.patch			\
+  gnu/packages/patches/xpdf-constchar.patch
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux

@@ -17,17 +17,21 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages pdf)
-  #:use-module ((guix licenses) #:select (gpl2+))
+  #:use-module ((guix licenses)
+                #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages lesstif)
   #:use-module (gnu packages libjpeg)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages libtiff)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xorg))
 
 (define-public poppler
   (package
@@ -63,5 +67,37 @@
    (synopsis "Poppler, a pdf rendering library")
    (description
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
-   (license gpl2+)
+   (license license:gpl2+)
    (home-page "http://poppler.freedesktop.org/")))
+
+(define-public xpdf
+  (package
+   (name "xpdf")
+   (version "3.03")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "ftp://ftp.foolabs.com/pub/xpdf/xpdf-"
+                                version ".tar.gz"))
+            (sha256 (base32
+                     "1jnfzdqc54wa73lw28kjv0m7120mksb0zkcn81jdlvijyvc67kq2"))))
+   (build-system gnu-build-system)
+   (inputs `(("freetype" ,freetype)
+             ("lesstif" ,lesstif)
+             ("libpaper" ,libpaper)
+             ("libx11" ,libx11)
+             ("libxext" ,libxext)
+             ("libxp" ,libxp)
+             ("libxpm" ,libxpm)
+             ("libxt" ,libxt)
+             ("zlib" ,zlib)
+             ("patch/constchar"
+                 ,(search-patch "xpdf-constchar.patch"))))
+   (arguments
+    `(#:tests? #f ; there is no check target
+      #:patches (list (assoc-ref %build-inputs
+                                 "patch/constchar"))))
+   (synopsis "Viewer for pdf files based on the Motif toolkit.")
+   (description
+    "Xpdf is a viewer for Portable Document Format (PDF) files")
+   (license license:gpl3) ; or gpl2, but not gpl2+
+   (home-page "http://www.foolabs.com/xpdf/")))
