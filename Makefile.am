@@ -79,6 +79,7 @@ MODULES =					\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/dejagnu.scm			\
   gnu/packages/ddrescue.scm			\
+  gnu/packages/dwm.scm				\
   gnu/packages/ed.scm				\
   gnu/packages/emacs.scm			\
   gnu/packages/fdisk.scm			\
