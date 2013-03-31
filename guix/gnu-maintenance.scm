@@ -66,12 +66,18 @@
 (define (http-fetch uri)
   "Return an input port containing the textual data at URI, a string."
   (let*-values (((resp data)
-                (http-get (string->uri uri)))
+                 (let ((uri (string->uri uri)))
+                   ;; Try hard to use the API du jour to get an input port.
+                   (if (version>? "2.0.7" (version))
+                       (if (defined? 'http-get*)
+                           (http-get* uri)
+                           (http-get uri))       ; old Guile, returns a string
+                       (http-get uri #:streaming? #t)))) ; 2.0.8 or later
                ((code)
                 (response-code resp)))
     (case code
       ((200)
-       (cond ((string<=? (version) "2.0.5")
+       (cond ((not data)
               (begin
                 ;; XXX: Guile 2.0.5 and earlier did not support chunked transfer
                 ;; encoding, which is required when fetching %PACKAGE-LIST-URL
@@ -85,9 +91,10 @@
                         (response-transfer-encoding resp))
                 (error "download failed; use a newer Guile"
                        uri resp)))
-             ((string<=? (version) "2.0.7")
+             ((string? data)                 ; old `http-get' returns a string
               (open-input-string data))
-             (else data)))
+             (else                           ; input port
+              data)))
       (else
        (error "download failed" uri code
               (response-reason-phrase resp))))))
