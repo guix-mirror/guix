@@ -83,7 +83,8 @@
             %store-prefix
             store-path?
             derivation-path?
-            store-path-package-name))
+            store-path-package-name
+            store-path-hash-part))
 
 (define %protocol-version #x10c)
 
@@ -751,3 +752,12 @@ collected, and the number of bytes freed."
 
   (and=> (regexp-exec store-path-rx path)
          (cut match:substring <> 1)))
+
+(define (store-path-hash-part path)
+  "Return the hash part of PATH as a base32 string, or #f if PATH is not a
+syntactically valid store path."
+  (let ((path-rx (make-regexp
+                  (string-append"^" (regexp-quote (%store-prefix))
+                                "/([0-9a-df-np-sv-z]{32})-[^/]+$"))))
+    (and=> (regexp-exec path-rx path)
+           (cut match:substring <> 1))))

@@ -48,6 +48,18 @@
 
 (test-begin "store")
 
+(test-equal "store-path-hash-part"
+  "283gqy39v3g9dxjy26rynl0zls82fmcg"
+  (store-path-hash-part
+   (string-append (%store-prefix)
+                  "/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7")))
+
+(test-equal "store-path-hash-part #f"
+  #f
+  (store-path-hash-part
+   (string-append (%store-prefix)
+                  "/foo/bar/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7")))
+
 (test-skip (if %store 0 10))
 
 (test-assert "dead-paths"
