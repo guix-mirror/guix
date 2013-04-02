@@ -4774,8 +4774,6 @@ emulation to complete hardware acceleration for modern GPUs.")
 ;;        ("xkeyboard-config" ,xkeyboard-config)
         ("xtrans" ,xtrans)
         ("zlib" ,zlib)))
-    (arguments
-     `(#:tests? #f))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
