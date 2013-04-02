@@ -113,6 +113,7 @@ MODULES =					\
   gnu/packages/libffi.scm			\
   gnu/packages/libidn.scm			\
   gnu/packages/libjpeg.scm			\
+  gnu/packages/libphidget.scm			\
   gnu/packages/libpng.scm			\
   gnu/packages/libsigsegv.scm			\
   gnu/packages/libtiff.scm			\
