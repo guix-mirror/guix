@@ -93,8 +93,9 @@ if test "x$guix_build_daemon" = "xyes"; then
   AC_MSG_RESULT([$GUIX_TEST_ROOT])
   AC_SUBST([GUIX_TEST_ROOT])
 
-  AC_CONFIG_FILES([nix/scripts/list-runtime-roots],
-    [chmod +x nix/scripts/list-runtime-roots])
+  AC_CONFIG_FILES([nix/scripts/list-runtime-roots
+                   nix/scripts/substitute-binary],
+    [chmod +x nix/scripts/list-runtime-roots nix/scripts/substitute-binary])
 fi
 
 AM_CONDITIONAL([BUILD_DAEMON], [test "x$guix_build_daemon" = "xyes"])

@@ -200,9 +200,17 @@ main (int argc, char *argv[])
     {
       settings.processEnvironment ();
 
-      /* FIXME: Disable substitutes until we have something that works.  */
-      settings.useSubstitutes = false;
+      /* Use our substituter by default.  */
       settings.substituters.clear ();
+      string subs = getEnv ("NIX_SUBSTITUTERS", "default");
+      if (subs == "default")
+	/* XXX: No substituters until we have something that works.  */
+	settings.substituters.clear ();
+	// settings.substituters.push_back (settings.nixLibexecDir
+	// 				 + "/guix/substitute-binary");
+      else
+	settings.substituters = tokenizeString<Strings> (subs, ":");
+
 
       argp_parse (&argp, argc, argv, 0, 0, 0);
 
