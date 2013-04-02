@@ -159,7 +159,8 @@ nix/libstore/schema.sql.hh: nix/libstore/schema.sql
 	           (write (get-string-all in) out)))))"
 
 nodist_pkglibexec_SCRIPTS =			\
-  nix/scripts/list-runtime-roots
+  nix/scripts/list-runtime-roots		\
+  nix/scripts/substitute-binary
 
 EXTRA_DIST +=					\
   nix/sync-with-upstream			\

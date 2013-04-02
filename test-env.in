@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -26,7 +26,6 @@
 
 if [ -x "@abs_top_builddir@/guix-daemon" ]
 then
-    NIX_SUBSTITUTERS=""		# don't resort to substituters
     NIX_SETUID_HELPER="@abs_top_builddir@/nix-setuid-helper" # normally unused
     NIX_IGNORE_SYMLINK_STORE=1	# in case the store is a symlink
     NIX_STORE_DIR="@GUIX_TEST_ROOT@/store"
@@ -39,18 +38,24 @@ then
     # that the directory name must be chosen so that the socket's file
     # name is less than 108-char long (the size of `sun_path' in glibc).
     # Currently, in Nix builds, we're at ~106 chars...
-    NIX_STATE_DIR="@GUIX_TEST_ROOT@/var/$$" # allow for parallel tests
+    NIX_STATE_DIR="@GUIX_TEST_ROOT@/var/$$"
 
-    export NIX_SUBSTITUTERS NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR	\
+    # A place to store data of the substituter.
+    GUIX_BINARY_SUBSTITUTE_URL="file://$NIX_STATE_DIR/substituter-data"
+    rm -rf "$NIX_STATE_DIR/substituter-data"
+    mkdir -p "$NIX_STATE_DIR/substituter-data"
+
+    export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR			\
 	NIX_LOCALSTATE_DIR NIX_LOG_DIR NIX_STATE_DIR NIX_DB_DIR		\
-	NIX_ROOT_FINDER NIX_SETUID_HELPER
+	NIX_ROOT_FINDER NIX_SETUID_HELPER GUIX_BINARY_SUBSTITUTE_URL
 
     # Do that because store.scm calls `canonicalize-path' on it.
     mkdir -p "$NIX_STORE_DIR"
 
     # Launch the daemon without chroot support because is may be
     # unavailable, for instance if we're not running as root.
-    "@abs_top_builddir@/guix-daemon" --disable-chroot &
+    "@abs_top_builddir@/pre-inst-env"				\
+	"@abs_top_builddir@/guix-daemon" --disable-chroot &
 
     daemon_pid=$!
     trap "kill $daemon_pid ; rm -rf $NIX_STATE_DIR" EXIT

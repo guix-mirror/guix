@@ -662,7 +662,7 @@ file name.  Return #t on success."
              store-path-list))
 
 (define substitutable-path-info
-  (operation (query-substitutable-paths (store-path-list paths))
+  (operation (query-substitutable-path-infos (store-path-list paths))
              "Return information about the subset of PATHS that is
 substitutable.  For each substitutable path, a `substitutable?' object is
 returned."

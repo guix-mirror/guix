@@ -72,3 +72,4 @@ stamp-h[0-9]
 /doc/guix.tp
 /doc/guix.vr
 /doc/guix.vrs
+/nix/scripts/substitute-binary

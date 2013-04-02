@@ -31,6 +31,7 @@ MODULES =					\
   guix/scripts/package.scm			\
   guix/scripts/gc.scm				\
   guix/scripts/pull.scm				\
+  guix/scripts/substitute-binary.scm		\
   guix/base32.scm				\
   guix/utils.scm				\
   guix/derivations.scm				\

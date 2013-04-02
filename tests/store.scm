@@ -26,6 +26,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
+  #:use-module (web uri)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64))
@@ -127,6 +128,44 @@
          (not (has-substitutes? s d2))
          (null? (substitutable-paths s o))
          (null? (substitutable-path-info s o)))))
+
+(test-skip (if (getenv "GUIX_BINARY_SUBSTITUTE_URL") 0 1))
+
+(test-assert "substitute query"
+  (let* ((s   (open-connection))
+         (d   (package-derivation s %bootstrap-guile (%current-system)))
+         (o   (derivation-path->output-path d))
+         (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
+                     (compose uri-path string->uri))))
+    ;; Create fake substituter data, to be read by `substitute-binary'.
+    (call-with-output-file (string-append dir "/nix-cache-info")
+      (lambda (p)
+        (format p "StoreDir: ~a\nWantMassQuery: 0\n"
+                (getenv "NIX_STORE_DIR"))))
+    (call-with-output-file (string-append dir "/" (store-path-hash-part o)
+                                          ".narinfo")
+      (lambda (p)
+        (format p "StorePath: ~a
+URL: ~a
+Compression: none
+NarSize: 1234
+References: 
+System: ~a
+Deriver: ~a~%"
+                o                                   ; StorePath
+                (string-append dir "/example.nar")  ; URL
+                (%current-system)                   ; System
+                (basename d))))                     ; Deriver
+
+    ;; Make sure `substitute-binary' correctly communicates the above data.
+    (set-build-options s #:use-substitutes? #t)
+    (and (has-substitutes? s o)
+         (equal? (list o) (substitutable-paths s (list o)))
+         (match (pk 'spi (substitutable-path-info s (list o)))
+           (((? substitutable? s))
+            (and (equal? (substitutable-deriver s) d)
+                 (null? (substitutable-references s))
+                 (equal? (substitutable-nar-size s) 1234)))))))
 
 (test-end "store")
 
