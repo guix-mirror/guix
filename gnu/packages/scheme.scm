@@ -28,6 +28,9 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages patchelf)
   #:use-module (gnu packages which)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages avahi)
+  #:use-module (gnu packages libphidget)
   #:use-module (ice-9 match))
 
 (define-public mit-scheme
@@ -161,7 +164,13 @@ development cycle.")
                    %standard-phases)))))
     (inputs
      `(("emacs" ,emacs)
-       ("patch/shebangs" ,(search-patch "bigloo-gc-shebangs.patch"))))
+       ("patch/shebangs" ,(search-patch "bigloo-gc-shebangs.patch"))
+
+       ;; Optional APIs for which Bigloo has bindings.
+       ("avahi" ,avahi)
+       ("libphidget" ,libphidget)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("gmp" ,gmp)))                             ; bigloo.h refers to gmp.h
     (home-page "http://www-sop.inria.fr/indes/fp/Bigloo/")
