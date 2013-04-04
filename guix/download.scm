@@ -105,8 +105,7 @@
        "http://mirrors.ircam.fr/pub/apache/"
        "http://apache-mirror.rbc.ru/pub/apache/")
       (xorg               ; from http://www.x.org/wiki/Releases/Download
-       "http://xorg.freedesktop.org/releases/" ; main mirrors
-       "http://www.x.org/pub/"
+       "http://www.x.org/releases/" ; main mirrors
        "ftp://mirror.csclub.uwaterloo.ca/x.org/" ; North America
        "ftp://xorg.mirrors.pair.com/"
        "http://mirror.csclub.uwaterloo.ca/x.org/"

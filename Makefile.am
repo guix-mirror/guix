@@ -108,6 +108,7 @@ MODULES =					\
   gnu/packages/irssi.scm 			\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
+  gnu/packages/lesstif.scm			\
   gnu/packages/libapr.scm 			\
   gnu/packages/libdaemon.scm			\
   gnu/packages/libevent.scm			\
@@ -177,6 +178,7 @@ MODULES =					\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
   gnu/packages/xml.scm				\
+  gnu/packages/xorg.scm				\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
   gnu/system/vm.scm
@@ -235,7 +237,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
   gnu/packages/patches/vpnc-script.patch			\
-  gnu/packages/patches/w3m-fix-compile.patch
+  gnu/packages/patches/w3m-fix-compile.patch			\
+  gnu/packages/patches/xpdf-constchar.patch
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
