@@ -191,9 +191,9 @@ failure."
                              '())))
                     (for-each (lambda (narinfo)
                                 (when narinfo
-                                  (display (narinfo-path narinfo))
-                                  (newline)))
-                              substitutable)))
+                                  (format #t "~a~%" (narinfo-path narinfo))))
+                              substitutable)
+                    (newline)))
                  (("info" paths ..1)
                   ;; Reply info about PATHS if it's in CACHE.
                   (let ((substitutable
@@ -215,9 +215,9 @@ failure."
                                           (narinfo-references narinfo))
                                 (format #t "~a\n~a\n"
                                         (or (narinfo-file-size narinfo) 0)
-                                        (or (narinfo-size narinfo) 0))
-                                (newline))
-                              substitutable)))
+                                        (or (narinfo-size narinfo) 0)))
+                              substitutable)
+                    (newline)))
                  (wtf
                   (error "unknown `--query' command" wtf)))
                (loop (read-line)))))))
