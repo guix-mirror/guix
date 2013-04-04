@@ -34,6 +34,8 @@ MODULES =					\
   guix/scripts/substitute-binary.scm		\
   guix/base32.scm				\
   guix/utils.scm				\
+  guix/serialization.scm			\
+  guix/nar.scm					\
   guix/derivations.scm				\
   guix/download.scm				\
   guix/gnu-maintenance.scm			\

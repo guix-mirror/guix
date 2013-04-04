@@ -17,8 +17,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix store)
+  #:use-module (guix nar)
   #:use-module (guix utils)
   #:use-module (guix config)
+  #:use-module (guix serialization)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
@@ -29,7 +31,6 @@
   #:use-module (srfi srfi-39)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
-  #:use-module (ice-9 ftw)
   #:use-module (ice-9 regex)
   #:export (%daemon-socket-file
 
@@ -161,152 +162,6 @@
 
 
 
-;; serialize.cc
-
-(define (write-int n p)
-  (let ((b (make-bytevector 8 0)))
-    (bytevector-u32-set! b 0 n (endianness little))
-    (put-bytevector p b)))
-
-(define (read-int p)
-  (let ((b (get-bytevector-n p 8)))
-    (bytevector-u32-ref b 0 (endianness little))))
-
-(define (write-long-long n p)
-  (let ((b (make-bytevector 8 0)))
-    (bytevector-u64-set! b 0 n (endianness little))
-    (put-bytevector p b)))
-
-(define (read-long-long p)
-  (let ((b (get-bytevector-n p 8)))
-    (bytevector-u64-ref b 0 (endianness little))))
-
-(define write-padding
-  (let ((zero (make-bytevector 8 0)))
-    (lambda (n p)
-      (let ((m (modulo n 8)))
-        (or (zero? m)
-            (put-bytevector p zero 0 (- 8 m)))))))
-
-(define (write-string s p)
-  (let* ((s (string->utf8 s))
-         (l (bytevector-length s))
-         (m (modulo l 8))
-         (b (make-bytevector (+ 8 l (if (zero? m) 0 (- 8 m))))))
-    (bytevector-u32-set! b 0 l (endianness little))
-    (bytevector-copy! s 0 b 8 l)
-    (put-bytevector p b)))
-
-(define (read-string p)
-  (let* ((len (read-int p))
-         (m   (modulo len 8))
-         (bv  (get-bytevector-n p len))
-         (str (utf8->string bv)))
-    (or (zero? m)
-        (get-bytevector-n p (- 8 m)))
-    str))
-
-(define (read-latin1-string p)
-  (let* ((len (read-int p))
-         (m   (modulo len 8))
-         (str (get-string-n p len)))
-    (or (zero? m)
-        (get-bytevector-n p (- 8 m)))
-    str))
-
-(define (write-string-list l p)
-  (write-int (length l) p)
-  (for-each (cut write-string <> p) l))
-
-(define (read-string-list p)
-  (let ((len (read-int p)))
-    (unfold (cut >= <> len)
-            (lambda (i)
-              (read-string p))
-            1+
-            0)))
-
-(define (write-store-path f p)
-  (write-string f p))                             ; TODO: assert path
-
-(define (read-store-path p)
-  (read-string p))                                ; TODO: assert path
-
-(define write-store-path-list write-string-list)
-(define read-store-path-list read-string-list)
-
-(define (write-contents file p size)
-  "Write SIZE bytes from FILE to output port P."
-  (define (call-with-binary-input-file file proc)
-    ;; Open FILE as a binary file.  This avoids scan-for-encoding, and thus
-    ;; avoids any initial buffering.  Disable file name canonicalization to
-    ;; avoid stat'ing like crazy.
-    (with-fluids ((%file-port-name-canonicalization #f))
-      (let ((port (open-file file "rb")))
-        (catch #t (cut proc port)
-          (lambda args
-            (close-port port)
-            (apply throw args))))))
-
-  (define (dump in size)
-    (define buf-size 65536)
-    (define buf (make-bytevector buf-size))
-
-    (let loop ((left size))
-      (if (<= left 0)
-          0
-          (let ((read (get-bytevector-n! in buf 0 buf-size)))
-            (if (eof-object? read)
-                left
-                (begin
-                  (put-bytevector p buf 0 read)
-                  (loop (- left read))))))))
-
-  (write-string "contents" p)
-  (write-long-long size p)
-  (call-with-binary-input-file file
-    ;; Use `sendfile' when available (Guile 2.0.8+).
-    (if (compile-time-value (defined? 'sendfile))
-        (cut sendfile p <> size 0)
-        (cut dump <> size)))
-  (write-padding size p))
-
-(define (write-file f p)
-  (define %archive-version-1 "nix-archive-1")
-
-  (write-string %archive-version-1 p)
-
-  (let dump ((f f))
-    (let ((s (lstat f)))
-      (write-string "(" p)
-      (case (stat:type s)
-        ((regular)
-         (write-string "type" p)
-         (write-string "regular" p)
-         (if (not (zero? (logand (stat:mode s) #o100)))
-             (begin
-               (write-string "executable" p)
-               (write-string "" p)))
-         (write-contents f p (stat:size s)))
-        ((directory)
-         (write-string "type" p)
-         (write-string "directory" p)
-         (let ((entries (remove (cut member <> '("." ".."))
-                                (scandir f))))
-           (for-each (lambda (e)
-                       (let ((f (string-append f "/" e)))
-                         (write-string "entry" p)
-                         (write-string "(" p)
-                         (write-string "name" p)
-                         (write-string e p)
-                         (write-string "node" p)
-                         (dump f)
-                         (write-string ")" p)))
-                     entries)))
-        (else
-         (error "ENOSYS")))
-      (write-string ")" p))))
-
 ;; Information about a substitutable store path.
 (define-record-type <substitutable>
   (substitutable path deriver refs dl-size nar-size)
