@@ -238,7 +238,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/procps-make-3.82.patch			\
   gnu/packages/patches/qemu-multiple-smb-shares.patch		\
   gnu/packages/patches/readline-link-ncurses.patch		\
-  gnu/packages/patches/shishi-gets-undeclared.patch		\
   gnu/packages/patches/tar-gets-undeclared.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
