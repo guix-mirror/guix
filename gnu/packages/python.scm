@@ -19,7 +19,10 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses) #:select (psfl))
+  #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages openssl)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -38,11 +41,35 @@
        (base32
         "11f9aw855lrmknr6c82gm1ijr3n0smc6idyp94y7774yivjnplv1"))))
     (build-system gnu-build-system)
-    (arguments `(#:tests? #f)) ; XXX: some tests fail
+    (arguments
+     `(#:tests? #f ; XXX: some tests fail
+       #:patches (list (assoc-ref %build-inputs "patch-dbm"))
+       #:patch-flags '("-p0")
+       #:configure-flags
+        (let ((bz2 (assoc-ref %build-inputs "bzip2"))
+              (gdbm (assoc-ref %build-inputs "gdbm"))
+              (openssl (assoc-ref %build-inputs "openssl"))
+              (readline (assoc-ref %build-inputs "readline"))
+              (zlib (assoc-ref %build-inputs "zlib")))
+         (list (string-append "CPPFLAGS="
+                "-I" bz2 "/include "
+                "-I" gdbm "/include "
+                "-I" openssl "/include "
+                "-I" readline "/include "
+                "-I" zlib "/include")
+               (string-append "LDFLAGS="
+                "-L" bz2 "/lib "
+                "-L" gdbm "/lib "
+                "-L" openssl "/lib "
+                "-L" readline "/lib "
+                "-L" zlib "/lib")))))
     (inputs
-     `(("zlib" ,zlib)
+     `(("bzip2" ,bzip2)
+       ("gdbm" ,gdbm)
        ("openssl" ,openssl)
-       ("bzip2" ,bzip2)))
+       ("readline" ,readline)
+       ("zlib" ,zlib)
+       ("patch-dbm" ,(search-patch "python-fix-dbm.patch"))))
     (home-page "http://python.org")
     (synopsis
      "Python, a high-level dynamically-typed programming language")

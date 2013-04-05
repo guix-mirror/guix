@@ -34,6 +34,7 @@
       (sha256
        (base32
         "0h9lfzdjc2yl849y0byg51h6xfjg0y7vg9jnsw3gpfwlbd617y13"))))
+    (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/gdbm/")
     (synopsis "GNU dbm key/value database library")

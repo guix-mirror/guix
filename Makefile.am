@@ -229,6 +229,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/make-impure-dirs.patch			\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
+  gnu/packages/patches/python-fix-dbm.patch			\
   gnu/packages/patches/procps-make-3.82.patch			\
   gnu/packages/patches/qemu-multiple-smb-shares.patch		\
   gnu/packages/patches/readline-link-ncurses.patch		\
