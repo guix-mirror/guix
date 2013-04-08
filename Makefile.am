@@ -296,6 +296,7 @@ TESTS =						\
   tests/packages.scm				\
   tests/snix.scm				\
   tests/store.scm				\
+  tests/nar.scm					\
   tests/union.scm				\
   tests/guix-build.sh				\
   tests/guix-download.sh			\
