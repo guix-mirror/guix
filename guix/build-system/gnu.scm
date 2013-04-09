@@ -135,6 +135,14 @@ use `--strip-all' as the arguments to `strip'."
   ;; Store passed to STANDARD-INPUTS.
   (make-parameter #f))
 
+(define (standard-packages)
+  "Return the list of (NAME PACKAGE OUTPUT) or (NAME PACKAGE) tuples of
+standard packages used as implicit inputs of the GNU build system."
+
+  ;; Resolve (gnu packages base) lazily to hide circular dependency.
+  (let ((distro (resolve-module '(gnu packages base))))
+    (module-ref distro '%final-inputs)))
+
 (define standard-inputs
   (memoize
    (lambda (system)
@@ -148,9 +156,7 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
            (z
             (error "invalid standard input" z)))
 
-          ;; Resolve (gnu packages base) lazily to hide circular dependency.
-          (let* ((distro (resolve-module '(gnu packages base)))
-                 (inputs (module-ref distro '%final-inputs)))
+          (let ((inputs (standard-packages)))
             (append inputs
                     (append-map (match-lambda
                                  ((name package _ ...)
@@ -203,7 +209,7 @@ which could lead to gratuitous input divergence."
                       (package-native-search-paths p))
                      (_
                       '()))
-                    implicit-inputs)
+                    (standard-packages))
         '()))
 
   (define builder
