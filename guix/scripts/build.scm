@@ -176,9 +176,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                   0
                   paths))))
        (lambda args
-         (format (current-error-port)
-                 (_ "failed to create GC root `~a': ~a~%")
-                 root (strerror (system-error-errno args)))
+         (leave (_ "failed to create GC root `~a': ~a~%")
+                root (strerror (system-error-errno args)))
          (exit 1)))))
 
   (define newest-available-packages
@@ -202,13 +201,10 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
         ((p)                                      ; one match
          p)
         ((p x ...)                                ; several matches
-         (format (current-error-port)
-                 (_ "warning: ambiguous package specification `~a'~%")
-                 request)
-         (format (current-error-port)
-                 (_ "warning: choosing ~a from ~a~%")
-                 (package-full-name p)
-                 (location->string (package-location p)))
+         (warning (_ "ambiguous package specification `~a'~%") request)
+         (warning (_ "choosing ~a from ~a~%")
+                  (package-full-name p)
+                  (location->string (package-location p)))
          p)
         (_                                        ; no matches
          (if version
