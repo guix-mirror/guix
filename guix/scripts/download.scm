@@ -81,8 +81,7 @@ and the hash of its contents.\n"))
                       ((or "base16" "hex" "hexadecimal")
                        bytevector->base16-string)
                       (x
-                       (format (current-error-port)
-                               "unsupported hash format: ~a~%" arg))))
+                       (leave (_ "unsupported hash format: ~a~%") arg))))
 
                   (alist-cons 'format fmt-proc
                               (alist-delete 'format result))))

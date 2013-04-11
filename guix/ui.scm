@@ -47,6 +47,9 @@
             string->recutils
             package->recutils
             run-guix-command
+            program-name
+            guix-warning-port
+            warning
             guix-main))
 
 ;;; Commentary:
@@ -332,6 +335,43 @@ WIDTH columns."
                                    (symbol-append 'guix- command))))
     (apply command-main args)))
 
+(define program-name
+  ;; Name of the command-line program currently executing, or #f.
+  (make-parameter #f))
+
+(define guix-warning-port
+  (make-parameter (current-warning-port)))
+
+(define-syntax warning
+  (lambda (s)
+    "Emit a warming.  The macro assumes that `_' is bound to `gettext'."
+    ;; All this just to preserve `-Wformat' warnings.  Too much?
+
+    (define (augmented-format-string fmt)
+      (string-append "~:[~;guix ~a: ~]~a" (syntax->datum fmt)))
+
+    (define prefix
+      #'(_ "warning: "))
+
+    (syntax-case s (N_ _)                        ; these are literals, yeah...
+      ((warning (_ fmt) args ...)
+       (string? (syntax->datum #'fmt))
+       (with-syntax ((fmt*   (augmented-format-string #'fmt))
+                     (prefix prefix))
+         #'(format (guix-warning-port) (gettext fmt*)
+                   (program-name) (program-name) prefix
+                   args ...)))
+      ((warning (N_ singular plural n) args ...)
+       (and (string? (syntax->datum #'singular))
+            (string? (syntax->datum #'plural)))
+       (with-syntax ((s (augmented-format-string #'singular))
+                     (p (augmented-format-string #'plural))
+                     (b prefix))
+         #'(format (guix-warning-port)
+                   (ngettext s p n %gettext-domain)
+                   (program-name) (program-name) b
+                   args ...))))))
+
 (define (guix-main arg0 . args)
   (initialize-guix)
   (let ()
@@ -340,10 +380,11 @@ WIDTH columns."
       (() (show-guix-usage) (exit 1))
       (("--help") (show-guix-usage))
       (("--version") (show-version-and-exit "guix"))
-      (((? option? arg1) args ...) (show-guix-usage) (exit 1))
+      (((? option?) args ...) (show-guix-usage) (exit 1))
       ((command args ...)
-       (apply run-guix-command
-              (string->symbol command)
-              args)))))
+       (parameterize ((program-name command))
+         (apply run-guix-command
+                (string->symbol command)
+                args))))))
 
 ;;; ui.scm ends here
