@@ -192,7 +192,7 @@ failure."
                     (for-each (lambda (narinfo)
                                 (when narinfo
                                   (format #t "~a~%" (narinfo-path narinfo))))
-                              substitutable)
+                              (filter narinfo? substitutable))
                     (newline)))
                  (("info" paths ..1)
                   ;; Reply info about PATHS if it's in CACHE.
@@ -216,7 +216,7 @@ failure."
                                 (format #t "~a\n~a\n"
                                         (or (narinfo-file-size narinfo) 0)
                                         (or (narinfo-size narinfo) 0)))
-                              substitutable)
+                              (filter narinfo? substitutable))
                     (newline)))
                  (wtf
                   (error "unknown `--query' command" wtf)))
