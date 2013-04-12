@@ -313,7 +313,8 @@ but ~a is available upstream~%")
 
 (define %default-options
   ;; Alist of default option values.
-  `((profile . ,%current-profile)))
+  `((profile . ,%current-profile)
+    (substitutes? . #t)))
 
 (define (show-help)
   (display (_ "Usage: guix package [OPTION]... PACKAGES...
@@ -334,6 +335,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
   (display (_ "
   -n, --dry-run          show what would be done without actually doing it"))
+  (display (_ "
+      --no-substitutes   build instead of resorting to pre-built substitutes"))
   (display (_ "
       --bootstrap        use the bootstrap Guile to build the profile"))
   (display (_ "
@@ -388,6 +391,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (option '(#\n "dry-run") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'dry-run? #t result)))
+        (option '("no-substitutes") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'substitutes? #f
+                              (alist-delete 'substitutes? result))))
         (option '("bootstrap") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'bootstrap? #t result)))
@@ -750,6 +757,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
     (or (process-query opts)
         (with-error-handling
           (parameterize ((%store (open-connection)))
+            (set-build-options (%store)
+                               #:use-substitutes?
+                               (assoc-ref opts 'substitutes?))
+
             (parameterize ((%guile-for-build
                             (package-derivation (%store)
                                                 (if (assoc-ref opts 'bootstrap?)
