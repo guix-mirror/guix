@@ -30,7 +30,6 @@
   #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-39)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:export (%daemon-socket-file
 
