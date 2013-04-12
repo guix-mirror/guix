@@ -211,7 +211,8 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
            (leave (_ "error: profile `~a' does not exist~%")
                   profile))
           ((zero? number)                         ; empty profile
-           (leave (_ "nothing to do: already at the empty profile~%")))
+           (format (current-error-port)
+                   (_ "nothing to do: already at the empty profile~%")))
           ((or (zero? previous-number)            ; going to emptiness
                (not (file-exists? previous-profile)))
            (let*-values (((drv-path drv)
