@@ -20,10 +20,13 @@
   #:use-module (guix ui)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix config)
+  #:use-module (guix nar)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 threads)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
@@ -70,9 +73,12 @@ pairs."
     (apply make args)))
 
 (define (fetch uri)
+  "Return a binary input port to URI and the number of bytes it's expected to
+provide."
   (case (uri-scheme uri)
     ((file)
-     (open-input-file (uri-path uri)))
+     (let ((port (open-input-file (uri-path uri))))
+       (values port (stat:size (stat port)))))
     ((http)
      (let*-values (((resp port)
                     ;; XXX: `http-get*' was introduced in 2.0.7, and deprecated
@@ -86,7 +92,7 @@ pairs."
                     (response-content-length resp)))
        (case code
          ((200)                                   ; OK
-          port)
+          (values port size))
          ((301                                    ; moved permanently
            302)                                   ; found (redirection)
           (let ((uri (response-location resp)))
@@ -120,11 +126,11 @@ failure."
                           '("StoreDir" "WantMassQuery")))))
 
 (define-record-type <narinfo>
-  (%make-narinfo path url compression file-hash file-size nar-hash nar-size
+  (%make-narinfo path uri compression file-hash file-size nar-hash nar-size
                  references deriver system)
   narinfo?
   (path         narinfo-path)
-  (url          narinfo-url)
+  (uri          narinfo-uri)
   (compression  narinfo-compression)
   (file-hash    narinfo-file-hash)
   (file-size    narinfo-file-size)
@@ -134,18 +140,26 @@ failure."
   (deriver      narinfo-deriver)
   (system       narinfo-system))
 
-(define (make-narinfo path url compression file-hash file-size nar-hash nar-size
-                      references deriver system)
-  "Return a new <narinfo> object."
-  (%make-narinfo path url compression file-hash
-                 (and=> file-size string->number)
-                 nar-hash
-                 (and=> nar-size string->number)
-                 (string-tokenize references)
-                 (match deriver
-                   ((or #f "") #f)
-                   (_ deriver))
-                 system))
+(define (narinfo-maker cache-url)
+  "Return a narinfo constructor for narinfos originating from CACHE-URL."
+  (lambda (path url compression file-hash file-size nar-hash nar-size
+                references deriver system)
+    "Return a new <narinfo> object."
+    (%make-narinfo path
+
+                   ;; Handle the case where URL is a relative URL.
+                   (or (string->uri url)
+                       (string->uri (string-append cache-url "/" url)))
+
+                   compression file-hash
+                   (and=> file-size string->number)
+                   nar-hash
+                   (and=> nar-size string->number)
+                   (string-tokenize references)
+                   (match deriver
+                     ((or #f "") #f)
+                     (_ deriver))
+                   system)))
 
 (define (fetch-narinfo cache path)
   "Return the <narinfo> record for PATH, or #f if CACHE does not hold PATH."
@@ -159,10 +173,35 @@ failure."
                                   (store-path-hash-part path)
                                   ".narinfo"))
          (lambda (properties)
-           (alist->record properties make-narinfo
+           (alist->record properties (narinfo-maker (cache-url cache))
                           '("StorePath" "URL" "Compression"
                             "FileHash" "FileSize" "NarHash" "NarSize"
                             "References" "Deriver" "System")))))
+
+(define (filtered-port command input)
+  "Return an input port (and PID) where data drained from INPUT is filtered
+through COMMAND.  INPUT must be a file input port."
+  (let ((i+o (pipe)))
+    (match (primitive-fork)
+      (0
+       (close-port (car i+o))
+       (close-port (current-input-port))
+       (dup2 (fileno input) 0)
+       (close-port (current-output-port))
+       (dup2 (fileno (cdr i+o)) 1)
+       (apply execl (car command) command))
+      (child
+       (close-port (cdr i+o))
+       (values (car i+o) child)))))
+
+(define (decompressed-port compression input)
+  "Return an input port where INPUT is decompressed according to COMPRESSION."
+  (match compression
+    ("none"  (values input #f))
+    ("bzip2" (filtered-port `(,%bzip2 "-dc") input))
+    ("xz"    (filtered-port `(,%xz "-dc") input))
+    ("gzip"  (filtered-port `(,%gzip "-dc") input))
+    (else    (error "unsupported compression scheme" compression))))
 
 (define %cache-url
   (or (getenv "GUIX_BINARY_SUBSTITUTE_URL")
@@ -222,10 +261,29 @@ failure."
                   (error "unknown `--query' command" wtf)))
                (loop (read-line)))))))
     (("--substitute" store-path destination)
-     ;; Download PATH and add it to the store.
-     ;; TODO: Implement.
-     (format (current-error-port) "substitution not implemented yet~%")
-     #f)
+     ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
+     (let* ((cache   (open-cache %cache-url))
+            (narinfo (fetch-narinfo cache store-path))
+            (uri     (narinfo-uri narinfo)))
+       ;; Tell the daemon what the expected hash of the Nar itself is.
+       (format #t "~a~%" (narinfo-hash narinfo))
+
+       (let*-values (((raw download-size)
+                      (fetch uri))
+                     ((input pid)
+                      (decompressed-port (narinfo-compression narinfo)
+                                         raw)))
+         ;; Note that Hydra currently generates Nars on the fly and doesn't
+         ;; specify a Content-Length, so DOWNLOAD-SIZE is #f in practice.
+         (format (current-error-port)
+                 (_ "downloading `~a' from `~a'~:[~*~; (~,1f KiB)~]...~%")
+                 store-path (uri->string uri)
+                 download-size
+                 (and=> download-size (cut / <> 1024.0)))
+
+         ;; Unpack the Nar at INPUT into DESTINATION.
+         (restore-file input destination)
+         (or (not pid) (zero? (cdr (waitpid pid)))))))
     (("--version")
      (show-version-and-exit "guix substitute-binary"))))
 
