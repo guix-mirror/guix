@@ -17,11 +17,13 @@ X.509 SubjectPublicKeyInfo.  These can be decoded with the [[http://lists.gnu.or
 GnuTLS]], but not yet with its Guile bindings.  There’s also
 ‘gnutls_privkey_sign_data’ to sign, and related functions.
 
-** Add a binary cache substituter
 
-Like scripts/download-from-binary-cache.pl in Nix, but written in
-Scheme.  Substituters allow pre-built binaries to be downloaded when
-they are available from a trusted source.
+** Add `guix publish' to publish the store using Guile's web server
+
+Generate narinfos and nars on the fly, upon HTTP GET requests.
+Ideally, extend .nix-cache-info to include the server's public key, and also
+reply to requests for .narinfo.sig.
+Optionally, use Guile-Avahi to publish the service.
 
 ** MAYBE Add a substituter that uses the GNUnet DHT
 
