@@ -161,6 +161,11 @@ sub-directories of FILE as needed."
                          (dump f)
                          (write-string ")" p)))
                      entries)))
+        ((symlink)
+         (write-string "type" p)
+         (write-string "symlink" p)
+         (write-string "target" p)
+         (write-string (readlink f) p))
         (else
          (raise (condition (&message (message "ENOSYS"))
                            (&nar-error)))))
@@ -178,14 +183,26 @@ Restore it as FILE."
                                    (file #f))))))
 
   (let restore ((file file))
+    (define (read-eof-marker)
+      (match (read-string port)
+        (")" #t)
+        (x (raise
+            (condition
+             (&message (message "invalid nar end-of-file marker"))
+             (&nar-read-error (port port) (file file) (token x)))))))
+
     (match (list (read-string port) (read-string port) (read-string port))
       (("(" "type" "regular")
        (call-with-output-file file (cut read-contents port <>))
-       (match (read-string port)
-         (")" #t)
+       (read-eof-marker))
+      (("(" "type" "symlink")
+       (match (list (read-string port) (read-string port))
+         (("target" target)
+          (symlink target file)
+          (read-eof-marker))
          (x (raise
              (condition
-              (&message (message "invalid nar end-of-file marker"))
+              (&message (message "invalid symlink tokens"))
               (&nar-read-error (port port) (file file) (token x)))))))
       (("(" "type" "directory")
        (let ((dir file))
