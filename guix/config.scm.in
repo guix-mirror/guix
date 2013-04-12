@@ -26,7 +26,10 @@
             %system
             %libgcrypt
             %nixpkgs
-            %nix-instantiate))
+            %nix-instantiate
+            %gzip
+            %bzip2
+            %xz))
 
 ;;; Commentary:
 ;;;
@@ -66,5 +69,14 @@
 
 (define %nix-instantiate
   "@NIX_INSTANTIATE@")
+
+(define %gzip
+  "@GZIP@")
+
+(define %bzip2
+  "@BZIP2@")
+
+(define %xz
+  "@XZ@")
 
 ;;; config.scm ends here

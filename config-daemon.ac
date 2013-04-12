@@ -11,6 +11,14 @@ if test "x$guix_build_daemon" = "xyes"; then
   AC_PROG_RANLIB
   AC_CONFIG_HEADER([nix/config.h])
 
+  dnl Decompressors, for use by the substituter.
+  AC_PATH_PROG([GZIP], [gzip])
+  AC_PATH_PROG([BZIP2], [bzip2])
+  AC_PATH_PROG([XZ], [xz])
+  AC_SUBST([GZIP])
+  AC_SUBST([BZIP2])
+  AC_SUBST([XZ])
+
   dnl Use 64-bit file system calls so that we can support files > 2 GiB.
   AC_SYS_LARGEFILE
 
