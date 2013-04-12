@@ -196,7 +196,8 @@
                   (cut restore-file <> output))
                 (file-tree-equal? input output))
               (lambda ()
-                (false-if-exception (delete-file nar)))))))
+                (false-if-exception (delete-file nar))
+                (false-if-exception (rm-rf output)))))))
       (lambda ()
         (rmdir input)))))
 
