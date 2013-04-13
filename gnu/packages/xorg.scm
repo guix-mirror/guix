@@ -4418,36 +4418,6 @@ tracking.")
     (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
 
-
-(define-public libxaw
-  (package
-    (name "libxaw")
-    (version "1.0.11")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/libXaw-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "14ll7ndf5njc30hz2w197qvwp7fqj7y14wq4p1cyxlbipfn79a47"))))
-    (build-system gnu-build-system)
-    (propagated-inputs
-      `(("libxext" ,libxext)
-        ("libxmu" ,libxmu)
-        ("libxpm" ,libxpm)))
-    (inputs
-      `(("libxt" ,libxt)
-        ("xproto" ,xproto)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
 (define-public libxfixes
   (package
     (name "libxfixes")
@@ -4870,3 +4840,30 @@ emulation to complete hardware acceleration for modern GPUs.")
     (license license:x11)))
 
 
+(define-public libxaw
+  (package
+    (name "libxaw")
+    (version "1.0.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/X11R7.7/src/everything/libXaw-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "14ll7ndf5njc30hz2w197qvwp7fqj7y14wq4p1cyxlbipfn79a47"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libxext" ,libxext)
+        ("libxmu" ,libxmu)
+        ("libxpm" ,libxpm)
+        ("libxt" ,libxt)))
+    (inputs
+      `(("xproto" ,xproto)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
