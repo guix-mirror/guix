@@ -26,7 +26,16 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages guile))
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages lesstif)
+  #:use-module (gnu packages libjpeg)
+  #:use-module (gnu packages libtiff)
+  #:use-module (gnu packages libpng)
+  #:use-module ((gnu packages compression)
+                #:renamer (symbol-prefix-proc 'compression:))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages glib))
 
 (define-public emacs
   (package
@@ -43,7 +52,8 @@
     (arguments
      '(#:configure-flags
        (list (string-append "--with-crt-dir=" (assoc-ref %build-inputs "libc")
-                            "/lib"))
+                            "/lib")
+             "--with-gif=no")                     ; XXX: add libungif
        #:patches (list (assoc-ref %build-inputs "patch/epaths"))
        #:phases (alist-cons-before
                  'configure 'fix-/bin/pwd
@@ -60,16 +70,22 @@
        ("ncurses" ,ncurses)
 
        ;; TODO: Add the optional dependencies.
-       ;; ("xlibs" ,xlibs)
+       ("xlibs" ,libx11)
+       ("libXaw" ,libxaw)                    ; XXX: eventually replace by GTK+
        ;; ("gtk+" ,gtk+)
-       ;; ("libXft" ,libXft)
-       ;; ("libtiff" ,libtiff)
+       ("libXft" ,libxft)
+       ("libtiff" ,libtiff)
        ;; ("libungif" ,libungif)
-       ;; ("libjpeg" ,libjpeg)
-       ;; ("libpng" ,libpng)
-       ;; ("libXpm" ,libXpm)
-       ;; ("libxml2" ,libxml2)
-       ;; ("dbus-library" ,dbus-library)
+       ("libjpeg" ,libjpeg-8)
+
+       ;; When looking for libpng `configure' links with `-lpng -lz', so we
+       ;; must also provide zlib as an input.
+       ("libpng" ,libpng)
+       ("zlib" ,compression:zlib)
+
+       ("libXpm" ,libxpm)
+       ("libxml2" ,libxml2)
+       ("dbus" ,dbus)
 
        ("patch/epaths" ,(search-patch "emacs-configure-sh.patch"))
        ))
