@@ -151,6 +151,11 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
         ,(search-patch "automake-skip-amhello-tests.patch"))))
     (arguments
      '(#:patches (list (assoc-ref %build-inputs "patch/skip-amhello"))
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (rnrs io ports))
        #:phases (alist-cons-before
                  'patch-source-shebangs 'patch-tests-shebangs
                  (lambda _
@@ -163,7 +168,35 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                      ;; that occur during the test suite.
                      (setenv "SHELL" sh)
                      (setenv "CONFIG_SHELL" sh)))
-                 %standard-phases)))
+
+                 ;; Files like `install-sh', `mdate.sh', etc. must use
+                 ;; #!/bin/sh, otherwise users could leak erroneous shebangs
+                 ;; in the wild.  See <http://bugs.gnu.org/14201> for an
+                 ;; example.
+                 (alist-cons-after
+                  'install 'unpatch-shebangs
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (dir (string-append out "/share")))
+                      (define (starts-with-shebang? file)
+                        (equal? (call-with-input-file file
+                                  (lambda (p)
+                                    (list (get-u8 p) (get-u8 p))))
+                                (map char->integer '(#\# #\!))))
+
+                      (for-each (lambda (file)
+                                  (when (and (starts-with-shebang? file)
+                                             (executable-file? file))
+                                    (format #t "restoring shebang on `~a'~%"
+                                            file)
+                                    (substitute* file
+                                      (("^#!.*/bin/sh")
+                                       "#!/bin/sh")
+                                      (("^#!.*/bin/env(.*)$" _ args)
+                                       (string-append "#!/usr/bin/env"
+                                                      args)))))
+                                (find-files dir ".*"))))
+                  %standard-phases))))
     (home-page "http://www.gnu.org/software/automake/")
     (synopsis
      "GNU Automake, a GNU standard-compliant makefile generator")
