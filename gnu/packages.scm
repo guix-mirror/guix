@@ -110,14 +110,6 @@
                   (false-if-exception (resolve-interface name))))
               (package-files)))
 
-(define (fold2 f seed1 seed2 lst)
-  (if (null? lst)
-      (values seed1 seed2)
-      (call-with-values
-          (lambda () (f (car lst) seed1 seed2))
-        (lambda (seed1 seed2)
-          (fold2 f seed1 seed2 (cdr lst))))))
-
 (define (fold-packages proc init)
   "Call (PROC PACKAGE RESULT) for each available package, using INIT as
 the initial value of RESULT.  It is guaranteed to never traverse the

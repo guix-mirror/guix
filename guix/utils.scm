@@ -59,7 +59,8 @@
             %current-system
             version-compare
             version>?
-            package-name->name+version))
+            package-name->name+version
+            fold2))
 
 
 ;;;
@@ -462,6 +463,32 @@ introduce the version part."
                (list->string (cons n rest))))
       ((head tail ...)
        (loop tail (cons head prefix))))))
+
+(define fold2
+  (case-lambda
+    ((proc seed1 seed2 lst)
+     "Like `fold', but with a single list and two seeds."
+     (let loop ((result1 seed1)
+                (result2 seed2)
+                (lst     lst))
+       (if (null? lst)
+           (values result1 result2)
+           (call-with-values
+               (lambda () (proc (car lst) result1 result2))
+             (lambda (result1 result2)
+               (loop result1 result2 (cdr lst)))))))
+    ((proc seed1 seed2 lst1 lst2)
+     "Like `fold', but with a two lists and two seeds."
+     (let loop ((result1 seed1)
+                (result2 seed2)
+                (lst1    lst1)
+                (lst2    lst2))
+       (if (or (null? lst1) (null? lst2))
+           (values result1 result2)
+           (call-with-values
+               (lambda () (proc (car lst1) (car lst2) result1 result2))
+             (lambda (result1 result2)
+               (fold2 proc result1 result2 (cdr lst1) (cdr lst2)))))))))
 
 
 ;;;

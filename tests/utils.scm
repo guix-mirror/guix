@@ -64,6 +64,31 @@
            ("nixpkgs" "1.0pre22125_a28fe19")
            ("gtk2" "2.38.0"))))
 
+(test-equal "fold2, 1 list"
+    (list (reverse (iota 5))
+          (map - (reverse (iota 5))))
+  (call-with-values
+      (lambda ()
+        (fold2 (lambda (i r1 r2)
+                 (values (cons i r1)
+                         (cons (- i) r2)))
+               '() '()
+               (iota 5)))
+    list))
+
+(test-equal "fold2, 2 lists"
+    (list (reverse '((a . 0) (b . 1) (c . 2) (d . 3)))
+          (reverse '((a . 0) (b . -1) (c . -2) (d . -3))))
+  (call-with-values
+      (lambda ()
+        (fold2 (lambda (k v r1 r2)
+                 (values (alist-cons k v r1)
+                         (alist-cons k (- v) r2)))
+               '() '()
+               '(a b c d)
+               '(0 1 2 3)))
+    list))
+
 (test-assert "define-record-type*"
   (begin
     (define-record-type* <foo> foo make-foo
