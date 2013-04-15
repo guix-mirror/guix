@@ -306,7 +306,8 @@ check what it has."
                      (values #f #f)))))
     (if valid?
         cached                                    ; including negative caches
-        (let ((narinfo (fetch-narinfo cache path)))
+        (let ((narinfo (and=> (force cache)
+                              (cut fetch-narinfo <> path))))
           (with-atomic-file-output cache-file
             (lambda (out)
               (write (cache-entry narinfo) out)))
@@ -351,7 +352,7 @@ through COMMAND.  INPUT must be a file input port."
   (mkdir-p %narinfo-cache-directory)
   (match args
     (("--query")
-     (let ((cache (open-cache %cache-url)))
+     (let ((cache (delay (open-cache %cache-url))))
        (let loop ((command (read-line)))
          (or (eof-object? command)
              (begin
@@ -397,7 +398,7 @@ through COMMAND.  INPUT must be a file input port."
                (loop (read-line)))))))
     (("--substitute" store-path destination)
      ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
-     (let* ((cache   (open-cache %cache-url))
+     (let* ((cache   (delay (open-cache %cache-url)))
             (narinfo (lookup-narinfo cache store-path))
             (uri     (narinfo-uri narinfo)))
        ;; Tell the daemon what the expected hash of the Nar itself is.
