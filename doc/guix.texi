@@ -537,9 +537,10 @@ multiple-output package.
 @itemx -r @var{package}
 Remove @var{package}.
 
-@item --upgrade=@var{regexp}
-@itemx -u @var{regexp}
-Upgrade all the installed packages matching @var{regexp}.
+@item --upgrade[=@var{regexp}]
+@itemx -u [@var{regexp}]
+Upgrade all the installed packages.  When @var{regexp} is specified, upgrade
+only installed packages whose name matches @var{regexp}.
 
 Note that this upgrades package to the latest version of packages found
 in the distribution currently installed.  To update your distribution,

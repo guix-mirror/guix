@@ -328,7 +328,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -r, --remove=PACKAGE   remove PACKAGE"))
   (display (_ "
-  -u, --upgrade=REGEXP   upgrade all the installed packages matching REGEXP"))
+  -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"))
   (display (_ "
       --roll-back        roll back to the previous generation"))
   (newline)
@@ -379,7 +379,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (option '(#\r "remove") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'remove arg result)))
-        (option '(#\u "upgrade") #t #f
+        (option '(#\u "upgrade") #f #t
                 (lambda (opt name arg result)
                   (alist-cons 'upgrade arg result)))
         (option '("roll-back") #f #f
@@ -602,7 +602,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (let* ((installed (manifest-packages (profile-manifest profile)))
                (upgrade-regexps (filter-map (match-lambda
                                              (('upgrade . regexp)
-                                              (make-regexp regexp))
+                                              (make-regexp (or regexp "")))
                                              (_ #f))
                                             opts))
                (upgrade  (if (null? upgrade-regexps)
