@@ -257,10 +257,11 @@ reading PORT."
     ;; list of key/value pairs.
     (false-if-exception (fetch (string->uri url))))
 
-  (and=> (download (string-append (cache-url cache) "/"
-                                  (store-path-hash-part path)
-                                  ".narinfo"))
-         (cute read-narinfo <> (cache-url cache))))
+  (and (string=? (cache-store-directory cache) (%store-prefix))
+       (and=> (download (string-append (cache-url cache) "/"
+                                       (store-path-hash-part path)
+                                       ".narinfo"))
+              (cute read-narinfo <> (cache-url cache)))))
 
 (define (lookup-narinfo cache path)
   "Check locally if we have valid info about PATH, otherwise go to CACHE and
