@@ -159,6 +159,12 @@ Deriver: ~a~%"
                 (%current-system)                   ; System
                 (basename d))))                     ; Deriver
 
+    ;; Remove entry from the local cache.
+    (false-if-exception
+     (delete-file (string-append (getenv "XDG_CACHE_HOME")
+                                 "/guix/substitute-binary/"
+                                 (store-path-hash-part o))))
+
     ;; Make sure `substitute-binary' correctly communicates the above data.
     (set-build-options s #:use-substitutes? #t)
     (and (has-substitutes? s o)

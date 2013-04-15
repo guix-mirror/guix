@@ -22,6 +22,7 @@
   #:use-module (guix utils)
   #:use-module (guix config)
   #:use-module (guix nar)
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
@@ -30,6 +31,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (web uri)
   #:use-module (web client)
@@ -46,6 +48,36 @@
 ;;; "binary cache".  This program implements the Nix "substituter" protocol.
 ;;;
 ;;; Code:
+
+(define %narinfo-cache-directory
+  ;; A local cache of narinfos, to avoid going to the network.
+  (or (and=> (getenv "XDG_CACHE_HOME")
+             (cut string-append <> "/guix/substitute-binary"))
+      (string-append %state-directory "/substitute-binary/cache")))
+
+(define %narinfo-ttl
+  ;; Number of seconds during which cached narinfo lookups are considered
+  ;; valid.
+  (* 24 3600))
+
+(define %narinfo-negative-ttl
+  ;; Likewise, but for negative lookups---i.e., cached lookup failures.
+  (* 3 3600))
+
+(define (with-atomic-file-output file proc)
+  "Call PROC with an output port for the file that is going to replace FILE.
+Upon success, FILE is atomically replaced by what has been written to the
+output port, and PROC's result is returned."
+  (let* ((template (string-append file ".XXXXXX"))
+         (out      (mkstemp! template)))
+    (with-throw-handler #t
+      (lambda ()
+        (let ((result (proc out)))
+          (close out)
+          (rename-file template file)
+          result))
+      (lambda (key . args)
+        (false-if-exception (delete-file template))))))
 
 (define (fields->alist port)
   "Read recutils-style record from PORT and return them as a list of key/value
@@ -71,6 +103,17 @@ pairs."
   "Apply MAKE to the values associated with KEYS in ALIST."
   (let ((args (map (cut assoc-ref alist <>) keys)))
     (apply make args)))
+
+(define (object->fields object fields port)
+  "Write OBJECT (typically a record) as a series of recutils-style fields to
+PORT, according to FIELDS.  FIELDS must be a list of field name/getter pairs."
+  (let loop ((fields fields))
+    (match fields
+      (()
+       object)
+      (((field . get) rest ...)
+       (format port "~a: ~a~%" field (get object))
+       (loop rest)))))
 
 (define (fetch uri)
   "Return a binary input port to URI and the number of bytes it's expected to
@@ -161,22 +204,113 @@ failure."
                      (_ deriver))
                    system)))
 
+(define* (read-narinfo port #:optional url)
+  "Read a narinfo from PORT in its standard external form.  If URL is true, it
+must be a string used to build full URIs from relative URIs found while
+reading PORT."
+  (alist->record (fields->alist port)
+                 (narinfo-maker url)
+                 '("StorePath" "URL" "Compression"
+                   "FileHash" "FileSize" "NarHash" "NarSize"
+                   "References" "Deriver" "System")))
+
+(define (write-narinfo narinfo port)
+  "Write NARINFO to PORT."
+  (define (empty-string-if-false x)
+    (or x ""))
+
+  (define (number-or-empty-string x)
+    (if (number? x)
+        (number->string x)
+        ""))
+
+  (object->fields narinfo
+                  `(("StorePath" . ,narinfo-path)
+                    ("URL" . ,(compose uri->string narinfo-uri))
+                    ("Compression" . ,narinfo-compression)
+                    ("FileHash" . ,(compose empty-string-if-false
+                                            narinfo-file-hash))
+                    ("FileSize" . ,(compose number-or-empty-string
+                                            narinfo-file-size))
+                    ("NarHash" . ,(compose empty-string-if-false
+                                           narinfo-hash))
+                    ("NarSize" . ,(compose number-or-empty-string
+                                           narinfo-size))
+                    ("References" . ,(compose string-join narinfo-references))
+                    ("Deriver" . ,(compose empty-string-if-false
+                                           narinfo-deriver))
+                    ("System" . ,narinfo-system))
+                  port))
+
+(define (narinfo->string narinfo)
+  "Return the external representation of NARINFO."
+  (call-with-output-string (cut write-narinfo narinfo <>)))
+
+(define (string->narinfo str)
+  "Return the narinfo represented by STR."
+  (call-with-input-string str (cut read-narinfo <>)))
+
 (define (fetch-narinfo cache path)
   "Return the <narinfo> record for PATH, or #f if CACHE does not hold PATH."
   (define (download url)
     ;; Download the `nix-cache-info' from URL, and return its contents as an
     ;; list of key/value pairs.
-    (and=> (false-if-exception (fetch (string->uri url)))
-           fields->alist))
+    (false-if-exception (fetch (string->uri url))))
 
   (and=> (download (string-append (cache-url cache) "/"
                                   (store-path-hash-part path)
                                   ".narinfo"))
-         (lambda (properties)
-           (alist->record properties (narinfo-maker (cache-url cache))
-                          '("StorePath" "URL" "Compression"
-                            "FileHash" "FileSize" "NarHash" "NarSize"
-                            "References" "Deriver" "System")))))
+         (cute read-narinfo <> (cache-url cache))))
+
+(define (lookup-narinfo cache path)
+  "Check locally if we have valid info about PATH, otherwise go to CACHE and
+check what it has."
+  (define now
+    (current-time time-monotonic))
+
+  (define (->time seconds)
+    (make-time time-monotonic 0 seconds))
+
+  (define (obsolete? date ttl)
+    (time>? (subtract-duration now (make-time time-duration 0 ttl))
+            (->time date)))
+
+  (define cache-file
+    (string-append %narinfo-cache-directory "/"
+                   (store-path-hash-part path)))
+
+  (define (cache-entry narinfo)
+    `(narinfo (version 0)
+              (date ,(time-second now))
+              (value ,(and=> narinfo narinfo->string))))
+
+  (let*-values (((valid? cached)
+                 (catch 'system-error
+                   (lambda ()
+                     (call-with-input-file cache-file
+                       (lambda (p)
+                         (match (read p)
+                           (('narinfo ('version 0) ('date date)
+                                      ('value #f))
+                            ;; A cached negative lookup.
+                            (if (obsolete? date %narinfo-negative-ttl)
+                                (values #f #f)
+                                (values #t #f)))
+                           (('narinfo ('version 0) ('date date)
+                                      ('value value))
+                            ;; A cached positive lookup
+                            (if (obsolete? date %narinfo-ttl)
+                                (values #f #f)
+                                (values #t (string->narinfo value))))))))
+                   (lambda _
+                     (values #f #f)))))
+    (if valid?
+        cached                                    ; including negative caches
+        (let ((narinfo (fetch-narinfo cache path)))
+          (with-atomic-file-output cache-file
+            (lambda (out)
+              (write (cache-entry narinfo) out)))
+          narinfo))))
 
 (define (filtered-port command input)
   "Return an input port (and PID) where data drained from INPUT is filtered
@@ -214,6 +348,7 @@ through COMMAND.  INPUT must be a file input port."
 
 (define (guix-substitute-binary . args)
   "Implement the build daemon's substituter protocol."
+  (mkdir-p %narinfo-cache-directory)
   (match args
     (("--query")
      (let ((cache (open-cache %cache-url)))
@@ -225,7 +360,7 @@ through COMMAND.  INPUT must be a file input port."
                   ;; Return the subset of PATHS available in CACHE.
                   (let ((substitutable
                          (if cache
-                             (par-map (cut fetch-narinfo cache <>)
+                             (par-map (cut lookup-narinfo cache <>)
                                       paths)
                              '())))
                     (for-each (lambda (narinfo)
@@ -237,7 +372,7 @@ through COMMAND.  INPUT must be a file input port."
                   ;; Reply info about PATHS if it's in CACHE.
                   (let ((substitutable
                          (if cache
-                             (par-map (cut fetch-narinfo cache <>)
+                             (par-map (cut lookup-narinfo cache <>)
                                       paths)
                              '())))
                     (for-each (lambda (narinfo)
@@ -263,7 +398,7 @@ through COMMAND.  INPUT must be a file input port."
     (("--substitute" store-path destination)
      ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
      (let* ((cache   (open-cache %cache-url))
-            (narinfo (fetch-narinfo cache store-path))
+            (narinfo (lookup-narinfo cache store-path))
             (uri     (narinfo-uri narinfo)))
        ;; Tell the daemon what the expected hash of the Nar itself is.
        (format #t "~a~%" (narinfo-hash narinfo))
