@@ -237,7 +237,9 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                                    (_ #f))
                                   opts)))
 
-          (show-what-to-build (%store) drv (assoc-ref opts 'dry-run?))
+          (show-what-to-build (%store) drv
+                              #:use-substitutes? (assoc-ref opts 'substitutes?)
+                              #:dry-run? (assoc-ref opts 'dry-run?))
 
           ;; TODO: Add more options.
           (set-build-options (%store)

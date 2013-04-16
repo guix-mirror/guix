@@ -144,33 +144,66 @@ error."
           (leave (_ "expression `~s' does not evaluate to a package~%")
                  exp)))))
 
-(define* (show-what-to-build store drv #:optional dry-run?)
+(define* (show-what-to-build store drv
+                             #:key dry-run? (use-substitutes? #t))
   "Show what will or would (depending on DRY-RUN?) be built in realizing the
 derivations listed in DRV.  Return #t if there's something to build, #f
-otherwise."
-  (let* ((req  (append-map (lambda (drv-path)
-                             (let ((d (call-with-input-file drv-path
-                                        read-derivation)))
-                               (derivation-prerequisites-to-build
-                                store d)))
-                           drv))
-         (req* (delete-duplicates
-                (append (remove (compose (cute valid-path? store <>)
-                                         derivation-path->output-path)
-                                drv)
-                        (map derivation-input-path req)))))
+otherwise.  When USE-SUBSTITUTES?, check and report what is prerequisites are
+available for download."
+  (let*-values (((build download)
+                 (fold2 (lambda (drv-path build download)
+                          (let ((drv (call-with-input-file drv-path
+                                       read-derivation)))
+                            (let-values (((b d)
+                                          (derivation-prerequisites-to-build
+                                           store drv
+                                           #:use-substitutes?
+                                           use-substitutes?)))
+                              (values (append b build)
+                                      (append d download)))))
+                        '() '()
+                        drv))
+                ((build)                          ; add the DRV themselves
+                 (delete-duplicates
+                  (append (remove (compose (lambda (out)
+                                             (or (valid-path? store out)
+                                                 (and use-substitutes?
+                                                      (has-substitutes? store
+                                                                        out))))
+                                           derivation-path->output-path)
+                                  drv)
+                          (map derivation-input-path build))))
+                ((download)                   ; add the references of DOWNLOAD
+                 (delete-duplicates
+                  (append download
+                          (remove (cut valid-path? store <>)
+                                  (append-map
+                                   substitutable-references
+                                   (substitutable-path-info store download)))))))
     (if dry-run?
-        (format (current-error-port)
-                (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
-                    "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
-                    (length req*))
-                (null? req*) req*)
-        (format (current-error-port)
-                (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
-                    "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
-                    (length req*))
-                (null? req*) req*))
-    (pair? req*)))
+        (begin
+          (format (current-error-port)
+                  (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
+                      "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
+                      (length build))
+                  (null? build) build)
+          (format (current-error-port)
+                  (N_ "~:[the following file would be downloaded:~%~{   ~a~%~}~;~]"
+                      "~:[the following files would be downloaded:~%~{    ~a~%~}~;~]"
+                      (length download))
+                  (null? download) download))
+        (begin
+          (format (current-error-port)
+                  (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
+                      "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
+                      (length build))
+                  (null? build) build)
+          (format (current-error-port)
+                  (N_ "~:[the following file will be downloaded:~%~{   ~a~%~}~;~]"
+                      "~:[the following files will be downloaded:~%~{    ~a~%~}~;~]"
+                      (length download))
+                  (null? download) download)))
+    (pair? build)))
 
 (define-syntax with-error-handling
   (syntax-rules ()

@@ -674,7 +674,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
             (ensure-default-profile))
 
           (show-what-to-remove/install remove* install* dry-run?)
-          (show-what-to-build (%store) drv dry-run?)
+          (show-what-to-build (%store) drv
+                              #:use-substitutes? (assoc-ref opts 'substitutes?)
+                              #:dry-run? dry-run?)
 
           (or dry-run?
               (and (build-derivations (%store) drv)

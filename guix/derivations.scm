@@ -48,6 +48,7 @@
             derivation-input?
             derivation-input-path
             derivation-input-sub-derivations
+            derivation-input-output-paths
 
             fixed-output-derivation?
             derivation-hash
@@ -99,6 +100,14 @@ download with a fixed hash (aka. `fetchurl')."
      #t)
     (_ #f)))
 
+(define (derivation-input-output-paths input)
+  "Return the list of output paths corresponding to INPUT, a
+<derivation-input>."
+  (match input
+    (($ <derivation-input> path sub-drvs)
+     (map (cut derivation-path->output-path path <>)
+          sub-drvs))))
+
 (define (derivation-prerequisites drv)
   "Return the list of derivation-inputs required to build DRV, recursively."
   (let loop ((drv    drv)
@@ -113,47 +122,85 @@ download with a fixed hash (aka. `fetchurl')."
                  inputs)))))
 
 (define* (derivation-prerequisites-to-build store drv
-                                            #:key (outputs
-                                                   (map
-                                                    car
-                                                    (derivation-outputs drv))))
-  "Return the list of derivation-inputs required to build the OUTPUTS of
-DRV and not already available in STORE, recursively."
+                                            #:key
+                                            (outputs
+                                             (map
+                                              car
+                                              (derivation-outputs drv)))
+                                            (use-substitutes? #t))
+  "Return two values: the list of derivation-inputs required to build the
+OUTPUTS of DRV and not already available in STORE, recursively, and the list
+of required store paths that can be substituted.  When USE-SUBSTITUTES? is #f,
+that second value is the empty list."
+  (define (derivation-output-paths drv sub-drvs)
+    (match drv
+      (($ <derivation> outputs)
+       (map (lambda (sub-drv)
+              (derivation-output-path (assoc-ref outputs sub-drv)))
+            sub-drvs))))
+
   (define built?
     (cut valid-path? store <>))
 
+  (define substitutable?
+    ;; Return true if the given path is substitutable.  Call
+    ;; `substitutable-paths' upfront, to benefit from parallelism in the
+    ;; substituter.
+    (if use-substitutes?
+        (let ((s (substitutable-paths store
+                                      (append
+                                       (derivation-output-paths drv outputs)
+                                       (append-map
+                                        derivation-input-output-paths
+                                        (derivation-prerequisites drv))))))
+          (cut member <> s))
+        (const #f)))
+
   (define input-built?
-    (match-lambda
-     (($ <derivation-input> path sub-drvs)
-      (let ((out (map (cut derivation-path->output-path path <>)
-                      sub-drvs)))
-        (any built? out)))))
+    (compose (cut any built? <>) derivation-input-output-paths))
+
+  (define input-substitutable?
+    ;; Return true if and only if all of SUB-DRVS are subsitutable.  If at
+    ;; least one is missing, then everything must be rebuilt.
+    (compose (cut every substitutable? <>) derivation-input-output-paths))
 
   (define (derivation-built? drv sub-drvs)
-    (match drv
-      (($ <derivation> outputs)
-       (let ((paths (map (lambda (sub-drv)
-                           (derivation-output-path
-                            (assoc-ref outputs sub-drv)))
-                         sub-drvs)))
-         (every built? paths)))))
+    (every built? (derivation-output-paths drv sub-drvs)))
 
-  (let loop ((drv      drv)
-             (sub-drvs outputs)
-             (result   '()))
-    (if (derivation-built? drv sub-drvs)
-        result
-        (let ((inputs (remove (lambda (i)
-                                (or (member i result) ; XXX: quadratic
-                                    (input-built? i)))
-                              (derivation-inputs drv))))
-          (fold loop
-                (append inputs result)
-                (map (lambda (i)
-                       (call-with-input-file (derivation-input-path i)
-                         read-derivation))
-                     inputs)
-                (map derivation-input-sub-derivations inputs))))))
+  (define (derivation-substitutable? drv sub-drvs)
+    (every substitutable? (derivation-output-paths drv sub-drvs)))
+
+  (let loop ((drv        drv)
+             (sub-drvs   outputs)
+             (build      '())
+             (substitute '()))
+    (cond ((derivation-built? drv sub-drvs)
+           (values build substitute))
+          ((derivation-substitutable? drv sub-drvs)
+           (values build
+                   (append (derivation-output-paths drv sub-drvs)
+                           substitute)))
+          (else
+           (let ((inputs (remove (lambda (i)
+                                   (or (member i build) ; XXX: quadratic
+                                       (input-built? i)
+                                       (input-substitutable? i)))
+                                 (derivation-inputs drv))))
+             (fold2 loop
+                    (append inputs build)
+                    (append (append-map (lambda (input)
+                                          (if (and (not (input-built? input))
+                                                   (input-substitutable? input))
+                                              (derivation-input-output-paths
+                                               input)
+                                              '()))
+                                        (derivation-inputs drv))
+                            substitute)
+                    (map (lambda (i)
+                           (call-with-input-file (derivation-input-path i)
+                             read-derivation))
+                         inputs)
+                    (map derivation-input-sub-derivations inputs)))))))
 
 (define (%read-derivation drv-port)
   ;; Actually read derivation from DRV-PORT.
