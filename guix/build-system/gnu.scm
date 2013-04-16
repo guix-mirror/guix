@@ -27,6 +27,7 @@
   #:use-module (ice-9 match)
   #:export (gnu-build
             gnu-build-system
+            standard-search-paths
             standard-inputs
             package-with-explicit-inputs
             package-with-extra-configure-variable
@@ -143,6 +144,16 @@ standard packages used as implicit inputs of the GNU build system."
   (let ((distro (resolve-module '(gnu packages base))))
     (module-ref distro '%final-inputs)))
 
+(define (standard-search-paths)
+  "Return the list of <search-path-specification> for the standard (implicit)
+inputs."
+  (append-map (match-lambda
+               ((_ (? package? p) _ ...)
+                (package-native-search-paths p))
+               (_
+                '()))
+              (standard-packages)))
+
 (define standard-inputs
   (memoize
    (lambda (system)
@@ -204,12 +215,7 @@ which could lead to gratuitous input divergence."
 
   (define implicit-search-paths
     (if implicit-inputs?
-        (append-map (match-lambda
-                     ((_ (? package? p) _ ...)
-                      (package-native-search-paths p))
-                     (_
-                      '()))
-                    (standard-packages))
+        (standard-search-paths)
         '()))
 
   (define builder

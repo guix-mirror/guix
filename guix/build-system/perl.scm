@@ -55,7 +55,8 @@
   "Build SOURCE using PERL, and with INPUTS.  This assumes that SOURCE
 provides a `Makefile.PL' file as its build system."
   (define perl-search-paths
-    (package-native-search-paths perl))
+    (append (package-native-search-paths perl)
+            (standard-search-paths)))
 
   (define builder
     `(begin

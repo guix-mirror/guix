@@ -72,7 +72,8 @@ provides a 'CMakeLists.txt' file as its build system."
                     #:outputs %outputs
                     #:inputs %build-inputs
                     #:search-paths ',(map search-path-specification->sexp
-                                          search-paths)
+                                          (append search-paths
+                                                  (standard-search-paths)))
                     #:patches ,patches
                     #:patch-flags ,patch-flags
                     #:phases ,phases
