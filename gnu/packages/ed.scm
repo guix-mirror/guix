@@ -43,8 +43,7 @@
                                        (("/bin/sh") (which "sh"))))
                                    %standard-phases)))
     (home-page "http://www.gnu.org/software/ed/")
-    (synopsis
-     "GNU ed, an implementation of the standard Unix editor")
+    (synopsis "Line-oriented text editor")
     (description
      "GNU ed is a line-oriented text editor.  It is used to create,
 display, modify and otherwise manipulate text files, both

@@ -35,7 +35,7 @@
              (base32 "16hrs8k3nmc7a8jam5j1fpspd6sdpkamskvsdpcw6m29vnis8q44"))))
    (build-system gnu-build-system)
    (home-page "http://www.gnu.org/software/libsigsegv/")
-   (synopsis "GNU libsigsegv, a library to handle page faults in user mode")
+   (synopsis "Library for handling page faults")
    (description
 "GNU libsigsegv is a library for handling page faults in user mode. A page
 fault occurs when a program tries to access to a region of memory that is

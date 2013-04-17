@@ -37,7 +37,7 @@
     (build-system gnu-build-system)
     (arguments '(#:parallel-build? #f))
     (home-page "http://www.gnu.org/software/pth")
-    (synopsis "The GNU Portable Threads library")
+    (synopsis "Portable thread library")
     (description
      "Pth is a very portable POSIX/ANSI-C based library for Unix
 platforms which provides non-preemptive priority-based scheduling for

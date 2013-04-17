@@ -78,7 +78,7 @@ caching facility provided by the library.")
        ("pkg-config" ,pkg-config)
        ("libcddb" ,libcddb)))
     (home-page "http://www.gnu.org/software/libcdio/")
-    (synopsis "A library for OS-independent CD-ROM and CD image access")
+    (synopsis "CD Input and Control library")
     (description
      "GNU libcdio is a library for OS-idependent CD-ROM and CD image access.
 It includes a library for working with ISO-9660 filesystems (libiso9660), as
@@ -104,7 +104,7 @@ well as utility programs such as an audio CD player and an extractor.")
        ("zlib" ,zlib)
        ("libcdio" ,libcdio)))
     (home-page "http://www.gnu.org/software/xorriso/")
-    (synopsis "An ISO 9660 Rock Ridge file system manipulator")
+    (synopsis "Create, manipulate, burn ISO-9660 filesystems")
     (description
      "GNU xorriso copies file objects from POSIX compliant filesystems into
 Rock Ridge enhanced ISO 9660 filesystems and allows session-wise manipulation

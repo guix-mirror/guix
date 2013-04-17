@@ -50,8 +50,7 @@
     (arguments `(#:tests? #f))
     (home-page
      "http://www.gnu.org/software/autoconf/")
-    (synopsis
-     "GNU Autoconf, a part of the GNU Build System")
+    (synopsis "Create source code configuration scripts")
     (description
      "GNU Autoconf is an extensible package of M4 macros that produce
 shell scripts to automatically configure software source code
@@ -198,8 +197,7 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                                 (find-files dir ".*"))))
                   %standard-phases))))
     (home-page "http://www.gnu.org/software/automake/")
-    (synopsis
-     "GNU Automake, a GNU standard-compliant makefile generator")
+    (synopsis "Making GNU standards-compliant Makefiles")
     (description
      "GNU Automake is a tool for automatically generating
 `Makefile.in' files compliant with the GNU Coding
@@ -253,7 +251,7 @@ Standards.  Automake requires the use of Autoconf.")
                  %standard-phases)))
     (inputs `(("patch/skip-tests"
                ,(search-patch "libtool-skip-tests.patch"))))
-    (synopsis "GNU Libtool, a generic library support script")
+    (synopsis "Generic shared library support tools")
     (description
      "GNU libtool is a generic library support script.  Libtool hides the
 complexity of using shared libraries behind a consistent, portable interface.

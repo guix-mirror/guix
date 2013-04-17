@@ -73,8 +73,7 @@
        ("qemu" ,qemu)
        ("xorriso" ,xorriso)))
     (home-page "http://www.gnu.org/software/grub/")
-    (synopsis
-     "GNU GRUB, the Grand Unified Boot Loader (2.x beta)")
+    (synopsis "GRand unified boot loader")
     (description
      "GNU GRUB is a Multiboot boot loader. It was derived from GRUB, GRand
 Unified Bootloader, which was originally designed and implemented by Erich

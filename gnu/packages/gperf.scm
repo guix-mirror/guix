@@ -37,8 +37,7 @@
     (build-system gnu-build-system)
     (arguments '(#:parallel-tests? #f))
     (home-page "http://www.gnu.org/software/gperf/")
-    (synopsis
-     "GNU gperf, a perfect hash function generator")
+    (synopsis "Perfect hash function generator")
     (description
      "GNU gperf is a perfect hash function generator.  For a given
 list of strings, it produces a hash function and hash table, in

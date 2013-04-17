@@ -38,8 +38,7 @@
         "18w0dbg77i56cx1bwa789w0qi3l4xkkbascxcv2b6gbm0zmjg1g6"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/pies/")
-    (synopsis
-     "GNU Pies, a program invocation and execution supervisor")
+    (synopsis "Program invocation and execution supervisor")
     (description
      "The name Pies (pronounced \"p-yes\") stands for Program Invocation
 and Execution Supervisor.  This utility starts and controls execution of
@@ -81,8 +80,7 @@ it can replace the inetd utility!")
     (inputs `(("patch/gets" ,(search-patch "diffutils-gets-undeclared.patch"))
               ("ncurses" ,ncurses)))
     (home-page "http://www.gnu.org/software/inetutils/")
-    (synopsis
-     "GNU Inetutils, a collection of common network programs")
+    (synopsis "Basic networking utilities")
     (description
      "The GNU network utilities suite provides the following tools:
 ftp(d), hostname, ifconfig, inetd, logger, ping, rcp, rexec(d),

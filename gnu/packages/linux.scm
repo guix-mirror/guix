@@ -186,7 +186,7 @@
                   'install ,install-phase
                   (alist-delete 'configure %standard-phases)))
        #:tests? #f))
-    (synopsis "GNU Linux-Libre kernel")
+    (synopsis "100% free redistribution of a cleaned Linux kernel")
     (description "Linux-Libre operating system kernel.")
     (license gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))

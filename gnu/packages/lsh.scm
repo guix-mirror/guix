@@ -117,8 +117,7 @@
              (which "cat"))))
         %standard-phases)))
     (home-page "http://www.lysator.liu.se/~nisse/lsh/")
-    (synopsis
-     "GNU lsh, a GPL'd implementation of the SSH protocol")
+    (synopsis "GNU implementation of the Secure Shell (ssh) protocols")
     (description
      "lsh is a free implementation (in the GNU sense) of the ssh
 version 2 protocol, currently being standardised by the IETF

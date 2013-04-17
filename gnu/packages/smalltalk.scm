@@ -47,8 +47,7 @@
                        (("@LIBC_SO_DIR@")  (string-append libc "/lib")))))
                 %standard-phases)))
     (home-page "https://www.gnu.org/software/smalltalk/")
-    (synopsis
-     "GNU Smalltalk, a free implementation of the Smalltalk-80 language")
+    (synopsis "Smalltalk environment")
     (description
      "GNU Smalltalk is a free implementation of the Smalltalk-80 language.
 

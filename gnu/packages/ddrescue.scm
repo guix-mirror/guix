@@ -37,7 +37,7 @@
     (build-system gnu-build-system)
     (home-page
      "http://www.gnu.org/software/ddrescue/ddrescue.html")
-    (synopsis "GNU Ddrescue, a data recovery tool")
+    (synopsis "Data recovery utility")
     (description
      "GNU Ddrescue is a data recovery tool.  It copies data from one
 file or block device (e.g., hard disk, CD-ROM) to another, trying hard to

@@ -34,7 +34,7 @@
             (sha256 (base32
                      "0f9655vqdvfwbxvs1gpa7py8k1z71aqh8hp73f65vazwbfz436wa"))))
    (build-system gnu-build-system)
-   (synopsis "GNU Indent, a program for code indentation and formatting")
+   (synopsis "Code reformatter")
    (description
     "GNU Indent can be used to make code easier to read. It can also convert
 from one style of writing C to another. Indent understands a substantial

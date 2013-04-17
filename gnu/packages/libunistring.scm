@@ -36,7 +36,7 @@
               "18q620269xzpw39dwvr9zpilnl2dkw5z5kz3mxaadnpv4k3kw3b1"))))
    (propagated-inputs '())                  ; FIXME: add libiconv when !glibc
    (build-system gnu-build-system)
-   (synopsis "GNU Libunistring, a Unicode string library")
+   (synopsis "C library for manipulating Unicode strings")
    (description
     "This library provides functions for manipulating Unicode strings and for
 manipulating C strings according to the Unicode standard.

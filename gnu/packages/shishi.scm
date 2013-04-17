@@ -46,8 +46,7 @@
        ("libgcrypt" ,libgcrypt)
        ("libtasn1" ,libtasn1)))
     (home-page "http://www.gnu.org/software/shishi/")
-    (synopsis
-     "GNU Shishi, an implementation of the Kerberos 5 network security system")
+    (synopsis "Implementation of the Kerberos 5 network security system")
     (description
      "Shishi contains a library ('libshishi') that can be used by application
 developers to add support for Kerberos 5.  Shishi contains a command line

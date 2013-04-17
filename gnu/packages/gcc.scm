@@ -132,7 +132,7 @@
                          %standard-phases)))))
 
      (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
-     (synopsis "The GNU Compiler Collection")
+     (synopsis "GNU Compiler Collection")
      (description
       "The GNU Compiler Collection includes compiler front ends for C, C++,
 Objective-C, Fortran, OpenMP for C/C++/Fortran, Java, and Ada, as well as

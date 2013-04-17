@@ -75,7 +75,7 @@
                   %standard-phases))))
     (home-page
      "http://www.gnu.org/software/dejagnu/")
-    (synopsis "The DejaGNU testing framework")
+    (synopsis "GNU software testing framework")
     (description
      "DejaGnu is a framework for testing other programs.  Its purpose
 is to provide a single front end for all tests.  Think of it as a

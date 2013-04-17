@@ -92,7 +92,7 @@ solve the shortest vector problem.")
         "18qf6jzz1r3mzb5qynywv4xx3z9g61hgkbpkdrhbgqh2g7jhgfc5"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/gsl/")
-    (synopsis "The GNU Scientific Library, a large numerical library")
+    (synopsis "Numerical library for C and C++")
     (description
      "The GNU Scientific Library (GSL) is a numerical library for C
 and C++ programmers.  It is free software under the GNU General
@@ -177,7 +177,7 @@ PARI is also available as a C library to allow for faster computations.")
                                     (string-append "--prefix=" out)))))
                       %standard-phases)))
     (home-page "http://www.gnu.org/software/bc/")
-    (synopsis "GNU software calculator")
+    (synopsis "Arbitrary precision numeric processing language")
     (description
      "bc is an arbitrary precision numeric processing language. Syntax
 is similar to C, but differs in many substantial areas. It supports

@@ -46,8 +46,7 @@
        ("util-linux" ,util-linux)
        ("parted" ,parted)))
     (home-page "https://www.gnu.org/software/fdisk/")
-    (synopsis
-     "GNU Fdisk, a command-line disk partitioning tool")
+    (synopsis "Low-level disk partitioning and formatting")
     (description
      "GNU Fdisk provides alternatives to util-linux fdisk and util-linux
 cfdisk.  It uses GNU Parted.")

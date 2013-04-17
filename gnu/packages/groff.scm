@@ -45,7 +45,7 @@
              ("perl" ,perl)
              ("psutils" ,psutils)
              ("texinfo" ,texinfo)))
-   (synopsis "GNU Troff text formatting system")
+   (synopsis "Typesetting from plain text mixed with formatting commands")
    (description
     "GNU Troff (Groff) is a software typesetting package which reads plain
 text mixed with formatting commands and produces formatted output.")

@@ -88,7 +88,7 @@
    ;; When cross-compiling, a native version of Guile itself is needed.
    (self-native-input? #t)
 
-   (synopsis "GNU Guile 1.8, an embeddable Scheme interpreter")
+   (synopsis "Scheme implementation intended especially for extensions")
    (description
 "GNU Guile 1.8 is an interpreter for the Scheme programming language,
 packaged as a library that can be embedded into programs to make them
@@ -137,7 +137,7 @@ extensible.  It supports many SRFIs.")
                        (string-append bash "/bin/bash")))))
                 %standard-phases)))
 
-   (synopsis "GNU Guile 2.0, an embeddable Scheme implementation")
+   (synopsis "Scheme implementation intended especially for extensions")
    (description
 "GNU Guile is an implementation of the Scheme programming language, with
 support for many SRFIs, packaged for use in a wide variety of environments.
@@ -231,8 +231,7 @@ many readers as needed).")
                                out)))))
                  %standard-phases)))
     (home-page "http://www.gnu.org/software/guile-ncurses/")
-    (synopsis
-     "GNU Guile-Ncurses, Scheme interface to the NCurses libraries")
+    (synopsis "Guile bindings to ncurses")
     (description
      "GNU Guile-Ncurses is a library for the Guile Scheme interpreter that
 provides functions for creating text user interfaces.  The text user interface
@@ -258,8 +257,7 @@ menu.")
      `(("ed" ,ed) ("which" ,which) ("guile" ,guile-1.8)
        ("patch/install" ,(search-patch "mcron-install.patch"))))
     (home-page "http://www.gnu.org/software/mcron/")
-    (synopsis
-     "GNU mcron, a flexible implementation of `cron' in Guile")
+    (synopsis "Run jobs at scheduled times")
     (description
      "The GNU package mcron (Mellor's cron) is a 100% compatible replacement
 for Vixie cron.  It is written in pure Guile, and allows configuration files

@@ -76,7 +76,7 @@
         #:phases (alist-cons-after 'install 'post-install
                                    ,post-install-phase
                                    %standard-phases)))
-     (synopsis "GNU Bourne-Again Shell")
+     (synopsis "The GNU Bourne-Again SHell")
      (description
       "Bash is the shell, or command language interpreter, that will appear in
 the GNU operating system.  Bash is an sh-compatible shell that incorporates

@@ -46,7 +46,7 @@
                   ;; sub-architectures.
                   "--enable-fat"
                   "--enable-cxx")))
-   (synopsis "GMP, the GNU multiple precision arithmetic library")
+   (synopsis "Multiple-precision arithmetic library")
    (description
     "GMP is a free library for arbitrary precision arithmetic, operating on
 signed integers, rational numbers, and floating point numbers.  There is no
@@ -82,8 +82,7 @@ faster algorithms.")
                      "0ym1ylcq803n52qrggxqmkz66gbn8ncc3ybawal31v5y5p1srma9"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
-   (synopsis "GNU MPFR, a library for multiple-precision floating-point
-arithmetic")
+   (synopsis "C library for arbitrary precision floating-point arithmetic")
    (description
     "The GNU MPFR library is a C library for multiple-precision
 floating-point computations with correct rounding.  MPFR is based on the GMP
@@ -109,8 +108,7 @@ double-precision floating-point arithmetic (53-bit mantissa).")
    (build-system gnu-build-system)
    (propagated-inputs `(("gmp" ,gmp)              ; <mpc.h> refers to both
                         ("mpfr" ,mpfr)))
-   (synopsis "GNU MPC, a library for multiprecision complex arithmetic
-with exact rounding")
+   (synopsis "C library for arbitrary precision complex arithmetic")
    (description
     "GNU MPC is a C library for the arithmetic of complex numbers with
 arbitrarily high precision and correct rounding of the result. It extends

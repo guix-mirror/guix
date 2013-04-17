@@ -61,7 +61,7 @@
                   ,(string-append "--with-gawk="  ; for illustration purposes
                                  (assoc-ref %build-inputs "gawk")))))
    (inputs `(("gawk" ,gawk)))
-   (synopsis "GNU Hello")
+   (synopsis "Hello, GNU world: An example GNU package")
    (description "Yeah...")
    (home-page "http://www.gnu.org/software/hello/")
    (license gpl3+)))
@@ -78,7 +78,7 @@
              (base32
               "1qbjb1l7f9blckc5pqy8jlf6482hpx4awn2acmhyf5mv9wfq03p7"))))
    (build-system gnu-build-system)
-   (synopsis "GNU implementation of the Unix grep command")
+   (synopsis "Print lines matching a pattern")
    (description
     "The grep command searches one or more input files for lines containing a
 match to a specified pattern.  By default, grep prints the matching
@@ -98,7 +98,7 @@ lines.")
              (base32
               "13wlsb4sf5d5a82xjhxqmdvrrn36rmw5f0pl9qyb9zkvldnb7hra"))))
    (build-system gnu-build-system)
-   (synopsis "GNU sed, a batch stream editor")
+   (synopsis "Stream editor")
    (arguments
     `(#:phases (alist-cons-before
                 'patch-source-shebangs 'patch-test-suite
@@ -134,7 +134,7 @@ substituting multiple occurrences of a string within a file.")
    (inputs `(("patch/gets" ,(search-patch "tar-gets-undeclared.patch"))))
    (arguments
     `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
-   (synopsis "GNU implementation of the `tar' archiver")
+   (synopsis "Managing tar archives")
    (description
     "The Tar program provides the ability to create tar archives, as well as
 various other kinds of manipulation.  For example, you can use Tar on
@@ -167,7 +167,7 @@ files (as archives).")
     ;; TODO: When cross-compiling, add this:
     ;;  '(#:configure-flags '("ac_cv_func_strnlen_working=yes"))
     )
-   (synopsis "GNU Patch, a program to apply differences to files")
+   (synopsis "Apply differences to originals, with optional backups")
    (description
     "GNU Patch takes a patch file containing a difference listing produced by
 the diff program and applies those differences to one or more original files,
@@ -190,7 +190,7 @@ producing patched versions.")
    (inputs `(("patch/gets"
               ,(search-patch "diffutils-gets-undeclared.patch"))))
    (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
-   (synopsis "Programs to find differences among text files")
+   (synopsis "Comparing and merging files")
    (description
     "GNU Diffutils is a package of several programs related to finding
 differences between files.
@@ -243,8 +243,7 @@ You can use the sdiff command to merge two files interactively.")
     ;; `(#:configure-flags '("gl_cv_func_wcwidth_works=yes")
     ;;   ,@(arguments cross-system))
     )
-   (synopsis "Basic directory searching utilities of the GNU operating
-system")
+   (synopsis "Operating on files matching given criteria")
    (description
     "The GNU Find Utilities are the basic directory searching utilities of
 the GNU operating system.  These programs are typically used in conjunction
@@ -291,9 +290,7 @@ The tools supplied with this package are:
                       (("#!/bin/sh")
                        (format #f "#!~a/bin/bash" bash)))))
                 %standard-phases)))
-   (synopsis
-    "The basic file, shell and text manipulation utilities of the GNU
-operating system")
+   (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "The GNU Core Utilities are the basic file, shell and text manipulation
 utilities of the GNU operating system.  These are the core utilities which
@@ -327,8 +324,7 @@ are expected to exist on every operating system.")
                        (format #f "default_shell[] = \"~a/bin/bash\";\n"
                                bash)))))
                 %standard-phases)))
-   (synopsis "GNU Make, a program controlling the generation of non-source
-files from sources")
+   (synopsis "Remake files automatically")
    (description
     "Make is a tool which controls the generation of executables and other
 non-source files of a program from the program's source files.
@@ -370,8 +366,7 @@ that it is possible to use Make to build and install the program.")
                           ;; Don't search under /usr/lib & co.
                           "--with-lib-path=/no-ld-lib-path")))
 
-   (synopsis "GNU Binutils, tools for manipulating binaries (linker,
-assembler, etc.)")
+   (synopsis "Binary utilities: bfd gas gprof ld")
    (description
     "The GNU Binutils are a collection of binary tools.  The main ones are
 `ld' (the GNU linker) and `as' (the GNU assembler).  They also include the

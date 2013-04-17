@@ -48,8 +48,7 @@
     (inputs `(("screen" ,screen)
               ("which" ,which)))
     (home-page "https://www.gnu.org/software/wdiff/")
-    (synopsis
-     "GNU Wdiff, a tool for comparing files on a word by word basis")
+    (synopsis "Word difference finder")
     (description
      "GNU Wdiff is a front end to 'diff' for comparing files on a word per
 word basis.  A word is anything between whitespace.  This is useful for

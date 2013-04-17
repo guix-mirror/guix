@@ -51,7 +51,7 @@
                 %standard-phases)))
    (inputs `(("libsigsegv" ,libsigsegv)))
    (home-page "http://www.gnu.org/software/gawk/")
-   (synopsis "GNU implementation of the Awk programming language")
+   (synopsis "A text scanning and processing language")
    (description
     "Many computer users need to manipulate text files: extract and then
 operate on data from parts of certain lines while discarding the rest, make

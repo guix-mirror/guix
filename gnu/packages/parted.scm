@@ -58,8 +58,7 @@
        ("readline" ,readline)
        ("util-linux" ,util-linux)))
     (home-page "http://www.gnu.org/software/parted/")
-    (synopsis
-     "GNU Parted, a tool to manipulate partitions")
+    (synopsis "Disk partition editor")
     (description
      "GNU Parted is an industrial-strength package for creating, destroying,
 resizing, checking and copying partitions, and the file systems on them.  This

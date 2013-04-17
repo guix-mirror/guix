@@ -107,8 +107,7 @@
                     ,configure-phase
                     %standard-phases)))))
      (self-native-input? #t)
-     (synopsis
-      "GNU Ncurses, a free software emulation of curses in SVR4 and more")
+     (synopsis "Terminal emulation (termcap, terminfo) library")
      (description
       "The Ncurses (new curses) library is a free software emulation of curses
 in System V Release 4.0, and more.  It uses Terminfo format, supports pads

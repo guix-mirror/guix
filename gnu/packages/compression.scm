@@ -73,7 +73,7 @@ in compression.")
              (base32
               "18rm80kar7n016g8bsyy1a3zk50i2826xdgs874yh64rzj7nxmdm"))))
    (build-system gnu-build-system)
-   (synopsis "Gzip, the GNU zip compression program")
+   (synopsis "General file (de)compression (using lzw)")
    (arguments
     ;; FIXME: The test suite wants `less', and optionally Perl.
     '(#:tests? #f))

@@ -61,7 +61,7 @@
              ("shishi" ,shishi)
              ("zlib" ,guix:zlib)
             ))
-   (synopsis "GNU GSS (Generic Security Service), a free implementatio of RFC 2743/2744")
+   (synopsis "Generic Security Service library")
    (description
     "GNU GSS is an implementation of the Generic Security Service Application
 Program Interface (GSS-API). GSS-API is used by network servers to provide
@@ -87,7 +87,7 @@ SMTP/IMAP servers. GSS consists of a library and a manual.")
              ("gss" ,gss)
              ("zlib" ,guix:zlib)
              ))
-   (synopsis "GNU SASL, an implementation of the Simple Authentication and Security Layer framework")
+   (synopsis "Simple Authentication and Security Layer library")
    (description
     "GNU SASL is an implementation of the Simple Authentication and Security
 Layer framework and a few common SASL mechanisms. SASL is used by network

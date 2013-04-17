@@ -56,8 +56,7 @@
         ,(search-patch "gettext-gets-undeclared.patch"))))
     (home-page
      "http://www.gnu.org/software/gettext/")
-    (synopsis
-     "GNU gettext, a well integrated set of translation tools and documentation")
+    (synopsis "Tools and documentation for translation")
     (description
      "Usually, programs are written and documented in English, and use
 English at execution time for interacting with users.  Using a common

@@ -40,8 +40,7 @@
     (inputs `(("perl" ,perl)))
     (propagated-inputs `(("m4" ,m4)))
     (home-page "http://www.gnu.org/software/bison/")
-    (synopsis
-     "GNU Bison, a Yacc-compatible parser generator")
+    (synopsis "Parser generator")
     (description
      "Bison is a general-purpose parser generator that converts an
 annotated context-free grammar into an LALR(1) or GLR parser for

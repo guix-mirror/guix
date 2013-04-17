@@ -36,8 +36,7 @@
         "1y2p50zadb36izzh2zw4dm5hvdiydqf3qa88l8kav20dcmfbc5yl"))))
     (build-system gnu-build-system)
     (home-page "https://gnu.org/software/which/")
-    (synopsis
-     "GNU Which shows the full path of (shell) commands")
+    (synopsis "Find full path of shell commands")
     (description
      "GNU Which takes one or more arguments. For each of its arguments
 it prints to stdout the full path of the executables that would have

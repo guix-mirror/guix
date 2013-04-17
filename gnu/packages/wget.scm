@@ -51,8 +51,7 @@
                                       '("doc/texi2pod.pl" "tests/run-px")))
                           %standard-phases)))
     (home-page "http://www.gnu.org/software/wget/")
-    (synopsis
-     "GNU Wget, a tool for retrieving files using HTTP, HTTPS, and FTP")
+    (synopsis "Non-interactive command-line utility for downloading files")
     (description
      "GNU Wget is a free software package for retrieving files using HTTP,
 HTTPS and FTP, the most widely-used Internet protocols.  It is a

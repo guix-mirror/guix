@@ -36,7 +36,7 @@
                "1jkbq97ajcf834z68hbn3xfhiz921zhn39gklml1racf0kb3jzh3"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/cflow/")
-    (synopsis "A tool to analyze the control flow of C programs")
+    (synopsis "Create a graph of control flow within a program")
     (description
      "GNU cflow analyzes a collection of C source files and prints a
 graph, charting control flow within the program.

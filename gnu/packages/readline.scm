@@ -62,7 +62,7 @@
                              'install 'post-install
                              ,post-install-phase
                              %standard-phases)))
-      (synopsis "GNU Readline, a library for interactive line editing")
+      (synopsis "Edit command lines while typing, with history support")
       (description
        "The GNU Readline library provides a set of functions for use by
 applications that allow users to edit command lines as they are typed in.

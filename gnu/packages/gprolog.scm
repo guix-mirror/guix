@@ -45,9 +45,7 @@
                      (("= /bin/sh") (string-append "= " (which "sh")))))
                  %standard-phases)))
     (home-page "https://www.gnu.org/software/gprolog/")
-    (synopsis
-     "GNU Prolog, a free Prolog compiler with constraint solving over
-finite domains")
+    (synopsis "Prolog compiler")
     (description
      "GNU Prolog is a free Prolog compiler with constraint solving over
 finite domains developed by Daniel Diaz.

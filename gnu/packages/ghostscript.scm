@@ -163,7 +163,7 @@ printing, and psresize, for adjusting page sizes.")
           (apply install args)
           (system* "make" "install-so")))
       %standard-phases)))))
-   (synopsis "GNU Ghostscript, an interpreter for the PostScript language and for PDF")
+   (synopsis "PostScript and PDF interpreter")
    (description
     "GNU Ghostscript is an interpreter for PostScript and Portable Document
 Format (PDF) files.

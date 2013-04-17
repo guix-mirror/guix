@@ -102,7 +102,7 @@
               (base32
                "0pclakzwxbqgy6wqwvs6ml62wgby8ba8xzmwzdwhx1v8wv05yw1j"))))))))
     (home-page "http://www.gnu.org/software/mit-scheme/")
-    (synopsis "MIT/GNU Scheme, a native code Scheme compiler")
+    (synopsis "Scheme implementation with integrated editor and debugger")
     (description
      "MIT/GNU Scheme is an implementation of the Scheme programming
 language, providing an interpreter, compiler, source-code debugger,
