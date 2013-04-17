@@ -266,19 +266,42 @@ matching packages."
                        (assoc-ref (derivation-outputs drv) sub-drv))))
          `(,name ,out))))))
 
+(define %sigint-prompt
+  ;; The prompt to jump to upon SIGINT.
+  (make-prompt-tag "interruptible"))
+
+(define (call-with-sigint-handler thunk handler)
+  "Call THUNK and return its value.  Upon SIGINT, call HANDLER with the signal
+number in the context of the continuation of the call to this function, and
+return its return value."
+  (call-with-prompt %sigint-prompt
+                    (lambda ()
+                      (sigaction SIGINT
+                        (lambda (signum)
+                          (sigaction SIGINT SIG_DFL)
+                          (abort-to-prompt %sigint-prompt signum)))
+                      (thunk))
+                    (lambda (k signum)
+                      (handler signum))))
+
 (define-syntax-rule (waiting exp fmt rest ...)
   "Display the given message while EXP is being evaluated."
   (let* ((message (format #f fmt rest ...))
          (blank   (make-string (string-length message) #\space)))
     (display message (current-error-port))
     (force-output (current-error-port))
-    (let ((result exp))
-      ;; Clear the line.
-      (display #\cr (current-error-port))
-      (display blank (current-error-port))
-      (display #\cr (current-error-port))
-      (force-output (current-error-port))
-      exp)))
+    (call-with-sigint-handler
+     (lambda ()
+       (let ((result exp))
+         ;; Clear the line.
+         (display #\cr (current-error-port))
+         (display blank (current-error-port))
+         (display #\cr (current-error-port))
+         (force-output (current-error-port))
+         exp))
+     (lambda (signum)
+       (format (current-error-port) "  interrupted by signal ~a~%" SIGINT)
+       #f))))
 
 (define (check-package-freshness package)
   "Check whether PACKAGE has a newer version available upstream, and report
