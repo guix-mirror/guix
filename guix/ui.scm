@@ -381,7 +381,7 @@ WIDTH columns."
     ;; All this just to preserve `-Wformat' warnings.  Too much?
 
     (define (augmented-format-string fmt)
-      (string-append "~:[~;guix ~a: ~]~a" (syntax->datum fmt)))
+      (string-append "~:[~*~;guix ~a: ~]~a" (syntax->datum fmt)))
 
     (define prefix
       #'(_ "warning: "))
