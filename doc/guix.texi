@@ -447,11 +447,8 @@ scripts, etc.  This direct correspondence allows users to make sure a
 given package installation matches the current state of their
 distribution, and helps maximize @dfn{reproducibility}.
 
-@c FIXME: Remove footnote when it's implemented.
 This foundation allows Guix to support @dfn{transparent binary/source
-deployment}@footnote{This feature is not implemented as of version
-@value{VERSION}.  Please contact @email{bug-guix@@gnu.org} for more
-details.}.  When a pre-built binary for a @file{/nix/store} path is
+deployment}.  When a pre-built binary for a @file{/nix/store} path is
 available from an external source, Guix just downloads it; otherwise, it
 builds the package from source, locally.
 
