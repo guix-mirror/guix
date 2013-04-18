@@ -204,10 +204,8 @@ main (int argc, char *argv[])
       settings.substituters.clear ();
       string subs = getEnv ("NIX_SUBSTITUTERS", "default");
       if (subs == "default")
-	/* XXX: No substituters until we have something that works.  */
-	settings.substituters.clear ();
-	// settings.substituters.push_back (settings.nixLibexecDir
-	// 				 + "/guix/substitute-binary");
+	settings.substituters.push_back (settings.nixLibexecDir
+					 + "/guix/substitute-binary");
       else
 	settings.substituters = tokenizeString<Strings> (subs, ":");
 
