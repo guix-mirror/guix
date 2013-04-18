@@ -141,8 +141,10 @@ Distribution}.
 @node Installation
 @chapter Installation
 
-This section describes the software requirements of Guix, as well as how
-to install it and get ready to use it.
+GNU Guix is available for download from its website at
+@url{http://www.gnu.org/software/guix/}.  This section describes the
+software requirements of Guix, as well as how to install it and get
+ready to use it.
 
 The build procedure for Guix is the same as for other GNU software, and
 is not covered here.  Please see the files @file{README} and
