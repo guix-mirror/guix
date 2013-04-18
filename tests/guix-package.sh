@@ -62,18 +62,19 @@ then
     # name and version string.
     installed="`guix package -p "$profile" --list-installed | cut -f1 | xargs echo | sort`"
     case "x$installed" in
-	"guile-bootstrap make-boot0")
-	    true;;
-	"make-boot0 guile-bootstrap")
-	    true;;
-	"*")
+        "guile-bootstrap make-boot0")
+            true;;
+        "make-boot0 guile-bootstrap")
+            true;;
+        "*")
             false;;
     esac
 
     test "`guix package -p "$profile" -I 'g.*e' | cut -f1`" = "guile-bootstrap"
 
     # Search.
-    test "`guix package -s "GNU Hello" | grep ^name:`" = "name: hello"
+    test "`guix package -s "An example GNU package" | grep ^name:`" = \
+        "name: hello"
     test "`guix package -s "n0t4r341p4ck4g3"`" = ""
 
     # Remove a package.
@@ -92,10 +93,10 @@ then
     # Move to the empty profile.
     for i in `seq 1 3`
     do
-	guix package --bootstrap --roll-back -p "$profile"
-	! test -f "$profile/bin"
-	! test -f "$profile/lib"
-	test "`readlink_base "$profile"`" = "$profile-0-link"
+        guix package --bootstrap --roll-back -p "$profile"
+        ! test -f "$profile/bin"
+        ! test -f "$profile/lib"
+        test "`readlink_base "$profile"`" = "$profile-0-link"
     done
 
     # Reinstall after roll-back to the empty profile.
