@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +19,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages glib)
-  #:use-module ((guix licenses) #:select (lgpl2.0+ gpl2+ gpl2))
+  #:use-module ((guix licenses)
+                #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -28,11 +30,10 @@
   #:use-module ((gnu packages gettext)
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages perl)
-  #:use-module ((gnu packages xml)
-                #:renamer (symbol-prefix-proc 'xml:)))
+  #:use-module (gnu packages xml))
 
 (define-public dbus
   (package
@@ -48,7 +49,7 @@
                "1wacqyfkcpayg7f8rvx9awqg275n5pksxq5q7y21lxjx85x6pfjz"))))
     (build-system gnu-build-system)
     (inputs
-     `(("expat" ,xml:expat)
+     `(("expat" ,expat)
        ("pkg-config" ,pkg-config)))
     (home-page "http://dbus.freedesktop.org/")
     (synopsis "Message bus for inter-process communication (IPC)")
@@ -68,7 +69,7 @@ to communicate directly (without going through the message bus
 daemon). Currently the communicating applications are on one computer,
 or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
-    (license gpl2+)))                     ; or Academic Free License 2.1
+    (license license:gpl2+)))                     ; or Academic Free License 2.1
 
 (define-public glib
   (package
@@ -126,31 +127,28 @@ shared NFS home directories.")
 and interfaces for such runtime functionality as an event loop, threads,
 dynamic loading, and an object system.")
    (home-page "http://developer.gnome.org/glib/")
-   (license lgpl2.0+)))                        ; some files are under lgpl2.1+
+   (license license:lgpl2.0+)))                        ; some files are under lgpl2.1+
 
 (define-public intltool
   (package
     (name "intltool")
-    (version "0.40.6")
+    (version "0.50.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "mirror://gnome/sources/intltool/0.40/intltool-"
-                   version
-                   ".tar.bz2"))
+             (uri (string-append "https://launchpad.net/intltool/trunk/"
+                                 version "/+download/intltool-"
+                                 version ".tar.gz"))
              (sha256
               (base32
-               "0r1vkvy5xzqk01yl6a0xlrry39bra24alkrx6279b77hc62my7jd"))))
+               "01j4yd7i84n9nk4ccs6yifg84pp68nr9by57jdbhj7dpdxf5rwk7"))))
     (build-system gnu-build-system)
-    (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
-     `(("gettext" ,guix:gettext)
-       ("perl-xml-parser" ,xml:perl-xml-parser)
-       ("perl" ,perl)))
-    (home-page "http://freedesktop.org/wiki/Software/intltool")
-    (synopsis "Tools to centralize translation of many different file formats")
+     `(("perl" ,perl)
+       ("perl-xml-parser" ,perl-xml-parser)))
+    (home-page "https://launchpad.net/intltool/+download")
+    (synopsis "Tools to centralise translations of different file formats")
     (description
-     "intltool is a set of tools to centralize translation of many different
+     "intltool is a set of tools to centralise translations of many different
 file formats using GNU gettext-compatible PO files.
 
 The intltool collection can be used to do these things:
@@ -163,4 +161,4 @@ The intltool collection can be used to do these things:
 
     Merge back the translations from .po files into .xml, .desktop and
     oaf files. This merge step will happen at build resp. installation time.")
-    (license gpl2)))
+    (license license:gpl2+)))
