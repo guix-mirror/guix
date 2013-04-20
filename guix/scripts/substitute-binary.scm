@@ -28,6 +28,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 threads)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 ftw)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
@@ -63,6 +64,10 @@
 (define %narinfo-negative-ttl
   ;; Likewise, but for negative lookups---i.e., cached lookup failures.
   (* 3 3600))
+
+(define %narinfo-expired-cache-entry-removal-delay
+  ;; How often we want to remove files corresponding to expired cache entries.
+  (* 7 24 3600))
 
 (define (with-atomic-file-output file proc)
   "Call PROC with an output port for the file that is going to replace FILE.
@@ -263,18 +268,16 @@ reading PORT."
                                        ".narinfo"))
               (cute read-narinfo <> (cache-url cache)))))
 
+(define (obsolete? date now ttl)
+  "Return #t if DATE is obsolete compared to NOW + TTL seconds."
+  (time>? (subtract-duration now (make-time time-duration 0 ttl))
+          (make-time time-monotonic 0 date)))
+
 (define (lookup-narinfo cache path)
   "Check locally if we have valid info about PATH, otherwise go to CACHE and
 check what it has."
   (define now
     (current-time time-monotonic))
-
-  (define (->time seconds)
-    (make-time time-monotonic 0 seconds))
-
-  (define (obsolete? date ttl)
-    (time>? (subtract-duration now (make-time time-duration 0 ttl))
-            (->time date)))
 
   (define cache-file
     (string-append %narinfo-cache-directory "/"
@@ -294,13 +297,13 @@ check what it has."
                            (('narinfo ('version 0) ('date date)
                                       ('value #f))
                             ;; A cached negative lookup.
-                            (if (obsolete? date %narinfo-negative-ttl)
+                            (if (obsolete? date now %narinfo-negative-ttl)
                                 (values #f #f)
                                 (values #t #f)))
                            (('narinfo ('version 0) ('date date)
                                       ('value value))
                             ;; A cached positive lookup
-                            (if (obsolete? date %narinfo-ttl)
+                            (if (obsolete? date now %narinfo-ttl)
                                 (values #f #f)
                                 (values #t (string->narinfo value))))))))
                    (lambda _
@@ -313,6 +316,59 @@ check what it has."
             (lambda (out)
               (write (cache-entry narinfo) out)))
           narinfo))))
+
+(define (remove-expired-cached-narinfos)
+  "Remove expired narinfo entries from the cache.  The sole purpose of this
+function is to make sure `%narinfo-cache-directory' doesn't grow
+indefinitely."
+  (define now
+    (current-time time-monotonic))
+
+  (define (expired? file)
+    (catch 'system-error
+      (lambda ()
+        (call-with-input-file file
+          (lambda (port)
+            (match (read port)
+              (('narinfo ('version 0) ('date date)
+                         ('value #f))
+               (obsolete? date now %narinfo-negative-ttl))
+              (('narinfo ('version 0) ('date date)
+                         ('value _))
+               (obsolete? date now %narinfo-ttl))
+              (_ #t)))))
+      (lambda args
+        ;; FILE may have been deleted.
+        #t)))
+
+  (for-each (lambda (file)
+              (let ((file (string-append %narinfo-cache-directory
+                                         "/" file)))
+                (when (expired? file)
+                  ;; Wrap in `false-if-exception' because FILE might have been
+                  ;; deleted in the meantime (TOCTTOU).
+                  (false-if-exception (delete-file file)))))
+            (scandir %narinfo-cache-directory
+                     (lambda (file)
+                       (= (string-length file) 32)))))
+
+(define (maybe-remove-expired-cached-narinfo)
+  "Remove expired narinfo entries from the cache if deemed necessary."
+  (define now
+    (current-time time-monotonic))
+
+  (define expiry-file
+    (string-append %narinfo-cache-directory "/last-expiry-cleanup"))
+
+  (define last-expiry-date
+    (or (false-if-exception
+         (call-with-input-file expiry-file read))
+        0))
+
+  (when (obsolete? last-expiry-date now %narinfo-expired-cache-entry-removal-delay)
+    (remove-expired-cached-narinfos)
+    (call-with-output-file expiry-file
+      (cute write (time-second now) <>))))
 
 (define (filtered-port command input)
   "Return an input port (and PID) where data drained from INPUT is filtered
@@ -351,6 +407,7 @@ through COMMAND.  INPUT must be a file input port."
 (define (guix-substitute-binary . args)
   "Implement the build daemon's substituter protocol."
   (mkdir-p %narinfo-cache-directory)
+  (maybe-remove-expired-cached-narinfo)
   (match args
     (("--query")
      (let ((cache (delay (open-cache %cache-url))))
