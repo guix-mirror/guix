@@ -37,7 +37,8 @@
     (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/gdbm/")
-    (synopsis "GNU dbm key/value database library")
+    (synopsis
+     "Hash library of database functions compatible with traditional dbm")
     (description
      "GNU dbm (or GDBM, for short) is a library of database functions
 that use extensible hashing and work similar to the standard UNIX dbm.

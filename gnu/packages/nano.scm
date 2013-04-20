@@ -42,7 +42,7 @@
      `(("gettext" ,guix:gettext)
        ("ncurses" ,ncurses)))
     (home-page "http://www.nano-editor.org/")
-    (synopsis "A small, user-friendly console text editor")
+    (synopsis "Small, user-friendly console text editor")
     (description
      "GNU nano is designed to be a free replacement for the Pico text
 editor, part of the Pine email suite from The University of
