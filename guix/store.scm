@@ -336,7 +336,10 @@ encoding conversion errors."
              #f))
           ((= k %stderr-error)
            (let ((error  (read-latin1-string p))
-                 (status (if (>= (nix-server-minor-version server) 8)
+                 ;; Currently the daemon fails to send a status code for early
+                 ;; errors like DB schema version mismatches, so check for EOF.
+                 (status (if (and (>= (nix-server-minor-version server) 8)
+                                  (not (eof-object? (lookahead-u8 p))))
                              (read-int p)
                              1)))
              (raise (condition (&nix-protocol-error
