@@ -17,7 +17,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gcc)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses)
+                #:select (gpl3+ gpl2+ lgpl2.1+ lgpl2.0+))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)

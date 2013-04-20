@@ -18,7 +18,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages base)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses)
+                #:select (gpl3+ lgpl2.0+))
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages bash)
@@ -373,6 +374,17 @@ that it is possible to use Make to build and install the program.")
 BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/binutils/")))
+
+(define-public binutils-2.23
+  (package (inherit binutils)
+    (version "2.23.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/binutils/binutils-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "15qhbkz3r266xaa52slh857qn3abw7rb2x2jnhpfrafpzrb4x4gy"))))))
 
 (define-public glibc
   (package
@@ -927,6 +939,35 @@ store.")
               ("bash"  ,bash-final)
               ,@(fold alist-delete (package-inputs ld-wrapper-boot3)
                       '("guile" "bash"))))))
+
+(define-public ld-wrapper-2.23         ; TODO: remove when Binutils is updated
+  (package (inherit ld-wrapper)
+    (inputs `(("binutils" ,binutils-2.23)
+              ,@(alist-delete "binutils" (package-inputs ld-wrapper))))))
+
+(define-public gcc-4.8
+  ;; FIXME: Move to gcc.scm when Binutils is updated.
+  (package (inherit gcc-4.7)
+    (version "4.8.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/gcc/gcc-"
+                                 version "/gcc-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "0b6cp9d1sas3vq6dj3zrgd134p9b569fqhbixb9cl7mp698zwdxh"))))
+    (inputs `(("gmp" ,gmp)
+              ("mpfr" ,mpfr)
+              ("mpc" ,mpc)
+              ("isl" ,isl)
+              ("cloog" ,cloog)
+              ("zlib" ,(@ (gnu packages compression) zlib))
+
+              ;; With ld from Binutils 2.22, we get the following error while
+              ;; linking gcov:
+              ;; ld: gcov: hidden symbol `__deregister_frame_info' in /nix/store/47myfniw4x7kfc601d7q1yvz5mixlr00-gcc-4.7.2/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/libgcc_eh.a(unwind-dw2-fde-dip.o) is referenced by DSO
+              ;; See <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=57015>.
+              ("ld-wrapper" ,ld-wrapper-2.23)))))
 
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by `gnu-build-system'.
