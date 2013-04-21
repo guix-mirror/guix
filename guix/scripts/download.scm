@@ -55,11 +55,14 @@ store path."
   `((format . ,bytevector->nix-base32-string)))
 
 (define (show-help)
-  (display (_ "Usage: guix download [OPTION]... URL
+  (display (_ "Usage: guix download [OPTION] URL
 Download the file at URL, add it to the store, and print its store path
-and the hash of its contents.\n"))
+and the hash of its contents.
+
+Supported formats: 'nix-base32' (default), 'base32', and 'base16'
+('hex' and 'hexadecimal' can be used as well).\n"))
   (format #t (_ "
-  -f, --format=FMT       write the hash in the given format (default: `nix-base32')"))
+  -f, --format=FMT       write the hash in the given format"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
