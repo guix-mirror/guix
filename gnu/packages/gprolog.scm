@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,15 +26,15 @@
 (define-public gprolog
   (package
     (name "gprolog")
-    (version "1.4.2")
+    (version "1.4.3")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.gprolog.org/gprolog-"
-                          version ".tar.gz"))
+      (uri (string-append "mirror://gnu/gprolog/gprolog-" version
+                          ".tar.gz"))
       (sha256
        (base32
-        "0y25c2gwz41i6g28qyfjklrmanzgk0c8cr4jn2s7s8qgd9dnm1fm"))))
+        "16yl6q9ydx9d8lphg9xkk53l1m0fq0kpvrhry8njsxhhncazm4j2"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
