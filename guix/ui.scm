@@ -65,15 +65,6 @@
 (define _ (cut gettext <> %gettext-domain))
 (define N_ (cut ngettext <> <> <> %gettext-domain))
 
-(define (install-locale)
-  "Install the current locale settings."
-  (catch 'system-error
-    (lambda _
-      (setlocale LC_ALL ""))
-    (lambda args
-      (warning (_ "failed to install locale: ~a~%")
-               (strerror (system-error-errno args))))))
-
 (define (initialize-guix)
   "Perform the usual initialization for stand-alone Guix commands."
   (install-locale)
@@ -404,6 +395,15 @@ messages."
   (begin
     (report-error args ...)
     (exit 1)))
+
+(define (install-locale)
+  "Install the current locale settings."
+  (catch 'system-error
+    (lambda _
+      (setlocale LC_ALL ""))
+    (lambda args
+      (warning (_ "failed to install locale: ~a~%")
+               (strerror (system-error-errno args))))))
 
 (define (guix-main arg0 . args)
   (initialize-guix)
