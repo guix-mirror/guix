@@ -21,30 +21,15 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix base32)
-  #:use-module ((guix download) #:select (%mirrors))
-  #:use-module (guix build download)
+  #:use-module (guix download)
   #:use-module (web uri)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-11)
-  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:export (guix-download))
 
-(define (fetch-and-store store fetch name)
-  "Call FETCH for URI, and pass it the name of a file to write to; eventually,
-copy data from that port to STORE, under NAME.  Return the resulting
-store path."
-  (call-with-temporary-output-file
-   (lambda (temp port)
-     (let ((result
-            (parameterize ((current-output-port (current-error-port)))
-              (fetch temp))))
-       (close port)
-       (and result
-            (add-to-store store name #f "sha256" temp))))))
 
 ;;;
 ;;; Command-line options.
@@ -124,10 +109,8 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                      (add-to-store store (basename (uri-path uri))
                                    #f "sha256" (uri-path uri)))
                     (else
-                     (fetch-and-store store
-                                      (cut url-fetch arg <>
-                                           #:mirrors %mirrors)
-                                      (basename (uri-path uri))))))
+                     (download-to-store store (uri->string uri)
+                                        (basename (uri-path uri))))))
            (hash  (call-with-input-file
                       (or path
                           (leave (_ "~a: download failed~%")

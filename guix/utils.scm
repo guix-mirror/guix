@@ -60,6 +60,7 @@
             version-compare
             version>?
             package-name->name+version
+            call-with-temporary-output-file
             fold2))
 
 
@@ -463,6 +464,21 @@ introduce the version part."
                (list->string (cons n rest))))
       ((head tail ...)
        (loop tail (cons head prefix))))))
+
+(define (call-with-temporary-output-file proc)
+  "Call PROC with a name of a temporary file and open output port to that
+file; close the file and delete it when leaving the dynamic extent of this
+call."
+  (let* ((template (string-copy "guix-file.XXXXXX"))
+         (out      (mkstemp! template)))
+    (dynamic-wind
+      (lambda ()
+        #t)
+      (lambda ()
+        (proc template out))
+      (lambda ()
+        (false-if-exception (close out))
+        (false-if-exception (delete-file template))))))
 
 (define fold2
   (case-lambda
