@@ -43,12 +43,11 @@
 When SOURCE? is true, return the derivations of the package sources."
   (let ((p (read/eval-package-expression str)))
     (if source?
-        (let ((source (package-source p))
-              (loc    (package-location p)))
+        (let ((source (package-source p)))
           (if source
               (package-source-derivation (%store) source)
-              (leave (_ "~a: error: package `~a' has no source~%")
-                     (location->string loc) (package-name p))))
+              (leave (_ "package `~a' has no source~%")
+                     (package-name p))))
         (package-derivation (%store) p system))))
 
 
@@ -169,7 +168,9 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
             (add-indirect-root (%store) root))
            ((paths ...)
             (fold (lambda (path count)
-                    (let ((root (string-append root "-" (number->string count))))
+                    (let ((root (string-append root
+                                               "-"
+                                               (number->string count))))
                       (symlink path root)
                       (add-indirect-root (%store) root))
                     (+ 1 count))
@@ -177,8 +178,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                   paths))))
        (lambda args
          (leave (_ "failed to create GC root `~a': ~a~%")
-                root (strerror (system-error-errno args)))
-         (exit 1)))))
+                root (strerror (system-error-errno args)))))))
 
   (define newest-available-packages
     (memoize find-newest-available-packages))

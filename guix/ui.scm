@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -70,9 +71,8 @@
     (lambda _
       (setlocale LC_ALL ""))
     (lambda args
-      (format (current-error-port)
-              (_ "warning: failed to install locale: ~a~%")
-              (strerror (system-error-errno args))))))
+      (warning (_ "failed to install locale: ~a~%")
+               (strerror (system-error-errno args))))))
 
 (define (initialize-guix)
   "Perform the usual initialization for stand-alone Guix commands."
@@ -80,12 +80,6 @@
   (textdomain "guix")
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF))
-
-(define-syntax-rule (leave fmt args ...)
-  "Format FMT and ARGS to the error port and exit."
-  (begin
-    (format (current-error-port) fmt args ...)
-    (exit 1)))
 
 (define* (show-version-and-exit #:optional (command (car (command-line))))
   "Display version information for COMMAND and `(exit 0)'."
@@ -111,16 +105,16 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
                     (file     (location-file location))
                     (line     (location-line location))
                     (column   (location-column location)))
-               (leave (_ "~a:~a:~a: error: package `~a' has an invalid input: ~s~%")
+               (leave (_ "~a:~a:~a: package `~a' has an invalid input: ~s~%")
                       file line column
                       (package-full-name package) input)))
             ((nix-connection-error? c)
-             (leave (_ "error: failed to connect to `~a': ~a~%")
+             (leave (_ "failed to connect to `~a': ~a~%")
                     (nix-connection-error-file c)
                     (strerror (nix-connection-error-code c))))
             ((nix-protocol-error? c)
              ;; FIXME: Server-provided error messages aren't i18n'd.
-             (leave (_ "error: build failed: ~a~%")
+             (leave (_ "build failed: ~a~%")
                     (nix-protocol-error-message c))))
     (thunk)))
 
@@ -375,35 +369,41 @@ WIDTH columns."
 (define guix-warning-port
   (make-parameter (current-warning-port)))
 
-(define-syntax warning
-  (lambda (s)
-    "Emit a warming.  The macro assumes that `_' is bound to `gettext'."
-    ;; All this just to preserve `-Wformat' warnings.  Too much?
+(define-syntax-rule (define-diagnostic name prefix)
+  "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
+messages."
+  (define-syntax name
+    (lambda (x)
+      (define (augmented-format-string fmt)
+        (string-append "~:[~*~;guix ~a: ~]~a" (syntax->datum fmt)))
 
-    (define (augmented-format-string fmt)
-      (string-append "~:[~*~;guix ~a: ~]~a" (syntax->datum fmt)))
+      (syntax-case x (N_ _)                    ; these are literals, yeah...
+        ((name (_ fmt) args (... ...))
+         (string? (syntax->datum #'fmt))
+         (with-syntax ((fmt*   (augmented-format-string #'fmt))
+                       (prefix (datum->syntax x prefix)))
+           #'(format (guix-warning-port) (gettext fmt*)
+                     (program-name) (program-name) prefix
+                     args (... ...))))
+        ((name (N_ singular plural n) args (... ...))
+         (and (string? (syntax->datum #'singular))
+              (string? (syntax->datum #'plural)))
+         (with-syntax ((s      (augmented-format-string #'singular))
+                       (p      (augmented-format-string #'plural))
+                       (prefix (datum->syntax x prefix)))
+           #'(format (guix-warning-port)
+                     (ngettext s p n %gettext-domain)
+                     (program-name) (program-name) prefix
+                     args (... ...))))))))
 
-    (define prefix
-      #'(_ "warning: "))
+(define-diagnostic warning "warning: ") ; emit a warning
 
-    (syntax-case s (N_ _)                        ; these are literals, yeah...
-      ((warning (_ fmt) args ...)
-       (string? (syntax->datum #'fmt))
-       (with-syntax ((fmt*   (augmented-format-string #'fmt))
-                     (prefix prefix))
-         #'(format (guix-warning-port) (gettext fmt*)
-                   (program-name) (program-name) prefix
-                   args ...)))
-      ((warning (N_ singular plural n) args ...)
-       (and (string? (syntax->datum #'singular))
-            (string? (syntax->datum #'plural)))
-       (with-syntax ((s (augmented-format-string #'singular))
-                     (p (augmented-format-string #'plural))
-                     (b prefix))
-         #'(format (guix-warning-port)
-                   (ngettext s p n %gettext-domain)
-                   (program-name) (program-name) b
-                   args ...))))))
+(define-diagnostic report-error "error: ")
+(define-syntax-rule (leave args ...)
+  "Emit an error message and exit."
+  (begin
+    (report-error args ...)
+    (exit 1)))
 
 (define (guix-main arg0 . args)
   (initialize-guix)

@@ -208,7 +208,7 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
       (switch-symlinks profile previous-profile))
 
     (cond ((not (file-exists? profile))           ; invalid profile
-           (leave (_ "error: profile `~a' does not exist~%")
+           (leave (_ "profile `~a' does not exist~%")
                   profile))
           ((zero? number)                         ; empty profile
            (format (current-error-port)
@@ -477,8 +477,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
     (define (ensure-output p sub-drv)
       (if (member sub-drv (package-outputs p))
           p
-          (leave (_ "~a: error: package `~a' lacks output `~a'~%")
-                 (location->string (package-location p))
+          (leave (_ "package `~a' lacks output `~a'~%")
                  (package-full-name p)
                  sub-drv)))
 

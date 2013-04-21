@@ -29,6 +29,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (system foreign)
   #:use-module (guix ftp-client)
+  #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:export (gnu-package-name
@@ -84,12 +85,11 @@
                 ;; (see <http://lists.gnu.org/archive/html/guile-devel/2011-09/msg00089.html>).
                 ;; Since users may still be using these versions, warn them and
                 ;; bail out.
-                (format (current-error-port)
-                        "warning: using Guile ~a, ~a ~s encoding~%"
-                        (version)
-                        "which does not support HTTP"
-                        (response-transfer-encoding resp))
-                (error "download failed; use a newer Guile"
+                (warning (_ "using Guile ~a, ~a ~s encoding~%")
+                         (version)
+                         "which does not support HTTP"
+                         (response-transfer-encoding resp))
+                (leave (_ "download failed; use a newer Guile~%")
                        uri resp)))
              ((string? data)                 ; old `http-get' returns a string
               (open-input-string data))

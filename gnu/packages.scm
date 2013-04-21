@@ -19,6 +19,7 @@
 
 (define-module (gnu packages)
   #:use-module (guix packages)
+  #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 vlist)
@@ -90,9 +91,8 @@
                       result)
                     (const #f)                    ; skip
                     (lambda (path stat errno result)
-                      (format (current-error-port)
-                              (_ "warning: cannot access `~a': ~a~%")
-                              path (strerror errno))
+                      (warning (_ "cannot access `~a': ~a~%")
+                               path (strerror errno))
                       result)
                     '()
                     %distro-module-directory
