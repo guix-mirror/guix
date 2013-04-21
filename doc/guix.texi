@@ -814,8 +814,9 @@ the GNU mirrors defined in @code{(guix download)}.
 The @code{sha256} field specifies the expected SHA256 hash of the file
 being downloaded.  It is mandatory, and allows Guix to check the
 integrity of the file.  The @code{(base32 @dots{})} form introduces the
-base32 representation of the hash.  A convenient way to obtain this
-information is with the @code{guix download} tool.
+base32 representation of the hash.  You can obtain this information with
+the @code{guix hash} (@pxref{Invoking guix hash}) and @code{guix
+download} tools.
 
 @item
 @cindex GNU Build System
@@ -1094,6 +1095,7 @@ space.
 
 @menu
 * Invoking guix build:: Building packages from the command line.
+* Invoking guix hash:: Computing the cryptographic hash of a file.
 @end menu
 
 @node Invoking guix build
@@ -1188,6 +1190,37 @@ Behind the scenes, @command{guix build} is essentially an interface to
 the @code{package-derivation} procedure of the @code{(guix packages)}
 module, and to the @code{build-derivations} procedure of the @code{(guix
 store)} module.
+
+@node Invoking guix hash
+@section Invoking @command{guix hash}
+
+The @command{guix hash} command allows to check the integrity of a file.
+It is primarily a convenience tool for anyone contributing to the
+distribution: it computes the cryptographic hash of a file, which can be
+used in the definition of a package (@pxref{Defining Packages}).
+
+The general syntax is:
+
+@example
+guix hash @var{option} @var{file}
+@end example
+
+@command{guix hash} has the following option:
+
+@table @code
+
+@item --format=@var{fmt}
+@itemx -f @var{fmt}
+Write the hash in the given format.
+
+Supported formats: @code{nix-base32}, @code{base32}, @code{base16}
+(@code{hex} and @code{hexadecimal} can be used as well).
+
+If the @option{--format} option is not specified, @command{guix hash}
+will output the hash in @code{nix-base32}.  This representation is used
+in the definitions of packages.
+
+@end table
 
 @c *********************************************************************
 @node GNU Distribution
