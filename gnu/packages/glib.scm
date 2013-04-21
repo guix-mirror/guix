@@ -147,7 +147,7 @@ dynamic loading, and an object system.")
        ;; the `intltool-update' script.
        ("gettext" ,guix:gettext)
 
-       ("perl-xml-parser" ,xml:perl-xml-parser)
+       ("perl-xml-parser" ,perl-xml-parser)
        ("perl" ,perl)))
     (home-page "https://launchpad.net/intltool/+download")
     (synopsis "Tools to centralise translations of different file formats")
