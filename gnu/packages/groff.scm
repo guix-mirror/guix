@@ -31,13 +31,13 @@
 (define-public groff
   (package
    (name "groff")
-   (version "1.22.1")
+   (version "1.22.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/groff/groff-" version
                                 ".tar.gz"))
             (sha256 (base32
-                     "1kihja9sj182pqms8lah2nn3y96rqccws7w04f7f7wpy84vs5bvn"))))
+                     "0xi07nhj5vdgax37rj25mwxzdmsz1ifx50hjgc6hqbkpqkd6821q"))))
    (build-system gnu-build-system)
    (inputs `(("bison" ,bison)
              ("ghostscript" ,ghostscript)
