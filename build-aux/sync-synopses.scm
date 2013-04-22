@@ -52,7 +52,7 @@
            ((package . descriptor)
             (let ((upstream   (gnu-package-doc-summary descriptor))
                   (downstream (package-synopsis package))
-                  (loc        (package-location package)))
+                  (loc        (package-field-location package 'synopsis)))
               (unless (and upstream (string=? upstream downstream))
                 (format (guix-warning-port)
                         "~a: ~a: proposed synopsis: ~s~%"

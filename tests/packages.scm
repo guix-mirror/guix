@@ -52,6 +52,27 @@
            (home-page #f) (license #f)
            extra-fields ...))
 
+(test-assert "package-field-location"
+  (let ()
+    (define (goto port line column)
+      (unless (and (= (port-column port) (- column 1))
+                   (= (port-line port) (- line 1)))
+        (unless (eof-object? (get-char port))
+          (goto port line column))))
+
+    (define read-at
+      (match-lambda
+       (($ <location> file line column)
+        (call-with-input-file (search-path %load-path file)
+          (lambda (port)
+            (goto port line column)
+            (read port))))))
+
+    (and (equal? (read-at (package-field-location %bootstrap-guile 'name))
+                 (package-name %bootstrap-guile))
+         (equal? (read-at (package-field-location %bootstrap-guile 'version))
+                 (package-version %bootstrap-guile)))))
+
 (test-assert "package-transitive-inputs"
   (let* ((a (dummy-package "a"))
          (b (dummy-package "b"
