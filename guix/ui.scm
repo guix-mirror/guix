@@ -64,6 +64,51 @@
 (define _ (cut gettext <> %gettext-domain))
 (define N_ (cut ngettext <> <> <> %gettext-domain))
 
+(define-syntax-rule (define-diagnostic name prefix)
+  "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
+messages."
+  (define-syntax name
+    (lambda (x)
+      (define (augmented-format-string fmt)
+        (string-append "~:[~*~;guix ~a: ~]~a" (syntax->datum fmt)))
+
+      (syntax-case x (N_ _)                    ; these are literals, yeah...
+        ((name (_ fmt) args (... ...))
+         (string? (syntax->datum #'fmt))
+         (with-syntax ((fmt*   (augmented-format-string #'fmt))
+                       (prefix (datum->syntax x prefix)))
+           #'(format (guix-warning-port) (gettext fmt*)
+                     (program-name) (program-name) prefix
+                     args (... ...))))
+        ((name (N_ singular plural n) args (... ...))
+         (and (string? (syntax->datum #'singular))
+              (string? (syntax->datum #'plural)))
+         (with-syntax ((s      (augmented-format-string #'singular))
+                       (p      (augmented-format-string #'plural))
+                       (prefix (datum->syntax x prefix)))
+           #'(format (guix-warning-port)
+                     (ngettext s p n %gettext-domain)
+                     (program-name) (program-name) prefix
+                     args (... ...))))))))
+
+(define-diagnostic warning "warning: ") ; emit a warning
+
+(define-diagnostic report-error "error: ")
+(define-syntax-rule (leave args ...)
+  "Emit an error message and exit."
+  (begin
+    (report-error args ...)
+    (exit 1)))
+
+(define (install-locale)
+  "Install the current locale settings."
+  (catch 'system-error
+    (lambda _
+      (setlocale LC_ALL ""))
+    (lambda args
+      (warning (_ "failed to install locale: ~a~%")
+               (strerror (system-error-errno args))))))
+
 (define (initialize-guix)
   "Perform the usual initialization for stand-alone Guix commands."
   (install-locale)
@@ -343,51 +388,6 @@ WIDTH columns."
 
 (define guix-warning-port
   (make-parameter (current-warning-port)))
-
-(define-syntax-rule (define-diagnostic name prefix)
-  "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
-messages."
-  (define-syntax name
-    (lambda (x)
-      (define (augmented-format-string fmt)
-        (string-append "~:[~*~;guix ~a: ~]~a" (syntax->datum fmt)))
-
-      (syntax-case x (N_ _)                    ; these are literals, yeah...
-        ((name (_ fmt) args (... ...))
-         (string? (syntax->datum #'fmt))
-         (with-syntax ((fmt*   (augmented-format-string #'fmt))
-                       (prefix (datum->syntax x prefix)))
-           #'(format (guix-warning-port) (gettext fmt*)
-                     (program-name) (program-name) prefix
-                     args (... ...))))
-        ((name (N_ singular plural n) args (... ...))
-         (and (string? (syntax->datum #'singular))
-              (string? (syntax->datum #'plural)))
-         (with-syntax ((s      (augmented-format-string #'singular))
-                       (p      (augmented-format-string #'plural))
-                       (prefix (datum->syntax x prefix)))
-           #'(format (guix-warning-port)
-                     (ngettext s p n %gettext-domain)
-                     (program-name) (program-name) prefix
-                     args (... ...))))))))
-
-(define-diagnostic warning "warning: ") ; emit a warning
-
-(define-diagnostic report-error "error: ")
-(define-syntax-rule (leave args ...)
-  "Emit an error message and exit."
-  (begin
-    (report-error args ...)
-    (exit 1)))
-
-(define (install-locale)
-  "Install the current locale settings."
-  (catch 'system-error
-    (lambda _
-      (setlocale LC_ALL ""))
-    (lambda args
-      (warning (_ "failed to install locale: ~a~%")
-               (strerror (system-error-errno args))))))
 
 (define (guix-main arg0 . args)
   (initialize-guix)
