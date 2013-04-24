@@ -60,6 +60,7 @@
             version-compare
             version>?
             package-name->name+version
+            file-extension
             call-with-temporary-output-file
             fold2))
 
@@ -464,6 +465,11 @@ introduce the version part."
                (list->string (cons n rest))))
       ((head tail ...)
        (loop tail (cons head prefix))))))
+
+(define (file-extension file)
+  "Return the extension of FILE or #f if there is none."
+  (let ((dot (string-rindex file #\.)))
+    (and dot (substring file (+ 1 dot) (string-length file)))))
 
 (define (call-with-temporary-output-file proc)
   "Call PROC with a name of a temporary file and open output port to that

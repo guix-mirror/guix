@@ -33,6 +33,7 @@ MODULES =					\
   guix/scripts/hash.scm				\
   guix/scripts/pull.scm				\
   guix/scripts/substitute-binary.scm		\
+  guix/scripts/refresh.scm			\
   guix/base32.scm				\
   guix/utils.scm				\
   guix/serialization.scm			\
@@ -47,6 +48,7 @@ MODULES =					\
   guix/build-system/perl.scm			\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
+  guix/gnupg.scm				\
   guix/store.scm				\
   guix/ui.scm					\
   guix/build/download.scm			\
