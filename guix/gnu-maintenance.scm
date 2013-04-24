@@ -252,26 +252,25 @@ stored."
     (_
      (values "ftp.gnu.org" (string-append "/gnu/" project)))))
 
-(define tarball-regexp
-  (memoize
-   (lambda (project)
-     "Return a regexp matching tarball names for PROJECT."
-     (make-regexp (string-append "^" project
-                                 "-([0-9]|[^-])*(-src)?\\.tar\\.")))))
-
-(define %alpha-tarball-rx
-  (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
-
 (define (sans-extension tarball)
   "Return TARBALL without its .tar.* extension."
   (let ((end (string-contains tarball ".tar")))
     (substring tarball 0 end)))
 
+(define %tarball-rx
+  (make-regexp "^(.+)-([0-9]|[^-])*(-src)?\\.tar\\."))
+
+(define %alpha-tarball-rx
+  (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
+
 (define (release-file project file)
   "Return #f if FILE is not a release tarball of PROJECT, otherwise return
 PACKAGE-VERSION."
   (and (not (string-suffix? ".sig" file))
-       (regexp-exec (tarball-regexp project) file)
+       (and=> (regexp-exec %tarball-rx file)
+              (lambda (match)
+                ;; Filter out unrelated files, like `guile-www-1.1.1'.
+                (equal? project (match:substring match 1))))
        (not (regexp-exec %alpha-tarball-rx file))
        (let ((s (sans-extension file)))
          (and (regexp-exec %package-name-rx s) s))))
