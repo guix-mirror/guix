@@ -31,7 +31,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "3.2")
+    (version "3.3")
     (source
      (origin
       (method url-fetch)
@@ -39,7 +39,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0gvgndypwicchf7m660zh7jdgmkfj9g9xavpcc08pyd0120y0bk7"))))
+        "1h1sz5py8zlg4yczybr6wa925pyadvjcxrdmhilwaqqgs4n2lrcj"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/libtasn1/")
     (synopsis "ASN.1 library")
