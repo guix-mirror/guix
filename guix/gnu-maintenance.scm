@@ -210,16 +210,17 @@
 
 (define gnu-package?
   (memoize
-   (lambda (package)
-     "Return true if PACKAGE is a GNU package.  This procedure may access the
+   (let ((official-gnu-packages (memoize official-gnu-packages)))
+     (lambda (package)
+       "Return true if PACKAGE is a GNU package.  This procedure may access the
 network to check in GNU's database."
-     ;; TODO: Find a way to determine that a package is non-GNU without going
-     ;; through the network.
-     (let ((url  (and=> (package-source package) origin-uri))
-           (name (package-name package)))
-       (or (and (string? url) (string-prefix? "mirror://gnu" url))
-           (and (member name (map gnu-package-name (official-gnu-packages)))
-                #t))))))
+       ;; TODO: Find a way to determine that a package is non-GNU without going
+       ;; through the network.
+       (let ((url  (and=> (package-source package) origin-uri))
+             (name (package-name package)))
+         (or (and (string? url) (string-prefix? "mirror://gnu" url))
+             (and (member name (map gnu-package-name (official-gnu-packages)))
+                  #t)))))))
 
 
 ;;;
