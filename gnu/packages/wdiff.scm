@@ -21,13 +21,14 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages screen)
   #:use-module (gnu packages which))
 
 (define-public wdiff
   (package
     (name "wdiff")
-    (version "1.1.2")
+    (version "1.2.1")
     (source
      (origin
       (method url-fetch)
@@ -35,7 +36,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0q78y5awvjjmsvizqilbpwany62shlmlq2ayxkjbygmdafpk1k8j"))))
+        "1gb5hpiyikada9bwz63q3g96zs383iskiir0xsqynqnvq1vd4n41"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
@@ -46,7 +47,10 @@
                       (string-append "#!" (which "sh")))))
                  %standard-phases)))
     (inputs `(("screen" ,screen)
-              ("which" ,which)))
+              ("which" ,which)
+
+              ;; For some reason wdiff.info gets rebuilt.
+              ("texinfo" ,texinfo)))
     (home-page "https://www.gnu.org/software/wdiff/")
     (synopsis "Word difference finder")
     (description
