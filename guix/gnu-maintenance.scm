@@ -252,30 +252,34 @@ stored."
     (_
      (values "ftp.gnu.org" (string-append "/gnu/" project)))))
 
+(define tarball-regexp
+  (memoize
+   (lambda (project)
+     "Return a regexp matching tarball names for PROJECT."
+     (make-regexp (string-append "^" project
+                                 "-([0-9]|[^-])*(-src)?\\.tar\\.")))))
+
+(define %alpha-tarball-rx
+  (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
+
+(define (sans-extension tarball)
+  "Return TARBALL without its .tar.* extension."
+  (let ((end (string-contains tarball ".tar")))
+    (substring tarball 0 end)))
+
+(define (release-file project file)
+  "Return #f if FILE is not a release tarball of PROJECT, otherwise return
+PACKAGE-VERSION."
+  (and (not (string-suffix? ".sig" file))
+       (regexp-exec (tarball-regexp project) file)
+       (not (regexp-exec %alpha-tarball-rx file))
+       (let ((s (sans-extension file)))
+         (and (regexp-exec %package-name-rx s) s))))
+
 (define (releases project)
   "Return the list of releases of PROJECT as a list of release name/directory
 pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). "
   ;; TODO: Parse something like fencepost.gnu.org:/gd/gnuorg/packages-ftp.
-  (define release-rx
-    (make-regexp (string-append "^" project
-                                "-([0-9]|[^-])*(-src)?\\.tar\\.")))
-
-  (define alpha-rx
-    (make-regexp "^.*-.*[0-9](-|~)?(alpha|beta|rc|cvs|svn|git)-?[0-9\\.]*\\.tar\\."))
-
-  (define (sans-extension tarball)
-    (let ((end (string-contains tarball ".tar")))
-      (substring tarball 0 end)))
-
-  (define (release-file file)
-    ;; Return #f if FILE is not a release tarball, otherwise return
-    ;; PACKAGE-VERSION.
-    (and (not (string-suffix? ".sig" file))
-         (regexp-exec release-rx file)
-         (not (regexp-exec alpha-rx file))
-         (let ((s (sans-extension file)))
-           (and (regexp-exec %package-name-rx s) s))))
-
   (let-values (((server directory) (ftp-server/directory project)))
     (define conn (ftp-open server))
 
@@ -301,7 +305,7 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
                   ;; guile-www; in mit-scheme, filter out binaries.
                   (filter-map (match-lambda
                                 ((file 'file . _)
-                                 (and=> (release-file file)
+                                 (and=> (release-file project file)
                                         (cut cons <> directory)))
                                 (_ #f))
                               files)
@@ -309,14 +313,39 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
 
 (define (latest-release project)
   "Return (\"FOO-X.Y\" . \"/bar/foo\") or #f."
-  (let ((releases (releases project)))
-    (and (not (null? releases))
-         (fold (lambda (release latest)
-                 (if (version>? (car release) (car latest))
-                     release
-                     latest))
-               '("" . "")
-               releases))))
+  (define (latest a b)
+    (if (version>? a b) a b))
+
+  (define contains-digit?
+    (cut string-any char-set:digit <>))
+
+  (let-values (((server directory) (ftp-server/directory project)))
+    (define conn (ftp-open server))
+
+    (let loop ((directory directory))
+      (let* ((entries (ftp-list conn directory))
+             (subdirs (filter-map (match-lambda
+                                   ((dir 'directory . _) dir)
+                                   (_ #f))
+                                  entries)))
+        (match subdirs
+          (()
+           ;; No sub-directories, so assume that tarballs are here.
+           (let ((files (filter-map (match-lambda
+                                     ((file 'file . _)
+                                      (release-file project file))
+                                     (_ #f))
+                                    entries)))
+             (and=> (reduce latest #f files)
+                    (cut cons <> directory))))
+          ((subdirs ...)
+           ;; Assume that SUBDIRS correspond to versions, and jump into the
+           ;; one with the highest version number.  Filter out sub-directories
+           ;; that do not contain digits---e.g., /gnuzilla/lang.
+           (let* ((subdirs (filter contains-digit? subdirs))
+                  (target  (reduce latest #f subdirs)))
+             (and target
+                  (loop (string-append directory "/" target))))))))))
 
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
