@@ -197,7 +197,7 @@ between Scheme and C# programs.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "04fhy5jp9lq12fmdqfjzj1w32f7nxc80fagbj7pfci7xh86nm2c5"))))
+               "1v2r4ga58kk1sx0frn8qa8ccmjpic9csqzpk499wc95y9c4b1wy3"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases
