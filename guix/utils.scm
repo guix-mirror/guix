@@ -533,5 +533,6 @@ etc."
   (let ((file (assq-ref loc 'filename))
         (line (assq-ref loc 'line))
         (col  (assq-ref loc 'column)))
-    ;; In accordance with the GCS, start line and column numbers at 1.
-    (location file (and line (+ line 1)) (and col (+ col 1)))))
+    ;; In accordance with the GCS, start line and column numbers at 1.  Note
+    ;; that unlike LINE and `port-column', COL is actually 1-indexed here...
+    (location file (and line (+ line 1)) col)))
