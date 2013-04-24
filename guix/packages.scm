@@ -28,8 +28,6 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:use-module ((ice-9 rdelim) #:select (read-line))
-  #:use-module (ice-9 regex)
   #:re-export (%current-system)
   #:export (origin
             origin?
@@ -163,32 +161,13 @@ representation."
                                                       16)))))
 
 (define (package-field-location package field)
-  "Return an estimate of the source code location of the definition of FIELD
-for PACKAGE."
-  (define field-rx
-    (make-regexp (string-append "\\("
-                                (regexp-quote (symbol->string field))
-                                "[[:blank:]]*")))
-  (define (seek-to-line port line)
-    (let ((line (- line 1)))
-      (let loop ()
-        (when (< (port-line port) line)
-          (unless (eof-object? (read-line port))
-            (loop))))))
-
-  (define (find-line port)
-    (let loop ((line (read-line port)))
-      (cond ((eof-object? line)
-             (values #f #f))
-            ((regexp-exec field-rx line)
-             =>
-             (lambda (match)
-               ;; At this point `port-line' points to the next line, so need
-               ;; need to add one.
-               (values (port-line port)
-                       (match:end match))))
-            (else
-             (loop (read-line port))))))
+  "Return the source code location of the definition of FIELD for PACKAGE, or
+#f if it could not be determined."
+  (define (goto port line column)
+    (unless (and (= (port-column port) (- column 1))
+                 (= (port-line port) (- line 1)))
+      (unless (eof-object? (read-char port))
+        (goto port line column))))
 
   (match (package-location package)
     (($ <location> file line column)
@@ -196,14 +175,21 @@ for PACKAGE."
        (lambda ()
          (call-with-input-file (search-path %load-path file)
            (lambda (port)
-             (seek-to-line port line)
-             (let-values (((line column)
-                           (find-line port)))
-               (if (and line column)
-                   (location file line column)
-                   (package-location package))))))
+             (goto port line column)
+             (match (read port)
+               (('package inits ...)
+                (let ((field (assoc field inits)))
+                  (match field
+                    ((_ value)
+                     (and=> (or (source-properties value)
+                                (source-properties field))
+                            source-properties->location))
+                    (_
+                     #f))))
+               (_
+                #f)))))
        (lambda _
-         (package-location package))))
+         #f)))
     (_ #f)))
 
 

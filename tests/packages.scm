@@ -71,7 +71,8 @@
     (and (equal? (read-at (package-field-location %bootstrap-guile 'name))
                  (package-name %bootstrap-guile))
          (equal? (read-at (package-field-location %bootstrap-guile 'version))
-                 (package-version %bootstrap-guile)))))
+                 (package-version %bootstrap-guile))
+         (not (package-field-location %bootstrap-guile 'does-not-exist)))))
 
 (test-assert "package-transitive-inputs"
   (let* ((a (dummy-package "a"))
