@@ -35,8 +35,7 @@
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (web uri)
-  #:use-module (web client)
-  #:use-module (web response)
+  #:use-module (guix web)
   #:export (guix-substitute-binary))
 
 ;;; Comment:
@@ -128,28 +127,7 @@ provide."
      (let ((port (open-input-file (uri-path uri))))
        (values port (stat:size (stat port)))))
     ((http)
-     (let*-values (((resp port)
-                    ;; XXX: `http-get*' was introduced in 2.0.7, and deprecated
-                    ;; in 2.0.8 (!).  Assume it is available here.
-                    (if (version>? "2.0.7" (version))
-                        (http-get* uri #:decode-body? #f)
-                        (http-get uri #:streaming? #t)))
-                   ((code)
-                    (response-code resp))
-                   ((size)
-                    (response-content-length resp)))
-       (case code
-         ((200)                                   ; OK
-          (values port size))
-         ((301                                    ; moved permanently
-           302)                                   ; found (redirection)
-          (let ((uri (response-location resp)))
-            (format #t "following redirection to `~a'...~%"
-                    (uri->string uri))
-            (fetch uri)))
-         (else
-          (error "download failed" (uri->string uri)
-                 code (response-reason-phrase resp))))))))
+     (http-fetch uri #:text? #f))))
 
 (define-record-type <cache>
   (%make-cache url store-directory wants-mass-query?)

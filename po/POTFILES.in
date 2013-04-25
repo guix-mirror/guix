@@ -12,3 +12,4 @@ guix/scripts/hash.scm
 guix/scripts/pull.scm
 guix/gnu-maintenance.scm
 guix/ui.scm
+guix/web.scm

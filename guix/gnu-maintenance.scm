@@ -28,6 +28,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (system foreign)
+  #:use-module (guix web)
   #:use-module (guix ftp-client)
   #:use-module (guix ui)
   #:use-module (guix utils)
@@ -73,45 +74,11 @@
 ;;; List of GNU packages.
 ;;;
 
-(define (http-fetch uri)
-  "Return an input port containing the textual data at URI, a string."
-  (let*-values (((resp data)
-                 (let ((uri (string->uri uri)))
-                   ;; Try hard to use the API du jour to get an input port.
-                   (if (version>? "2.0.7" (version))
-                       (if (defined? 'http-get*)
-                           (http-get* uri)
-                           (http-get uri))       ; old Guile, returns a string
-                       (http-get uri #:streaming? #t)))) ; 2.0.8 or later
-               ((code)
-                (response-code resp)))
-    (case code
-      ((200)
-       (cond ((not data)
-              (begin
-                ;; XXX: Guile 2.0.5 and earlier did not support chunked transfer
-                ;; encoding, which is required when fetching %PACKAGE-LIST-URL
-                ;; (see <http://lists.gnu.org/archive/html/guile-devel/2011-09/msg00089.html>).
-                ;; Since users may still be using these versions, warn them and
-                ;; bail out.
-                (warning (_ "using Guile ~a, ~a ~s encoding~%")
-                         (version)
-                         "which does not support HTTP"
-                         (response-transfer-encoding resp))
-                (leave (_ "download failed; use a newer Guile~%")
-                       uri resp)))
-             ((string? data)                 ; old `http-get' returns a string
-              (open-input-string data))
-             (else                           ; input port
-              data)))
-      (else
-       (error "download failed" uri code
-              (response-reason-phrase resp))))))
-
 (define %package-list-url
-  (string-append "http://cvs.savannah.gnu.org/"
-                 "viewvc/*checkout*/gnumaint/"
-                 "gnupackages.txt?root=womb"))
+  (string->uri
+   (string-append "http://cvs.savannah.gnu.org/"
+                  "viewvc/*checkout*/gnumaint/"
+                  "gnupackages.txt?root=womb")))
 
 (define-record-type* <gnu-package-descriptor>
   gnu-package-descriptor
@@ -197,7 +164,7 @@
                                "savannah" "fsd" "language" "logo"
                                "doc-category" "doc-summary" "doc-urls"
                                "download-url")))
-        (group-package-fields (http-fetch %package-list-url)
+        (group-package-fields (http-fetch %package-list-url #:text? #t)
                               '(())))))
 
 (define (find-packages regexp)
