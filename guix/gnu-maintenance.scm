@@ -356,9 +356,9 @@ success, return the tarball file name."
       (if ret
           tarball
           (begin
-            (warning (_ "signature verification failed for `~a'")
+            (warning (_ "signature verification failed for `~a'~%")
                      base)
-            (warning (_ "(could be because the public key is not in your keyring)"))
+            (warning (_ "(could be because the public key is not in your keyring)~%"))
             #f)))))
 
 (define (package-update store package)
