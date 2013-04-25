@@ -51,6 +51,16 @@ The "autoreconf -vi" command can be used to generate the build system
 infrastructure; it reports an error if an inappropriate version of the
 above packages is being used.
 
+* Installing Guix from Guix
+
+You can re-build and re-install Guix using a system that already runs Guix.
+To do so:
+
+  - install the dependencies (see 'Requirements' above) using Guix
+  - re-run the configure script passing it the option
+    `--with-libgcrypt-prefix=$HOME/.guix-profile/'
+  - run "make" and "make install"
+
 * How It Works
 
 Guix does the high-level preparation of a /derivation/.  A derivation is
