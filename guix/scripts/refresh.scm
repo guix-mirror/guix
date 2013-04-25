@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix gnu-maintenance)
   #:use-module (gnu packages)
+  #:use-module ((gnu packages base) #:select (%final-inputs))
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
@@ -46,6 +47,15 @@
   (list (option '(#\n "dry-run") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'dry-run? #t result)))
+        (option '(#\s "select") #t #f
+                (lambda (opt name arg result)
+                  (match arg
+                    ((or "core" "non-core")
+                     (alist-cons 'select (string->symbol arg)
+                                 result))
+                    (x
+                     (leave (_ "~a: invalid selection; expected `core' or `non-core'")
+                            arg)))))
 
         (option '(#\h "help") #f #f
                 (lambda args
@@ -57,9 +67,16 @@
 
 (define (show-help)
   (display (_ "Usage: guix refresh [OPTION]... PACKAGE...
-Update package definitions to match the latest upstream version.\n"))
+Update package definitions to match the latest upstream version.
+
+When PACKAGE... is given, update only the specified packages.  Otherwise
+update all the packages of the distribution, or the subset thereof
+specified with `--select'.\n"))
   (display (_ "
   -n, --dry-run          do not build the derivations"))
+  (display (_ "
+  -s, --select=SUBSET    select all the packages in SUBSET, one of
+                         `core' or `non-core'"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -83,6 +100,26 @@ Update package definitions to match the latest upstream version.\n"))
                  (alist-cons 'argument arg result))
                %default-options))
 
+  (define core-package?
+    (let* ((input->package (match-lambda
+                            ((name (? package? package) _ ...) package)
+                            (_ #f)))
+           (final-inputs   (map input->package %final-inputs))
+           (core           (append final-inputs
+                                   (append-map (compose (cut filter-map input->package <>)
+                                                        package-transitive-inputs)
+                                               final-inputs)))
+           (names          (delete-duplicates (map package-name core))))
+      (lambda (package)
+        "Return true if PACKAGE is likely a \"core package\"---i.e., one whose
+update would trigger a complete rebuild."
+        ;; Compare by name because packages in base.scm basically inherit
+        ;; other packages.  So, even if those packages are not core packages
+        ;; themselves, updating them would also update those who inherit from
+        ;; them.
+        ;; XXX: Fails to catch MPFR/MPC, whose *source* is used as input.
+        (member (package-name package) names))))
+
   (let* ((opts     (parse-options))
          (dry-run? (assoc-ref opts 'dry-run?))
          (packages (match (concatenate
@@ -96,42 +133,50 @@ Update package definitions to match the latest upstream version.\n"))
                                         (_ #f))
                                        opts))
                      (()                          ; default to all packages
-                      ;; TODO: Keep only the newest of each package.
-                      (fold-packages cons '()))
+                      (let ((select? (match (assoc-ref opts 'select)
+                                       ('core core-package?)
+                                       ('non-core (negate core-package?))
+                                       (_ (const #t)))))
+                        ;; TODO: Keep only the newest of each package.
+                        (fold-packages (lambda (package result)
+                                         (if (select? package)
+                                             (cons package result)
+                                             result))
+                                       '())))
                      (some                        ; user-specified packages
                       some))))
-   (with-error-handling
-     (if dry-run?
-         (for-each (lambda (package)
-                     (match (false-if-exception (package-update-path package))
-                       ((new-version . directory)
-                        (let ((loc (or (package-field-location package 'version)
-                                       (package-location package))))
-                          (format (current-error-port)
-                                  (_ "~a: ~a would be upgraded from ~a to ~a~%")
-                                  (location->string loc)
-                                  (package-name package) (package-version package)
-                                  new-version)))
-                       (_ #f)))
-                   packages)
-         (let ((store (open-connection)))
-           (for-each (lambda (package)
-                       (let-values (((version tarball)
-                                     (catch #t
-                                       (lambda ()
-                                         (package-update store package))
-                                       (lambda _
-                                         (values #f #f))))
-                                    ((loc)
-                                     (or (package-field-location package
-                                                                 'version)
-                                         (package-location package))))
-                         (when version
+    (with-error-handling
+      (if dry-run?
+          (for-each (lambda (package)
+                      (match (false-if-exception (package-update-path package))
+                        ((new-version . directory)
+                         (let ((loc (or (package-field-location package 'version)
+                                        (package-location package))))
                            (format (current-error-port)
-                                   (_ "~a: ~a: updating from version ~a to version ~a...~%")
-                                   (location->string loc) (package-name package)
-                                   (package-version package) version)
-                           (let ((hash (call-with-input-file tarball
-                                         (compose sha256 get-bytevector-all))))
-                             (update-package-source package version hash)))))
-                     packages))))))
+                                   (_ "~a: ~a would be upgraded from ~a to ~a~%")
+                                   (location->string loc)
+                                   (package-name package) (package-version package)
+                                   new-version)))
+                        (_ #f)))
+                    packages)
+          (let ((store (open-connection)))
+            (for-each (lambda (package)
+                        (let-values (((version tarball)
+                                      (catch #t
+                                        (lambda ()
+                                          (package-update store package))
+                                        (lambda _
+                                          (values #f #f))))
+                                     ((loc)
+                                      (or (package-field-location package
+                                                                  'version)
+                                          (package-location package))))
+                          (when version
+                            (format (current-error-port)
+                                    (_ "~a: ~a: updating from version ~a to version ~a...~%")
+                                    (location->string loc) (package-name package)
+                                    (package-version package) version)
+                            (let ((hash (call-with-input-file tarball
+                                          (compose sha256 get-bytevector-all))))
+                              (update-package-source package version hash)))))
+                      packages))))))
