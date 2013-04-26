@@ -153,14 +153,14 @@ files (as archives).")
 (define-public patch
   (package
    (name "patch")
-   (version "2.6.1")
+   (version "2.7.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/patch/patch-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "18012gxs9wc96izskp1q7bclrwns6rdmkn4jj31c8jbyfz6l5npq"))))
+              "1sqckf560pzwgniy00vcpdv2c9c11s4cmhlm14yqgg8avd3bl94i"))))
    (build-system gnu-build-system)
    (native-inputs '())                      ; FIXME: needs `ed' for the tests
    (arguments
