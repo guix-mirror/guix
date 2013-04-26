@@ -179,18 +179,15 @@ producing patched versions.")
 (define-public diffutils
   (package
    (name "diffutils")
-   (version "3.2")
+   (version "3.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/diffutils/diffutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0jci0wv68025xd0s0rq4s5qxpx56dd9d730lka63qpzk1rfvfkxb"))))
+              "1761vymxbp4wb5rzjvabhdkskk95pghnn67464byvzb5mfl8jpm2"))))
    (build-system gnu-build-system)
-   (inputs `(("patch/gets"
-              ,(search-patch "diffutils-gets-undeclared.patch"))))
-   (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
    (synopsis "Comparing and merging files")
    (description
     "GNU Diffutils is a package of several programs related to finding
