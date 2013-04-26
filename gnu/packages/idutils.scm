@@ -42,7 +42,7 @@
                ,(search-patch "diffutils-gets-undeclared.patch"))))
     (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
     (home-page "http://www.gnu.org/software/idutils/")
-    (synopsis "GNU Idutils, a text searching utility")
+    (synopsis "Identifier database utilities")
     (description
      "An \"ID database\" is a binary file containing a list of file
 names, a list of tokens, and a sparse matrix indicating which

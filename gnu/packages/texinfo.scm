@@ -42,7 +42,7 @@
     ;; TODO: Remove Perl from here when 'patch-shebang' DTRT with /usr/bin/env.
     (propagated-inputs `(("perl" ,perl)))         ; yuck!
     (home-page "http://www.gnu.org/software/texinfo/")
-    (synopsis "GNU Texinfo, the GNU documentation system")
+    (synopsis "The GNU documentation format")
     (description
      "Texinfo is the official documentation format of the GNU project.
 It was invented by Richard Stallman and Bob Chassell many years

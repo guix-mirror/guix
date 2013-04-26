@@ -59,7 +59,10 @@
             %current-system
             version-compare
             version>?
-            package-name->name+version))
+            package-name->name+version
+            file-extension
+            call-with-temporary-output-file
+            fold2))
 
 
 ;;;
@@ -463,6 +466,52 @@ introduce the version part."
       ((head tail ...)
        (loop tail (cons head prefix))))))
 
+(define (file-extension file)
+  "Return the extension of FILE or #f if there is none."
+  (let ((dot (string-rindex file #\.)))
+    (and dot (substring file (+ 1 dot) (string-length file)))))
+
+(define (call-with-temporary-output-file proc)
+  "Call PROC with a name of a temporary file and open output port to that
+file; close the file and delete it when leaving the dynamic extent of this
+call."
+  (let* ((template (string-copy "guix-file.XXXXXX"))
+         (out      (mkstemp! template)))
+    (dynamic-wind
+      (lambda ()
+        #t)
+      (lambda ()
+        (proc template out))
+      (lambda ()
+        (false-if-exception (close out))
+        (false-if-exception (delete-file template))))))
+
+(define fold2
+  (case-lambda
+    ((proc seed1 seed2 lst)
+     "Like `fold', but with a single list and two seeds."
+     (let loop ((result1 seed1)
+                (result2 seed2)
+                (lst     lst))
+       (if (null? lst)
+           (values result1 result2)
+           (call-with-values
+               (lambda () (proc (car lst) result1 result2))
+             (lambda (result1 result2)
+               (loop result1 result2 (cdr lst)))))))
+    ((proc seed1 seed2 lst1 lst2)
+     "Like `fold', but with a two lists and two seeds."
+     (let loop ((result1 seed1)
+                (result2 seed2)
+                (lst1    lst1)
+                (lst2    lst2))
+       (if (or (null? lst1) (null? lst2))
+           (values result1 result2)
+           (call-with-values
+               (lambda () (proc (car lst1) (car lst2) result1 result2))
+             (lambda (result1 result2)
+               (fold2 proc result1 result2 (cdr lst1) (cdr lst2)))))))))
+
 
 ;;;
 ;;; Source location.
@@ -490,5 +539,6 @@ etc."
   (let ((file (assq-ref loc 'filename))
         (line (assq-ref loc 'line))
         (col  (assq-ref loc 'column)))
-    ;; In accordance with the GCS, start line and column numbers at 1.
-    (location file (and line (+ line 1)) (and col (+ col 1)))))
+    ;; In accordance with the GCS, start line and column numbers at 1.  Note
+    ;; that unlike LINE and `port-column', COL is actually 1-indexed here...
+    (location file (and line (+ line 1)) col)))

@@ -32,6 +32,7 @@
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
+  #:use-module (web uri)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 ftw)
@@ -397,6 +398,51 @@
          ;; Now INPUT-PATH is missing, yet it shouldn't be listed as a
          ;; prerequisite to build because DRV itself is already built.
          (null? (derivation-prerequisites-to-build %store drv)))))
+
+(test-skip (if (getenv "GUIX_BINARY_SUBSTITUTE_URL") 0 1))
+(test-assert "derivation-prerequisites-to-build and substitutes"
+  (let*-values (((store)
+                 (open-connection))
+                ((drv-path drv)
+                 (build-expression->derivation store "prereq-subst"
+                                               (%current-system)
+                                               (random 1000) '()))
+                ((output)
+                 (derivation-output-path
+                  (assoc-ref (derivation-outputs drv) "out")))
+                ((dir)
+                 (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
+                        (compose uri-path string->uri))))
+    ;; Create fake substituter data, to be read by `substitute-binary'.
+    (call-with-output-file (string-append dir "/nix-cache-info")
+      (lambda (p)
+        (format p "StoreDir: ~a\nWantMassQuery: 0\n"
+                (%store-prefix))))
+    (call-with-output-file (string-append dir "/" (store-path-hash-part output)
+                                          ".narinfo")
+      (lambda (p)
+        (format p "StorePath: ~a
+URL: ~a
+Compression: none
+NarSize: 1234
+References: 
+System: ~a
+Deriver: ~a~%"
+                output                              ; StorePath
+                (string-append dir "/example.nar")  ; URL
+                (%current-system)                   ; System
+                (basename drv-path))))              ; Deriver
+
+    (let-values (((build download)
+                  (derivation-prerequisites-to-build store drv))
+                 ((build* download*)
+                  (derivation-prerequisites-to-build store drv
+                                                     #:use-substitutes? #f)))
+      (pk build download build* download*)
+      (and (null? build)
+           (equal? download (list output))
+           (null? download*)
+           (null? build*)))))
 
 (test-assert "build-expression->derivation with expression returning #f"
   (let* ((builder  '(begin

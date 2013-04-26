@@ -93,7 +93,7 @@
            (variable "GUILE_LOAD_PATH")
            (directories '("share/guile/site")))))
 
-   (synopsis "GNU Guile 1.8, an embeddable Scheme interpreter")
+   (synopsis "Scheme implementation intended especially for extensions")
    (description
 "GNU Guile 1.8 is an interpreter for the Scheme programming language,
 packaged as a library that can be embedded into programs to make them
@@ -104,14 +104,14 @@ extensible.  It supports many SRFIs.")
 (define-public guile-2.0
   (package
    (name "guile")
-   (version "2.0.7")
+   (version "2.0.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/guile/guile-" version
                                 ".tar.xz"))
             (sha256
              (base32
-              "0f53pxkia4v17n0avwqlcjpy0n89hkazm2xsa6p84lv8k6k8y9vg"))))
+              "0nw9y8vjyz4r61v06p9msks5lm58pd91irmzg4k487vmv743h2pp"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
@@ -150,7 +150,7 @@ extensible.  It supports many SRFIs.")
            (variable "GUILE_LOAD_COMPILED_PATH")
            (directories '("share/guile/site/2.0")))))
 
-   (synopsis "GNU Guile 2.0, an embeddable Scheme implementation")
+   (synopsis "Scheme implementation intended especially for extensions")
    (description
 "GNU Guile is an implementation of the Scheme programming language, with
 support for many SRFIs, packaged for use in a wide variety of environments.
@@ -164,7 +164,15 @@ call interface, and powerful string processing.")
 (define-public guile-2.0/fixed
   ;; A package of Guile 2.0 that's rarely changed.  It is the one used
   ;; in the `base' module, and thus changing it entails a full rebuild.
-  guile-2.0)
+  (package (inherit guile-2.0)
+    (version "2.0.7")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/guile/guile-" version
+                                 ".tar.xz"))
+             (sha256
+              (base32
+               "0f53pxkia4v17n0avwqlcjpy0n89hkazm2xsa6p84lv8k6k8y9vg"))))))
 
 
 ;;;
@@ -244,8 +252,7 @@ many readers as needed).")
                                out)))))
                  %standard-phases)))
     (home-page "http://www.gnu.org/software/guile-ncurses/")
-    (synopsis
-     "GNU Guile-Ncurses, Scheme interface to the NCurses libraries")
+    (synopsis "Guile bindings to ncurses")
     (description
      "GNU Guile-Ncurses is a library for the Guile Scheme interpreter that
 provides functions for creating text user interfaces.  The text user interface
@@ -271,8 +278,7 @@ menu.")
      `(("ed" ,ed) ("which" ,which) ("guile" ,guile-1.8)
        ("patch/install" ,(search-patch "mcron-install.patch"))))
     (home-page "http://www.gnu.org/software/mcron/")
-    (synopsis
-     "GNU mcron, a flexible implementation of `cron' in Guile")
+    (synopsis "Run jobs at scheduled times")
     (description
      "The GNU package mcron (Mellor's cron) is a 100% compatible replacement
 for Vixie cron.  It is written in pure Guile, and allows configuration files

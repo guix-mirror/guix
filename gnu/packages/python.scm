@@ -31,7 +31,7 @@
 (define-public python
   (package
     (name "python")
-    (version "2.7.3")
+    (version "2.7.4")
     (source
      (origin
       (method url-fetch)
@@ -39,12 +39,10 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "11f9aw855lrmknr6c82gm1ijr3n0smc6idyp94y7774yivjnplv1"))))
+        "0bdn4dylm92n2dsvqvjfyask9jbz88aan5hi4lgkawkxs2v6wqmn"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f ; XXX: some tests fail
-       #:patches (list (assoc-ref %build-inputs "patch-dbm"))
-       #:patch-flags '("-p0")
        #:configure-flags
         (let ((bz2 (assoc-ref %build-inputs "bzip2"))
               (gdbm (assoc-ref %build-inputs "gdbm"))
@@ -68,8 +66,7 @@
        ("gdbm" ,gdbm)
        ("openssl" ,openssl)
        ("readline" ,readline)
-       ("zlib" ,zlib)
-       ("patch-dbm" ,(search-patch "python-fix-dbm.patch"))))
+       ("zlib" ,zlib)))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")

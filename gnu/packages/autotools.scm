@@ -50,8 +50,7 @@
     (arguments `(#:tests? #f))
     (home-page
      "http://www.gnu.org/software/autoconf/")
-    (synopsis
-     "GNU Autoconf, a part of the GNU Build System")
+    (synopsis "Create source code configuration scripts")
     (description
      "GNU Autoconf is an extensible package of M4 macros that produce
 shell scripts to automatically configure software source code
@@ -149,8 +148,17 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
        ("perl" ,perl)
        ("patch/skip-amhello"
         ,(search-patch "automake-skip-amhello-tests.patch"))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "ACLOCAL_PATH")
+            (directories '("share/aclocal")))))
     (arguments
      '(#:patches (list (assoc-ref %build-inputs "patch/skip-amhello"))
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (srfi srfi-1)
+                  (srfi srfi-26)
+                  (rnrs io ports))
        #:phases (alist-cons-before
                  'patch-source-shebangs 'patch-tests-shebangs
                  (lambda _
@@ -163,15 +171,37 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                      ;; that occur during the test suite.
                      (setenv "SHELL" sh)
                      (setenv "CONFIG_SHELL" sh)))
-                 %standard-phases)))
-    (native-search-paths
-     (list (search-path-specification
-            (variable "ACLOCAL_PATH")
-            (directories '("share/aclocal")))))
 
+                 ;; Files like `install-sh', `mdate.sh', etc. must use
+                 ;; #!/bin/sh, otherwise users could leak erroneous shebangs
+                 ;; in the wild.  See <http://bugs.gnu.org/14201> for an
+                 ;; example.
+                 (alist-cons-after
+                  'install 'unpatch-shebangs
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (dir (string-append out "/share")))
+                      (define (starts-with-shebang? file)
+                        (equal? (call-with-input-file file
+                                  (lambda (p)
+                                    (list (get-u8 p) (get-u8 p))))
+                                (map char->integer '(#\# #\!))))
+
+                      (for-each (lambda (file)
+                                  (when (and (starts-with-shebang? file)
+                                             (executable-file? file))
+                                    (format #t "restoring shebang on `~a'~%"
+                                            file)
+                                    (substitute* file
+                                      (("^#!.*/bin/sh")
+                                       "#!/bin/sh")
+                                      (("^#!.*/bin/env(.*)$" _ args)
+                                       (string-append "#!/usr/bin/env"
+                                                      args)))))
+                                (find-files dir ".*"))))
+                  %standard-phases))))
     (home-page "http://www.gnu.org/software/automake/")
-    (synopsis
-     "GNU Automake, a GNU standard-compliant makefile generator")
+    (synopsis "Making GNU standards-compliant Makefiles")
     (description
      "GNU Automake is a tool for automatically generating
 `Makefile.in' files compliant with the GNU Coding
@@ -225,7 +255,7 @@ Standards.  Automake requires the use of Autoconf.")
                  %standard-phases)))
     (inputs `(("patch/skip-tests"
                ,(search-patch "libtool-skip-tests.patch"))))
-    (synopsis "GNU Libtool, a generic library support script")
+    (synopsis "Generic shared library support tools")
     (description
      "GNU libtool is a generic library support script.  Libtool hides the
 complexity of using shared libraries behind a consistent, portable interface.

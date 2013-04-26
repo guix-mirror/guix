@@ -34,6 +34,7 @@
   #:use-module (guix utils)
   #:use-module (guix base32)
   #:use-module (guix config)
+  #:use-module (guix gnu-maintenance)
   #:export (open-nixpkgs
             xml->snix
             nixpkgs->guix-package))
@@ -435,8 +436,16 @@ location of DERIVATION."
 
              (home-page ,(and=> (find-attribute-by-name "homepage" meta)
                                 attribute-value))
-             (synopsis ,(and=> (find-attribute-by-name "description" meta)
-                               attribute-value))
+             (synopsis
+              ;; For GNU packages, prefer the official synopsis.
+              ,(or (false-if-exception
+                    (and=> (find (lambda (gnu-package)
+                                   (equal? (gnu-package-name gnu-package)
+                                           name))
+                                 (official-gnu-packages))
+                           gnu-package-doc-summary))
+                   (and=> (find-attribute-by-name "description" meta)
+                          attribute-value)))
              (description
               ,(and=> (find-attribute-by-name "longDescription" meta)
                       attribute-value))

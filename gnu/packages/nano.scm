@@ -28,7 +28,7 @@
 (define-public nano
   (package
     (name "nano")
-    (version "2.2.6")
+    (version "2.3.2")
     (source
      (origin
       (method url-fetch)
@@ -36,14 +36,13 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0yp6pid67k8h7394spzw0067fl2r7rxm2b6kfccg87g8nlry2s5y"))))
+        "1s3b21h5p7r8xafw0gahswj16ai6k2vnjhmd15b491hl0x494c7z"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,guix:gettext)
        ("ncurses" ,ncurses)))
     (home-page "http://www.nano-editor.org/")
-    (synopsis
-     "A small, user-friendly console text editor")
+    (synopsis "Small, user-friendly console text editor")
     (description
      "GNU nano is designed to be a free replacement for the Pico text
 editor, part of the Pine email suite from The University of

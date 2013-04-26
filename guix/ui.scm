@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +41,6 @@
             with-error-handling
             read/eval-package-expression
             location->string
-            call-with-temporary-output-file
             switch-symlinks
             config-directory
             fill-paragraph
@@ -64,15 +64,50 @@
 (define _ (cut gettext <> %gettext-domain))
 (define N_ (cut ngettext <> <> <> %gettext-domain))
 
+(define-syntax-rule (define-diagnostic name prefix)
+  "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
+messages."
+  (define-syntax name
+    (lambda (x)
+      (define (augmented-format-string fmt)
+        (string-append "~:[~*~;guix ~a: ~]~a" (syntax->datum fmt)))
+
+      (syntax-case x (N_ _)                    ; these are literals, yeah...
+        ((name (_ fmt) args (... ...))
+         (string? (syntax->datum #'fmt))
+         (with-syntax ((fmt*   (augmented-format-string #'fmt))
+                       (prefix (datum->syntax x prefix)))
+           #'(format (guix-warning-port) (gettext fmt*)
+                     (program-name) (program-name) prefix
+                     args (... ...))))
+        ((name (N_ singular plural n) args (... ...))
+         (and (string? (syntax->datum #'singular))
+              (string? (syntax->datum #'plural)))
+         (with-syntax ((s      (augmented-format-string #'singular))
+                       (p      (augmented-format-string #'plural))
+                       (prefix (datum->syntax x prefix)))
+           #'(format (guix-warning-port)
+                     (ngettext s p n %gettext-domain)
+                     (program-name) (program-name) prefix
+                     args (... ...))))))))
+
+(define-diagnostic warning "warning: ") ; emit a warning
+
+(define-diagnostic report-error "error: ")
+(define-syntax-rule (leave args ...)
+  "Emit an error message and exit."
+  (begin
+    (report-error args ...)
+    (exit 1)))
+
 (define (install-locale)
   "Install the current locale settings."
   (catch 'system-error
     (lambda _
       (setlocale LC_ALL ""))
     (lambda args
-      (format (current-error-port)
-              (_ "warning: failed to install locale: ~a~%")
-              (strerror (system-error-errno args))))))
+      (warning (_ "failed to install locale: ~a~%")
+               (strerror (system-error-errno args))))))
 
 (define (initialize-guix)
   "Perform the usual initialization for stand-alone Guix commands."
@@ -80,12 +115,6 @@
   (textdomain "guix")
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF))
-
-(define-syntax-rule (leave fmt args ...)
-  "Format FMT and ARGS to the error port and exit."
-  (begin
-    (format (current-error-port) fmt args ...)
-    (exit 1)))
 
 (define* (show-version-and-exit #:optional (command (car (command-line))))
   "Display version information for COMMAND and `(exit 0)'."
@@ -111,16 +140,16 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
                     (file     (location-file location))
                     (line     (location-line location))
                     (column   (location-column location)))
-               (leave (_ "~a:~a:~a: error: package `~a' has an invalid input: ~s~%")
+               (leave (_ "~a:~a:~a: package `~a' has an invalid input: ~s~%")
                       file line column
                       (package-full-name package) input)))
             ((nix-connection-error? c)
-             (leave (_ "error: failed to connect to `~a': ~a~%")
+             (leave (_ "failed to connect to `~a': ~a~%")
                     (nix-connection-error-file c)
                     (strerror (nix-connection-error-code c))))
             ((nix-protocol-error? c)
              ;; FIXME: Server-provided error messages aren't i18n'd.
-             (leave (_ "error: build failed: ~a~%")
+             (leave (_ "build failed: ~a~%")
                     (nix-protocol-error-message c))))
     (thunk)))
 
@@ -144,33 +173,66 @@ error."
           (leave (_ "expression `~s' does not evaluate to a package~%")
                  exp)))))
 
-(define* (show-what-to-build store drv #:optional dry-run?)
+(define* (show-what-to-build store drv
+                             #:key dry-run? (use-substitutes? #t))
   "Show what will or would (depending on DRY-RUN?) be built in realizing the
 derivations listed in DRV.  Return #t if there's something to build, #f
-otherwise."
-  (let* ((req  (append-map (lambda (drv-path)
-                             (let ((d (call-with-input-file drv-path
-                                        read-derivation)))
-                               (derivation-prerequisites-to-build
-                                store d)))
-                           drv))
-         (req* (delete-duplicates
-                (append (remove (compose (cute valid-path? store <>)
-                                         derivation-path->output-path)
-                                drv)
-                        (map derivation-input-path req)))))
+otherwise.  When USE-SUBSTITUTES?, check and report what is prerequisites are
+available for download."
+  (let*-values (((build download)
+                 (fold2 (lambda (drv-path build download)
+                          (let ((drv (call-with-input-file drv-path
+                                       read-derivation)))
+                            (let-values (((b d)
+                                          (derivation-prerequisites-to-build
+                                           store drv
+                                           #:use-substitutes?
+                                           use-substitutes?)))
+                              (values (append b build)
+                                      (append d download)))))
+                        '() '()
+                        drv))
+                ((build)                          ; add the DRV themselves
+                 (delete-duplicates
+                  (append (remove (compose (lambda (out)
+                                             (or (valid-path? store out)
+                                                 (and use-substitutes?
+                                                      (has-substitutes? store
+                                                                        out))))
+                                           derivation-path->output-path)
+                                  drv)
+                          (map derivation-input-path build))))
+                ((download)                   ; add the references of DOWNLOAD
+                 (delete-duplicates
+                  (append download
+                          (remove (cut valid-path? store <>)
+                                  (append-map
+                                   substitutable-references
+                                   (substitutable-path-info store download)))))))
     (if dry-run?
-        (format (current-error-port)
-                (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
-                    "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
-                    (length req*))
-                (null? req*) req*)
-        (format (current-error-port)
-                (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
-                    "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
-                    (length req*))
-                (null? req*) req*))
-    (pair? req*)))
+        (begin
+          (format (current-error-port)
+                  (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
+                      "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
+                      (length build))
+                  (null? build) build)
+          (format (current-error-port)
+                  (N_ "~:[the following file would be downloaded:~%~{   ~a~%~}~;~]"
+                      "~:[the following files would be downloaded:~%~{    ~a~%~}~;~]"
+                      (length download))
+                  (null? download) download))
+        (begin
+          (format (current-error-port)
+                  (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
+                      "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
+                      (length build))
+                  (null? build) build)
+          (format (current-error-port)
+                  (N_ "~:[the following file will be downloaded:~%~{   ~a~%~}~;~]"
+                      "~:[the following files will be downloaded:~%~{    ~a~%~}~;~]"
+                      (length download))
+                  (null? download) download)))
+    (pair? build)))
 
 (define-syntax with-error-handling
   (syntax-rules ()
@@ -186,21 +248,6 @@ otherwise."
     (#f (_ "<unknown location>"))
     (($ <location> file line column)
      (format #f "~a:~a:~a" file line column))))
-
-(define (call-with-temporary-output-file proc)
-  "Call PROC with a name of a temporary file and open output port to that
-file; close the file and delete it when leaving the dynamic extent of this
-call."
-  (let* ((template (string-copy "guix-file.XXXXXX"))
-         (out      (mkstemp! template)))
-    (dynamic-wind
-      (lambda ()
-        #t)
-      (lambda ()
-        (proc template out))
-      (lambda ()
-        (false-if-exception (close out))
-        (false-if-exception (delete-file template))))))
 
 (define (switch-symlinks link target)
   "Atomically switch LINK, a symbolic link, to point to TARGET.  Works
@@ -341,36 +388,6 @@ WIDTH columns."
 
 (define guix-warning-port
   (make-parameter (current-warning-port)))
-
-(define-syntax warning
-  (lambda (s)
-    "Emit a warming.  The macro assumes that `_' is bound to `gettext'."
-    ;; All this just to preserve `-Wformat' warnings.  Too much?
-
-    (define (augmented-format-string fmt)
-      (string-append "~:[~;guix ~a: ~]~a" (syntax->datum fmt)))
-
-    (define prefix
-      #'(_ "warning: "))
-
-    (syntax-case s (N_ _)                        ; these are literals, yeah...
-      ((warning (_ fmt) args ...)
-       (string? (syntax->datum #'fmt))
-       (with-syntax ((fmt*   (augmented-format-string #'fmt))
-                     (prefix prefix))
-         #'(format (guix-warning-port) (gettext fmt*)
-                   (program-name) (program-name) prefix
-                   args ...)))
-      ((warning (N_ singular plural n) args ...)
-       (and (string? (syntax->datum #'singular))
-            (string? (syntax->datum #'plural)))
-       (with-syntax ((s (augmented-format-string #'singular))
-                     (p (augmented-format-string #'plural))
-                     (b prefix))
-         #'(format (guix-warning-port)
-                   (ngettext s p n %gettext-domain)
-                   (program-name) (program-name) b
-                   args ...))))))
 
 (define (guix-main arg0 . args)
   (initialize-guix)

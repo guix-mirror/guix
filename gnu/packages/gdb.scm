@@ -57,7 +57,7 @@
        ("texinfo" ,texinfo)
        ("dejagnu" ,dejagnu)))
     (home-page "http://www.gnu.org/software/gdb/")
-    (synopsis "GDB, the GNU Project debugger")
+    (synopsis "The GNU debugger")
     (description
      "GDB, the GNU Project debugger, allows you to see what is going
 on `inside' another program while it executes -- or what another

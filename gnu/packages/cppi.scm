@@ -35,7 +35,7 @@
                "1jk42cjaggk71rimjnx3qpmb6hivps0917vl3z7wbxk3i2whb98j"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/cppi/")
-    (synopsis "A cpp directive indenter")
+    (synopsis "Indent C preprocessor directives to reflect nesting and more")
     (description
      "GNU cppi indents C preprocessor directives to reflect their nesting and
 ensure that there is exactly one space character between each #if, #elif,

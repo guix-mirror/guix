@@ -208,7 +208,7 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
       (switch-symlinks profile previous-profile))
 
     (cond ((not (file-exists? profile))           ; invalid profile
-           (leave (_ "error: profile `~a' does not exist~%")
+           (leave (_ "profile `~a' does not exist~%")
                   profile))
           ((zero? number)                         ; empty profile
            (format (current-error-port)
@@ -266,19 +266,42 @@ matching packages."
                        (assoc-ref (derivation-outputs drv) sub-drv))))
          `(,name ,out))))))
 
+(define %sigint-prompt
+  ;; The prompt to jump to upon SIGINT.
+  (make-prompt-tag "interruptible"))
+
+(define (call-with-sigint-handler thunk handler)
+  "Call THUNK and return its value.  Upon SIGINT, call HANDLER with the signal
+number in the context of the continuation of the call to this function, and
+return its return value."
+  (call-with-prompt %sigint-prompt
+                    (lambda ()
+                      (sigaction SIGINT
+                        (lambda (signum)
+                          (sigaction SIGINT SIG_DFL)
+                          (abort-to-prompt %sigint-prompt signum)))
+                      (thunk))
+                    (lambda (k signum)
+                      (handler signum))))
+
 (define-syntax-rule (waiting exp fmt rest ...)
   "Display the given message while EXP is being evaluated."
   (let* ((message (format #f fmt rest ...))
          (blank   (make-string (string-length message) #\space)))
     (display message (current-error-port))
     (force-output (current-error-port))
-    (let ((result exp))
-      ;; Clear the line.
-      (display #\cr (current-error-port))
-      (display blank (current-error-port))
-      (display #\cr (current-error-port))
-      (force-output (current-error-port))
-      exp)))
+    (call-with-sigint-handler
+     (lambda ()
+       (let ((result exp))
+         ;; Clear the line.
+         (display #\cr (current-error-port))
+         (display blank (current-error-port))
+         (display #\cr (current-error-port))
+         (force-output (current-error-port))
+         exp))
+     (lambda (signum)
+       (format (current-error-port) "  interrupted by signal ~a~%" SIGINT)
+       #f))))
 
 (define (check-package-freshness package)
   "Check whether PACKAGE has a newer version available upstream, and report
@@ -328,7 +351,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -r, --remove=PACKAGE   remove PACKAGE"))
   (display (_ "
-  -u, --upgrade=REGEXP   upgrade all the installed packages matching REGEXP"))
+  -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"))
   (display (_ "
       --roll-back        roll back to the previous generation"))
   (newline)
@@ -379,7 +402,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (option '(#\r "remove") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'remove arg result)))
-        (option '(#\u "upgrade") #t #f
+        (option '(#\u "upgrade") #f #t
                 (lambda (opt name arg result)
                   (alist-cons 'upgrade arg result)))
         (option '("roll-back") #f #f
@@ -454,8 +477,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
     (define (ensure-output p sub-drv)
       (if (member sub-drv (package-outputs p))
           p
-          (leave (_ "~a: error: package `~a' lacks output `~a'~%")
-                 (location->string (package-location p))
+          (leave (_ "package `~a' lacks output `~a'~%")
                  (package-full-name p)
                  sub-drv)))
 
@@ -602,7 +624,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (let* ((installed (manifest-packages (profile-manifest profile)))
                (upgrade-regexps (filter-map (match-lambda
                                              (('upgrade . regexp)
-                                              (make-regexp regexp))
+                                              (make-regexp (or regexp "")))
                                              (_ #f))
                                             opts))
                (upgrade  (if (null? upgrade-regexps)
@@ -674,7 +696,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
             (ensure-default-profile))
 
           (show-what-to-remove/install remove* install* dry-run?)
-          (show-what-to-build (%store) drv dry-run?)
+          (show-what-to-build (%store) drv
+                              #:use-substitutes? (assoc-ref opts 'substitutes?)
+                              #:dry-run? dry-run?)
 
           (or dry-run?
               (and (build-derivations (%store) drv)

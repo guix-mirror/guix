@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,19 +17,17 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix scripts download)
-  #:use-module (guix ui)
-  #:use-module (guix store)
-  #:use-module (guix utils)
-  #:use-module (guix base32)
-  #:use-module (guix download)
-  #:use-module (web uri)
-  #:use-module (ice-9 match)
-  #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-37)
-  #:use-module (rnrs bytevectors)
-  #:use-module (rnrs io ports)
-  #:export (guix-download))
+(define-module (guix scripts hash)
+    #:use-module (guix base32)
+    #:use-module (guix ui)
+    #:use-module (guix utils)
+    #:use-module (rnrs io ports)
+    #:use-module (rnrs files)
+    #:use-module (ice-9 match)
+    #:use-module (srfi srfi-1)
+    #:use-module (srfi srfi-26)
+    #:use-module (srfi srfi-37)
+    #:export (guix-hash))
 
 
 ;;;
@@ -40,9 +39,8 @@
   `((format . ,bytevector->nix-base32-string)))
 
 (define (show-help)
-  (display (_ "Usage: guix download [OPTION] URL
-Download the file at URL, add it to the store, and print its store path
-and the hash of its contents.
+  (display (_ "Usage: guix hash [OPTION] FILE
+Return the cryptographic hash of FILE.
 
 Supported formats: 'nix-base32' (default), 'base32', and 'base16'
 ('hex' and 'hexadecimal' can be used as well).\n"))
@@ -57,7 +55,7 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
   (show-bug-report-information))
 
 (define %options
-  ;; Specifications of the command-line options.
+  ;; Specification of the command-line options.
   (list (option '(#\f "format") #t #f
                 (lambda (opt name arg result)
                   (define fmt-proc
@@ -69,7 +67,8 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                       ((or "base16" "hex" "hexadecimal")
                        bytevector->base16-string)
                       (x
-                       (leave (_ "unsupported hash format: ~a~%") arg))))
+                       (leave (_ "unsupported hash format: ~a~%")
+                              arg))))
 
                   (alist-cons 'format fmt-proc
                               (alist-delete 'format result))))
@@ -80,42 +79,42 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                   (exit 0)))
         (option '(#\V "version") #f #f
                 (lambda args
-                  (show-version-and-exit "guix download")))))
+                  (show-version-and-exit "guix hash")))))
+
 
 
 ;;;
 ;;; Entry point.
 ;;;
 
-(define (guix-download . args)
+(define (guix-hash . args)
   (define (parse-options)
     ;; Return the alist of option values.
     (args-fold args %options
                (lambda (opt name arg result)
-                 (leave (_ "~A: unrecognized option~%") name))
+                 (leave (_ "unrecognized option: ~a~%")
+                        name))
                (lambda (arg result)
                  (alist-cons 'argument arg result))
                %default-options))
 
-  (with-error-handling
-    (let* ((opts  (parse-options))
-           (store (open-connection))
-           (arg   (assq-ref opts 'argument))
-           (uri   (or (string->uri arg)
-                      (leave (_ "~a: failed to parse URI~%")
-                             arg)))
-           (path  (case (uri-scheme uri)
-                    ((file)
-                     (add-to-store store (basename (uri-path uri))
-                                   #f "sha256" (uri-path uri)))
-                    (else
-                     (download-to-store store (uri->string uri)
-                                        (basename (uri-path uri))))))
-           (hash  (call-with-input-file
-                      (or path
-                          (leave (_ "~a: download failed~%")
-                                 arg))
-                    (compose sha256 get-bytevector-all)))
-           (fmt   (assq-ref opts 'format)))
-      (format #t "~a~%~a~%" path (fmt hash))
-      #t)))
+    (let* ((opts (parse-options))
+           (args (filter-map (match-lambda
+                              (('argument . value)
+                               value)
+                              (_ #f))
+                             (reverse opts)))
+           (fmt  (assq-ref opts 'format)))
+
+      (match args
+        ((file)
+         (catch 'system-error
+           (lambda ()
+             (format #t "~a~%"
+                     (call-with-input-file file
+                       (compose fmt sha256 get-bytevector-all))))
+           (lambda args
+             (leave (_ "~a~%")
+                    (strerror (system-error-errno args))))))
+        (_
+         (leave (_ "wrong number of arguments~%"))))))

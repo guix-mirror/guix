@@ -61,7 +61,7 @@
              ("patch/readlink-EINVAL"
               ,(search-patch "m4-readlink-EINVAL.patch"))
              ("patch/gets" ,(search-patch "m4-gets-undeclared.patch"))))
-   (synopsis "GNU M4, a macro processor")
+   (synopsis "Macro processor")
    (description
     "GNU M4 is an implementation of the traditional Unix macro processor.  It
 is mostly SVR4 compatible although it has some extensions (for example,

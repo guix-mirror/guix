@@ -94,8 +94,7 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
     (build-system gnu-build-system)
     (inputs `(("libogg" ,libogg)))
     (home-page "https://gnu.org/software/speex")
-    (synopsis
-     "GNU Speex, a patent-free voice codec")
+    (synopsis "Library for patent-free audio compression format")
     (description
      "GNU Speex is a patent-free voice codec.  It is designed to
 compress voice at bitrates in the 2--45 kbps range.  Possible

@@ -38,8 +38,7 @@
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (home-page "http://aspell.net/")
-    (synopsis
-     "GNU Aspell, A spell checker for many languages")
+    (synopsis "Spell checker")
     (description
      "GNU Aspell is a free spell checker designed to eventually replace
 Ispell.  It can either be used as a library or as an independent spell

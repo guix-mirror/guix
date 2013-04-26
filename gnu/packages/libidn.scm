@@ -35,7 +35,7 @@
                      "0g657kv60rh486m7bwyp5k24ljmym4wnb8nmk6d3i3qgr1qlqbqa"))))
    (build-system gnu-build-system)
 ;; FIXME: No Java and C# libraries are currently built.
-   (synopsis "GNU Libidn, a library to encode and decode internationalised domain names")
+   (synopsis "Internationalized string processing library")
    (description
     "GNU Libidn is a fully documented implementation of the Stringprep,
 Punycode and IDNA specifications. Libidn's purpose is to encode and decode

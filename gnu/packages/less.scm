@@ -38,9 +38,7 @@
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)))
     (home-page "https://www.gnu.org/software/less/")
-    (synopsis
-     "GNU less is a program similar to more, but which allows backward
-movement in the file as well as forward movement")
+    (synopsis "Paginator for terminals")
     (description
      "GNU less is a program similar to more, but which allows backward
 movement in the file as well as forward movement. Also, less does not

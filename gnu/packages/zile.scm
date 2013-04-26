@@ -45,7 +45,7 @@
        ("perl" ,perl)
        ("help2man" ,help2man)))
     (home-page "http://www.gnu.org/software/zile/")
-    (synopsis "GNU Zile, a lightweight Emacs clone")
+    (synopsis "Zile is lossy Emacs, a lightweight Emacs clone")
     (description
      "GNU Zile, which is a lightweight Emacs clone.  Zile is short
 for Zile Is Lossy Emacs.  Zile has been written to be as

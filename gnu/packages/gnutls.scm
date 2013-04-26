@@ -31,7 +31,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "3.2")
+    (version "3.3")
     (source
      (origin
       (method url-fetch)
@@ -39,10 +39,10 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0gvgndypwicchf7m660zh7jdgmkfj9g9xavpcc08pyd0120y0bk7"))))
+        "1h1sz5py8zlg4yczybr6wa925pyadvjcxrdmhilwaqqgs4n2lrcj"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/libtasn1/")
-    (synopsis "GNU Libtasn1, an ASN.1 library")
+    (synopsis "ASN.1 library")
     (description
      "Libtasn1 is the ASN.1 library used by GnuTLS, GNU Shishi and some
 other packages.  The goal of this implementation is to be highly
@@ -73,7 +73,7 @@ portable, and only require an ANSI C89 platform.")
        ("nettle" ,nettle)
        ("which" ,which)))
     (home-page "http://www.gnu.org/software/gnutls/")
-    (synopsis "The GNU Transport Layer Security Library")
+    (synopsis "Transport layer security library")
     (description
      "GnuTLS is a project that aims to develop a library which provides
 a secure layer, over a reliable transport layer. Currently the GnuTLS

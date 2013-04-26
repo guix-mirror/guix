@@ -40,7 +40,7 @@
      `(("ncurses", ncurses)
        ("perl" ,perl)))
     (home-page "http://www.gnu.org/software/screen/")
-    (synopsis "GNU Screen, a terminal multiplexer")
+    (synopsis "Full-screen window manager providing multiple terminals")
     (description
      "GNU screen is a full-screen window manager that multiplexes a physical
 terminal between several processes, typically interactive shells. Each virtual

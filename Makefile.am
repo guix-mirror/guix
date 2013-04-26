@@ -30,8 +30,10 @@ MODULES =					\
   guix/scripts/import.scm			\
   guix/scripts/package.scm			\
   guix/scripts/gc.scm				\
+  guix/scripts/hash.scm				\
   guix/scripts/pull.scm				\
   guix/scripts/substitute-binary.scm		\
+  guix/scripts/refresh.scm			\
   guix/base32.scm				\
   guix/utils.scm				\
   guix/serialization.scm			\
@@ -46,6 +48,8 @@ MODULES =					\
   guix/build-system/perl.scm			\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
+  guix/web.scm					\
+  guix/gnupg.scm				\
   guix/store.scm				\
   guix/ui.scm					\
   guix/build/download.scm			\
@@ -327,6 +331,7 @@ EXTRA_DIST =					\
   .dir-locals.el				\
   hydra.scm					\
   build-aux/download.scm			\
+  build-aux/sync-synopses.scm			\
   srfi/srfi-64.scm				\
   srfi/srfi-64.upstream.scm			\
   tests/test.drv				\
@@ -374,3 +379,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --with-libgcrypt-prefix="$(LIBGCRYPT_PREFIX)"	\
   --with-nix-prefix="$(NIX_PREFIX)"		\
   --enable-daemon
+
+dist-hook:
+	-$(top_builddir)/pre-inst-env $(GUILE)		\
+	   $(top_srcdir)/build-aux/sync-synopses.scm

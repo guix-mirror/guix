@@ -18,7 +18,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages base)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses)
+                #:select (gpl3+ lgpl2.0+))
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages bash)
@@ -61,7 +62,7 @@
                   ,(string-append "--with-gawk="  ; for illustration purposes
                                  (assoc-ref %build-inputs "gawk")))))
    (inputs `(("gawk" ,gawk)))
-   (synopsis "GNU Hello")
+   (synopsis "Hello, GNU world: An example GNU package")
    (description "Yeah...")
    (home-page "http://www.gnu.org/software/hello/")
    (license gpl3+)))
@@ -78,7 +79,7 @@
              (base32
               "1qbjb1l7f9blckc5pqy8jlf6482hpx4awn2acmhyf5mv9wfq03p7"))))
    (build-system gnu-build-system)
-   (synopsis "GNU implementation of the Unix grep command")
+   (synopsis "Print lines matching a pattern")
    (description
     "The grep command searches one or more input files for lines containing a
 match to a specified pattern.  By default, grep prints the matching
@@ -98,7 +99,7 @@ lines.")
              (base32
               "1myvrmh99jsvk7v3d7crm0gcrq51hmmm1r2kjyyci152in1x2j7h"))))
    (build-system gnu-build-system)
-   (synopsis "GNU sed, a batch stream editor")
+   (synopsis "Stream editor")
    (arguments
     `(#:phases (alist-cons-before
                 'patch-source-shebangs 'patch-test-suite
@@ -134,7 +135,7 @@ substituting multiple occurrences of a string within a file.")
    (inputs `(("patch/gets" ,(search-patch "tar-gets-undeclared.patch"))))
    (arguments
     `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
-   (synopsis "GNU implementation of the `tar' archiver")
+   (synopsis "Managing tar archives")
    (description
     "The Tar program provides the ability to create tar archives, as well as
 various other kinds of manipulation.  For example, you can use Tar on
@@ -167,7 +168,7 @@ files (as archives).")
     ;; TODO: When cross-compiling, add this:
     ;;  '(#:configure-flags '("ac_cv_func_strnlen_working=yes"))
     )
-   (synopsis "GNU Patch, a program to apply differences to files")
+   (synopsis "Apply differences to originals, with optional backups")
    (description
     "GNU Patch takes a patch file containing a difference listing produced by
 the diff program and applies those differences to one or more original files,
@@ -190,7 +191,7 @@ producing patched versions.")
    (inputs `(("patch/gets"
               ,(search-patch "diffutils-gets-undeclared.patch"))))
    (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
-   (synopsis "Programs to find differences among text files")
+   (synopsis "Comparing and merging files")
    (description
     "GNU Diffutils is a package of several programs related to finding
 differences between files.
@@ -243,8 +244,7 @@ You can use the sdiff command to merge two files interactively.")
     ;; `(#:configure-flags '("gl_cv_func_wcwidth_works=yes")
     ;;   ,@(arguments cross-system))
     )
-   (synopsis "Basic directory searching utilities of the GNU operating
-system")
+   (synopsis "Operating on files matching given criteria")
    (description
     "The GNU Find Utilities are the basic directory searching utilities of
 the GNU operating system.  These programs are typically used in conjunction
@@ -291,9 +291,7 @@ The tools supplied with this package are:
                       (("#!/bin/sh")
                        (format #f "#!~a/bin/bash" bash)))))
                 %standard-phases)))
-   (synopsis
-    "The basic file, shell and text manipulation utilities of the GNU
-operating system")
+   (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "The GNU Core Utilities are the basic file, shell and text manipulation
 utilities of the GNU operating system.  These are the core utilities which
@@ -327,8 +325,7 @@ are expected to exist on every operating system.")
                        (format #f "default_shell[] = \"~a/bin/bash\";\n"
                                bash)))))
                 %standard-phases)))
-   (synopsis "GNU Make, a program controlling the generation of non-source
-files from sources")
+   (synopsis "Remake files automatically")
    (description
     "Make is a tool which controls the generation of executables and other
 non-source files of a program from the program's source files.
@@ -374,14 +371,24 @@ that it is possible to use Make to build and install the program.")
                           ;; expression >= 0 is always true" in wchar.h.
                           "--disable-werror")))
 
-   (synopsis "GNU Binutils, tools for manipulating binaries (linker,
-assembler, etc.)")
+   (synopsis "Binary utilities: bfd gas gprof ld")
    (description
     "The GNU Binutils are a collection of binary tools.  The main ones are
 `ld' (the GNU linker) and `as' (the GNU assembler).  They also include the
 BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/binutils/")))
+
+(define-public binutils-2.23
+  (package (inherit binutils)
+    (version "2.23.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/binutils/binutils-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "15qhbkz3r266xaa52slh857qn3abw7rb2x2jnhpfrafpzrb4x4gy"))))))
 
 (define-public glibc
   (package
@@ -957,6 +964,35 @@ store.")
               ("bash"  ,bash-final)
               ,@(fold alist-delete (package-inputs ld-wrapper-boot3)
                       '("guile" "bash"))))))
+
+(define-public ld-wrapper-2.23         ; TODO: remove when Binutils is updated
+  (package (inherit ld-wrapper)
+    (inputs `(("binutils" ,binutils-2.23)
+              ,@(alist-delete "binutils" (package-inputs ld-wrapper))))))
+
+(define-public gcc-4.8
+  ;; FIXME: Move to gcc.scm when Binutils is updated.
+  (package (inherit gcc-4.7)
+    (version "4.8.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/gcc/gcc-"
+                                 version "/gcc-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "0b6cp9d1sas3vq6dj3zrgd134p9b569fqhbixb9cl7mp698zwdxh"))))
+    (inputs `(("gmp" ,gmp)
+              ("mpfr" ,mpfr)
+              ("mpc" ,mpc)
+              ("isl" ,isl)
+              ("cloog" ,cloog)
+              ("zlib" ,(@ (gnu packages compression) zlib))
+
+              ;; With ld from Binutils 2.22, we get the following error while
+              ;; linking gcov:
+              ;; ld: gcov: hidden symbol `__deregister_frame_info' in /nix/store/47myfniw4x7kfc601d7q1yvz5mixlr00-gcc-4.7.2/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/libgcc_eh.a(unwind-dw2-fde-dip.o) is referenced by DSO
+              ;; See <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=57015>.
+              ("ld-wrapper" ,ld-wrapper-2.23)))))
 
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by `gnu-build-system'.

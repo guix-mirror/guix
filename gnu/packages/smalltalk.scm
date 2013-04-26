@@ -26,7 +26,7 @@
 (define-public smalltalk
   (package
     (name "smalltalk")
-    (version "3.2.4")
+    (version "3.2.5")
     (source
      (origin
       (method url-fetch)
@@ -34,7 +34,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1bdhbppjv1fswh4ls9q90zix38l1hg9qd4c4bz1pbg1af991xq3a"))))
+        "1k2ssrapfzhngc7bg1zrnd9n2vyxp9c9m70byvsma6wapbvib6l1"))))
     (build-system gnu-build-system)
     (inputs `(("zip" ,zip)))
     (arguments
@@ -47,8 +47,7 @@
                        (("@LIBC_SO_DIR@")  (string-append libc "/lib")))))
                 %standard-phases)))
     (home-page "https://www.gnu.org/software/smalltalk/")
-    (synopsis
-     "GNU Smalltalk, a free implementation of the Smalltalk-80 language")
+    (synopsis "Smalltalk environment")
     (description
      "GNU Smalltalk is a free implementation of the Smalltalk-80 language.
 

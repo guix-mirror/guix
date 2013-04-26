@@ -82,7 +82,7 @@
        ("patch/gets-undeclared"
         ,(search-patch "m4-gets-undeclared.patch"))))
     (home-page "http://www.gnu.org/software/mailutils/")
-    (synopsis "A rich and powerful protocol-independent mail framework")
+    (synopsis "Utilities and library for reading and serving mail")
     (description
      "GNU Mailutils is a rich and powerful protocol-independent mail
 framework.  It contains a series of useful mail libraries, clients, and

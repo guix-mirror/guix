@@ -49,9 +49,7 @@
                                     (string-append "--prefix=" out)))))
                       %standard-phases)))
     (home-page "http://www.gnu.org/software/time/")
-    (synopsis
-     "GNU Time, a tool that runs programs and summarizes the system
-resources they use")
+    (synopsis "Run a command, then display its resource usage")
     (description
      "The 'time' command runs another program, then displays information
 about the resources used by that program, collected by the system while

@@ -17,7 +17,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gcc)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses)
+                #:select (gpl3+ gpl2+ lgpl2.1+ lgpl2.0+))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
@@ -140,7 +141,7 @@
              (directories '("lib" "lib64")))))
 
      (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
-     (synopsis "The GNU Compiler Collection")
+     (synopsis "GNU Compiler Collection")
      (description
       "The GNU Compiler Collection includes compiler front ends for C, C++,
 Objective-C, Fortran, OpenMP for C/C++/Fortran, Java, and Ada, as well as

@@ -46,8 +46,7 @@
              ("patch/gets"
               ,(search-patch "diffutils-gets-undeclared.patch"))))
    (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
-   (synopsis "GNU recutils, tools and libraries to access human-editable,
-text-based databases")
+   (synopsis "Manipulate plain text files as databases")
    (description
     "GNU recutils is a set of tools and libraries to access human-editable,
 text-based databases called recfiles.  The data is stored as a sequence of

@@ -65,6 +65,7 @@ builds derivations on behalf of its clients.";
 #define GUIX_OPT_DEBUG 9
 #define GUIX_OPT_CHROOT_DIR 10
 #define GUIX_OPT_LISTEN 11
+#define GUIX_OPT_NO_SUBSTITUTES 12
 
 static const struct argp_option options[] =
   {
@@ -90,6 +91,8 @@ static const struct argp_option options[] =
     },
     { "build-users-group", GUIX_OPT_BUILD_USERS_GROUP, "GROUP", 0,
       "Perform builds as a user of GROUP" },
+    { "no-substitutes", GUIX_OPT_NO_SUBSTITUTES, 0, 0,
+      "Do not use substitutes" },
     { "cache-failures", GUIX_OPT_CACHE_FAILURES, 0, 0,
       "Cache build failures" },
     { "lose-logs", GUIX_OPT_LOSE_LOGS, 0, 0,
@@ -152,6 +155,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	  exit (EXIT_FAILURE);
 	}
       break;
+    case GUIX_OPT_NO_SUBSTITUTES:
+      settings.useSubstitutes = false;
+      break;
     case GUIX_OPT_DEBUG:
       verbosity = lvlDebug;
       break;
@@ -202,17 +208,20 @@ main (int argc, char *argv[])
 
       /* Use our substituter by default.  */
       settings.substituters.clear ();
-      string subs = getEnv ("NIX_SUBSTITUTERS", "default");
-      if (subs == "default")
-	/* XXX: No substituters until we have something that works.  */
-	settings.substituters.clear ();
-	// settings.substituters.push_back (settings.nixLibexecDir
-	// 				 + "/guix/substitute-binary");
-      else
-	settings.substituters = tokenizeString<Strings> (subs, ":");
-
+      settings.useSubstitutes = true;
 
       argp_parse (&argp, argc, argv, 0, 0, 0);
+
+      if (settings.useSubstitutes)
+	{
+	  string subs = getEnv ("NIX_SUBSTITUTERS", "default");
+
+	  if (subs == "default")
+	    settings.substituters.push_back (settings.nixLibexecDir
+					     + "/guix/substitute-binary");
+	  else
+	    settings.substituters = tokenizeString<Strings> (subs, ":");
+	}
 
       if (geteuid () == 0 && settings.buildUsersGroup.empty ())
 	fprintf (stderr, "warning: daemon is running as root, so "

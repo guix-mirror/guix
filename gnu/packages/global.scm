@@ -44,7 +44,7 @@
        (list (string-append "--with-ncurses="
                             (assoc-ref %build-inputs "ncurses")))))
     (home-page "http://www.gnu.org/software/global/")
-    (synopsis "GNU GLOBAL source code tag system")
+    (synopsis "Cross-environment source code tag system")
     (description
      "GNU GLOBAL is a source code tagging system that works the same way
 across diverse environments (Emacs, vi, less, Bash, web browser, etc).

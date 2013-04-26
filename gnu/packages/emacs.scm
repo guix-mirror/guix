@@ -90,8 +90,7 @@
        ("patch/epaths" ,(search-patch "emacs-configure-sh.patch"))
        ))
     (home-page "http://www.gnu.org/software/emacs/")
-    (synopsis
-     "GNU Emacs 24, the extensible, customizable text editor")
+    (synopsis "The extensible, customizable, self-documenting text editor")
     (description
      "GNU Emacs is an extensible, customizable text editor—and more.  At its
 core is an interpreter for Emacs Lisp, a dialect of the Lisp

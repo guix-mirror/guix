@@ -87,9 +87,8 @@ interpreted."
              ("TB"  (expt 10 12))
              (""    1)
              (_
-              (leave (_ "error: unknown unit: ~a~%") unit)
-              (exit 1))))
-        (leave (_ "error: invalid number: ~a") numstr))))
+              (leave (_ "unknown unit: ~a~%") unit))))
+        (leave (_ "invalid number: ~a~%") numstr))))
 
 (define %options
   ;; Specification of the command-line options.
@@ -110,7 +109,7 @@ interpreted."
                       (let ((amount (size->number arg)))
                         (if arg
                             (alist-cons 'min-freed amount result)
-                            (leave (_ "error: invalid amount of storage: ~a~%")
+                            (leave (_ "invalid amount of storage: ~a~%")
                                    arg))))
                      (#f result)))))
         (option '(#\d "delete") #f #f

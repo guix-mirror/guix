@@ -42,8 +42,7 @@
     (inputs
      `(("patch/gets" ,(search-patch "cpio-gets-undeclared.patch"))))
     (home-page "https://www.gnu.org/software/cpio/")
-    (synopsis
-     "A program to create or extract from cpio archives")
+    (synopsis "Manage cpio and tar file archives")
     (description
      "GNU Cpio copies files into or out of a cpio or tar archive. The
 archive can be another file on the disk, a magnetic tape, or a pipe.

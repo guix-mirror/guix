@@ -19,6 +19,7 @@
 
 (define-module (gnu packages)
   #:use-module (guix packages)
+  #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 vlist)
@@ -90,9 +91,8 @@
                       result)
                     (const #f)                    ; skip
                     (lambda (path stat errno result)
-                      (format (current-error-port)
-                              (_ "warning: cannot access `~a': ~a~%")
-                              path (strerror errno))
+                      (warning (_ "cannot access `~a': ~a~%")
+                               path (strerror errno))
                       result)
                     '()
                     %distro-module-directory
@@ -109,14 +109,6 @@
                                                   not-slash))))
                   (false-if-exception (resolve-interface name))))
               (package-files)))
-
-(define (fold2 f seed1 seed2 lst)
-  (if (null? lst)
-      (values seed1 seed2)
-      (call-with-values
-          (lambda () (f (car lst) seed1 seed2))
-        (lambda (seed1 seed2)
-          (fold2 f seed1 seed2 (cdr lst))))))
 
 (define (fold-packages proc init)
   "Call (PROC PACKAGE RESULT) for each available package, using INIT as

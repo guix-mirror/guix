@@ -121,7 +121,7 @@ shared NFS home directories.")
       #:configure-flags (list (string-append "--with-html-dir="
                                              (assoc-ref %outputs "doc")
                                              "/share/gtk-doc"))))
-   (synopsis "C library that provides core application building blocks")
+   (synopsis "Thread-safe general utility library; basis of GTK+ and GNOME")
    (description
     "GLib provides data structure handling for C, portability wrappers,
 and interfaces for such runtime functionality as an event loop, threads,

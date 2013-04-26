@@ -21,13 +21,15 @@
   #:use-module (ice-9 match)
   #:use-module (guix derivations)
   #:use-module (guix packages)
-  #:use-module ((guix store) #:select (derivation-path?))
+  #:use-module ((guix store) #:select (derivation-path? add-to-store))
+  #:use-module ((guix build download) #:renamer (symbol-prefix-proc 'build:))
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:export (%mirrors
-            url-fetch))
+            url-fetch
+            download-to-store))
 
 ;;; Commentary:
 ;;;
@@ -229,5 +231,18 @@ must be a list of symbol/URL-list pairs."
                                               (guix ftp-client))
                                   #:guile-for-build guile-for-build
                                   #:env-vars env-vars)))
+
+(define* (download-to-store store url #:optional (name (basename url))
+                            #:key (log (current-error-port)))
+  "Download from URL to STORE, either under NAME or URL's basename if
+omitted.  Write progress reports to LOG."
+  (call-with-temporary-output-file
+   (lambda (temp port)
+     (let ((result
+            (parameterize ((current-output-port log))
+              (build:url-fetch url temp #:mirrors %mirrors))))
+       (close port)
+       (and result
+            (add-to-store store name #f "sha256" temp))))))
 
 ;;; download.scm ends here

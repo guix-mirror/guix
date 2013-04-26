@@ -64,6 +64,7 @@
             package-maintainers
             package-properties
             package-location
+            package-field-location
 
             package-transitive-inputs
             package-transitive-propagated-inputs
@@ -181,6 +182,38 @@ corresponds to the arguments expected by `set-path-environment-variable'."
                                       (number->string (object-address
                                                        package)
                                                       16)))))
+
+(define (package-field-location package field)
+  "Return the source code location of the definition of FIELD for PACKAGE, or
+#f if it could not be determined."
+  (define (goto port line column)
+    (unless (and (= (port-column port) (- column 1))
+                 (= (port-line port) (- line 1)))
+      (unless (eof-object? (read-char port))
+        (goto port line column))))
+
+  (match (package-location package)
+    (($ <location> file line column)
+     (catch 'system
+       (lambda ()
+         (call-with-input-file (search-path %load-path file)
+           (lambda (port)
+             (goto port line column)
+             (match (read port)
+               (('package inits ...)
+                (let ((field (assoc field inits)))
+                  (match field
+                    ((_ value)
+                     (and=> (or (source-properties value)
+                                (source-properties field))
+                            source-properties->location))
+                    (_
+                     #f))))
+               (_
+                #f)))))
+       (lambda _
+         #f)))
+    (_ #f)))
 
 
 ;; Error conditions.
