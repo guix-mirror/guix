@@ -181,9 +181,12 @@ representation."
                 (let ((field (assoc field inits)))
                   (match field
                     ((_ value)
-                     (and=> (or (source-properties value)
-                                (source-properties field))
-                            source-properties->location))
+                     ;; Put the `or' here, and not in the first argument of
+                     ;; `and=>', to work around a compiler bug in 2.0.5.
+                     (or (and=> (source-properties value)
+                                source-properties->location)
+                         (and=> (source-properties field)
+                                source-properties->location)))
                     (_
                      #f))))
                (_
