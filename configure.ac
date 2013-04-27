@@ -40,7 +40,7 @@ AC_ARG_ENABLE([daemon],
 guix_localstatedir="`eval echo $localstatedir | sed -e "s|NONE|/usr/local|g"`"
 AC_SUBST([guix_localstatedir])
 
-PKG_CHECK_MODULES([GUILE], [guile-2.0])
+PKG_CHECK_MODULES([GUILE], [guile-2.0 >= 2.0.5])
 AC_PATH_PROG([GUILE], [guile])
 AC_PATH_PROG([GUILD], [guild])
 if test "x$GUILD" = "x"; then
