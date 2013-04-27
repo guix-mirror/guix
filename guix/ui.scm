@@ -213,23 +213,23 @@ available for download."
         (begin
           (format (current-error-port)
                   (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
-                      "~:[the following derivations would be built:~%~{    ~a~%~}~;~]"
+                      "~:[the following derivations would be built:~%~{   ~a~%~}~;~]"
                       (length build))
                   (null? build) build)
           (format (current-error-port)
                   (N_ "~:[the following file would be downloaded:~%~{   ~a~%~}~;~]"
-                      "~:[the following files would be downloaded:~%~{    ~a~%~}~;~]"
+                      "~:[the following files would be downloaded:~%~{   ~a~%~}~;~]"
                       (length download))
                   (null? download) download))
         (begin
           (format (current-error-port)
                   (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
-                      "~:[the following derivations will be built:~%~{    ~a~%~}~;~]"
+                      "~:[the following derivations will be built:~%~{   ~a~%~}~;~]"
                       (length build))
                   (null? build) build)
           (format (current-error-port)
                   (N_ "~:[the following file will be downloaded:~%~{   ~a~%~}~;~]"
-                      "~:[the following files will be downloaded:~%~{    ~a~%~}~;~]"
+                      "~:[the following files will be downloaded:~%~{   ~a~%~}~;~]"
                       (length download))
                   (null? download) download)))
     (pair? build)))
