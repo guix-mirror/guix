@@ -438,6 +438,7 @@ if an update was made, and #f otherwise."
         (begin
           (format (current-error-port)
                   (_ "~a: ~a: no `version' field in source; skipping~%")
-                  name (package-location package))))))
+                  (location->string (package-location package))
+                  name)))))
 
 ;;; gnu-maintenance.scm ends here
