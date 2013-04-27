@@ -109,9 +109,10 @@ makefiles."
            (base (basename out))
            (dash (string-rindex base #\-)))
       ;; XXX: We'd rather use `package-name->name+version' or similar.
-      (if dash
-          (substring base 0 dash)
-          base)))
+      (string-drop (if dash
+                       (substring base 0 dash)
+                       base)
+                   (+ 1 (string-index base #\-)))))
 
   (let* ((prefix     (assoc-ref outputs "out"))
          (bindir     (assoc-ref outputs "bin"))
