@@ -1,5 +1,83 @@
--*- org -*-
+Guix NEWS – history of user-visible changes.                  -*- org -*-
+
+Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+
+  Copying and distribution of this file, with or without modification,
+  are permitted in any medium without royalty provided the copyright
+  notice and this notice are preserved.
+
+Please send Guix bug reports to bug-guix@gnu.org.
+
 
 * Changes in 0.2 (since 0.1)
 
-** (guix download) now supports HTTPS, using GnuTLS
+** Package management
+
+*** Guix commands are now sub-commands of the “guix” program
+
+Instead of typing “guix-package”, one now has to type “guix package”, and so
+on.  This has allowed us to homogenize the user interface and initial program
+setup, and to allow commands to be upgradable through “guix pull”.
+
+*** New “guix pull” command
+
+The command pulls the latest version of Guix–both the package management
+modules and the distribution.  See the manual for details.
+
+*** New binary substituter
+
+The “substituter” mechanism allows pre-built binaries to be transparently
+downloaded instead of performing a build locally.  Currently binaries are
+available for x86_64 Linux-based GNU systems from http://hydra.gnu.org.  See
+the manual for details.
+
+*** New “guix refresh” command
+
+The command is used by Guix maintainers.  It automatically updates the
+distribution to the latest upstream releases of GNU software.
+
+*** New “guix hash” command
+
+Convenience command to compute the hash of a file.  See the manual for
+details.
+
+*** (guix download) now supports HTTPS, using GnuTLS
+
+It allows package source tarballs to be retrieved over HTTPS.
+
+** Programming interfaces
+
+*** New ‘native-search-path’ and ‘search-path’ package fields
+
+Packages can define in their ‘native-search-path’ field environment variables
+that define search paths and need to be set for proper functioning of the
+package.  For instance, GCC has ‘CPATH’ and ‘LIBRARY_PATH’ in its
+‘native-search-path’, Perl has ‘PERL5LIB’, Python has ‘PYTHONPATH’, etc.
+These environment variables are automatically set when building a package that
+uses one of these.
+
+*** Package inputs can be a function of the target system type
+
+The ‘inputs’ field of a package can now be conditional on the value of
+(%current-system).  This is useful for packages that take system-dependent
+tarballs as inputs, such as GNU/MIT Scheme.
+
+*** New build systems
+
+The ‘perl-build-system’, ‘python-build-system’, and ‘cmake-build-system’ have
+been added.  They implement the standard build systems for Perl, Python, and
+CMake packages.
+
+** GNU distribution
+
+Many updates and additions have been made to the distribution.  Here are the
+highlights.
+
+*** Major updates
+
+GCC 4.7.3 (the default) and GCC 4.8.0, Binutils 2.23.2, Guile 2.0.9,
+Coreutils 8.20, GDB 7.6, Texinfo 5.1.
+
+*** Noteworthy new packages
+
+TeXLive 2012, Xorg, GNU Parted, QEMU and QEMU-KVM, Avahi, Python, Lua, Samba.
