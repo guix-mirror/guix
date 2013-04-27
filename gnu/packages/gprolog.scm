@@ -26,7 +26,7 @@
 (define-public gprolog
   (package
     (name "gprolog")
-    (version "1.4.3")
+    (version "1.4.4")
     (source
      (origin
       (method url-fetch)
@@ -34,7 +34,7 @@
                           ".tar.gz"))
       (sha256
        (base32
-        "16yl6q9ydx9d8lphg9xkk53l1m0fq0kpvrhry8njsxhhncazm4j2"))))
+        "13miyas47bmijmadm68cbvb21n4s156gjafz7kfx9brk9djfkh0q"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
