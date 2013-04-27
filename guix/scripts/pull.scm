@@ -22,7 +22,7 @@
   #:use-module (guix config)
   #:use-module (guix packages)
   #:use-module (guix derivations)
-  #:use-module (guix build download)
+  #:use-module (guix download)
   #:use-module (gnu packages base)
   #:use-module ((gnu packages bootstrap)
                 #:select (%bootstrap-guile))
@@ -37,20 +37,6 @@
   ;; "http://hydra.gnu.org/job/guix/master/tarball/latest/download"
   "http://git.savannah.gnu.org/cgit/guix.git/snapshot/guix-master.tar.gz"
   )
-
-(define (download-and-store store)
-  "Download the latest Guix tarball, add it to STORE, and return its store
-path."
-  ;; FIXME: Authenticate the downloaded file!
-  ;; FIXME: Optimize data transfers using rsync, Git, bsdiff, or GNUnet's DHT.
-  (call-with-temporary-output-file
-   (lambda (temp port)
-     (let ((result
-            (parameterize ((current-output-port (current-error-port)))
-              (url-fetch %snapshot-url temp))))
-       (close port)
-       (and result
-            (add-to-store store "guix-latest.tar.gz" #f "sha256" temp))))))
 
 (define (unpack store tarball)
   "Return a derivation that unpacks TARBALL into STORE and compiles Scheme
@@ -197,7 +183,8 @@ Download and deploy the latest version of Guix.\n"))
   (with-error-handling
     (let ((opts  (parse-options))
           (store (open-connection)))
-      (let ((tarball (download-and-store store)))
+      (let ((tarball (download-to-store store %snapshot-url
+                                        "guix-latest.tar.gz")))
         (unless tarball
           (leave (_ "failed to download up-to-date source, exiting\n")))
         (parameterize ((%guile-for-build
