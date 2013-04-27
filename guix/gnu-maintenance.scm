@@ -291,8 +291,12 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
 
     (let loop ((directory directory))
       (let* ((entries (ftp-list conn directory))
+
+             ;; Filter out sub-directories that do not contain digits---e.g.,
+             ;; /gnuzilla/lang and /gnupg/patches.
              (subdirs (filter-map (match-lambda
-                                   ((dir 'directory . _) dir)
+                                   (((? contains-digit? dir) 'directory . _)
+                                    dir)
                                    (_ #f))
                                   entries)))
         (match subdirs
@@ -307,10 +311,8 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
                     (cut cons <> directory))))
           ((subdirs ...)
            ;; Assume that SUBDIRS correspond to versions, and jump into the
-           ;; one with the highest version number.  Filter out sub-directories
-           ;; that do not contain digits---e.g., /gnuzilla/lang.
-           (let* ((subdirs (filter contains-digit? subdirs))
-                  (target  (reduce latest #f subdirs)))
+           ;; one with the highest version number.
+           (let ((target (reduce latest #f subdirs)))
              (and target
                   (loop (string-append directory "/" target))))))))))
 
