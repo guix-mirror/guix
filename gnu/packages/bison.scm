@@ -27,7 +27,7 @@
 (define-public bison
   (package
     (name "bison")
-    (version "2.6.1")
+    (version "2.7.1")
     (source
      (origin
       (method url-fetch)
@@ -35,7 +35,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "0y9svfkbw8jc8yv280hqzilpvlwg60gayck83jj98djmzaxr1w86"))))
+        "1yx7isx67sdmyijvihgyra1f59fwdz7sqriginvavfj5yb5ss2dl"))))
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)))
     (propagated-inputs `(("m4" ,m4)))
