@@ -130,9 +130,22 @@ or a TCP port number), and return it."
 (define (ftp-close conn)
   (close (ftp-connection-socket conn)))
 
+(define %char-set:not-slash
+  (char-set-complement (char-set #\/)))
+
 (define (ftp-chdir conn dir)
-  (%ftp-command (string-append "CWD " dir) 250
-                (ftp-connection-socket conn)))
+  "Change to directory DIR."
+
+  ;; On ftp.gnupg.org, "PASV" right after "CWD /gcrypt/gnupg" hangs.  Doing
+  ;; CWD in two steps works, so just do this.
+  (let ((components (string-tokenize dir %char-set:not-slash)))
+    (fold (lambda (dir result)
+            (%ftp-command (string-append "CWD " dir) 250
+                          (ftp-connection-socket conn)))
+          #f
+          (if (string-prefix? "/" dir)
+              (cons "/" components)
+              components))))
 
 (define (ftp-size conn file)
   "Return the size in bytes of FILE."
@@ -238,15 +251,15 @@ must be closed before CONN can be used for other purposes."
                                    (rec (read! bv start count)
                                         (match (get-bytevector-n! s bv
                                                                   start count)
-                                       ((? eof-object?) 0)
-                                       (0
-                                        ;; Nothing available yet, so try
-                                        ;; again.  This is important because
-                                        ;; the return value of `read!' makes
-                                        ;; it impossible to distinguish
-                                        ;; between "not yet" and "EOF".
-                                        (read! bv start count))
-                                       (read read)))
+                                          ((? eof-object?) 0)
+                                          (0
+                                           ;; Nothing available yet, so try
+                                           ;; again.  This is important because
+                                           ;; the return value of `read!' makes
+                                           ;; it impossible to distinguish
+                                           ;; between "not yet" and "EOF".
+                                           (read! bv start count))
+                                          (read read)))
                                    #f #f          ; no get/set position
                                    terminate)))
 
