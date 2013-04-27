@@ -136,6 +136,10 @@ closed it will also close PORT, unless the KEEP-ALIVE? is true."
    (module-set! (resolve-module '(web response))
                 'read-response-body read-response-body*)))
 
+;; XXX: Work around <http://bugs.gnu.org/13095>, present in Guile
+;; up to 2.0.7.
+(module-define! (resolve-module '(web client))
+                'shutdown (const #f))
 
 (define* (http-fetch uri #:key (text? #f))
   "Return an input port containing the data at URI, and the expected number of
