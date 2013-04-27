@@ -121,12 +121,15 @@ closed it will also close PORT, unless the KEEP-ALIVE? is true."
                                                   #:keep-alive? #t)))
          (get-bytevector-all chunk-port))
        (let ((nbytes (response-content-length r)))
-         (and nbytes
-              (let ((bv (get-bytevector-n (response-port r) nbytes)))
-                (if (= (bytevector-length bv) nbytes)
-                    bv
-                    (bad-response "EOF while reading response body: ~a bytes of ~a"
-                                  (bytevector-length bv) nbytes)))))))
+         ;; Backport of Guile commit 84dfde82ae8f6ec247c1c147c1e2ae50b207bad9
+         ;; ("fix response-body-port for responses without content-length").
+         (if nbytes
+             (let ((bv (get-bytevector-n (response-port r) nbytes)))
+               (if (= (bytevector-length bv) nbytes)
+                   bv
+                   (bad-response "EOF while reading response body: ~a bytes of ~a"
+                                 (bytevector-length bv) nbytes)))
+             (get-bytevector-all (response-port r))))))
 
  ;; Install this patch only on Guile 2.0.5.
  (when (version>? "2.0.6" (version))
