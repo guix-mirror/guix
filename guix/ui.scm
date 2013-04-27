@@ -29,6 +29,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (_
@@ -46,6 +47,7 @@
             fill-paragraph
             string->recutils
             package->recutils
+            args-fold*
             run-guix-command
             program-name
             guix-warning-port
@@ -369,6 +371,18 @@ WIDTH columns."
   (format port "description: ~a~%"
           (and=> (package-description p) description->recutils))
   (newline port))
+
+(define (args-fold* options unrecognized-option-proc operand-proc . seeds)
+  "A wrapper on top of `args-fold' that does proper user-facing error
+reporting."
+  (catch 'misc-error
+    (lambda ()
+      (apply args-fold options unrecognized-option-proc
+             operand-proc seeds))
+    (lambda (key proc msg args . rest)
+      ;; XXX: MSG is not i18n'd.
+      (leave (_ "invalid argument: ~a~%")
+             (apply format #f msg args)))))
 
 (define (show-guix-usage)
   ;; TODO: Dynamically generate a summary of available commands.

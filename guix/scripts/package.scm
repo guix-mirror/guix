@@ -446,12 +446,12 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
 (define (guix-package . args)
   (define (parse-options)
     ;; Return the alist of option values.
-    (args-fold args %options
-               (lambda (opt name arg result)
-                 (leave (_ "~A: unrecognized option~%") name))
-               (lambda (arg result)
-                 (leave (_ "~A: extraneous argument~%") arg))
-               %default-options))
+    (args-fold* args %options
+                (lambda (opt name arg result)
+                  (leave (_ "~A: unrecognized option~%") name))
+                (lambda (arg result)
+                  (leave (_ "~A: extraneous argument~%") arg))
+                %default-options))
 
   (define (guile-missing?)
     ;; Return #t if %GUILE-FOR-BUILD is not available yet.

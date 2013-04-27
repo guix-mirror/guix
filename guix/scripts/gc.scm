@@ -141,12 +141,12 @@ interpreted."
 (define (guix-gc . args)
   (define (parse-options)
     ;; Return the alist of option values.
-    (args-fold args %options
-               (lambda (opt name arg result)
-                 (leave (_ "~A: unrecognized option~%") name))
-               (lambda (arg result)
-                 (alist-cons 'argument arg result))
-               %default-options))
+    (args-fold* args %options
+                (lambda (opt name arg result)
+                  (leave (_ "~A: unrecognized option~%") name))
+                (lambda (arg result)
+                  (alist-cons 'argument arg result))
+                %default-options))
 
   (define (symlink-target file)
     (let ((s (false-if-exception (lstat file))))

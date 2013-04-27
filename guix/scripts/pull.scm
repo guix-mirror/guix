@@ -173,12 +173,12 @@ Download and deploy the latest version of Guix.\n"))
 (define (guix-pull . args)
   (define (parse-options)
     ;; Return the alist of option values.
-    (args-fold args %options
-               (lambda (opt name arg result)
-                 (leave (_ "~A: unrecognized option~%") name))
-               (lambda (arg result)
-                 (leave (_ "~A: unexpected argument~%") arg))
-               %default-options))
+    (args-fold* args %options
+                (lambda (opt name arg result)
+                  (leave (_ "~A: unrecognized option~%") name))
+                (lambda (arg result)
+                  (leave (_ "~A: unexpected argument~%") arg))
+                %default-options))
 
   (with-error-handling
     (let ((opts  (parse-options))

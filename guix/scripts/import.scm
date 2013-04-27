@@ -95,12 +95,12 @@ Import and convert the Nix expression ATTRIBUTE of NIXPKGS.\n"))
 (define (guix-import . args)
   (define (parse-options)
     ;; Return the alist of option values.
-    (args-fold args %options
-               (lambda (opt name arg result)
-                 (leave (_ "~A: unrecognized option~%") name))
-               (lambda (arg result)
-                 (alist-cons 'argument arg result))
-               %default-options))
+    (args-fold* args %options
+                (lambda (opt name arg result)
+                  (leave (_ "~A: unrecognized option~%") name))
+                (lambda (arg result)
+                  (alist-cons 'argument arg result))
+                %default-options))
 
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda

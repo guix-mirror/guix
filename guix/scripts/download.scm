@@ -90,12 +90,12 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
 (define (guix-download . args)
   (define (parse-options)
     ;; Return the alist of option values.
-    (args-fold args %options
-               (lambda (opt name arg result)
-                 (leave (_ "~A: unrecognized option~%") name))
-               (lambda (arg result)
-                 (alist-cons 'argument arg result))
-               %default-options))
+    (args-fold* args %options
+                (lambda (opt name arg result)
+                  (leave (_ "~A: unrecognized option~%") name))
+                (lambda (arg result)
+                  (alist-cons 'argument arg result))
+                %default-options))
 
   (with-error-handling
     (let* ((opts  (parse-options))
