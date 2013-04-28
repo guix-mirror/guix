@@ -82,6 +82,7 @@
                      "1jnfzdqc54wa73lw28kjv0m7120mksb0zkcn81jdlvijyvc67kq2"))))
    (build-system gnu-build-system)
    (inputs `(("freetype" ,freetype)
+             ("gs-fonts" ,gs-fonts)
              ("lesstif" ,lesstif)
              ("libpaper" ,libpaper)
              ("libx11" ,libx11)
@@ -95,7 +96,21 @@
    (arguments
     `(#:tests? #f ; there is no check target
       #:patches (list (assoc-ref %build-inputs
-                                 "patch/constchar"))))
+                                 "patch/constchar"))
+      #:phases
+       (alist-replace
+        'install
+        (lambda* (#:key outputs inputs #:allow-other-keys #:rest args)
+         (let* ((install (assoc-ref %standard-phases 'install))
+                (out (assoc-ref outputs "out"))
+                (xpdfrc (string-append out "/etc/xpdfrc"))
+                (gs-fonts (assoc-ref inputs "gs-fonts")))
+               (apply install args)
+               (substitute* xpdfrc
+                (("/usr/local/share/ghostscript/fonts")
+                 (string-append gs-fonts "/share/fonts/type1/ghostscript"))
+                (("#fontFile") "fontFile"))))
+        %standard-phases)))
    (synopsis "Viewer for pdf files based on the Motif toolkit.")
    (description
     "Xpdf is a viewer for Portable Document Format (PDF) files")
