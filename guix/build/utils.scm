@@ -680,8 +680,8 @@ contents:
 This is useful for scripts that expect particular programs to be in $PATH, for
 programs that expect particular shared libraries to be in $LD_LIBRARY_PATH, or
 modules in $GUILE_LOAD_PATH, etc."
-  (let ((prog-real (string-append "." prog "-real"))
-        (prog-tmp  (string-append "." prog "-tmp")))
+  (let ((prog-real (string-append (dirname prog) "/." (basename prog) "-real"))
+        (prog-tmp  (string-append (dirname prog) "/." (basename prog) "-tmp")))
     (define (export-variable lst)
       ;; Return a string that exports an environment variable.
       (match lst
@@ -709,7 +709,7 @@ modules in $GUILE_LOAD_PATH, etc."
     (with-output-to-file prog-tmp
       (lambda ()
         (format #t
-                "#!~a~%~a~%exec ~a~%"
+                "#!~a~%~a~%exec \"~a\" \"$@\"~%"
                 (which "bash")
                 (string-join (map export-variable vars)
                              "\n")
