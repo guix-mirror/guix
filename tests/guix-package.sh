@@ -47,6 +47,10 @@ test -L "$profile" && test -L "$profile-1-link"
 ! test -f "$profile-2-link"
 test -f "$profile/bin/guile"
 
+# No search path env. var. here.
+guix package --search-paths -p "$profile"
+test "`guix package --search-paths -p "$profile" | wc -l`" = 0
+
 # Check whether we have network access.
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
@@ -119,6 +123,10 @@ then
     rm "$profile-1-link"
     guix package --bootstrap -p "$profile" --roll-back
     test "`readlink_base "$profile"`" = "$profile-0-link"
+
+    # Make sure LIBRARY_PATH gets listed by `--search-paths'.
+    guix package --bootstrap -p "$profile" -i guile-bootstrap -i gcc-bootstrap
+    guix package --search-paths -p "$profile" | grep LIBRARY_PATH
 fi
 
 # Make sure the `:' syntax works.

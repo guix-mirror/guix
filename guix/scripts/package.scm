@@ -330,6 +330,53 @@ but ~a is available upstream~%")
         ((getaddrinfo-error ftp-error) #f)
         (else (apply throw key args))))))
 
+(define* (search-path-environment-variables packages profile
+                                            #:optional (getenv getenv))
+  "Return environment variable definitions that may be needed for the use of
+PACKAGES in PROFILE.  Use GETENV to determine the current settings and report
+only settings not already effective."
+
+  ;; The search path info is not stored in the manifest.  Thus, we infer the
+  ;; search paths from same-named packages found in the distro.
+
+  (define package-in-manifest->package
+    (match-lambda
+     ((name version _ ...)
+      (match (append (find-packages-by-name name version)
+                     (find-packages-by-name name))
+        ((p _ ...) p)
+        (_ #f)))))
+
+  (define search-path-definition
+    (match-lambda
+     (($ <search-path-specification> variable directories separator)
+      (let ((values      (or (and=> (getenv variable)
+                                    (cut string-tokenize* <> separator))
+                             '()))
+            (directories (filter file-exists?
+                                 (map (cut string-append profile
+                                           "/" <>)
+                                      directories))))
+        (if (every (cut member <> values) directories)
+            #f
+            (format #f "export ~a=\"~a\""
+                    variable
+                    (string-join directories separator)))))))
+
+  (let* ((packages     (filter-map package-in-manifest->package packages))
+         (search-paths (delete-duplicates
+                        (append-map package-native-search-paths
+                                    packages))))
+    (filter-map search-path-definition search-paths)))
+
+(define (display-search-paths packages profile)
+  "Display the search path environment variables that may need to be set for
+PACKAGES, in the context of PROFILE."
+  (let ((settings (search-path-environment-variables packages profile)))
+    (unless (null? settings)
+      (format #t (_ "The following environment variable definitions may be needed:~%"))
+      (format #t "~{    ~a~%~}" settings))))
+
 
 ;;;
 ;;; Command-line options.
@@ -354,6 +401,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"))
   (display (_ "
       --roll-back        roll back to the previous generation"))
+  (display (_ "
+      --search-paths     display needed environment variable definitions"))
   (newline)
   (display (_ "
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
@@ -408,6 +457,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (option '("roll-back") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'roll-back? #t result)))
+        (option '("search-paths") #f #f
+                (lambda (opt name arg result)
+                  (cons `(query search-paths) result)))
         (option '(#\p "profile") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'profile arg
@@ -728,7 +780,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                 (build-derivations (%store) (list prof-drv)))
                               (begin
                                 (switch-symlinks name prof)
-                                (switch-symlinks profile name))))))))))
+                                (switch-symlinks profile name)
+                                (display-search-paths packages
+                                                      profile))))))))))
 
   (define (process-query opts)
     ;; Process any query specified by OPTS.  Return #t when a query was
@@ -776,6 +830,16 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
            (for-each (cute package->recutils <> (current-output-port))
                      (find-packages-by-description regexp))
            #t))
+
+        (('search-paths)
+         (let* ((manifest (profile-manifest profile))
+                (packages (manifest-packages manifest))
+                (settings (search-path-environment-variables packages
+                                                             profile
+                                                             (const #f))))
+           (format #t "~{~a~%~}" settings)
+           #t))
+
         (_ #f))))
 
   (let ((opts (parse-options)))
