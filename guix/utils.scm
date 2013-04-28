@@ -60,6 +60,7 @@
             version-compare
             version>?
             package-name->name+version
+            string-tokenize*
             file-extension
             call-with-temporary-output-file
             fold2))
@@ -470,6 +471,33 @@ introduce the version part."
   "Return the extension of FILE or #f if there is none."
   (let ((dot (string-rindex file #\.)))
     (and dot (substring file (+ 1 dot) (string-length file)))))
+
+(define (string-tokenize* string separator)
+  "Return the list of substrings of STRING separated by SEPARATOR.  This is
+like `string-tokenize', but SEPARATOR is a string."
+  (define (index string what)
+    (let loop ((string string)
+               (offset 0))
+      (cond ((string-null? string)
+             #f)
+            ((string-prefix? what string)
+             offset)
+            (else
+             (loop (string-drop string 1) (+ 1 offset))))))
+
+  (define len
+    (string-length separator))
+
+  (let loop ((string string)
+             (result  '()))
+    (cond ((index string separator)
+           =>
+           (lambda (offset)
+             (loop (string-drop string (+ offset len))
+                   (cons (substring string 0 offset)
+                         result))))
+          (else
+           (reverse (cons string result))))))
 
 (define (call-with-temporary-output-file proc)
   "Call PROC with a name of a temporary file and open output port to that
