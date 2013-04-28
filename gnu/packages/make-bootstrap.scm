@@ -324,7 +324,10 @@
                                (string-append incdir "/asm-generic"))
              #t))))
       (inputs `(("libc" ,glibc)
-                ("linux-headers" ,linux-libre-headers))))))
+                ("linux-headers" ,linux-libre-headers)))
+
+      ;; Only one output.
+      (outputs '("out")))))
 
 (define %gcc-static
   ;; A statically-linked GCC, with stripped-down functionality.
