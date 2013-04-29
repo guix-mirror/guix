@@ -17,12 +17,14 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-utils)
+  #:use-module ((guix config) #:select (%gzip))
   #:use-module (guix utils)
   #:use-module ((guix store) #:select (%store-prefix store-path-package-name))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs bytevectors)
+  #:use-module (rnrs io ports)
   #:use-module (ice-9 match))
 
 (test-begin "utils")
@@ -88,6 +90,31 @@
                '(a b c d)
                '(0 1 2 3)))
     list))
+
+(test-assert "filtered-port, file"
+  (let ((file (search-path %load-path "guix.scm")))
+    (call-with-input-file file
+      (lambda (input)
+        (let*-values (((compressed pids1)
+                       (filtered-port `(,%gzip "-c" "--fast") input))
+                      ((decompressed pids2)
+                       (filtered-port `(,%gzip "-d") compressed)))
+          (and (every (compose zero? cdr waitpid)
+                      (append pids1 pids2))
+               (equal? (get-bytevector-all decompressed)
+                       (call-with-input-file file get-bytevector-all))))))))
+
+(test-assert "filtered-port, non-file"
+  (let ((data (call-with-input-file (search-path %load-path "guix.scm")
+                get-bytevector-all)))
+    (let*-values (((compressed pids1)
+                   (filtered-port `(,%gzip "-c" "--fast")
+                                  (open-bytevector-input-port data)))
+                  ((decompressed pids2)
+                   (filtered-port `(,%gzip "-d") compressed)))
+      (and (pk (every (compose zero? cdr waitpid)
+                   (append pids1 pids2)))
+           (equal? (get-bytevector-all decompressed) data)))))
 
 (test-assert "define-record-type*"
   (begin

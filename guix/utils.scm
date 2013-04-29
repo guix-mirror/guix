@@ -25,6 +25,7 @@
   #:use-module (srfi srfi-60)
   #:use-module (rnrs bytevectors)
   #:use-module ((rnrs io ports) #:select (put-bytevector))
+  #:use-module ((guix build utils) #:select (dump-port))
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
   #:autoload   (ice-9 popen)  (open-pipe*)
@@ -62,7 +63,8 @@
             package-name->name+version
             file-extension
             call-with-temporary-output-file
-            fold2))
+            fold2
+            filtered-port))
 
 
 ;;;
@@ -152,6 +154,50 @@ evaluate to a simple datum."
         (hash sha256 (bytevector->pointer digest)
               (bytevector->pointer bv) (bytevector-length bv))
         digest))))
+
+
+;;;
+;;; Filtering & pipes.
+;;;
+
+(define (filtered-port command input)
+  "Return an input port where data drained from INPUT is filtered through
+COMMAND (a list).  In addition, return a list of PIDs that the caller must
+wait."
+  (let loop ((input input)
+             (pids '()))
+    (if (file-port? input)
+        (match (pipe)
+          ((in . out)
+           (match (primitive-fork)
+             (0
+              (close-port in)
+              (close-port (current-input-port))
+              (dup2 (fileno input) 0)
+              (close-port (current-output-port))
+              (dup2 (fileno out) 1)
+              (apply execl (car command) command))
+             (child
+              (close-port out)
+              (values in (cons child pids))))))
+
+        ;; INPUT is not a file port, so fork just for the sake of tunneling it
+        ;; through a file port.
+        (match (pipe)
+          ((in . out)
+           (match (primitive-fork)
+             (0
+              (dynamic-wind
+                (const #t)
+                (lambda ()
+                  (close-port in)
+                  (dump-port input out))
+                (lambda ()
+                  (false-if-exception (close out))
+                  (primitive-exit 0))))
+             (child
+              (close-port out)
+              (loop in (cons child pids)))))))))
 
 
 ;;;

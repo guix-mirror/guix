@@ -348,26 +348,10 @@ indefinitely."
     (call-with-output-file expiry-file
       (cute write (time-second now) <>))))
 
-(define (filtered-port command input)
-  "Return an input port (and PID) where data drained from INPUT is filtered
-through COMMAND.  INPUT must be a file input port."
-  (let ((i+o (pipe)))
-    (match (primitive-fork)
-      (0
-       (close-port (car i+o))
-       (close-port (current-input-port))
-       (dup2 (fileno input) 0)
-       (close-port (current-output-port))
-       (dup2 (fileno (cdr i+o)) 1)
-       (apply execl (car command) command))
-      (child
-       (close-port (cdr i+o))
-       (values (car i+o) child)))))
-
 (define (decompressed-port compression input)
   "Return an input port where INPUT is decompressed according to COMPRESSION."
   (match compression
-    ("none"  (values input #f))
+    ("none"  (values input '()))
     ("bzip2" (filtered-port `(,%bzip2 "-dc") input))
     ("xz"    (filtered-port `(,%xz "-dc") input))
     ("gzip"  (filtered-port `(,%gzip "-dc") input))
@@ -442,7 +426,7 @@ through COMMAND.  INPUT must be a file input port."
 
        (let*-values (((raw download-size)
                       (fetch uri))
-                     ((input pid)
+                     ((input pids)
                       (decompressed-port (narinfo-compression narinfo)
                                          raw)))
          ;; Note that Hydra currently generates Nars on the fly and doesn't
@@ -455,7 +439,7 @@ through COMMAND.  INPUT must be a file input port."
 
          ;; Unpack the Nar at INPUT into DESTINATION.
          (restore-file input destination)
-         (or (not pid) (zero? (cdr (waitpid pid)))))))
+         (every (compose zero? cdr waitpid) pids))))
     (("--version")
      (show-version-and-exit "guix substitute-binary"))))
 
