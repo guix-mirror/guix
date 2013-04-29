@@ -289,7 +289,7 @@ gnu/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz:
 
 nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
 
-TESTS =						\
+SCM_TESTS =					\
   tests/base32.scm				\
   tests/builders.scm				\
   tests/derivations.scm				\
@@ -300,11 +300,15 @@ TESTS =						\
   tests/snix.scm				\
   tests/store.scm				\
   tests/nar.scm					\
-  tests/union.scm				\
+  tests/union.scm
+
+SH_TESTS =					\
   tests/guix-build.sh				\
   tests/guix-download.sh			\
   tests/guix-gc.sh				\
   tests/guix-package.sh
+
+TESTS = $(SCM_TESTS) $(SH_TESTS)
 
 TEST_EXTENSIONS = .scm .sh
 
@@ -332,7 +336,9 @@ EXTRA_DIST =					\
   release.nix					\
   $(TESTS)
 
-CLEANFILES = $(GOBJECTS) *.log
+CLEANFILES =					\
+  $(GOBJECTS)					\
+  $(SCM_TESTS:%.scm=%.log)
 
 # XXX: Use the C locale for when Guile lacks
 # <http://git.sv.gnu.org/cgit/guile.git/commit/?h=stable-2.0&id=e2c6bf3866d1186c60bacfbd4fe5037087ee5e3f>.
