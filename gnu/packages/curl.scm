@@ -55,18 +55,7 @@
              ("pkg-config" ,pkg-config)
              ("zlib" ,zlib)))
    (arguments
-    `(#:configure-flags '("--with-gnutls" "--with-gssapi")
-      #:phases
-       (alist-replace
-        'unpack
-        (lambda* (#:key #:allow-other-keys #:rest args)
-         (let ((unpack (assoc-ref %standard-phases 'unpack)))
-           (apply unpack args)
-           ;; The following patch-shebang phase will replace perl
-           ;; by the correct path.
-           (substitute* "tests/runtests.pl"
-                         (("#!/usr/bin/env perl") "#!/usr/bin/perl"))))
-       %standard-phases)))
+    `(#:configure-flags '("--with-gnutls" "--with-gssapi")))
    (synopsis "curl, command line tool for transferring data with URL syntax")
    (description
     "curl is a command line tool for transferring data with URL syntax,

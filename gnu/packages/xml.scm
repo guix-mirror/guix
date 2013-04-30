@@ -19,6 +19,7 @@
 
 (define-module (gnu packages xml)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
@@ -64,7 +65,21 @@ things the parser might find in the XML document (like start tags).")
     (home-page "http://www.xmlsoft.org/")
     (synopsis "libxml2, a C parser for XML")
     (inputs `(("perl" ,perl)
-              ("python" ,python)))
+              ("python" ,python)
+              ("zlib" ,zlib)))
+    (arguments
+     `(#:phases
+        (alist-replace
+         'install
+         (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
+          (let ((install (assoc-ref %standard-phases 'install))
+                (glibc (assoc-ref inputs "libc"))
+                (out (assoc-ref outputs "out")))
+            (apply install args)
+            (chdir "python")
+            (substitute* "setup.py" (("/opt/include") (string-append glibc "/include")))
+            (system* "python" "setup.py" "install" (string-append "--prefix=" out))))
+        %standard-phases)))
     (description
      "Libxml2 is the XML C parser and toolkit developed for the Gnome project
 (but it is usable outside of the Gnome platform).")
@@ -86,7 +101,19 @@ things the parser might find in the XML document (like start tags).")
     (synopsis "libxslt, a C library for applying XSLT stylesheets to XML documents")
     (inputs `(("libgcrypt" ,libgcrypt)
               ("libxml2" ,libxml2)
-              ("python" ,python)))
+              ("python" ,python)
+              ("zlib" ,zlib)))
+    (arguments
+      `(#:phases
+         (alist-replace
+          'configure
+          (lambda* (#:key inputs #:allow-other-keys #:rest args)
+            (let ((configure (assoc-ref %standard-phases 'configure))
+                  (libxml2 (assoc-ref inputs "libxml2")))
+              ;; FIXME: This should be done more centrally.
+              (setenv "PYTHONPATH" (string-append libxml2 "/lib/python2.7/site-packages"))
+              (apply configure args)))
+         %standard-phases)))
     (description
      "Libxslt is an XSLT C library developed for the GNOME project. It is
 based on libxml for XML parsing, tree manipulation and XPath support.")

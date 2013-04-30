@@ -43,13 +43,6 @@
      `(("gnutls" ,gnutls)
        ("perl" ,perl)
        ("gettext" ,guix:gettext)))
-    (arguments
-     '(#:phases
-       (alist-cons-before 'build 'patch-/usr/bin/env
-                          (lambda _
-                            (for-each patch-shebang
-                                      '("doc/texi2pod.pl" "tests/run-px")))
-                          %standard-phases)))
     (home-page "http://www.gnu.org/software/wget/")
     (synopsis "Non-interactive command-line utility for downloading files")
     (description

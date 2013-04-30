@@ -171,3 +171,45 @@ It consists of a PostScript interpreter layer, and a graphics
 library.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/ghostscript/")))
+
+(define-public gs-fonts
+  (package
+   (name "gs-fonts")
+   (version "8.11")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/gs-fonts/gs-fonts/"
+                                version
+                                "%20%28base%2035%2C%20GPL%29/ghostscript-fonts-std-"
+                                version
+                                ".tar.gz"))
+            (sha256 (base32
+                     "00f4l10xd826kak51wsmaz69szzm2wp8a41jasr4jblz25bg7dhf"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:tests? #f ; nothing to check, just files to copy
+      #:modules ((guix build gnu-build-system)
+                 (guix build utils)
+                 (srfi srfi-1)) ; for alist-delete
+      #:phases
+       (alist-delete
+        'configure
+       (alist-delete
+        'build
+       (alist-replace
+        'install
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let* ((out (assoc-ref outputs "out"))
+                 (dir (string-append out "/share/fonts/type1/ghostscript")))
+            (mkdir-p dir)
+            (for-each
+              (lambda (file)
+                (copy-file file (string-append dir "/" file)))
+              (find-files "." "pfb|afm"))))
+       %standard-phases)))))
+   (synopsis "free replacements for the PostScript fonts")
+   (description
+    "gs-fonts provides fonts and font metrics customarily distributed with
+Ghostscript. It currently includes the 35 standard PostScript fonts.")
+   (license license:gpl2)
+   (home-page "http://sourceforge.net/projects/gs-fonts/")))

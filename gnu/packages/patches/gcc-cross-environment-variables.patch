@@ -1,0 +1,24 @@
+Search path environment variables for cross-compilers.  See the discussion
+at <http://gcc.gnu.org/ml/gcc/2013-02/msg00124.html>.
+
+--- gcc-4.7.2/gcc/incpath.c	2012-01-27 00:34:58.000000000 +0100
++++ gcc-4.7.2/gcc/incpath.c	2013-02-12 10:11:27.000000000 +0100
+@@ -452,7 +452,7 @@ register_include_chains (cpp_reader *pfi
+ 
+   /* CPATH and language-dependent environment variables may add to the
+      include chain.  */
+-  add_env_var_paths ("CPATH", BRACKET);
++  add_env_var_paths ("CROSS_CPATH", BRACKET);
+   add_env_var_paths (lang_env_vars[idx], SYSTEM);
+ 
+   target_c_incpath.extra_pre_includes (sysroot, iprefix, stdinc);
+
+--- gcc-4.7.2/gcc/system.h	2012-02-17 00:16:28.000000000 +0100
++++ gcc-4.7.2/gcc/system.h	2013-02-12 10:22:17.000000000 +0100
+@@ -1023,4 +1023,6 @@ helper_const_non_const_cast (const char
+ #define DEBUG_VARIABLE
+ #endif
+ 
++#define LIBRARY_PATH_ENV "CROSS_LIBRARY_PATH"
++
+ #endif /* ! GCC_SYSTEM_H */

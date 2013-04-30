@@ -38,6 +38,7 @@
 (define* (perl-build store name source inputs
                      #:key
                      (perl (@ (gnu packages perl) perl))
+                     (search-paths '())
                      (tests? #t)
                      (make-maker-flags ''())
                      (phases '(@ (guix build perl-build-system)
@@ -53,6 +54,10 @@
                                 (guix build utils))))
   "Build SOURCE using PERL, and with INPUTS.  This assumes that SOURCE
 provides a `Makefile.PL' file as its build system."
+  (define perl-search-paths
+    (append (package-native-search-paths perl)
+            (standard-search-paths)))
+
   (define builder
     `(begin
        (use-modules ,@modules)
@@ -60,6 +65,9 @@ provides a `Makefile.PL' file as its build system."
                    #:source ,(if (and source (derivation-path? source))
                                  (derivation-path->output-path source)
                                  source)
+                   #:search-paths ',(map search-path-specification->sexp
+                                         (append perl-search-paths
+                                                 search-paths))
                    #:make-maker-flags ,make-maker-flags
                    #:system ,system
                    #:test-target "test"

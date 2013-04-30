@@ -27,6 +27,7 @@
   #:use-module (ice-9 match)
   #:export (gnu-build
             gnu-build-system
+            standard-search-paths
             standard-inputs
             package-with-explicit-inputs
             package-with-extra-configure-variable
@@ -135,6 +136,24 @@ use `--strip-all' as the arguments to `strip'."
   ;; Store passed to STANDARD-INPUTS.
   (make-parameter #f))
 
+(define (standard-packages)
+  "Return the list of (NAME PACKAGE OUTPUT) or (NAME PACKAGE) tuples of
+standard packages used as implicit inputs of the GNU build system."
+
+  ;; Resolve (gnu packages base) lazily to hide circular dependency.
+  (let ((distro (resolve-module '(gnu packages base))))
+    (module-ref distro '%final-inputs)))
+
+(define (standard-search-paths)
+  "Return the list of <search-path-specification> for the standard (implicit)
+inputs."
+  (append-map (match-lambda
+               ((_ (? package? p) _ ...)
+                (package-native-search-paths p))
+               (_
+                '()))
+              (standard-packages)))
+
 (define standard-inputs
   (memoize
    (lambda (system)
@@ -148,9 +167,7 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
            (z
             (error "invalid standard input" z)))
 
-          ;; Resolve (gnu packages base) lazily to hide circular dependency.
-          (let* ((distro (resolve-module '(gnu packages base)))
-                 (inputs (module-ref distro '%final-inputs)))
+          (let ((inputs (standard-packages)))
             (append inputs
                     (append-map (match-lambda
                                  ((name package _ ...)
@@ -159,11 +176,12 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
 
 (define* (gnu-build store name source inputs
                     #:key (guile #f)
-                    (outputs '("out")) (configure-flags ''())
+                    (outputs '("out"))
+                    (search-paths '())
+                    (configure-flags ''())
                     (make-flags ''())
                     (patches ''()) (patch-flags ''("--batch" "-p1"))
                     (out-of-source? #f)
-                    (path-exclusions ''())
                     (tests? #t)
                     (test-target "check")
                     (parallel-build? #t) (parallel-tests? #t)
@@ -190,6 +208,16 @@ the builder's environment, from the host.  Note that we distinguish
 between both, because for Guile's own modules like (ice-9 foo), we want
 to use GUILE's own version of it, rather than import the user's one,
 which could lead to gratuitous input divergence."
+  (define implicit-inputs
+    (and implicit-inputs?
+         (parameterize ((%store store))
+           (standard-inputs system))))
+
+  (define implicit-search-paths
+    (if implicit-inputs?
+        (standard-search-paths)
+        '()))
+
   (define builder
     `(begin
        (use-modules ,@modules)
@@ -199,13 +227,15 @@ which could lead to gratuitous input divergence."
                   #:system ,system
                   #:outputs %outputs
                   #:inputs %build-inputs
+                  #:search-paths ',(map search-path-specification->sexp
+                                        (append implicit-search-paths
+                                                search-paths))
                   #:patches ,patches
                   #:patch-flags ,patch-flags
                   #:phases ,phases
                   #:configure-flags ,configure-flags
                   #:make-flags ,make-flags
                   #:out-of-source? ,out-of-source?
-                  #:path-exclusions ,path-exclusions
                   #:tests? ,tests?
                   #:test-target ,test-target
                   #:parallel-build? ,parallel-build?
@@ -233,8 +263,7 @@ which could lead to gratuitous input divergence."
                                         '())
                                   ,@inputs
                                   ,@(if implicit-inputs?
-                                        (parameterize ((%store store))
-                                          (standard-inputs system))
+                                        implicit-inputs
                                         '()))
                                 #:outputs outputs
                                 #:modules imported-modules

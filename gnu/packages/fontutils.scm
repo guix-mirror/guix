@@ -38,6 +38,20 @@
             (sha256 (base32
                      "0gpcz6swir64kp0dk3rwgqqkmf48b90dqgczdmznjjryhrahx9r9"))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:phases
+       (alist-replace
+        'install
+        (lambda* (#:key outputs #:allow-other-keys #:rest args)
+         (let ((install (assoc-ref %standard-phases 'install))
+               (include (string-append (assoc-ref outputs "out") "/include")))
+           (apply install args)
+           ;; Unravel one directory, since ft2build.h includes directly from
+           ;; freetype/, not freetype2/freetype; this is announced in the file
+           ;; to be changed in a future release.
+           (symlink (string-append include "/freetype2/freetype")
+                    (string-append include "/freetype"))))
+       %standard-phases)))
    (synopsis "Freetype, a library to render fonts")
    (description
     "Freetype is a library that can be used by applications to access the

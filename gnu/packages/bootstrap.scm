@@ -135,6 +135,7 @@ check whether everything is alright."
   "Return the name of Glibc's dynamic linker for SYSTEM."
   (cond ((string=? system "x86_64-linux") "/lib/ld-linux-x86-64.so.2")
         ((string=? system "i686-linux") "/lib/ld-linux.so.2")
+        ((string=? system "mips64el-linux") "/lib/ld.so.1")
         (else (error "dynamic linker name not known for this system"
                      system))))
 
@@ -153,7 +154,8 @@ check whether everything is alright."
   (let ((raw (build-system
               (name "raw")
               (description "Raw build system with direct store access")
-              (build (lambda* (store name source inputs #:key outputs system)
+              (build (lambda* (store name source inputs
+                                     #:key outputs system search-paths)
                        (define (->store file)
                          (add-to-store store file #t "sha256"
                                        (or (search-bootstrap-binary file
@@ -351,6 +353,13 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                         ("i686-linux"
                          (base32
                           "06wqs0xxnpw3hn0xjb4c9cs0899p1xwkcysa2rvzhvpra0c5vsg2")))))))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "CPATH")
+            (directories '("include")))
+           (search-path-specification
+            (variable "LIBRARY_PATH")
+            (directories '("lib" "lib64")))))
     (synopsis "Bootstrap binaries of the GNU Compiler Collection")
     (description #f)
     (home-page #f)

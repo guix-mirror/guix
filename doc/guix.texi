@@ -517,8 +517,13 @@ Thus, when installing MPC, the MPFR and GMP libraries also get installed
 in the profile; removing MPC also removes MPFR and GMP---unless they had
 also been explicitly installed independently.
 
+Besides, packages sometime rely on the definition of environment
+variables for their search paths (see explanation of
+@code{--search-paths} below.)  Any missing or possibly incorrect
+environment variable definitions are reported here.
+
 @c XXX: keep me up-to-date
-Besides, when installing a GNU package, the tool reports the
+Finally, when installing a GNU package, the tool reports the
 availability of a newer upstream version.  In the future, it may provide
 the option of installing directly from the upstream version, even if
 that version is not yet in the distribution.
@@ -565,6 +570,21 @@ apart from its own meta-data.
 Installing, removing, or upgrading packages from a generation that has
 been rolled back to overwrites previous future generations.  Thus, the
 history of a profile's generations is always linear.
+
+@item --search-paths
+@cindex search paths
+Report environment variable definitions, in Bash syntax, that may be
+needed in order to use the set of installed packages.  These environment
+variables are used to specify @dfn{search paths} for files used by some
+of the installed packages.
+
+For example, GCC needs the @code{CPATH} and @code{LIBRARY_PATH}
+environment variables to be defined so it can look for headers and
+libraries in the user's profile (@pxref{Environment Variables,,, gcc,
+Using the GNU Compiler Collection (GCC)}).  If GCC and, say, the C
+library are installed in the profile, then @code{--search-paths} will
+suggest setting these variables to @code{@var{profile}/include} and
+@code{@var{profile}/lib}, respectively.
 
 @item --profile=@var{profile}
 @itemx -p @var{profile}

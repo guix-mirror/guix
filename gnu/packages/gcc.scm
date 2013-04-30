@@ -35,18 +35,22 @@
   (let ((stripped? #t))                         ; TODO: make this a parameter
     (package
      (name "gcc")
-     (version "4.7.2")
+     (version "4.7.3")
      (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnu/gcc/gcc-"
                                   version "/gcc-" version ".tar.bz2"))
               (sha256
                (base32
-                "115h03hil99ljig8lkrq4qk426awmzh0g99wrrggxf8g07bq74la"))))
+                "1hx9h64ivarlzi4hxvq42as5m9vlr5cyzaaq4gzj4i619zmkfz1g"))))
      (build-system gnu-build-system)
-     (inputs `(("gmp" ,gmp)
-               ("mpfr" ,mpfr)
-               ("mpc" ,mpc)))           ; TODO: libelf, ppl, cloog, zlib, etc.
+    (inputs `(("gmp" ,gmp)
+              ("mpfr" ,mpfr)
+              ("mpc" ,mpc)
+              ("isl" ,isl)
+              ("cloog" ,cloog)
+              ("libelf" ,libelf)
+              ("zlib" ,zlib)))
      (arguments
       `(#:out-of-source? #t
         #:strip-binaries? ,stripped?
@@ -65,8 +69,8 @@
         #:make-flags
         (let ((libc (assoc-ref %build-inputs "libc")))
           `(,@(if libc
-                  (list (string-append "LDFLAGS_FOR_BUILD="
-                                       "-L" libc "/lib "
+                  (list (string-append "LDFLAGS_FOR_TARGET="
+                                       "-B" libc "/lib "
                                        "-Wl,-dynamic-linker "
                                        "-Wl," libc
                                        ,(glibc-dynamic-linker)))
@@ -102,7 +106,7 @@
                   ;; RUNPATH to GCC even when `libgcc_s' is not NEEDED.
                   ;; There's not much that can be done to avoid it, though.
                   (format #f "#define LIB_SPEC \"-L~a/lib %{!static:-rpath=~a/lib \
-%{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib}} \" ~a~%"
+%{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib}} \" ~a"
                           libc libc out out suffix))
                  (("#define STARTFILE_SPEC.*$" line)
                   (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
@@ -132,6 +136,14 @@
                                           "install"))))
                          %standard-phases)))))
 
+     (native-search-paths
+      (list (search-path-specification
+             (variable "CPATH")
+             (directories '("include")))
+            (search-path-specification
+             (variable "LIBRARY_PATH")
+             (directories '("lib" "lib64")))))
+
      (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
      (synopsis "GNU Compiler Collection")
      (description
@@ -143,6 +155,18 @@ GCC development is a part of the GNU Project, aiming to improve the compiler
 used in the GNU system including the GNU/Linux variant.")
      (license gpl3+)
      (home-page "http://gcc.gnu.org/"))))
+
+(define-public gcc-4.8
+  ;; FIXME: Move to gcc.scm when Binutils is updated.
+  (package (inherit gcc-4.7)
+    (version "4.8.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/gcc/gcc-"
+                                 version "/gcc-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "0b6cp9d1sas3vq6dj3zrgd134p9b569fqhbixb9cl7mp698zwdxh"))))))
 
 (define-public isl
   (package

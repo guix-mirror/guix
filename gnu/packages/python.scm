@@ -67,6 +67,10 @@
        ("openssl" ,openssl)
        ("readline" ,readline)
        ("zlib" ,zlib)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "PYTHONPATH")
+            (directories '("lib/python2.7/site-packages")))))
     (home-page "http://python.org")
     (synopsis
      "Python, a high-level dynamically-typed programming language")

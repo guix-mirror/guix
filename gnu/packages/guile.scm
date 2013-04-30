@@ -88,6 +88,11 @@
    ;; When cross-compiling, a native version of Guile itself is needed.
    (self-native-input? #t)
 
+   (native-search-paths
+    (list (search-path-specification
+           (variable "GUILE_LOAD_PATH")
+           (directories '("share/guile/site")))))
+
    (synopsis "Scheme implementation intended especially for extensions")
    (description
 "GNU Guile 1.8 is an interpreter for the Scheme programming language,
@@ -137,6 +142,14 @@ extensible.  It supports many SRFIs.")
                        (string-append bash "/bin/bash")))))
                 %standard-phases)))
 
+   (native-search-paths
+    (list (search-path-specification
+           (variable "GUILE_LOAD_PATH")
+           (directories '("share/guile/site/2.0")))
+          (search-path-specification
+           (variable "GUILE_LOAD_COMPILED_PATH")
+           (directories '("share/guile/site/2.0")))))
+
    (synopsis "Scheme implementation intended especially for extensions")
    (description
 "GNU Guile is an implementation of the Scheme programming language, with
@@ -151,15 +164,7 @@ call interface, and powerful string processing.")
 (define-public guile-2.0/fixed
   ;; A package of Guile 2.0 that's rarely changed.  It is the one used
   ;; in the `base' module, and thus changing it entails a full rebuild.
-  (package (inherit guile-2.0)
-    (version "2.0.7")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/guile/guile-" version
-                                 ".tar.xz"))
-             (sha256
-              (base32
-               "0f53pxkia4v17n0avwqlcjpy0n89hkazm2xsa6p84lv8k6k8y9vg"))))))
+  guile-2.0)
 
 
 ;;;

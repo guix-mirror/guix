@@ -90,14 +90,14 @@ lines.")
 (define-public sed
   (package
    (name "sed")
-   (version "4.2.1")
+   (version "4.2.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/sed/sed-" version
                                 ".tar.bz2"))
             (sha256
              (base32
-              "13wlsb4sf5d5a82xjhxqmdvrrn36rmw5f0pl9qyb9zkvldnb7hra"))))
+              "1myvrmh99jsvk7v3d7crm0gcrq51hmmm1r2kjyyci152in1x2j7h"))))
    (build-system gnu-build-system)
    (synopsis "Stream editor")
    (arguments
@@ -153,14 +153,14 @@ files (as archives).")
 (define-public patch
   (package
    (name "patch")
-   (version "2.6.1")
+   (version "2.7.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/patch/patch-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "18012gxs9wc96izskp1q7bclrwns6rdmkn4jj31c8jbyfz6l5npq"))))
+              "1sqckf560pzwgniy00vcpdv2c9c11s4cmhlm14yqgg8avd3bl94i"))))
    (build-system gnu-build-system)
    (native-inputs '())                      ; FIXME: needs `ed' for the tests
    (arguments
@@ -179,18 +179,15 @@ producing patched versions.")
 (define-public diffutils
   (package
    (name "diffutils")
-   (version "3.2")
+   (version "3.3")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/diffutils/diffutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0jci0wv68025xd0s0rq4s5qxpx56dd9d730lka63qpzk1rfvfkxb"))))
+              "1761vymxbp4wb5rzjvabhdkskk95pghnn67464byvzb5mfl8jpm2"))))
    (build-system gnu-build-system)
-   (inputs `(("patch/gets"
-              ,(search-patch "diffutils-gets-undeclared.patch"))))
-   (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
    (synopsis "Comparing and merging files")
    (description
     "GNU Diffutils is a package of several programs related to finding
@@ -264,14 +261,14 @@ The tools supplied with this package are:
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.20")
+   (version "8.21")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1cly97xdy3v4nbbx631k43smqw0nnpn651kkprs0yyl2cj3pkjyv"))))
+              "064f512185iysqqcvhnhaf3bfmzrvcgs7n405qsyp99zmfyl9amd"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)
              ("gmp"  ,gmp)
@@ -340,14 +337,14 @@ that it is possible to use Make to build and install the program.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.22")
+   (version "2.23.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "1a9w66v5dwvbnawshjwqcgz7km6kw6ihkzp6sswv9ycc3knzhykc"))))
+              "15qhbkz3r266xaa52slh857qn3abw7rb2x2jnhpfrafpzrb4x4gy"))))
    (build-system gnu-build-system)
 
    ;; Split Binutils in several outputs, mostly to avoid collisions in
@@ -365,7 +362,11 @@ that it is possible to use Make to build and install the program.")
                           "LDFLAGS=-static-libgcc"
 
                           ;; Don't search under /usr/lib & co.
-                          "--with-lib-path=/no-ld-lib-path")))
+                          "--with-lib-path=/no-ld-lib-path"
+
+                          ;; Glibc 2.17 has a "comparison of unsigned
+                          ;; expression >= 0 is always true" in wchar.h.
+                          "--disable-werror")))
 
    (synopsis "Binary utilities: bfd gas gprof ld")
    (description
@@ -374,17 +375,6 @@ that it is possible to use Make to build and install the program.")
 BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/binutils/")))
-
-(define-public binutils-2.23
-  (package (inherit binutils)
-    (version "2.23.2")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/binutils/binutils-"
-                                 version ".tar.bz2"))
-             (sha256
-              (base32
-               "15qhbkz3r266xaa52slh857qn3abw7rb2x2jnhpfrafpzrb4x4gy"))))))
 
 (define-public glibc
   (package
@@ -403,13 +393,28 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
    ;; users should automatically pull Linux headers as well.
    (propagated-inputs `(("linux-headers" ,linux-libre-headers)))
 
+   ;; Store the locales separately (~100 MiB).  Note that "out" retains a
+   ;; reference to them anyway, so there's no space savings here.
+   ;; TODO: Eventually we may want to add a $LOCALE_ARCHIVE search path like
+   ;; Nixpkgs does.
+   (outputs '("out" "locales"))
+
    (arguments
     `(#:out-of-source? #t
       #:patches (list (assoc-ref %build-inputs "patch/ld.so.cache"))
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"
-            "--localedir=/var/run/current-system/sw/lib/locale" ; XXX
+            (string-append "--localedir=" (assoc-ref %outputs "locales")
+                           "/share/locale")
+
+            ;; `--localedir' is not honored, so work around it.
+            ;; See <http://sourceware.org/ml/libc-alpha/2013-03/msg00093.html>.
+            (string-append "libc_cv_localedir="
+                           (assoc-ref %outputs "locales")
+                           "/share/locale")
+
+
             (string-append "--with-headers="
                            (assoc-ref %build-inputs "linux-headers")
                            "/include")
@@ -475,7 +480,12 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
                     (substitute* "libio/iopopen.c"
                       (("/bin/sh")
                        (string-append out "/bin/bash")))))
-                %standard-phases)))
+                (alist-cons-after
+                 'install 'install-locales
+                 (lambda _
+                   (zero? (system* "make" "localedata/install-locales")))
+                 %standard-phases))))
+
    (inputs `(("patch/ld.so.cache"
               ,(search-patch "glibc-no-ld-so-cache.patch"))
              ("static-bash" ,(static-package bash-light))))
@@ -578,7 +588,8 @@ identifier SYSTEM."
         #:implicit-inputs? #f
         ,@(substitute-keyword-arguments (package-arguments binutils)
             ((#:configure-flags cf)
-             `(list ,(string-append "--target=" (boot-triplet)))))))
+             `(cons ,(string-append "--target=" (boot-triplet))
+                    ,cf)))))
      (inputs %boot0-inputs))))
 
 (define gcc-boot0
@@ -939,35 +950,6 @@ store.")
               ("bash"  ,bash-final)
               ,@(fold alist-delete (package-inputs ld-wrapper-boot3)
                       '("guile" "bash"))))))
-
-(define-public ld-wrapper-2.23         ; TODO: remove when Binutils is updated
-  (package (inherit ld-wrapper)
-    (inputs `(("binutils" ,binutils-2.23)
-              ,@(alist-delete "binutils" (package-inputs ld-wrapper))))))
-
-(define-public gcc-4.8
-  ;; FIXME: Move to gcc.scm when Binutils is updated.
-  (package (inherit gcc-4.7)
-    (version "4.8.0")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/gcc/gcc-"
-                                 version "/gcc-" version ".tar.bz2"))
-             (sha256
-              (base32
-               "0b6cp9d1sas3vq6dj3zrgd134p9b569fqhbixb9cl7mp698zwdxh"))))
-    (inputs `(("gmp" ,gmp)
-              ("mpfr" ,mpfr)
-              ("mpc" ,mpc)
-              ("isl" ,isl)
-              ("cloog" ,cloog)
-              ("zlib" ,(@ (gnu packages compression) zlib))
-
-              ;; With ld from Binutils 2.22, we get the following error while
-              ;; linking gcov:
-              ;; ld: gcov: hidden symbol `__deregister_frame_info' in /nix/store/47myfniw4x7kfc601d7q1yvz5mixlr00-gcc-4.7.2/lib/gcc/x86_64-unknown-linux-gnu/4.7.2/libgcc_eh.a(unwind-dw2-fde-dip.o) is referenced by DSO
-              ;; See <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=57015>.
-              ("ld-wrapper" ,ld-wrapper-2.23)))))
 
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by `gnu-build-system'.

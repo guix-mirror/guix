@@ -27,18 +27,15 @@
 (define-public gmp
   (package
    (name "gmp")
-   (version "5.1.0")
+   (version "5.1.1")
    (source (origin
             (method url-fetch)
             (uri
-             ;; Note: this version is not available from GNU mirrors
-             ;; because it was made with an Automake affected by
-             ;; CVE-2012-3386.
-             (string-append "ftp://ftp.gmplib.org/pub/gmp-"
-                            version "/gmp-" version ".tar.bz2"))
+             (string-append "mirror://gnu/gmp/gmp-"
+                            version ".tar.xz"))
             (sha256
              (base32
-              "15n7xxgasbxdch8ii8z9ic6fxc2ysk3q8iavf55abjp5iylspnfz"))))
+              "1hili06lcf0clg5qfvz7knm6pmj6ab54yhsvskp1mdny5xw4vmjb"))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (arguments `(#:configure-flags
@@ -73,13 +70,13 @@ faster algorithms.")
 (define-public mpfr
   (package
    (name "mpfr")
-   (version "3.1.1")
+   (version "3.1.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/mpfr/mpfr-" version
                                 ".tar.xz"))
             (sha256 (base32
-                     "0ym1ylcq803n52qrggxqmkz66gbn8ncc3ybawal31v5y5p1srma9"))))
+                     "0fs501qi8l523gs3cpy4jjcnvwxggyfbklcys80wq236xx3hz79r"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
    (synopsis "C library for arbitrary precision floating-point arithmetic")

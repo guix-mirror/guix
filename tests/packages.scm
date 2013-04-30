@@ -22,6 +22,7 @@
   #:use-module (guix utils)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix build-system)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -159,6 +160,41 @@
     (and (build-derivations %store (list d))
          (let ((p (pk 'drv d (derivation-path->output-path d))))
            (eq? 'hello (call-with-input-file p read))))))
+
+(test-assert "search paths"
+  (let* ((p (make-prompt-tag "return-search-paths"))
+         (s (build-system
+             (name "raw")
+             (description "Raw build system with direct store access")
+             (build (lambda* (store name source inputs
+                                    #:key outputs system search-paths)
+                      search-paths))))
+         (x (list (search-path-specification
+                   (variable "GUILE_LOAD_PATH")
+                   (directories '("share/guile/site/2.0")))
+                  (search-path-specification
+                   (variable "GUILE_LOAD_COMPILED_PATH")
+                   (directories '("share/guile/site/2.0")))))
+         (a (package (inherit (dummy-package "guile"))
+              (build-system s)
+              (native-search-paths x)))
+         (b (package (inherit (dummy-package "guile-foo"))
+              (build-system s)
+              (inputs `(("guile" ,a)))))
+         (c (package (inherit (dummy-package "guile-bar"))
+              (build-system s)
+              (inputs `(("guile" ,a)
+                        ("guile-foo" ,b))))))
+    (let-syntax ((collect (syntax-rules ()
+                            ((_ body ...)
+                             (call-with-prompt p
+                               (lambda ()
+                                 body ...)
+                               (lambda (k search-paths)
+                                 search-paths))))))
+      (and (null? (collect (package-derivation %store a)))
+           (equal? x (collect (package-derivation %store b)))
+           (equal? x (collect (package-derivation %store c)))))))
 
 (unless (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV))
   (test-skip 1))

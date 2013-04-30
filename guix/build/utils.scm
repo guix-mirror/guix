@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +33,7 @@
             with-directory-excursion
             mkdir-p
             copy-recursively
+            delete-file-recursively
             find-files
 
             set-path-environment-variable
@@ -49,9 +52,10 @@
             patch-shebang
             patch-makefile-SHELL
             fold-port-matches
-            remove-store-references))
+            remove-store-references
+            wrap-program))
 
-
+
 ;;;
 ;;; Directories.
 ;;;
@@ -120,8 +124,11 @@ return values of applying PROC to the port."
       (() #t))))
 
 (define* (copy-recursively source destination
-                           #:optional (log (current-output-port)))
-  "Copy SOURCE directory to DESTINATION."
+                           #:key
+                           (log (current-output-port))
+                           (follow-symlinks? #f))
+  "Copy SOURCE directory to DESTINATION.  Follow symlinks if FOLLOW-SYMLINKS?
+is true; otherwise, just preserve them.  Write verbose output to the LOG port."
   (define strip-source
     (let ((len (string-length source)))
       (lambda (file)
@@ -132,7 +139,12 @@ return values of applying PROC to the port."
                       (let ((dest (string-append destination
                                                  (strip-source file))))
                         (format log "`~a' -> `~a'~%" file dest)
-                        (copy-file file dest)))
+                        (case (stat:type stat)
+                          ((symlink)
+                           (let ((target (readlink file)))
+                             (symlink target dest)))
+                          (else
+                           (copy-file file dest)))))
                     (lambda (dir stat result)     ; down
                       (mkdir-p (string-append destination
                                               (strip-source dir))))
@@ -144,7 +156,31 @@ return values of applying PROC to the port."
                               file (strerror errno))
                       #f)
                     #t
-                    source))
+                    source
+
+                    (if follow-symlinks?
+                        stat
+                        lstat)))
+
+(define (delete-file-recursively dir)
+  "Delete DIR recursively, like `rm -rf', without following symlinks.  Report
+but ignore errors."
+  (file-system-fold (const #t)                    ; enter?
+                    (lambda (file stat result)    ; leaf
+                      (delete-file file))
+                    (const #t)                    ; down
+                    (lambda (dir stat result)     ; up
+                      (rmdir dir))
+                    (const #t)                    ; skip
+                    (lambda (file stat errno result)
+                      (format (current-error-port)
+                              "warning: failed to delete ~a: ~a~%"
+                              file (strerror errno)))
+                    #t
+                    dir
+
+                    ;; Don't follow symlinks.
+                    lstat))
 
 (define (find-files dir regexp)
   "Return the list of files under DIR whose basename matches REGEXP."
@@ -426,7 +462,7 @@ bytes transferred and the continuation of the transfer as a thunk."
          (stat:mtimensec stat)))
 
 (define patch-shebang
-  (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]+)(.*)$")))
+  (let ((shebang-rx (make-regexp "^[[:blank:]]*([[:graph:]]+)[[:blank:]]*([[:graph:]]*)(.*)$")))
     (lambda* (file
               #:optional
               (path (search-path-as-string->list (getenv "PATH")))
@@ -465,16 +501,29 @@ FILE are kept unchanged."
                (let ((line (false-if-exception (read-line p))))
                  (and=> (and line (regexp-exec shebang-rx line))
                         (lambda (m)
-                          (let* ((cmd (match:substring m 1))
-                                 (bin (search-path path (basename cmd))))
+                          (let* ((interp (match:substring m 1))
+                                 (arg1 (match:substring m 2))
+                                 (rest (match:substring m 3))
+                                 (has-env (string-suffix? "/env" interp))
+                                 (cmd (if has-env arg1 (basename interp)))
+                                 (bin (search-path path cmd)))
                             (if bin
-                                (if (string=? bin cmd)
+                                (if (string=? bin interp)
                                     #f            ; nothing to do
-                                    (begin
-                                      (format (current-error-port)
-                                              "patch-shebang: ~a: changing `~a' to `~a'~%"
-                                              file cmd bin)
-                                      (patch p bin (match:substring m 2))))
+                                    (if has-env
+                                        (begin
+                                          (format (current-error-port)
+                                                  "patch-shebang: ~a: changing `~a' to `~a'~%"
+                                                  file (string-append interp " " arg1) bin)
+                                          (patch p bin rest))
+                                      (begin 
+                                        (format (current-error-port)
+                                                "patch-shebang: ~a: changing `~a' to `~a'~%"
+                                                file interp bin)
+                                        (patch p bin
+                                               (if (string-null? arg1)
+                                                   ""
+                                                   (string-append " " arg1 rest))))))
                                 (begin
                                   (format (current-error-port)
                                           "patch-shebang: ~a: warning: no binary for interpreter `~a' found in $PATH~%"
@@ -604,6 +653,70 @@ known as `nuke-refs' in Nixpkgs."
                            (lambda (char result)
                              (put-u8 out (char->integer char))
                              result))))))
+
+(define* (wrap-program prog #:rest vars)
+  "Rename PROG to .PROG-real and make PROG a wrapper.  VARS should look like
+this:
+
+  '(VARIABLE DELIMITER POSITION LIST-OF-DIRECTORIES)
+
+where DELIMITER is optional.  ':' will be used if DELIMITER is not given.
+
+For example, this command:
+
+  (wrap-program \"foo\"
+                '(\"PATH\" \":\" = (\"/nix/.../bar/bin\"))
+                '(\"CERT_PATH\" suffix (\"/nix/.../baz/certs\"
+                                        \"/qux/certs\")))
+
+will copy 'foo' to '.foo-real' and create the file 'foo' with the following
+contents:
+
+  #!location/of/bin/bash
+  export PATH=\"/nix/.../bar/bin\"
+  export CERT_PATH=\"$CERT_PATH${CERT_PATH:+:}/nix/.../baz/certs:/qux/certs\"
+  exec location/of/.foo-real
+
+This is useful for scripts that expect particular programs to be in $PATH, for
+programs that expect particular shared libraries to be in $LD_LIBRARY_PATH, or
+modules in $GUILE_LOAD_PATH, etc."
+  (let ((prog-real (string-append (dirname prog) "/." (basename prog) "-real"))
+        (prog-tmp  (string-append (dirname prog) "/." (basename prog) "-tmp")))
+    (define (export-variable lst)
+      ;; Return a string that exports an environment variable.
+      (match lst
+        ((var sep '= rest)
+         (format #f "export ~a=\"~a\""
+                 var (string-join rest sep)))
+        ((var sep 'prefix rest)
+         (format #f "export ~a=\"~a${~a~a+~a}$~a\""
+                 var (string-join rest sep) var sep sep var))
+        ((var sep 'suffix rest)
+         (format #f "export ~a=\"$~a${~a~a+~a}~a\""
+                 var var var sep sep (string-join rest sep)))
+        ((var '= rest)
+         (format #f "export ~a=\"~a\""
+                 var (string-join rest ":")))
+        ((var 'prefix rest)
+         (format #f "export ~a=\"~a${~a:+:}$~a\""
+                 var (string-join rest ":") var var))
+        ((var 'suffix rest)
+         (format #f "export ~a=\"$~a${~a:+:}~a\""
+                 var var var (string-join rest ":")))))
+
+    (copy-file prog prog-real)
+
+    (with-output-to-file prog-tmp
+      (lambda ()
+        (format #t
+                "#!~a~%~a~%exec \"~a\" \"$@\"~%"
+                (which "bash")
+                (string-join (map export-variable vars)
+                             "\n")
+                (canonicalize-path prog-real))))
+
+    (chmod prog-tmp #o755)
+    (rename-file prog-tmp prog)))
 
 ;;; Local Variables:
 ;;; eval: (put 'call-with-output-file/atomic 'scheme-indent-function 1)

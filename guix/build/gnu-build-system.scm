@@ -48,33 +48,22 @@
                     #f
                     dir))
 
-(define* (set-paths #:key inputs (path-exclusions '())
+(define* (set-paths #:key inputs (search-paths '())
                     #:allow-other-keys)
-  (define (relevant-input-directories env-var)
-    ;; Return the subset of INPUTS that should be considered when setting
-    ;; ENV-VAR.
-    (match (assoc-ref path-exclusions env-var)
-      (#f
-       (map cdr inputs))
-      ((excluded ...)
-       (filter-map (match-lambda
-                    ((name . dir)
-                     (and (not (member name excluded))
-                          dir)))
-                   inputs))))
+  (define input-directories
+    (match inputs
+      (((_ . dir) ...)
+       dir)))
 
-  (set-path-environment-variable "PATH" '("bin")
-                                 (relevant-input-directories "PATH"))
-  (set-path-environment-variable "CPATH" '("include")
-                                 (relevant-input-directories "CPATH"))
-  (set-path-environment-variable "LIBRARY_PATH" '("lib" "lib64")
-                                 (relevant-input-directories "LIBRARY_PATH"))
+  (set-path-environment-variable "PATH" '("bin" "sbin")
+                                 input-directories)
 
-  ;; FIXME: Eventually move this to the `search-paths' field of the
-  ;; `pkg-config' package.
-  (set-path-environment-variable "PKG_CONFIG_PATH"
-                                 '("lib/pkgconfig" "lib64/pkgconfig")
-                                 (relevant-input-directories "PKG_CONFIG_PATH"))
+  (for-each (match-lambda
+             ((env-var (directories ...) separator)
+              (set-path-environment-variable env-var directories
+                                             input-directories
+                                             #:separator separator)))
+            search-paths)
 
   ;; Dump the environment variables as a shell script, for handy debugging.
   (system "export > environment-variables"))
@@ -120,9 +109,10 @@ makefiles."
            (base (basename out))
            (dash (string-rindex base #\-)))
       ;; XXX: We'd rather use `package-name->name+version' or similar.
-      (if dash
-          (substring base 0 dash)
-          base)))
+      (string-drop (if dash
+                       (substring base 0 dash)
+                       base)
+                   (+ 1 (string-index base #\-)))))
 
   (let* ((prefix     (assoc-ref outputs "out"))
          (bindir     (assoc-ref outputs "bin"))

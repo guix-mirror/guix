@@ -66,6 +66,16 @@
            ("nixpkgs" "1.0pre22125_a28fe19")
            ("gtk2" "2.38.0"))))
 
+(test-equal "string-tokenize*"
+  '(("foo")
+    ("foo" "bar" "baz")
+    ("foo" "bar" "")
+    ("foo" "bar" "baz"))
+  (list (string-tokenize* "foo" ":")
+        (string-tokenize* "foo;bar;baz" ";")
+        (string-tokenize* "foo!bar!" "!")
+        (string-tokenize* "foo+-+bar+-+baz" "+-+")))
+
 (test-equal "fold2, 1 list"
     (list (reverse (iota 5))
           (map - (reverse (iota 5))))

@@ -33,6 +33,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tcsh)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages zip))
 
 (define texlive-extra-src
@@ -66,6 +67,8 @@
              ("icu4c" ,icu4c)
              ("ghostscript" ,ghostscript)
              ("libpng" ,libpng)
+             ("libxaw" ,libxaw)
+             ("libxt" ,libxt)
              ("perl" ,perl)
              ("poppler" ,poppler)
              ("pkg-config" ,pkg-config)
@@ -88,7 +91,6 @@
          ,(string-append "--datarootdir=" (assoc-ref %outputs "data"))
          ,(string-append "--infodir=" (assoc-ref %outputs "out") "/share/info")
          ,(string-append "--mandir=" (assoc-ref %outputs "out") "/share/man")
-         "--without-x" ; FIXME: Drop as soon as X is available.
          "--with-system-freetype2"
          ;; "--with-system-gd"
          ;; "--with-system-graphite"

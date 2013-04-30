@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,7 +26,9 @@
   #:export (trivial-build-system))
 
 (define* (trivial-build store name source inputs
-                        #:key outputs guile system builder (modules '()))
+                        #:key
+                        outputs guile system builder (modules '())
+                        search-paths)
   "Run build expression BUILDER, an expression, for SYSTEM.  SOURCE is
 ignored."
   (define guile-for-build

@@ -81,10 +81,12 @@ MODULES =					\
   gnu/packages/compression.scm			\
   gnu/packages/cpio.scm				\
   gnu/packages/cppi.scm				\
+  gnu/packages/cross-base.scm			\
   gnu/packages/curl.scm				\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/dejagnu.scm			\
   gnu/packages/ddrescue.scm			\
+  gnu/packages/dwm.scm				\
   gnu/packages/ed.scm				\
   gnu/packages/emacs.scm			\
   gnu/packages/fdisk.scm			\
@@ -114,6 +116,7 @@ MODULES =					\
   gnu/packages/irssi.scm 			\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
+  gnu/packages/lesstif.scm			\
   gnu/packages/libapr.scm 			\
   gnu/packages/libdaemon.scm			\
   gnu/packages/libevent.scm			\
@@ -158,6 +161,7 @@ MODULES =					\
   gnu/packages/pth.scm				\
   gnu/packages/python.scm			\
   gnu/packages/qemu.scm				\
+  gnu/packages/ratpoison.scm			\
   gnu/packages/readline.scm			\
   gnu/packages/recutils.scm			\
   gnu/packages/rsync.scm			\
@@ -184,6 +188,7 @@ MODULES =					\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
   gnu/packages/xml.scm				\
+  gnu/packages/xorg.scm				\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
   gnu/system/vm.scm
@@ -209,6 +214,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/flac-fix-memcmp-not-declared.patch	\
   gnu/packages/patches/flex-bison-tests.patch			\
   gnu/packages/patches/gawk-shell.patch				\
+  gnu/packages/patches/gcc-cross-environment-variables.patch	\
   gnu/packages/patches/gettext-gets-undeclared.patch		\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
@@ -233,6 +239,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/make-impure-dirs.patch			\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
+  gnu/packages/patches/python-fix-dbm.patch			\
   gnu/packages/patches/procps-make-3.82.patch			\
   gnu/packages/patches/qemu-multiple-smb-shares.patch		\
   gnu/packages/patches/readline-link-ncurses.patch		\
@@ -240,7 +247,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
   gnu/packages/patches/vpnc-script.patch			\
-  gnu/packages/patches/w3m-fix-compile.patch
+  gnu/packages/patches/w3m-fix-compile.patch			\
+  gnu/packages/patches/xpdf-constchar.patch
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux

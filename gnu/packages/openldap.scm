@@ -55,7 +55,7 @@
              ("libtool" ,libtool "bin")
              ("zlib" ,zlib)))
    (arguments
-    `(#:parallel-tests? #f
+    `(#:tests? #f
       #:phases
        (alist-replace
         'configure
@@ -63,19 +63,7 @@
          (let ((configure (assoc-ref %standard-phases 'configure)))
            (apply configure args)
            (copy-file (which "libtool") "libtool")))
-       (alist-replace
-        'check
-        (lambda* (#:key #:allow-other-keys #:rest args)
-         (let ((check (assoc-ref %standard-phases 'check)))
-           (for-each (lambda (f)
-                       (substitute* (string-append "tests/scripts/" f)
-                                    (("/bin/rm") "rm")))
-                       '("all" "its-all" "passwd-search" "sql-all" "test027-emptydn"))
-           ;; disable especially finicky tests
-           (delete-file "tests/scripts/test058-syncrepl-asymmetric")
-           (delete-file "tests/scripts/test061-syncreplication-initiation")
-           (apply check args)))
-       %standard-phases))))
+       %standard-phases)))
    (synopsis "openldap, an implementation of the Lightweight Directory Access Protocol")
    (description
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
