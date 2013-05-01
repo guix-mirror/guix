@@ -3628,21 +3628,8 @@ tracking.")
       `(("gettext" ,gnu:gettext)
         ("intltool" ,intltool)
         ("libx11" ,libx11)
-        ;; required to set PERL5LIB, although it is propagated by intltool
-        ("perl-xml-parser" ,perl-xml-parser)
         ("pkg-config" ,pkg-config)
         ("xkbcomp" ,xkbcomp)))
-    (arguments
-      `(#:phases
-         (alist-replace
-          'configure
-          (lambda* (#:key inputs #:allow-other-keys #:rest args)
-            (let ((configure (assoc-ref %standard-phases 'configure))
-                  (perl-xml-parser (assoc-ref inputs "perl-xml-parser")))
-              ;; FIXME: This should be done more centrally.
-              (setenv "PERL5LIB" (string-append perl-xml-parser "/lib/perl5/site_perl"))
-              (apply configure args)))
-         %standard-phases)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
