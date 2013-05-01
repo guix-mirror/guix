@@ -103,17 +103,6 @@ things the parser might find in the XML document (like start tags).")
               ("libxml2" ,libxml2)
               ("python" ,python)
               ("zlib" ,zlib)))
-    (arguments
-      `(#:phases
-         (alist-replace
-          'configure
-          (lambda* (#:key inputs #:allow-other-keys #:rest args)
-            (let ((configure (assoc-ref %standard-phases 'configure))
-                  (libxml2 (assoc-ref inputs "libxml2")))
-              ;; FIXME: This should be done more centrally.
-              (setenv "PYTHONPATH" (string-append libxml2 "/lib/python2.7/site-packages"))
-              (apply configure args)))
-         %standard-phases)))
     (description
      "Libxslt is an XSLT C library developed for the GNOME project. It is
 based on libxml for XML parsing, tree manipulation and XPath support.")

@@ -4619,15 +4619,7 @@ tracking.")
           (lambda* (#:key #:allow-other-keys)
             ;; remove dangling symlink to /usr/include/wine/windows
             (delete-file "src/gallium/state_trackers/d3d1x/w32api"))
-         (alist-replace
-          'configure
-          (lambda* (#:key inputs #:allow-other-keys #:rest args)
-            (let ((configure (assoc-ref %standard-phases 'configure))
-                  (libxml2 (assoc-ref inputs "libxml2")))
-              ;; FIXME: This should be done more centrally.
-              (setenv "PYTHONPATH" (string-append libxml2 "/lib/python2.7/site-packages"))
-              (apply configure args)))
-         %standard-phases))))
+         %standard-phases)))
     (home-page "http://mesa3d.org/")
     (synopsis "Mesa, an OpenGL implementation")
     (description "Mesa is a free implementation of the OpenGL specification -
