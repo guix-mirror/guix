@@ -83,6 +83,46 @@ versions of ID3v2")
    (license license:gpl2+)
    (home-page "http://www.underbit.com/products/mad/")))
 
+(define-public id3lib
+  (package
+   (name "id3lib")
+   (version "3.8.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/id3lib/id3lib/"
+                                version "/id3lib-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "0yfhqwk0w8q2hyv1jib1008jvzmwlpsxvc8qjllhna6p1hycqj97"))))
+   (build-system gnu-build-system)
+   (arguments
+    `(#:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key #:allow-other-keys #:rest args)
+          (let ((configure (assoc-ref %standard-phases 'configure)))
+            (substitute* "configure"
+              (("iomanip.h") "")) ; drop check for unused header
+            ;; see http://www.linuxfromscratch.org/patches/downloads/id3lib/
+            (substitute* "include/id3/id3lib_strings.h"
+              (("include <string>") "include <cstring>\n#include <string>"))
+            (substitute* "include/id3/writers.h"
+              (("//\\#include <string.h>") "#include <cstring>"))
+            (substitute* "examples/test_io.cpp"
+              (("dami;") "dami;\nusing namespace std;"))
+            (apply configure args)))
+         %standard-phases)))
+   (synopsis "a library for reading, writing, and manipulating ID3v1 and ID3v2 tags")
+   (description
+    "id3lib is a cross-platform software development library for reading,
+writing, and manipulating ID3v1 and ID3v2 tags. It is an on-going project
+whose primary goals are full compliance with the ID3v2 standard, portability
+across several platforms, and providing a powerful and feature-rich API with
+a highly stable and efficient implementation.")
+   (license license:lgpl2.0+)
+   (home-page "http://id3lib.sourceforge.net/")))
+
 (define-public libmp3splt
   (package
    (name "libmp3splt")
