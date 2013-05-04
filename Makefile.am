@@ -108,6 +108,7 @@ MODULES =					\
   gnu/packages/groff.scm			\
   gnu/packages/grub.scm				\
   gnu/packages/gsasl.scm			\
+  gnu/packages/gtk.scm				\
   gnu/packages/guile.scm			\
   gnu/packages/help2man.scm			\
   gnu/packages/icu4c.scm			\
