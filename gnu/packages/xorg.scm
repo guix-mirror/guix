@@ -177,7 +177,7 @@ tracking.")
 
 
 
-    ;; packages without propagated input
+;; packages without propagated input
 ;; (rationale for this separation: The packages in PROPAGATED_INPUTS need to
 ;; be defined first, the split makes book-keeping easier.)
 
@@ -4841,6 +4841,36 @@ emulation to complete hardware acceleration for modern GPUs.")
         ("libxt" ,libxt)))
     (inputs
       `(("xproto" ,xproto)
+        ("pkg-config" ,pkg-config)))
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+
+;; package outside the x.org system proper of height 5
+
+(define-public libxaw3d
+  (package
+    (name "libxaw3d")
+    (version "1.6.2")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/lib/libXaw3d-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0awplv1nf53ywv01yxphga3v6dcniwqnxgnb0cn4khb121l12kxp"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libxext" ,libxext)
+        ("libxmu" ,libxmu)
+        ("libxt" ,libxt)))
+    (inputs
+      `(("libx11" ,libx11)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
