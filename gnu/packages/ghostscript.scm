@@ -216,3 +216,29 @@ library.")
 Ghostscript. It currently includes the 35 standard PostScript fonts.")
    (license license:gpl2)
    (home-page "http://sourceforge.net/projects/gs-fonts/")))
+
+(define-public gv
+  (package
+   (name "gv")
+   (version "3.7.4")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnu/gv/gv-"
+                                version ".tar.gz"))
+            (sha256 (base32
+                     "0q8s43z14vxm41pfa8s5h9kyyzk1fkwjhkiwbf2x70alm6rv6qi1"))))
+   (build-system gnu-build-system)
+   (propagated-inputs `(("ghostscript" ,ghostscript)))
+   (inputs `(("libx11" ,libx11)
+             ("libxaw3d" ,libxaw3d)
+             ("libxinerama" ,libxinerama)
+             ("libxpm" ,libxpm)
+             ("pkg-config" ,pkg-config)
+             ("zlib" ,zlib)))
+   (synopsis "postscript and pdf viewer for x")
+   (description
+    "GNU gv allows to view and navigate through PostScript and PDF documents
+on an X display by providing a graphical user interface for the Ghostscript
+interpreter.")
+   (license license:gpl3+)
+   (home-page "http://www.gnu.org/software/gv/")))
