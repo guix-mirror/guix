@@ -44,9 +44,9 @@
 
 (define %options
   ;; Specification of the command-line options.
-  (list (option '(#\n "dry-run") #f #f
+  (list (option '(#\u "update") #f #f
                 (lambda (opt name arg result)
-                  (alist-cons 'dry-run? #t result)))
+                  (alist-cons 'update? #t result)))
         (option '(#\s "select") #t #f
                 (lambda (opt name arg result)
                   (match arg
@@ -73,7 +73,7 @@ When PACKAGE... is given, update only the specified packages.  Otherwise
 update all the packages of the distribution, or the subset thereof
 specified with `--select'.\n"))
   (display (_ "
-  -n, --dry-run          do not build the derivations"))
+  -u, --update           update source files in place"))
   (display (_ "
   -s, --select=SUBSET    select all the packages in SUBSET, one of
                          `core' or `non-core'"))
@@ -121,7 +121,7 @@ update would trigger a complete rebuild."
         (member (package-name package) names))))
 
   (let* ((opts     (parse-options))
-         (dry-run? (assoc-ref opts 'dry-run?))
+         (update?  (assoc-ref opts 'update?))
          (packages (match (concatenate
                            (filter-map (match-lambda
                                         (('argument . value)
@@ -146,19 +146,7 @@ update would trigger a complete rebuild."
                      (some                        ; user-specified packages
                       some))))
     (with-error-handling
-      (if dry-run?
-          (for-each (lambda (package)
-                      (match (false-if-exception (package-update-path package))
-                        ((new-version . directory)
-                         (let ((loc (or (package-field-location package 'version)
-                                        (package-location package))))
-                           (format (current-error-port)
-                                   (_ "~a: ~a would be upgraded from ~a to ~a~%")
-                                   (location->string loc)
-                                   (package-name package) (package-version package)
-                                   new-version)))
-                        (_ #f)))
-                    packages)
+      (if update?
           (let ((store (open-connection)))
             (for-each (lambda (package)
                         (let-values (((version tarball)
@@ -179,4 +167,16 @@ update would trigger a complete rebuild."
                             (let ((hash (call-with-input-file tarball
                                           (compose sha256 get-bytevector-all))))
                               (update-package-source package version hash)))))
-                      packages))))))
+                      packages))
+          (for-each (lambda (package)
+                      (match (false-if-exception (package-update-path package))
+                        ((new-version . directory)
+                         (let ((loc (or (package-field-location package 'version)
+                                        (package-location package))))
+                           (format (current-error-port)
+                                   (_ "~a: ~a would be upgraded from ~a to ~a~%")
+                                   (location->string loc)
+                                   (package-name package) (package-version package)
+                                   new-version)))
+                        (_ #f)))
+                    packages)))))
