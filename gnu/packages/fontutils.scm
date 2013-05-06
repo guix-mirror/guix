@@ -32,9 +32,8 @@
    (version "2.4.11")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                   "http://download.savannah.gnu.org/releases/freetype/freetype-"
-                   version ".tar.gz"))
+            (uri (string-append "mirror://savannah/freetype/freetype-"
+                                version ".tar.gz"))
             (sha256 (base32
                      "0gpcz6swir64kp0dk3rwgqqkmf48b90dqgczdmznjjryhrahx9r9"))))
    (build-system gnu-build-system)
