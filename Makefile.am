@@ -93,6 +93,7 @@ MODULES =					\
   gnu/packages/file.scm				\
   gnu/packages/flex.scm				\
   gnu/packages/fontutils.scm			\
+  gnu/packages/freeipmi.scm			\
   gnu/packages/gawk.scm				\
   gnu/packages/gcc.scm				\
   gnu/packages/gdb.scm				\
