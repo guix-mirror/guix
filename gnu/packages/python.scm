@@ -24,6 +24,7 @@
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages patchelf)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -49,7 +50,8 @@
               (openssl (assoc-ref %build-inputs "openssl"))
               (readline (assoc-ref %build-inputs "readline"))
               (zlib (assoc-ref %build-inputs "zlib")))
-         (list (string-append "CPPFLAGS="
+         (list "--enable-shared"                  ; allow embedding
+               (string-append "CPPFLAGS="
                 "-I" bz2 "/include "
                 "-I" gdbm "/include "
                 "-I" openssl "/include "
@@ -60,13 +62,52 @@
                 "-L" gdbm "/lib "
                 "-L" openssl "/lib "
                 "-L" readline "/lib "
-                "-L" zlib "/lib")))))
+                "-L" zlib "/lib")))
+
+        #:modules ((guix build gnu-build-system)
+                   (guix build utils)
+                   (ice-9 popen)
+                   (ice-9 rdelim)
+                   (srfi srfi-26))
+
+        #:phases
+        (alist-cons-after
+         'strip 'add-lib-to-runpath
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; XXX: copied from Samba; TODO: factorize in a module
+
+           (define (file-rpath file)
+             ;; Return the RPATH of FILE.
+             (let* ((p (open-pipe* OPEN_READ "patchelf"
+                                   "--print-rpath" file))
+                    (l (read-line p)))
+               (and (zero? (close-pipe p)) l)))
+
+           (define (augment-rpath file dir)
+             ;; Add DIR to the RPATH of FILE.
+             (let* ((rpath  (file-rpath file))
+                    (rpath* (if rpath
+                                (string-append dir ":" rpath)
+                                dir)))
+               (format #t "~a: changing RPATH from `~a' to `~a'~%"
+                       file (or rpath "") rpath*)
+               (zero? (system* "patchelf" "--set-rpath"
+                               rpath* file))))
+
+           (let* ((out (assoc-ref outputs "out"))
+                  (lib (string-append out "/lib")))
+             ;; Add LIB to the RUNPATH of all the executables.
+             (with-directory-excursion out
+               (for-each (cut augment-rpath <> lib)
+                         (find-files "bin" ".*")))))
+         %standard-phases)))
     (inputs
      `(("bzip2" ,bzip2)
        ("gdbm" ,gdbm)
        ("openssl" ,openssl)
        ("readline" ,readline)
-       ("zlib" ,zlib)))
+       ("zlib" ,zlib)
+       ("patchelf" ,patchelf)))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
