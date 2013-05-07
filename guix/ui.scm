@@ -214,24 +214,24 @@ available for download."
     (if dry-run?
         (begin
           (format (current-error-port)
-                  (N_ "~:[the following derivation would be built:~%~{   ~a~%~}~;~]"
-                      "~:[the following derivations would be built:~%~{   ~a~%~}~;~]"
+                  (N_ "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
+                      "~:[The following derivations would be built:~%~{   ~a~%~}~;~]"
                       (length build))
                   (null? build) build)
           (format (current-error-port)
-                  (N_ "~:[the following file would be downloaded:~%~{   ~a~%~}~;~]"
-                      "~:[the following files would be downloaded:~%~{   ~a~%~}~;~]"
+                  (N_ "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
+                      "~:[The following files would be downloaded:~%~{   ~a~%~}~;~]"
                       (length download))
                   (null? download) download))
         (begin
           (format (current-error-port)
-                  (N_ "~:[the following derivation will be built:~%~{   ~a~%~}~;~]"
-                      "~:[the following derivations will be built:~%~{   ~a~%~}~;~]"
+                  (N_ "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
+                      "~:[The following derivations will be built:~%~{   ~a~%~}~;~]"
                       (length build))
                   (null? build) build)
           (format (current-error-port)
-                  (N_ "~:[the following file will be downloaded:~%~{   ~a~%~}~;~]"
-                      "~:[the following files will be downloaded:~%~{   ~a~%~}~;~]"
+                  (N_ "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
+                      "~:[The following files will be downloaded:~%~{   ~a~%~}~;~]"
                       (length download))
                   (null? download) download)))
     (pair? build)))
