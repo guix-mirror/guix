@@ -83,10 +83,12 @@ SMTP/IMAP servers. GSS consists of a library and a manual.")
    (build-system gnu-build-system)
    (inputs `(("libidn" ,libidn)
              ("libntlm" ,libntlm)
-             ("gnutls" ,gnutls)
              ("gss" ,gss)
-             ("zlib" ,guix:zlib)
-             ))
+             ("zlib" ,guix:zlib)))
+   (propagated-inputs
+    ;; Propagate GnuTLS because libgnutls.la reads `-lnettle', and Nettle is a
+    ;; propagated input of GnuTLS.
+    `(("gnutls" ,gnutls)))
    (synopsis "Simple Authentication and Security Layer library")
    (description
     "GNU SASL is an implementation of the Simple Authentication and Security
