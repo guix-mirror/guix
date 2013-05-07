@@ -653,17 +653,17 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
       (match install
         (((name version _ path _) ..1)
          (let ((len     (length name))
-               (install (map (cut format #f "  ~a-~a\t~a" <> <> <>)
+               (install (map (cut format #f "   ~a-~a\t~a" <> <> <>)
                              name version path)))
            (if dry-run?
                (format (current-error-port)
-                       (N_ "The following package would be installed:~% ~{~a~%~}~%"
-                           "The following packages would be installed:~% ~{~a~%~}~%"
+                       (N_ "The following package would be installed:~%~{~a~%~}~%"
+                           "The following packages would be installed:~%~{~a~%~}~%"
                            len)
                        install)
                (format (current-error-port)
-                       (N_ "The following package will be installed:~% ~{~a~%~}~%"
-                           "The following packages will be installed:~% ~{~a~%~}~%"
+                       (N_ "The following package will be installed:~%~{~a~%~}~%"
+                           "The following packages will be installed:~%~{~a~%~}~%"
                            len)
                        install))))
         (_ #f)))
