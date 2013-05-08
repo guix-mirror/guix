@@ -520,10 +520,11 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
           ((_ version pkgs ...) pkgs)
           (#f '()))))
 
-  (define (find-package name)
+  (define* (find-package name #:optional (output "out"))
     ;; Find the package NAME; NAME may contain a version number and a
     ;; sub-derivation name.  If the version number is not present,
-    ;; return the preferred newest version.
+    ;; return the preferred newest version.  If the sub-derivation name is not
+    ;; present, use OUTPUT.
     (define request name)
 
     (define (ensure-output p sub-drv)
@@ -535,7 +536,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
 
     (let*-values (((name sub-drv)
                    (match (string-rindex name #\:)
-                     (#f    (values name "out"))
+                     (#f    (values name output))
                      (colon (values (substring name 0 colon)
                                     (substring name (+ 1 colon))))))
                   ((name version)
@@ -687,7 +688,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                                              (and (any (cut regexp-exec <> name)
                                                        upgrade-regexps)
                                                   (upgradeable? name version path)
-                                                  (find-package name)))
+                                                  (find-package name
+                                                                (or output "out"))))
                                             (_ #f))
                                            installed))))
                (install  (append
