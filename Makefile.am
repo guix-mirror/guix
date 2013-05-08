@@ -58,6 +58,7 @@ MODULES =					\
   guix/build/perl-build-system.scm		\
   guix/build/utils.scm				\
   guix/build/union.scm				\
+  guix/build/rpath.scm				\
   guix/packages.scm				\
   guix/snix.scm					\
   guix.scm					\

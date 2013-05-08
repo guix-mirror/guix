@@ -111,24 +111,6 @@ anywhere.")
                  (alist-cons-after
                   'strip 'add-lib-to-runpath
                   (lambda* (#:key outputs #:allow-other-keys)
-                    (define (file-rpath file)
-                      ;; Return the RPATH of FILE.
-                      (let* ((p (open-pipe* OPEN_READ "patchelf"
-                                            "--print-rpath" file))
-                             (l (read-line p)))
-                        (and (zero? (close-pipe p)) l)))
-
-                    (define (augment-rpath file dir)
-                      ;; Add DIR to the RPATH of FILE.
-                      (let* ((rpath  (file-rpath file))
-                             (rpath* (if rpath
-                                         (string-append dir ":" rpath)
-                                         dir)))
-                        (format #t "~a: changing RPATH from `~a' to `~a'~%"
-                                file (or rpath "") rpath*)
-                        (zero? (system* "patchelf" "--set-rpath"
-                                        rpath* file))))
-
                     (let* ((out (assoc-ref outputs "out"))
                            (lib (string-append out "/lib")))
                       ;; Add LIB to the RUNPATH of all the executables.
@@ -140,9 +122,11 @@ anywhere.")
 
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
-                  (ice-9 popen)
-                  (ice-9 rdelim)
+                  (guix build rpath)
                   (srfi srfi-26))
+       #:imported-modules ((guix build gnu-build-system)
+                           (guix build utils)
+                           (guix build rpath))
 
        ;; This flag is required to allow for "make test".
        #:configure-flags '("--enable-socket-wrapper")
@@ -163,7 +147,7 @@ anywhere.")
        ("openldap" ,openldap)
        ("linux-pam" ,linux-pam)
        ("readline" ,readline)
-       ("patchelf" ,patchelf)))
+       ("patchelf" ,patchelf)))                   ; for (guix build rpath)
     (native-inputs                                ; for the test suite
      `(("perl" ,perl)
        ("python" ,python)))
