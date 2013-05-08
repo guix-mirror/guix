@@ -652,10 +652,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                        remove))))
         (_ #f))
       (match install
-        (((name version _ path _) ..1)
+        (((name version output path _) ..1)
          (let ((len     (length name))
-               (install (map (cut format #f "   ~a-~a\t~a" <> <> <>)
-                             name version path)))
+               (install (map (cut format #f "   ~a-~a\t~a\t~a" <> <> <> <>)
+                             name version output path)))
            (if dry-run?
                (format (current-error-port)
                        (N_ "The following package would be installed:~%~{~a~%~}~%"
