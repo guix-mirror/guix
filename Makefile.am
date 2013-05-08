@@ -73,6 +73,7 @@ MODULES =					\
   gnu/packages/avahi.scm			\
   gnu/packages/base.scm				\
   gnu/packages/bash.scm				\
+  gnu/packages/bazaar.scm			\
   gnu/packages/bdb.scm				\
   gnu/packages/bdw-gc.scm			\
   gnu/packages/bison.scm			\
