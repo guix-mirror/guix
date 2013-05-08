@@ -1,4 +1,6 @@
-Guix NEWS – history of user-visible changes.                  -*- org -*-
+                                                              -*- org -*-
+#+TITLE: Guix NEWS – history of user-visible changes
+#+STARTUP: content hidestars
 
 Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 
@@ -18,6 +20,11 @@ Please send Guix bug reports to bug-guix@gnu.org.
 Instead of typing “guix-package”, one now has to type “guix package”, and so
 on.  This has allowed us to homogenize the user interface and initial program
 setup, and to allow commands to be upgradable through “guix pull”.
+
+*** New “guix package --upgrade” option
+
+As the name implies, this option atomically upgrades all the packages
+installed in a profile.  See “Invoking guix package” in the manual.
 
 *** New “guix pull” command
 
@@ -80,4 +87,4 @@ Coreutils 8.20, GDB 7.6, Texinfo 5.1.
 
 *** Noteworthy new packages
 
-TeXLive 2012, Xorg, GNU Parted, QEMU and QEMU-KVM, Avahi, Python, Lua, Samba.
+TeXLive, Xorg, GNU Parted, QEMU and QEMU-KVM, Avahi, Hugs, Python, Lua, Samba.
