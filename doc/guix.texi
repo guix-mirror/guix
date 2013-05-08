@@ -896,7 +896,9 @@ Once a package definition is in place@footnote{Simple package
 definitions like the one above may be automatically converted from the
 Nixpkgs distribution using the @command{guix import} command.}, the
 package may actually be built using the @code{guix build} command-line
-tool (@pxref{Invoking guix build}).
+tool (@pxref{Invoking guix build}).  Eventually, updating the package
+definition to a new upstream version can be partly automated by the
+@command{guix refresh} command (@pxref{Invoking guix refresh}).
 
 Behind the scenes, a derivation corresponding to the @code{<package>}
 object is first computed by the @code{package-derivation} procedure.
@@ -1114,8 +1116,9 @@ space.
 @chapter Utilities
 
 @menu
-* Invoking guix build:: Building packages from the command line.
-* Invoking guix hash:: Computing the cryptographic hash of a file.
+* Invoking guix build::         Building packages from the command line.
+* Invoking guix hash::          Computing the cryptographic hash of a file.
+* Invoking guix refresh::       Updating package definitions.
 @end menu
 
 @node Invoking guix build
@@ -1241,6 +1244,75 @@ will output the hash in @code{nix-base32}.  This representation is used
 in the definitions of packages.
 
 @end table
+
+@node Invoking guix refresh
+@section Invoking @command{guix refresh}
+
+The primary audience of the @command{guix refresh} command is developers
+of the GNU software distribution.  By default, it reports any packages
+provided by the distribution that are outdated compared to the latest
+upstream version, like this:
+
+@example
+$ guix refresh
+gnu/packages/gettext.scm:29:13: gettext would be upgraded from 0.18.1.1 to 0.18.2.1
+gnu/packages/glib.scm:77:12: glib would be upgraded from 2.34.3 to 2.37.0
+@end example
+
+It does so by browsing each package's FTP directory and determining the
+highest version number of the source tarballs
+therein@footnote{Currently, this only works for GNU packages.}.
+
+When passed @code{--update}, it modifies distribution source files to
+update the version numbers and source tarball hashes of those packages'
+recipes (@pxref{Defining Packages}).  This is achieved by downloading
+each package's latest source tarball and its associated OpenPGP
+signature, authenticating the downloaded tarball against its signature
+using @command{gpg}, and finally computing its hash.  When the public
+key used to sign the tarball is missing from the user's keyring, an
+attempt is made to automatically retrieve it from a public key server;
+when it's successful, the key is added to the user's keyring; otherwise,
+@command{guix refresh} reports an error.
+
+The following options are supported:
+
+@table @code
+
+@item --update
+@itemx -u
+Update distribution source files (package recipes) in place.
+@ref{Defining Packages}, for more information on package definitions.
+
+@item --select=[@var{subset}]
+@itemx -s @var{subset}
+Select all the packages in @var{subset}, one of @code{core} or
+@code{non-core}.
+
+The @code{core} subset refers to all the packages at the core of the
+distribution---i.e., packages that are used to build ``everything
+else''.  This includes GCC, libc, Binutils, Bash, etc.  Usually,
+changing one of these packages in the distribution entails a rebuild of
+all the others.  Thus, such updates are an inconvenience to users in
+terms of build time or bandwidth used to achieve the upgrade.
+
+The @code{non-core} subset refers to the remaining packages.  It is
+typically useful in cases where an update of the core packages would be
+inconvenient.
+
+@end table
+
+In addition, @command{guix refresh} can be passed one or more package
+names, as in this example:
+
+@example
+guix refresh -u emacs idutils
+@end example
+
+@noindent
+The command above specifically updates the @code{emacs} and
+@code{idutils} packages.  The @code{--select} option would have no
+effect in this case.
+
 
 @c *********************************************************************
 @node GNU Distribution
