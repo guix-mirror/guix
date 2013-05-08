@@ -19,7 +19,7 @@
 
 (define-module (gnu packages base)
   #:use-module ((guix licenses)
-                #:select (gpl3+ lgpl2.0+))
+                #:select (gpl3+ lgpl2.0+ public-domain))
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages bash)
@@ -499,6 +499,74 @@ The GNU C library is used as the C library in the GNU system and most systems
 with the Linux kernel.")
    (license lgpl2.0+)
    (home-page "http://www.gnu.org/software/libc/")))
+
+(define-public tzdata
+  (package
+    (name "tzdata")
+    (version "2013c")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://www.iana.org/time-zones/repository/releases/tzdata"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "11swq6fg20m2dh520qcr8vb23gqhzbvqhizx8wifnmci4gmsg5z5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:tests? #f
+       #:make-flags (let ((out (assoc-ref %outputs "out"))
+                          (tmp (getenv "TMPDIR")))
+                      (list (string-append "TOPDIR=" out)
+                            (string-append "TZDIR=" out "/share/zoneinfo")
+
+                            ;; Discard zic, dump, and tzselect, already
+                            ;; provided by glibc.
+                            (string-append "ETCDIR=" tmp "/etc")
+
+                            ;; Likewise for the C library routines.
+                            (string-append "LIBDIR=" tmp "/lib")
+                            (string-append "MANDIR=" tmp "/man")
+
+                            "AWK=awk"
+                            "CC=gcc"))
+       #:modules ((guix build utils)
+                  (guix build gnu-build-system)
+                  (srfi srfi-1))
+       #:phases
+       (alist-replace
+        'unpack
+        (lambda* (#:key inputs #:allow-other-keys)
+          (and (zero? (system* "tar" "xvf" (assoc-ref inputs "source")))
+               (zero? (system* "tar" "xvf" (assoc-ref inputs "tzcode")))))
+        (alist-cons-after
+         'install 'post-install
+         (lambda* (#:key outputs #:allow-other-keys)
+           ;; Move data in the right place.
+           (let ((out (assoc-ref outputs "out")))
+             (copy-recursively (string-append out "/share/zoneinfo-posix")
+                               (string-append out "/share/zoneinfo/posix"))
+             (copy-recursively (string-append out "/share/zoneinfo-leaps")
+                               (string-append out "/share/zoneinfo/right"))
+             (delete-file-recursively (string-append out "/share/zoneinfo-posix"))
+             (delete-file-recursively (string-append out "/share/zoneinfo-leaps"))))
+         (alist-delete 'configure %standard-phases)))))
+    (inputs `(("tzcode" ,(origin
+                          (method url-fetch)
+                          (uri (string-append
+                                "http://www.iana.org/time-zones/repository/releases/tzcode"
+                                version ".tar.gz"))
+                          (sha256
+                           (base32
+                            "1w6nkdwhi6k9llshp4baac1yj43jqf3apdf6n66i0wvjj8qyjvp4"))))))
+    (home-page "http://www.iana.org/time-zones")
+    (synopsis "Database of current and historical time zones")
+    (description "The Time Zone Database (often called tz or zoneinfo)
+contains code and data that represent the history of local time for many
+representative locations around the globe. It is updated periodically to
+reflect changes made by political bodies to time zone boundaries, UTC offsets,
+and daylight-saving rules.")
+    (license public-domain)))
 
 
 ;;;
