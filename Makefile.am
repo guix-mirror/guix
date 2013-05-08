@@ -46,6 +46,7 @@ MODULES =					\
   guix/build-system/cmake.scm			\
   guix/build-system/gnu.scm			\
   guix/build-system/perl.scm			\
+  guix/build-system/python.scm			\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
   guix/web.scm					\
@@ -56,6 +57,7 @@ MODULES =					\
   guix/build/cmake-build-system.scm		\
   guix/build/gnu-build-system.scm		\
   guix/build/perl-build-system.scm		\
+  guix/build/python-build-system.scm		\
   guix/build/utils.scm				\
   guix/build/union.scm				\
   guix/build/rpath.scm				\
