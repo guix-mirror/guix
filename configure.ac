@@ -47,6 +47,9 @@ if test "x$GUILD" = "x"; then
    AC_MSG_ERROR(['guild' binary not found; please check your guile-2.x installation.])
 fi
 
+dnl Make sure we have a full-fledged Guile.
+GUIX_ASSERT_GUILE_FEATURES([regex posix socket net-db threads])
+
 AC_ARG_WITH([nix-prefix],
   [AS_HELP_STRING([--with-nix-prefix=DIR], [search for Nix in DIR])],
   [case "$withval" in

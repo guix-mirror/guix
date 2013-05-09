@@ -67,3 +67,20 @@ AC_DEFUN([GUIX_SYSTEM_TYPE], [
 
   AC_SUBST([guix_system])
 ])
+
+dnl GUIX_ASSERT_GUILE_FEATURES FEATURES
+dnl
+dnl Assert that FEATURES are provided by $GUILE.
+AC_DEFUN([GUIX_ASSERT_GUILE_FEATURES], [
+  for guix_guile_feature in $1
+  do
+    AC_MSG_CHECKING([whether $GUILE provides feature '$guix_guile_feature'])
+    if "$GUILE" -c "(exit (provided? '$guix_guile_feature))"
+    then
+      AC_MSG_RESULT([yes])
+    else
+      AC_MSG_RESULT([no])
+      AC_MSG_ERROR([$GUILE does not support feature '$guix_guile_feature', which is required.])
+    fi
+  done
+])
