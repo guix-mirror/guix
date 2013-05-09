@@ -101,6 +101,12 @@ abbreviation of URI showing the scheme, host, and basename of the file."
 (module-autoload! (current-module)
                   '(gnutls) '(make-session connection-end/client))
 
+(define add-weak-reference
+  (let ((table (make-weak-key-hash-table)))
+    (lambda (from to)
+      "Hold a weak reference from FROM to TO."
+      (hashq-set! table from to))))
+
 (define (tls-wrap port)
   "Return PORT wrapped in a TLS connection."
   (define (log level str)
@@ -117,7 +123,13 @@ abbreviation of URI showing the scheme, host, and basename of the file."
     ;;(set-log-procedure! log)
 
     (handshake session)
-    (session-record-port session)))
+    (let ((record (session-record-port session)))
+      ;; Since we use `fileno' above, the file descriptor behind PORT would be
+      ;; closed when PORT is GC'd.  If we used `port->fdes', it would instead
+      ;; never be closed.  So we use `fileno', but keep a weak reference to
+      ;; PORT, so the file descriptor gets closed when RECORD is GC'd.
+      (add-weak-reference record port)
+      record)))
 
 (define (open-connection-for-uri uri)
   "Return an open input/output port for a connection to URI.
