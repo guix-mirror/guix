@@ -212,6 +212,7 @@ stored."
       ("icecat"       "ftp.gnu.org" "/gnu/gnuzilla")
       ("source-highlight" "ftp.gnu.org" "/gnu/src-highlite")
       ("glib"         "ftp.gnome.org" "/pub/gnome/sources/glib")
+      ("gnutls"       "ftp.gnutls.org" "/gcrypt/gnutls")
       ("TeXmacs"      "ftp.texmacs.org" "/TeXmacs/targz")))
 
   (match (assoc project quirks)
