@@ -336,38 +336,46 @@ but ~a is available upstream~%")
 PACKAGES in PROFILE.  Use GETENV to determine the current settings and report
 only settings not already effective."
 
-  ;; The search path info is not stored in the manifest.  Thus, we infer the
-  ;; search paths from same-named packages found in the distro.
+  ;; Prefer ~/.guix-profile to the real profile directory name.
+  (let ((profile (if (and %user-environment-directory
+                          (false-if-exception
+                           (string=? (readlink %user-environment-directory)
+                                     profile)))
+                     %user-environment-directory
+                     profile)))
 
-  (define package-in-manifest->package
-    (match-lambda
-     ((name version _ ...)
-      (match (append (find-packages-by-name name version)
-                     (find-packages-by-name name))
-        ((p _ ...) p)
-        (_ #f)))))
+    ;; The search path info is not stored in the manifest.  Thus, we infer the
+    ;; search paths from same-named packages found in the distro.
 
-  (define search-path-definition
-    (match-lambda
-     (($ <search-path-specification> variable directories separator)
-      (let ((values      (or (and=> (getenv variable)
-                                    (cut string-tokenize* <> separator))
-                             '()))
-            (directories (filter file-exists?
-                                 (map (cut string-append profile
-                                           "/" <>)
-                                      directories))))
-        (if (every (cut member <> values) directories)
-            #f
-            (format #f "export ~a=\"~a\""
-                    variable
-                    (string-join directories separator)))))))
+    (define package-in-manifest->package
+      (match-lambda
+       ((name version _ ...)
+        (match (append (find-packages-by-name name version)
+                       (find-packages-by-name name))
+          ((p _ ...) p)
+          (_ #f)))))
 
-  (let* ((packages     (filter-map package-in-manifest->package packages))
-         (search-paths (delete-duplicates
-                        (append-map package-native-search-paths
-                                    packages))))
-    (filter-map search-path-definition search-paths)))
+    (define search-path-definition
+      (match-lambda
+       (($ <search-path-specification> variable directories separator)
+        (let ((values      (or (and=> (getenv variable)
+                                      (cut string-tokenize* <> separator))
+                               '()))
+              (directories (filter file-exists?
+                                   (map (cut string-append profile
+                                             "/" <>)
+                                        directories))))
+          (if (every (cut member <> values) directories)
+              #f
+              (format #f "export ~a=\"~a\""
+                      variable
+                      (string-join directories separator)))))))
+
+    (let* ((packages     (filter-map package-in-manifest->package packages))
+           (search-paths (delete-duplicates
+                          (append-map package-native-search-paths
+                                      packages))))
+      (filter-map search-path-definition search-paths))))
 
 (define (display-search-paths packages profile)
   "Display the search path environment variables that may need to be set for
@@ -375,7 +383,7 @@ PACKAGES, in the context of PROFILE."
   (let ((settings (search-path-environment-variables packages profile)))
     (unless (null? settings)
       (format #t (_ "The following environment variable definitions may be needed:~%"))
-      (format #t "~{    ~a~%~}" settings))))
+      (format #t "~{   ~a~%~}" settings))))
 
 
 ;;;
