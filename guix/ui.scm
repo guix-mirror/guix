@@ -387,7 +387,8 @@ reporting."
 
 (define (show-guix-usage)
   (format (current-error-port)
-          (_ "Usage: guix COMMAND ARGS...~%")))
+          (_ "Try `guix --help' for more information.~%"))
+  (exit 1))
 
 (define (command-files)
   "Return the list of source files that define Guix sub-commands."
@@ -428,7 +429,9 @@ found."
       (lambda ()
         (resolve-interface `(guix scripts ,command)))
       (lambda -
-        (leave (_ "~a: command not found~%") command))))
+        (format (current-error-port)
+                (_ "guix: ~a: command not found~%") command)
+        (show-guix-usage))))
 
   (let ((command-main (module-ref module
                                   (symbol-append 'guix- command))))
@@ -443,10 +446,18 @@ found."
   (let ()
     (define (option? str) (string-prefix? "-" str))
     (match args
-      (() (show-guix-usage) (exit 1))
-      (("--help") (show-guix-help))
-      (("--version") (show-version-and-exit "guix"))
-      (((? option?) args ...) (show-guix-usage) (exit 1))
+      (()
+       (format (current-error-port)
+               (_ "guix: missing command name~%"))
+       (show-guix-usage))
+      (("--help")
+       (show-guix-help))
+      (("--version")
+       (show-version-and-exit "guix"))
+      (((? option? o) args ...)
+       (format (current-error-port)
+               (_ "guix: unrecognized option '~a'~%") o)
+       (show-guix-usage))
       ((command args ...)
        (apply run-guix-command
               (string->symbol command)
