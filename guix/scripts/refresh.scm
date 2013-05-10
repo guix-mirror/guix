@@ -160,13 +160,21 @@ update would trigger a complete rebuild."
                                                                   'version)
                                           (package-location package))))
                           (when version
-                            (format (current-error-port)
-                                    (_ "~a: ~a: updating from version ~a to version ~a...~%")
-                                    (location->string loc) (package-name package)
-                                    (package-version package) version)
-                            (let ((hash (call-with-input-file tarball
-                                          (compose sha256 get-bytevector-all))))
-                              (update-package-source package version hash)))))
+                            (if (and=> tarball file-exists?)
+                                (begin
+                                  (format (current-error-port)
+                                          (_ "~a: ~a: updating from version ~a to version ~a...~%")
+                                          (location->string loc)
+                                          (package-name package)
+                                          (package-version package) version)
+                                  (let ((hash (call-with-input-file tarball
+                                                (compose sha256
+                                                         get-bytevector-all))))
+                                    (update-package-source package version
+                                                           hash)))
+                                (warning (_ "~a: version ~a could not be \
+downloaded and authenticated; not updating")
+                                         (package-name package) version)))))
                       packages))
           (for-each (lambda (package)
                       (match (false-if-exception (package-update-path package))
