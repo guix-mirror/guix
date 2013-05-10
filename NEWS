@@ -24,7 +24,8 @@ setup, and to allow commands to be upgradable through “guix pull”.
 *** New “guix package --upgrade” option
 
 As the name implies, this option atomically upgrades all the packages
-installed in a profile.  See “Invoking guix package” in the manual.
+installed in a profile or the set of packages matching a given regexp.
+See “Invoking guix package” in the manual.
 
 *** New “guix pull” command
 
