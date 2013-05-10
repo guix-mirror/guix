@@ -157,6 +157,14 @@ case when generations have been deleted (there are \"holes\")."
 (define (profile-derivation store packages)
   "Return a derivation that builds a profile (a user environment) with
 all of PACKAGES, a list of name/version/output/path/deps tuples."
+  (define packages*
+    ;; Turn any package object in PACKAGES into its output path.
+    (map (match-lambda
+          ((name version output path (deps ...))
+           `(,name ,version ,output ,path
+                   ,(map input->name+path deps))))
+         packages))
+
   (define builder
     `(begin
        (use-modules (ice-9 pretty-print)
@@ -173,8 +181,17 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
          (call-with-output-file (string-append output "/manifest")
            (lambda (p)
              (pretty-print '(manifest (version 1)
-                                      (packages ,packages))
+                                      (packages ,packages*))
                            p))))))
+
+  (define ensure-valid-input
+    ;; If a package object appears in the given input, turn it into a
+    ;; derivation path.
+    (match-lambda
+     ((name (? package? p) sub-drv ...)
+      `(,name ,(package-derivation (%store) p) ,@sub-drv))
+     (input
+      input)))
 
   (build-expression->derivation store "user-environment"
                                 (%current-system)
@@ -182,7 +199,8 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
                                 (append-map (match-lambda
                                              ((name version output path deps)
                                               `((,name ,path)
-                                                ,@deps)))
+                                                ,@(map ensure-valid-input
+                                                       deps))))
                                             packages)
                                 #:modules '((guix build union))))
 
@@ -256,15 +274,12 @@ matching packages."
   "Convert the name/package/sub-drv tuple INPUT to a name/store-path tuple."
   (let loop ((input input))
     (match input
-      ((name package)
+      ((name (? package? package))
        (loop `(,name ,package "out")))
-      ((name package sub-drv)
-       (let*-values (((_ drv)
-                      (package-derivation (%store) package))
-                     ((out)
-                      (derivation-output-path
-                       (assoc-ref (derivation-outputs drv) sub-drv))))
-         `(,name ,out))))))
+      ((name (? package? package) sub-drv)
+       `(,name ,(package-output (%store) package sub-drv)))
+      (_
+       input))))
 
 (define %sigint-prompt
   ;; The prompt to jump to upon SIGINT.
@@ -619,12 +634,18 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
       ;; where each input is a name/path tuple.
       (define (same? d1 d2)
         (match d1
-          ((_ path1)
+          ((_ p1)
            (match d2
-             ((_ path2)
-              (string=? path1 path2))))))
+             ((_ p2) (eq? p1 p2))
+             (_      #f)))
+          ((_ p1 out1)
+           (match d2
+             ((_ p2 out2)
+              (and (string=? out1 out2)
+                   (eq? p1 p2)))
+             (_ #f)))))
 
-      (delete-duplicates (map input->name+path deps) same?))
+      (delete-duplicates deps same?))
 
     (define (package->tuple p)
       (let ((path (package-derivation (%store) p))
