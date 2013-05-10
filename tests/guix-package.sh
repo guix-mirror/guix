@@ -117,6 +117,7 @@ then
     guix package --bootstrap -p "$profile" -e "$boot_make"
     test "`readlink_base "$profile"`" = "$profile-2-link"
     test -x "$profile/bin/guile" && test -x "$profile/bin/make"
+    grep "`guix build -e "$boot_make"`" "$profile/manifest"
 
     # Make a "hole" in the list of generations, and make sure we can
     # roll back "over" it.

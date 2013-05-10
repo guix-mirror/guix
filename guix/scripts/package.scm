@@ -648,15 +648,15 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
       (delete-duplicates deps same?))
 
     (define (package->tuple p)
-      (let ((path (package-derivation (%store) p))
-            (deps (package-transitive-propagated-inputs p)))
+      ;; Convert package P to a tuple.
+      ;; When given a package via `-e', install the first of its
+      ;; outputs (XXX).
+      (let* ((out  (car (package-outputs p)))
+             (path (package-output (%store) p out))
+             (deps (package-transitive-propagated-inputs p)))
         `(,(package-name p)
           ,(package-version p)
-
-          ;; When given a package via `-e', install the first of its
-          ;; outputs (XXX).
-          ,(car (package-outputs p))
-
+          ,out
           ,path
           ,(canonicalize-deps deps))))
 
