@@ -30,6 +30,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
+  #:autoload   (ice-9 ftw)  (scandir)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:export (_
@@ -385,9 +386,35 @@ reporting."
              (apply format #f msg args)))))
 
 (define (show-guix-usage)
-  ;; TODO: Dynamically generate a summary of available commands.
   (format (current-error-port)
           (_ "Usage: guix COMMAND ARGS...~%")))
+
+(define (command-files)
+  "Return the list of source files that define Guix sub-commands."
+  (define directory
+    (and=> (search-path %load-path "guix.scm")
+           (compose (cut string-append <> "/guix/scripts")
+                    dirname)))
+
+  (if directory
+      (scandir directory (cut string-suffix? ".scm" <>))
+      '()))
+
+(define (commands)
+  "Return the list of Guix command names."
+  (map (compose (cut string-drop-right <> 4)
+                basename)
+       (command-files)))
+
+(define (show-guix-help)
+  (format #t (_ "Usage: guix COMMAND ARGS...
+Run COMMAND with ARGS.\n"))
+  (newline)
+  (format #t (_ "COMMAND must be one of the sub-commands listed below:\n"))
+  (newline)
+  ;; TODO: Display a synopsis of each command.
+  (format #t "~{   ~a~%~}" (commands))
+  (show-bug-report-information))
 
 (define program-name
   ;; Name of the command-line program currently executing, or #f.
@@ -417,7 +444,7 @@ found."
     (define (option? str) (string-prefix? "-" str))
     (match args
       (() (show-guix-usage) (exit 1))
-      (("--help") (show-guix-usage))
+      (("--help") (show-guix-help))
       (("--version") (show-version-and-exit "guix"))
       (((? option?) args ...) (show-guix-usage) (exit 1))
       ((command args ...)
