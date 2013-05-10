@@ -389,16 +389,24 @@ reporting."
   (format (current-error-port)
           (_ "Usage: guix COMMAND ARGS...~%")))
 
-(define (run-guix-command command . args)
-  ;; TODO: Gracefully report errors
-  (let* ((module (resolve-interface `(guix scripts ,command)))
-         (command-main (module-ref module
-                                   (symbol-append 'guix- command))))
-    (apply command-main args)))
-
 (define program-name
   ;; Name of the command-line program currently executing, or #f.
   (make-parameter #f))
+
+(define (run-guix-command command . args)
+  "Run COMMAND with the given ARGS.  Report an error when COMMAND is not
+found."
+  (define module
+    (catch 'misc-error
+      (lambda ()
+        (resolve-interface `(guix scripts ,command)))
+      (lambda -
+        (leave (_ "~a: command not found~%") command))))
+
+  (let ((command-main (module-ref module
+                                  (symbol-append 'guix- command))))
+    (parameterize ((program-name command))
+      (apply command-main args))))
 
 (define guix-warning-port
   (make-parameter (current-warning-port)))
@@ -413,9 +421,8 @@ reporting."
       (("--version") (show-version-and-exit "guix"))
       (((? option?) args ...) (show-guix-usage) (exit 1))
       ((command args ...)
-       (parameterize ((program-name command))
-         (apply run-guix-command
-                (string->symbol command)
-                args))))))
+       (apply run-guix-command
+              (string->symbol command)
+              args)))))
 
 ;;; ui.scm ends here
