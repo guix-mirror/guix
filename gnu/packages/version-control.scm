@@ -16,10 +16,11 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages bazaar)
-  #:use-module ((guix licenses) #:select (gpl2+))
+(define-module (gnu packages version-control)
+  #:use-module ((guix licenses) #:select (gpl2+ gpl3+))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build utils)
   #:use-module ((gnu packages gettext)
@@ -52,3 +53,25 @@ central version control and distributed version control.  Developers can
 organize their workspace in whichever way they want.  It is possible to work
 from a command line or use a GUI application.")
     (license gpl2+)))
+
+(define-public rcs
+  (package
+    (name "rcs")
+    (version "5.9.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/rcs/rcs-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0w26vsx732dcmb5qfhlkkzvrk1sx6d74qibrn914n14j0ci90jcq"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.gnu.org/software/rcs/")
+    (synopsis "Per-file local revision control system")
+    (description
+     "The GNU Revision Control System (RCS) manages multiple revisions of
+files. RCS automates the storing, retrieval, logging, identification, and
+merging of revisions.  RCS is useful for text that is revised frequently,
+including source code, programs, documentation, graphics, papers, and form
+letters.")
+    (license gpl3+)))

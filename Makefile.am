@@ -73,7 +73,6 @@ MODULES =					\
   gnu/packages/avahi.scm			\
   gnu/packages/base.scm				\
   gnu/packages/bash.scm				\
-  gnu/packages/bazaar.scm			\
   gnu/packages/bdb.scm				\
   gnu/packages/bdw-gc.scm			\
   gnu/packages/bison.scm			\
@@ -191,6 +190,7 @@ MODULES =					\
   gnu/packages/time.scm				\
   gnu/packages/tmux.scm 			\
   gnu/packages/tor.scm				\
+  gnu/packages/version-control.scm		\
   gnu/packages/vim.scm 				\
   gnu/packages/vpn.scm				\
   gnu/packages/w3m.scm				\
