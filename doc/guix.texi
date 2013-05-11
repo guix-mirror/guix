@@ -835,8 +835,8 @@ The @code{sha256} field specifies the expected SHA256 hash of the file
 being downloaded.  It is mandatory, and allows Guix to check the
 integrity of the file.  The @code{(base32 @dots{})} form introduces the
 base32 representation of the hash.  You can obtain this information with
-the @code{guix hash} (@pxref{Invoking guix hash}) and @code{guix
-download} tools.
+@code{guix download} (@pxref{Invoking guix download}) and @code{guix
+hash} (@pxref{Invoking guix hash}).
 
 @item
 @cindex GNU Build System
@@ -1115,8 +1115,13 @@ space.
 @node Utilities
 @chapter Utilities
 
+This section describes tools primarily targeted at developers and users
+who write new package definitions.  They complement the Scheme
+programming interface of Guix in a convenient way.
+
 @menu
 * Invoking guix build::         Building packages from the command line.
+* Invoking guix download::      Downloading a file and printing its hash.
 * Invoking guix hash::          Computing the cryptographic hash of a file.
 * Invoking guix refresh::       Updating package definitions.
 @end menu
@@ -1214,10 +1219,42 @@ the @code{package-derivation} procedure of the @code{(guix packages)}
 module, and to the @code{build-derivations} procedure of the @code{(guix
 store)} module.
 
+@node Invoking guix download
+@section Invoking @command{guix download}
+
+When writing a package definition, developers typically need to download
+the package's source tarball, compute its SHA256 hash, and write that
+hash in the package definition (@pxref{Defining Packages}).  The
+@command{guix download} tool helps with this task: it downloads a file
+from the given URI, adds it to the store, and prints both its file name
+in the store and its SHA256 hash.
+
+The fact that the downloaded file is added to the store saves bandwidth:
+when the developer eventually tries to build the newly defined package
+with @command{guix build}, the source tarball will not have to be
+downloaded again because it is already in the store.  It is also a
+convenient way to temporarily stash files, which may be deleted
+eventually (@pxref{Invoking guix gc}).
+
+The @command{guix download} command supports the same URIs as used in
+package definitions.  In particular, it supports @code{mirror://} URIs.
+@code{https} URIs (HTTP over TLS) are supported @emph{provided} the
+Guile bindings for GnuTLS are available in the user's environment; when
+they are not available, an error is raised.
+
+The following option is available:
+
+@table @code
+@item --format=@var{fmt}
+@itemx -f @var{fmt}
+Write the hash in the format specified by @var{fmt}.  For more
+information on the valid values for @var{fmt}, @ref{Invoking guix hash}.
+@end table
+
 @node Invoking guix hash
 @section Invoking @command{guix hash}
 
-The @command{guix hash} command allows to check the integrity of a file.
+The @command{guix hash} command computes the SHA256 hash of a file.
 It is primarily a convenience tool for anyone contributing to the
 distribution: it computes the cryptographic hash of a file, which can be
 used in the definition of a package (@pxref{Defining Packages}).
@@ -1234,7 +1271,7 @@ guix hash @var{option} @var{file}
 
 @item --format=@var{fmt}
 @itemx -f @var{fmt}
-Write the hash in the given format.
+Write the hash in the format specified by @var{fmt}.
 
 Supported formats: @code{nix-base32}, @code{base32}, @code{base16}
 (@code{hex} and @code{hexadecimal} can be used as well).
