@@ -366,7 +366,7 @@ EXTRA_DIST =					\
 
 CLEANFILES =					\
   $(GOBJECTS)					\
-  $(SCM_TESTS:%.scm=%.log)
+  $(SCM_TESTS:tests/%.scm=%.log)
 
 AM_V_GUILEC = $(AM_V_GUILEC_$(V))
 AM_V_GUILEC_ = $(AM_V_GUILEC_$(AM_DEFAULT_VERBOSITY))
