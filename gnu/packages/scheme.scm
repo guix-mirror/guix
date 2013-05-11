@@ -295,3 +295,27 @@ mashups, office (web agendas, mail clients, ...), etc.")
 produces portable and efficient C, supports almost all of the R5RS Scheme
 language standard, and includes many enhancements and extensions.")
     (license bsd-3)))
+
+(define-public scheme48
+  (package
+    (name "scheme48")
+    (version "1.9")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://s48.org/" version
+                                 "/scheme48-" version ".tgz"))
+             (sha256
+              (base32
+               "0rw2lz5xgld0klvld292ds6hvfk5l12vskzgf1hhwjdpa38r3fnw"))))
+    (build-system gnu-build-system)
+    (arguments `(#:patches (list (assoc-ref %build-inputs "patch/tests"))))
+    (inputs `(("patch/tests" ,(search-patch "scheme48-tests.patch"))))
+    (home-page "http://s48.org/")
+    (synopsis "Scheme implementation using a bytecode interpreter")
+    (description
+     "Scheme 48 is an implementation of Scheme based on a byte-code
+interpreter and is designed to be used as a testbed for experiments in
+implementation techniques and as an expository tool.")
+
+    ;; Most files are BSD-3; see COPYING for the few exceptions.
+    (license bsd-3)))

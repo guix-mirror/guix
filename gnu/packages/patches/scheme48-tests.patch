@@ -1,0 +1,36 @@
+The test case below relies on /etc/groups and similar info that is
+not available in chroot builds, so skip it.
+
+--- scheme48-1.9/scheme/posix/check.scm	2013-05-11 21:55:36.000000000 +0200
++++ scheme48-1.9/scheme/posix/check.scm	2013-05-11 21:55:40.000000000 +0200
+@@ -229,29 +229,7 @@
+ 
+ ; This assumes that we are not running as root and that / is owned by root.
+ 
+-(define-test-case users&groups posix-core-tests
+-  (let ((my-info (get-file-info directory-name))
+-	(root-info (get-file-info "/")))
+-    (let ((my-user (user-id->user-info (file-info-owner my-info)))
+-	  (root-user (user-id->user-info (file-info-owner root-info)))
+-	  (my-group (group-id->group-info (file-info-group my-info)))
+-	  (root-group (group-id->group-info (file-info-group root-info))))
+-      (let ((my-other-user (name->user-info (user-info-name my-user)))
+-	    (my-other-group (name->group-info (group-info-name my-group))))
+-	(check-that (file-info-owner my-info)
+-		    (is user-id=? (user-info-id my-user)))
+-	(check-that (file-info-owner root-info)
+-		    (opposite (is user-id=? (user-info-id my-user))))
+-	(check-that (file-info-group my-info)
+-		    (is group-id=? (group-info-id my-group)))
+-	;; doesn't work reliably
+-	;; (specifically, if the user is member of wheel)
+-	;; (check (not (group-id=? (file-info-group root-info)
+-	;;		(group-info-id my-group))))
+-	(check-that (os-string->string (user-info-name root-user))
+-		    (member-of '("root"
+-				 "bin" ; AIX
+-				 )))))))
++
+ 
+ (define-test-case environment posix-core-tests
+   (let ((env (reverse (environment-alist))))
