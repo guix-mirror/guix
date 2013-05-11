@@ -153,7 +153,7 @@
 
 (define %test-dir
   ;; An output directory under $top_builddir.
-  (string-append (dirname (search-path %load-path "configure"))
+  (string-append (dirname (search-path %load-path "pre-inst-env"))
                  "/test-nar-" (number->string (getpid))))
 
 
