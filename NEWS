@@ -76,6 +76,26 @@ The ‘perl-build-system’, ‘python-build-system’, and ‘cmake-build-syste
 been added.  They implement the standard build systems for Perl, Python, and
 CMake packages.
 
+*** Tools to build Linux initrds, QEMU images, and more
+
+The (gnu packages linux-initrd) module provides a procedure to build a Linux
+initrd (“initial RAM disk”).  The initrd embeds Guile, which is used to
+evaluate the given expression.  The example below returns an initrd that
+mounts the /proc file system and starts a REPL:
+
+  (expression->initrd
+    '(begin
+       (mkdir "/proc")
+       (mount "none" "/proc" "proc")
+       ((@ (system repl repl) start-repl))))
+
+More examples in the linux-initrd.scm file.
+
+Experimental interfaces to produce and use QEMU images are provided by the
+(gnu system vm) module.  For instance, the
+‘expression->derivation-in-linux-vm’ evaluates the given Scheme expression in
+a QEMU virtual machine running the Linux kernel and Guile.
+
 ** GNU distribution
 
 Many updates and additions have been made to the distribution.  Here are the
@@ -88,4 +108,5 @@ Coreutils 8.20, GDB 7.6, Texinfo 5.1.
 
 *** Noteworthy new packages
 
-TeXLive, Xorg, GNU Parted, QEMU and QEMU-KVM, Avahi, Hugs, Python, Lua, Samba.
+TeXLive, Xorg, GNU Parted, QEMU and QEMU-KVM, Avahi, Bigloo, CHICKEN,
+Scheme48, Hugs, Python, Lua, Samba.
