@@ -22,6 +22,7 @@
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix gnu-maintenance)
+  #:use-module (guix gnupg)
   #:use-module (gnu packages)
   #:use-module ((gnu packages base) #:select (%final-inputs))
   #:use-module (ice-9 match)
@@ -57,6 +58,13 @@
                      (leave (_ "~a: invalid selection; expected `core' or `non-core'")
                             arg)))))
 
+        (option '("key-server") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'key-server arg result)))
+        (option '("gpg") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'gpg-command arg result)))
+
         (option '(#\h "help") #f #f
                 (lambda args
                   (show-help)
@@ -79,11 +87,44 @@ specified with `--select'.\n"))
                          `core' or `non-core'"))
   (newline)
   (display (_ "
+      --key-server=HOST  use HOST as the OpenPGP key server"))
+  (display (_ "
+      --gpg=COMMAND      use COMMAND as the GnuPG 2.x command"))
+  (newline)
+  (display (_ "
   -h, --help             display this help and exit"))
   (display (_ "
   -V, --version          display version information and exit"))
   (newline)
   (show-bug-report-information))
+
+(define (update-package store package)
+  "Update the source file that defines PACKAGE with the new version."
+  (let-values (((version tarball)
+                (catch #t
+                  (lambda ()
+                    (package-update store package))
+                  (lambda _
+                    (values #f #f))))
+               ((loc)
+                (or (package-field-location package
+                                            'version)
+                    (package-location package))))
+    (when version
+      (if (and=> tarball file-exists?)
+          (begin
+            (format (current-error-port)
+                    (_ "~a: ~a: updating from version ~a to version ~a...~%")
+                    (location->string loc)
+                    (package-name package)
+                    (package-version package) version)
+            (let ((hash (call-with-input-file tarball
+                          (compose sha256 get-bytevector-all))))
+              (update-package-source package version hash)))
+          (warning (_ "~a: version ~a could not be \
+downloaded and authenticated; not updating")
+                   (package-name package) version)))))
+
 
 
 ;;;
@@ -148,34 +189,13 @@ update would trigger a complete rebuild."
     (with-error-handling
       (if update?
           (let ((store (open-connection)))
-            (for-each (lambda (package)
-                        (let-values (((version tarball)
-                                      (catch #t
-                                        (lambda ()
-                                          (package-update store package))
-                                        (lambda _
-                                          (values #f #f))))
-                                     ((loc)
-                                      (or (package-field-location package
-                                                                  'version)
-                                          (package-location package))))
-                          (when version
-                            (if (and=> tarball file-exists?)
-                                (begin
-                                  (format (current-error-port)
-                                          (_ "~a: ~a: updating from version ~a to version ~a...~%")
-                                          (location->string loc)
-                                          (package-name package)
-                                          (package-version package) version)
-                                  (let ((hash (call-with-input-file tarball
-                                                (compose sha256
-                                                         get-bytevector-all))))
-                                    (update-package-source package version
-                                                           hash)))
-                                (warning (_ "~a: version ~a could not be \
-downloaded and authenticated; not updating")
-                                         (package-name package) version)))))
-                      packages))
+            (parameterize ((%openpgp-key-server
+                            (or (assoc-ref opts 'key-server)
+                                (%openpgp-key-server)))
+                           (%gpg-command
+                            (or (assoc-ref opts 'gpg-command)
+                                (%gpg-command))))
+              (for-each (cut update-package store <>) packages)))
           (for-each (lambda (package)
                       (match (false-if-exception (package-update-path package))
                         ((new-version . directory)

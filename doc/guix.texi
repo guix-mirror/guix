@@ -1313,6 +1313,19 @@ The command above specifically updates the @code{emacs} and
 @code{idutils} packages.  The @code{--select} option would have no
 effect in this case.
 
+The following options can be used to customize GnuPG operation:
+
+@table @code
+
+@item --key-server=@var{host}
+Use @var{host} as the OpenPGP key server when importing a public key.
+
+@item --gpg=@var{command}
+Use @var{command} as the GnuPG 2.x command.  @var{command} is searched
+for in @code{$PATH}.
+
+@end table
+
 
 @c *********************************************************************
 @node GNU Distribution
