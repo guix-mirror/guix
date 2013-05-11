@@ -45,7 +45,7 @@
     (arguments
      `(#:tests? #f)) ; no test target
     (home-page "https://gnu.org/software/bazaar")
-    (synopsis "Distributed and central version control system")
+    (synopsis "Decentralized revision control system")
     (description
      "GNU Bazaar is a distributed version control system, which supports both
 central version control and distributed version control.  Developers can

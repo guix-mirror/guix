@@ -53,7 +53,7 @@
              ("libxpm" ,libxpm)
              ("pkg-config" ,pkg-config)
              ("zlib" ,zlib)))
-   (synopsis "postscript and pdf viewer for x")
+   (synopsis "PostScript and PDF viewer using Ghostscript as a back-end")
    (description
     "GNU gv allows to view and navigate through PostScript and PDF documents
 on an X display by providing a graphical user interface for the Ghostscript
