@@ -22,7 +22,9 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-1)
-  #:export (gnupg-verify
+  #:export (%gpg-command
+            %openpgp-key-server
+            gnupg-verify
             gnupg-verify*
             gnupg-status-good-signature?
             gnupg-status-missing-key?))
@@ -33,8 +35,14 @@
 ;;;
 ;;; Code:
 
-(define %gpg-command "gpg2")
-(define %openpgp-key-server "keys.gnupg.net")
+(define %gpg-command
+  ;; The GnuPG 2.x command-line program name.
+  (make-parameter "gpg2"))
+
+(define %openpgp-key-server
+  ;; The default key server.  Note that keys.gnupg.net appears to be
+  ;; unreliable.
+  (make-parameter "pgp.mit.edu"))
 
 (define (gnupg-verify sig file)
   "Verify signature SIG for FILE.  Return a status s-exp if GnuPG failed."
@@ -106,7 +114,7 @@
           (loop (read-line input)
                 (cons (status-line->sexp line) result)))))
 
-  (let* ((pipe   (open-pipe* OPEN_READ %gpg-command "--status-fd=1"
+  (let* ((pipe   (open-pipe* OPEN_READ (%gpg-command) "--status-fd=1"
                              "--verify" sig file))
          (status (parse-status pipe)))
     ;; Ignore PIPE's exit status since STATUS above should contain all the
@@ -135,9 +143,9 @@ missing key."
        status))
 
 (define (gnupg-receive-keys key-id server)
-  (system* %gpg-command "--keyserver" server "--recv-keys" key-id))
+  (system* (%gpg-command) "--keyserver" server "--recv-keys" key-id))
 
-(define* (gnupg-verify* sig file #:optional (server %openpgp-key-server))
+(define* (gnupg-verify* sig file #:optional (server (%openpgp-key-server)))
   "Like `gnupg-verify', but try downloading the public key if it's missing.
 Return #t if the signature was good, #f otherwise."
   (let ((status (gnupg-verify sig file)))
