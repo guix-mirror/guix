@@ -293,6 +293,5 @@ mashups, office (web agendas, mail clients, ...), etc.")
     (description
      "CHICKEN is a compiler for the Scheme programming language.  CHICKEN
 produces portable and efficient C, supports almost all of the R5RS Scheme
-language standard, and includes many enhancements and extensions.  CHICKEN
-runs on Linux, MacOS X, Windows, and many Unix flavours.")
+language standard, and includes many enhancements and extensions.")
     (license bsd-3)))
