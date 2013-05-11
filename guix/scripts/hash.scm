@@ -98,23 +98,28 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                   (alist-cons 'argument arg result))
                 %default-options))
 
-    (let* ((opts (parse-options))
-           (args (filter-map (match-lambda
-                              (('argument . value)
-                               value)
-                              (_ #f))
-                             (reverse opts)))
-           (fmt  (assq-ref opts 'format)))
+  (define (eof->null x)
+    (if (eof-object? x)
+        #vu8()
+        x))
 
-      (match args
-        ((file)
-         (catch 'system-error
-           (lambda ()
-             (format #t "~a~%"
-                     (call-with-input-file file
-                       (compose fmt sha256 get-bytevector-all))))
-           (lambda args
-             (leave (_ "~a~%")
-                    (strerror (system-error-errno args))))))
-        (_
-         (leave (_ "wrong number of arguments~%"))))))
+  (let* ((opts (parse-options))
+         (args (filter-map (match-lambda
+                            (('argument . value)
+                             value)
+                            (_ #f))
+                           (reverse opts)))
+         (fmt  (assq-ref opts 'format)))
+
+    (match args
+      ((file)
+       (catch 'system-error
+         (lambda ()
+           (format #t "~a~%"
+                   (call-with-input-file file
+                     (compose fmt sha256 eof->null get-bytevector-all))))
+         (lambda args
+           (leave (_ "~a~%")
+                  (strerror (system-error-errno args))))))
+      (_
+       (leave (_ "wrong number of arguments~%"))))))
