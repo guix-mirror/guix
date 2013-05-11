@@ -131,7 +131,7 @@ specifications are building blocks of S/MIME and TLS.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.0.19")
+    (version "2.0.20")
     (source
      (origin
       (method url-fetch)
@@ -139,7 +139,7 @@ specifications are building blocks of S/MIME and TLS.")
                           ".tar.bz2"))
       (sha256
        (base32
-        "08n636sfffs5qvg9ppiprvsh00q0dmdw425psg3m3nssja53m8pg"))))
+        "16mp0j5inrcqcb3fxbn0b3aamascy3n923wiy0y8marc0rzrp53f"))))
     (build-system gnu-build-system)
     (inputs
      `(;; TODO: Add missing optional dep libusb.
