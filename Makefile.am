@@ -340,6 +340,14 @@ AM_SCM_LOG_FLAGS = --no-auto-compile -L "$(top_srcdir)"
 SH_LOG_COMPILER = $(top_builddir)/test-env $(SHELL)
 AM_SH_LOG_FLAGS = -x -e
 
+# Make sure `tests/guix-gc.sh' runs last, after all the others.  Otherwise it
+# could end up removing files from the store while they are being used by
+# other instances of the daemon.
+tests/guix-gc.log:							\
+  $(patsubst %.sh,%.log,$(filter-out tests/guix-gc.sh,$(SH_TESTS)))	\
+  $(SCM_TESTS:%.scm=%.log)
+
+
 EXTRA_DIST =					\
   HACKING					\
   ROADMAP					\
