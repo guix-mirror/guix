@@ -412,7 +412,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --with-nix-prefix="$(NIX_PREFIX)"		\
   --enable-daemon
 
-dist-hook: sync-synopses gen-ChangeLog
+dist-hook: sync-synopses gen-ChangeLog assert-no-store-file-names
 
 sync-synopses:
 	-$(top_builddir)/pre-inst-env $(GUILE)		\
@@ -426,4 +426,13 @@ gen-ChangeLog:
 	  mv $(distdir)/cl-t $(distdir)/ChangeLog;	\
 	fi
 
-.PHONY: sync-synopses gen-ChangeLog
+# Make sure we're not shipping a file that embeds a local /nix/store file name.
+assert-no-store-file-names:
+	if grep -r --exclude=*.texi --exclude=*.info				\
+	     "$(storedir)/[a-z0-9]{32}-" $(distdir) ;				\
+	then									\
+	  echo "error: store file names embedded in the distribution" >&2 ;	\
+	  exit 1 ;								\
+	fi
+
+.PHONY: sync-synopses gen-ChangeLog assert-no-store-file-names
