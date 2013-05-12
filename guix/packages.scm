@@ -18,6 +18,7 @@
 
 (define-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix records)
   #:use-module (guix store)
   #:use-module (guix base32)
   #:use-module (guix derivations)

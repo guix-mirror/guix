@@ -35,6 +35,7 @@ MODULES =					\
   guix/scripts/substitute-binary.scm		\
   guix/scripts/refresh.scm			\
   guix/base32.scm				\
+  guix/records.scm				\
   guix/utils.scm				\
   guix/serialization.scm			\
   guix/nar.scm					\
@@ -85,7 +86,7 @@ MODULES =					\
   gnu/packages/cpio.scm				\
   gnu/packages/cppi.scm				\
   gnu/packages/cross-base.scm			\
-  gnu/packages/cryptsetup.scm				\
+  gnu/packages/cryptsetup.scm			\
   gnu/packages/curl.scm				\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/dejagnu.scm			\
@@ -121,11 +122,11 @@ MODULES =					\
   gnu/packages/icu4c.scm			\
   gnu/packages/idutils.scm			\
   gnu/packages/indent.scm			\
-  gnu/packages/irssi.scm 			\
+  gnu/packages/irssi.scm			\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
   gnu/packages/lesstif.scm			\
-  gnu/packages/libapr.scm 			\
+  gnu/packages/libapr.scm			\
   gnu/packages/libdaemon.scm			\
   gnu/packages/libevent.scm			\
   gnu/packages/libffi.scm			\
@@ -156,7 +157,7 @@ MODULES =					\
   gnu/packages/ncurses.scm			\
   gnu/packages/netpbm.scm			\
   gnu/packages/nettle.scm			\
-  gnu/packages/ocaml.scm 			\
+  gnu/packages/ocaml.scm			\
   gnu/packages/oggvorbis.scm			\
   gnu/packages/openldap.scm			\
   gnu/packages/openssl.scm			\
@@ -176,22 +177,22 @@ MODULES =					\
   gnu/packages/rsync.scm			\
   gnu/packages/samba.scm			\
   gnu/packages/scheme.scm			\
-  gnu/packages/screen.scm 			\
+  gnu/packages/screen.scm			\
   gnu/packages/shishi.scm			\
   gnu/packages/smalltalk.scm			\
-  gnu/packages/sqlite.scm 			\
+  gnu/packages/sqlite.scm			\
   gnu/packages/ssh.scm				\
-  gnu/packages/subversion.scm 			\
+  gnu/packages/subversion.scm			\
   gnu/packages/system.scm			\
   gnu/packages/tcl.scm				\
-  gnu/packages/tcsh.scm 			\
+  gnu/packages/tcsh.scm				\
   gnu/packages/texinfo.scm			\
   gnu/packages/texlive.scm			\
   gnu/packages/time.scm				\
-  gnu/packages/tmux.scm 			\
+  gnu/packages/tmux.scm				\
   gnu/packages/tor.scm				\
   gnu/packages/version-control.scm		\
-  gnu/packages/vim.scm 				\
+  gnu/packages/vim.scm				\
   gnu/packages/vpn.scm				\
   gnu/packages/w3m.scm				\
   gnu/packages/wdiff.scm			\
@@ -313,6 +314,7 @@ SCM_TESTS =					\
   tests/builders.scm				\
   tests/derivations.scm				\
   tests/ui.scm					\
+  tests/records.scm				\
   tests/utils.scm				\
   tests/build-utils.scm				\
   tests/packages.scm				\

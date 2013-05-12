@@ -21,6 +21,7 @@
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix config)
+  #:use-module (guix records)
   #:use-module (guix nar)
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (ice-9 rdelim)
@@ -102,22 +103,6 @@ pairs."
                                result))))
           (else
            (error "unmatched line" line)))))
-
-(define (alist->record alist make keys)
-  "Apply MAKE to the values associated with KEYS in ALIST."
-  (let ((args (map (cut assoc-ref alist <>) keys)))
-    (apply make args)))
-
-(define (object->fields object fields port)
-  "Write OBJECT (typically a record) as a series of recutils-style fields to
-PORT, according to FIELDS.  FIELDS must be a list of field name/getter pairs."
-  (let loop ((fields fields))
-    (match fields
-      (()
-       object)
-      (((field . get) rest ...)
-       (format port "~a: ~a~%" field (get object))
-       (loop rest)))))
 
 (define (fetch uri)
   "Return a binary input port to URI and the number of bytes it's expected to

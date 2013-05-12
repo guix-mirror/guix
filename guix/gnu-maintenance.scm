@@ -32,6 +32,7 @@
   #:use-module (guix ftp-client)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module ((guix download) #:select (download-to-store))
   #:use-module (guix gnupg)
@@ -149,12 +150,6 @@
               (regexp-exec end-rx line)) ; don't include dummy fields
           (remove null-list? state)
           (match-field line))))
-
-  (define (alist->record alist make keys)
-    ;; Apply MAKE, which should be a syntactic constructor, to the
-    ;; values associated with KEYS in ALIST.
-    (let ((args (map (cut assoc-ref alist <>) keys)))
-      (apply make args)))
 
   (reverse
    (map (lambda (alist)

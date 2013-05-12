@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build-system)
-  #:use-module (guix utils)
+  #:use-module (guix records)
   #:export (build-system
             build-system?
             build-system-name
