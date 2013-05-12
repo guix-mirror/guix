@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2012, 2013  Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012  Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -26,39 +26,6 @@ let
   succeedOnFailure = true;
   keepBuildDirectory = true;
 
-  # Run the given derivation in outside of a chroot.  This hack is used on
-  # hydra.gnu.org where we want Guix derivations to run in a chroot that lacks
-  # /bin, whereas Nixpkgs relies on /bin/sh.
-  unchroot =
-    let
-      pkgs = import nixpkgs {};
-
-      # XXX: The `python' derivation contains a `modules' attribute that makes
-      # `overrideDerivation' fail with "cannot coerce an attribute set (except
-      # a derivation) to a string", so just remove it.
-      pythonKludge = drv: removeAttrs drv [ "modules" ];
-    in
-      drv:
-        if builtins.isAttrs drv
-        then pkgs.lib.overrideDerivation (pythonKludge drv) (args: {
-          __noChroot = true;
-          nativeBuildInputs = map unchroot args.nativeBuildInputs;
-          propagatedNativeBuildInputs =
-            map unchroot args.propagatedNativeBuildInputs;
-        })
-        else drv;
-
-  # Return a Nixpkgs with some derivations "unchrooted".
-  unchrootedNixpkgs = system:
-    import nixpkgs {
-      # XXX: Hack to make sure these ones also get "unchrooted".
-      config.packageOverrides = pkgs: {
-        zlib = unchroot pkgs.zlib;
-        libunistring = unchroot pkgs.libunistring;
-      };
-      inherit system;
-    };
-
   # The Guile used to bootstrap the whole thing.  It's normally
   # downloaded by the build system, but here we download it via a
   # fixed-output derivation and stuff it into the build tree.
@@ -77,39 +44,27 @@ let
 
   jobs = {
     tarball =
-      unchroot
-      (let pkgs = unchrootedNixpkgs builtins.currentSystem; in
+      let pkgs = import nixpkgs {}; in
       pkgs.releaseTools.sourceTarball {
         name = "guix-tarball";
         src = <guix>;
-        buildInputs =
-          let git_light = pkgs.git.override {
-              # Minimal Git to avoid building too many dependencies.
-              withManual = false;
-              pythonSupport = false;
-              svnSupport = false;
-              guiSupport = false;
-            };
-          in
-            [ git_light ] ++
-            (with pkgs; [ guile sqlite bzip2 libgcrypt ]);
-        nativeBuildInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
+        buildInputs = with pkgs; [ guile sqlite bzip2 git libgcrypt ];
+        buildNativeInputs = with pkgs; [ texinfo gettext cvs pkgconfig ];
         preAutoconf = ''git config submodule.nix.url "${<nix>}"'';
         configureFlags =
           [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
             "--localstatedir=/nix/var"
           ];
-      });
+      };
 
     build =
       { system ? builtins.currentSystem }:
 
-      unchroot
-      (let pkgs = unchrootedNixpkgs system; in
+      let pkgs = import nixpkgs { inherit system; }; in
       pkgs.releaseTools.nixBuild {
         name = "guix";
         buildInputs = with pkgs; [ guile sqlite bzip2 libgcrypt ];
-        nativeBuildInputs = [ pkgs.pkgconfig ];
+        buildNativeInputs = [ pkgs.pkgconfig ];
         src = jobs.tarball;
         configureFlags =
           [ "--with-libgcrypt-prefix=${pkgs.libgcrypt}"
@@ -128,15 +83,14 @@ let
 
         inherit succeedOnFailure keepBuildDirectory
           buildOutOfSourceTree;
-      });
+      };
 
 
     build_disable_daemon =
       { system ? builtins.currentSystem }:
 
-      unchroot
-      (let
-        pkgs = unchrootedNixpkgs system;
+      let
+        pkgs = import nixpkgs { inherit system; };
         build = jobs.build { inherit system; };
       in
         pkgs.lib.overrideDerivation build ({ configureFlags, ... }: {
@@ -147,7 +101,7 @@ let
           # the chroot.
           preConfigure = "export NIX_REMOTE=daemon";
           __noChroot = true;
-        }));
+        });
 
     # Jobs to test the distro.
     distro = {
@@ -155,7 +109,7 @@ let
         { system ? builtins.currentSystem }:
 
         let
-          pkgs = unchrootedNixpkgs system;
+          pkgs = import nixpkgs { inherit system; };
           guix = jobs.build { inherit system; };
         in
           # XXX: We have no way to tell the Nix code to swallow the .drv
