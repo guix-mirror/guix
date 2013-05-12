@@ -189,8 +189,14 @@ or 2.0."
    (native-inputs `(("pkgconfig" ,pkg-config)
                     ("gperf" ,gperf)))
    (inputs `(("guile" ,guile)))
-   (synopsis "Guile-Reader, a simple framework for building readers for
-GNU Guile")
+   (arguments `(#:configure-flags
+                (let ((out (assoc-ref %outputs "out")))
+                  ,(if (string-prefix? "2." (package-version guile))
+                       '(list (string-append "--with-guilemoduledir="
+                                             out "/share/guile/site/2.0"))
+                       '(list (string-append "--with-guilemoduledir="
+                                             out "/share/guile/site"))))))
+   (synopsis "Framework for building readers for GNU Guile")
    (description
 "Guile-Reader is a simple framework for building readers for GNU Guile.
 
