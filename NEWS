@@ -27,6 +27,12 @@ As the name implies, this option atomically upgrades all the packages
 installed in a profile or the set of packages matching a given regexp.
 See “Invoking guix package” in the manual.
 
+*** New “guix package --search” option
+
+Performs a full text search in package synopses and descriptions, and returns
+the matching packages in recutils format.  See “Invoking guix package” in the
+manual, for details.
+
 *** New “guix pull” command
 
 The command pulls the latest version of Guix–both the package management
@@ -36,8 +42,11 @@ modules and the distribution.  See the manual for details.
 
 The “substituter” mechanism allows pre-built binaries to be transparently
 downloaded instead of performing a build locally.  Currently binaries are
-available for x86_64 Linux-based GNU systems from http://hydra.gnu.org.  See
-the manual for details.
+available for x86_64 Linux-based GNU systems from http://hydra.gnu.org.  The
+distribution is continuously built and binaries are made available from there.
+
+See http://hydra.gnu.org/jobset/gnu/master under “Job status” for the list of
+available binary packages.
 
 *** New “guix refresh” command
 
@@ -49,11 +58,16 @@ distribution to the latest upstream releases of GNU software.
 Convenience command to compute the hash of a file.  See the manual for
 details.
 
+*** Nix daemon code updated
+
+The daemon code from Nix, used by the ‘guix-daemon’ command, has been updated
+to current Nix ‘master’.
+
+** Programming interfaces
+
 *** (guix download) now supports HTTPS, using GnuTLS
 
 It allows package source tarballs to be retrieved over HTTPS.
-
-** Programming interfaces
 
 *** New ‘native-search-path’ and ‘search-path’ package fields
 
@@ -108,5 +122,5 @@ Coreutils 8.20, GDB 7.6, Texinfo 5.1.
 
 *** Noteworthy new packages
 
-TeXLive, Xorg, GNU Parted, QEMU and QEMU-KVM, Avahi, Bigloo, CHICKEN,
-Scheme48, Hugs, Python, Lua, Samba.
+TeXLive, Xorg, GNU GRUB, GNU Parted, QEMU and QEMU-KVM, Avahi, Bigloo,
+CHICKEN, Scheme48, Hugs, Python, Lua, Samba.
