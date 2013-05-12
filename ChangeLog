@@ -1,1 +1,4 @@
-Please see the Git commit log at <https://gitorious.org/guix>.
+Normally a ChangeLog is generated at "make dist" time and available in
+source tarballs.
+
+If not, see the Git commit log at <http://git.sv.gnu.org/cgit/guix.git/>.

@@ -412,6 +412,18 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --with-nix-prefix="$(NIX_PREFIX)"		\
   --enable-daemon
 
-dist-hook:
+dist-hook: sync-synopses gen-ChangeLog
+
+sync-synopses:
 	-$(top_builddir)/pre-inst-env $(GUILE)		\
 	   $(top_srcdir)/build-aux/sync-synopses.scm
+
+gen-ChangeLog:
+	if test -d .git; then				\
+	  $(top_srcdir)/build-aux/gitlog-to-changelog	\
+	    > $(distdir)/cl-t;				\
+	  rm -f $(distdir)/ChangeLog;			\
+	  mv $(distdir)/cl-t $(distdir)/ChangeLog;	\
+	fi
+
+.PHONY: sync-synopses gen-ChangeLog
