@@ -397,8 +397,14 @@ reporting."
            (compose (cut string-append <> "/guix/scripts")
                     dirname)))
 
+  (define dot-scm?
+    (cut string-suffix? ".scm" <>))
+
+  ;; In Guile 2.0.5 `scandir' would return "." and ".." regardless even though
+  ;; they don't match `dot-scm?'.  Work around it by doing additional
+  ;; filtering.
   (if directory
-      (scandir directory (cut string-suffix? ".scm" <>))
+      (filter dot-scm? (scandir directory dot-scm?))
       '()))
 
 (define (commands)
