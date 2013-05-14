@@ -420,7 +420,7 @@ Run COMMAND with ARGS.\n"))
   (format #t (_ "COMMAND must be one of the sub-commands listed below:\n"))
   (newline)
   ;; TODO: Display a synopsis of each command.
-  (format #t "~{   ~a~%~}" (commands))
+  (format #t "~{   ~a~%~}" (sort (commands) string<?))
   (show-bug-report-information))
 
 (define program-name
