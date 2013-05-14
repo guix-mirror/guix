@@ -21,6 +21,7 @@
 (define-module (guix licenses)
   #:use-module (srfi srfi-9)
   #:export (license? license-name license-uri license-comment
+            agpl3 agpl3+
             asl2.0
             boost1.0
             bsd-2 bsd-3 bsd-4 bsd-style
@@ -59,6 +60,16 @@
 ;;; https://www.gnu.org/licenses/license-list
 ;;;
 ;;; Code:
+
+(define agpl3
+  (license "AGPL 3"
+           "https://gnu.org/licenses/agpl.html"
+           "https://gnu.org/licenses/why-affero-gpl.html"))
+
+(define agpl3+
+  (license "AGPL 3+"
+           "https://gnu.org/licenses/agpl.html"
+           "https://gnu.org/licenses/why-affero-gpl.html"))
 
 (define asl2.0
   (license "ASL 2.0"
