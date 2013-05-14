@@ -84,6 +84,18 @@ output port, and PROC's result is returned."
       (lambda (key . args)
         (false-if-exception (delete-file template))))))
 
+(define %regexp-exec-mutex
+  ;; In Guile 2.0.9, `regexp-exec' is thread-unsafe, so work around it.
+  ;; See <http://bugs.gnu.org/14404>.
+  (make-mutex))
+
+(define string->uri
+  (let ((real (@ (web uri) string->uri)))
+    (lambda (uri)
+      "A thread-safe `string->uri'."
+      (with-mutex %regexp-exec-mutex
+        (real uri)))))
+
 (define (fields->alist port)
   "Read recutils-style record from PORT and return them as a list of key/value
 pairs."
@@ -94,7 +106,8 @@ pairs."
              (result '()))
     (cond ((eof-object? line)
            (reverse result))
-          ((regexp-exec field-rx line)
+          ((with-mutex %regexp-exec-mutex
+             (regexp-exec field-rx line))
            =>
            (lambda (match)
              (loop (read-line port)
