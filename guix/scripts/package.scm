@@ -295,7 +295,10 @@ return its return value."
                         (lambda (signum)
                           (sigaction SIGINT SIG_DFL)
                           (abort-to-prompt %sigint-prompt signum)))
-                      (thunk))
+                      (dynamic-wind
+                        (const #t)
+                        thunk
+                        (cut sigaction SIGINT SIG_DFL)))
                     (lambda (k signum)
                       (handler signum))))
 
