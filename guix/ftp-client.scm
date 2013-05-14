@@ -87,45 +87,39 @@ or a TCP port number), and return it."
   ;; Use 21 as the default PORT instead of "ftp", to avoid depending on
   ;; libc's NSS, which is not available during bootstrap.
 
-  (catch 'getaddrinfo-error
-    (lambda ()
-      (define addresses
-        (getaddrinfo host
-                     (if (number? port) (number->string port) port)
-                     (if (number? port) AI_NUMERICSERV 0)))
+  (define addresses
+    (getaddrinfo host
+                 (if (number? port) (number->string port) port)
+                 (if (number? port) AI_NUMERICSERV 0)))
 
-      (let loop ((addresses addresses))
-        (let* ((ai (car addresses))
-               (s  (socket (addrinfo:fam ai) (addrinfo:socktype ai)
-                           (addrinfo:protocol ai))))
+  (let loop ((addresses addresses))
+    (let* ((ai (car addresses))
+           (s  (socket (addrinfo:fam ai) (addrinfo:socktype ai)
+                       (addrinfo:protocol ai))))
 
-          (catch 'system-error
-            (lambda ()
-              (connect s (addrinfo:addr ai))
-              (setvbuf s _IOLBF)
-              (let-values (((code message) (%ftp-listen s)))
-                (if (eqv? code 220)
-                    (begin
-                      ;;(%ftp-command "OPTS UTF8 ON" 200 s)
-                      (%ftp-login "anonymous" "guix@example.com" s)
-                      (%make-ftp-connection s ai))
-                    (begin
-                      (format (current-error-port)
-                              "FTP to `~a' failed: ~A: ~A~%"
-                              host code message)
-                      (close s)
-                      #f))))
+      (catch 'system-error
+        (lambda ()
+          (connect s (addrinfo:addr ai))
+          (setvbuf s _IOLBF)
+          (let-values (((code message) (%ftp-listen s)))
+            (if (eqv? code 220)
+                (begin
+                  ;;(%ftp-command "OPTS UTF8 ON" 200 s)
+                  (%ftp-login "anonymous" "guix@example.com" s)
+                  (%make-ftp-connection s ai))
+                (begin
+                  (format (current-error-port)
+                          "FTP to `~a' failed: ~A: ~A~%"
+                          host code message)
+                  (close s)
+                  #f))))
 
-            (lambda args
-              ;; Connection failed, so try one of the other addresses.
-              (close s)
-              (if (null? addresses)
-                  (apply throw args)
-                  (loop (cdr addresses))))))))
-    (lambda (key errcode)
-      (format (current-error-port) "failed to resolve `~a': ~a~%"
-              host (gai-strerror errcode))
-      #f)))
+        (lambda args
+          ;; Connection failed, so try one of the other addresses.
+          (close s)
+          (if (null? addresses)
+              (apply throw args)
+              (loop (cdr addresses))))))))
 
 (define (ftp-close conn)
   (close (ftp-connection-socket conn)))

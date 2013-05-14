@@ -307,13 +307,15 @@ return its return value."
     (force-output (current-error-port))
     (call-with-sigint-handler
      (lambda ()
-       (let ((result exp))
-         ;; Clear the line.
-         (display #\cr (current-error-port))
-         (display blank (current-error-port))
-         (display #\cr (current-error-port))
-         (force-output (current-error-port))
-         exp))
+       (dynamic-wind
+         (const #f)
+         (lambda () exp)
+         (lambda ()
+           ;; Clear the line.
+           (display #\cr (current-error-port))
+           (display blank (current-error-port))
+           (display #\cr (current-error-port))
+           (force-output (current-error-port)))))
      (lambda (signum)
        (format (current-error-port) "  interrupted by signal ~a~%" SIGINT)
        #f))))
