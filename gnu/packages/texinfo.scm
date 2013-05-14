@@ -38,9 +38,8 @@
                "0864v5i488x3mb3v5p6nhy2kw0mqkzpa3b0453iibj81zlpq078q"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
-              ("xz" ,xz)))
-    ;; TODO: Remove Perl from here when 'patch-shebang' DTRT with /usr/bin/env.
-    (propagated-inputs `(("perl" ,perl)))         ; yuck!
+              ("xz" ,xz)
+              ("perl" ,perl)))
     (home-page "http://www.gnu.org/software/texinfo/")
     (synopsis "The GNU documentation format")
     (description
