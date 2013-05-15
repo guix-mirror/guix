@@ -141,20 +141,30 @@ closed it will also close PORT, unless the KEEP-ALIVE? is true."
 (module-define! (resolve-module '(web client))
                 'shutdown (const #f))
 
-(define* (http-fetch uri #:key (text? #f))
+(define* (http-fetch uri #:key (text? #f) (buffered? #t))
   "Return an input port containing the data at URI, and the expected number of
 bytes available or #f.  If TEXT? is true, the data at URI is considered to be
-textual.  Follow any HTTP redirection."
+textual.  Follow any HTTP redirection.  When BUFFERED? is #f, return an
+unbuffered port, suitable for use in `filtered-port'."
   (let loop ((uri uri))
+    (define port
+      (let ((s (open-socket-for-uri uri)))
+        (unless buffered?
+          (setvbuf s _IONBF))
+        s))
+
     (let*-values (((resp data)
                    ;; Try hard to use the API du jour to get an input port.
                    ;; On Guile 2.0.5 and before, we can only get a string or
                    ;; bytevector, and not an input port.  Work around that.
                    (if (version>? "2.0.7" (version))
                        (if (defined? 'http-get*)
-                           (http-get* uri #:decode-body? text?) ; 2.0.7
-                           (http-get uri #:decode-body? text?)) ; 2.0.5-
-                       (http-get uri #:streaming? #t)))         ; 2.0.9+
+                           (http-get* uri #:decode-body? text?
+                                      #:port port)              ; 2.0.7
+                           (http-get uri #:decode-body? text?
+                                     #:port port))              ; 2.0.5-
+                       (http-get uri #:streaming? #t
+                                 #:port port)))                 ; 2.0.9+
                   ((code)
                    (response-code resp)))
       (case code
@@ -182,7 +192,8 @@ textual.  Follow any HTTP redirection."
         ((301                                      ; moved permanently
           302)                                     ; found (redirection)
          (let ((uri (response-location resp)))
-           (format #t "following redirection to `~a'...~%"
+           (close-port port)
+           (format #t (_ "following redirection to `~a'...~%")
                    (uri->string uri))
            (loop uri)))
         (else

@@ -117,15 +117,17 @@ pairs."
           (else
            (error "unmatched line" line)))))
 
-(define (fetch uri)
+(define* (fetch uri #:key (buffered? #t))
   "Return a binary input port to URI and the number of bytes it's expected to
 provide."
   (case (uri-scheme uri)
     ((file)
      (let ((port (open-input-file (uri-path uri))))
+       (unless buffered?
+         (setvbuf port _IONBF))
        (values port (stat:size (stat port)))))
     ((http)
-     (http-fetch uri #:text? #f))))
+     (http-fetch uri #:text? #f #:buffered? buffered?))))
 
 (define-record-type <cache>
   (%make-cache url store-directory wants-mass-query?)
@@ -423,7 +425,7 @@ indefinitely."
        (format #t "~a~%" (narinfo-hash narinfo))
 
        (let*-values (((raw download-size)
-                      (fetch uri))
+                      (fetch uri #:buffered? #f))
                      ((input pids)
                       (decompressed-port (narinfo-compression narinfo)
                                          raw)))

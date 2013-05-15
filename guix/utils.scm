@@ -163,7 +163,8 @@ evaluate to a simple datum."
 (define (filtered-port command input)
   "Return an input port where data drained from INPUT is filtered through
 COMMAND (a list).  In addition, return a list of PIDs that the caller must
-wait."
+wait.  When INPUT is a file port, it must be unbuffered; otherwise, any
+buffered data is lost."
   (let loop ((input input)
              (pids '()))
     (if (file-port? input)

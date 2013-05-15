@@ -102,17 +102,16 @@
     list))
 
 (test-assert "filtered-port, file"
-  (let ((file (search-path %load-path "guix.scm")))
-    (call-with-input-file file
-      (lambda (input)
-        (let*-values (((compressed pids1)
-                       (filtered-port `(,%gzip "-c" "--fast") input))
-                      ((decompressed pids2)
-                       (filtered-port `(,%gzip "-d") compressed)))
-          (and (every (compose zero? cdr waitpid)
-                      (append pids1 pids2))
-               (equal? (get-bytevector-all decompressed)
-                       (call-with-input-file file get-bytevector-all))))))))
+  (let* ((file  (search-path %load-path "guix.scm"))
+         (input (open-file file "r0")))
+    (let*-values (((compressed pids1)
+                   (filtered-port `(,%gzip "-c" "--fast") input))
+                  ((decompressed pids2)
+                   (filtered-port `(,%gzip "-d") compressed)))
+      (and (every (compose zero? cdr waitpid)
+                  (append pids1 pids2))
+           (equal? (get-bytevector-all decompressed)
+                   (call-with-input-file file get-bytevector-all))))))
 
 (test-assert "filtered-port, non-file"
   (let ((data (call-with-input-file (search-path %load-path "guix.scm")
