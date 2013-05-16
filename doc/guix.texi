@@ -490,7 +490,8 @@ directory is normally
 @var{localstatedir} is the value passed to @code{configure} as
 @code{--localstatedir}, and @var{user} is the user name.  It must be
 created by @code{root}, with @var{user} as the owner.  When it does not
-exist, @command{guix package} emits an error about it.
+exist, or is not owned by @var{user}, @command{guix package} emits an
+error about it.
 
 The @var{options} can be among the following:
 

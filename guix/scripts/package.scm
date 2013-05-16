@@ -600,7 +600,14 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
       (#f #f)))
 
   (define (ensure-default-profile)
-    ;; Ensure the default profile symlink and directory exist.
+    ;; Ensure the default profile symlink and directory exist and are
+    ;; writable.
+
+    (define (rtfm)
+      (format (current-error-port)
+              (_ "Try \"info '(guix) Invoking guix package'\" for \
+more information.~%"))
+      (exit 1))
 
     ;; Create ~/.guix-profile if it doesn't exist yet.
     (when (and %user-environment-directory
@@ -609,23 +616,34 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                      (lstat %user-environment-directory))))
       (symlink %current-profile %user-environment-directory))
 
-    ;; Attempt to create /…/profiles/per-user/$USER if needed.
-    (unless (directory-exists? %profile-directory)
-      (catch 'system-error
-        (lambda ()
-          (mkdir-p %profile-directory))
-        (lambda args
-          ;; Often, we cannot create %PROFILE-DIRECTORY because its
-          ;; parent directory is root-owned and we're running
-          ;; unprivileged.
-          (format (current-error-port)
-                  (_ "error: while creating directory `~a': ~a~%")
-                  %profile-directory
-                  (strerror (system-error-errno args)))
-          (format (current-error-port)
-                  (_ "Please create the `~a' directory, with you as the owner.~%")
-                  %profile-directory)
-          (exit 1)))))
+    (let ((s (stat %profile-directory #f)))
+      ;; Attempt to create /…/profiles/per-user/$USER if needed.
+      (unless (and s (eq? 'directory (stat:type s)))
+        (catch 'system-error
+          (lambda ()
+            (mkdir-p %profile-directory))
+          (lambda args
+            ;; Often, we cannot create %PROFILE-DIRECTORY because its
+            ;; parent directory is root-owned and we're running
+            ;; unprivileged.
+            (format (current-error-port)
+                    (_ "error: while creating directory `~a': ~a~%")
+                    %profile-directory
+                    (strerror (system-error-errno args)))
+            (format (current-error-port)
+                    (_ "Please create the `~a' directory, with you as the owner.~%")
+                    %profile-directory)
+            (rtfm))))
+
+      ;; Bail out if it's not owned by the user.
+      (unless (= (stat:uid s) (getuid))
+        (format (current-error-port)
+                (_ "error: directory `~a' is not owned by you~%")
+                %profile-directory)
+        (format (current-error-port)
+                (_ "Please change the owner of `~a' to user ~s.~%")
+                %profile-directory (or (getenv "USER") (getuid)))
+        (rtfm))))
 
   (define (process-actions opts)
     ;; Process any install/remove/upgrade action from OPTS.
