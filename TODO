@@ -57,6 +57,12 @@ write a new one based on it, as opposed to actually using it.
 
 * extend <package>
 
+** add ‘recommends’ field
+
+For instance, glibc, binutils, gcc, and ld-wrapper would recommend each other.
+‘guix package -i’ could ask interactively (?), or allow users to follow all or
+none of the recommendations.
+
 ** add a ‘user-environment-hook’
 
 This should specify builder code to be run when building a user
