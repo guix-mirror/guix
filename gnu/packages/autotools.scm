@@ -121,27 +121,27 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                    (use-modules (guix build utils))
                    (let ((result (apply system* ,autoconf
                                         (cdr (command-line)))))
-                     (if (and (zero? result)
-                              (file-exists? "configure")
-                              (not (file-exists? "/bin/sh")))
-                         (begin
-                           (patch-shebang "configure")
-                           #t)
-                         (exit (status:exit-val result)))))
+                     (when (and (file-exists? "configure")
+                                (not (file-exists? "/bin/sh")))
+                       ;; Patch regardless of RESULT, because `autoconf
+                       ;; -Werror' can both create a `configure' file and
+                       ;; return a non-zero exit code.
+                       (patch-shebang "configure"))
+                     (exit (status:exit-val result))))
                 port)))
            (chmod (string-append bin "/autoconf") #o555)))))))
 
 (define-public automake
   (package
     (name "automake")
-    (version "1.13.1")
+    (version "1.13.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/automake/automake-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "12yi1bzkipi7qdmkdy77pazljsa9z7q66hi6c4rq73p7hbv6rkbf"))))
+               "0im691b7bhpg01ka6w46y8kdvagyj9z9dhba27sdx69k6d3j2sc0"))))
     (build-system gnu-build-system)
     (inputs
      `(("autoconf" ,autoconf-wrapper)
