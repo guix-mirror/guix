@@ -409,3 +409,23 @@ slabtop, and skill.")
     (license (list gpl2                           ; programs
                    lgpl2.0                        ; libext2fs
                    x11))))                        ; libuuid
+
+(define-public strace
+  (package
+    (name "strace")
+    (version "4.7")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/strace/strace-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "158iwk0pl2mfw93m1843xb7a2zb8p6lh0qim07rca6f1ff4dk764"))))
+    (build-system gnu-build-system)
+    (inputs `(("perl" ,perl)))
+    (home-page "http://strace.sourceforge.net/")
+    (synopsis "System call tracer for Linux")
+    (description
+     "strace is a system call tracer, i.e. a debugging tool which prints out a
+trace of all the system calls made by a another process/program.")
+    (license bsd-3)))
