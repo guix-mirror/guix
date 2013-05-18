@@ -284,8 +284,7 @@ providing the system administrator with some help in common tasks.")
               ("ncurses" ,ncurses)
               ("perl" ,perl)))
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
-    (synopsis
-     "util-linux is a random collection of utilities for the Linux kernel")
+    (synopsis "Collection of utilities for the Linux kernel")
     (description
      "util-linux is a random collection of utilities for the Linux kernel.")
 
@@ -342,8 +341,7 @@ providing the system administrator with some help in common tasks.")
        ;; What did you expect?  Tests?
        #:tests? #f))
     (home-page "http://procps.sourceforge.net/")
-    (synopsis
-     "Utilities that give information about processes using the /proc filesystem")
+    (synopsis "Utilities that give information about processes")
     (description
      "procps is the package that has a bunch of small useful utilities
 that give information about processes using the Linux /proc file system.
@@ -405,7 +403,7 @@ slabtop, and skill.")
        ;; filesystem is mounted due to missing mtab file".
        #:tests? #f))
     (home-page "http://e2fsprogs.sourceforge.net/")
-    (synopsis "Tools for creating and checking ext2/ext3/ext4 filesystems")
+    (synopsis "Creating and checking ext2/ext3/ext4 file systems")
     (description
      "This package provides tools for manipulating ext2/ext3/ext4 file systems.")
     (license (list gpl2                           ; programs
