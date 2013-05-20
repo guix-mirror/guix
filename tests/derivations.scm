@@ -353,6 +353,21 @@
            (equal? '(hello guix)
                    (call-with-input-file (string-append p "/test") read))))))
 
+(test-assert "build-expression->derivation and max-silent-time"
+  (let* ((store      (let ((s (open-connection)))
+                       (set-build-options s #:max-silent-time 1)
+                       s))
+         (builder    '(sleep 100))
+         (drv-path   (build-expression->derivation %store "silent"
+                                                   (%current-system)
+                                                   builder '()))
+         (out-path   (derivation-path->output-path drv-path)))
+    (guard (c ((nix-protocol-error? c)
+               (and (string-contains (nix-protocol-error-message c)
+                                     "failed")
+                    (not (valid-path? store out-path)))))
+      (build-derivations %store (list drv-path)))))
+
 (test-assert "build-expression->derivation and derivation-prerequisites-to-build"
   (let-values (((drv-path drv)
                 (build-expression->derivation %store "fail" (%current-system)

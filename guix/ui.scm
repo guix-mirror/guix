@@ -38,6 +38,7 @@
             leave
             show-version-and-exit
             show-bug-report-information
+            string->number*
             show-what-to-build
             call-with-error-handling
             with-error-handling
@@ -133,6 +134,11 @@ Report bugs to: ~a.") %guix-bug-report-address)
   (display (_ "
 General help using GNU software: <http://www.gnu.org/gethelp/>"))
   (newline))
+
+(define (string->number* str)
+  "Like `string->number', but error out with an error message on failure."
+  (or (string->number str)
+      (leave (_ "~a: invalid number~%") str)))
 
 (define (call-with-error-handling thunk)
   "Call THUNK within a user-friendly error handler."

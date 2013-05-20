@@ -59,6 +59,7 @@ When SOURCE? is true, return the derivations of the package sources."
   ;; Alist of default option values.
   `((system . ,(%current-system))
     (substitutes? . #t)
+    (max-silent-time . 3600)
     (verbosity . 0)))
 
 (define (show-help)
@@ -78,6 +79,9 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   -n, --dry-run          do not build the derivations"))
   (display (_ "
       --no-substitutes   build instead of resorting to pre-built substitutes"))
+  (display (_ "
+      --max-silent-time=SECONDS
+                         mark the build as failed after SECONDS of silence"))
   (display (_ "
   -c, --cores=N          allow the use of up to N CPU cores for the build"))
   (display (_ "
@@ -132,6 +136,10 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                 (lambda (opt name arg result)
                   (alist-cons 'substitutes? #f
                               (alist-delete 'substitutes? result))))
+        (option '("max-silent-time") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'max-silent-time (string->number* arg)
+                              result)))
         (option '(#\r "root") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'gc-root arg result)))
@@ -246,6 +254,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                              #:keep-failed? (assoc-ref opts 'keep-failed?)
                              #:build-cores (or (assoc-ref opts 'cores) 0)
                              #:use-substitutes? (assoc-ref opts 'substitutes?)
+                             #:max-silent-time (assoc-ref opts 'max-silent-time)
                              #:verbosity (assoc-ref opts 'verbosity))
 
           (if (assoc-ref opts 'derivations-only?)

@@ -413,6 +413,7 @@ PACKAGES, in the context of PROFILE."
 (define %default-options
   ;; Alist of default option values.
   `((profile . ,%current-profile)
+    (max-silent-time . 3600)
     (substitutes? . #t)))
 
 (define (show-help)
@@ -438,6 +439,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   -n, --dry-run          show what would be done without actually doing it"))
   (display (_ "
       --no-substitutes   build instead of resorting to pre-built substitutes"))
+  (display (_ "
+      --max-silent-time=SECONDS
+                         mark the build as failed after SECONDS of silence"))
   (display (_ "
       --bootstrap        use the bootstrap Guile to build the profile"))
   (display (_ "
@@ -499,6 +503,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                 (lambda (opt name arg result)
                   (alist-cons 'substitutes? #f
                               (alist-delete 'substitutes? result))))
+        (option '("max-silent-time") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'max-silent-time (string->number* arg)
+                              result)))
         (option '("bootstrap") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'bootstrap? #t result)))
@@ -902,7 +910,9 @@ more information.~%"))
           (parameterize ((%store (open-connection)))
             (set-build-options (%store)
                                #:use-substitutes?
-                               (assoc-ref opts 'substitutes?))
+                               (assoc-ref opts 'substitutes?)
+                               #:max-silent-time
+                               (assoc-ref opts 'max-silent-time))
 
             (parameterize ((%guile-for-build
                             (package-derivation (%store)

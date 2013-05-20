@@ -596,7 +596,8 @@ Use @var{profile} instead of the user's default profile.
 Show what would be done without actually doing it.
 
 @item --no-substitutes
-Build instead of resorting to pre-built substitutes.
+@itemx --max-silent-time=@var{seconds}
+Same as for @command{guix build} (@pxref{Invoking guix build}).
 
 @item --verbose
 Produce verbose output.  In particular, emit the environment's build log
@@ -1197,6 +1198,10 @@ Do not build the derivations.
 
 @item --no-substitutes
 Build instead of resorting to pre-built substitutes.
+
+@item --max-silent-time=@var{seconds}
+When the build or substitution process remains silent for more than
+@var{seconds}, terminate it and report a build failure.
 
 @item --cores=@var{n}
 @itemx -c @var{n}
