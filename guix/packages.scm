@@ -27,6 +27,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
   #:re-export (%current-system)
@@ -305,41 +306,47 @@ Return the cached result when available."
       (#f
        (cache package system thunk)))))
 
-(define* (package-derivation store package
-                             #:optional (system (%current-system)))
-  "Return the derivation path and corresponding <derivation> object of
-PACKAGE for SYSTEM."
+(define* (expand-input store package input system #:optional cross-system)
+  "Expand INPUT, an input tuple, such that it contains only references to
+derivation paths or store paths.  PACKAGE is only used to provide contextual
+information in exceptions."
   (define (intern file)
     ;; Add FILE to the store.  Set the `recursive?' bit to #t, so that
     ;; file permissions are preserved.
     (add-to-store store (basename file) #t "sha256" file))
 
-  (define expand-input
-    ;; Expand the given input tuple such that it contains only
-    ;; references to derivation paths or store paths.
-    (match-lambda
-     (((? string? name) (? package? package))
-      (list name (package-derivation store package system)))
-     (((? string? name) (? package? package)
-       (? string? sub-drv))
-      (list name (package-derivation store package system)
-            sub-drv))
-     (((? string? name)
-       (and (? string?) (? derivation-path?) drv))
-      (list name drv))
-     (((? string? name)
-       (and (? string?) (? file-exists? file)))
-      ;; Add FILE to the store.  When FILE is in the sub-directory of a
-      ;; store path, it needs to be added anyway, so it can be used as a
-      ;; source.
-      (list name (intern file)))
-     (((? string? name) (? origin? source))
-      (list name (package-source-derivation store source system)))
-     (x
-      (raise (condition (&package-input-error
-                         (package package)
-                         (input   x)))))))
+  (define derivation
+    (if cross-system
+        (cut package-cross-derivation store <> cross-system system)
+        (cut package-derivation store <> system)))
 
+  (match input
+    (((? string? name) (? package? package))
+     (list name (derivation package)))
+    (((? string? name) (? package? package)
+      (? string? sub-drv))
+     (list name (derivation package)
+           sub-drv))
+    (((? string? name)
+      (and (? string?) (? derivation-path?) drv))
+     (list name drv))
+    (((? string? name)
+      (and (? string?) (? file-exists? file)))
+     ;; Add FILE to the store.  When FILE is in the sub-directory of a
+     ;; store path, it needs to be added anyway, so it can be used as a
+     ;; source.
+     (list name (intern file)))
+    (((? string? name) (? origin? source))
+     (list name (package-source-derivation store source system)))
+    (x
+     (raise (condition (&package-input-error
+                        (package package)
+                        (input   x)))))))
+
+(define* (package-derivation store package
+                             #:optional (system (%current-system)))
+  "Return the derivation path and corresponding <derivation> object of
+PACKAGE for SYSTEM."
   ;; Compute the derivation and cache the result.  Caching is important
   ;; because some derivations, such as the implicit inputs of the GNU build
   ;; system, will be queried many, many times in a row.
@@ -353,7 +360,9 @@ PACKAGE for SYSTEM."
                   args inputs propagated-inputs native-inputs self-native-input?
                   outputs)
                (let* ((inputs     (package-transitive-inputs package))
-                      (input-drvs (map expand-input inputs))
+                      (input-drvs (map (cut expand-input
+                                            store package <> system)
+                                       inputs))
                       (paths      (delete-duplicates
                                    (append-map (match-lambda
                                                 ((_ (? package? p) _ ...)
@@ -371,7 +380,8 @@ PACKAGE for SYSTEM."
                         #:outputs outputs #:system system
                         (args))))))))
 
-(define* (package-cross-derivation store package)
+(define* (package-cross-derivation store package cross-system
+                                   #:optional (system (%current-system)))
   ;; TODO
   #f)
 
