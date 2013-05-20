@@ -11,6 +11,20 @@ Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 Please send Guix bug reports to bug-guix@gnu.org.
 
 
+* Changes in 0.3 (since 0.2)
+
+** Package management
+*** New ‘--max-silent-time’ option for “guix build” and “guix package”
+
+See the manual for details.
+
+** Bugs fixed
+*** “guix --help” now works when using Guile 2.0.5
+*** Binary substituter multi-threading and pipe issues fixed
+
+These could lead to random substituter crashes while substituting a binary.
+See commits 0332386 and 101d9f3 for details.
+
 * Changes in 0.2 (since 0.1)
 
 ** Package management
