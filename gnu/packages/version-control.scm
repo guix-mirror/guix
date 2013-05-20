@@ -17,14 +17,16 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages version-control)
-  #:use-module ((guix licenses) #:select (gpl2+ gpl3+))
+  #:use-module ((guix licenses) #:select (gpl1+ gpl2+ gpl3+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build utils)
   #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'guix:)))
+                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages nano)
+  #:use-module (gnu packages compression))
 
 (define-public bazaar
   (package
@@ -75,3 +77,30 @@ merging of revisions.  RCS is useful for text that is revised frequently,
 including source code, programs, documentation, graphics, papers, and form
 letters.")
     (license gpl3+)))
+
+(define-public cvs
+  (package
+    (name "cvs")
+    (version "1.12.13")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://ftp.gnu.org/non-gnu/cvs/source/feature/"
+                   version "/cvs-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "0pjir8cwn0087mxszzbsi1gyfc6373vif96cw4q3m1x6p49kd1bq"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; XXX: The test suite looks flawed, and the package is obsolete anyway.
+     '(#:tests? #f))
+    (inputs `(("zlib" ,zlib)
+              ("nano" ,nano)))                    ; the default editor
+    (home-page "http://cvs.nongnu.org")
+    (synopsis "Historical centralized version control system")
+    (description
+     "CVS is a version control system, an important component of Source
+Configuration Management (SCM).  Using it, you can record the history of
+sources files, and documents.  It fills a similar role to the free software
+RCS, PRCS, and Aegis packages.")
+    (license gpl1+)))
