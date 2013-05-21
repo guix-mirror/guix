@@ -167,6 +167,7 @@ MODULES =					\
   gnu/packages/pdf.scm				\
   gnu/packages/perl.scm				\
   gnu/packages/pkg-config.scm			\
+  gnu/packages/plotutils.scm			\
   gnu/packages/popt.scm				\
   gnu/packages/pth.scm				\
   gnu/packages/python.scm			\
