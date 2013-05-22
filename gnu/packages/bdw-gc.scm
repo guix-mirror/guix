@@ -58,3 +58,17 @@ C or C++ programs, though that is not its primary goal.")
    ;; permissive X11-style license:
    ;; http://www.hpl.hp.com/personal/Hans_Boehm/gc/license.txt
    (license x11)))
+
+(define-public libgc-7.2
+  ;; This is the latest final release of the 7.2 series.
+  ;; TODO: Use it as the default when doing a core-updates.
+  (package (inherit libgc)
+    (version "7.2d")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0phwa5driahnpn79zqff14w9yc8sn3599cxz91m78hqdcpl0mznr"))))))
