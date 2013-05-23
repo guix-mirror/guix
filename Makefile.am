@@ -192,6 +192,7 @@ MODULES =					\
   gnu/packages/time.scm				\
   gnu/packages/tmux.scm				\
   gnu/packages/tor.scm				\
+  gnu/packages/unrtf.scm			\
   gnu/packages/version-control.scm		\
   gnu/packages/vim.scm				\
   gnu/packages/vpn.scm				\
