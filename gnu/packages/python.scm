@@ -18,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages python)
-  #:use-module ((guix licenses) #:select (psfl x11))
+  #:use-module ((guix licenses) #:select (bsd-3 psfl x11))
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gdbm)
@@ -127,3 +127,29 @@ data types.")
      "This library allows accurate and cross platform timezone calculations
 using Python 2.4 or higher and provides access to the Olson timezone database.")
     (license x11)))
+
+(define-public babel
+  (package
+    (name "babel")
+    (version "0.9.6")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://ftp.edgewall.com/pub/babel/Babel-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "03vmr54jq5vf3qw6kpdv7cdk7x7i2jhzyf1mawv2gk8zrxg0hfja"))))
+    (build-system python-build-system)
+    (inputs
+     `(("pytz" ,pytz)))
+    (home-page "http://babel.edgewall.org/")
+    (synopsis
+     "Tools for internationalizing Python applications")
+    (description
+     "Babel is composed of two major parts:
+- tools to build and work with gettext message catalogs
+- a Python interface to the CLDR (Common Locale Data Repository), providing
+access to various locale display names, localized number and date formatting,
+etc. ")
+    (license bsd-3)))
