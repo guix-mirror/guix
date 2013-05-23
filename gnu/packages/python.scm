@@ -18,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages python)
-  #:use-module ((guix licenses) #:select (psfl))
+  #:use-module ((guix licenses) #:select (psfl x11))
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gdbm)
@@ -27,7 +27,8 @@
   #:use-module (gnu packages patchelf)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public python
   (package
@@ -106,3 +107,23 @@ expression of procedural code; full modularity, supporting hierarchical
 packages; exception-based error handling; and very high level dynamic
 data types.")
     (license psfl)))
+
+(define-public pytz
+  (package
+    (name "pytz")
+    (version "2013b")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://launchpad.net/pytz/main/" version
+                          "/+download/pytz-" version ".tar.bz2"))
+      (sha256
+       (base32
+        "19giwgfcrg0nr1gdv49qnmf2jb2ilkcfc7qyqvfpz4dp0p64ksv5"))))
+    (build-system python-build-system)
+    (home-page "https://launchpad.net/pytz")
+    (synopsis "The Python timezone library.")
+    (description
+     "This library allows accurate and cross platform timezone calculations
+using Python 2.4 or higher and provides access to the Olson timezone database.")
+    (license x11)))
