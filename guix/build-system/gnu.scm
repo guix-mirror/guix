@@ -144,35 +144,48 @@ standard packages used as implicit inputs of the GNU build system."
   (let ((distro (resolve-module '(gnu packages base))))
     (module-ref distro '%final-inputs)))
 
-(define (standard-search-paths)
-  "Return the list of <search-path-specification> for the standard (implicit)
-inputs."
+(define* (inputs-search-paths inputs
+                              #:optional (package->search-paths
+                                          package-native-search-paths))
+  "Return the <search-path-specification> objects for INPUTS, using
+PACKAGE->SEARCH-PATHS to extract the search path specifications of a package."
   (append-map (match-lambda
                ((_ (? package? p) _ ...)
-                (package-native-search-paths p))
+                (package->search-paths p))
                (_
                 '()))
-              (standard-packages)))
+              inputs))
+
+(define (standard-search-paths)
+  "Return the list of <search-path-specification> for the standard (implicit)
+inputs when doing a native build."
+  (inputs-search-paths (standard-packages)))
+
+(define (expand-inputs inputs system)
+  "Expand INPUTS, which contains <package> objects, so that it contains only
+derivations for SYSTEM.  Include propagated inputs in the result."
+  (define input-package->derivation
+    (match-lambda
+     ((name pkg sub-drv ...)
+      (cons* name (package-derivation (%store) pkg system) sub-drv))
+     ((name (? derivation-path? path) sub-drv ...)
+      (cons* name path sub-drv))
+     (z
+      (error "invalid standard input" z))))
+
+  (map input-package->derivation
+       (append inputs
+               (append-map (match-lambda
+                            ((name package _ ...)
+                             (package-transitive-propagated-inputs package)))
+                           inputs))))
 
 (define standard-inputs
   (memoize
    (lambda (system)
      "Return the list of implicit standard inputs used with the GNU Build
 System: GCC, GNU Make, Bash, Coreutils, etc."
-     (map (match-lambda
-           ((name pkg sub-drv ...)
-            (cons* name (package-derivation (%store) pkg system) sub-drv))
-           ((name (? derivation-path? path) sub-drv ...)
-            (cons* name path sub-drv))
-           (z
-            (error "invalid standard input" z)))
-
-          (let ((inputs (standard-packages)))
-            (append inputs
-                    (append-map (match-lambda
-                                 ((name package _ ...)
-                                  (package-transitive-propagated-inputs package)))
-                                inputs)))))))
+     (expand-inputs (standard-packages) system))))
 
 (define* (gnu-build store name source inputs
                     #:key (guile #f)
@@ -269,8 +282,180 @@ which could lead to gratuitous input divergence."
                                 #:modules imported-modules
                                 #:guile-for-build guile-for-build))
 
+
+;;;
+;;; Cross-compilation.
+;;;
+
+(define standard-cross-packages
+  (memoize
+   (lambda (target kind)
+     "Return the list of name/package tuples to cross-build for TARGET.  KIND
+is one of `host' or `target'."
+     (let* ((cross     (resolve-interface '(gnu packages cross-base)))
+            (gcc       (module-ref cross 'cross-gcc))
+            (binutils  (module-ref cross 'cross-binutils))
+            (libc      (module-ref cross 'cross-libc)))
+       (case kind
+         ((host)
+          `(("cross-gcc" ,(gcc target
+                               (binutils target)
+                               (libc target)))
+            ("cross-binutils" ,(binutils target))
+            ,@(standard-packages)))
+         ((target)
+          `(("cross-libc" ,(libc target)))))))))
+
+(define standard-cross-inputs
+  (memoize
+   (lambda (system target kind)
+     "Return the list of implicit standard inputs used with the GNU Build
+System when cross-compiling for TARGET: GCC, GNU Make, Bash, Coreutils, etc."
+     (expand-inputs (standard-cross-packages target kind) system))))
+
+(define (standard-cross-search-paths target kind)
+  "Return the list of <search-path-specification> for the standard (implicit)
+inputs."
+  (inputs-search-paths (append (standard-cross-packages target 'target)
+                               (standard-cross-packages target 'host))
+                       (case kind
+                         ((host)   package-native-search-paths)
+                         ((target) package-search-paths))))
+
+(define* (gnu-cross-build store name target source inputs native-inputs
+                          #:key
+                          (guile #f)
+                          (outputs '("out"))
+                          (search-paths '())
+                          (native-search-paths '())
+
+                          (configure-flags ''())
+                          (make-flags ''())
+                          (patches ''()) (patch-flags ''("--batch" "-p1"))
+                          (out-of-source? #f)
+                          (tests? #t)
+                          (test-target "check")
+                          (parallel-build? #t) (parallel-tests? #t)
+                          (patch-shebangs? #t)
+                          (strip-binaries? #t)
+                          (strip-flags ''("--strip-debug"))
+                          (strip-directories ''("lib" "lib64" "libexec"
+                                                "bin" "sbin"))
+                          (phases '%standard-cross-phases)
+                          (system (%current-system))
+                          (implicit-inputs? #t)    ; useful when bootstrapping
+                          (imported-modules '((guix build gnu-build-system)
+                                              (guix build gnu-cross-build)
+                                              (guix build utils)))
+                          (modules '((guix build gnu-build-system)
+                                     (guix build gnu-cross-build)
+                                     (guix build utils))))
+  "Cross-build NAME for TARGET, where TARGET is a GNU triplet.  INPUTS are
+cross-built inputs, and NATIVE-INPUTS are inputs that run on the build
+platform."
+
+  (define implicit-host-inputs
+    (and implicit-inputs?
+         (parameterize ((%store store))
+           (standard-cross-inputs system target 'host))))
+
+  (define implicit-target-inputs
+    (and implicit-inputs?
+         (parameterize ((%store store))
+           (standard-cross-inputs system target 'target))))
+
+  (define implicit-host-search-paths
+    (if implicit-inputs?
+        (standard-cross-search-paths target 'host)
+        '()))
+
+  (define implicit-target-search-paths
+    (if implicit-inputs?
+        (standard-cross-search-paths target 'target)
+        '()))
+
+  (define builder
+    `(begin
+       (use-modules ,@modules)
+
+       (let ()
+         (define %build-host-inputs
+           ',(map (match-lambda
+                   ((name (? derivation-path? drv-path) sub ...)
+                    `(,name . ,(apply derivation-path->output-path
+                                      drv-path sub)))
+                   (x x))
+                  (append (or implicit-host-inputs '()) native-inputs)))
+
+         (define %build-target-inputs
+           ',(map (match-lambda
+                   ((name (? derivation-path? drv-path) sub ...)
+                    `(,name . ,(apply derivation-path->output-path
+                                      drv-path sub)))
+                   (x x))
+                  (append (or implicit-target-inputs) inputs)))
+
+         (gnu-build #:source ,(if (and source (derivation-path? source))
+                                  (derivation-path->output-path source)
+                                  source)
+                    #:system ,system
+                    #:target ,target
+                    #:outputs %outputs
+                    #:inputs %build-target-inputs
+                    #:native-inputs %build-host-inputs
+                    #:search-paths ',(map search-path-specification->sexp
+                                          (append implicit-target-search-paths
+                                                  search-paths))
+                    #:native-search-paths ',(map
+                                             search-path-specification->sexp
+                                             (append implicit-host-search-paths
+                                                     native-search-paths))
+                    #:patches ,patches
+                    #:patch-flags ,patch-flags
+                    #:phases ,phases
+                    #:configure-flags ,configure-flags
+                    #:make-flags ,make-flags
+                    #:out-of-source? ,out-of-source?
+                    #:tests? ,tests?
+                    #:test-target ,test-target
+                    #:parallel-build? ,parallel-build?
+                    #:parallel-tests? ,parallel-tests?
+                    #:patch-shebangs? ,patch-shebangs?
+                    #:strip-binaries? ,strip-binaries?
+                    #:strip-flags ,strip-flags
+                    #:strip-directories ,strip-directories))))
+
+  (define guile-for-build
+    (match guile
+      ((? package?)
+       (package-derivation store guile system))
+      ((and (? string?) (? derivation-path?))
+       guile)
+      (#f                                         ; the default
+       (let* ((distro (resolve-interface '(gnu packages base)))
+              (guile  (module-ref distro 'guile-final)))
+         (package-derivation store guile system)))))
+
+  (build-expression->derivation store name system
+                                builder
+                                `(,@(if source
+                                        `(("source" ,source))
+                                        '())
+                                  ,@inputs
+                                  ,@(if implicit-inputs?
+                                        implicit-target-inputs
+                                        '())
+                                  ,@native-inputs
+                                  ,@(if implicit-inputs?
+                                        implicit-host-inputs
+                                        '()))
+                                #:outputs outputs
+                                #:modules imported-modules
+                                #:guile-for-build guile-for-build))
+
 (define gnu-build-system
   (build-system (name 'gnu)
                 (description
                  "The GNU Build System—i.e., ./configure && make && make install")
-                (build gnu-build)))             ; TODO: add `gnu-cross-build'
+                (build gnu-build)
+                (cross-build gnu-cross-build)))

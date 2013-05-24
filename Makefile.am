@@ -57,6 +57,7 @@ MODULES =					\
   guix/build/download.scm			\
   guix/build/cmake-build-system.scm		\
   guix/build/gnu-build-system.scm		\
+  guix/build/gnu-cross-build.scm		\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
   guix/build/utils.scm				\

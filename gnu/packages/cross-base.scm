@@ -29,7 +29,10 @@
   #:use-module (guix build-system trivial)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:export (cross-binutils
+            cross-libc
+            cross-gcc))
 
 (define (cross p target)
   (package (inherit p)
