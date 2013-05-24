@@ -175,7 +175,17 @@ GCC that does not target a libc; otherwise, target that libc."
            (if libc
                `(("libc" ,libc)
                  ,@inputs)
-               inputs))))))
+               inputs))))
+
+    ;; Only search target inputs, not host inputs.
+    (search-paths
+     (list (search-path-specification
+            (variable "CROSS_CPATH")
+            (directories '("include")))
+           (search-path-specification
+            (variable "CROSS_LIBRARY_PATH")
+            (directories '("lib" "lib64")))))
+    (native-search-paths '())))
 
 (define* (cross-libc target
                      #:optional
