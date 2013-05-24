@@ -76,11 +76,12 @@ SYSTEM."
 
 (define %packages-to-cross-build
   (list gmp mpfr mpc coreutils findutils diffutils patch hello guile-2.0
-        %bootstrap-binaries-tarball
-        %binutils-bootstrap-tarball
-        %glibc-bootstrap-tarball
-        %gcc-bootstrap-tarball
-        %guile-bootstrap-tarball))
+        ;; %bootstrap-binaries-tarball
+        ;; %binutils-bootstrap-tarball
+        ;; %glibc-bootstrap-tarball
+        ;; %gcc-bootstrap-tarball
+        ;; %guile-bootstrap-tarball
+        ))
 
 (define %cross-targets
   '("mips64el-linux-gnu"))
