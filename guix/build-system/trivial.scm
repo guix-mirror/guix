@@ -25,31 +25,45 @@
   #:use-module (ice-9 match)
   #:export (trivial-build-system))
 
+(define (guile-for-build store guile system)
+  (match guile
+    ((? package?)
+     (package-derivation store guile system))
+    ((and (? string?) (? derivation-path?))
+     guile)
+    (#f                                         ; the default
+     (let* ((distro (resolve-interface '(gnu packages base)))
+            (guile  (module-ref distro 'guile-final)))
+       (package-derivation store guile system)))))
+
 (define* (trivial-build store name source inputs
                         #:key
                         outputs guile system builder (modules '())
                         search-paths)
   "Run build expression BUILDER, an expression, for SYSTEM.  SOURCE is
 ignored."
-  (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system))
-      ((and (? string?) (? derivation-path?))
-       guile)
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages base)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system)))))
-
   (build-expression->derivation store name system builder inputs
                                 #:outputs outputs
                                 #:modules modules
-                                #:guile-for-build guile-for-build))
+                                #:guile-for-build
+                                (guile-for-build store guile system)))
+
+(define* (trivial-cross-build store name target source inputs native-inputs
+                              #:key
+                              outputs guile system builder (modules '())
+                              search-paths native-search-paths)
+  "Like `trivial-build', but in a cross-compilation context."
+  (build-expression->derivation store name system
+                                `(begin (define %target ,target) ,builder)
+                                (append native-inputs inputs)
+                                #:outputs outputs
+                                #:modules modules
+                                #:guile-for-build
+                                (guile-for-build store guile system)))
 
 (define trivial-build-system
   (build-system (name 'trivial)
                 (description
                  "Trivial build system, to run arbitrary Scheme build expressions")
                 (build trivial-build)
-                (cross-build trivial-build)))
+                (cross-build trivial-cross-build)))
