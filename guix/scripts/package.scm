@@ -644,7 +644,7 @@ more information.~%"))
             (rtfm))))
 
       ;; Bail out if it's not owned by the user.
-      (unless (= (stat:uid s) (getuid))
+      (unless (or (not s) (= (stat:uid s) (getuid)))
         (format (current-error-port)
                 (_ "error: directory `~a' is not owned by you~%")
                 %profile-directory)
