@@ -69,6 +69,8 @@
             package-field-location
 
             package-transitive-inputs
+            package-transitive-target-inputs
+            package-transitive-native-inputs
             package-transitive-propagated-inputs
             package-source-derivation
             package-derivation
@@ -268,6 +270,19 @@ with their propagated inputs, recursively."
                              (package-inputs package)
                              (package-propagated-inputs package))))
 
+(define (package-transitive-target-inputs package)
+  "Return the transitive target inputs of PACKAGE---i.e., its direct inputs
+along with their propagated inputs, recursively.  This only includes inputs
+for the target system, and not native inputs."
+  (transitive-inputs (append (package-inputs package)
+                             (package-propagated-inputs package))))
+
+(define (package-transitive-native-inputs package)
+  "Return the transitive native inputs of PACKAGE---i.e., its direct inputs
+along with their propagated inputs, recursively.  This only includes inputs
+for the host system (\"native inputs\"), and not target inputs."
+  (transitive-inputs (package-native-inputs package)))
+
 (define (package-transitive-propagated-inputs package)
   "Return the propagated inputs of PACKAGE, and their propagated inputs,
 recursively."
@@ -354,7 +369,8 @@ PACKAGE for SYSTEM."
 
           ;; Bind %CURRENT-SYSTEM so that thunked field values can refer
           ;; to it.
-          (parameterize ((%current-system system))
+          (parameterize ((%current-system system)
+                         (%current-target-system #f))
             (match package
               (($ <package> name version source (= build-system-builder builder)
                   args inputs propagated-inputs native-inputs self-native-input?
@@ -380,10 +396,57 @@ PACKAGE for SYSTEM."
                         #:outputs outputs #:system system
                         (args))))))))
 
-(define* (package-cross-derivation store package cross-system
+(define* (package-cross-derivation store package target
                                    #:optional (system (%current-system)))
-  ;; TODO
-  #f)
+  "Cross-build PACKAGE for TARGET (a GNU triplet) from host SYSTEM (a Guix
+system identifying string)."
+  (cached package (cons system target)
+
+          ;; Bind %CURRENT-SYSTEM so that thunked field values can refer
+          ;; to it.
+          (parameterize ((%current-system system)
+                         (%current-target-system target))
+            (match package
+              (($ <package> name version source
+                  (= build-system-cross-builder builder)
+                  args inputs propagated-inputs native-inputs self-native-input?
+                  outputs)
+               (let* ((inputs     (package-transitive-target-inputs package))
+                      (input-drvs (map (cut expand-input
+                                            store package <>
+                                            system target)
+                                       inputs))
+                      (host       (append (if self-native-input?
+                                              `(("self" ,package))
+                                              '())
+                                          (package-transitive-native-inputs package)))
+                      (host-drvs  (map (cut expand-input
+                                            store package <> system)
+                                       host))
+                      (all        (append host inputs))
+                      (paths      (delete-duplicates
+                                   (append-map (match-lambda
+                                                ((_ (? package? p) _ ...)
+                                                 (package-search-paths p))
+                                                (_ '()))
+                                               all)))
+                      (npaths     (delete-duplicates
+                                   (append-map (match-lambda
+                                                ((_ (? package? p) _ ...)
+                                                 (package-native-search-paths
+                                                  p))
+                                                (_ '()))
+                                               all))))
+
+                 (apply builder
+                        store (package-full-name package) target
+                        (and source
+                             (package-source-derivation store source system))
+                        input-drvs host-drvs
+                        #:search-paths paths
+                        #:native-search-paths npaths
+                        #:outputs outputs #:system system
+                        (args))))))))
 
 (define* (package-output store package output
                          #:optional (system (%current-system)))

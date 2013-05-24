@@ -57,6 +57,7 @@
 
             gnu-triplet->nix-system
             %current-system
+            %current-target-system
             version-compare
             version>?
             package-name->name+version
@@ -309,6 +310,11 @@ returned by `config.guess'."
   ;; System type as expected by Nix, usually ARCHITECTURE-KERNEL.
   ;; By default, this is equal to (gnu-triplet->nix-system %host-type).
   (make-parameter %system))
+
+(define %current-target-system
+  ;; Either #f or a GNU triplet representing the target system we are
+  ;; cross-building to.
+  (make-parameter #f))
 
 (define version-compare
   (let ((strverscmp

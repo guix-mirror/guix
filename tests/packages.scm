@@ -94,7 +94,7 @@
                    ("d" ,d) ("d/x" "something.drv"))
                  (pk 'x (package-transitive-inputs e))))))
 
-(test-skip (if (not %store) 4 0))
+(test-skip (if (not %store) 5 0))
 
 (test-assert "return values"
   (let-values (((drv-path drv)
@@ -195,6 +195,13 @@
       (and (null? (collect (package-derivation %store a)))
            (equal? x (collect (package-derivation %store b)))
            (equal? x (collect (package-derivation %store c)))))))
+
+(test-assert "package-cross-derivation"
+  (let-values (((drv-path drv)
+                (package-cross-derivation %store (dummy-package "p")
+                                          "mips64el-linux-gnu")))
+    (and (derivation-path? drv-path)
+         (derivation? drv))))
 
 (unless (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV))
   (test-skip 1))

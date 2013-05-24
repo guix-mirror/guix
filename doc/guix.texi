@@ -919,6 +919,23 @@ must be a connection to the daemon, which operates on the store
 (@pxref{The Store}).
 @end deffn
 
+@noindent
+@cindex cross-compilation
+Similarly, it is possible to compute a derivation that cross-builds a
+package for some other system:
+
+@deffn {Scheme Procedure} package-cross-derivation @var{store} @
+            @var{package} @var{target} [@var{system}]
+Return the derivation path and corresponding @code{<derivation>} object
+of @var{package} cross-built from @var{system} to @var{target}.
+
+@var{target} must be a valid GNU triplet denoting the target hardware
+and operating system, such as @code{"mips64el-linux-gnu"}
+(@pxref{Configuration Names, GNU configuration triplets,, configure, GNU
+Configure and Build System}).
+@end deffn
+
+
 @node The Store
 @section The Store
 
