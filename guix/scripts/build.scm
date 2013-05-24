@@ -38,9 +38,11 @@
 (define %store
   (make-parameter #f))
 
-(define (derivations-from-package-expressions str system source?)
+(define (derivations-from-package-expressions str package-derivation
+                                              system source?)
   "Read/eval STR and return the corresponding derivation path for SYSTEM.
-When SOURCE? is true, return the derivations of the package sources."
+When SOURCE? is true, return the derivations of the package sources;
+otherwise, use PACKAGE-DERIVATION to compute the derivation of a package."
   (let ((p (read/eval-package-expression str)))
     (if source?
         (let ((source (package-source p)))
@@ -71,6 +73,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   -S, --source           build the packages' source derivations"))
   (display (_ "
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
+  (display (_ "
+      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
   (display (_ "
   -d, --derivations      return the derivation paths of the given packages"))
   (display (_ "
@@ -114,6 +118,10 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                 (lambda (opt name arg result)
                   (alist-cons 'system arg
                               (alist-delete 'system result eq?))))
+        (option '("target") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'target arg
+                              (alist-delete 'target result eq?))))
         (option '(#\d "derivations") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'derivations-only? #t result)))
@@ -222,13 +230,19 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
 
   (with-error-handling
     (let ((opts (parse-options)))
+      (define package->derivation
+        (match (assoc-ref opts 'target)
+          (#f package-derivation)
+          (triplet
+           (cut package-cross-derivation <> <> triplet <>))))
+
       (parameterize ((%store (open-connection)))
         (let* ((src? (assoc-ref opts 'source?))
                (sys  (assoc-ref opts 'system))
                (drv  (filter-map (match-lambda
                                   (('expression . str)
-                                   (derivations-from-package-expressions str sys
-                                                                         src?))
+                                   (derivations-from-package-expressions
+                                    str package->derivation sys src?))
                                   (('argument . (? derivation-path? drv))
                                    drv)
                                   (('argument . (? string? x))
@@ -237,7 +251,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                                          (let ((s (package-source p)))
                                            (package-source-derivation
                                             (%store) s))
-                                         (package-derivation (%store) p sys))))
+                                         (package->derivation (%store) p sys))))
                                   (_ #f))
                                  opts))
                (roots (filter-map (match-lambda

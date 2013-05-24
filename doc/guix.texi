@@ -1198,6 +1198,12 @@ different personalities.  For instance, passing
 @code{--system=i686-linux} on an @code{x86_64-linux} system allows users
 to build packages in a complete 32-bit environment.
 
+@item --target=@var{triplet}
+@cindex cross-compilation
+Cross-build for @var{triplet}, which must be a valid GNU triplet, such
+as @code{"mips64el-linux-gnu"} (@pxref{Configuration Names, GNU
+configuration triplets,, configure, GNU Configure and Build System}).
+
 @item --derivations
 @itemx -d
 Return the derivation paths, not the output paths, of the given
