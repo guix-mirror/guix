@@ -42,6 +42,8 @@
              (gnu packages)
              (gnu packages base)
              (gnu packages guile)
+             (gnu packages multiprecision)
+             (gnu packages make-bootstrap)
              (srfi srfi-1)
              (srfi srfi-26)
              (ice-9 match))
@@ -51,7 +53,8 @@
 (setvbuf (current-error-port) _IOLBF)
 (set-current-output-port (current-error-port))
 
-(define (package->alist store package system)
+(define* (package->alist store package system
+                         #:optional (package-derivation package-derivation))
   "Convert PACKAGE to an alist suitable for Hydra."
   `((derivation . ,(package-derivation store package system))
     (description . ,(package-synopsis package))
@@ -64,11 +67,40 @@
   "Return a job called JOB-NAME that builds PACKAGE on SYSTEM."
   `(,job-name . ,(cut package->alist store package system)))
 
+(define (package-cross-job store job-name package target system)
+  "Return a job called TARGET.JOB-NAME that cross-builds PACKAGE for TARGET on
+SYSTEM."
+  `(,(symbol-append (string->symbol target) (string->symbol ".") job-name) .
+    ,(cute package->alist store package system
+           (cut package-cross-derivation <> <> target <>))))
+
+(define %packages-to-cross-build
+  (list gmp mpfr mpc coreutils findutils diffutils patch hello guile-2.0
+        %bootstrap-binaries-tarball
+        %binutils-bootstrap-tarball
+        %glibc-bootstrap-tarball
+        %gcc-bootstrap-tarball
+        %guile-bootstrap-tarball))
+
+(define %cross-targets
+  '("mips64el-linux-gnu"))
+
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
   (define system
     (or (assoc-ref arguments system)
         (%current-system)))
+
+  (define job-name
+    (compose string->symbol package-full-name))
+
+  (define cross-jobs
+    (append-map (lambda (target)
+                  (map (lambda (package)
+                         (package-cross-job store (job-name package)
+                                            package target system))
+                       %packages-to-cross-build))
+                %cross-targets))
 
   ;; Return one job for each package, except bootstrap packages.
   (let ((base-packages (delete-duplicates
@@ -82,9 +114,7 @@
     (fold-packages (lambda (package result)
                      (if (member package base-packages)
                          result
-                         (let ((name (string->symbol
-                                      (package-full-name package))))
-                           (cons (package-job store name package
-                                              system)
-                                 result))))
-                   '())))
+                         (cons (package-job store (job-name package)
+                                            package system)
+                               result)))
+                   cross-jobs)))
