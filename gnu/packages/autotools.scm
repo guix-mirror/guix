@@ -231,28 +231,30 @@ Standards.  Automake requires the use of Autoconf.")
 
     (arguments
      `(#:patches (list (assoc-ref %build-inputs "patch/skip-tests"))
-       #:phases (alist-cons-before
-                 'check 'pre-check
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   ;; Run the test suite in parallel, if possible.
-                   (let ((ncores
-                          (cond
-                           ((getenv "NIX_BUILD_CORES")
-                            =>
-                            (lambda (n)
-                              (if (zero? (string->number n))
-                                  (number->string (current-processor-count))
-                                  n)))
-                           (else "1"))))
-                    (setenv "TESTSUITEFLAGS"
-                            (string-append "-j" ncores)))
+       ,@(if (%current-target-system)
+             '()                        ; no `check' phase when cross-building
+             '(#:phases (alist-cons-before
+                         'check 'pre-check
+                         (lambda* (#:key inputs #:allow-other-keys)
+                           ;; Run the test suite in parallel, if possible.
+                           (let ((ncores
+                                  (cond
+                                   ((getenv "NIX_BUILD_CORES")
+                                    =>
+                                    (lambda (n)
+                                      (if (zero? (string->number n))
+                                          (number->string (current-processor-count))
+                                          n)))
+                                   (else "1"))))
+                             (setenv "TESTSUITEFLAGS"
+                                     (string-append "-j" ncores)))
 
-                   ;; Path references to /bin/sh.
-                   (let ((bash (assoc-ref inputs "bash")))
-                     (substitute* "tests/testsuite"
-                       (("/bin/sh")
-                        (string-append bash "/bin/bash")))))
-                 %standard-phases)))
+                           ;; Path references to /bin/sh.
+                           (let ((bash (assoc-ref inputs "bash")))
+                             (substitute* "tests/testsuite"
+                               (("/bin/sh")
+                                (string-append bash "/bin/bash")))))
+                         %standard-phases)))))
     (inputs `(("patch/skip-tests"
                ,(search-patch "libtool-skip-tests.patch"))))
     (synopsis "Generic shared library support tools")
