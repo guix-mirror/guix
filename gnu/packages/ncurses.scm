@@ -42,7 +42,16 @@
                             (string-append "CONFIG_SHELL=" bash)
                             (string-append "--prefix=" out)
                             configure-flags)))))
+        (cross-pre-install-phase
+         '(lambda _
+            ;; Run the native `tic' program, not the cross-built one.
+            (substitute* "misc/run_tic.sh"
+              (("\\{TIC_PATH:=.*\\}")
+               "{TIC_PATH:=true}")
+              (("cross_compiling:=no")
+               "cross_compiling:=yes"))))
         (post-install-phase
+         ;; FIXME: The `tic' binary lacks a RUNPATH; fix it.
          '(lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               ;; When building a wide-character (Unicode) build, create backward
@@ -97,16 +106,28 @@
                  '("--without-cxx-binding")
                  '()))
         #:tests? #f                               ; no "check" target
-        #:phases (alist-cons-after
-                  'install 'post-install ,post-install-phase
-                  (alist-cons-before
-                   'configure 'patch-makefile-SHELL
-                   ,patch-makefile-phase
-                   (alist-replace
-                    'configure
-                    ,configure-phase
-                    %standard-phases)))))
-     (self-native-input? #t)
+        #:phases ,(if (%current-target-system)
+
+                      `(alist-cons-before         ; cross build
+                        'configure 'patch-makefile-SHELL
+                        ,patch-makefile-phase
+                        (alist-cons-before
+                         'install 'pre-install
+                         ,cross-pre-install-phase
+                         (alist-cons-after
+                          'install 'post-install ,post-install-phase
+                          %standard-cross-phases)))
+
+                      `(alist-cons-after          ; native build
+                        'install 'post-install ,post-install-phase
+                        (alist-cons-before
+                         'configure 'patch-makefile-SHELL
+                         ,patch-makefile-phase
+                         (alist-replace
+                          'configure
+                          ,configure-phase
+                          %standard-phases))))))
+     (self-native-input? #t)                      ; for `tic'
      (synopsis "Terminal emulation (termcap, terminfo) library")
      (description
       "The Ncurses (new curses) library is a free software emulation of curses

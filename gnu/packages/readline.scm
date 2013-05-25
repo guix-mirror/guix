@@ -61,7 +61,9 @@
                    #:phases (alist-cons-after
                              'install 'post-install
                              ,post-install-phase
-                             %standard-phases)))
+                             ,(if (%current-target-system)
+                                  '%standard-cross-phases
+                                  '%standard-phases))))
       (synopsis "Edit command lines while typing, with history support")
       (description
        "The GNU Readline library provides a set of functions for use by
