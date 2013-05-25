@@ -30,8 +30,10 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://zlib.net/zlib-"
-                          version ".tar.gz"))
+      (uri (list (string-append "http://zlib.net/zlib-"
+                                 version ".tar.gz")
+                 (string-append "mirror://sourceforge/libpng/zlib-"
+                                 version ".tar.gz")))
       (sha256
        (base32
         "1i96gsdvxqb6skp9a58bacf1wxamwi9m9pg4yn7cpf7g7239r77s"))))
