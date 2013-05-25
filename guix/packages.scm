@@ -30,7 +30,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
-  #:re-export (%current-system)
+  #:re-export (%current-system
+               %current-target-system)
   #:export (origin
             origin?
             origin-uri
