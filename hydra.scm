@@ -41,6 +41,7 @@
              ((guix utils) #:select (%current-system))
              (gnu packages)
              (gnu packages base)
+             (gnu packages gawk)
              (gnu packages guile)
              (gnu packages multiprecision)
              (gnu packages make-bootstrap)
