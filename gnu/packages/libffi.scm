@@ -49,11 +49,16 @@
                "0ln4jbpb6clcsdpb9niqk0frgx4k0xki96wiv067ig0q4cajb7aq"))))
     (build-system gnu-build-system)
     (arguments `(#:modules ((guix build utils) (guix build gnu-build-system)
-                            (ice-9 ftw) (srfi srfi-26))
+                            (ice-9 ftw) (srfi srfi-26)
+                            ,@(if (%current-target-system)
+                                  '((guix build gnu-cross-build))
+                                  '()))
                  #:phases (alist-cons-after 'install 'post-install
                                             ,post-install-phase
-                                            %standard-phases)))
-    (synopsis "libffi, a foreign function call interface library")
+                                            ,(if (%current-target-system)
+                                                 '%standard-cross-phases
+                                                 '%standard-phases))))
+    (synopsis "Foreign function call interface library")
     (description
      "The libffi library provides a portable, high level programming interface
 to various calling conventions.  This allows a programmer to call any
