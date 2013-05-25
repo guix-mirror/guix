@@ -147,7 +147,7 @@ corresponds to the arguments expected by `set-path-environment-variable'."
   (propagated-inputs package-propagated-inputs    ; same, but propagated
                      (default '()))
   (native-inputs package-native-inputs    ; native input packages/derivations
-                 (default '()))
+                 (default '()) (thunked))
   (self-native-input? package-self-native-input?  ; whether to use itself as
                                                   ; a native input when cross-
                       (default #f))               ; compiling
