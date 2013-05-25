@@ -384,7 +384,8 @@ platform."
                    ((name (? derivation-path? drv-path) sub ...)
                     `(,name . ,(apply derivation-path->output-path
                                       drv-path sub)))
-                   (x x))
+                   ((name path)
+                    `(,name . ,path)))
                   (append (or implicit-host-inputs '()) native-inputs)))
 
          (define %build-target-inputs
@@ -392,7 +393,8 @@ platform."
                    ((name (? derivation-path? drv-path) sub ...)
                     `(,name . ,(apply derivation-path->output-path
                                       drv-path sub)))
-                   (x x))
+                   ((name path)
+                    `(,name . ,path)))
                   (append (or implicit-target-inputs) inputs)))
 
          (gnu-build #:source ,(if (and source (derivation-path? source))
