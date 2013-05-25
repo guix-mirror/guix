@@ -270,9 +270,13 @@ The tools supplied with this package are:
              (base32
               "064f512185iysqqcvhnhaf3bfmzrvcgs7n405qsyp99zmfyl9amd"))))
    (build-system gnu-build-system)
-   (inputs `(("acl"  ,acl)
+   (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)
-             ("perl" ,perl)))                     ; TODO: add SELinux
+
+             ;; Perl is needed to run tests; remove it from cross builds.
+             ,@(if (%current-target-system)
+                   '()
+                   `(("perl" ,perl)))))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
       #:phases (alist-cons-before
@@ -287,7 +291,9 @@ The tools supplied with this package are:
                     (substitute* (find-files "tests" "\\.sh$")
                       (("#!/bin/sh")
                        (format #f "#!~a/bin/bash" bash)))))
-                %standard-phases)))
+                ,(if (%current-target-system)
+                     '%standard-cross-phases
+                     '%standard-phases))))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "The GNU Core Utilities are the basic file, shell and text manipulation
