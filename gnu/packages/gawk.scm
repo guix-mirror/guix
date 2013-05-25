@@ -44,11 +44,18 @@
                 'configure 'set-shell-file-name
                 (lambda* (#:key inputs #:allow-other-keys)
                   ;; Refer to the right shell.
-                  (let ((bash (assoc-ref inputs "bash")))
-                    (substitute* "io.c"
-                      (("/bin/sh")
-                       (string-append bash "/bin/bash")))))
-                %standard-phases)))
+                  ;; FIXME: Remove `else' arm upon core-updates.
+                  ,(if (%current-target-system)
+                       '(let ((sh (which "sh")))
+                          (substitute* "io.c"
+                            (("/bin/sh") sh)))
+                       '(let ((bash (assoc-ref inputs "bash")))
+                          (substitute* "io.c"
+                            (("/bin/sh")
+                             (string-append bash "/bin/bash"))))))
+                ,(if (%current-target-system)
+                     '%standard-cross-phases
+                     '%standard-phases))))
    (inputs `(("libsigsegv" ,libsigsegv)))
    (home-page "http://www.gnu.org/software/gawk/")
    (synopsis "A text scanning and processing language")
