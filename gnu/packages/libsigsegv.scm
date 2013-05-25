@@ -36,6 +36,23 @@
    (build-system gnu-build-system)
    (home-page "http://www.gnu.org/software/libsigsegv/")
    (synopsis "Library for handling page faults")
+   (arguments
+    ;; On MIPS, work around this error:
+    ;;
+    ;; In file included from fault-linux-mips-old.h:18:0,
+    ;;    [...]
+    ;; linux-libre-headers-cross-mips64el-linux-gnu-3.3.8/include/asm/sigcontext.h:57:8: error: redefinition of 'struct sigcontext'
+    (if (string-contains (or (%current-target-system) (%current-system))
+                         "mips64el")
+        `(#:phases (alist-cons-before
+                    'configure 'patch-mips-old-h
+                    (lambda _
+                      (substitute* "src/fault-linux-mips-old.h"
+                        (("#include <asm/sigcontext\\.h>") "")))
+                    ,(if (%current-target-system)
+                         '%standard-cross-phases
+                         '%standard-phases)))
+        '()))
    (description
 "GNU libsigsegv is a library for handling page faults in user mode. A page
 fault occurs when a program tries to access to a region of memory that is
