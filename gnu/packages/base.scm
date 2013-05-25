@@ -101,16 +101,18 @@ lines.")
    (build-system gnu-build-system)
    (synopsis "Stream editor")
    (arguments
-    `(#:phases (alist-cons-before
-                'patch-source-shebangs 'patch-test-suite
-                (lambda* (#:key inputs #:allow-other-keys)
-                  (let ((bash (assoc-ref inputs "bash")))
-                    (patch-makefile-SHELL "testsuite/Makefile.tests")
-                    (substitute* '("testsuite/bsd.sh"
-                                   "testsuite/bug-regex9.c")
-                      (("/bin/sh")
-                       (string-append bash "/bin/bash")))))
-                %standard-phases)))
+    (if (%current-target-system)
+        '()
+        `(#:phases (alist-cons-before
+                    'patch-source-shebangs 'patch-test-suite
+                    (lambda* (#:key inputs #:allow-other-keys)
+                      (let ((bash (assoc-ref inputs "bash")))
+                        (patch-makefile-SHELL "testsuite/Makefile.tests")
+                        (substitute* '("testsuite/bsd.sh"
+                                       "testsuite/bug-regex9.c")
+                          (("/bin/sh")
+                           (string-append bash "/bin/bash")))))
+                    %standard-phases))))
    (description
     "Sed (stream editor) isn't really a true text editor or text processor.
 Instead, it is used to filter text, i.e., it takes text input and performs
