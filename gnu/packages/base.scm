@@ -236,13 +236,13 @@ You can use the sdiff command to merge two files interactively.")
     `(("patch/absolute-paths"
        ,(search-patch "findutils-absolute-paths.patch"))))
    (arguments
-    `(#:patches (list (assoc-ref %build-inputs "patch/absolute-paths")))
+    `(#:patches (list (assoc-ref %build-inputs "patch/absolute-paths"))
 
-    ;; TODO: Work around cross-compilation failure.
-    ;; See <http://savannah.gnu.org/bugs/?27299#comment1>.
-    ;; `(#:configure-flags '("gl_cv_func_wcwidth_works=yes")
-    ;;   ,@(arguments cross-system))
-    )
+      ;; Work around cross-compilation failure.
+      ;; See <http://savannah.gnu.org/bugs/?27299#comment1>.
+      ,@(if (%current-target-system)
+            '(#:configure-flags '("gl_cv_func_wcwidth_works=yes"))
+            '())))
    (synopsis "Operating on files matching given criteria")
    (description
     "The GNU Find Utilities are the basic directory searching utilities of
