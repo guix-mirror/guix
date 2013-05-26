@@ -43,6 +43,7 @@
              (gnu packages base)
              (gnu packages gawk)
              (gnu packages guile)
+             (gnu packages gettext)
              (gnu packages multiprecision)
              (gnu packages make-bootstrap)
              (srfi srfi-1)
