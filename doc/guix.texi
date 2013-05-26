@@ -96,8 +96,8 @@ Documentation License.''
 GNU Guix@footnote{``Guix'' is pronounced like ``geeks'', or ``ɡiːks''
 using the international phonetic alphabet (IPA).} is a functional
 package management tool for the GNU system.  Package management consists
-in all the activities that relate to building packages from source,
-honoring the build-time and run-time dependencies on packages,
+of all activities that relate to building packages from sources,
+honoring their build-time and run-time dependencies,
 installing packages in user environments, upgrading installed packages
 to new versions or rolling back to a previous set, removing unused
 software packages, etc.
@@ -105,17 +105,17 @@ software packages, etc.
 @cindex functional package management
 The term @dfn{functional} refers to a specific package management
 discipline.  In Guix, the package build and installation process is seen
-as a function, in the mathematical sense: that function takes inputs,
-such as build scripts, a compiler, and libraries depended on, and
-returns the installed package.  As a pure function, its result depends
+as a function, in the mathematical sense.  That function takes inputs,
+such as build scripts, a compiler, and libraries, and
+returns an installed package.  As a pure function, its result depends
 solely on its inputs---for instance, it cannot refer to software or
 scripts that were not explicitly passed as inputs.  A build function
-always produces the same result when passed a given set of inputs.  Last
-but not least, a build function cannot alter the system's environment in
+always produces the same result when passed a given set of inputs.  It
+cannot alter the system's environment in
 any way; for instance, it cannot create, modify, or delete files outside
 of its build and installation directories.  This is achieved by running
-build processes in dedicated ``chroots'', where only their explicit
-inputs are visible.
+build processes in isolated environments (or @dfn{chroots}), where only their
+explicit inputs are visible.
 
 @cindex store
 The result of package build functions is @dfn{cached} in the file
@@ -126,12 +126,11 @@ a hash of all the inputs used to build that package; thus, changing an
 input yields a different directory name.
 
 This approach is the foundation of Guix's salient features: support for
-transactional package upgrades and rollback, per-user installation, and
+transactional package upgrade and rollback, per-user installation, and
 garbage collection of packages (@pxref{Features}).
 
-Guix has a command-line interface allowing users to build, install,
+Guix has a command-line interface, which allows users to build, install,
 upgrade, and remove packages, as well as a Scheme programming interface.
-The remainder of this manual describes them.
 
 Last but not least, Guix is used to build a distribution of the GNU
 system, with many GNU and non-GNU free software packages.  @xref{GNU
@@ -175,19 +174,20 @@ following packages are also needed:
 @item @url{http://gcc.gnu.org, GCC's g++}
 @end itemize
 
-When a working installation of the Nix package manager is available, you
+When a working installation of @url{http://nixos.org/nix/, the Nix package
+manager} is available, you
 can instead configure Guix with @code{--disable-daemon}.  In that case,
-@url{http://nixos.org/nix/, Nix} replaces the three dependencies above.
+Nix replaces the three dependencies above.
 
 Guix is compatible with Nix, so it is possible to share the same store
 between both.  To do so, you must pass @command{configure} not only the
 same @code{--with-store-dir} value, but also the same
-@code{--localstatedir} value (the latter is essential because it
-specifies where the database that store meta-data about the store is
-located, among other things.)  The default values are
+@code{--localstatedir} value.  The latter is essential because it
+specifies where the database that stores metadata about the store is
+located, among other things.  The default values are
 @code{--with-store-dir=/nix/store} and @code{--localstatedir=/nix/var}.
-Note that @code{--disable-daemon} is orthogonal and is not required if
-your goal is to share the same store as Nix.
+Note that @code{--disable-daemon} is not required if
+your goal is to share the store with Nix.
 
 @node Setting Up the Daemon
 @section Setting Up the Daemon
