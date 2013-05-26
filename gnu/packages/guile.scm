@@ -19,6 +19,7 @@
 (define-module (gnu packages guile)
   #:use-module (guix licenses)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages gperf)
@@ -115,7 +116,12 @@ extensible.  It supports many SRFIs.")
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
-             ("readline" ,readline)))
+             ("readline" ,readline)
+
+             ;; TODO: On next core-updates, make Bash input unconditional.
+             ,@(if (%current-target-system)
+                   `(("bash" ,bash))
+                   '())))
 
    (propagated-inputs
     `( ;; These ones aren't normally needed here, but since `libguile-2.0.la'
@@ -133,14 +139,16 @@ extensible.  It supports many SRFIs.")
    (self-native-input? #t)
 
    (arguments
-    '(#:phases (alist-cons-before
+    `(#:phases (alist-cons-before
                 'configure 'pre-configure
                 (lambda* (#:key inputs #:allow-other-keys)
                   (let ((bash (assoc-ref inputs "bash")))
                     (substitute* "module/ice-9/popen.scm"
                       (("/bin/sh")
                        (string-append bash "/bin/bash")))))
-                %standard-phases)))
+                ,(if (%current-target-system)
+                     '%standard-cross-phases
+                     '%standard-phases))))
 
    (native-search-paths
     (list (search-path-specification
