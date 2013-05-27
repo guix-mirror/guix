@@ -44,8 +44,21 @@
         `(cons ,(string-append "--target=" target)
                ,flags))))))
 
-(define cross-binutils
-  (cut cross binutils <>))
+(define (cross-binutils target)
+  "Return a cross-Binutils for TARGET."
+  (let ((binutils (package (inherit binutils)
+                    (arguments
+                     (substitute-keyword-arguments (package-arguments
+                                                    binutils)
+                       ((#:configure-flags flags)
+                        ;; Build with `--with-sysroot' so that ld honors
+                        ;; DT_RUNPATH entries when searching for a needed
+                        ;; library.  This works because as a side effect
+                        ;; `genscripts.sh' sets `USE_LIBPATH=yes', which tells
+                        ;; elf32.em to use DT_RUNPATH in its search list.
+                        `(cons "--with-sysroot=/no-such-path"
+                               ,flags)))))))
+    (cross binutils target)))
 
 (define* (cross-gcc target
                     #:optional (xbinutils (cross-binutils target)) libc)
