@@ -395,7 +395,7 @@ platform."
                                       drv-path sub)))
                    ((name path)
                     `(,name . ,path)))
-                  (append (or implicit-target-inputs) inputs)))
+                  (append (or implicit-target-inputs '()) inputs)))
 
          (gnu-build #:source ,(if (and source (derivation-path? source))
                                   (derivation-path->output-path source)
