@@ -20,9 +20,11 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
+  #:export (pkg-config))
 
-(define-public pkg-config
+(define %pkg-config
   (package
    (name "pkg-config")
    (version "0.27.1")
@@ -53,3 +55,50 @@ command line so an application can use gcc -o test test.c `pkg-config
 on where to find glib (or other libraries). It is language-agnostic, so
 it can be used for defining the location of documentation tools, for
 instance.")))
+
+(define (cross-pkg-config target)
+  "Return a pkg-config for TARGET, essentially just a wrapper called
+`TARGET-pkg-config', as `configure' scripts like it."
+  ;; See <http://www.flameeyes.eu/autotools-mythbuster/pkgconfig/cross-compiling.html>
+  ;; for details.
+  (package (inherit %pkg-config)
+    (name (string-append (package-name %pkg-config) "-" target))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+
+                   (let* ((out  (assoc-ref %outputs "out"))
+                          (bin  (string-append out "/bin"))
+                          (prog (string-append ,target "-pkg-config"))
+                          (native
+                           (string-append
+                            (assoc-ref %build-inputs "pkg-config")
+                            "/bin/pkg-config")))
+
+                     (mkdir-p bin)
+
+                     ;; Create a `TARGET-pkg-config' -> `pkg-config' symlink.
+                     ;; This satisfies the pkg.m4 macros, which use
+                     ;; AC_PROG_TOOL to determine the `pkg-config' program
+                     ;; name.
+                     (symlink native (string-append bin "/" prog))))))
+    (native-inputs `(("pkg-config" ,%pkg-config)))
+
+    ;; Ignore native inputs, and set `PKG_CONFIG_PATH' for target inputs.
+    (native-search-paths '())
+    (search-paths (package-native-search-paths %pkg-config))))
+
+(define (pkg-config-for-target target)
+  "Return a pkg-config package for TARGET, which may be either #f for a native
+build, or a GNU triplet."
+  (if target
+      (cross-pkg-config target)
+      %pkg-config))
+
+;; This hack allows us to automatically choose the native or the cross
+;; `pkg-config' depending on whether it's being used in a cross-build
+;; environment or not.
+(define-syntax pkg-config
+  (identifier-syntax (pkg-config-for-target (%current-target-system))))
