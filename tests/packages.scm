@@ -30,6 +30,7 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match))
@@ -211,6 +212,16 @@
                   (package-cross-derivation %store p "mips64el-linux-gnu")))
       (and (derivation-path? drv-path)
            (derivation? drv)))))
+
+(test-assert "package-cross-derivation, no cross builder"
+  (let* ((b (build-system (inherit trivial-build-system)
+              (cross-build #f)))
+         (p (package (inherit (dummy-package "p"))
+              (build-system b))))
+    (guard (c ((package-cross-build-system-error? c)
+               (eq? (package-error-package c) p)))
+      (package-cross-derivation %store p "mips64el-linux-gnu")
+      #f)))
 
 (unless (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV))
   (test-skip 1))

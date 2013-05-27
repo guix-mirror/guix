@@ -83,7 +83,9 @@
             package-error-package
             &package-input-error
             package-input-error?
-            package-error-invalid-input))
+            package-error-invalid-input
+            &package-cross-build-system-error
+            package-cross-build-system-error?))
 
 ;;; Commentary:
 ;;;
@@ -233,6 +235,9 @@ corresponds to the arguments expected by `set-path-environment-variable'."
 (define-condition-type &package-input-error &package-error
   package-input-error?
   (input package-error-invalid-input))
+
+(define-condition-type &package-cross-build-system-error &package-error
+  package-cross-build-system-error?)
 
 
 (define (package-full-name package)
@@ -412,6 +417,11 @@ system identifying string)."
                   (= build-system-cross-builder builder)
                   args inputs propagated-inputs native-inputs self-native-input?
                   outputs)
+               (unless builder
+                 (raise (condition
+                         (&package-cross-build-system-error
+                          (package package)))))
+
                (let* ((inputs     (package-transitive-target-inputs package))
                       (input-drvs (map (cut expand-input
                                             store package <>
