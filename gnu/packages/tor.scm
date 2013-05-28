@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages tor)
-  #:use-module ((guix licenses) #:select (bsd-3))
+  #:use-module ((guix licenses) #:select (bsd-3 gpl2+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -41,6 +41,9 @@
      `(("zlib" ,zlib)
        ("openssl" ,openssl)
        ("libevent" ,libevent)))
+
+    ;; TODO: Recommend `torsocks' since `torify' needs it.
+
     (home-page "http://www.torproject.org/")
     (synopsis "An anonymous network router to improve privacy on the Internet")
     (description
@@ -52,3 +55,23 @@ location. Tor works with many of your existing applications, including
 web browsers, instant messaging clients, remote login, and other
 applications based on the TCP protocol.")
     (license bsd-3)))
+
+(define-public torsocks
+  (package
+    (name "torsocks")
+    (version "1.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://torsocks.googlecode.com/files/torsocks-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "1m0is5q24sf7jjlkl0icfkdc0m53nbkg0q72s57p48yp4hv7v9dy"))))
+    (build-system gnu-build-system)
+    (home-page "http://code.google.com/p/torsocks/")
+    (synopsis "Use socks-friendly applications with Tor")
+    (description
+     "Torsocks allows you to use most socks-friendly applications in a safe
+way with Tor.  It ensures that DNS requests are handled safely and explicitly
+rejects UDP traffic from the application you're using.")
+    (license gpl2+)))
