@@ -82,6 +82,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -n, --dry-run          do not build the derivations"))
   (display (_ "
+      --fallback         fall back to building when the substituter fails"))
+  (display (_ "
       --no-substitutes   build instead of resorting to pre-built substitutes"))
   (display (_ "
       --max-silent-time=SECONDS
@@ -140,6 +142,10 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
         (option '(#\n "dry-run") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'dry-run? #t result)))
+        (option '("fallback") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'fallback? #t
+                              (alist-delete 'fallback? result))))
         (option '("no-substitutes") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'substitutes? #f
@@ -267,6 +273,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
           (set-build-options (%store)
                              #:keep-failed? (assoc-ref opts 'keep-failed?)
                              #:build-cores (or (assoc-ref opts 'cores) 0)
+                             #:fallback? (assoc-ref opts 'fallback?)
                              #:use-substitutes? (assoc-ref opts 'substitutes?)
                              #:max-silent-time (assoc-ref opts 'max-silent-time)
                              #:verbosity (assoc-ref opts 'verbosity))

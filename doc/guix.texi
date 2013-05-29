@@ -595,6 +595,10 @@ Use @var{profile} instead of the user's default profile.
 @itemx -n
 Show what would be done without actually doing it.
 
+@item --fallback
+When substituting a pre-built binary fails, fall back to building
+packages locally.
+
 @item --no-substitutes
 @itemx --max-silent-time=@var{seconds}
 Same as for @command{guix build} (@pxref{Invoking guix build}).
@@ -1218,6 +1222,10 @@ the end of the build log.  This is useful when debugging build issues.
 @item --dry-run
 @itemx -n
 Do not build the derivations.
+
+@item --fallback
+When substituting a pre-built binary fails, fall back to building
+packages locally.
 
 @item --no-substitutes
 Build instead of resorting to pre-built substitutes.

@@ -438,6 +438,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -n, --dry-run          show what would be done without actually doing it"))
   (display (_ "
+      --fallback         fall back to building when the substituter fails"))
+  (display (_ "
       --no-substitutes   build instead of resorting to pre-built substitutes"))
   (display (_ "
       --max-silent-time=SECONDS
@@ -499,6 +501,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (option '(#\n "dry-run") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'dry-run? #t result)))
+        (option '("fallback") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'fallback? #t
+                              (alist-delete 'fallback? result))))
         (option '("no-substitutes") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'substitutes? #f
@@ -909,6 +915,7 @@ more information.~%"))
         (with-error-handling
           (parameterize ((%store (open-connection)))
             (set-build-options (%store)
+                               #:fallback? (assoc-ref opts 'fallback?)
                                #:use-substitutes?
                                (assoc-ref opts 'substitutes?)
                                #:max-silent-time
