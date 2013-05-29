@@ -35,12 +35,17 @@
 ;;
 ;; Code:
 
+(define (default-python)
+  "Return the default Python package."
+  ;; Lazily resolve the binding to avoid a circular dependency.
+  (let ((python (resolve-interface '(gnu packages python))))
+    (module-ref python 'python)))
+
 (define* (python-build store name source inputs
                        #:key
-                       (python (@ (gnu packages python) python))
+                       (python (default-python))
                        (python-version
-                        (string-take (package-version
-                                      (@ (gnu packages python) python)) 3))
+                        (string-take (package-version (default-python)) 3))
                        (tests? #t)
                        (configure-flags ''())
                        (phases '(@ (guix build python-build-system)
