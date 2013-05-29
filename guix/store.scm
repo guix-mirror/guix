@@ -354,7 +354,7 @@ encoding conversion errors."
                               (status   k))))))))
 
 (define* (set-build-options server
-                            #:key keep-failed? keep-going? try-fallback?
+                            #:key keep-failed? keep-going? fallback?
                             (verbosity 0)
                             (max-build-jobs (current-processor-count))
                             (max-silent-time 3600)
@@ -377,7 +377,7 @@ encoding conversion errors."
                           ...)))))
     (write-int (operation-id set-options) socket)
     (send (boolean keep-failed?) (boolean keep-going?)
-          (boolean try-fallback?) (integer verbosity)
+          (boolean fallback?) (integer verbosity)
           (integer max-build-jobs) (integer max-silent-time))
     (if (>= (nix-server-minor-version server) 2)
         (send (boolean use-build-hook?)))

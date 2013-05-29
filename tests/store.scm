@@ -31,6 +31,7 @@
   #:use-module (web uri)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64))
 
 ;; Test the (guix store) module.
@@ -225,6 +226,56 @@ Deriver: ~a~%"
     (and (has-substitutes? s o)
          (build-derivations s (list d))
          (equal? c (call-with-input-file o get-string-all)))))
+
+(test-assert "substitute --fallback"
+  (let* ((s   (open-connection))
+         (t   (random-text))                      ; contents of the output
+         (d   (build-expression->derivation
+               s "substitute-me-not" (%current-system)
+               `(call-with-output-file %output
+                  (lambda (p)
+                    (display ,t p)))
+               '()
+               #:guile-for-build
+               (package-derivation s %bootstrap-guile (%current-system))))
+         (o   (derivation-path->output-path d))
+         (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
+                     (compose uri-path string->uri))))
+    ;; Create fake substituter data, to be read by `substitute-binary'.
+    (call-with-output-file (string-append dir "/nix-cache-info")
+      (lambda (p)
+        (format p "StoreDir: ~a\nWantMassQuery: 0\n"
+                (%store-prefix))))
+    (call-with-output-file (string-append dir "/" (store-path-hash-part o)
+                                          ".narinfo")
+      (lambda (p)
+        (format p "StorePath: ~a
+URL: ~a
+Compression: none
+NarSize: 1234
+NarHash: sha256:0mdqa9w1p6cmli6976v4wi0sw9r4p5prkj7lzfd1877wk11c9c73
+References: 
+System: ~a
+Deriver: ~a~%"
+                o                                   ; StorePath
+                "does-not-exist.nar"                ; relative URL
+                (%current-system)                   ; System
+                (basename d))))                     ; Deriver
+
+    ;; Make sure we use `substitute-binary'.
+    (set-build-options s #:use-substitutes? #t)
+    (and (has-substitutes? s o)
+         (guard (c ((nix-protocol-error? c)
+                    ;; The substituter failed as expected.  Now make sure that
+                    ;; #:fallback? #t works correctly.
+                    (set-build-options s
+                                       #:use-substitutes? #t
+                                       #:fallback? #t)
+                    (and (build-derivations s (list d))
+                         (equal? t (call-with-input-file o get-string-all)))))
+           ;; Should fail.
+           (build-derivations s (list d))
+           #f))))
 
 (test-end "store")
 
