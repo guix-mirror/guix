@@ -361,6 +361,19 @@ indefinitely."
   (or (getenv "GUIX_BINARY_SUBSTITUTE_URL")
       "http://hydra.gnu.org"))
 
+(define-syntax with-networking
+  (syntax-rules ()
+    "Catch DNS lookup errors and gracefully exit."
+    ;; Note: no attempt is made to catch other networking errors, because DNS
+    ;; lookup errors are typically the first one, and because other errors are
+    ;; a subset of `system-error', which is harder to filter.
+    ((_ exp ...)
+     (catch 'getaddrinfo-error
+       (lambda () exp ...)
+       (lambda (key error)
+         (leave (_ "host name lookup error: ~a~%")
+                (gai-strerror error)))))))
+
 
 ;;;
 ;;; Entry point.
@@ -370,77 +383,78 @@ indefinitely."
   "Implement the build daemon's substituter protocol."
   (mkdir-p %narinfo-cache-directory)
   (maybe-remove-expired-cached-narinfo)
-  (match args
-    (("--query")
-     (let ((cache (delay (open-cache %cache-url))))
-       (let loop ((command (read-line)))
-         (or (eof-object? command)
-             (begin
-               (match (string-tokenize command)
-                 (("have" paths ..1)
-                  ;; Return the subset of PATHS available in CACHE.
-                  (let ((substitutable
-                         (if cache
-                             (par-map (cut lookup-narinfo cache <>)
-                                      paths)
-                             '())))
-                    (for-each (lambda (narinfo)
-                                (when narinfo
-                                  (format #t "~a~%" (narinfo-path narinfo))))
-                              (filter narinfo? substitutable))
-                    (newline)))
-                 (("info" paths ..1)
-                  ;; Reply info about PATHS if it's in CACHE.
-                  (let ((substitutable
-                         (if cache
-                             (par-map (cut lookup-narinfo cache <>)
-                                      paths)
-                             '())))
-                    (for-each (lambda (narinfo)
-                                (format #t "~a\n~a\n~a\n"
-                                        (narinfo-path narinfo)
-                                        (or (and=> (narinfo-deriver narinfo)
-                                                   (cute string-append
-                                                         (%store-prefix) "/"
-                                                         <>))
-                                            "")
-                                        (length (narinfo-references narinfo)))
-                                (for-each (cute format #t "~a/~a~%"
-                                                (%store-prefix) <>)
-                                          (narinfo-references narinfo))
-                                (format #t "~a\n~a\n"
-                                        (or (narinfo-file-size narinfo) 0)
-                                        (or (narinfo-size narinfo) 0)))
-                              (filter narinfo? substitutable))
-                    (newline)))
-                 (wtf
-                  (error "unknown `--query' command" wtf)))
-               (loop (read-line)))))))
-    (("--substitute" store-path destination)
-     ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
-     (let* ((cache   (delay (open-cache %cache-url)))
-            (narinfo (lookup-narinfo cache store-path))
-            (uri     (narinfo-uri narinfo)))
-       ;; Tell the daemon what the expected hash of the Nar itself is.
-       (format #t "~a~%" (narinfo-hash narinfo))
+  (with-networking
+   (match args
+     (("--query")
+      (let ((cache (delay (open-cache %cache-url))))
+        (let loop ((command (read-line)))
+          (or (eof-object? command)
+              (begin
+                (match (string-tokenize command)
+                  (("have" paths ..1)
+                   ;; Return the subset of PATHS available in CACHE.
+                   (let ((substitutable
+                          (if cache
+                              (par-map (cut lookup-narinfo cache <>)
+                                       paths)
+                              '())))
+                     (for-each (lambda (narinfo)
+                                 (when narinfo
+                                   (format #t "~a~%" (narinfo-path narinfo))))
+                               (filter narinfo? substitutable))
+                     (newline)))
+                  (("info" paths ..1)
+                   ;; Reply info about PATHS if it's in CACHE.
+                   (let ((substitutable
+                          (if cache
+                              (par-map (cut lookup-narinfo cache <>)
+                                       paths)
+                              '())))
+                     (for-each (lambda (narinfo)
+                                 (format #t "~a\n~a\n~a\n"
+                                         (narinfo-path narinfo)
+                                         (or (and=> (narinfo-deriver narinfo)
+                                                    (cute string-append
+                                                          (%store-prefix) "/"
+                                                          <>))
+                                             "")
+                                         (length (narinfo-references narinfo)))
+                                 (for-each (cute format #t "~a/~a~%"
+                                                 (%store-prefix) <>)
+                                           (narinfo-references narinfo))
+                                 (format #t "~a\n~a\n"
+                                         (or (narinfo-file-size narinfo) 0)
+                                         (or (narinfo-size narinfo) 0)))
+                               (filter narinfo? substitutable))
+                     (newline)))
+                  (wtf
+                   (error "unknown `--query' command" wtf)))
+                (loop (read-line)))))))
+     (("--substitute" store-path destination)
+      ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
+      (let* ((cache   (delay (open-cache %cache-url)))
+             (narinfo (lookup-narinfo cache store-path))
+             (uri     (narinfo-uri narinfo)))
+        ;; Tell the daemon what the expected hash of the Nar itself is.
+        (format #t "~a~%" (narinfo-hash narinfo))
 
-       (let*-values (((raw download-size)
-                      (fetch uri #:buffered? #f))
-                     ((input pids)
-                      (decompressed-port (narinfo-compression narinfo)
-                                         raw)))
-         ;; Note that Hydra currently generates Nars on the fly and doesn't
-         ;; specify a Content-Length, so DOWNLOAD-SIZE is #f in practice.
-         (format (current-error-port)
-                 (_ "downloading `~a' from `~a'~:[~*~; (~,1f KiB)~]...~%")
-                 store-path (uri->string uri)
-                 download-size
-                 (and=> download-size (cut / <> 1024.0)))
+        (let*-values (((raw download-size)
+                       (fetch uri #:buffered? #f))
+                      ((input pids)
+                       (decompressed-port (narinfo-compression narinfo)
+                                          raw)))
+          ;; Note that Hydra currently generates Nars on the fly and doesn't
+          ;; specify a Content-Length, so DOWNLOAD-SIZE is #f in practice.
+          (format (current-error-port)
+                  (_ "downloading `~a' from `~a'~:[~*~; (~,1f KiB)~]...~%")
+                  store-path (uri->string uri)
+                  download-size
+                  (and=> download-size (cut / <> 1024.0)))
 
-         ;; Unpack the Nar at INPUT into DESTINATION.
-         (restore-file input destination)
-         (every (compose zero? cdr waitpid) pids))))
-    (("--version")
-     (show-version-and-exit "guix substitute-binary"))))
+          ;; Unpack the Nar at INPUT into DESTINATION.
+          (restore-file input destination)
+          (every (compose zero? cdr waitpid) pids))))
+     (("--version")
+      (show-version-and-exit "guix substitute-binary")))))
 
 ;;; substitute-binary.scm ends here
