@@ -31,10 +31,12 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages which)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tcsh)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages zip))
+  #:use-module (gnu packages zip)
+  #:autoload   (gnu packages texinfo) (texinfo))
 
 (define texlive-extra-src
   (origin
@@ -176,3 +178,33 @@ that are free software, including support for many languages around the
 world.")
    (license (license:fsf-free "http://tug.org/texlive/copying.html"))
    (home-page "http://www.tug.org/texlive/")))
+
+(define-public rubber
+  (package
+    (name "rubber")
+    (version "1.1")
+    (source (origin
+             (method url-fetch)
+             (uri (list (string-append "https://launchpad.net/rubber/trunk/"
+                                       version "/+download/rubber-"
+                                       version ".tar.gz")
+                        (string-append "http://ebeffara.free.fr/pub/rubber-"
+                                       version ".tar.gz")))
+             (sha256
+              (base32
+               "1xbkv8ll889933gyi2a5hj7hhh216k04gn8fwz5lfv5iz8s34gbq"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f))                    ; no `check' target
+    (inputs `(("texinfo" ,texinfo)
+              ("python" ,python)
+              ("which" ,which)))
+    (home-page "https://launchpad.net/rubber")
+    (synopsis "Rubber, a wrapper for LaTeX and friends")
+    (description
+     "Rubber is a program whose purpose is to handle all tasks related to the
+compilation of LaTeX documents.  This includes compiling the document itself,
+of course, enough times so that all references are defined, and running BibTeX
+to manage bibliographic references.  Automatic execution of dvips to produce
+PostScript documents is also included, as well as usage of pdfLaTeX to produce
+PDF documents.")
+    (license license:gpl2+)))
