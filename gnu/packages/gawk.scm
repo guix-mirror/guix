@@ -18,6 +18,7 @@
 
 (define-module (gnu packages gawk)
   #:use-module (guix licenses)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages libsigsegv)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -45,18 +46,20 @@
                 (lambda* (#:key inputs #:allow-other-keys)
                   ;; Refer to the right shell.
                   ;; FIXME: Remove `else' arm upon core-updates.
-                  ,(if (%current-target-system)
-                       '(let ((sh (which "sh")))
-                          (substitute* "io.c"
-                            (("/bin/sh") sh)))
-                       '(let ((bash (assoc-ref inputs "bash")))
-                          (substitute* "io.c"
-                            (("/bin/sh")
-                             (string-append bash "/bin/bash"))))))
+                  (let ((bash (assoc-ref inputs "bash")))
+                    (substitute* "io.c"
+                      (("/bin/sh")
+                       (string-append bash "/bin/bash")))))
                 ,(if (%current-target-system)
                      '%standard-cross-phases
                      '%standard-phases))))
-   (inputs `(("libsigsegv" ,libsigsegv)))
+   (inputs `(("libsigsegv" ,libsigsegv)
+
+             ;; TODO: On next core-updates, make Bash input unconditional.
+             ,@(if (%current-target-system)
+                   `(("bash" ,bash))
+                   '())))
+
    (home-page "http://www.gnu.org/software/gawk/")
    (synopsis "A text scanning and processing language")
    (description
