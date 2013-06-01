@@ -14,9 +14,23 @@ Please send Guix bug reports to bug-guix@gnu.org.
 * Changes in 0.3 (since 0.2)
 
 ** Package management
+
+*** Cross-compilation support
+
+Guix can now cross-build packages.  On the command-line, this is achieved with
+the new ‘--target’ command-line option of ‘guix build’.  At the Scheme level,
+the guts of this is the ‘package-cross-derivation’ procedure.  Core packages
+of the distribution can already be cross-compiled.  See the manual for
+details.
+
 *** New ‘--max-silent-time’ option for “guix build” and “guix package”
 
 See the manual for details.
+
+*** New ‘--fallback’ option for “guix build” and “guix package”
+
+This option instructs to fall back to local builds when the substituter fails
+to download a substitute.
 
 ** Bugs fixed
 *** “guix --help” now works when using Guile 2.0.5
@@ -24,6 +38,8 @@ See the manual for details.
 
 These could lead to random substituter crashes while substituting a binary.
 See commits 0332386 and 101d9f3 for details.
+
+*** Binary substituter gracefully handles lack of network connectivity
 
 * Changes in 0.2 (since 0.1)
 
