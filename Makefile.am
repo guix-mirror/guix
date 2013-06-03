@@ -114,6 +114,7 @@ MODULES =					\
   gnu/packages/gprolog.scm			\
   gnu/packages/groff.scm			\
   gnu/packages/grub.scm				\
+  gnu/packages/grue-hunter.scm			\
   gnu/packages/gsasl.scm			\
   gnu/packages/gtk.scm				\
   gnu/packages/guile.scm			\
