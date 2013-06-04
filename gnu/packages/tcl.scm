@@ -20,6 +20,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages xorg)
   #:use-module (guix licenses))
 
 (define-public tcl
@@ -115,3 +116,41 @@ stuff trivial. Expect is also useful for testing these same
 applications. And by adding Tk, you can wrap interactive applications in
 X11 GUIs.")
     (license public-domain)))            ; as written in `license.terms'
+
+(define-public tk
+  (package
+    (name "tk")
+    (version "8.6.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/tcl/Tcl/"
+                                 version "/tk" version "-src.tar.gz"))
+             (sha256
+              (base32
+               "1rld0l7p1h31z488w44j170jpsm11xsjf2qrb7gid2b5dwmqnw2w"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'configure 'pre-configure
+                 (lambda _
+                   (chdir "unix"))
+                 %standard-phases)
+
+       #:configure-flags (list (string-append "--with-tcl="
+                                              (assoc-ref %build-inputs "tcl")
+                                              "/lib"))
+
+       ;; The tests require a running X server, so we just skip them.
+       #:tests? #f))
+    (inputs `(("tcl" ,tcl)))
+
+    ;; tk.h refers to X11 headers, hence the propagation.
+    (propagated-inputs `(("libx11" ,libx11)
+                         ("libxext" ,libxext)))
+
+    (home-page "http://www.tcl.tk/")
+    (synopsis "Graphical user interface toolkit for Tcl")
+    (description
+     "Tk is a graphical toolkit for building graphical user interfaces
+(GUIs) in the Tcl language.")
+    (license (package-license tcl))))
