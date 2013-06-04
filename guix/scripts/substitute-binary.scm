@@ -236,8 +236,8 @@ reading PORT."
 (define (fetch-narinfo cache path)
   "Return the <narinfo> record for PATH, or #f if CACHE does not hold PATH."
   (define (download url)
-    ;; Download the `nix-cache-info' from URL, and return its contents as an
-    ;; list of key/value pairs.
+    ;; Download the .narinfo from URL, and return its contents as a list of
+    ;; key/value pairs.
     (false-if-exception (fetch (string->uri url))))
 
   (and (string=? (cache-store-directory cache) (%store-prefix))
@@ -288,11 +288,15 @@ check what it has."
                      (values #f #f)))))
     (if valid?
         cached                                    ; including negative caches
-        (let ((narinfo (and=> (force cache)
-                              (cut fetch-narinfo <> path))))
-          (with-atomic-file-output cache-file
-            (lambda (out)
-              (write (cache-entry narinfo) out)))
+        (let* ((cache   (force cache))
+               (narinfo (and cache (fetch-narinfo cache path))))
+          ;; Cache NARINFO only when CACHE was actually accessible.  This
+          ;; avoids caching negative hits when in fact we just lacked network
+          ;; access.
+          (when cache
+            (with-atomic-file-output cache-file
+              (lambda (out)
+                (write (cache-entry narinfo) out))))
           narinfo))))
 
 (define (remove-expired-cached-narinfos)
@@ -456,5 +460,10 @@ indefinitely."
           (every (compose zero? cdr waitpid) pids))))
      (("--version")
       (show-version-and-exit "guix substitute-binary")))))
+
+
+;;; Local Variable:
+;;; eval: (put 'with-atomic-file-output 'scheme-indent-function 1)
+;;; End:
 
 ;;; substitute-binary.scm ends here
