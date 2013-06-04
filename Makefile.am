@@ -202,6 +202,7 @@ MODULES =					\
   gnu/packages/wdiff.scm			\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
+  gnu/packages/wordnet.scm			\
   gnu/packages/xlockmore.scm			\
   gnu/packages/xml.scm				\
   gnu/packages/xorg.scm				\
