@@ -14,7 +14,7 @@ Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 Command-line tools can be used even if you have not run "make install".
 To do that, prefix each command with ‘./pre-inst-env’, as in:
 
-  ./pre-inst-env guix-build --help
+  ./pre-inst-env guix build --help
 
 Similarly, for a Guile session using the Guix modules:
 
@@ -39,6 +39,16 @@ To actually edit the code, Emacs already has a neat Scheme mode.  But in
 addition to that, you must not miss [[http://www.emacswiki.org/emacs/ParEdit][Paredit]].  It provides facilities to
 directly operate on the syntax tree, such as raising an s-expression or
 wrapping it, swallowing or rejecting the following s-expression, etc.
+
+* Packaging Guidelines
+
+The GNU distribution is about respecting the freedom of users.  Consequently,
+it contains only free software as defined at
+http://www.gnu.org/philosophy/free-sw.html .
+
+In addition, we follow the [[http://www.gnu.org/distros/free-system-distribution-guidelines.html][free software distribution guidelines]].  Among other
+things, this means that the distribution tries hard not to steer users towards
+obtaining information about non-free software.
 
 * Adding new packages
 
@@ -68,21 +78,54 @@ Package recipes in Guix look like this:
 #+END_SRC
 
 Such a recipe can be written by hand, and then tested by running
-‘./pre-inst-env guix-build nettle’.
+‘./pre-inst-env guix build nettle’.
 
 When writing the recipe, the base32-encoded SHA256 hash of the source
 code tarball, which can be seen in the example above, can be obtained by
 running:
 
-  guix-download http://ftp.gnu.org/gnu/nettle/nettle-2.5.tar.gz
+  guix download http://ftp.gnu.org/gnu/nettle/nettle-2.5.tar.gz
 
 Alternatively, it is possible to semi-automatically import recipes from
 the [[http://nixos.org/nixpkgs/][Nixpkgs]] software distribution using this command:
 
-  guix-import /path/to/nixpkgs/checkout nettle
+  guix import /path/to/nixpkgs/checkout nettle
 
 The command automatically fetches and converts to Guix the “Nix
 expression” of Nettle.
+
+* Submitting Patches
+
+Development is done using the Git distributed version control system.  Thus,
+access to the repository is not strictly necessary.  We welcome contributions
+in the form of patches as produced by ‘git format-patch’ sent to
+bug-guix@gnu.org.  Please write commit logs in the [[http://www.gnu.org/prep/standards/html_node/Change-Logs.html#Change-Logs][GNU ChangeLog format]].
+
+As you become a regular contributor, you may find it convenient to have write
+access to the repository (see below.)
+
+* Commit Access
+
+For frequent contributors, having write access to the repository is
+convenient.  When you deem it necessary, feel free to ask for it on the
+mailing list.  When you get commit access, please make sure to follow the
+policy below (discussions of the policy can take place on bug-guix@gnu.org.)
+
+Non-trivial patches should always be posted to bug-guix@gnu.org (trivial
+patches include fixing typos, etc.)
+
+For patches that just add a new package, and a simple one, it’s OK to commit,
+if you’re confident (which means you successfully built it in a chroot setup.)
+Likewise for package upgrades.  We have a mailing list for commit
+notifications (guix-commits@gnu.org), so people can notice.  Before pushing
+your changes, make sure to run ‘git pull --rebase’.
+
+For anything else, please post to bug-guix@gnu.org and leave time for a
+review, without committing anything.  If you didn’t receive any reply
+after two weeks, and if you’re confident, it’s OK to commit.
+
+That last part is subject to being adjusted, allowing individuals to commit
+directly on non-controversial changes on parts they’re familiar with.
 
 * Porting the Guix distro on a new platform
 
@@ -137,7 +180,7 @@ GCC, libc, etc. need to be built.  To that end, run the following
 commands:
 
 #+BEGIN_SRC sh
-  ./pre-inst-env guix-build -K                                    \
+  ./pre-inst-env guix build -K                                    \
       -e '(@ (gnu packages make-bootstrap) %bootstrap-tarballs)'  \
       --system=i686-linux
 
@@ -174,30 +217,3 @@ shown above.  For example, all the binaries (except for glibc) must be
 statically-linked; the bootstrap Guile must be relocatable (see patch in
 the Guix distro); the static-binaries tarball must contain the same
 programs (Coreutils, Grep, sed, Awk, etc.); and so on.
-
-* Commit Access
-
-Development is done using the Git distributed version control system.  Thus,
-access to the repository is not strictly necessary.  We welcome contributions
-in the form of patches as produced by ‘git format-patch’ sent to
-bug-guix@gnu.org.
-
-However, for frequent contributors, having write access to the repository is
-convenient.  When you get commit access, please make sure to follow the policy
-below (discussions of the policy can take place on bug-guix@gnu.org.)
-
-Non-trivial patches should always be posted to bug-guix@gnu.org (trivial
-patches include fixing typos, etc.)
-
-For patches that just add a new package, and a simple one, it’s OK to commit,
-if you’re confident (which means you successfully built it in a chroot setup.)
-Likewise for package upgrades.  We have a mailing list for commit
-notifications (guix-commits@gnu.org), so people can notice.  Before pushing
-your changes, make sure to run ‘git pull --rebase’.
-
-For anything else, please post to bug-guix@gnu.org and leave time for a
-review, without committing anything.  If you didn’t receive any reply
-after two weeks, and if you’re confident, it’s OK to commit.
-
-That last part is subject to being adjusted, allowing individuals to commit
-directly on non-controversial changes on parts they’re familiar with.

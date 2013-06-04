@@ -82,6 +82,7 @@ Documentation License.''
 * Programming Interface::       Using Guix in Scheme.
 * Utilities::                   Package management commands.
 * GNU Distribution::            Software for your friendly GNU system.
+* Contributing::                Your help needed!
 
 * Acknowledgments::             Thanks!
 * GNU Free Documentation License::  The license of this manual.
@@ -1439,9 +1440,21 @@ tight integration of GNU components, and an emphasis on programs and
 tools that help users exert that freedom.
 
 Building this distribution is a cooperative effort, and you are invited
-to join!  Please get in touch with us on @email{bug-guix@@gnu.org}.  We
+to join!  @ref{Contributing}, for information about how you can help.
+
+@c *********************************************************************
+@node Contributing
+@chapter Contributing
+
+This project is a cooperative effort, and we need your help to make it
+grow!  Please get in touch with us on @email{bug-guix@@gnu.org}.  We
 welcome ideas, bug reports, patches, and anything that may be helpful to
 the project.
+
+Please see the
+@url{http://git.savannah.gnu.org/cgit/guix.git/tree/HACKING,
+@file{HACKING} file} that comes with the Guix source code for practical
+details about contributions.
 
 
 @c *********************************************************************
