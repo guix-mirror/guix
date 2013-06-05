@@ -106,8 +106,11 @@ modification.")
      (let ((args `(#:modules ((guix build gnu-build-system)
                               (guix build utils)
                               (srfi srfi-1)
-                              (srfi srfi-26))
-                             ,@(package-arguments bash))))
+                              (srfi srfi-26)
+                              ,@(if (%current-target-system)
+                                    '((guix build gnu-cross-build))
+                                    '()))
+                   ,@(package-arguments bash))))
        (substitute-keyword-arguments args
          ((#:configure-flags flags)
           `(list "--without-bash-malloc"
@@ -116,4 +119,8 @@ modification.")
                  "--disable-help-builtin"
                  "--disable-progcomp"
                  "--disable-net-redirections"
-                 "--disable-nls")))))))
+                 "--disable-nls"
+
+                 ,@(if (%current-target-system)
+                       '("bash_cv_job_control_missing=no")
+                       '()))))))))
