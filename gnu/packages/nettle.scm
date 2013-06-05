@@ -27,14 +27,14 @@
 (define-public nettle
   (package
     (name "nettle")
-    (version "2.7")
+    (version "2.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/nettle/nettle-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1mnl5i1136p47lrklm0mhnnv3gjakza385zvxz12qf057h9ym562"))))
+               "0h2vap31yvi1a438d36lg1r1nllfx3y19r4rfxv7slrm6kafnwdw"))))
     (build-system gnu-build-system)
     (inputs `(("m4" ,m4)))
     (propagated-inputs `(("gmp" ,gmp)))
