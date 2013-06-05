@@ -116,20 +116,19 @@ flags for VARIABLE, the associated value is augmented."
                          #:key (strip-all? #t))
   "Return a statically-linked version of package P.  If STRIP-ALL? is true,
 use `--strip-all' as the arguments to `strip'."
-  (let ((args (package-arguments p)))
-    (package (inherit p)
-      (location (source-properties->location loc))
-      (arguments
-       (let ((a (default-keyword-arguments args
-                  '(#:configure-flags '()
-                    #:strip-flags '("--strip-debug")))))
-         (substitute-keyword-arguments a
-           ((#:configure-flags flags)
-            `(cons* "--disable-shared" "LDFLAGS=-static" ,flags))
-           ((#:strip-flags flags)
-            (if strip-all?
-                ''("--strip-all")
-                flags))))))))
+  (package (inherit p)
+    (location (source-properties->location loc))
+    (arguments
+     (let ((a (default-keyword-arguments (package-arguments p)
+                '(#:configure-flags '()
+                  #:strip-flags '("--strip-debug")))))
+       (substitute-keyword-arguments a
+         ((#:configure-flags flags)
+          `(cons* "--disable-shared" "LDFLAGS=-static" ,flags))
+         ((#:strip-flags flags)
+          (if strip-all?
+              ''("--strip-all")
+              flags)))))))
 
 
 (define %store
