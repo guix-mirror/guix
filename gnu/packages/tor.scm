@@ -23,7 +23,10 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages openssl))
+  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages w3m))
 
 (define-public tor
   (package
@@ -74,4 +77,43 @@ applications based on the TCP protocol.")
      "Torsocks allows you to use most socks-friendly applications in a safe
 way with Tor.  It ensures that DNS requests are handled safely and explicitly
 rejects UDP traffic from the application you're using.")
+    (license gpl2+)))
+
+(define-public privoxy
+  (package
+    (name "privoxy")
+    (version "3.0.21")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/ijbswa/Sources/"
+                                 version "%20%28stable%29/privoxy-"
+                                 version "-stable-src.tar.gz"))
+             (sha256
+              (base32
+               "1f6xb7aa47p90c26vqaw74y6drs9gpnhxsgby3mx0awdjh0ydisy"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'configure 'autoconf
+                 (lambda _
+                   ;; Unfortunately, this is not a tarball produced by
+                   ;; "make dist".
+                   (zero? (system* "autoreconf" "-vfi")))
+                 %standard-phases)
+       #:tests? #f))
+    (inputs
+     `(("w3m" ,w3m)
+       ("pcre" ,pcre)
+       ("zlib" ,zlib)
+       ("autoconf" ,autoconf)
+       ("automake" ,automake)))
+    (home-page "http://www.privoxy.org")
+    (synopsis "Web proxy with advanced filtering capabilities for enhancing privacy")
+    (description
+     "Privoxy is a non-caching web proxy with advanced filtering capabilities
+for enhancing privacy, modifying web page data and HTTP headers, controlling
+access, and removing ads and other obnoxious Internet junk.  Privoxy has a
+flexible configuration and can be customized to suit individual needs and
+tastes.  It has application for both stand-alone systems and multi-user
+networks.")
     (license gpl2+)))
