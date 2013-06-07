@@ -21,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages libpng))
 
 (define-public plotutils
@@ -35,7 +36,10 @@
               (base32
                "1arkyizn5wbgvbh53aziv3s6lmd3wm9lqzkhxb3hijlp1y124hjg"))))
     (build-system gnu-build-system)
-    (inputs `(("libpng" ,libpng)))
+    (inputs `(("libpng" ,libpng)
+              ("libx11" ,libx11)
+              ("libxt" ,libxt)
+              ("libxaw" ,libxaw)))
     (home-page
      "http://www.gnu.org/software/plotutils/")
     (synopsis "Plotting utilities and library")
