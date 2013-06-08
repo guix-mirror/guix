@@ -34,7 +34,7 @@
     (version "1.7.8")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://apache/subversion/subversion-"
+             (uri (string-append "https://archive.apache.org/dist/subversion/subversion-"
                                  version ".tar.bz2"))
              (sha256
               (base32
