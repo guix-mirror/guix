@@ -236,7 +236,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
   gnu/packages/patches/glib-tests-prlimit.patch			\
-  gnu/packages/patches/glib-tests-timezone.patch		\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-no-ld-so-cache.patch		\
   gnu/packages/patches/grub-gets-undeclared.patch		\

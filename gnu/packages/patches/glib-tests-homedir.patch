@@ -29,21 +29,21 @@ chroot build environment.  Thus, disable them.
  
    ret = g_test_run();
  
---- glib-2.34.3/gio/tests/gdbus-exit-on-close.c	2013-01-16 17:49:25.000000000 +0100
-+++ glib-2.34.3/gio/tests/gdbus-exit-on-close.c	2013-01-16 17:49:30.000000000 +0100
-@@ -206,13 +206,6 @@ main (int   argc,
-   g_type_init ();
+--- glib-2.37.1/gio/tests/gdbus-exit-on-close.c	2013-06-07 23:41:34.000000000 +0200
++++ glib-2.37.1/gio/tests/gdbus-exit-on-close.c	2013-06-07 23:41:40.000000000 +0200
+@@ -211,6 +211,7 @@ main (int   argc,
+ 
    g_test_init (&argc, &argv, NULL);
  
--  for (i = 0; cases[i].name != NULL; i++)
--    {
--      gchar *name = g_strdup_printf ("/gdbus/exit-on-close/%s", cases[i].name);
--
--      g_test_add_data_func (name, &cases[i], test_exit_on_close);
--      g_free (name);
--    }
++  return g_test_run();
+   for (i = 0; cases[i].name != NULL; i++)
+     {
+       gchar *name;
+@@ -224,5 +225,4 @@ main (int   argc,
+       g_free (name);
+     }
  
-   return g_test_run();
+-  return g_test_run();
  }
 
 --- glib-2.34.3/gio/tests/gdbus-non-socket.c	2013-01-16 18:13:25.000000000 +0100

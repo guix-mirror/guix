@@ -33,7 +33,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages bash))
 
 (define-public dbus
   (package
@@ -74,14 +75,14 @@ shared NFS home directories.")
 (define-public glib
   (package
    (name "glib")
-   (version "2.34.3")
+   (version "2.37.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
                                 name "/2.34/"
                                 name "-" version ".tar.xz"))
             (sha256
-             (base32 "19sq4rhl2vr8ikjvl8qh51vr38yqfhbkb3imi2s6ac5rgkwcnpw5"))))
+             (base32 "1lp705q0g9jlfj24x8fpgjh7awmmara5iyj9kz5lhd49sr9s813k"))))
    (build-system gnu-build-system)
    (outputs '("out"                        ; everything
               "doc"))                      ; 20 MiB of GTK-Doc reference
@@ -94,9 +95,9 @@ shared NFS home directories.")
       ("zlib" ,zlib)
       ("perl" ,perl)                              ; needed by GIO tests
       ("dbus" ,dbus)                              ; for GDBus tests
+      ("bash" ,bash)
+      ("tzdata" ,tzdata)                          ; for tests/gdatetime.c
 
-      ("patch/tests-tzdata"
-       ,(search-patch "glib-tests-timezone.patch"))
       ("patch/tests-homedir"
        ,(search-patch "glib-tests-homedir.patch"))
       ("patch/tests-desktop"
@@ -104,17 +105,31 @@ shared NFS home directories.")
       ("patch/tests-prlimit"
        ,(search-patch "glib-tests-prlimit.patch"))))
    (arguments
-    '(#:patches (list (assoc-ref %build-inputs "patch/tests-tzdata")
-                      (assoc-ref %build-inputs "patch/tests-homedir")
+    '(#:patches (list (assoc-ref %build-inputs "patch/tests-homedir")
                       (assoc-ref %build-inputs "patch/tests-desktop")
                       (assoc-ref %build-inputs "patch/tests-prlimit"))
       #:phases (alist-cons-before
                 'build 'pre-build
                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                  ;; For tests/gdatetime.c.
+                  (setenv "TZDIR"
+                          (string-append (assoc-ref inputs "tzdata")
+                                         "/share/zoneinfo"))
+
+                  ;; Some tests want write access there.
+                  (setenv "XDG_CACHE_HOME" (getcwd))
+
                   (substitute* '("glib/gspawn.c"
                                  "glib/tests/utils.c"
                                  "tests/spawn-test.c")
-                    (("/bin/sh") (which "sh"))))
+                    (("/bin/sh")
+                     (string-append (assoc-ref inputs "bash") "/bin/sh")))
+
+                  ;; Honor $(TESTS_ENVIRONMENT).
+                  (substitute* (find-files "." "^Makefile(\\.in)?$")
+                    (("^GTESTER[[:blank:]]*=(.*)$" _ rest)
+                     (string-append "GTESTER = $(TESTS_ENVIRONMENT) "
+                                    rest))))
                 %standard-phases)
 
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.

@@ -1,9 +1,9 @@
 Some GLib tests expect desktop things, such as an xterm, a MIME
 database, the `update-desktop-database' program, which we don't provide.
 
---- glib-2.34.3/gio/tests/appinfo.c	2013-01-16 18:20:00.000000000 +0100
-+++ glib-2.34.3/gio/tests/appinfo.c	2013-01-16 18:20:06.000000000 +0100
-@@ -384,14 +384,09 @@ main (int argc, char *argv[])
+--- glib-2.37.1/gio/tests/appinfo.c	2013-06-07 23:44:44.000000000 +0200
++++ glib-2.37.1/gio/tests/appinfo.c	2013-06-07 23:44:56.000000000 +0200
+@@ -497,16 +497,10 @@ main (int argc, char *argv[])
  
    g_test_add_func ("/appinfo/basic", test_basic);
    g_test_add_func ("/appinfo/text", test_text);
@@ -11,12 +11,15 @@ database, the `update-desktop-database' program, which we don't provide.
    g_test_add_func ("/appinfo/show-in", test_show_in);
    g_test_add_func ("/appinfo/commandline", test_commandline);
 -  g_test_add_func ("/appinfo/launch-context", test_launch_context);
+-  g_test_add_func ("/appinfo/launch-context-signals", test_launch_context_signals);
    g_test_add_func ("/appinfo/tryexec", test_tryexec);
 -  g_test_add_func ("/appinfo/associations", test_associations);
    g_test_add_func ("/appinfo/environment", test_environment);
 -  g_test_add_func ("/appinfo/startup-wm-class", test_startup_wm_class);
 -  g_test_add_func ("/appinfo/supported-types", test_supported_types);
    g_test_add_func ("/appinfo/from-keyfile", test_from_keyfile);
+ 
+   return g_test_run ();
 
 --- glib-2.34.3/gio/tests/contenttype.c	2013-01-16 21:22:29.000000000 +0100
 +++ glib-2.34.3/gio/tests/contenttype.c	2013-01-16 21:22:33.000000000 +0100
@@ -35,18 +38,16 @@ database, the `update-desktop-database' program, which we don't provide.
    return g_test_run ();
  }
 
---- glib-2.34.3/gio/tests/desktop-app-info.c	2013-01-16 21:30:00.000000000 +0100
-+++ glib-2.34.3/gio/tests/desktop-app-info.c	2013-01-16 21:30:02.000000000 +0100
-@@ -363,9 +363,5 @@ main (int   argc,
+--- glib-2.37.1/gio/tests/desktop-app-info.c	2013-06-07 23:46:28.000000000 +0200
++++ glib-2.37.1/gio/tests/desktop-app-info.c	2013-06-07 23:46:32.000000000 +0200
+@@ -385,6 +385,7 @@ main (int   argc,
    g_setenv ("XDG_DATA_HOME", basedir, TRUE);
    cleanup_subdirs (basedir);
    
--  g_test_add_func ("/desktop-app-info/delete", test_delete);
--  g_test_add_func ("/desktop-app-info/default", test_default);
--  g_test_add_func ("/desktop-app-info/fallback", test_fallback);
--  g_test_add_func ("/desktop-app-info/lastused", test_last_used);
- 
-   result = g_test_run ();
++  return 0;
+   g_test_add_func ("/desktop-app-info/delete", test_delete);
+   g_test_add_func ("/desktop-app-info/default", test_default);
+   g_test_add_func ("/desktop-app-info/fallback", test_fallback);
 
 
 -----------------------------
@@ -81,7 +82,7 @@ The test below depends on the availability /etc/passwd to dbus-daemon.
  {
    gint ret;
  
-+  exit (0);
++  return 0;
    setlocale (LC_ALL, "C");
  
    g_type_init ();
