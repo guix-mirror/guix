@@ -79,7 +79,7 @@ shared NFS home directories.")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
-                                name "/2.34/"
+                                name "/2.37/"
                                 name "-" version ".tar.xz"))
             (sha256
              (base32 "1lp705q0g9jlfj24x8fpgjh7awmmara5iyj9kz5lhd49sr9s813k"))))
