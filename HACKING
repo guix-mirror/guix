@@ -142,7 +142,7 @@ problem?  Chicken-and-egg.
 
 To break that cycle, the distro starts from a set of pre-built
 binaries–usually referred to as “bootstrap binaries.”  These include
-statically-linked versions of Guile, GCC, Coreutils, Make, Grep, sed,
+statically-linked versions of Guile, GCC, Coreutils, Grep, sed,
 etc., and the GNU C Library.
 
 This section describes how to build those bootstrap binaries when
@@ -154,7 +154,7 @@ In that case, the easiest thing is to bootstrap the distro using
 binaries from Nixpkgs.
 
 To do that, you need to comment out the definitions of
-‘%bootstrap-guile’ and ‘%bootstrap-inputs’ in distro/packages/bootstrap.scm
+‘%bootstrap-guile’ and ‘%bootstrap-inputs’ in gnu/packages/bootstrap.scm
 to force the use of Nixpkgs derivations.  For instance, when porting to
 ‘i686-linux’, you should redefine these variables along these lines:
 
@@ -190,10 +190,10 @@ These should build tarballs containing statically-linked tools usable on
 that system.
 
 In the source tree, you need to install binaries for ‘mkdir’, ‘bash’,
-‘tar’, and ‘xz’ under ‘distro/packages/bootstrap/i686-linux’.  These
+‘tar’, and ‘xz’ under ‘gnu/packages/bootstrap/i686-linux’.  These
 binaries can be extracted from the static-binaries tarball built above.
 
-A rule for ‘distro/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz’
+A rule for ‘gnu/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz’
 needs to be added in ‘Makefile.am’, with the appropriate hexadecimal
 vrepresentation of its SHA256 hash.
 
