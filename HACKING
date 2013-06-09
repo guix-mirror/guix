@@ -115,10 +115,11 @@ Non-trivial patches should always be posted to bug-guix@gnu.org (trivial
 patches include fixing typos, etc.)
 
 For patches that just add a new package, and a simple one, it’s OK to commit,
-if you’re confident (which means you successfully built it in a chroot setup.)
-Likewise for package upgrades.  We have a mailing list for commit
-notifications (guix-commits@gnu.org), so people can notice.  Before pushing
-your changes, make sure to run ‘git pull --rebase’.
+if you’re confident (which means you successfully built it in a chroot setup,
+and have done a reasonable copyright and license auditing.)  Likewise for
+package upgrades.  We have a mailing list for commit notifications
+(guix-commits@gnu.org), so people can notice.  Before pushing your changes,
+make sure to run ‘git pull --rebase’.
 
 For anything else, please post to bug-guix@gnu.org and leave time for a
 review, without committing anything.  If you didn’t receive any reply
