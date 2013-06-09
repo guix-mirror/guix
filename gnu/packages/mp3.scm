@@ -181,3 +181,27 @@ This package contains the binary.")
    (license license:gpl2+)
    (home-page "http://mp3splt.sourceforge.net/mp3splt_page/home.php")))
 
+(define-public mpg321
+  (package
+    (name "mpg321")
+    (version "0.3.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/mpg321/"
+                                 version "/mpg321-" version ".tar.gz"))
+             (sha256
+              (base32
+               "0yamsqvj15nsxxnjs9mgyslzx7krgsfk3q1hk3g6l8w9bbbj770b"))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--disable-alsa")))
+    (inputs
+     `(("zlib" ,zlib)
+       ("libmad" ,libmad)
+       ("libid3tag" ,libid3tag)
+       ("libao" ,ao)))
+    (home-page "http://mpg321.sourceforge.net/")
+    (synopsis "Command-line MP3 player")
+    (description "mpg321 is a command-line mp3 player.  mpg321 is used for
+frontends, as an mp3 player and as an mp3 to wave file decoder (primarily for
+use with CD-recording software).")
+    (license license:gpl2)))
