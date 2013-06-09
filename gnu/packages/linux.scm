@@ -429,3 +429,23 @@ slabtop, and skill.")
      "strace is a system call tracer, i.e. a debugging tool which prints out a
 trace of all the system calls made by a another process/program.")
     (license bsd-3)))
+
+(define-public alsa-lib
+  (package
+    (name "alsa-lib")
+    (version "1.0.27.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "ftp://ftp.alsa-project.org/pub/lib/alsa-lib-"
+                   version ".tar.bz2"))
+             (sha256
+              (base32
+               "0fx057746dj7rjdi0jnvx2m9b0y1lgdkh1hks87d8w32xyihf3k9"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.alsa-project.org/")
+    (synopsis "The Advanced Linux Sound Architecture libraries")
+    (description
+     "The Advanced Linux Sound Architecture (ALSA) provides audio and
+MIDI functionality to the Linux-based operating system.")
+    (license lgpl2.1+)))
