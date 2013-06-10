@@ -157,14 +157,13 @@ unbuffered port, suitable for use in `filtered-port'."
                    ;; Try hard to use the API du jour to get an input port.
                    ;; On Guile 2.0.5 and before, we can only get a string or
                    ;; bytevector, and not an input port.  Work around that.
-                   (if (version>? "2.0.7" (version))
-                       (if (defined? 'http-get*)
-                           (http-get* uri #:decode-body? text?
-                                      #:port port)              ; 2.0.7
-                           (http-get uri #:decode-body? text?
-                                     #:port port))              ; 2.0.5-
-                       (http-get uri #:streaming? #t
-                                 #:port port)))                 ; 2.0.9+
+                  (if (version>? (version) "2.0.7")
+                      (http-get uri #:streaming? #t #:port port) ; 2.0.9+
+                      (if (defined? 'http-get*)
+                          (http-get* uri #:decode-body? text?
+                                     #:port port)                ; 2.0.7
+                          (http-get uri #:decode-body? text?
+                                    #:port port))))              ; 2.0.5-
                   ((code)
                    (response-code resp)))
       (case code
