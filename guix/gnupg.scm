@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2010, 2011, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,9 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 i18n)
   #:use-module (srfi srfi-1)
+  #:use-module (guix ui)
   #:export (%gpg-command
             %openpgp-key-server
             gnupg-verify
@@ -145,16 +148,37 @@ missing key."
 (define (gnupg-receive-keys key-id server)
   (system* (%gpg-command) "--keyserver" server "--recv-keys" key-id))
 
-(define* (gnupg-verify* sig file #:optional (server (%openpgp-key-server)))
+(define* (gnupg-verify* sig file
+                        #:key (key-download 'interactive)
+                              (server (%openpgp-key-server)))
   "Like `gnupg-verify', but try downloading the public key if it's missing.
-Return #t if the signature was good, #f otherwise."
+Return #t if the signature was good, #f otherwise.  KEY-DOWNLOAD specifies a
+download policy for missing OpenPGP keys; allowed values: 'always', 'never',
+and 'interactive' (default)."
   (let ((status (gnupg-verify sig file)))
     (or (gnupg-status-good-signature? status)
         (let ((missing (gnupg-status-missing-key? status)))
+          (define (download-and-try-again)
+            ;; Download the missing key and try again.
+            (begin
+              (gnupg-receive-keys missing server)
+              (gnupg-status-good-signature? (gnupg-verify sig file))))
+
+          (define (receive?)
+            (let ((answer
+                   (begin (format #t (_ "~a~a~%")
+                                  "Would you like to download this key "
+                                  "and add it to your keyring?")
+                          (read-line))))
+              (string-match (locale-yes-regexp) answer)))
+
           (and missing
-               (begin
-                 ;; Download the missing key and try again.
-                 (gnupg-receive-keys missing server)
-                 (gnupg-status-good-signature? (gnupg-verify sig file))))))))
+               (case key-download
+                 ((never) #f)
+                 ((always)
+                  (download-and-try-again))
+                 (else
+                  (and (receive?)
+                       (download-and-try-again)))))))))
 
 ;;; gnupg.scm ends here

@@ -341,16 +341,19 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
          (_ #f))))
 
 (define* (download-tarball store project directory version
-                           #:optional (archive-type "gz"))
+                           #:key (archive-type "gz")
+                                 (key-download 'interactive))
   "Download PROJECT's tarball over FTP and check its OpenPGP signature.  On
-success, return the tarball file name."
+success, return the tarball file name.  KEY-DOWNLOAD specifies a download
+policy for missing OpenPGP keys; allowed values: 'interactive' (default),
+'always', and 'never'."
   (let* ((server  (ftp-server/directory project))
          (base    (string-append project "-" version ".tar." archive-type))
          (url     (string-append "ftp://" server "/" directory "/" base))
          (sig-url (string-append url ".sig"))
          (tarball (download-to-store store url))
          (sig     (download-to-store store sig-url)))
-    (let ((ret (gnupg-verify* sig tarball)))
+    (let ((ret (gnupg-verify* sig tarball #:key-download key-download)))
       (if ret
           tarball
           (begin
@@ -359,9 +362,11 @@ success, return the tarball file name."
             (warning (_ "(could be because the public key is not in your keyring)~%"))
             #f)))))
 
-(define (package-update store package)
+(define* (package-update store package #:key (key-download 'interactive))
   "Return the new version and the file name of the new version tarball for
-PACKAGE, or #f and #f when PACKAGE is up-to-date."
+PACKAGE, or #f and #f when PACKAGE is up-to-date.  KEY-DOWNLOAD specifies a
+download policy for missing OpenPGP keys; allowed values: 'always', 'never',
+and 'interactive' (default)."
   (match (package-update-path package)
     ((version . directory)
      (let-values (((name)
@@ -372,7 +377,8 @@ PACKAGE, or #f and #f when PACKAGE is up-to-date."
                               (file-extension (origin-uri source)))
                          "gz"))))
        (let ((tarball (download-tarball store name directory version
-                                        archive-type)))
+                                        #:archive-type archive-type
+                                        #:key-download key-download)))
          (values version tarball))))
     (_
      (values #f #f))))
