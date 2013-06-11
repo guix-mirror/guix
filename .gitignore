@@ -24,6 +24,7 @@ config.cache
 /m4/progtest.m4
 /po/ChangeLog
 /po/Makefile.in.in
+/po/Makevars.template
 /po/POTFILES
 /po/Rules-quot
 /po/boldquot.sed
