@@ -101,6 +101,7 @@ MODULES =					\
   gnu/packages/fontutils.scm			\
   gnu/packages/freeipmi.scm			\
   gnu/packages/gawk.scm				\
+  gnu/packages/gcal.scm				\
   gnu/packages/gcc.scm				\
   gnu/packages/gdb.scm				\
   gnu/packages/gdbm.scm				\
