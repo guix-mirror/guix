@@ -11,7 +11,7 @@ main="(@ (gnu build-support ld-wrapper) ld-wrapper)"
 exec @GUILE@ -c "(load-compiled \"$0.go\") (apply $main (cdr (command-line)))" "$@"
 !#
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -82,13 +82,26 @@ exec @GUILE@ -c "(load-compiled \"$0.go\") (apply $main (cdr (command-line)))" "
   (getenv "GUIX_LD_WRAPPER_DEBUG"))
 
 (define (pure-file-name? file)
-  ;; Return #t when FILE is the name of a file either within the store or
-  ;; within the build directory.
-  (or (not (string-prefix? "/" file))
-      (string-prefix? %store-directory file)
-      (string-prefix? %temporary-directory file)
-      (and %build-directory
-           (string-prefix? %build-directory file))))
+  ;; Return #t when FILE is the name of a file either within the store
+  ;; (possibly via a symlink) or within the build directory.
+  (define %max-symlink-depth 50)
+
+  (let loop ((file  file)
+             (depth 0))
+    (or (not (string-prefix? "/" file))
+        (string-prefix? %store-directory file)
+        (string-prefix? %temporary-directory file)
+        (if %build-directory
+            (string-prefix? %build-directory file)
+
+            ;; When used from a user environment, FILE may refer to
+            ;; ~/.guix-profile/lib/libfoo.so, which is itself a symlink to the
+            ;; store.  Check whether this is the case.
+            (let ((s (false-if-exception (lstat file))))
+              (and s
+                   (eq? 'symlink (stat:type s))
+                   (< depth %max-symlink-depth)
+                   (loop (readlink file) (+ 1 depth))))))))
 
 (define (switch-arguments switch args)
   ;; Return the arguments passed for the occurrences of SWITCH--e.g.,
