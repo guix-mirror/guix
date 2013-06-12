@@ -47,18 +47,40 @@ required:
   - [[http://www.gnu.org/software/automake/][GNU Automake]]
   - [[http://www.gnu.org/software/gettext/][GNU Gettext]]
 
-The "autoreconf -vi" command can be used to generate the build system
-infrastructure; it reports an error if an inappropriate version of the
-above packages is being used.
+Run the "bootstrap" script to download the Nix daemon and to generate the
+build system infrastructure using autoconf. It reports an error if an
+inappropriate version of the above packages is being used.
 
 * Installing Guix from Guix
 
 You can re-build and re-install Guix using a system that already runs Guix.
 To do so:
 
-  - install the dependencies (see 'Requirements' above) using Guix
+  - Install the dependencies (see 'Requirements' above) and build tools using
+    Guix.  You should have the following packages installed in your user
+    profile:
+
+    - autoconf
+    - automake
+    - bzip2
+    - gcc
+    - gettext
+    - glibc
+    - guile
+    - ld-wrapper
+    - libgcrypt
+    - pkg-config
+    - sqlite
+
+  - set the environment variables that Guix recommends you to set during the
+    package installation process:
+      ACLOCAL, CPATH, LIBRARY_PATH, PATH, PKG_CONFIG_PATH
+    In addition, set 
+      GUIX_LD_WRAPPER_ALLOW_IMPURITIES=yes
+
   - re-run the configure script passing it the option
     `--with-libgcrypt-prefix=$HOME/.guix-profile/'
+
   - run "make" and "make install"
 
 * How It Works
