@@ -106,6 +106,24 @@
          (null? (references %store t1))
          (null? (referrers %store t2)))))
 
+(test-assert "requisites"
+  (let* ((t1 (add-text-to-store %store "random1"
+                                (random-text) '()))
+         (t2 (add-text-to-store %store "random2"
+                                (random-text) (list t1)))
+         (t3 (add-text-to-store %store "random3"
+                                (random-text) (list t2)))
+         (t4 (add-text-to-store %store "random4"
+                                (random-text) (list t1 t3))))
+    (define (same? x y)
+      (and (= (length x) (length y))
+           (lset= equal? x y)))
+
+    (and (same? (requisites %store t1) (list t1))
+         (same? (requisites %store t2) (list t1 t2))
+         (same? (requisites %store t3) (list t1 t2 t3))
+         (same? (requisites %store t4) (list t1 t2 t3 t4)))))
+
 (test-assert "derivers"
   (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
          (s (add-to-store %store "bash" #t "sha256"

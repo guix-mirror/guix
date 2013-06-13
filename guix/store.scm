@@ -31,6 +31,7 @@
   #:use-module (srfi srfi-39)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 vlist)
   #:export (%daemon-socket-file
 
             nix-server?
@@ -70,6 +71,7 @@
             substitutable-path-info
 
             references
+            requisites
             referrers
             valid-derivers
             query-derivation-outputs
@@ -492,6 +494,30 @@ file name.  Return #t on success."
   (operation (query-references (store-path path))
              "Return the list of references of PATH."
              store-path-list))
+
+(define* (fold-path store proc seed path
+                    #:optional (relatives (cut references store <>)))
+  "Call PROC for each of the RELATIVES of PATH, exactly once, and return the
+result formed from the successive calls to PROC, the first of which is passed
+SEED."
+  (let loop ((paths  (list path))
+             (result seed)
+             (seen   vlist-null))
+    (match paths
+      ((path rest ...)
+       (if (vhash-assoc path seen)
+           (loop rest result seen)
+           (let ((seen   (vhash-cons path #t seen))
+                 (rest   (append rest (relatives path)))
+                 (result (proc path result)))
+             (loop rest result seen))))
+      (()
+       result))))
+
+(define (requisites store path)
+  "Return the requisites of PATH, including PATH---i.e., its closure (all its
+references, recursively)."
+  (fold-path store cons '() path))
 
 (define referrers
   (operation (query-referrers (store-path path))
