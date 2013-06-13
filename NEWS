@@ -32,6 +32,10 @@ See the manual for details.
 This option instructs to fall back to local builds when the substituter fails
 to download a substitute.
 
+*** New ‘--requisites’ option for “guix gc”
+
+See the manual for details.
+
 ** Bugs fixed
 *** “guix --help” now works when using Guile 2.0.5
 *** Binary substituter multi-threading and pipe issues fixed

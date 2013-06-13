@@ -51,6 +51,8 @@ Invoke the garbage collector.\n"))
   (display (_ "
       --references       list the references of PATHS"))
   (display (_ "
+  -R, --requisites       list the requisites of PATHS"))
+  (display (_ "
       --referrers        list the referrers of PATHS"))
   (newline)
   (display (_ "
@@ -128,6 +130,10 @@ interpreted."
                 (lambda (opt name arg result)
                   (alist-cons 'action 'list-references
                               (alist-delete 'action result))))
+        (option '(#\R "requisites") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'action 'list-requisites
+                              (alist-delete 'action result))))
         (option '("referrers") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'action 'list-referrers
@@ -189,6 +195,8 @@ interpreted."
          (delete-paths store paths))
         ((list-references)
          (list-relatives references))
+        ((list-requisites)
+         (list-relatives requisites))
         ((list-referrers)
          (list-relatives referrers))
         ((list-dead)

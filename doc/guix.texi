@@ -722,6 +722,13 @@ In addition, the references among existing store files can be queried:
 List the references (respectively, the referrers) of store files given
 as arguments.
 
+@item --requisites
+@itemx -R
+List the requisites of the store files passed as arguments.  Requisites
+include the store files themselves, their references, and the references
+of these, recursively.  In other words, the returned list is the
+@dfn{transitive closure} of the store files.
+
 @end table
 
 
