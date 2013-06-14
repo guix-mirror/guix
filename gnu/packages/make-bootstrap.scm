@@ -83,18 +83,22 @@
 (define %static-inputs
   ;; Packages that are to be used as %BOOTSTRAP-INPUTS.
   (let ((coreutils (package (inherit coreutils)
-                     (arguments
-                      `(#:configure-flags
-                        '("--disable-nls"
-                          "--disable-silent-rules"
-                          "--enable-no-install-program=stdbuf,libstdbuf.so"
-                          "CFLAGS=-Os -g0"        ; smaller, please
-                          "LDFLAGS=-static -pthread")
-                        #:tests? #f   ; signal-related Gnulib tests fail
-                        ,@(package-arguments coreutils)))
+                      (arguments
+                       `(#:configure-flags
+                         '("--disable-nls"
+                           "--disable-silent-rules"
+                           "--enable-no-install-program=stdbuf,libstdbuf.so"
+                           "CFLAGS=-Os -g0"        ; smaller, please
+                           "LDFLAGS=-static -pthread")
+                         #:tests? #f   ; signal-related Gnulib tests fail
+                         ,@(package-arguments coreutils)))
 
-                     ;; Remove optional dependencies such as GMP.
-                     (inputs `(,(assoc "perl" (package-inputs coreutils))))))
+                      ;; Remove optional dependencies such as GMP.  Keep Perl
+                      ;; except if it's missing (which is the case when
+                      ;; cross-compiling).
+                      (inputs (match (assoc "perl" (package-inputs coreutils))
+                                (#f '())
+                                (x  (list x))))))
         (bzip2 (package (inherit bzip2)
                  (arguments
                   (substitute-keyword-arguments (package-arguments bzip2)
