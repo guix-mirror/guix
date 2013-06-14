@@ -49,33 +49,39 @@
 ;;;
 ;;; Code:
 
-(define %glibc-for-bootstrap
-  ;; A libc whose `system' and `popen' functions looks for `sh' in $PATH,
-  ;; without nscd, and with static NSS modules.
-  (package (inherit glibc-final)
+(define* (glibc-for-bootstrap #:optional (base glibc-final))
+  "Return a libc deriving from BASE whose `system' and `popen' functions looks
+for `sh' in $PATH, and without nscd, and with static NSS modules."
+  (package (inherit base)
     (arguments
-     (substitute-keyword-arguments (package-arguments glibc-final)
+     (substitute-keyword-arguments (package-arguments base)
        ((#:patches patches)
-        `(cons (assoc-ref %build-inputs "patch/system") ,patches))
+	`(cons (assoc-ref %build-inputs "patch/system") ,patches))
        ((#:configure-flags flags)
-        ;; Arrange so that getaddrinfo & co. do not contact the nscd,
-        ;; and can use statically-linked NSS modules.
-        `(cons* "--disable-nscd" "--disable-build-nscd"
-                "--enable-static-nss"
-                ,flags))))
+	;; Arrange so that getaddrinfo & co. do not contact the nscd,
+	;; and can use statically-linked NSS modules.
+	`(cons* "--disable-nscd" "--disable-build-nscd"
+		"--enable-static-nss"
+		,flags))))
     (inputs
      `(("patch/system" ,(search-patch "glibc-bootstrap-system.patch"))
-       ,@(package-inputs glibc-final)))))
+       ,@(package-inputs base)))))
 
-(define %standard-inputs-with-relocatable-glibc
-  ;; Standard inputs with the above libc and corresponding GCC.
-  `(("libc", %glibc-for-bootstrap)
-    ("gcc" ,(package-with-explicit-inputs
-             gcc-4.7
-             `(("libc",%glibc-for-bootstrap)
-               ,@(alist-delete "libc" %final-inputs))
-             (current-source-location)))
-    ,@(fold alist-delete %final-inputs '("libc" "gcc"))))
+(define (package-with-relocatable-glibc p)
+  "Return a variant of P that uses the libc as defined by
+`glibc-for-bootstrap'."
+
+  (define inputs
+    `(("libc", (glibc-for-bootstrap))
+      ("gcc" ,(package-with-explicit-inputs
+               gcc-4.7
+	       `(("libc",(glibc-for-bootstrap))
+		 ,@(alist-delete "libc" %final-inputs))
+	       (current-source-location)))
+      ,@(fold alist-delete %final-inputs '("libc" "gcc"))))
+
+  (package-with-explicit-inputs p inputs
+				(current-source-location)))
 
 (define %bash-static
   (static-package bash-light))
@@ -135,11 +141,8 @@
                               (("-export-dynamic") "")))
                           ,phases)))))
                 (inputs `(("patch/sh" ,(search-patch "gawk-shell.patch"))))))
-        (finalize (lambda (p)
-                    (static-package (package-with-explicit-inputs
-                                     p
-                                     %standard-inputs-with-relocatable-glibc)
-                                    (current-source-location)))))
+	(finalize (compose static-package
+			   package-with-relocatable-glibc)))
     `(,@(map (match-lambda
               ((name package)
                (list name (finalize package))))
@@ -284,7 +287,7 @@
   ;; GNU libc's essential shared libraries, dynamic linker, and headers,
   ;; with all references to store directories stripped.  As a result,
   ;; libc.so is unusable and need to be patched for proper relocation.
-  (let ((glibc %glibc-for-bootstrap))
+  (let ((glibc (glibc-for-bootstrap)))
     (package (inherit glibc)
       (name "glibc-stripped")
       (build-system trivial-build-system)
@@ -335,7 +338,7 @@
 
 (define %gcc-static
   ;; A statically-linked GCC, with stripped-down functionality.
-  (package-with-explicit-inputs
+  (package-with-relocatable-glibc
    (package (inherit gcc-final)
      (name "gcc-static")
      (arguments
@@ -362,11 +365,10 @@
             ((#:make-flags flags)
              `(cons "BOOT_LDFLAGS=-static" ,flags)))))
      (inputs `(("gmp-source" ,(package-source gmp))
-               ("mpfr-source" ,(package-source mpfr))
-               ("mpc-source" ,(package-source mpc))
-               ("binutils" ,binutils-final)
-               ,@(package-inputs gcc-4.7))))
-   %standard-inputs-with-relocatable-glibc))
+	       ("mpfr-source" ,(package-source mpfr))
+	       ("mpc-source" ,(package-source mpc))
+	       ("binutils" ,binutils-final)
+	       ,@(package-inputs gcc-4.7))))))
 
 (define %gcc-stripped
   ;; The subset of GCC files needed for bootstrap.
@@ -409,60 +411,58 @@
   ;; .scm and .go files relative to its installation directory, rather
   ;; than in hard-coded configure-time paths.
   (let* ((libgc (package (inherit libgc)
-                  (arguments
-                   ;; Make it so that we don't rely on /proc.  This is
-                   ;; especially useful in an initrd run before /proc is
-                   ;; mounted.
-                   '(#:configure-flags '("CPPFLAGS=-DUSE_LIBC_PRIVATES")))))
-         (guile (package (inherit guile-2.0)
-                  (name (string-append (package-name guile-2.0) "-static"))
-                  (inputs
-                   `(("patch/relocatable"
-                      ,(search-patch "guile-relocatable.patch"))
-                     ("patch/utf8"
-                      ,(search-patch "guile-default-utf8.patch"))
-                     ("patch/syscalls"
-                      ,(search-patch "guile-linux-syscalls.patch"))
-                     ,@(package-inputs guile-2.0)))
-                  (propagated-inputs
-                   `(("bdw-gc" ,libgc)
-                     ,@(alist-delete "bdw-gc"
-                                     (package-propagated-inputs guile-2.0))))
-                  (arguments
-                   `(;; When `configure' checks for ltdl availability, it
-                     ;; doesn't try to link using libtool, and thus fails
-                     ;; because of a missing -ldl.  Work around that.
-                     #:configure-flags '("LDFLAGS=-ldl")
+		  (arguments
+		   ;; Make it so that we don't rely on /proc.  This is
+		   ;; especially useful in an initrd run before /proc is
+		   ;; mounted.
+		   '(#:configure-flags '("CPPFLAGS=-DUSE_LIBC_PRIVATES")))))
+	 (guile (package (inherit guile-2.0)
+		  (name (string-append (package-name guile-2.0) "-static"))
+		  (inputs
+		   `(("patch/relocatable"
+		      ,(search-patch "guile-relocatable.patch"))
+		     ("patch/utf8"
+		      ,(search-patch "guile-default-utf8.patch"))
+		     ("patch/syscalls"
+		      ,(search-patch "guile-linux-syscalls.patch"))
+		     ,@(package-inputs guile-2.0)))
+		  (propagated-inputs
+		   `(("bdw-gc" ,libgc)
+		     ,@(alist-delete "bdw-gc"
+				     (package-propagated-inputs guile-2.0))))
+		  (arguments
+		   `(;; When `configure' checks for ltdl availability, it
+		     ;; doesn't try to link using libtool, and thus fails
+		     ;; because of a missing -ldl.  Work around that.
+		     #:configure-flags '("LDFLAGS=-ldl")
 
-                     #:phases (alist-cons-before
-                               'configure 'static-guile
-                               (lambda _
-                                 (substitute* "libguile/Makefile.in"
-                                   ;; Create a statically-linked `guile'
-                                   ;; executable.
-                                   (("^guile_LDFLAGS =")
-                                    "guile_LDFLAGS = -all-static")
+		     #:phases (alist-cons-before
+			       'configure 'static-guile
+			       (lambda _
+				 (substitute* "libguile/Makefile.in"
+				   ;; Create a statically-linked `guile'
+				   ;; executable.
+				   (("^guile_LDFLAGS =")
+				    "guile_LDFLAGS = -all-static")
 
-                                   ;; Add `-ldl' *after* libguile-2.0.la.
-                                   (("^guile_LDADD =(.*)$" _ ldadd)
-                                    (string-append "guile_LDADD = "
-                                                   (string-trim-right ldadd)
-                                                   " -ldl\n"))))
-                               %standard-phases)
+				   ;; Add `-ldl' *after* libguile-2.0.la.
+				   (("^guile_LDADD =(.*)$" _ ldadd)
+				    (string-append "guile_LDADD = "
+						   (string-trim-right ldadd)
+						   " -ldl\n"))))
+			       %standard-phases)
 
-                     ;; Allow Guile to be relocated, as is needed during
-                     ;; bootstrap.
-                     #:patches
-                     (list (assoc-ref %build-inputs "patch/relocatable")
-                           (assoc-ref %build-inputs "patch/utf8")
-                           (assoc-ref %build-inputs "patch/syscalls"))
+		     ;; Allow Guile to be relocated, as is needed during
+		     ;; bootstrap.
+		     #:patches
+		     (list (assoc-ref %build-inputs "patch/relocatable")
+			   (assoc-ref %build-inputs "patch/utf8")
+			   (assoc-ref %build-inputs "patch/syscalls"))
 
-                     ;; There are uses of `dynamic-link' in
-                     ;; {foreign,coverage}.test that don't fly here.
-                     #:tests? #f)))))
-    (package-with-explicit-inputs (static-package guile)
-                                  %standard-inputs-with-relocatable-glibc
-                                  (current-source-location))))
+		     ;; There are uses of `dynamic-link' in
+		     ;; {foreign,coverage}.test that don't fly here.
+		     #:tests? #f)))))
+    (package-with-relocatable-glibc (static-package guile))))
 
 (define %guile-static-stripped
   ;; A stripped static Guile binary, for use during bootstrap.
