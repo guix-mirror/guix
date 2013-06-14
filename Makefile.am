@@ -107,6 +107,7 @@ MODULES =					\
   gnu/packages/gdbm.scm				\
   gnu/packages/gettext.scm			\
   gnu/packages/ghostscript.scm			\
+  gnu/packages/git.scm				\
   gnu/packages/glib.scm				\
   gnu/packages/global.scm			\
   gnu/packages/gnupg.scm			\

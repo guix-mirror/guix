@@ -22,8 +22,15 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages libpng)
+  #:use-module (gnu packages pdf)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xorg))
 
 (define-public atk
   (package
@@ -46,3 +53,53 @@ by other toolkits and applications. Using the ATK interfaces, accessibility
 tools have full access to view and control running applications.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/atk/")))
+
+(define-public cairo
+  (package
+   (name "cairo")
+   (version "1.12.14")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://cairographics.org/releases/cairo-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "04xcykglff58ygs0dkrmmnqljmpjwp2qgwcz8sijqkdpz7ix3l4n"))))
+   (build-system gnu-build-system)
+   (propagated-inputs
+    `(("fontconfig" ,fontconfig)
+      ("freetype" ,freetype)
+      ("glib" ,glib)
+      ("libpng" ,libpng)
+      ("libx11" ,libx11)
+      ("libxext" ,libxext)
+      ("libxrender" ,libxrender)
+      ("pixman" ,pixman)))
+   (inputs
+    `(("ghostscript" ,ghostscript)
+      ("libspectre" ,libspectre)
+      ("pkg-config" ,pkg-config)
+      ("poppler" ,poppler)
+      ("python" ,python)
+      ("xextproto" ,xextproto)
+      ("zlib" ,zlib)))
+    (arguments
+      `(#:tests? #f)) ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
+   (synopsis "2D graphics library")
+   (description
+    "Cairo is a 2D graphics library with support for multiple output devices.
+Currently supported output targets include the X Window System (via both
+Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file
+output. Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.
+
+Cairo is designed to produce consistent output on all output media while
+taking advantage of display hardware acceleration when available
+eg. through the X Render Extension).
+
+The cairo API provides operations similar to the drawing operators of
+PostScript and PDF. Operations in cairo including stroking and filling cubic
+Bézier splines, transforming and compositing translucent images, and
+antialiased text rendering. All drawing operations can be transformed by any
+affine transformation (scale, rotation, shear, etc.)")
+   (license license:lgpl2.1) ; or Mozilla Public License 1.1
+   (home-page "http://cairographics.org/")))
