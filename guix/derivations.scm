@@ -469,8 +469,9 @@ in SIZE bytes."
               (drv    (make-derivation outputs inputs sources
                                        system builder args env-vars)))
          (sha256
-          (string->utf8 (call-with-output-string
-                         (cut write-derivation drv <>))))))))))
+          (with-fluids ((%default-port-encoding "UTF-8"))
+            (string->utf8 (call-with-output-string
+                           (cut write-derivation drv <>)))))))))))
 
 (define (store-path type hash name)               ; makeStorePath
   "Return the store path for NAME/HASH/TYPE."
