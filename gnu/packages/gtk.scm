@@ -128,3 +128,28 @@ affine transformation (scale, rotation, shear, etc.)")
    (license (license:x11-style "file://COPYING"
                        "See 'COPYING' in the distribution."))
    (home-page "http://www.freedesktop.org/wiki/Software/HarfBuzz/")))
+
+(define-public pango
+  (package
+   (name "pango")
+   (version "1.34.1")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/pango/1.34/pango-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "0k7662qix7zzh7mf6ikdj594n8jpbfm25z8swz64zbm86kgk1shs"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("cairo" ,cairo)
+      ("harfbuzz" ,harfbuzz)
+      ("pkg-config" ,pkg-config)
+      ("zlib" ,zlib)))
+   (synopsis "GNOME text and font handling library")
+   (description
+    "Pango is the core text and font handling library used in GNOME
+applications. It has extensive support for the different writing systems
+used throughout the world.")
+   (license license:lgpl2.0+)
+   (home-page "https://developer.gnome.org/pango/")))
