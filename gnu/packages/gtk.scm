@@ -26,6 +26,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
@@ -103,3 +104,27 @@ antialiased text rendering. All drawing operations can be transformed by any
 affine transformation (scale, rotation, shear, etc.)")
    (license license:lgpl2.1) ; or Mozilla Public License 1.1
    (home-page "http://cairographics.org/")))
+
+(define-public harfbuzz
+  (package
+   (name "harfbuzz")
+   (version "0.9.18")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://www.freedesktop.org/software/harfbuzz/release/harfbuzz-"
+                                version ".tar.bz2"))
+            (sha256
+             (base32
+              "026rlwspf1zn5akds9fwibpqpn47kmlnmqm5fi0cp4k4dnygpw7y"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("cairo" ,cairo)
+      ("icu4c" ,icu4c)
+      ("pkg-config" ,pkg-config)
+      ("python" ,python)))
+   (synopsis "opentype text shaping engine")
+   (description
+    "HarfBuzz is an OpenType text shaping engine.")
+   (license (license:x11-style "file://COPYING"
+                       "See 'COPYING' in the distribution."))
+   (home-page "http://www.freedesktop.org/wiki/Software/HarfBuzz/")))
