@@ -45,6 +45,13 @@ See commits 0332386 and 101d9f3 for details.
 
 *** Binary substituter gracefully handles lack of network connectivity
 
+*** Daemon properly handles rebuilds of multiple-output derivations
+
+Previously it would fail when rebuilding a multiple-output derivation when
+some (but not all) of its outputs were already present.  See
+http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00038.html and
+https://github.com/NixOS/nix/issues/122 .
+
 * Changes in 0.2 (since 0.1)
 
 ** Package management
