@@ -54,7 +54,7 @@ ignored."
                               search-paths native-search-paths)
   "Like `trivial-build', but in a cross-compilation context."
   (build-expression->derivation store name system
-                                `(begin (define %target ,target) ,builder)
+                                `(let ((%target ,target)) ,builder)
                                 (append native-inputs inputs)
                                 #:outputs outputs
                                 #:modules modules
