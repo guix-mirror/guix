@@ -27,7 +27,9 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages libjpeg)
   #:use-module (gnu packages libpng)
+  #:use-module (gnu packages libtiff)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -153,3 +155,28 @@ applications. It has extensive support for the different writing systems
 used throughout the world.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/pango/")))
+
+(define-public gdk-pixbuf
+  (package
+   (name "gdk-pixbuf")
+   (version "2.28.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/gdk-pixbuf/2.28/gdk-pixbuf-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "05s6ksvy1yan6h6zny9n3bmvygcnzma6ljl6i0z9cci2xg116c8q"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("glib" ,glib)
+      ("libjpeg" ,libjpeg)
+      ("libpng" ,libpng)
+      ("libtiff" ,libtiff)
+      ("pkg-config" ,pkg-config)))
+   (synopsis "GNOME image loading and manipulation library")
+   (description
+    "GdkPixbuf is a library for image loading and manipulation developed
+in the GNOME project.")
+   (license license:lgpl2.0+)
+   (home-page "https://developer.gnome.org/gdk-pixbuf/")))
