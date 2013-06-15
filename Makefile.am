@@ -188,7 +188,6 @@ MODULES =					\
   gnu/packages/smalltalk.scm			\
   gnu/packages/sqlite.scm			\
   gnu/packages/ssh.scm				\
-  gnu/packages/subversion.scm			\
   gnu/packages/system.scm			\
   gnu/packages/tcl.scm				\
   gnu/packages/tcsh.scm				\
