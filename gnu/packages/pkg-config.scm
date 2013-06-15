@@ -24,7 +24,10 @@
   #:use-module (guix build-system trivial)
   #:export (pkg-config))
 
-(define %pkg-config
+;; This is the "primitive" pkg-config package.  People should use `pkg-config'
+;; (see below) rather than `%pkg-config', but we export `%pkg-config' so that
+;; `fold-packages' finds it.
+(define-public %pkg-config
   (package
    (name "pkg-config")
    (version "0.27.1")
