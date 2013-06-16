@@ -37,7 +37,10 @@
             (sha256 (base32
                      "0m3vz3gig7s63zanq5b1dgb5ph12qm0cylw4g4fbxlsq3f74hn8l"))))
    (build-system gnu-build-system)
-   (inputs `(("zlib" ,zlib)))
+
+   ;; libpng.la says "-lz", so propagate it.
+   (propagated-inputs `(("zlib" ,zlib)))
+
    (synopsis "Libpng, a library for handling PNG files")
    (description
     "Libpng is the official PNG (Portable Network Graphics) reference
