@@ -115,6 +115,7 @@ MODULES =					\
   gnu/packages/gnutls.scm			\
   gnu/packages/gperf.scm			\
   gnu/packages/gprolog.scm			\
+  gnu/packages/graphviz.scm			\
   gnu/packages/groff.scm			\
   gnu/packages/grub.scm				\
   gnu/packages/grue-hunter.scm			\
