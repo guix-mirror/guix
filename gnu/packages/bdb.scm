@@ -45,7 +45,11 @@
             (system* "./dist/configure"
                      (string-append "--prefix=" out)
                      (string-append "CONFIG_SHELL=" (which "bash"))
-                     (string-append "SHELL=" (which "bash"))))))
+                     (string-append "SHELL=" (which "bash"))
+
+                     ;; The compatibility mode is needed by some packages,
+                     ;; notably iproute2.
+                     "--enable-compat185"))))
        %standard-phases)))
    (synopsis "db, the Berkeley database")
    (description
