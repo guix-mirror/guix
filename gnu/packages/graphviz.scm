@@ -80,7 +80,7 @@
     (home-page "http://www.graphviz.org/")
     (synopsis "Graph visualization software")
     (description
-     "Graphviz is graph visualization tool suite.  Graph visualization is a
+     "Graphviz is a graph visualization tool suite.  Graph visualization is a
 way of representing structural information as diagrams of abstract graphs and
 networks.  It has important applications in networking, bioinformatics,
 software engineering, database and web design, machine learning, and in visual
