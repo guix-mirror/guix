@@ -117,7 +117,38 @@ pairs."
           (else
            (error "unmatched line" line)))))
 
-(define* (fetch uri #:key (buffered? #t))
+(define %fetch-timeout
+  ;; Number of seconds after which networking is considered "slow".
+  3)
+
+(define-syntax-rule (with-timeout duration handler body ...)
+  "Run BODY; when DURATION seconds have expired, call HANDLER, and run BODY
+again."
+  (begin
+    (sigaction SIGALRM
+      (lambda (signum)
+        (sigaction SIGALRM SIG_DFL)
+        handler))
+    (alarm duration)
+    (call-with-values
+        (lambda ()
+          (let try ()
+            (catch 'system-error
+              (lambda ()
+                body ...)
+              (lambda args
+                ;; The SIGALRM triggers EINTR.  When that happens, try again.
+                ;; Note: SA_RESTART cannot be used because of
+                ;; <http://bugs.gnu.org/14640>.
+                (if (= EINTR (system-error-errno args))
+                    (try)
+                    (apply throw args))))))
+      (lambda result
+        (alarm 0)
+        (sigaction SIGALRM SIG_DFL)
+        (apply values result)))))
+
+(define* (fetch uri #:key (buffered? #t) (timeout? #t))
   "Return a binary input port to URI and the number of bytes it's expected to
 provide."
   (case (uri-scheme uri)
@@ -127,7 +158,21 @@ provide."
          (setvbuf port _IONBF))
        (values port (stat:size (stat port)))))
     ((http)
-     (http-fetch uri #:text? #f #:buffered? buffered?))))
+     ;; On Guile 2.0.5, `http-fetch' fetches the whole thing at once.  So
+     ;; honor TIMEOUT? to disable the timeout when fetching a nar.
+     ;;
+     ;; Test this with:
+     ;;   sudo tc qdisc add dev eth0 root netem delay 1500ms
+     ;; and then cancel with:
+     ;;   sudo tc qdisc del dev eth0 root
+     (with-timeout (if (or timeout? (version>? (version) "2.0.5"))
+                       %fetch-timeout
+                       0)
+       (begin
+         (warning (_ "while fetching ~a: server is unresponsive~%")
+                  (uri->string uri))
+         (warning (_ "try `--no-substitutes' if the problem persists~%")))
+       (http-fetch uri #:text? #f #:buffered? buffered?)))))
 
 (define-record-type <cache>
   (%make-cache url store-directory wants-mass-query?)
@@ -443,7 +488,7 @@ indefinitely."
         (format #t "~a~%" (narinfo-hash narinfo))
 
         (let*-values (((raw download-size)
-                       (fetch uri #:buffered? #f))
+                       (fetch uri #:buffered? #f #:timeout? #f))
                       ((input pids)
                        (decompressed-port (narinfo-compression narinfo)
                                           raw)))
@@ -464,6 +509,7 @@ indefinitely."
 
 ;;; Local Variable:
 ;;; eval: (put 'with-atomic-file-output 'scheme-indent-function 1)
+;;; eval: (put 'with-timeout 'scheme-indent-function 1)
 ;;; End:
 
 ;;; substitute-binary.scm ends here
