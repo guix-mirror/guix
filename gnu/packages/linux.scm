@@ -455,3 +455,28 @@ trace of all the system calls made by a another process/program.")
      "The Advanced Linux Sound Architecture (ALSA) provides audio and
 MIDI functionality to the Linux-based operating system.")
     (license lgpl2.1+)))
+
+(define-public iptables
+  (package
+    (name "iptables")
+    (version "1.4.16.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://www.netfilter.org/projects/iptables/files/iptables-"
+                   version ".tar.bz2"))
+             (sha256
+              (base32
+               "0vkg5lzkn4l3i1sm6v3x96zzvnv9g7mi0qgj6279ld383mzcws24"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f))                    ; no test suite
+    (home-page "http://www.netfilter.org/projects/iptables/index.html")
+    (synopsis "Program to configure the Linux IP packet filtering rules")
+    (description
+     "iptables is the userspace command line program used to configure the
+Linux 2.4.x and later IPv4 packet filtering ruleset.  It is targeted towards
+system administrators.  Since Network Address Translation is also configured
+from the packet filter ruleset, iptables is used for this, too.  The iptables
+package also includes ip6tables.  ip6tables is used for configuring the IPv6
+packet filter.")
+    (license gpl2+)))
