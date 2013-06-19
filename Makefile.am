@@ -126,6 +126,7 @@ MODULES =					\
   gnu/packages/hugs.scm				\
   gnu/packages/icu4c.scm			\
   gnu/packages/idutils.scm			\
+  gnu/packages/imagemagick.scm			\
   gnu/packages/indent.scm			\
   gnu/packages/irssi.scm			\
   gnu/packages/ld-wrapper.scm			\
