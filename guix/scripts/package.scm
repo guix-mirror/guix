@@ -849,6 +849,8 @@ more information.~%"))
                               (begin
                                 (switch-symlinks name prof)
                                 (switch-symlinks profile name)
+                                (format #t (_ "~a packages in profile~%")
+                                        (length packages))
                                 (display-search-paths packages
                                                       profile))))))))))
 
