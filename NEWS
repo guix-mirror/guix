@@ -32,6 +32,10 @@ See the manual for details.
 This option instructs to fall back to local builds when the substituter fails
 to download a substitute.
 
+*** New ‘--requisites’ option for “guix gc”
+
+See the manual for details.
+
 ** Bugs fixed
 *** “guix --help” now works when using Guile 2.0.5
 *** Binary substituter multi-threading and pipe issues fixed
@@ -40,6 +44,13 @@ These could lead to random substituter crashes while substituting a binary.
 See commits 0332386 and 101d9f3 for details.
 
 *** Binary substituter gracefully handles lack of network connectivity
+
+*** Daemon properly handles rebuilds of multiple-output derivations
+
+Previously it would fail when rebuilding a multiple-output derivation when
+some (but not all) of its outputs were already present.  See
+http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00038.html and
+https://github.com/NixOS/nix/issues/122 .
 
 * Changes in 0.2 (since 0.1)
 

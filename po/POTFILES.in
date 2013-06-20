@@ -10,6 +10,7 @@ guix/scripts/package.scm
 guix/scripts/gc.scm
 guix/scripts/hash.scm
 guix/scripts/pull.scm
+guix/scripts/substitute-binary.scm
 guix/gnu-maintenance.scm
 guix/ui.scm
 guix/web.scm

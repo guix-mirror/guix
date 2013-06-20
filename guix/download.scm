@@ -148,7 +148,14 @@
        "ftp://ftp.osuosl.org/pub/CPAN/"
        "ftp://ftp.nara.wide.ad.jp/pub/CPAN/"
        "http://mirrors.163.com/cpan/"
-       "ftp://cpan.mirror.ac.za/"))))
+       "ftp://cpan.mirror.ac.za/")
+      (imagemagick       ; from http://www.imagemagick.org/script/download.php
+       "http://mirror.checkdomain.de/imagemagick/"
+       "ftp://gd.tuwien.ac.at/pub/graphics/ImageMagick/"
+       "http://www.imagemagick.org/download"
+       "ftp://mirror.searchdaimon.com/ImageMagick"
+       "http://mirror.is.co.za/pub/imagemagick/"
+       "ftp://mirror.aarnet.edu.au/pub/imagemagick/"))))
 
 (define (gnutls-derivation store system)
   "Return the GnuTLS derivation for SYSTEM."

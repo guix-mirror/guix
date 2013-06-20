@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages version-control)
-  #:use-module ((guix licenses) #:select (gpl1+ gpl2+ gpl3+))
+  #:use-module ((guix licenses) #:select (asl2.0 gpl1+ gpl2+ gpl3+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -25,7 +26,11 @@
   #:use-module (guix build utils)
   #:use-module ((gnu packages gettext)
                 #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages libapr)
   #:use-module (gnu packages nano)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages compression))
 
 (define-public bazaar
@@ -55,6 +60,35 @@ central version control and distributed version control.  Developers can
 organize their workspace in whichever way they want.  It is possible to work
 from a command line or use a GUI application.")
     (license gpl2+)))
+
+(define-public subversion
+  (package
+    (name "subversion")
+    (version "1.7.8")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://archive.apache.org/dist/subversion/subversion-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "11inl9n1riahfnbk1fax0dysm2swakzhzhpmm2zvga6fikcx90zw"))))
+    (build-system gnu-build-system)
+    (inputs
+      `(("libapr" ,libapr)
+        ("libaprutil" ,libaprutil)
+        ("perl" ,perl)
+        ("python" ,python)
+        ("sqlite" ,sqlite)
+        ("zlib" ,zlib)))
+    (home-page "http://subversion.apache.org/")
+    (synopsis "Subversion, a revision control system")
+    (description
+     "Subversion exists to be universally recognized and adopted as an
+open-source, centralized version control system characterized by its
+reliability as a safe haven for valuable data; the simplicity of its model and
+usage; and its ability to support the needs of a wide variety of users and
+projects, from individuals to large-scale enterprise operations.")
+    (license asl2.0)))
 
 (define-public rcs
   (package

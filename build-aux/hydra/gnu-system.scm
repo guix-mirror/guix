@@ -31,7 +31,7 @@
 
   (and=> (assoc-ref (current-source-location) 'filename)
          (lambda (file)
-           (let ((dir (dirname file)))
+           (let ((dir (string-append (dirname file) "/../..")))
              (format (current-error-port) "prepending ~s to the load path~%"
                      dir)
              (set! %load-path (cons dir %load-path))))))

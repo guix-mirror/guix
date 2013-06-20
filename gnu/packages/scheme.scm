@@ -31,6 +31,10 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages libphidget)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages libffi)
+  #:use-module (gnu packages libjpeg)
+  #:use-module ((gnu packages gtk) #:select (cairo pango))
   #:use-module (ice-9 match))
 
 (define-public mit-scheme
@@ -319,3 +323,72 @@ implementation techniques and as an expository tool.")
 
     ;; Most files are BSD-3; see COPYING for the few exceptions.
     (license bsd-3)))
+
+(define-public racket
+  (package
+    (name "racket")
+    (version "5.3.4")
+    (source (origin
+             (method url-fetch)
+             (uri (list (string-append "http://download.racket-lang.org/installers/"
+                                       version "/racket/racket-" version
+                                       "-src-unix.tgz")
+                        (string-append
+                         "http://mirror.informatik.uni-tuebingen.de/mirror/racket/"
+                         version "/racket/racket-" version "-src-unix.tgz")))
+             (sha256
+              ;; XXX: Used to be 1xhnx3yd74zrvn6sfcqmk57kxj51cwvm660dwiaxr1qxnm5lq0v7.
+              (base32 "0yrdmpdvzf092869y6zjjjxl6j2kypgiv7qrfkv7lj8w01pbh7sd"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (let* ((gui-libs
+               (lambda (inputs)
+                 ;; FIXME: Add GTK+ and GDK for DrRacket.
+                 (let ((glib     (string-append (assoc-ref inputs "glib") "/lib"))
+                       (cairo    (string-append (assoc-ref inputs "cairo") "/lib"))
+                       (pango    (string-append (assoc-ref inputs "pango") "/lib"))
+                       (libjpeg  (string-append (assoc-ref inputs "libjpeg") "/lib")))
+                   (list glib cairo pango libjpeg)))))
+         (alist-cons-before
+          'configure 'pre-configure
+          (lambda* (#:key inputs #:allow-other-keys)
+            (chdir "src")
+
+            ;; The GUI libs are dynamically opened through the FFI, so they
+            ;; must be in the loader's search path.
+            (setenv "LD_LIBRARY_PATH" (string-join (gui-libs inputs) ":")))
+          (alist-cons-after
+           'unpack 'patch-/bin/sh
+           (lambda _
+             (substitute* "collects/racket/system.rkt"
+               (("/bin/sh") (which "sh"))))
+           (alist-cons-after
+            'install 'wrap-programs
+            (lambda* (#:key inputs outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (define (wrap prog)
+                  (wrap-program prog
+                                `("LD_LIBRARY_PATH" ":" prefix
+                                  ,(gui-libs inputs))))
+
+                (with-directory-excursion (string-append out "/bin")
+                  (for-each wrap
+                            (list "gracket" "drracket" "slideshow" "mred"))
+                  #t)))
+            %standard-phases))))
+       #:tests? #f                                ; XXX: how to run them?
+       ))
+    (inputs `(("libffi" ,libffi)
+              ("glib" ,glib)                      ; for DrRacket
+              ("cairo" ,cairo)
+              ("pango" ,pango)
+              ("libjpeg" ,libjpeg-8)))
+    (home-page "http://racket-lang.org")
+    (synopsis "Implementation of Scheme and related languages")
+    (description
+     "Racket is an implementation of the Scheme programming language (R5RS and
+R6RS) and related languages, such as Typed Racket.  It features a compiler and
+a virtual machine with just-in-time native compilation, as well as a large set
+of libraries.")
+    (license lgpl2.0+)))

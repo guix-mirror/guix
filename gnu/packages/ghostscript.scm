@@ -214,3 +214,23 @@ Ghostscript. It currently includes the 35 standard PostScript fonts.")
    (license license:gpl2)
    (home-page "http://sourceforge.net/projects/gs-fonts/")))
 
+(define-public libspectre
+  (package
+   (name "libspectre")
+   (version "0.2.7")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "http://libspectre.freedesktop.org/releases/libspectre-"
+                                version ".tar.gz"))
+            (sha256 (base32
+                     "1v63lqc6bhhxwkpa43qmz8phqs8ci4dhzizyy16d3vkb20m846z8"))))
+   (build-system gnu-build-system)
+   (inputs `(("ghostscript" ,ghostscript)
+             ("pkg-config" ,pkg-config)))
+   (synopsis "postscript rendering library")
+   (description
+    "libspectre is a small library for rendering Postscript documents.
+It provides a convenient easy to use API for handling and rendering
+Postscript documents.")
+   (license license:gpl2+)
+   (home-page "http://www.freedesktop.org/wiki/Software/libspectre")))

@@ -846,9 +846,13 @@ more information.~%"))
                                                   (current-error-port)
                                                   (%make-void-port "w"))))
                                 (build-derivations (%store) (list prof-drv)))
-                              (begin
+                              (let ((count (length packages)))
                                 (switch-symlinks name prof)
                                 (switch-symlinks profile name)
+                                (format #t (N_ "~a package in profile~%"
+                                               "~a packages in profile~%"
+                                               count)
+                                        count)
                                 (display-search-paths packages
                                                       profile))))))))))
 
