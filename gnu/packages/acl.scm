@@ -46,7 +46,7 @@
         (lambda _
           (patch-makefile-SHELL "include/buildmacros"))
         ,(if (%current-target-system)
-             '%standard-cross-phases
+             '%standard-phases
              '(alist-replace 'check
                              (lambda _
                                (system* "make" "tests" "-C" "test")

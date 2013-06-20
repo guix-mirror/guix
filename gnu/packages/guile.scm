@@ -158,9 +158,7 @@ extensible.  It supports many SRFIs.")
                     (substitute* "module/ice-9/popen.scm"
                       (("/bin/sh")
                        (string-append bash "/bin/bash")))))
-                ,(if (%current-target-system)
-                     '%standard-cross-phases
-                     '%standard-phases))
+                %standard-phases)
 
       ,@(if (%current-target-system)
             '(#:configure-flags '("CC_FOR_BUILD=gcc"))

@@ -48,15 +48,28 @@
                     #f
                     dir))
 
-(define* (set-paths #:key inputs (search-paths '())
+(define* (set-paths #:key target inputs native-inputs
+                    (search-paths '()) (native-search-paths '())
                     #:allow-other-keys)
   (define input-directories
     (match inputs
       (((_ . dir) ...)
        dir)))
 
+  (define native-input-directories
+    (match native-inputs
+      (((_ . dir) ...)
+       dir)
+      (#f                                         ; not cross compiling
+       '())))
+
+  ;; When cross building, $PATH must refer only to native (host) inputs since
+  ;; target inputs are not executable.
   (set-path-environment-variable "PATH" '("bin" "sbin")
-                                 input-directories)
+                                 (append native-input-directories
+                                         (if target
+                                             '()
+                                             input-directories)))
 
   (for-each (match-lambda
              ((env-var (directories ...) separator)
@@ -64,6 +77,15 @@
                                              input-directories
                                              #:separator separator)))
             search-paths)
+
+  (when native-search-paths
+    ;; Search paths for native inputs, when cross building.
+    (for-each (match-lambda
+               ((env-var (directories ...) separator)
+                (set-path-environment-variable env-var directories
+                                               native-input-directories
+                                               #:separator separator)))
+              native-search-paths))
 
   ;; Dump the environment variables as a shell script, for handy debugging.
   (system "export > environment-variables"))
@@ -102,7 +124,8 @@ makefiles."
                          (append patch-flags (list "--input" p)))))
          patches))
 
-(define* (configure #:key inputs outputs (configure-flags '()) out-of-source?
+(define* (configure #:key target native-inputs inputs outputs
+                    (configure-flags '()) out-of-source?
                     #:allow-other-keys)
   (define (package-name)
     (let* ((out  (assoc-ref outputs "out"))
@@ -119,7 +142,7 @@ makefiles."
          (libdir     (assoc-ref outputs "lib"))
          (includedir (assoc-ref outputs "include"))
          (docdir     (assoc-ref outputs "doc"))
-         (bash       (or (and=> (assoc-ref inputs "bash")
+         (bash       (or (and=> (assoc-ref (or native-inputs inputs) "bash")
                                 (cut string-append <> "/bin/bash"))
                          "/bin/sh"))
          (flags      `(,(string-append "CONFIG_SHELL=" bash)
@@ -147,6 +170,9 @@ makefiles."
                        ,@(if docdir
                              (list (string-append "--docdir=" docdir
                                                   "/doc/" (package-name)))
+                             '())
+                       ,@(if target               ; cross building
+                             (list (string-append "--host=" target))
                              '())
                        ,@configure-flags))
          (abs-srcdir (getcwd))
@@ -230,17 +256,20 @@ makefiles."
                 bindirs)))
   #t)
 
-(define* (strip #:key outputs (strip-binaries? #t)
+(define* (strip #:key target outputs (strip-binaries? #t)
+                (strip-command (if target
+                                   (string-append target "-strip")
+                                   "strip"))
                 (strip-flags '("--strip-debug"))
                 (strip-directories '("lib" "lib64" "libexec"
                                      "bin" "sbin"))
                 #:allow-other-keys)
   (define (strip-dir dir)
-    (format #t "stripping binaries in ~s with flags ~s~%"
-            dir strip-flags)
+    (format #t "stripping binaries in ~s with ~s and flags ~s~%"
+            dir strip-command strip-flags)
     (file-system-fold (const #t)
                       (lambda (path stat result)  ; leaf
-                        (zero? (apply system* "strip"
+                        (zero? (apply system* strip-command
                                       (append strip-flags (list path)))))
                       (const #t)                  ; down
                       (const #t)                  ; up

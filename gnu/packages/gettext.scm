@@ -39,7 +39,7 @@
     (arguments
      `(#:patches (list (assoc-ref %build-inputs "patch/gets"))
        #:phases ,(if (%current-target-system)
-                     '%standard-cross-phases
+                     '%standard-phases
                      '(alist-cons-before
                        'check 'patch-tests
                        (lambda* (#:key inputs #:allow-other-keys)

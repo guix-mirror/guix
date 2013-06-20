@@ -80,18 +80,12 @@
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
-                  (srfi srfi-1)
-                  ,@(if (%current-target-system)
-                        '((guix build gnu-cross-build))
-                        '()))
+                  (srfi srfi-1))
        #:phases (alist-replace
                  'build ,(build-phase (%current-system))
                  (alist-replace
                   'install ,install-phase
-                  (alist-delete 'configure
-                                ,(if (%current-target-system)
-                                     '%standard-cross-phases
-                                     '%standard-phases))))
+                  (alist-delete 'configure %standard-phases)))
        #:tests? #f))
     (synopsis "GNU Linux-Libre kernel headers")
     (description "Headers of the Linux-Libre kernel.")

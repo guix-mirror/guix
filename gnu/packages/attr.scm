@@ -55,7 +55,7 @@
 
          ;; When building natively, adjust the test cases.
          ,(if (%current-target-system)
-              '%standard-cross-phases
+              '%standard-phases
               '(alist-replace 'check
                               (lambda _
                                 ;; Use the right shell.

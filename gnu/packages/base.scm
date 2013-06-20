@@ -293,9 +293,7 @@ The tools supplied with this package are:
                     (substitute* (find-files "tests" "\\.sh$")
                       (("#!/bin/sh")
                        (format #f "#!~a/bin/bash" bash)))))
-                ,(if (%current-target-system)
-                     '%standard-cross-phases
-                     '%standard-phases))))
+                %standard-phases)))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "The GNU Core Utilities are the basic file, shell and text manipulation

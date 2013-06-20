@@ -50,9 +50,7 @@
                     (substitute* "io.c"
                       (("/bin/sh")
                        (string-append bash "/bin/bash")))))
-                ,(if (%current-target-system)
-                     '%standard-cross-phases
-                     '%standard-phases))))
+                %standard-phases)))
    (inputs `(("libsigsegv" ,libsigsegv)
 
              ;; TODO: On next core-updates, make Bash input unconditional.

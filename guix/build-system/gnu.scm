@@ -340,14 +340,12 @@ inputs."
                           (strip-flags ''("--strip-debug"))
                           (strip-directories ''("lib" "lib64" "libexec"
                                                 "bin" "sbin"))
-                          (phases '%standard-cross-phases)
+                          (phases '%standard-phases)
                           (system (%current-system))
-                          (implicit-inputs? #t)    ; useful when bootstrapping
+                          (implicit-inputs? #t)
                           (imported-modules '((guix build gnu-build-system)
-                                              (guix build gnu-cross-build)
                                               (guix build utils)))
                           (modules '((guix build gnu-build-system)
-                                     (guix build gnu-cross-build)
                                      (guix build utils))))
   "Cross-build NAME for TARGET, where TARGET is a GNU triplet.  INPUTS are
 cross-built inputs, and NATIVE-INPUTS are inputs that run on the build
