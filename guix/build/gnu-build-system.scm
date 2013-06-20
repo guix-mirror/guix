@@ -87,8 +87,7 @@
                                                #:separator separator)))
               native-search-paths))
 
-  ;; Dump the environment variables as a shell script, for handy debugging.
-  (system "export > environment-variables"))
+  #t)
 
 (define* (unpack #:key source #:allow-other-keys)
   (and (zero? (system* "tar" "xvf" source))
@@ -316,10 +315,13 @@ in order.  Return #t if all the PHASES succeeded, #f otherwise."
   (every (match-lambda
           ((name . proc)
            (let ((start (gettimeofday)))
-            (format #t "starting phase `~a'~%" name)
-            (let ((result (apply proc args))
-                  (end    (gettimeofday)))
-              (format #t "phase `~a' ~:[failed~;succeeded~] after ~a seconds~%"
-                      name result (- (car end) (car start)))
-              result))))
+             (format #t "starting phase `~a'~%" name)
+             (let ((result (apply proc args))
+                   (end    (gettimeofday)))
+               (format #t "phase `~a' ~:[failed~;succeeded~] after ~a seconds~%"
+                       name result (- (car end) (car start)))
+
+               ;; Dump the environment variables as a shell script, for handy debugging.
+               (system "export > $NIX_BUILD_TOP/environment-variables")
+               result))))
          phases))
