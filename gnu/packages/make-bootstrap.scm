@@ -404,13 +404,7 @@
   ;; A statically-linked Guile that is relocatable--i.e., it can search
   ;; .scm and .go files relative to its installation directory, rather
   ;; than in hard-coded configure-time paths.
-  (let* ((libgc (package (inherit libgc)
-                  (arguments
-                   ;; Make it so that we don't rely on /proc.  This is
-                   ;; especially useful in an initrd run before /proc is
-                   ;; mounted.
-                   '(#:configure-flags '("CPPFLAGS=-DUSE_LIBC_PRIVATES")))))
-         (guile (package (inherit guile-2.0)
+  (let* ((guile (package (inherit guile-2.0)
                   (name (string-append (package-name guile-2.0) "-static"))
                   (inputs
                    `(("patch/relocatable"
