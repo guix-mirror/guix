@@ -127,7 +127,7 @@ EXTRA_DIST =					\
   ROADMAP					\
   TODO						\
   .dir-locals.el				\
-  hydra.scm					\
+  build-aux/hydra/gnu-system.scm		\
   build-aux/download.scm			\
   build-aux/sync-synopses.scm			\
   srfi/srfi-64.scm				\
