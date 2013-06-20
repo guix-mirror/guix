@@ -24,12 +24,15 @@
   #:use-module (guix records)
   #:use-module (guix nar)
   #:use-module ((guix build utils) #:select (mkdir-p))
+  #:use-module ((guix build download)
+                #:select (progress-proc uri-abbreviation))
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 threads)
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
+  #:use-module (ice-9 binary-ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
@@ -398,13 +401,32 @@ indefinitely."
       (cute write (time-second now) <>))))
 
 (define (decompressed-port compression input)
-  "Return an input port where INPUT is decompressed according to COMPRESSION."
+  "Return an input port where INPUT is decompressed according to COMPRESSION,
+along with a list of PIDs to wait for."
   (match compression
     ("none"  (values input '()))
     ("bzip2" (filtered-port `(,%bzip2 "-dc") input))
     ("xz"    (filtered-port `(,%xz "-dc") input))
     ("gzip"  (filtered-port `(,%gzip "-dc") input))
     (else    (error "unsupported compression scheme" compression))))
+
+(define (progress-report-port report-progress port)
+  "Return a port that calls REPORT-PROGRESS every time something is read from
+PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
+`progress-proc'."
+  (define total 0)
+  (define (read! bv start count)
+    (let ((n (match (get-bytevector-n! port bv start count)
+               ((? eof-object?) 0)
+               (x x))))
+      (set! total (+ total n))
+      (report-progress total (const n))
+      ;; XXX: We're not in control, so we always return anyway.
+      n))
+
+  (make-custom-binary-input-port "progress-port-proc"
+                                 read! #f #f
+                                 (cut close-port port)))
 
 (define %cache-url
   (or (getenv "GUIX_BINARY_SUBSTITUTE_URL")
@@ -487,19 +509,25 @@ indefinitely."
         ;; Tell the daemon what the expected hash of the Nar itself is.
         (format #t "~a~%" (narinfo-hash narinfo))
 
+        (format (current-error-port) "downloading `~a' from `~a'...~%"
+                store-path (uri->string uri))
         (let*-values (((raw download-size)
+                       ;; Note that Hydra currently generates Nars on the fly
+                       ;; and doesn't specify a Content-Length, so
+                       ;; DOWNLOAD-SIZE is #f in practice.
                        (fetch uri #:buffered? #f #:timeout? #f))
+                      ((progress)
+                       (let* ((comp     (narinfo-compression narinfo))
+                              (dl-size  (or download-size
+                                            (and (equal? comp "none")
+                                                 (narinfo-size narinfo))))
+                              (progress (progress-proc (uri-abbreviation uri)
+                                                       dl-size
+                                                       (current-error-port))))
+                         (progress-report-port progress raw)))
                       ((input pids)
                        (decompressed-port (narinfo-compression narinfo)
-                                          raw)))
-          ;; Note that Hydra currently generates Nars on the fly and doesn't
-          ;; specify a Content-Length, so DOWNLOAD-SIZE is #f in practice.
-          (format (current-error-port)
-                  (_ "downloading `~a' from `~a'~:[~*~; (~,1f KiB)~]...~%")
-                  store-path (uri->string uri)
-                  download-size
-                  (and=> download-size (cut / <> 1024.0)))
-
+                                          progress)))
           ;; Unpack the Nar at INPUT into DESTINATION.
           (restore-file input destination)
           (every (compose zero? cdr waitpid) pids))))
