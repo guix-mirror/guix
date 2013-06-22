@@ -66,14 +66,14 @@ in compression.")
 (define-public gzip
   (package
    (name "gzip")
-   (version "1.5")
+   (version "1.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gzip/gzip-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "18rm80kar7n016g8bsyy1a3zk50i2826xdgs874yh64rzj7nxmdm"))))
+              "0zlgdm4v3dndrbiz7b67mbbj25dpwqbmbzjiycssvrfrcfvq7swp"))))
    (build-system gnu-build-system)
    (synopsis "General file (de)compression (using lzw)")
    (arguments
