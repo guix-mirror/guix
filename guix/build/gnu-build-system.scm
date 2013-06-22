@@ -214,8 +214,8 @@ makefiles."
                         '())
                   ,@make-flags))))
 
-(define* (check #:key (make-flags '()) (tests? #t) (test-target "check")
-                (parallel-tests? #t)
+(define* (check #:key target (make-flags '()) (tests? (not target))
+                (test-target "check") (parallel-tests? #t)
                 #:allow-other-keys)
   (if tests?
       (zero? (apply system* "make" test-target
