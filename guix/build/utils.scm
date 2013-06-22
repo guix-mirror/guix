@@ -248,9 +248,17 @@ SEPARATOR-separated path accordingly.  Example:
 "
   (let* ((path  (search-path-as-list sub-directories input-dirs))
          (value (list->search-path-as-string path separator)))
-   (setenv env-var value)
-   (format #t "environment variable `~a' set to `~a'~%"
-           env-var value)))
+    (if (string-null? value)
+        (begin
+          ;; Never set ENV-VAR to an empty string because often, the empty
+          ;; string is equivalent to ".".  This is the case for
+          ;; GUILE_LOAD_PATH in Guile 2.0, for instance.
+          (unsetenv env-var)
+          (format #t "environment variable `~a' unset~%" env-var))
+        (begin
+          (setenv env-var value)
+          (format #t "environment variable `~a' set to `~a'~%"
+                  env-var value)))))
 
 (define (which program)
   "Return the complete file name for PROGRAM as found in $PATH, or #f if
