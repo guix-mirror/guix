@@ -157,16 +157,15 @@ used in the GNU system including the GNU/Linux variant.")
      (home-page "http://gcc.gnu.org/"))))
 
 (define-public gcc-4.8
-  ;; FIXME: Move to gcc.scm when Binutils is updated.
   (package (inherit gcc-4.7)
-    (version "4.8.0")
+    (version "4.8.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gcc/gcc-"
                                  version "/gcc-" version ".tar.bz2"))
              (sha256
               (base32
-               "0b6cp9d1sas3vq6dj3zrgd134p9b569fqhbixb9cl7mp698zwdxh"))))))
+               "04sqn0ds17ys8l6zn7vyyvjz1a7hsk4zb0381vlw9wnr7az48nsl"))))))
 
 (define-public isl
   (package
