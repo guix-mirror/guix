@@ -29,7 +29,7 @@
             (define out (assoc-ref outputs "out"))
             (mkdir (string-append out "/include"))
             (with-directory-excursion
-                (string-append out "/lib/libffi-3.0.9/include")
+                (string-append out "/lib/libffi-3.0.13/include")
               (for-each (lambda (h)
                           (format #t "moving `~a' to includedir~%" h)
                           (rename-file h (string-append out "/include/" h)))
@@ -38,7 +38,7 @@
                                    (not (member x '("." ".."))))))))))
    (package
     (name "libffi")
-    (version "3.0.9")
+    (version "3.0.13")
     (source (origin
              (method url-fetch)
              (uri
@@ -46,7 +46,7 @@
                              name "-" version ".tar.gz"))
              (sha256
               (base32
-               "0ln4jbpb6clcsdpb9niqk0frgx4k0xki96wiv067ig0q4cajb7aq"))))
+               "077ibkf84bvcd6rw1m6jb107br63i2pp301rkmsbgg6300adxp8x"))))
     (build-system gnu-build-system)
     (arguments `(#:modules ((guix build utils) (guix build gnu-build-system)
                             (ice-9 ftw) (srfi srfi-26))
