@@ -38,9 +38,6 @@
    (arguments
     `(#:parallel-tests? #f                ; test suite fails in parallel
 
-      ;; Work around test failure on Cygwin.
-      #:tests? ,(not (string=? (%current-system) "i686-cygwin"))
-
       #:phases (alist-cons-before
                 'configure 'set-shell-file-name
                 (lambda* (#:key inputs #:allow-other-keys)
@@ -48,7 +45,16 @@
                   (let ((bash (assoc-ref inputs "bash")))
                     (substitute* "io.c"
                       (("/bin/sh")
-                       (string-append bash "/bin/bash")))))
+                       (string-append bash "/bin/bash")))
+
+                    ;; When cross-compiling, remove dependencies on the
+                    ;; `check-for-shared-lib-support' target, which tries to
+                    ;; run the cross-built `gawk'.
+                    ,@(if (%current-target-system)
+                          '((substitute* "extension/Makefile.in"
+                              (("^.*: check-for-shared-lib-support" match)
+                               (string-append "### " match))))
+                          '())))
                 %standard-phases)))
    (inputs `(("libsigsegv" ,libsigsegv)
 
