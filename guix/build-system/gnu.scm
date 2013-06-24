@@ -332,7 +332,7 @@ inputs."
                           (make-flags ''())
                           (patches ''()) (patch-flags ''("--batch" "-p1"))
                           (out-of-source? #f)
-                          (tests? #t)
+                          (tests? #f)             ; nothing can be done
                           (test-target "check")
                           (parallel-build? #t) (parallel-tests? #t)
                           (patch-shebangs? #t)
