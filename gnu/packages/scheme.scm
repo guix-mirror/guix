@@ -128,7 +128,7 @@ development cycle.")
                "1771z43nmf9awjvlvrpjfhzcfxsbw2qipir8g9r47sygf2vn59yl"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:patches (list (assoc-ref %build-inputs "patch/shebangs"))
+     `(#:patches (list (assoc-ref %build-inputs "patch/shebangs"))
        #:test-target "test"
        #:phases (alist-replace
                  'configure
@@ -137,6 +137,17 @@ development cycle.")
                    (substitute* "configure"
                      (("^shell=.*$")
                       (string-append "shell=" (which "bash") "\n")))
+
+                   ;; Since libgc's pthread redirects are used, we end up
+                   ;; using libgc symbols, so we must link against it.
+                   ;; Reported on 2013-06-25.
+                   (substitute* "api/pthread/src/Makefile"
+                     (("^EXTRALIBS[[:blank:]]*=(.*)$" _ value)
+                      (string-append "EXTRALIBS = "
+                                     (string-trim-right value)
+                                     " -l$(GCLIB)_fth-$(RELEASE)"
+                                     " -Wl,-rpath=" (assoc-ref outputs "out")
+                                     "/lib/bigloo/" ,version)))
 
                    ;; Those variables are used by libgc's `configure'.
                    (setenv "SHELL" (which "bash"))
