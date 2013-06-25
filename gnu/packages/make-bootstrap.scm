@@ -24,6 +24,7 @@
   #:use-module (guix build-system gnu)
   #:use-module ((gnu packages) #:select (search-patch))
   #:use-module (gnu packages base)
+  #:use-module (gnu packages cross-base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gawk)
@@ -49,20 +50,20 @@
 ;;;
 ;;; Code:
 
-(define* (glibc-for-bootstrap #:optional (base glibc-final))
+(define* (glibc-for-bootstrap #:optional (base glibc))
   "Return a libc deriving from BASE whose `system' and `popen' functions looks
 for `sh' in $PATH, and without nscd, and with static NSS modules."
   (package (inherit base)
     (arguments
      (substitute-keyword-arguments (package-arguments base)
        ((#:patches patches)
-	`(cons (assoc-ref %build-inputs "patch/system") ,patches))
+        `(cons (assoc-ref %build-inputs "patch/system") ,patches))
        ((#:configure-flags flags)
-	;; Arrange so that getaddrinfo & co. do not contact the nscd,
-	;; and can use statically-linked NSS modules.
-	`(cons* "--disable-nscd" "--disable-build-nscd"
-		"--enable-static-nss"
-		,flags))))
+        ;; Arrange so that getaddrinfo & co. do not contact the nscd,
+        ;; and can use statically-linked NSS modules.
+        `(cons* "--disable-nscd" "--disable-build-nscd"
+                "--enable-static-nss"
+                ,flags))))
     (inputs
      `(("patch/system" ,(search-patch "glibc-bootstrap-system.patch"))
        ,@(package-inputs base)))))
@@ -71,17 +72,39 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   "Return a variant of P that uses the libc as defined by
 `glibc-for-bootstrap'."
 
-  (define inputs
-    `(("libc", (glibc-for-bootstrap))
-      ("gcc" ,(package-with-explicit-inputs
-               gcc-4.7
-	       `(("libc",(glibc-for-bootstrap))
-		 ,@(alist-delete "libc" %final-inputs))
-	       (current-source-location)))
-      ,@(fold alist-delete %final-inputs '("libc" "gcc"))))
+  (define (cross-bootstrap-libc)
+    (let ((target (%current-target-system)))
+      (glibc-for-bootstrap
+       ;; `cross-libc' already returns a cross libc, so clear
+       ;; %CURRENT-TARGET-SYSTEM.
+       (parameterize ((%current-target-system #f))
+         (cross-libc target)))))
+
+  ;; Standard inputs with the above libc and corresponding GCC.
+
+  (define (inputs)
+    (if (%current-target-system)                ; is this package cross built?
+        `(("cross-libc" ,(cross-bootstrap-libc)))
+        '()))
+
+  (define (native-inputs)
+    (if (%current-target-system)
+        (let ((target (%current-target-system)))
+          `(("cross-gcc"      ,(cross-gcc target
+                                          (cross-binutils target)
+                                          (cross-bootstrap-libc)))
+            ("cross-binutils" ,(cross-binutils target))
+            ,@%final-inputs))
+        `(("libc" ,(glibc-for-bootstrap))
+          ("gcc" ,(package (inherit gcc-4.7)
+                    (inputs
+                     `(("libc",(glibc-for-bootstrap))
+                       ,@(package-inputs gcc-4.7)))))
+          ,@(fold alist-delete %final-inputs '("libc" "gcc")))))
 
   (package-with-explicit-inputs p inputs
-				(current-source-location)))
+                                (current-source-location)
+                                #:native-inputs native-inputs))
 
 (define %bash-static
   (static-package bash-light))
@@ -140,9 +163,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                             (substitute* "configure"
                               (("-export-dynamic") "")))
                           ,phases)))))
-                (inputs `(("patch/sh" ,(search-patch "gawk-shell.patch"))))))
-	(finalize (compose static-package
-			   package-with-relocatable-glibc)))
+                (inputs `(("patch/sh" ,(search-patch "gawk-shell.patch"))
+                          ,@(if (%current-target-system)
+                                `(("bash" ,%bash-static))
+                                '())))))
+        (finalize (compose static-package
+                           package-with-relocatable-glibc)))
     `(,@(map (match-lambda
               ((name package)
                (list name (finalize package))))
@@ -155,12 +181,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                ("sed" ,sed)
                ("grep" ,grep)
                ("gawk" ,gawk)))
-      ("bash" ,%bash-static)
-      ;; ("ld-wrapper" ,ld-wrapper)
-      ;; ("binutils" ,binutils-final)
-      ;; ("gcc" ,gcc-final)
-      ;; ("libc" ,glibc-final)
-      )))
+      ("bash" ,%bash-static))))
 
 (define %static-binaries
   (package
@@ -330,7 +351,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
              (copy-recursively (string-append linux "/include/asm-generic")
                                (string-append incdir "/asm-generic"))
              #t))))
-      (inputs `(("libc" ,glibc)
+      (inputs `(("libc" ,(let ((target (%current-target-system)))
+                           (if target
+                               (glibc-for-bootstrap
+                                (parameterize ((%current-target-system #f))
+                                  (cross-libc target)))
+                               glibc)))
                 ("linux-headers" ,linux-libre-headers)))
 
       ;; Only one output.
@@ -339,7 +365,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %gcc-static
   ;; A statically-linked GCC, with stripped-down functionality.
   (package-with-relocatable-glibc
-   (package (inherit gcc-final)
+   (package (inherit gcc-4.7)
      (name "gcc-static")
      (arguments
       `(#:modules ((guix build utils)
@@ -347,7 +373,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                    (srfi srfi-1)
                    (srfi srfi-26)
                    (ice-9 regex))
-        ,@(substitute-keyword-arguments (package-arguments gcc-final)
+        ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
             ((#:guile _) #f)
             ((#:implicit-inputs? _) #t)
             ((#:configure-flags flags)
@@ -365,10 +391,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ((#:make-flags flags)
              `(cons "BOOT_LDFLAGS=-static" ,flags)))))
      (inputs `(("gmp-source" ,(package-source gmp))
-	       ("mpfr-source" ,(package-source mpfr))
-	       ("mpc-source" ,(package-source mpc))
-	       ("binutils" ,binutils-final)
-	       ,@(package-inputs gcc-4.7))))))
+               ("mpfr-source" ,(package-source mpfr))
+               ("mpc-source" ,(package-source mpc))
+               ("binutils" ,binutils)
+               ,@(package-inputs gcc-4.7))))))
 
 (define %gcc-stripped
   ;; The subset of GCC files needed for bootstrap.
@@ -411,51 +437,54 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   ;; .scm and .go files relative to its installation directory, rather
   ;; than in hard-coded configure-time paths.
   (let* ((guile (package (inherit guile-2.0)
-		  (name (string-append (package-name guile-2.0) "-static"))
-		  (inputs
-		   `(("patch/relocatable"
-		      ,(search-patch "guile-relocatable.patch"))
-		     ("patch/utf8"
-		      ,(search-patch "guile-default-utf8.patch"))
-		     ("patch/syscalls"
-		      ,(search-patch "guile-linux-syscalls.patch"))
-		     ,@(package-inputs guile-2.0)))
-		  (propagated-inputs
-		   `(("bdw-gc" ,libgc)
-		     ,@(alist-delete "bdw-gc"
-				     (package-propagated-inputs guile-2.0))))
-		  (arguments
-		   `(;; When `configure' checks for ltdl availability, it
-		     ;; doesn't try to link using libtool, and thus fails
-		     ;; because of a missing -ldl.  Work around that.
-		     #:configure-flags '("LDFLAGS=-ldl")
+                  (name (string-append (package-name guile-2.0) "-static"))
+                  (inputs
+                   `(("patch/relocatable"
+                      ,(search-patch "guile-relocatable.patch"))
+                     ("patch/utf8"
+                      ,(search-patch "guile-default-utf8.patch"))
+                     ("patch/syscalls"
+                      ,(search-patch "guile-linux-syscalls.patch"))
+                     ,@(package-inputs guile-2.0)))
+                  (propagated-inputs
+                   `(("bdw-gc" ,libgc)
+                     ,@(alist-delete "bdw-gc"
+                                     (package-propagated-inputs guile-2.0))))
+                  (arguments
+                   `(;; When `configure' checks for ltdl availability, it
+                     ;; doesn't try to link using libtool, and thus fails
+                     ;; because of a missing -ldl.  Work around that.
+                     #:configure-flags '("LDFLAGS=-ldl"
+                                         ,@(if (%current-target-system)
+                                               '("CC_FOR_BUILD=gcc")
+                                               '()))
 
-		     #:phases (alist-cons-before
-			       'configure 'static-guile
-			       (lambda _
-				 (substitute* "libguile/Makefile.in"
-				   ;; Create a statically-linked `guile'
-				   ;; executable.
-				   (("^guile_LDFLAGS =")
-				    "guile_LDFLAGS = -all-static")
+                     #:phases (alist-cons-before
+                               'configure 'static-guile
+                               (lambda _
+                                 (substitute* "libguile/Makefile.in"
+                                   ;; Create a statically-linked `guile'
+                                   ;; executable.
+                                   (("^guile_LDFLAGS =")
+                                    "guile_LDFLAGS = -all-static")
 
-				   ;; Add `-ldl' *after* libguile-2.0.la.
-				   (("^guile_LDADD =(.*)$" _ ldadd)
-				    (string-append "guile_LDADD = "
-						   (string-trim-right ldadd)
-						   " -ldl\n"))))
-			       %standard-phases)
+                                   ;; Add `-ldl' *after* libguile-2.0.la.
+                                   (("^guile_LDADD =(.*)$" _ ldadd)
+                                    (string-append "guile_LDADD = "
+                                                   (string-trim-right ldadd)
+                                                   " -ldl\n"))))
+                               %standard-phases)
 
-		     ;; Allow Guile to be relocated, as is needed during
-		     ;; bootstrap.
-		     #:patches
-		     (list (assoc-ref %build-inputs "patch/relocatable")
-			   (assoc-ref %build-inputs "patch/utf8")
-			   (assoc-ref %build-inputs "patch/syscalls"))
+                     ;; Allow Guile to be relocated, as is needed during
+                     ;; bootstrap.
+                     #:patches
+                     (list (assoc-ref %build-inputs "patch/relocatable")
+                           (assoc-ref %build-inputs "patch/utf8")
+                           (assoc-ref %build-inputs "patch/syscalls"))
 
-		     ;; There are uses of `dynamic-link' in
-		     ;; {foreign,coverage}.test that don't fly here.
-		     #:tests? #f)))))
+                     ;; There are uses of `dynamic-link' in
+                     ;; {foreign,coverage}.test that don't fly here.
+                     #:tests? #f)))))
     (package-with-relocatable-glibc (static-package guile))))
 
 (define %guile-static-stripped
@@ -492,9 +521,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (location (source-properties->location (current-source-location)))
     (name (string-append (package-name pkg) "-tarball"))
     (build-system trivial-build-system)
-    (inputs `(("tar" ,tar)
-              ("xz" ,xz)
-              ("input" ,pkg)))
+    (native-inputs `(("tar" ,tar)
+                     ("xz" ,xz)))
+    (inputs `(("input" ,pkg)))
     (arguments
      (let ((name    (package-name pkg))
            (version (package-version pkg)))
@@ -512,7 +541,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                (zero? (system* "tar" "cJvf"
                                (string-append out "/"
                                               ,name "-" ,version
-                                              "-" ,(%current-system)
+                                              "-"
+                                              ,(or (%current-target-system)
+                                                   (%current-system))
                                               ".tar.xz")
                                "."))))))))))
 
