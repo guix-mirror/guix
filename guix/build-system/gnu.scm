@@ -72,7 +72,11 @@ builder, or the distro's final Guile when GUILE is #f."
       (memoize
        (match-lambda
         ((name (? package? p) sub-drv ...)
-         (cons* name (loop p) sub-drv))
+         ;; XXX: Check whether P's build system knows #:implicit-inputs, for
+         ;; things like `cross-pkg-config'.
+         (if (eq? (package-build-system p) gnu-build-system)
+             (cons* name (loop p) sub-drv)
+             (cons* name p sub-drv)))
         (x x))))
 
     (package (inherit p)
