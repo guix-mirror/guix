@@ -175,7 +175,8 @@ GCC that does not target a libc; otherwise, target that libc."
             ;; <http://lists.fedoraproject.org/pipermail/arm/2010-August/000663.html>
             ;; for instance.
             #f))))
-    (inputs
+
+    (native-inputs
      `(("patch/cross-env-vars"
         ,(search-patch "gcc-cross-environment-variables.patch"))
 
@@ -192,6 +193,8 @@ GCC that does not target a libc; otherwise, target that libc."
                `(("libc" ,libc)
                  ,@inputs)
                inputs))))
+
+    (inputs '())
 
     ;; Only search target inputs, not host inputs.
     (search-paths
@@ -225,9 +228,9 @@ XBINUTILS and the cross tool chain."
               (and (zero? (system* "make" "defconfig"))
                    (zero? (system* "make" "mrproper" "headers_check"))))
             ,phases))))
-      (inputs `(("cross-gcc" ,xgcc)
-                ("cross-binutils" ,xbinutils)
-                ,@(package-inputs linux-libre-headers)))))
+      (native-inputs `(("cross-gcc" ,xgcc)
+                       ("cross-binutils" ,xbinutils)
+                       ,@(package-native-inputs linux-libre-headers)))))
 
   (package (inherit glibc)
     (name (string-append "glibc-cross-" target))
@@ -248,9 +251,9 @@ XBINUTILS and the cross tool chain."
               #t))
           ,phases))))
     (propagated-inputs `(("cross-linux-headers" ,xlinux-headers)))
-    (inputs `(("cross-gcc" ,xgcc)
-              ("cross-binutils" ,xbinutils)
-              ,@(package-inputs glibc)))))
+    (native-inputs `(("cross-gcc" ,xgcc)
+                     ("cross-binutils" ,xbinutils)
+                     ,@(package-native-inputs glibc)))))
 
 
 ;;;
