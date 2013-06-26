@@ -83,10 +83,12 @@ SYSTEM."
         %binutils-bootstrap-tarball
         %glibc-bootstrap-tarball
         %gcc-bootstrap-tarball
-        %guile-bootstrap-tarball))
+        %guile-bootstrap-tarball
+        %bootstrap-tarballs))
 
 (define %cross-targets
-  '("mips64el-linux-gnu"))
+  '("mips64el-linux-gnu"
+    "mips64el-linux-gnuabi64"))
 
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
