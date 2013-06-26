@@ -30,7 +30,6 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
-  #:use-module (ice-9 regex)
   #:export (cross-binutils
             cross-libc
             cross-gcc))
@@ -65,20 +64,6 @@
                         ;; target libs, not native libs, so this is safe.
                         `(cons "--with-sysroot=/" ,flags)))))))
     (cross binutils target)))
-
-(define (gcc-configure-flags-for-triplet target)
-  "Return a list of additional GCC `configure' flags for TARGET, a GNU triplet.
-
-The purpose of this procedure is to translate extended GNU triplets---e.g.,
-where the OS part is overloaded to denote a specific ABI---into GCC
-`configure' options.  We take extended GNU triplets that glibc recognizes."
-  (cond ((string-match "^mips64el.*gnuabin?64$" target)
-         ;; Triplets recognized by glibc as denoting the N64 ABI; see
-         ;; ports/sysdeps/mips/preconfigure.
-         '("--with-abi=64"))
-        (else
-         ;; TODO: Add `armel.*gnueabi', `hf', etc.
-         '())))
 
 (define* (cross-gcc target
                     #:optional (xbinutils (cross-binutils target)) libc)

@@ -25,11 +25,26 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (ice-9 regex))
 
 (define %gcc-infrastructure
   ;; Base URL for GCC's infrastructure.
   "ftp://gcc.gnu.org/pub/gcc/infrastructure/")
+
+(define-public (gcc-configure-flags-for-triplet target)
+  "Return a list of additional GCC `configure' flags for TARGET, a GNU triplet.
+
+The purpose of this procedure is to translate extended GNU triplets---e.g.,
+where the OS part is overloaded to denote a specific ABI---into GCC
+`configure' options.  We take extended GNU triplets that glibc recognizes."
+  (cond ((string-match "^mips64el.*gnuabin?64$" target)
+         ;; Triplets recognized by glibc as denoting the N64 ABI; see
+         ;; ports/sysdeps/mips/preconfigure.
+         '("--with-abi=64"))
+        (else
+         ;; TODO: Add `armel.*gnueabi', `hf', etc.
+         '())))
 
 (define-public gcc-4.7
   (let* ((stripped? #t)                           ; TODO: make this a parameter
@@ -63,6 +78,12 @@
                             (string-append "--with-native-system-header-dir=" libc
                                            "/include")
                             "--without-headers")))
+
+                   ;; When cross-compiling GCC, pass the right options for the
+                   ;; target triplet.
+                   (or (and=> (%current-target-system)
+                              gcc-configure-flags-for-triplet)
+                       '())
 
                    (maybe-target-tools))))))
     (package
