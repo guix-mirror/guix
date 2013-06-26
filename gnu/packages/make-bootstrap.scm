@@ -260,7 +260,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   (package (inherit binutils)
     (name "binutils-static")
     (arguments
-     `(#:configure-flags '("--disable-gold" "--with-lib-path=/no-ld-lib-path")
+     `(#:configure-flags (cons "--disable-gold"
+                               ,(match (memq #:configure-flags
+                                             (package-arguments binutils))
+                                  ((#:configure-flags flags _ ...)
+                                   flags)))
        #:strip-flags '("--strip-all")
        #:phases (alist-cons-before
                  'configure 'all-static
