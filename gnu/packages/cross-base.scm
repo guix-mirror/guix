@@ -56,8 +56,13 @@
                         ;; library.  This works because as a side effect
                         ;; `genscripts.sh' sets `USE_LIBPATH=yes', which tells
                         ;; elf32.em to use DT_RUNPATH in its search list.
-                        `(cons "--with-sysroot=/no-such-path"
-                               ,flags)))))))
+                        ;; See <http://sourceware.org/ml/binutils/2013-05/msg00312.html>.
+                        ;;
+                        ;; In theory choosing / as the sysroot could lead ld
+                        ;; to pick up native libs instead of target ones.  In
+                        ;; practice the RUNPATH of target libs only refers to
+                        ;; target libs, not native libs, so this is safe.
+                        `(cons "--with-sysroot=/" ,flags)))))))
     (cross binutils target)))
 
 (define* (cross-gcc target
