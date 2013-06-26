@@ -70,12 +70,6 @@
   "Return a cross-compiler for TARGET, where TARGET is a GNU triplet.  Use
 XBINUTILS as the associated cross-Binutils.  If LIBC is false, then build a
 GCC that does not target a libc; otherwise, target that libc."
-  (define args
-    ;; Get the arguments as if we were building for TARGET.  In particular, we
-    ;; want `glibc-dynamic-linker' to return the right thing.
-    (parameterize ((%current-system (gnu-triplet->nix-system target)))
-      (package-arguments gcc-4.7)))
-
   (package (inherit gcc-4.7)
     (name (string-append "gcc-cross-"
                          (if libc "" "sans-libc-")
@@ -89,7 +83,7 @@ GCC that does not target a libc; otherwise, target that libc."
                   (srfi srfi-26))
        #:patches (list (assoc-ref %build-inputs "patch/cross-env-vars"))
 
-       ,@(substitute-keyword-arguments args
+       ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
            ((#:configure-flags flags)
             `(append (list ,(string-append "--target=" target)
                            ,@(if libc

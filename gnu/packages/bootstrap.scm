@@ -131,7 +131,10 @@ check whether everything is alright."
       (propagated-inputs (map rewritten-input
                               (package-propagated-inputs p)))))))
 
-(define* (glibc-dynamic-linker #:optional (system (%current-system)))
+(define* (glibc-dynamic-linker
+          #:optional (system (or (and=> (%current-target-system)
+                                        gnu-triplet->nix-system)
+                                 (%current-system))))
   "Return the name of Glibc's dynamic linker for SYSTEM."
   (cond ((string=? system "x86_64-linux") "/lib/ld-linux-x86-64.so.2")
         ((string=? system "i686-linux") "/lib/ld-linux.so.2")
