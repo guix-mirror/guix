@@ -24,6 +24,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages nettle)
   #:use-module ((gnu packages compression)
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (gnu packages multiprecision)
@@ -52,7 +53,7 @@
 (define-public lsh
   (package
     (name "lsh")
-    (version "2.0.4")
+    (version "2.1")
     (source
      (origin
       (method url-fetch)
@@ -60,10 +61,11 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "149hf49xcj99wwvi7hcb59igq4vpyv8har1br1if3lrsw5irsjv1"))))
+        "1qqjy9zfzgny0rkb27c8c7dfsylvb6n0ld8h3an2r83pmaqr9gwb"))))
     (build-system gnu-build-system)
     (inputs
-     `(("linux-pam" ,linux-pam)
+     `(("nettle" ,nettle)
+       ("linux-pam" ,linux-pam)
        ("m4" ,m4)
        ("readline" ,readline)
        ("liboop" ,liboop)
@@ -72,17 +74,9 @@
        ("guile" ,guile-final)
        ("gperf" ,gperf)
        ("psmisc" ,psmisc)                         ; for `killall'
-
-       ("patch/no-root-login" ,(search-patch "lsh-no-root-login.patch"))
-       ("patch/guile-compat" ,(search-patch "lsh-guile-compat.patch"))
-       ("patch/pam-service-name"
-        ,(search-patch "lsh-pam-service-name.patch"))))
+       ))
     (arguments
-     '(#:patches (list (assoc-ref %build-inputs "patch/no-root-login")
-                       (assoc-ref %build-inputs "patch/pam-service-name")
-                       (assoc-ref %build-inputs "patch/guile-compat"))
-
-       ;; Skip the `configure' test that checks whether /dev/ptmx &
+     '(;; Skip the `configure' test that checks whether /dev/ptmx &
        ;; co. work as expected, because it relies on impurities (for
        ;; instance, /dev/pts may be unavailable in chroots.)
        #:configure-flags '("lsh_cv_sys_unix98_ptys=yes")

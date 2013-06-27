@@ -196,9 +196,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/libapr-skip-getservbyname-test.patch	\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/libtool-skip-tests.patch			\
-  gnu/packages/patches/lsh-guile-compat.patch			\
-  gnu/packages/patches/lsh-no-root-login.patch			\
-  gnu/packages/patches/lsh-pam-service-name.patch		\
   gnu/packages/patches/m4-gets-undeclared.patch			\
   gnu/packages/patches/m4-readlink-EINVAL.patch			\
   gnu/packages/patches/m4-s_isdir.patch				\
