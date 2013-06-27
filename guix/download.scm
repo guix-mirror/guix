@@ -84,7 +84,8 @@
        "http://mirror.csclub.uwaterloo.ca/nongnu/"
        "http://nongnu.askapache.com/"
        "http://savannah.c3sl.ufpr.br/"
-       "http://www.centervenus.com/mirrors/nongnu/")
+       "http://www.centervenus.com/mirrors/nongnu/"
+       "http://download.savannah.gnu.org/releases-noredirect/")
       (sourceforge
        "http://prdownloads.sourceforge.net/"
        "http://heanet.dl.sourceforge.net/sourceforge/"
