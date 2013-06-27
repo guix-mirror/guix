@@ -77,14 +77,14 @@
                    '("design" "expert" "slides" "user")))))
    (package
     (name "lout")
-    (version "3.39")
+    (version "3.40")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/lout/lout-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "12gkyqrn0kaa8xq7sc7v3wm407pz2fxg9ngc75aybhi5z825b9vq"))))
+               "1gb8vb1wl7ikn269dd1c7ihqhkyrwk19jwx5kd0rdvbk6g7g25ix"))))
     (build-system gnu-build-system)               ; actually, just a makefile
     (outputs '("out" "doc"))
     (inputs
