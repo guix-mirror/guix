@@ -23,6 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module ((gnu packages compression)
                 #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages perl)
@@ -65,12 +66,18 @@ portable, and only require an ANSI C89 platform.")
               (base32
                "1zi2kq3vcbqdy9khl7r6pgk4hgwibniasm9k6siasdvqjijq3ymb"))))
     (build-system gnu-build-system)
+    (arguments
+      `(#:patches (list (assoc-ref %build-inputs
+                                   "patch/fix-tests"))
+        #:patch-flags '("-p0")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.0)
        ("zlib" ,guix:zlib)
-       ("perl" ,perl)))
+       ("perl" ,perl)
+       ("patch/fix-tests"
+        ,(search-patch "gnutls-fix-tests-on-32-bits-system.patch"))))
     (propagated-inputs
      `(("libtasn1" ,libtasn1)
        ("nettle" ,nettle)
