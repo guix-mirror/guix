@@ -137,6 +137,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/readline.scm			\
   gnu/packages/recutils.scm			\
   gnu/packages/rsync.scm			\
+  gnu/packages/rush.scm				\
   gnu/packages/samba.scm			\
   gnu/packages/scheme.scm			\
   gnu/packages/screen.scm			\
