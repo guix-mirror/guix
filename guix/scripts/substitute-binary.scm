@@ -124,6 +124,9 @@ pairs."
   ;; Number of seconds after which networking is considered "slow".
   3)
 
+(define %random-state
+  (seed->random-state (+ (ash (cdr (gettimeofday)) 32) (getpid))))
+
 (define-syntax-rule (with-timeout duration handler body ...)
   "Run BODY; when DURATION seconds have expired, call HANDLER, and run BODY
 again."
@@ -140,11 +143,15 @@ again."
               (lambda ()
                 body ...)
               (lambda args
-                ;; The SIGALRM triggers EINTR.  When that happens, try again.
-                ;; Note: SA_RESTART cannot be used because of
-                ;; <http://bugs.gnu.org/14640>.
+                ;; The SIGALRM triggers EINTR, because of the bug at
+                ;; <http://lists.gnu.org/archive/html/guile-devel/2013-06/msg00050.html>.
+                ;; When that happens, try again.  Note: SA_RESTART cannot be
+                ;; used because of <http://bugs.gnu.org/14640>.
                 (if (= EINTR (system-error-errno args))
-                    (try)
+                    (begin
+                      ;; Wait a little to avoid bursts.
+                      (usleep (random 3000000 %random-state))
+                      (try))
                     (apply throw args))))))
       (lambda result
         (alarm 0)
@@ -168,14 +175,19 @@ provide."
      ;;   sudo tc qdisc add dev eth0 root netem delay 1500ms
      ;; and then cancel with:
      ;;   sudo tc qdisc del dev eth0 root
-     (with-timeout (if (or timeout? (version>? (version) "2.0.5"))
-                       %fetch-timeout
-                       0)
-       (begin
-         (warning (_ "while fetching ~a: server is unresponsive~%")
-                  (uri->string uri))
-         (warning (_ "try `--no-substitutes' if the problem persists~%")))
-       (http-fetch uri #:text? #f #:buffered? buffered?)))))
+     (let ((port #f))
+       (with-timeout (if (or timeout? (version>? (version) "2.0.5"))
+                         %fetch-timeout
+                         0)
+         (begin
+           (warning (_ "while fetching ~a: server is unresponsive~%")
+                    (uri->string uri))
+           (warning (_ "try `--no-substitutes' if the problem persists~%"))
+           (when port
+             (close-port port)))
+         (begin
+           (set! port (open-socket-for-uri uri #:buffered? buffered?))
+           (http-fetch uri #:text? #f #:port port)))))))
 
 (define-record-type <cache>
   (%make-cache url store-directory wants-mass-query?)
@@ -535,7 +547,7 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
       (show-version-and-exit "guix substitute-binary")))))
 
 
-;;; Local Variable:
+;;; Local Variables:
 ;;; eval: (put 'with-atomic-file-output 'scheme-indent-function 1)
 ;;; eval: (put 'with-timeout 'scheme-indent-function 1)
 ;;; End:

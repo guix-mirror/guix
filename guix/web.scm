@@ -27,7 +27,8 @@
   #:use-module (rnrs bytevectors)
   #:use-module (guix ui)
   #:use-module (guix utils)
-  #:export (http-fetch))
+  #:export (open-socket-for-uri
+            http-fetch))
 
 ;;; Commentary:
 ;;;
@@ -141,62 +142,67 @@ closed it will also close PORT, unless the KEEP-ALIVE? is true."
 (module-define! (resolve-module '(web client))
                 'shutdown (const #f))
 
-(define* (http-fetch uri #:key (text? #f) (buffered? #t))
+(define* (open-socket-for-uri uri #:key (buffered? #t))
+  "Return an open port for URI.  When BUFFERED? is false, the returned port is
+unbuffered."
+  (let ((s ((@ (web client) open-socket-for-uri) uri)))
+    (unless buffered?
+      (setvbuf s _IONBF))
+    s))
+
+(define* (http-fetch uri #:key port (text? #f) (buffered? #t))
   "Return an input port containing the data at URI, and the expected number of
 bytes available or #f.  If TEXT? is true, the data at URI is considered to be
 textual.  Follow any HTTP redirection.  When BUFFERED? is #f, return an
 unbuffered port, suitable for use in `filtered-port'."
   (let loop ((uri uri))
-    (define port
-      (let ((s (open-socket-for-uri uri)))
-        (unless buffered?
-          (setvbuf s _IONBF))
-        s))
-
-    (let*-values (((resp data)
-                   ;; Try hard to use the API du jour to get an input port.
-                   ;; On Guile 2.0.5 and before, we can only get a string or
-                   ;; bytevector, and not an input port.  Work around that.
-                  (if (version>? (version) "2.0.7")
-                      (http-get uri #:streaming? #t #:port port) ; 2.0.9+
-                      (if (defined? 'http-get*)
-                          (http-get* uri #:decode-body? text?
-                                     #:port port)                ; 2.0.7
-                          (http-get uri #:decode-body? text?
-                                    #:port port))))              ; 2.0.5-
-                  ((code)
-                   (response-code resp)))
-      (case code
-        ((200)
-         (let ((len (response-content-length resp)))
-           (cond ((not data)
-                  (begin
-                    ;; Guile 2.0.5 and earlier did not support chunked
-                    ;; transfer encoding, which is required for instance when
-                    ;; fetching %PACKAGE-LIST-URL (see
-                    ;; <http://lists.gnu.org/archive/html/guile-devel/2011-09/msg00089.html>).
-                    ;; Normally the `when-guile<=2.0.5' block above fixes
-                    ;; that, but who knows what could happen.
-                    (warning (_ "using Guile ~a, which does not support ~s encoding~%")
-                             (version)
-                             (response-transfer-encoding resp))
-                    (leave (_ "download failed; use a newer Guile~%")
-                           uri resp)))
-                 ((string? data)                   ; `http-get' from 2.0.5-
-                  (values (open-input-string data) len))
-                 ((bytevector? data)               ; likewise
-                  (values (open-bytevector-input-port data) len))
-                 (else                             ; input port
-                  (values data len)))))
-        ((301                                      ; moved permanently
-          302)                                     ; found (redirection)
-         (let ((uri (response-location resp)))
-           (close-port port)
-           (format #t (_ "following redirection to `~a'...~%")
-                   (uri->string uri))
-           (loop uri)))
-        (else
-         (error "download failed" uri code
-                (response-reason-phrase resp)))))))
+    (let ((port (or port
+                    (open-socket-for-uri uri
+                                         #:buffered? buffered?))))
+      (let*-values (((resp data)
+                     ;; Try hard to use the API du jour to get an input port.
+                     ;; On Guile 2.0.5 and before, we can only get a string or
+                     ;; bytevector, and not an input port.  Work around that.
+                     (if (version>? (version) "2.0.7")
+                         (http-get uri #:streaming? #t #:port port) ; 2.0.9+
+                         (if (defined? 'http-get*)
+                             (http-get* uri #:decode-body? text?
+                                        #:port port) ; 2.0.7
+                             (http-get uri #:decode-body? text?
+                                       #:port port)))) ; 2.0.5-
+                    ((code)
+                     (response-code resp)))
+        (case code
+          ((200)
+           (let ((len (response-content-length resp)))
+             (cond ((not data)
+                    (begin
+                      ;; Guile 2.0.5 and earlier did not support chunked
+                      ;; transfer encoding, which is required for instance when
+                      ;; fetching %PACKAGE-LIST-URL (see
+                      ;; <http://lists.gnu.org/archive/html/guile-devel/2011-09/msg00089.html>).
+                      ;; Normally the `when-guile<=2.0.5' block above fixes
+                      ;; that, but who knows what could happen.
+                      (warning (_ "using Guile ~a, which does not support ~s encoding~%")
+                               (version)
+                               (response-transfer-encoding resp))
+                      (leave (_ "download failed; use a newer Guile~%")
+                             uri resp)))
+                   ((string? data)                ; `http-get' from 2.0.5-
+                    (values (open-input-string data) len))
+                   ((bytevector? data)            ; likewise
+                    (values (open-bytevector-input-port data) len))
+                   (else                          ; input port
+                    (values data len)))))
+          ((301                                   ; moved permanently
+            302)                                  ; found (redirection)
+           (let ((uri (response-location resp)))
+             (close-port port)
+             (format #t (_ "following redirection to `~a'...~%")
+                     (uri->string uri))
+             (loop uri)))
+          (else
+           (error "download failed" uri code
+                  (response-reason-phrase resp))))))))
 
 ;;; web.scm ends here
