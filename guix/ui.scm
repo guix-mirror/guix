@@ -223,12 +223,15 @@ available for download."
                                   drv)
                           (map derivation-input-path build))))
                 ((download)                   ; add the references of DOWNLOAD
-                 (delete-duplicates
-                  (append download
-                          (remove (cut valid-path? store <>)
-                                  (append-map
-                                   substitutable-references
-                                   (substitutable-path-info store download)))))))
+                 (if use-substitutes?
+                     (delete-duplicates
+                      (append download
+                              (remove (cut valid-path? store <>)
+                                      (append-map
+                                       substitutable-references
+                                       (substitutable-path-info store
+                                                                download)))))
+                     download)))
     (if dry-run?
         (begin
           (format (current-error-port)
