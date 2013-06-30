@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,6 +32,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages system)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages compression))
 
 (define-public bazaar
@@ -138,3 +141,25 @@ Configuration Management (SCM).  Using it, you can record the history of
 sources files, and documents.  It fills a similar role to the free software
 RCS, PRCS, and Aegis packages.")
     (license gpl1+)))
+
+(define-public vc-dwim
+  (package
+    (name "vc-dwim")
+    (version "1.7")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/vc-dwim/vc-dwim-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "094pjwshvazlgagc254in2xvrp93vhcj0kb5ms17qs7sch99x9z2"))))
+    (build-system gnu-build-system)
+    (inputs `(("perl" ,perl)
+              ("inetutils" ,inetutils)     ; for `hostname', used in the tests
+              ("emacs" ,emacs)))           ; for `ctags'
+    (home-page "http://www.gnu.org/software/vc-dwim/")
+    (synopsis "Version-control-agnostic ChangeLog diff and commit tool")
+    (description
+     "vc-dwim is a version-control-agnostic ChangeLog diff and commit
+tool. vc-chlog is a helper tool for writing GNU-style ChangeLog entries.")
+    (license gpl3+)))
