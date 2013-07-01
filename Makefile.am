@@ -38,6 +38,7 @@ MODULES =					\
   guix/scripts/refresh.scm			\
   guix/base32.scm				\
   guix/records.scm				\
+  guix/hash.scm					\
   guix/utils.scm				\
   guix/serialization.scm			\
   guix/nar.scm					\

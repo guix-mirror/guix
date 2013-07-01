@@ -19,6 +19,7 @@
 (define-module (guix scripts download)
   #:use-module (guix ui)
   #:use-module (guix store)
+  #:use-module (guix hash)
   #:use-module (guix utils)
   #:use-module (guix base32)
   #:use-module (guix download)

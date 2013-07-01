@@ -36,7 +36,6 @@
   #:autoload   (system foreign) (pointer->procedure)
   #:export (bytevector->base16-string
             base16-string->bytevector
-            sha256
 
             %nixpkgs-directory
             nixpkgs-derivation
@@ -138,23 +137,6 @@ evaluate to a simple datum."
                    s)
       bv)))
 
-
-;;;
-;;; Hash.
-;;;
-
-(define sha256
-  (let ((hash   (pointer->procedure void
-                                    (dynamic-func "gcry_md_hash_buffer"
-                                                  (dynamic-link %libgcrypt))
-                                    `(,int * * ,size_t)))
-        (sha256 8))                        ; GCRY_MD_SHA256, as of 1.5.0
-    (lambda (bv)
-      "Return the SHA256 of BV as a bytevector."
-      (let ((digest (make-bytevector (/ 256 8))))
-        (hash sha256 (bytevector->pointer digest)
-              (bytevector->pointer bv) (bytevector-length bv))
-        digest))))
 
 
 ;;;

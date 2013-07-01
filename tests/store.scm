@@ -20,6 +20,7 @@
 (define-module (test-store)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix hash)
   #:use-module (guix base32)
   #:use-module (guix packages)
   #:use-module (guix derivations)

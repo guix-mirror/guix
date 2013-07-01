@@ -21,6 +21,7 @@
   #:use-module (guix derivations)
   #:use-module (guix store)
   #:use-module (guix utils)
+  #:use-module (guix hash)
   #:use-module (guix base32)
   #:use-module ((guix packages) #:select (package-derivation))
   #:use-module ((gnu packages) #:select (search-bootstrap-binary))
