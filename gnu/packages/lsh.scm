@@ -45,9 +45,15 @@
        (base32
         "0z6rlalhvfca64jpvksppc9bdhs7jwhiw4y35g5ibvh91xp3rn1l"))))
     (build-system gnu-build-system)
-    (home-page "http://liboop.ofb.net/")
-    (synopsis "`liboop', an event loop library")
-    (description "liboop is an event loop library.")
+    (home-page "http://www.lysator.liu.se/liboop/")
+    (synopsis "Event loop library")
+    (description "Liboop is a low-level event loop management library for
+POSIX-based operating systems. It supports the development of modular,
+multiplexed applications which may respond to events from several sources. It
+replaces the \"select() loop\" and allows the registration of event handlers
+for file and network I/O, timers and signals.  Since processes use these
+mechanisms for almost all external communication, liboop can be used as the
+basis for almost any application.")
     (license lgpl2.1+)))
 
 (define-public lsh
