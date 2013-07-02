@@ -469,6 +469,10 @@ in SIZE bytes."
                            inputs))
               (drv    (make-derivation outputs inputs sources
                                        system builder args env-vars)))
+
+         ;; XXX: At this point this remains faster than `port-sha256', because
+         ;; the SHA256 port's `write' method gets called for every single
+         ;; character.
          (sha256
           (with-fluids ((%default-port-encoding "UTF-8"))
             (string->utf8 (call-with-output-string

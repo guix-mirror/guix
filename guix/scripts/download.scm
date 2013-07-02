@@ -116,7 +116,7 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                       (or path
                           (leave (_ "~a: download failed~%")
                                  arg))
-                    (compose sha256 get-bytevector-all)))
+                    port-sha256))
            (fmt   (assq-ref opts 'format)))
       (format #t "~a~%~a~%" path (fmt hash))
       #t)))

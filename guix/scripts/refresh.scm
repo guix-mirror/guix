@@ -137,7 +137,7 @@ values: 'interactive' (default), 'always', and 'never'."
                     (package-name package)
                     (package-version package) version)
             (let ((hash (call-with-input-file tarball
-                          (compose sha256 get-bytevector-all))))
+                          port-sha256)))
               (update-package-source package version hash)))
           (warning (_ "~a: version ~a could not be \
 downloaded and authenticated; not updating")
