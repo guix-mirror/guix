@@ -84,6 +84,7 @@ nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
 
 SCM_TESTS =					\
   tests/base32.scm				\
+  tests/hash.scm				\
   tests/builders.scm				\
   tests/derivations.scm				\
   tests/ui.scm					\

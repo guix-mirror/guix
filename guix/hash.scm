@@ -19,8 +19,13 @@
 (define-module (guix hash)
   #:use-module (guix config)
   #:use-module (rnrs bytevectors)
+  #:use-module (rnrs io ports)
   #:use-module (system foreign)
-  #:export (sha256))
+  #:use-module ((guix build utils) #:select (dump-port))
+  #:use-module (srfi srfi-11)
+  #:export (sha256
+            open-sha256-port
+            port-sha256))
 
 ;;; Commentary:
 ;;;
@@ -33,17 +38,94 @@
 ;;; Hash.
 ;;;
 
+(define-syntax GCRY_MD_SHA256
+  ;; Value as of Libgcrypt 1.5.2.
+  (identifier-syntax 8))
+
 (define sha256
-  (let ((hash   (pointer->procedure void
-                                    (dynamic-func "gcry_md_hash_buffer"
-                                                  (dynamic-link %libgcrypt))
-                                    `(,int * * ,size_t)))
-        (sha256 8))                        ; GCRY_MD_SHA256, as of 1.5.0
+  (let ((hash (pointer->procedure void
+                                  (dynamic-func "gcry_md_hash_buffer"
+                                                (dynamic-link %libgcrypt))
+                                  `(,int * * ,size_t))))
     (lambda (bv)
       "Return the SHA256 of BV as a bytevector."
       (let ((digest (make-bytevector (/ 256 8))))
-        (hash sha256 (bytevector->pointer digest)
+        (hash GCRY_MD_SHA256 (bytevector->pointer digest)
               (bytevector->pointer bv) (bytevector-length bv))
         digest))))
+
+(define open-sha256-md
+  (let ((open (pointer->procedure int
+                                  (dynamic-func "gcry_md_open"
+                                                (dynamic-link %libgcrypt))
+                                  `(* ,int ,unsigned-int))))
+    (lambda ()
+      (let* ((md  (bytevector->pointer (make-bytevector (sizeof '*))))
+             (err (open md GCRY_MD_SHA256 0)))
+        (if (zero? err)
+            (dereference-pointer md)
+            (throw 'gcrypt-error err))))))
+
+(define md-write
+  (pointer->procedure void
+                      (dynamic-func "gcry_md_write"
+                                    (dynamic-link %libgcrypt))
+                      `(* * ,size_t)))
+
+(define md-read
+  (pointer->procedure '*
+                      (dynamic-func "gcry_md_read"
+                                    (dynamic-link %libgcrypt))
+                      `(* ,int)))
+
+(define md-close
+  (pointer->procedure void
+                      (dynamic-func "gcry_md_close"
+                                    (dynamic-link %libgcrypt))
+                      '(*)))
+
+
+(define (open-sha256-port)
+  "Return two values: an output port, and a thunk.  When the thunk is called,
+it returns the SHA256 hash (a bytevector) of all the data written to the
+output port."
+  (define sha256-md
+    (open-sha256-md))
+
+  (define digest #f)
+
+  (define (finalize!)
+    (let ((ptr (md-read sha256-md 0)))
+      (set! digest (bytevector-copy (pointer->bytevector ptr 32)))
+      (md-close sha256-md)))
+
+  (define (write! bv offset len)
+    (if (zero? len)
+        (begin
+          (finalize!)
+          0)
+        (let ((ptr (bytevector->pointer bv offset)))
+          (md-write sha256-md ptr len)
+          len)))
+
+  (define (close)
+    (unless digest
+      (finalize!)))
+
+  (values (make-custom-binary-output-port "sha256"
+                                          write! #f #f
+                                          close)
+          (lambda ()
+            (unless digest
+              (finalize!))
+            digest)))
+
+(define (port-sha256 port)
+  "Return the SHA256 hash (a bytevector) of all the data drained from PORT."
+  (let-values (((out get)
+                (open-sha256-port)))
+    (dump-port port out)
+    (close-port out)
+    (get)))
 
 ;;; hash.scm ends here
