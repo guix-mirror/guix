@@ -85,10 +85,6 @@ create a new ‘dir’.
 #+END_SRC
 
 
-* add ‘make-sha256-port’ binding for ‘gcry_md_write’ & co.
-
-This should make `derivation-hash' faster.
-
 * synchronize package descriptions with GSRC and/or the [[http://directory.fsf.org][FSD]]
 
 Meta-data for GNU packages, including descriptions and synopses, can be

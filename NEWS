@@ -36,6 +36,13 @@ to download a substitute.
 
 See the manual for details.
 
+
+** Programming interfaces
+
+*** New (guix hash) module; new ‘open-sha256-port’ and ‘sha256-port’ procedures
+
+This improves performance of SHA256 computations.
+
 ** Bugs fixed
 *** “guix --help” now works when using Guile 2.0.5
 *** Binary substituter multi-threading and pipe issues fixed
