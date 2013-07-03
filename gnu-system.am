@@ -118,6 +118,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ncurses.scm			\
   gnu/packages/netpbm.scm			\
   gnu/packages/nettle.scm			\
+  gnu/packages/noweb.scm			\
   gnu/packages/ocaml.scm			\
   gnu/packages/oggvorbis.scm			\
   gnu/packages/openldap.scm			\
