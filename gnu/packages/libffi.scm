@@ -53,6 +53,7 @@
                  #:phases (alist-cons-after 'install 'post-install
                                             ,post-install-phase
                                             %standard-phases)))
+    (outputs '("out" "debug"))
     (synopsis "Foreign function call interface library")
     (description
      "The libffi library provides a portable, high level programming interface

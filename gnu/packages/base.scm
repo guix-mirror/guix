@@ -279,6 +279,7 @@ The tools supplied with this package are:
              ,@(if (%current-target-system)
                    '()
                    `(("perl" ,perl)))))
+   (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
       #:phases (alist-cons-before
@@ -316,6 +317,7 @@ are expected to exist on every operating system.")
    (build-system gnu-build-system)
    (native-inputs
     `(("patch/impure-dirs" ,(search-patch "make-impure-dirs.patch"))))
+   (outputs '("out" "debug"))
    (arguments
     '(#:patches (list (assoc-ref %build-inputs "patch/impure-dirs"))
       #:phases (alist-cons-before
@@ -403,7 +405,7 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
    ;; reference to them anyway, so there's no space savings here.
    ;; TODO: Eventually we may want to add a $LOCALE_ARCHIVE search path like
    ;; Nixpkgs does.
-   (outputs '("out" "locales"))
+   (outputs '("out" "locales" "debug"))
 
    (arguments
     `(#:out-of-source? #t

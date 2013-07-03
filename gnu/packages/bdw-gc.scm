@@ -39,6 +39,7 @@
     ;; Make it so that we don't rely on /proc.  This is especially useful in
     ;; an initrd run before /proc is mounted.
     '(#:configure-flags '("CPPFLAGS=-DUSE_LIBC_PRIVATES")))
+   (outputs '("out" "debug"))
    (synopsis "The Boehm-Demers-Weiser conservative garbage collector
 for C and C++")
    (description

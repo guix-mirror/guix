@@ -138,6 +138,8 @@ extensible.  It supports many SRFIs.")
 
    (self-native-input? #t)
 
+   (outputs '("out" "debug"))
+
    (arguments
     `(#:phases (alist-cons-before
                 'configure 'pre-configure

@@ -38,6 +38,7 @@
               "1hnbxz7a6jrli8ph27i8zb6k2f456zn6l5xi78yhskzbxjk47nf7"))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
+   (outputs '("out" "debug"))
    (arguments `(#:configure-flags
                 '(;; Build a "fat binary", with routines for several
                   ;; sub-architectures.
@@ -78,6 +79,7 @@ faster algorithms.")
             (sha256 (base32
                      "0fs501qi8l523gs3cpy4jjcnvwxggyfbklcys80wq236xx3hz79r"))))
    (build-system gnu-build-system)
+   (outputs '("out" "debug"))
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
    (synopsis "C library for arbitrary precision floating-point arithmetic")
    (description
@@ -103,6 +105,7 @@ double-precision floating-point arithmetic (53-bit mantissa).")
             (sha256 (base32
                      "1zq0fidp1jii2j5k5n9hmx55a6wwid33gjzhimvxq9d5zrf82npd"))))
    (build-system gnu-build-system)
+   (outputs '("out" "debug"))
    (propagated-inputs `(("gmp" ,gmp)              ; <mpc.h> refers to both
                         ("mpfr" ,mpfr)))
    (synopsis "C library for arbitrary precision complex arithmetic")
