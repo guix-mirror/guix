@@ -27,6 +27,8 @@
   #:use-module (ice-9 rdelim)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
+  #:re-export (alist-cons
+               alist-delete)
   #:export (directory-exists?
             executable-file?
             call-with-ascii-input-file
