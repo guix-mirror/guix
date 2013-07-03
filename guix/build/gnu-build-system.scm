@@ -259,17 +259,66 @@ makefiles."
                 (strip-command (if target
                                    (string-append target "-strip")
                                    "strip"))
+                (objcopy-command (if target
+                                     (string-append target "-objcopy")
+                                     "objcopy"))
                 (strip-flags '("--strip-debug"))
                 (strip-directories '("lib" "lib64" "libexec"
                                      "bin" "sbin"))
                 #:allow-other-keys)
+  (define debug-output
+    ;; If an output is called "debug", then that's where debugging information
+    ;; will be stored instead of being discarded.
+    (assoc-ref outputs "debug"))
+
+  (define debug-file-extension
+    ;; File name extension for debugging information.
+    ".debug")
+
+  (define (debug-file file)
+    ;; Return the name of the debug file for FILE, an absolute file name.
+    ;; Once installed in the user's profile, it is in $PROFILE/lib/debug/FILE,
+    ;; which is where GDB looks for it (info "(gdb) Separate Debug Files").
+    (string-append debug-output "/lib/debug/"
+                   file debug-file-extension))
+
+  (define (make-debug-file file)
+    ;; Create a file in DEBUG-OUTPUT containing the debugging info of FILE.
+    (let ((debug (debug-file file)))
+      (mkdir-p (dirname debug))
+      (copy-file file debug)
+      (and (zero? (system* strip-command "--only-keep-debug" debug))
+           (begin
+             (chmod debug #o400)
+             #t))))
+
+  (define (add-debug-link file)
+    ;; Add a debug link in FILE (info "(binutils) strip").
+
+    ;; `objcopy --add-gnu-debuglink' wants to have the target of the debug
+    ;; link around so it can compute a CRC of that file (see the
+    ;; `bfd_fill_in_gnu_debuglink_section' function.)  No reference to
+    ;; DEBUG-OUTPUT is kept because bfd keeps only the basename of the debug
+    ;; file.
+    (zero? (system* objcopy-command
+                    (string-append "--add-gnu-debuglink="
+                                   (debug-file file))
+                    file)))
+
   (define (strip-dir dir)
     (format #t "stripping binaries in ~s with ~s and flags ~s~%"
             dir strip-command strip-flags)
+    (when debug-output
+      (format #t "debugging output written to ~s using ~s~%"
+              debug-output objcopy-command))
     (file-system-fold (const #t)
                       (lambda (path stat result)  ; leaf
-                        (zero? (apply system* strip-command
-                                      (append strip-flags (list path)))))
+                        (and (or (not debug-output)
+                                 (make-debug-file path))
+                             (zero? (apply system* strip-command
+                                           (append strip-flags (list path))))
+                             (or (not debug-output)
+                                 (add-debug-link path))))
                       (const #t)                  ; down
                       (const #t)                  ; up
                       (const #t)                  ; skip
