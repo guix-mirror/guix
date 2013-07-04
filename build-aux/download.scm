@@ -25,7 +25,8 @@
              (web client)
              (rnrs io ports)
              (srfi srfi-11)
-             (guix utils))
+             (guix utils)
+             (guix hash))
 
 (define %url-base
   "http://alpha.gnu.org/gnu/guix/bootstrap"
