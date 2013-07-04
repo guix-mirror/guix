@@ -299,7 +299,9 @@ which could lead to gratuitous input divergence."
                                   ,@(if implicit-inputs?
                                         implicit-inputs
                                         '()))
-                                #:outputs outputs
+                                #:outputs (if strip-binaries?
+                                              outputs
+                                              (delete "debug" outputs))
                                 #:modules imported-modules
                                 #:guile-for-build guile-for-build))
 
@@ -470,7 +472,9 @@ platform."
                                   ,@(if implicit-inputs?
                                         implicit-host-inputs
                                         '()))
-                                #:outputs outputs
+                                #:outputs (if strip-binaries?
+                                              outputs
+                                              (delete "debug" outputs))
                                 #:modules imported-modules
                                 #:guile-for-build guile-for-build))
 

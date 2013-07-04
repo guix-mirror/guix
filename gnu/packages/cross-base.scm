@@ -251,9 +251,6 @@ XBINUTILS and the cross tool chain."
               #t))
           ,phases))))
 
-    ;; Remove the "debug" output since stripping is disabled.
-    (outputs (delete "debug" (package-outputs glibc)))
-
     (propagated-inputs `(("cross-linux-headers" ,xlinux-headers)))
     (native-inputs `(("cross-gcc" ,xgcc)
                      ("cross-binutils" ,xbinutils)
