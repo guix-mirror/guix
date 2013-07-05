@@ -22,6 +22,7 @@ guilemoduledir="${datarootdir}/guile/site/2.0"
 AC_SUBST([guilemoduledir])
 
 GUIX_SYSTEM_TYPE
+GUIX_ASSERT_SUPPORTED_SYSTEM
 
 AC_ARG_WITH(store-dir,
   AC_HELP_STRING([--with-store-dir=PATH],

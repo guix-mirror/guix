@@ -70,6 +70,35 @@ AC_DEFUN([GUIX_SYSTEM_TYPE], [
   AC_SUBST([guix_system])
 ])
 
+dnl GUIX_ASSERT_SUPPORTED_SYSTEM
+dnl
+dnl Assert that this is a system to which the distro is ported.
+AC_DEFUN([GUIX_ASSERT_SUPPORTED_SYSTEM], [
+  AC_REQUIRE([GUIX_SYSTEM_TYPE])
+
+  AC_ARG_WITH([courage], [AC_HELP_STRING([--with-courage],
+    [Assert that even if this platform is unsupported, you will be
+courageous and port the GNU System distribution to it (see
+"GNU Distribution" in the manual.)])],
+    [guix_courageous="$withval"],
+    [guix_courageous="no"])
+
+  # Currently only Linux-based systems are supported, and only on some
+  # platforms.
+  case "$guix_system" in
+    x86_64-linux|i686-linux)
+      ;;
+    *)
+      if test "x$guix_courageous" = "xyes"; then
+        AC_MSG_WARN([building Guix on `$guix_system', which is not supported])
+      else
+        AC_MSG_ERROR([`$guix_system' is not a supported platform.
+See "GNU Distribution" in the manual, or try `--with-courage'.])
+      fi
+      ;;
+  esac
+])
+
 dnl GUIX_ASSERT_GUILE_FEATURES FEATURES
 dnl
 dnl Assert that FEATURES are provided by $GUILE.
