@@ -519,7 +519,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                       (string-append out "/bin/guile"))
            (remove-store-references (string-append out "/bin/guile"))
            #t))))
-    (inputs `(("guile" ,%guile-static)))))
+    (inputs `(("guile" ,%guile-static)))
+    (outputs '("out"))))
 
 (define (tarball-package pkg)
   "Return a package containing a tarball of PKG."
