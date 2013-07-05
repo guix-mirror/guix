@@ -40,6 +40,8 @@ dnl Determine the Guix host system type, and store it in the
 dnl `guix_system' variable.
 AC_DEFUN([GUIX_SYSTEM_TYPE], [
   AC_REQUIRE([AC_CANONICAL_HOST])
+  AC_PATH_PROG([SED], [sed])
+
   AC_ARG_WITH(system, AC_HELP_STRING([--with-system=SYSTEM],
     [Platform identifier (e.g., `i686-linux').]),
     [guix_system="$withval"],
@@ -59,7 +61,7 @@ AC_DEFUN([GUIX_SYSTEM_TYPE], [
        *)
 	  # Strip the version number from names such as `gnu0.3',
 	  # `darwin10.2.0', etc.
-	  guix_system="$machine_name-`echo $host_os | "$SED" -e's/@<:@0-9.@:>@*$//g'`";;
+	  guix_system="$machine_name-`echo $host_os | "$SED" -e's/[0-9.]*$//g'`";;
      esac])
 
   AC_MSG_CHECKING([for the Guix system type])
