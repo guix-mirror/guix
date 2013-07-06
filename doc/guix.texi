@@ -1434,6 +1434,7 @@ tools that help users exert that freedom.
 @menu
 * Package Modules::             Packages from the programmer's viewpoint.
 * Bootstrapping::               GNU/Linux built from scratch.
+* Porting::                     Targeting another platform or kernel.
 @end menu
 
 Building this distribution is a cooperative effort, and you are invited
@@ -1587,6 +1588,35 @@ reach a fixed point?  That is an interesting question!  The answer is
 unknown, but if you would like to investigate further (and have
 significant computational and storage resources to do so), then let us
 know.
+
+@node Porting
+@section Porting to a New Platform
+
+As discussed above, the GNU distribution is self-contained, and
+self-containment is achieved by relying on pre-built ``bootstrap
+binaries'' (@pxref{Bootstrapping}).  These binaries are specific to an
+operating system kernel, CPU architecture, and application binary
+interface (ABI).  Thus, to port the distribution to a platform that is
+not yet supported, one must build those bootstrap binaries, and update
+the @code{(gnu packages bootstrap)} module to use them on that platform.
+
+Fortunately, Guix can @emph{cross compile} those bootstrap binaries.
+When everything goes well, and assuming the GNU tool chain supports the
+target platform, this can be as simple as running a command like this
+one:
+
+@example
+guix build --target=armv5tel-linux-gnueabi bootstrap-tarballs
+@end example
+
+In practice, there may be some complications.  First, it may be that the
+extended GNU triplet that specifies an ABI (like the @code{eabi} suffix
+above) is not recognized by all the GNU tools.  Typically, glibc
+recognizes some of these, whereas GCC uses an extra @code{--with-abi}
+configure flag (see @code{gcc.scm} for examples of how to handle this.)
+Second, some of the required packages could fail to build for that
+platform.  Lastly, the generated binaries could be broken for some
+reason.
 
 
 @c *********************************************************************
