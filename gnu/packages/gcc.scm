@@ -23,6 +23,7 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages texinfo)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -104,6 +105,10 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ("cloog" ,cloog)
                 ("libelf" ,libelf)
                 ("zlib" ,zlib)))
+
+      ;; GCC is one of the few packages that doesn't ship .info files.
+      (native-inputs `(("texinfo" ,texinfo)))
+
       (arguments
        `(#:out-of-source? #t
          #:strip-binaries? ,stripped?
@@ -199,7 +204,6 @@ used in the GNU system including the GNU/Linux variant.")
       (home-page "http://gcc.gnu.org/"))))
 
 (define-public gcc-4.8
-  ;; FIXME: Move to gcc.scm when Binutils is updated.
   (package (inherit gcc-4.7)
     (version "4.8.0")
     (source (origin

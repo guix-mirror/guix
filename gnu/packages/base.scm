@@ -756,7 +756,11 @@ identifier SYSTEM."
                ;; Call it differently so that the builder can check whether
                ;; the "libc" input is #f.
                ("libc-native" ,@(assoc-ref %boot0-inputs "libc"))
-               ,@(alist-delete "libc" %boot0-inputs))))))
+               ,@(alist-delete "libc" %boot0-inputs)))
+
+     ;; No need for Texinfo at this stage.
+     (native-inputs (alist-delete "texinfo"
+                                  (package-native-inputs gcc-4.7))))))
 
 (define linux-libre-headers-boot0
   (package-with-bootstrap-guile
