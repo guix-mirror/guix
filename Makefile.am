@@ -169,7 +169,31 @@ $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
 SUBDIRS = po
 
 info_TEXINFOS = doc/guix.texi
-EXTRA_DIST += doc/fdl-1.3.texi
+EXTRA_DIST +=					\
+  doc/fdl-1.3.texi				\
+  doc/images/bootstrap-graph.dot		\
+  doc/images/bootstrap-graph.eps
+
+infoimagedir = $(infodir)/images
+dist_infoimage_DATA = doc/images/bootstrap-graph.png
+
+# Try hard to obtain an image size and aspect that's reasonable for inclusion
+# in an Info or PDF document.
+DOT_OPTIONS =						\
+  -Tpng -Gratio=.9 -Gnodesep=.005 -Granksep=.00005	\
+  -Nfontsize=9 -Nheight=.1 -Nwidth=.1
+
+.dot.png:
+	dot -Tpng $(DOT_OPTIONS) < "$<" > "$@.tmp"
+	mv "$@.tmp" "$@"
+
+.dot.eps:
+	dot -Teps $(DOT_OPTIONS) < "$<" > "$@.tmp"
+	mv "$@.tmp" "$@"
+
+doc/guix.pdf: doc/images/bootstrap-graph.png
+doc/guix.info: doc/images/bootstrap-graph.png
+doc/guix.ps: doc/images/bootstrap-graph.eps
 
 if BUILD_DAEMON
 
