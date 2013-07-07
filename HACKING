@@ -40,16 +40,6 @@ addition to that, you must not miss [[http://www.emacswiki.org/emacs/ParEdit][Pa
 directly operate on the syntax tree, such as raising an s-expression or
 wrapping it, swallowing or rejecting the following s-expression, etc.
 
-* Packaging Guidelines
-
-The GNU distribution is about respecting the freedom of users.  Consequently,
-it contains only free software as defined at
-http://www.gnu.org/philosophy/free-sw.html .
-
-In addition, we follow the [[http://www.gnu.org/distros/free-system-distribution-guidelines.html][free software distribution guidelines]].  Among other
-things, this means that the distribution tries hard not to steer users towards
-obtaining information about non-free software.
-
 * Adding new packages
 
 Package recipes in Guix look like this:

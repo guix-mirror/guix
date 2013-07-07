@@ -1432,6 +1432,7 @@ tight integration of GNU components, and an emphasis on programs and
 tools that help users exert that freedom.
 
 @menu
+* Packaging Guidelines::        What goes into the distribution.
 * Package Modules::             Packages from the programmer's viewpoint.
 * Bootstrapping::               GNU/Linux built from scratch.
 * Porting::                     Targeting another platform or kernel.
@@ -1439,6 +1440,26 @@ tools that help users exert that freedom.
 
 Building this distribution is a cooperative effort, and you are invited
 to join!  @ref{Contributing}, for information about how you can help.
+
+@node Packaging Guidelines
+@section Packaging Guidelines
+
+@c Adapted from http://www.gnu.org/philosophy/philosophy.html.
+
+The GNU operating system has been developed so that users can have
+freedom in their computing.  GNU is @dfn{free software}, meaning that
+users have the @url{http://www.gnu.org/philosophy/free-sw.html,four
+essential freedoms}: to run the program, to study and change the program
+in source code form, to redistribute exact copies, and to distribute
+modified versions.  Packages found in the GNU distribution provide only
+software that conveys these four freedoms.
+
+In addition, the GNU distribution follow the
+@url{http://www.gnu.org/distros/free-system-distribution-guidelines.html,free
+software distribution guidelines}.  Among other things, these guidelines
+reject non-free firmware, recommendations of non-free software, and
+discuss ways to deal with trademarks and patents.
+
 
 @node Package Modules
 @section Package Modules
