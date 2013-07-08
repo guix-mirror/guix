@@ -707,10 +707,12 @@ output, whereas the GUIs are in a separate output.  This allows users
 who do not need the GUIs to save space.
 
 There are several such multiple-output packages in the GNU distribution.
-Other conventional output names are @code{lib} for libraries and
-possibly header files, and @code{bin} for stand-alone programs.  The
-outputs of a packages are listed in the third column of the output of
-@command{guix package --list-available} (@pxref{Invoking guix package}).
+Other conventional output names include @code{lib} for libraries and
+possibly header files, @code{bin} for stand-alone programs, and
+@code{debug} for debugging information (@pxref{Installing Debugging
+Files}).  The outputs of a packages are listed in the third column of
+the output of @command{guix package --list-available} (@pxref{Invoking
+guix package}).
 
 
 @node Invoking guix gc
@@ -1481,6 +1483,7 @@ tools that help users exert that freedom.
 
 @menu
 * Packaging Guidelines::        What goes into the distribution.
+* Installing Debugging Files::  Feeding the debugger.
 * Package Modules::             Packages from the programmer's viewpoint.
 * Bootstrapping::               GNU/Linux built from scratch.
 * Porting::                     Targeting another platform or kernel.
@@ -1507,6 +1510,64 @@ In addition, the GNU distribution follow the
 software distribution guidelines}.  Among other things, these guidelines
 reject non-free firmware, recommendations of non-free software, and
 discuss ways to deal with trademarks and patents.
+
+
+@node Installing Debugging Files
+@section Installing Debugging Files
+
+Program binaries, as produced by the GCC compilers for instance, are
+typically written in the ELF format, with a section containing
+@dfn{debugging information}.  Debugging information is what allows the
+debugger, GDB, to map binary code to source code; it is required to
+debug a compiled program in good conditions.
+
+The problem with debugging information is that is takes up a fair amount
+of disk space.  For example, debugging information for the GNU C Library
+weighs in at more than 60 MiB.  Thus, as a user, keeping all the
+debugging info of all the installed programs is usually not an option.
+Yet, space savings should not come at the cost of an impediment to
+debugging---especially in the GNU system, which should make it easier
+for users to exert their computing freedom (@pxref{GNU Distribution}).
+
+Thankfully, the GNU Binary Utilities (Binutils) and GDB provide a
+mechanism that allows users to get the best of both worlds: debugging
+information can be stripped from the binaries and stored in separate
+files.  GDB is then able to load debugging information from those files,
+when they are available (@pxref{Separate Debug Files,,, gdb, Debugging
+with GDB}).
+
+The GNU distribution takes advantage of this by storing debugging
+information in the @code{lib/debug} sub-directory of a separate package
+output unimaginatively called @code{debug} (@pxref{Packages with
+Multiple Outputs}).  Users can choose to install the @code{debug} output
+of a package when they need it.  For instance, the following command
+installs the debugging information for the GNU C Library and for GNU
+Guile:
+
+@example
+guix package -i glibc:debug -i guile:debug
+@end example
+
+GDB must then be told to look for debug files in the user's profile, by
+setting the @code{debug-file-directory} variable (consider setting it
+from the @file{~/.gdbinit} file, @pxref{Startup,,, gdb, Debugging with
+GDB}):
+
+@example
+(gdb) set debug-file-directory ~/.guix-profile/lib/debug
+@end example
+
+From there on, GDB will pick up debugging information from the
+@code{.debug} files under @file{~/.guix-profile/lib/debug}.
+
+@c XXX: keep me up-to-date
+The @code{debug} output mechanism in Guix is implemented by the
+@code{gnu-build-system} (@pxref{Defining Packages}).  Currently, it is
+opt-in---debugging information is available only for those packages
+whose definition explicitly declares a @code{debug} output.  This may be
+changed to opt-out in the future, if our build farm servers can handle
+the load.  To check whether a package has a @code{debug} output, use
+@command{guix package --list-available} (@pxref{Invoking guix package}).
 
 
 @node Package Modules
