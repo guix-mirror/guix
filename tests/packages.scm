@@ -70,10 +70,14 @@
             (goto port line column)
             (read port))))))
 
-    (and (equal? (read-at (package-field-location %bootstrap-guile 'name))
-                 (package-name %bootstrap-guile))
-         (equal? (read-at (package-field-location %bootstrap-guile 'version))
-                 (package-version %bootstrap-guile))
+    ;; Until Guile 2.0.6 included, source properties were added only to pairs.
+    ;; Thus, check against both VALUE and (FIELD VALUE).
+    (and (member (read-at (package-field-location %bootstrap-guile 'name))
+                 (let ((name (package-name %bootstrap-guile)))
+                   (list name `(name ,name))))
+         (member (read-at (package-field-location %bootstrap-guile 'version))
+                 (let ((version (package-version %bootstrap-guile)))
+                   (list version `(version ,version))))
          (not (package-field-location %bootstrap-guile 'does-not-exist)))))
 
 (test-assert "package-transitive-inputs"
