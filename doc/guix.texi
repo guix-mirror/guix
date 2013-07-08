@@ -399,6 +399,7 @@ management tools it provides.
 @menu
 * Features::                    How Guix will make your life brighter.
 * Invoking guix package::       Package installation, removal, etc.
+* Packages with Multiple Outputs:: Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
 @end menu
@@ -507,7 +508,8 @@ Install @var{package}.
 such as @code{guile-1.8.8}.  If no version number is specified, the
 newest available version will be selected.  In addition, @var{package}
 may contain a colon, followed by the name of one of the outputs of the
-package, as in @code{gcc:doc} or @code{binutils-2.22:lib}.
+package, as in @code{gcc:doc} or @code{binutils-2.22:lib}
+(@pxref{Packages with Multiple Outputs}).
 
 @cindex propagated inputs
 Sometimes packages have @dfn{propagated inputs}: these are dependencies
@@ -658,11 +660,57 @@ List packages currently available in the software distribution
 installed packages whose name matches @var{regexp}.
 
 For each package, print the following items separated by tabs: its name,
-its version string, the parts of the package (@code{out} for the main
-files, @code{lib} for libraries and possibly headers, etc.), and the
-source location of its definition.
+its version string, the parts of the package (@pxref{Packages with
+Multiple Outputs}), and the source location of its definition.
 
 @end table
+
+@node Packages with Multiple Outputs
+@section Packages with Multiple Outputs
+
+@cindex multiple-output packages
+@cindex package outputs
+
+Often, packages defined in Guix have a single @dfn{output}---i.e., the
+source package leads exactly one directory in the store.  When running
+@command{guix package -i glibc}, one installs the default output of the
+GNU libc package; the default output is called @code{out}, but its name
+can be omitted as shown in this command.  In this particular case, the
+default output of @code{glibc} contains all the C header files, shared
+libraries, static libraries, Info documentation, and other supporting
+files.
+
+Sometimes it is more appropriate to separate the various types of files
+produced from a single source package into separate outputs.  For
+instance, the GLib C library (used by GTK+ and related packages)
+installs more than 20 MiB of reference documentation as HTML pages.
+To save space for users who do not need it, the documentation goes to a
+separate output, called @code{doc}.  To install the main GLib output,
+which contains everything but the documentation, one would run:
+
+@example
+guix package -i glib
+@end example
+
+The command to install its documentation is:
+
+@example
+guix package -i glib:doc
+@end example
+
+Some packages install programs with different ``dependency footprints''.
+For instance, the WordNet package install both command-line tools and
+graphical user interfaces (GUIs).  The former depend solely on the C
+library, whereas the latter depend on Tcl/Tk and the underlying X
+libraries.  In this case, we leave the command-line tools in the default
+output, whereas the GUIs are in a separate output.  This allows users
+who do not need the GUIs to save space.
+
+There are several such multiple-output packages in the GNU distribution.
+Other conventional output names are @code{lib} for libraries and
+possibly header files, and @code{bin} for stand-alone programs.  The
+outputs of a packages are listed in the third column of the output of
+@command{guix package --list-available} (@pxref{Invoking guix package}).
 
 
 @node Invoking guix gc
