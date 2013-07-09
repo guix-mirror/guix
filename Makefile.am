@@ -130,6 +130,7 @@ EXTRA_DIST =					\
   .dir-locals.el				\
   build-aux/hydra/gnu-system.scm		\
   build-aux/download.scm			\
+  build-aux/list-packages.scm			\
   build-aux/sync-synopses.scm			\
   srfi/srfi-64.scm				\
   srfi/srfi-64.upstream.scm			\
