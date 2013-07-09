@@ -49,9 +49,7 @@
                     (lambda _
                       (substitute* "src/fault-linux-mips-old.h"
                         (("#include <asm/sigcontext\\.h>") "")))
-                    ,(if (%current-target-system)
-                         '%standard-cross-phases
-                         '%standard-phases)))
+                    %standard-phases))
         '()))
    (description
 "GNU libsigsegv is a library for handling page faults in user mode. A page

@@ -27,35 +27,37 @@
 (define-public gawk
   (package
    (name "gawk")
-   (version "4.0.2")
+   (version "4.1.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gawk/gawk-" version
                                 ".tar.xz"))
             (sha256
-             (base32 "04vd0axif762mf781pj3days6ilv2333b9zi9c50y5mma66g5q91"))))
+             (base32 "0hin2hswbbd6kd6i4zzvgciwpl5fba8d2s524z8y5qagyz3x010q"))))
    (build-system gnu-build-system)
    (arguments
     `(#:parallel-tests? #f                ; test suite fails in parallel
-
-      ;; Work around test failure on Cygwin.
-      #:tests? ,(not (string=? (%current-system) "i686-cygwin"))
 
       #:phases (alist-cons-before
                 'configure 'set-shell-file-name
                 (lambda* (#:key inputs #:allow-other-keys)
                   ;; Refer to the right shell.
-                  ;; FIXME: Remove `else' arm upon core-updates.
                   (let ((bash (assoc-ref inputs "bash")))
                     (substitute* "io.c"
                       (("/bin/sh")
-                       (string-append bash "/bin/bash")))))
-                ,(if (%current-target-system)
-                     '%standard-cross-phases
-                     '%standard-phases))))
+                       (string-append bash "/bin/bash")))
+
+                    ;; When cross-compiling, remove dependencies on the
+                    ;; `check-for-shared-lib-support' target, which tries to
+                    ;; run the cross-built `gawk'.
+                    ,@(if (%current-target-system)
+                          '((substitute* "extension/Makefile.in"
+                              (("^.*: check-for-shared-lib-support" match)
+                               (string-append "### " match))))
+                          '())))
+                %standard-phases)))
    (inputs `(("libsigsegv" ,libsigsegv)
 
-             ;; TODO: On next core-updates, make Bash input unconditional.
              ,@(if (%current-target-system)
                    `(("bash" ,bash))
                    '())))

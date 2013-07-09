@@ -279,6 +279,7 @@ The tools supplied with this package are:
              ,@(if (%current-target-system)
                    '()
                    `(("perl" ,perl)))))
+   (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
       #:phases (alist-cons-before
@@ -293,9 +294,7 @@ The tools supplied with this package are:
                     (substitute* (find-files "tests" "\\.sh$")
                       (("#!/bin/sh")
                        (format #f "#!~a/bin/bash" bash)))))
-                ,(if (%current-target-system)
-                     '%standard-cross-phases
-                     '%standard-phases))))
+                %standard-phases)))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
     "The GNU Core Utilities are the basic file, shell and text manipulation
@@ -318,6 +317,7 @@ are expected to exist on every operating system.")
    (build-system gnu-build-system)
    (native-inputs
     `(("patch/impure-dirs" ,(search-patch "make-impure-dirs.patch"))))
+   (outputs '("out" "debug"))
    (arguments
     '(#:patches (list (assoc-ref %build-inputs "patch/impure-dirs"))
       #:phases (alist-cons-before
@@ -405,7 +405,7 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
    ;; reference to them anyway, so there's no space savings here.
    ;; TODO: Eventually we may want to add a $LOCALE_ARCHIVE search path like
    ;; Nixpkgs does.
-   (outputs '("out" "locales"))
+   (outputs '("out" "locales" "debug"))
 
    (arguments
     `(#:out-of-source? #t
@@ -511,7 +511,7 @@ with the Linux kernel.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2013c")
+    (version "2013d")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -519,7 +519,7 @@ with the Linux kernel.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "11swq6fg20m2dh520qcr8vb23gqhzbvqhizx8wifnmci4gmsg5z5"))))
+               "08jzd8y2xkgd89wqrv3835pqr48yjabaczxr2rmg42zaykr11an0"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -566,7 +566,7 @@ with the Linux kernel.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1w6nkdwhi6k9llshp4baac1yj43jqf3apdf6n66i0wvjj8qyjvp4"))))))
+                            "13xd30ngwhqmj7w216ghd5knvg047hzpc0xca5l297g5cwb62hza"))))))
     (home-page "http://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
@@ -756,7 +756,11 @@ identifier SYSTEM."
                ;; Call it differently so that the builder can check whether
                ;; the "libc" input is #f.
                ("libc-native" ,@(assoc-ref %boot0-inputs "libc"))
-               ,@(alist-delete "libc" %boot0-inputs))))))
+               ,@(alist-delete "libc" %boot0-inputs)))
+
+     ;; No need for Texinfo at this stage.
+     (native-inputs (alist-delete "texinfo"
+                                  (package-native-inputs gcc-4.7))))))
 
 (define linux-libre-headers-boot0
   (package-with-bootstrap-guile

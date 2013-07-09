@@ -184,7 +184,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/flex-bison-tests.patch			\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
-  gnu/packages/patches/gettext-gets-undeclared.patch		\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
   gnu/packages/patches/glib-tests-prlimit.patch			\

@@ -138,29 +138,18 @@ extensible.  It supports many SRFIs.")
 
    (self-native-input? #t)
 
+   (outputs '("out" "debug"))
+
    (arguments
     `(#:phases (alist-cons-before
                 'configure 'pre-configure
                 (lambda* (#:key inputs #:allow-other-keys)
-                  ;; By default we end up with GUILE_LOAD_PATH="" and
-                  ;; GUILE_LOAD_COMPILED_PATH="".  But that is equivalent to
-                  ;; ".", and breaks the build system when cross-compiling.
-                  ;; Thus, make sure they are unset.
-                  ;; TODO: Eventually fix `set-path-environment-variable'
-                  ;; for that case.
-                  ,@(if (%current-target-system)
-                        '((unsetenv "GUILE_LOAD_PATH")
-                          (unsetenv "GUILE_LOAD_COMPILED_PATH"))
-                        '())
-
                   ;; Tell (ice-9 popen) the file name of Bash.
                   (let ((bash (assoc-ref inputs "bash")))
                     (substitute* "module/ice-9/popen.scm"
                       (("/bin/sh")
                        (string-append bash "/bin/bash")))))
-                ,(if (%current-target-system)
-                     '%standard-cross-phases
-                     '%standard-phases))
+                %standard-phases)
 
       ,@(if (%current-target-system)
             '(#:configure-flags '("CC_FOR_BUILD=gcc"))

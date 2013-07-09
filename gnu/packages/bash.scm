@@ -82,9 +82,7 @@
 
         #:phases (alist-cons-after 'install 'post-install
                                    ,post-install-phase
-                                   ,(if (%current-target-system)
-                                        '%standard-cross-phases
-                                        '%standard-phases))))
+                                   %standard-phases)))
      (synopsis "The GNU Bourne-Again SHell")
      (description
       "Bash is the shell, or command language interpreter, that will appear in
@@ -106,10 +104,7 @@ modification.")
      (let ((args `(#:modules ((guix build gnu-build-system)
                               (guix build utils)
                               (srfi srfi-1)
-                              (srfi srfi-26)
-                              ,@(if (%current-target-system)
-                                    '((guix build gnu-cross-build))
-                                    '()))
+                              (srfi srfi-26))
                    ,@(package-arguments bash))))
        (substitute-keyword-arguments args
          ((#:configure-flags flags)

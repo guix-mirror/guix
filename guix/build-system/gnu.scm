@@ -41,42 +41,64 @@
 ;;
 ;; Code:
 
-(define* (package-with-explicit-inputs p boot-inputs
+(define* (package-with-explicit-inputs p inputs
                                        #:optional
                                        (loc (current-source-location))
-                                       #:key guile)
-  "Rewrite P, which is assumed to use GNU-BUILD-SYSTEM, to take
-BOOT-INPUTS as explicit inputs instead of the implicit default, and
-return it.  Use GUILE to run the builder, or the distro's final Guile
-when GUILE is #f."
-  (define rewritten-input
-    (match-lambda
-     ((name (? package? p) sub-drv ...)
-      (cons* name
-             (package-with-explicit-inputs p boot-inputs #:guile guile)
-             sub-drv))
-     (x x)))
+                                       #:key (native-inputs '())
+                                       guile)
+  "Rewrite P, which is assumed to use GNU-BUILD-SYSTEM, to take INPUTS and
+NATIVE-INPUTS as explicit inputs instead of the implicit default, and return
+it.  INPUTS and NATIVE-INPUTS can be either input lists or thunks; in the
+latter case, they will be called in a context where the `%current-system' and
+`%current-target-system' are suitably parametrized.  Use GUILE to run the
+builder, or the distro's final Guile when GUILE is #f."
+  (define inputs* inputs)
+  (define native-inputs* native-inputs)
 
-  (define boot-input-names
-    (map car boot-inputs))
+  (define (call inputs)
+    (if (procedure? inputs)
+        (inputs)
+        inputs))
 
-  (define (filtered-inputs inputs)
-    (fold alist-delete inputs boot-input-names))
+  (define (duplicate-filter inputs)
+    (let ((names (match (call inputs)
+                   (((name _ ...) ...)
+                    name))))
+      (lambda (inputs)
+        (fold alist-delete inputs names))))
 
-  (package (inherit p)
-    (location (if (pair? loc) (source-properties->location loc) loc))
-    (arguments
-     (let ((args (package-arguments p)))
-       `(#:guile ,guile
-         #:implicit-inputs? #f ,@args)))
-    (native-inputs (map rewritten-input
-                        (filtered-inputs (package-native-inputs p))))
-    (propagated-inputs (map rewritten-input
-                            (filtered-inputs
-                             (package-propagated-inputs p))))
-    (inputs `(,@boot-inputs
-              ,@(map rewritten-input
-                     (filtered-inputs (package-inputs p)))))))
+  (let loop ((p p))
+    (define rewritten-input
+      (memoize
+       (match-lambda
+        ((name (? package? p) sub-drv ...)
+         ;; XXX: Check whether P's build system knows #:implicit-inputs, for
+         ;; things like `cross-pkg-config'.
+         (if (eq? (package-build-system p) gnu-build-system)
+             (cons* name (loop p) sub-drv)
+             (cons* name p sub-drv)))
+        (x x))))
+
+    (package (inherit p)
+      (location (if (pair? loc) (source-properties->location loc) loc))
+      (arguments
+       (let ((args (package-arguments p)))
+         `(#:guile ,guile
+           #:implicit-inputs? #f
+           ,@args)))
+      (native-inputs
+       (let ((filtered (duplicate-filter native-inputs*)))
+        `(,@(call native-inputs*)
+          ,@(map rewritten-input
+                 (filtered (package-native-inputs p))))))
+      (propagated-inputs
+       (map rewritten-input
+            (package-propagated-inputs p)))
+      (inputs
+       (let ((filtered (duplicate-filter inputs*)))
+         `(,@(call inputs*)
+           ,@(map rewritten-input
+                  (filtered (package-inputs p)))))))))
 
 (define (package-with-extra-configure-variable p variable value)
   "Return a version of P with VARIABLE=VALUE specified as an extra `configure'
@@ -277,7 +299,9 @@ which could lead to gratuitous input divergence."
                                   ,@(if implicit-inputs?
                                         implicit-inputs
                                         '()))
-                                #:outputs outputs
+                                #:outputs (if strip-binaries?
+                                              outputs
+                                              (delete "debug" outputs))
                                 #:modules imported-modules
                                 #:guile-for-build guile-for-build))
 
@@ -332,7 +356,7 @@ inputs."
                           (make-flags ''())
                           (patches ''()) (patch-flags ''("--batch" "-p1"))
                           (out-of-source? #f)
-                          (tests? #t)
+                          (tests? #f)             ; nothing can be done
                           (test-target "check")
                           (parallel-build? #t) (parallel-tests? #t)
                           (patch-shebangs? #t)
@@ -340,14 +364,12 @@ inputs."
                           (strip-flags ''("--strip-debug"))
                           (strip-directories ''("lib" "lib64" "libexec"
                                                 "bin" "sbin"))
-                          (phases '%standard-cross-phases)
+                          (phases '%standard-phases)
                           (system (%current-system))
-                          (implicit-inputs? #t)    ; useful when bootstrapping
+                          (implicit-inputs? #t)
                           (imported-modules '((guix build gnu-build-system)
-                                              (guix build gnu-cross-build)
                                               (guix build utils)))
                           (modules '((guix build gnu-build-system)
-                                     (guix build gnu-cross-build)
                                      (guix build utils))))
   "Cross-build NAME for TARGET, where TARGET is a GNU triplet.  INPUTS are
 cross-built inputs, and NATIVE-INPUTS are inputs that run on the build
@@ -450,7 +472,9 @@ platform."
                                   ,@(if implicit-inputs?
                                         implicit-host-inputs
                                         '()))
-                                #:outputs outputs
+                                #:outputs (if strip-binaries?
+                                              outputs
+                                              (delete "debug" outputs))
                                 #:modules imported-modules
                                 #:guile-for-build guile-for-build))
 

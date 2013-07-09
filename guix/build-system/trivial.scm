@@ -53,8 +53,7 @@ ignored."
                               outputs guile system builder (modules '())
                               search-paths native-search-paths)
   "Like `trivial-build', but in a cross-compilation context."
-  (build-expression->derivation store name system
-                                `(let ((%target ,target)) ,builder)
+  (build-expression->derivation store name system builder
                                 (append native-inputs inputs)
                                 #:outputs outputs
                                 #:modules modules

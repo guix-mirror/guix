@@ -25,7 +25,7 @@
 (define-public libgc
   (package
    (name "libgc")
-   (version "7.2alpha6")
+   (version "7.2d")
    (source (origin
             (method url-fetch)
             (uri (string-append
@@ -33,9 +33,13 @@
                   version ".tar.gz"))
             (sha256
              (base32
-              "05jwadjbrv8pr7z9cb4miskicxqpxm0pca4h2rg5cgbpajr2bx7b"))))
+              "0phwa5driahnpn79zqff14w9yc8sn3599cxz91m78hqdcpl0mznr"))))
    (build-system gnu-build-system)
-   ;; TODO: Build with -DUSE_LIBC_PRIVATES (see make-bootstrap.scm).
+   (arguments
+    ;; Make it so that we don't rely on /proc.  This is especially useful in
+    ;; an initrd run before /proc is mounted.
+    '(#:configure-flags '("CPPFLAGS=-DUSE_LIBC_PRIVATES")))
+   (outputs '("out" "debug"))
    (synopsis "The Boehm-Demers-Weiser conservative garbage collector
 for C and C++")
    (description
@@ -58,17 +62,3 @@ C or C++ programs, though that is not its primary goal.")
    ;; permissive X11-style license:
    ;; http://www.hpl.hp.com/personal/Hans_Boehm/gc/license.txt
    (license x11)))
-
-(define-public libgc-7.2
-  ;; This is the latest final release of the 7.2 series.
-  ;; TODO: Use it as the default when doing a core-updates.
-  (package (inherit libgc)
-    (version "7.2d")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append
-                   "http://www.hpl.hp.com/personal/Hans_Boehm/gc/gc_source/gc-"
-                   version ".tar.gz"))
-             (sha256
-              (base32
-               "0phwa5driahnpn79zqff14w9yc8sn3599cxz91m78hqdcpl0mznr"))))))

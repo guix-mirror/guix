@@ -116,7 +116,7 @@
                          ,cross-pre-install-phase
                          (alist-cons-after
                           'install 'post-install ,post-install-phase
-                          %standard-cross-phases)))
+                          %standard-phases)))
 
                       `(alist-cons-after          ; native build
                         'install 'post-install ,post-install-phase

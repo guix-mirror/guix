@@ -56,8 +56,13 @@
                         ;; library.  This works because as a side effect
                         ;; `genscripts.sh' sets `USE_LIBPATH=yes', which tells
                         ;; elf32.em to use DT_RUNPATH in its search list.
-                        `(cons "--with-sysroot=/no-such-path"
-                               ,flags)))))))
+                        ;; See <http://sourceware.org/ml/binutils/2013-05/msg00312.html>.
+                        ;;
+                        ;; In theory choosing / as the sysroot could lead ld
+                        ;; to pick up native libs instead of target ones.  In
+                        ;; practice the RUNPATH of target libs only refers to
+                        ;; target libs, not native libs, so this is safe.
+                        `(cons "--with-sysroot=/" ,flags)))))))
     (cross binutils target)))
 
 (define* (cross-gcc target
@@ -65,12 +70,6 @@
   "Return a cross-compiler for TARGET, where TARGET is a GNU triplet.  Use
 XBINUTILS as the associated cross-Binutils.  If LIBC is false, then build a
 GCC that does not target a libc; otherwise, target that libc."
-  (define args
-    ;; Get the arguments as if we were building for TARGET.  In particular, we
-    ;; want `glibc-dynamic-linker' to return the right thing.
-    (parameterize ((%current-system (gnu-triplet->nix-system target)))
-      (package-arguments gcc-4.7)))
-
   (package (inherit gcc-4.7)
     (name (string-append "gcc-cross-"
                          (if libc "" "sans-libc-")
@@ -84,9 +83,10 @@ GCC that does not target a libc; otherwise, target that libc."
                   (srfi srfi-26))
        #:patches (list (assoc-ref %build-inputs "patch/cross-env-vars"))
 
-       ,@(substitute-keyword-arguments args
+       ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
            ((#:configure-flags flags)
             `(append (list ,(string-append "--target=" target)
+                           ,@(gcc-configure-flags-for-triplet target)
                            ,@(if libc
                                  '()
                                  `( ;; Disable features not needed at this stage.
@@ -175,7 +175,8 @@ GCC that does not target a libc; otherwise, target that libc."
             ;; <http://lists.fedoraproject.org/pipermail/arm/2010-August/000663.html>
             ;; for instance.
             #f))))
-    (inputs
+
+    (native-inputs
      `(("patch/cross-env-vars"
         ,(search-patch "gcc-cross-environment-variables.patch"))
 
@@ -192,6 +193,8 @@ GCC that does not target a libc; otherwise, target that libc."
                `(("libc" ,libc)
                  ,@inputs)
                inputs))))
+
+    (inputs '())
 
     ;; Only search target inputs, not host inputs.
     (search-paths
@@ -225,9 +228,9 @@ XBINUTILS and the cross tool chain."
               (and (zero? (system* "make" "defconfig"))
                    (zero? (system* "make" "mrproper" "headers_check"))))
             ,phases))))
-      (inputs `(("cross-gcc" ,xgcc)
-                ("cross-binutils" ,xbinutils)
-                ,@(package-inputs linux-libre-headers)))))
+      (native-inputs `(("cross-gcc" ,xgcc)
+                       ("cross-binutils" ,xbinutils)
+                       ,@(package-native-inputs linux-libre-headers)))))
 
   (package (inherit glibc)
     (name (string-append "glibc-cross-" target))
@@ -247,10 +250,11 @@ XBINUTILS and the cross tool chain."
                       (string-append linux "/include"))
               #t))
           ,phases))))
+
     (propagated-inputs `(("cross-linux-headers" ,xlinux-headers)))
-    (inputs `(("cross-gcc" ,xgcc)
-              ("cross-binutils" ,xbinutils)
-              ,@(package-inputs glibc)))))
+    (native-inputs `(("cross-gcc" ,xgcc)
+                     ("cross-binutils" ,xbinutils)
+                     ,@(package-native-inputs glibc)))))
 
 
 ;;;
@@ -258,7 +262,7 @@ XBINUTILS and the cross tool chain."
 ;;;
 
 (define-public xgcc-mips64el
-  (let ((triplet "mips64el-linux-gnu"))
+  (let ((triplet "mips64el-linux-gnuabi64"))      ; N64 ABI
     (cross-gcc triplet
                (cross-binutils triplet)
                (cross-libc triplet))))

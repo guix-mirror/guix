@@ -46,7 +46,7 @@
         (lambda _
           (patch-makefile-SHELL "include/buildmacros"))
         ,(if (%current-target-system)
-             '%standard-cross-phases
+             '%standard-phases
              '(alist-replace 'check
                              (lambda _
                                (system* "make" "tests" "-C" "test")
@@ -60,14 +60,9 @@
               ;; Perl is needed to run tests; remove it from cross builds.
               ,@(if (%current-target-system)
                     '()
-                    `(("gettext" ,guix:gettext)
-                      ("perl" ,perl)))))
+                    `(("perl" ,perl)))))
     (native-inputs
-     ;; FIXME: Upon next core-updates, make gettext a native input
-     ;; unconditionally.
-     (if (%current-target-system)
-         `(("gettext" ,guix:gettext))
-         '()))
+     `(("gettext" ,guix:gettext)))
 
     (home-page
      "http://savannah.nongnu.org/projects/acl")
