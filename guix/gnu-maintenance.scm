@@ -48,6 +48,7 @@
             gnu-package-logo
             gnu-package-doc-category
             gnu-package-doc-summary
+            gnu-package-doc-description
             gnu-package-doc-urls
             gnu-package-download-url
 
@@ -80,6 +81,11 @@
                   "viewvc/*checkout*/gnumaint/"
                   "gnupackages.txt?root=womb")))
 
+(define %gsrc-package-list-url
+  ;; This file is normally kept in sync with GSRC.
+  ;; See <http://lists.gnu.org/archive/html/bug-guix/2013-04/msg00117.html>.
+  (string->uri "http://www.gnu.org/software/gsrc/MANIFEST.rec"))
+
 (define-record-type* <gnu-package-descriptor>
   gnu-package-descriptor
   make-gnu-package-descriptor
@@ -95,31 +101,44 @@
   (logo             gnu-package-logo)
   (doc-category     gnu-package-doc-category)
   (doc-summary      gnu-package-doc-summary)
+  (doc-description  gnu-package-doc-description)  ; taken from GSRC
   (doc-urls         gnu-package-doc-urls)         ; list of strings
   (download-url     gnu-package-download-url))
 
 (define (official-gnu-packages)
   "Return a list of records, which are GNU packages."
-  (define (group-package-fields port)
+  (define (read-records port)
     ;; Return a list of alists.  Each alist contains fields of a GNU
     ;; package.
     (let loop ((alist  (recutils->alist port))
                (result '()))
       (if (null? alist)
-          result
+          (reverse result)
           (loop (recutils->alist port)
                 (cons alist result)))))
 
-  (reverse
-   (map (lambda (alist)
-          (alist->record alist
-                         make-gnu-package-descriptor
-                         (list "package" "mundane-name" "copyright-holder"
-                               "savannah" "fsd" "language" "logo"
-                               "doc-category" "doc-summary" "doc-url"
-                               "download-url")
-                         '("doc-url" "language")))
-        (group-package-fields (http-fetch %package-list-url #:text? #t)))))
+  (define gsrc-description
+    (let ((gsrc (read-records (http-fetch %gsrc-package-list-url
+                                          #:text? #t))))
+      (lambda (name)
+        ;; Return the description found in GSRC for package NAME, or #f.
+        (and=> (find (lambda (alist)
+                       (equal? name (assoc-ref alist "Upstream_name")))
+                     gsrc)
+               (cut assoc-ref <> "Blurb")))))
+
+  (map (lambda (alist)
+         (let ((name (assoc-ref alist "package")))
+           (alist->record `(("description" . ,(gsrc-description name))
+                            ,@alist)
+                          make-gnu-package-descriptor
+                          (list "package" "mundane-name" "copyright-holder"
+                                "savannah" "fsd" "language" "logo"
+                                "doc-category" "doc-summary" "description"
+                                "doc-url"
+                                "download-url")
+                          '("doc-url" "language"))))
+       (read-records (http-fetch %package-list-url #:text? #t))))
 
 (define (find-packages regexp)
   "Find GNU packages which satisfy REGEXP."
