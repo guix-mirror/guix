@@ -158,6 +158,16 @@ Version: 1.5
     (list (recutils->alist p)
           (recutils->alist p))))
 
+(test-equal "recutils->alist with + lines"
+  '(("Name" . "foo")
+    ("Description" . "1st line,\n2nd line,\n 3rd line with extra space,\n4th line without space."))
+  (recutils->alist (open-input-string "
+Name: foo
+Description: 1st line,
++ 2nd line,
++  3rd line with extra space,
++4th line without space.")))
+
 (test-equal "alist->record" '((1 2) b c)
   (alist->record '(("a" . 1) ("b" . b) ("c" . c) ("a" . 2))
                  list

@@ -231,6 +231,9 @@ PORT, according to FIELDS.  FIELDS must be a list of field name/getter pairs."
   ;; info "(recutils) Comments"
   (make-regexp "^#"))
 
+(define %recutils-plus-rx
+  (make-regexp "^\\+ ?(.*)$"))
+
 (define (recutils->alist port)
   "Read a recutils-style record from PORT and return it as a list of key/value
 pairs.  Stop upon an empty line (after consuming it) or EOF."
@@ -244,6 +247,15 @@ pairs.  Stop upon an empty line (after consuming it) or EOF."
                (reverse result)))                 ; end-of-record marker
           ((regexp-exec %recutils-comment-rx line)
            (loop (read-line port) result))
+          ((regexp-exec %recutils-plus-rx line)
+           =>
+           (lambda (m)
+             (match result
+               (((field . value) rest ...)
+                (loop (read-line port)
+                      `((,field . ,(string-append value "\n"
+                                                  (match:substring m 1)))
+                        ,@rest))))))
           ((regexp-exec %recutils-field-rx line)
            =>
            (lambda (match)
