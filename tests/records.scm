@@ -138,13 +138,23 @@
      ("Something_else" . "chbouib"))
     (("Name" . "bar")
      ("Version" . "1.5")))
-  (let ((p (open-input-string "Name: foo
+  (let ((p (open-input-string "
+# Comment following an empty line, and
+# preceding a couple of empty lines, all of
+# which should be silently consumed.
+
+
+Name: foo
 Version: 0.1
+# Comment right in the middle,
+# spanning two lines.
 Synopsis: foo bar
 Something_else: chbouib
 
+# Comment right before.
 Name: bar
-Version: 1.5")))
+Version: 1.5
+# Comment at the end.")))
     (list (recutils->alist p)
           (recutils->alist p))))
 

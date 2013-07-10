@@ -217,13 +217,23 @@ PORT, according to FIELDS.  FIELDS must be a list of field name/getter pairs."
 (define %recutils-field-rx
   (make-regexp "^([[:graph:]]+): (.*)$"))
 
+(define %recutils-comment-rx
+  ;; info "(recutils) Comments"
+  (make-regexp "^#"))
+
 (define (recutils->alist port)
   "Read a recutils-style record from PORT and return it as a list of key/value
 pairs.  Stop upon an empty line (after consuming it) or EOF."
   (let loop ((line   (read-line port))
              (result '()))
-    (cond ((or (eof-object? line) (string-null? line))
+    (cond ((eof-object? line)
            (reverse result))
+          ((string-null? line)
+           (if (null? result)
+               (loop (read-line port) result)     ; leading space: ignore it
+               (reverse result)))                 ; end-of-record marker
+          ((regexp-exec %recutils-comment-rx line)
+           (loop (read-line port) result))
           ((regexp-exec %recutils-field-rx line)
            =>
            (lambda (match)
