@@ -158,6 +158,12 @@ Version: 1.5
     (list (recutils->alist p)
           (recutils->alist p))))
 
+(test-equal "alist->record" '((1 2) b c)
+  (alist->record '(("a" . 1) ("b" . b) ("c" . c) ("a" . 2))
+                 list
+                 '("a" "b" "c")
+                 '("a")))
+
 (test-end)
 
 

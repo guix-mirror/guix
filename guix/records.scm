@@ -198,9 +198,19 @@ thunked fields."
                                                          #'((field options ...)
                                                             ...))))))))))
 
-(define (alist->record alist make keys)
-  "Apply MAKE to the values associated with KEYS in ALIST."
-  (let ((args (map (cut assoc-ref alist <>) keys)))
+(define* (alist->record alist make keys
+                        #:optional (multiple-value-keys '()))
+  "Apply MAKE to the values associated with KEYS in ALIST.  Items in KEYS that
+are also in MULTIPLE-VALUE-KEYS are considered to occur possibly multiple
+times in ALIST, and thus their value is a list."
+  (let ((args (map (lambda (key)
+                     (if (member key multiple-value-keys)
+                         (filter-map (match-lambda
+                                      ((k . v)
+                                       (and (equal? k key) v)))
+                                     alist)
+                         (assoc-ref alist key)))
+                   keys)))
     (apply make args)))
 
 (define (object->fields object fields port)
