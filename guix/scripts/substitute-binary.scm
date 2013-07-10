@@ -102,23 +102,8 @@ output port, and PROC's result is returned."
 (define (fields->alist port)
   "Read recutils-style record from PORT and return them as a list of key/value
 pairs."
-  (define field-rx
-    (make-regexp "^([[:graph:]]+): (.*)$"))
-
-  (let loop ((line   (read-line port))
-             (result '()))
-    (cond ((eof-object? line)
-           (reverse result))
-          ((with-mutex %regexp-exec-mutex
-             (regexp-exec field-rx line))
-           =>
-           (lambda (match)
-             (loop (read-line port)
-                   (alist-cons (match:substring match 1)
-                               (match:substring match 2)
-                               result))))
-          (else
-           (error "unmatched line" line)))))
+  (with-mutex %regexp-exec-mutex
+    (recutils->alist port)))
 
 (define %fetch-timeout
   ;; Number of seconds after which networking is considered "slow".

@@ -21,9 +21,12 @@
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
+  #:use-module (ice-9 rdelim)
   #:export (define-record-type*
             alist->record
-            object->fields))
+            object->fields
+            recutils->alist))
 
 ;;; Commentary:
 ;;;
@@ -210,5 +213,25 @@ PORT, according to FIELDS.  FIELDS must be a list of field name/getter pairs."
       (((field . get) rest ...)
        (format port "~a: ~a~%" field (get object))
        (loop rest)))))
+
+(define %recutils-field-rx
+  (make-regexp "^([[:graph:]]+): (.*)$"))
+
+(define (recutils->alist port)
+  "Read a recutils-style record from PORT and return it as a list of key/value
+pairs.  Stop upon an empty line (after consuming it) or EOF."
+  (let loop ((line   (read-line port))
+             (result '()))
+    (cond ((or (eof-object? line) (string-null? line))
+           (reverse result))
+          ((regexp-exec %recutils-field-rx line)
+           =>
+           (lambda (match)
+             (loop (read-line port)
+                   (alist-cons (match:substring match 1)
+                               (match:substring match 2)
+                               result))))
+          (else
+           (error "unmatched line" line)))))
 
 ;;; records.scm ends here

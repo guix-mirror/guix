@@ -131,6 +131,23 @@
              (parameterize ((mark (cons 'a 'b)))
                (eq? (foo-baz y) (mark))))))))
 
+(test-equal "recutils->alist"
+  '((("Name" . "foo")
+     ("Version" . "0.1")
+     ("Synopsis" . "foo bar")
+     ("Something_else" . "chbouib"))
+    (("Name" . "bar")
+     ("Version" . "1.5")))
+  (let ((p (open-input-string "Name: foo
+Version: 0.1
+Synopsis: foo bar
+Something_else: chbouib
+
+Name: bar
+Version: 1.5")))
+    (list (recutils->alist p)
+          (recutils->alist p))))
+
 (test-end)
 
 
