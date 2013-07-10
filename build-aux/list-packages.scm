@@ -107,6 +107,13 @@ exec guile -l "$0"                              \
 (define (list-packages . args)
   "Return an HTML page listing all the packages found in the GNU distribution,
 with gnu.org server-side include and all that."
+  ;; Don't attempt to translate descriptions.
+  (setlocale LC_ALL "C")
+
+  ;; Output the page as UTF-8 since that's what the gnu.org server-side
+  ;; headers claim.
+  (set-port-encoding! (current-output-port) "UTF-8")
+
   (let ((packages (sort (fold-packages cons '())
                         (lambda (p1 p2)
                           (string<? (package-name p1) (package-name p2))))))
