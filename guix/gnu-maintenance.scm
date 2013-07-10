@@ -22,7 +22,6 @@
   #:use-module (web client)
   #:use-module (web response)
   #:use-module (ice-9 regex)
-  #:use-module (ice-9 rdelim)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -92,64 +91,24 @@
   (copyright-holder gnu-package-copyright-holder)
   (savannah         gnu-package-savannah)
   (fsd              gnu-package-fsd)
-  (language         gnu-package-language)
+  (language         gnu-package-language)         ; list of strings
   (logo             gnu-package-logo)
   (doc-category     gnu-package-doc-category)
   (doc-summary      gnu-package-doc-summary)
-  (doc-urls         gnu-package-doc-urls)
+  (doc-urls         gnu-package-doc-urls)         ; list of strings
   (download-url     gnu-package-download-url))
 
 (define (official-gnu-packages)
   "Return a list of records, which are GNU packages."
-  (define (group-package-fields port state)
+  (define (group-package-fields port)
     ;; Return a list of alists.  Each alist contains fields of a GNU
     ;; package.
-    (let ((line        (read-line port))
-          (field-rx    (make-regexp "^([[:graph:]]+): (.*)$"))
-          (doc-urls-rx (make-regexp "^doc-url: (.*)$"))
-          (end-rx      (make-regexp "^# End. .+Do not remove this line.+")))
-
-      (define (match-field str)
-        ;; Packages are separated by empty strings.  If STR is an
-        ;; empty string, create a new list to store fields of a
-        ;; different package.  Otherwise, match and create a key-value
-        ;; pair.
-        (match str
-          (""
-           (group-package-fields port (cons '() state)))
-          (str
-           (cond ((regexp-exec doc-urls-rx str)
-                  =>
-                  (lambda (match)
-                    (if (equal? (assoc-ref (first state) "doc-urls") #f)
-                        (group-package-fields
-                         port (cons (cons (cons "doc-urls"
-                                                (list
-                                                 (match:substring match 1)))
-                                          (first state))
-                                    (drop state 1)))
-                        (group-package-fields
-                         port (cons (cons (cons "doc-urls"
-                                                (cons (match:substring match 1)
-                                                      (assoc-ref (first state)
-                                                                 "doc-urls")))
-                                          (assoc-remove! (first state)
-                                                         "doc-urls"))
-                                    (drop state 1))))))
-                 ((regexp-exec field-rx str)
-                  =>
-                  (lambda (match)
-                    (group-package-fields
-                     port (cons (cons (cons (match:substring match 1)
-                                            (match:substring match 2))
-                                      (first state))
-                                (drop state 1)))))
-                 (else (group-package-fields port state))))))
-
-      (if (or (eof-object? line)
-              (regexp-exec end-rx line)) ; don't include dummy fields
-          (remove null-list? state)
-          (match-field line))))
+    (let loop ((alist  (recutils->alist port))
+               (result '()))
+      (if (null? alist)
+          result
+          (loop (recutils->alist port)
+                (cons alist result)))))
 
   (reverse
    (map (lambda (alist)
@@ -157,10 +116,10 @@
                          make-gnu-package-descriptor
                          (list "package" "mundane-name" "copyright-holder"
                                "savannah" "fsd" "language" "logo"
-                               "doc-category" "doc-summary" "doc-urls"
-                               "download-url")))
-        (group-package-fields (http-fetch %package-list-url #:text? #t)
-                              '(())))))
+                               "doc-category" "doc-summary" "doc-url"
+                               "download-url")
+                         '("doc-url" "language")))
+        (group-package-fields (http-fetch %package-list-url #:text? #t)))))
 
 (define (find-packages regexp)
   "Find GNU packages which satisfy REGEXP."
