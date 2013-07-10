@@ -30,6 +30,7 @@ exec guile -l "$0"                              \
   #:use-module (sxml simple)
   #:use-module (web uri)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:export (list-packages))
 
 ;;; Commentary:
@@ -37,6 +38,14 @@ exec guile -l "$0"                              \
 ;;; Emit an HTML representation of the packages available in GNU Guix.
 ;;;
 ;;; Code:
+
+(define lookup-gnu-package
+  (let ((gnu (official-gnu-packages)))
+    (lambda (name)
+      "Return the package description for GNU package NAME, or #f."
+      (find (lambda (package)
+              (equal? (gnu-package-name package) name))
+            gnu))))
 
 (define (package->sxml package)
   "Return HTML-as-SXML representing PACKAGE."
@@ -65,6 +74,10 @@ exec guile -l "$0"                              \
 
     (->sxml (package-license package)))
 
+  (define (package-logo name)
+    (and=> (lookup-gnu-package name)
+           gnu-package-logo))
+
   (let ((description-id (symbol->string
                          (gensym (package-name package)))))
    `(tr (td ,(if (gnu-package? package)
@@ -81,6 +94,12 @@ exec guile -l "$0"                              \
                ,(package-synopsis package))
             (div (@ (id ,description-id)
                     (style "position: relative; display: none;"))
+                 ,(match (package-logo (package-name package))
+                    ((? string? url)
+                     `(img (@ (src ,url)
+                              (height "35em")
+                              (style "float: left; padding-right: 1em;"))))
+                    (_ #f))
                  (p ,(package-description package))
                  ,(license package)
                  (a (@ (href ,(package-home-page package)))
