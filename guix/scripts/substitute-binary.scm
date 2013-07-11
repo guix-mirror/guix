@@ -87,23 +87,18 @@ output port, and PROC's result is returned."
       (lambda (key . args)
         (false-if-exception (delete-file template))))))
 
-(define %regexp-exec-mutex
-  ;; In Guile 2.0.9, `regexp-exec' is thread-unsafe, so work around it.
-  ;; See <http://bugs.gnu.org/14404>.
-  (make-mutex))
+;; In Guile 2.0.9, `regexp-exec' is thread-unsafe, so work around it.
+;; See <http://bugs.gnu.org/14404>.
+(set! regexp-exec
+      (let ((real regexp-exec)
+            (lock (make-mutex)))
+        (lambda args
+          (with-mutex lock
+            (apply real args)))))
 
-(define string->uri
-  (let ((real (@ (web uri) string->uri)))
-    (lambda (uri)
-      "A thread-safe `string->uri'."
-      (with-mutex %regexp-exec-mutex
-        (real uri)))))
-
-(define (fields->alist port)
-  "Read recutils-style record from PORT and return them as a list of key/value
-pairs."
-  (with-mutex %regexp-exec-mutex
-    (recutils->alist port)))
+(define fields->alist
+  ;; The narinfo format is really just like recutils.
+  recutils->alist)
 
 (define %fetch-timeout
   ;; Number of seconds after which networking is considered "slow".
