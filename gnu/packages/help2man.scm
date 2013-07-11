@@ -26,7 +26,7 @@
 (define-public help2man
   (package
     (name "help2man")
-    (version "1.41.2")
+    (version "1.43.3")
     (source
      (origin
       (method url-fetch)
@@ -34,7 +34,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1as014d8wxy7529fr8n2ihy61c2p5jzywzirkqggvz8lwg6r933a"))))
+        "00yk86rvvaavg7y6i5bvk5xhm417jl9dpr8bqvqdksw0i48qv5v7"))))
     (build-system gnu-build-system)
     (arguments `(;; There's no `check' target.
                  #:tests? #f))
