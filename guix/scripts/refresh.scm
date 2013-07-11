@@ -159,6 +159,20 @@ downloaded and authenticated; not updating")
                   (alist-cons 'argument arg result))
                 %default-options))
 
+  (define (keep-newest package lst)
+    ;; If a newer version of PACKAGE is already in LST, return LST; otherwise
+    ;; return LST minus the other version of PACKAGE in it, plus PACKAGE.
+    (let ((name (package-name package)))
+      (match (find (lambda (p)
+                     (string=? (package-name p) name))
+                   lst)
+        ((? package? other)
+         (if (version>? (package-version other) (package-version package))
+             lst
+             (cons package (delq other lst))))
+        (_
+         (cons package lst)))))
+
   (define core-package?
     (let* ((input->package (match-lambda
                             ((name (? package? package) _ ...) package)
@@ -198,10 +212,9 @@ update would trigger a complete rebuild."
                                         ('core core-package?)
                                         ('non-core (negate core-package?))
                                         (_ (const #t)))))
-                    ;; TODO: Keep only the newest of each package.
                     (fold-packages (lambda (package result)
                                      (if (select? package)
-                                         (cons package result)
+                                         (keep-newest package result)
                                          result))
                                    '())))
                  (some                        ; user-specified packages
