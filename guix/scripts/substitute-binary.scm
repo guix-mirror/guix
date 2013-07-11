@@ -107,7 +107,7 @@ pairs."
 
 (define %fetch-timeout
   ;; Number of seconds after which networking is considered "slow".
-  3)
+  5)
 
 (define %random-state
   (seed->random-state (+ (ash (cdr (gettimeofday)) 32) (getpid))))
