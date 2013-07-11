@@ -34,7 +34,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.11")
+    (version "1.12")
     (source
      (origin
       (method url-fetch)
@@ -42,7 +42,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1h0ql8j65ns2rmhj9wnc9035026crzkg226xg8614fq71947ccxf"))))
+        "0pz58vr12qihq2f0bypjxsb6cf6ajq5258fmfm8s6lvwm3b9xz6a"))))
     (build-system gnu-build-system)
     (home-page "http://gnupg.org")
     (synopsis
@@ -81,7 +81,7 @@ functions, random numbers and a lot of supporting functions.")
 (define-public libassuan
   (package
     (name "libassuan")
-    (version "2.1.0")
+    (version "2.1.1")
     (source
      (origin
       (method url-fetch)
@@ -89,7 +89,7 @@ functions, random numbers and a lot of supporting functions.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0ry2078pafpx2prnhngqsj9bvqxaywakp2paqayfh9i71hxbvid4"))))
+        "1783nb0b6nr9yjhb5wfh8ykc5w89f4anppz1kz9913mqg5vxdqi3"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error) ("pth" ,pth)))
