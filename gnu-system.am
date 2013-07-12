@@ -189,7 +189,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-no-ld-so-cache.patch		\
-  gnu/packages/patches/gnutls-fix-tests-on-32-bits-system.patch \
+  gnu/packages/patches/gnutls-fix-tests-on-32-bits-system.patch	\
   gnu/packages/patches/grub-gets-undeclared.patch		\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
   gnu/packages/patches/guile-default-utf8.patch			\
@@ -204,8 +204,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/make-impure-dirs.patch			\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
-  gnu/packages/patches/python-fix-dbm.patch			\
+  gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\
+  gnu/packages/patches/python-fix-dbm.patch			\
   gnu/packages/patches/qemu-multiple-smb-shares.patch		\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/scheme48-tests.patch			\

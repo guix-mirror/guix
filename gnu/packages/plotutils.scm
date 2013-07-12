@@ -22,7 +22,8 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages libpng))
+  #:use-module (gnu packages libpng)
+  #:use-module (gnu packages))
 
 (define-public plotutils
   (package
@@ -36,10 +37,13 @@
               (base32
                "1arkyizn5wbgvbh53aziv3s6lmd3wm9lqzkhxb3hijlp1y124hjg"))))
     (build-system gnu-build-system)
+    (arguments '(#:patches (list (assoc-ref %build-inputs "patch/jmpbuf"))))
     (inputs `(("libpng" ,libpng)
               ("libx11" ,libx11)
               ("libxt" ,libxt)
-              ("libxaw" ,libxaw)))
+              ("libxaw" ,libxaw)
+              ("patch/jmpbuf"
+               ,(search-patch "plotutils-libpng-jmpbuf.patch"))))
     (home-page
      "http://www.gnu.org/software/plotutils/")
     (synopsis "Plotting utilities and library")
