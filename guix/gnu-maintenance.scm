@@ -252,8 +252,10 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
                               files)
                   result))))))))
 
-(define (latest-release project)
-  "Return (\"FOO-X.Y\" . \"/bar/foo\") or #f."
+(define* (latest-release project
+                         #:key (ftp-open ftp-open) (ftp-close ftp-close))
+  "Return (\"FOO-X.Y\" . \"/bar/foo\") or #f.  Use FTP-OPEN and FTP-CLOSE to
+open (resp. close) FTP connections; this can be useful to reuse connections."
   (define (latest a b)
     (if (version>? a b) a b))
 

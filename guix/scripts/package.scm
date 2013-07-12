@@ -26,6 +26,7 @@
   #:use-module (guix utils)
   #:use-module (guix config)
   #:use-module ((guix build utils) #:select (directory-exists? mkdir-p))
+  #:use-module ((guix ftp-client) #:select (ftp-open))
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
@@ -323,6 +324,12 @@ return its return value."
        (format (current-error-port) "  interrupted by signal ~a~%" SIGINT)
        #f))))
 
+(define ftp-open*
+  ;; Memoizing version of `ftp-open'.  The goal is to avoid initiating a new
+  ;; FTP connection for each package, esp. since most of them are to the same
+  ;; server.  This has a noticeable impact when doing "guix upgrade -u".
+  (memoize ftp-open))
+
 (define (check-package-freshness package)
   "Check whether PACKAGE has a newer version available upstream, and report
 it."
@@ -333,7 +340,9 @@ it."
       (when (false-if-exception (gnu-package? package))
         (let ((name      (package-name package))
               (full-name (package-full-name package)))
-          (match (waiting (latest-release name)
+          (match (waiting (latest-release name
+                                          #:ftp-open ftp-open*
+                                          #:ftp-close (const #f))
                           (_ "looking for the latest release of GNU ~a...") name)
             ((latest-version . _)
              (when (version>? latest-version full-name)
