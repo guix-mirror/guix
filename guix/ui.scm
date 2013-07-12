@@ -120,6 +120,11 @@ messages."
   "Perform the usual initialization for stand-alone Guix commands."
   (install-locale)
   (textdomain "guix")
+
+  ;; Ignore SIGPIPE.  If the daemon closes the connection, we prefer to be
+  ;; notified via an EPIPE later.
+  (sigaction SIGPIPE SIG_IGN)
+
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF))
 
@@ -171,7 +176,12 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
              ;; FIXME: Server-provided error messages aren't i18n'd.
              (leave (_ "build failed: ~a~%")
                     (nix-protocol-error-message c))))
-    (thunk)))
+    ;; Catch EPIPE and the likes.
+    (catch 'system-error
+      thunk
+      (lambda args
+        (leave (_ "~a~%")
+               (strerror (system-error-errno args)))))))
 
 (define (read/eval-package-expression str)
   "Read and evaluate STR and return the package it refers to, or exit an
