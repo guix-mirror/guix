@@ -281,14 +281,18 @@ pairs.  Example: (\"mit-scheme-9.0.1\" . \"/gnu/mit-scheme/stable.pkg/9.0.1\"). 
                                       (release-file project file))
                                      (_ #f))
                                     entries)))
+             (ftp-close conn)
              (and=> (reduce latest #f files)
                     (cut cons <> directory))))
           ((subdirs ...)
            ;; Assume that SUBDIRS correspond to versions, and jump into the
            ;; one with the highest version number.
            (let ((target (reduce latest #f subdirs)))
-             (and target
-                  (loop (string-append directory "/" target))))))))))
+             (if target
+                 (loop (string-append directory "/" target))
+                 (begin
+                   (ftp-close conn)
+                   #f)))))))))
 
 (define %package-name-rx
   ;; Regexp for a package name, e.g., "foo-X.Y".  Since TeXmacs uses
