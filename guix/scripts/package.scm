@@ -703,7 +703,7 @@ more information.~%"))
         `(,(package-name p)
           ,(package-version p)
           ,out
-          ,path
+          ,p
           ,(canonicalize-deps deps))))
 
     (define (show-what-to-remove/install remove install dry-run?)
@@ -771,7 +771,7 @@ more information.~%"))
                           upgrade
                           (filter-map (match-lambda
                                        (('install . (? package? p))
-                                        #f)
+                                        (package->tuple p))
                                        (('install . (? store-path?))
                                         #f)
                                        (('install . package)
@@ -789,7 +789,7 @@ more information.~%"))
                (install* (append
                           (filter-map (match-lambda
                                        (('install . (? package? p))
-                                        (package->tuple p))
+                                        #f)
                                        (('install . (? store-path? path))
                                         (let-values (((name version)
                                                       (package-name->name+version
