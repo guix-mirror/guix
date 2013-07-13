@@ -3,11 +3,46 @@
 #+TITLE: Hacking GNU Guix and Its Incredible Distro
 
 Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
   notice and this notice are preserved.
 
+
+* Building from Git
+
+First, make sure that Autoconf (>= 2.69), Automake, and pkg-config are
+installed.  Run ‘./bootstrap’ that, among other things, invokes ‘git submodule
+update’, or you might get the following error
+
+  make: *** No rule to make target `nix/libstore/schema.sql', needed by
+  `nix/libstore/schema.sql.hh'
+
+Then, as always, run ‘./configure’.  If you get an error like this one
+
+  ./configure: line 6755: `PKG_CHECK_MODULES(GUILE, guile-2.0 >= 2.0.5)'
+
+it probably means that Autoconf couldn’t find ‘pkg.m4’, which is provided by
+pkg-config.  Make sure that ‘pkg.m4’ is available.  For instance, if you
+installed Automake in ‘/usr/local’, it wouldn’t look for ‘.m4’ files in
+‘/usr/share’.  So you have to invoke the following command in that case
+
+  $ export ACLOCAL_PATH=/usr/share/aclocal
+
+See “info '(automake) Macro Search Path'” for more information.
+
+After that you should proceed with ‘make’.  You might also get this error
+
+  /bin/bash: dot: command not found
+  make[2]: *** [doc/images/bootstrap-graph.png] Error 127
+
+This one is easy to handle; just install Graphviz.  It is not listed as a
+requirement because the resulting images should come with a tarball.
+
+Finally, you have to invoke ‘make check’ to run tests.  If anything fails,
+take a look at “info '(guix) Installation'” or send a message to
+<bug-guix@gnu.org>.
 
 * Running Guix before it is installed
 
