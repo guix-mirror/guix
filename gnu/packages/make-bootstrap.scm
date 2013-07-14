@@ -153,6 +153,13 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
         (gawk (package (inherit gawk)
                 (arguments
                  `(#:patches (list (assoc-ref %build-inputs "patch/sh"))
+
+                   ;; Starting from gawk 4.1.0, some of the tests for the
+                   ;; plug-in mechanism just fail on static builds:
+                   ;;
+                   ;; ./fts.awk:1: error: can't open shared library `filefuncs' for reading (No such file or directory)
+                   #:tests? #f
+
                    ,@(substitute-keyword-arguments (package-arguments gawk)
                        ((#:phases phases)
                         `(alist-cons-before
