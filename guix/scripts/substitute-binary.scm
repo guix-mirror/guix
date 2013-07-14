@@ -39,7 +39,7 @@
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (web uri)
-  #:use-module (guix web)
+  #:use-module (guix http-client)
   #:export (guix-substitute-binary))
 
 ;;; Comment:

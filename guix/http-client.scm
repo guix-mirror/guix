@@ -17,7 +17,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix web)
+(define-module (guix http-client)
   #:use-module (guix utils)
   #:use-module (web uri)
   #:use-module (web client)
@@ -32,7 +32,7 @@
 
 ;;; Commentary:
 ;;;
-;;; Web client portable among Guile versions.
+;;; HTTP client portable among Guile versions.
 ;;;
 ;;; Code:
 
@@ -205,4 +205,4 @@ unbuffered port, suitable for use in `filtered-port'."
            (error "download failed" uri code
                   (response-reason-phrase resp))))))))
 
-;;; web.scm ends here
+;;; http-client.scm ends here

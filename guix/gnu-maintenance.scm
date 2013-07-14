@@ -27,7 +27,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (system foreign)
-  #:use-module (guix web)
+  #:use-module (guix http-client)
   #:use-module (guix ftp-client)
   #:use-module (guix ui)
   #:use-module (guix utils)

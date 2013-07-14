@@ -13,4 +13,4 @@ guix/scripts/pull.scm
 guix/scripts/substitute-binary.scm
 guix/gnu-maintenance.scm
 guix/ui.scm
-guix/web.scm
+guix/http-client.scm

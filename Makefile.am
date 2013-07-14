@@ -53,7 +53,7 @@ MODULES =					\
   guix/build-system/python.scm			\
   guix/build-system/trivial.scm			\
   guix/ftp-client.scm				\
-  guix/web.scm					\
+  guix/http-client.scm				\
   guix/gnupg.scm				\
   guix/store.scm				\
   guix/ui.scm					\
