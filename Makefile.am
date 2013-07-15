@@ -129,6 +129,7 @@ EXTRA_DIST =					\
   TODO						\
   .dir-locals.el				\
   build-aux/hydra/gnu-system.scm		\
+  build-aux/check-available-binaries.scm	\
   build-aux/download.scm			\
   build-aux/list-packages.scm			\
   build-aux/sync-synopses.scm			\
@@ -211,6 +212,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --enable-daemon
 
 dist-hook: sync-synopses gen-ChangeLog assert-no-store-file-names
+distcheck-hook: assert-binaries-available
 
 sync-synopses:
 	-$(top_builddir)/pre-inst-env $(GUILE)		\
@@ -233,4 +235,10 @@ assert-no-store-file-names:
 	  exit 1 ;								\
 	fi
 
-.PHONY: sync-synopses gen-ChangeLog assert-no-store-file-names
+# Make sure hydra.gnu.org has the important binaries.
+assert-binaries-available:
+	$(top_builddir)/pre-inst-env "$(GUILE)"				\
+	  "$(top_srcdir)/build-aux/check-available-binaries.scm"
+
+.PHONY: sync-synopses gen-ChangeLog
+.PHONY: assert-no-store-file-names assert-binaries-available
