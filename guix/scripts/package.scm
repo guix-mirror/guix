@@ -693,6 +693,12 @@ more information.~%"))
 
       (delete-duplicates deps same?))
 
+    (define (same-package? tuple name out)
+      (match tuple
+        ((tuple-name _ tuple-output _ ...)
+         (and (equal? name tuple-name)
+              (equal? out tuple-output)))))
+
     (define (package->tuple p)
       ;; Convert package P to a tuple.
       ;; When given a package via `-e', install the first of its
@@ -816,8 +822,11 @@ more information.~%"))
                (packages (append install*
                                  (fold (lambda (package result)
                                          (match package
-                                           ((name _ ...)
-                                            (alist-delete name result))))
+                                           ((name _ out _ ...)
+                                            (filter (negate
+                                                     (cut same-package? <>
+                                                          name out))
+                                                    result))))
                                        (fold alist-delete installed remove)
                                        install*))))
 
