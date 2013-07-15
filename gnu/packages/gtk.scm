@@ -143,9 +143,10 @@ affine transformation (scale, rotation, shear, etc.)")
              (base32
               "0k7662qix7zzh7mf6ikdj594n8jpbfm25z8swz64zbm86kgk1shs"))))
    (build-system gnu-build-system)
+   (propagated-inputs
+    `(("harfbuzz" ,harfbuzz)))
    (inputs
     `(("cairo" ,cairo)
-      ("harfbuzz" ,harfbuzz)
       ("pkg-config" ,pkg-config)
       ("zlib" ,zlib)))
    (synopsis "GNOME text and font handling library")
@@ -180,3 +181,41 @@ used throughout the world.")
 in the GNOME project.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/gdk-pixbuf/")))
+
+(define-public gtk+
+  (package
+   (name "gtk+")
+   (version "2.24.20")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/gtk+/2.24/gtk+-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "18qdvb7nxi25hfnpmcy01p3majw9jnx83ikm263dk9rrjazvqrnc"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("atk" ,atk)
+      ("cairo" ,cairo)
+      ("gdk-pixbuf" ,gdk-pixbuf)
+      ("pango" ,pango)
+      ("pkg-config" ,pkg-config)))
+   (arguments
+    `(#:phases
+      (alist-replace
+       'configure
+       (lambda* (#:key #:allow-other-keys #:rest args)
+        (let ((configure (assoc-ref %standard-phases 'configure)))
+          ;; FIXME: re-enable tests requiring an X server
+          (substitute* "gtk/Makefile.in"
+           (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits ."))
+          (apply configure args)))
+      %standard-phases)))
+   (synopsis "multi-platform toolkit for creating graphical user interfaces")
+   (description
+    "GTK+, or the GIMP Toolkit, is a multi-platform toolkit for creating
+graphical user interfaces. Offering a complete set of widgets, GTK+ is
+suitable for projects ranging from small one-off tools to complete
+application suites.")
+   (license license:lgpl2.0+)
+   (home-page "http://www.gtk.org/")))
