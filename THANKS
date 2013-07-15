@@ -3,12 +3,15 @@ Transposing functional programming discipline to package management
 proved to be inspiring and fruitful.
 
 Thanks to the following people who contributed to GNU Guix through
-suggestions, bug reports, patches, or general infrastructure help:
+suggestions, bug reports, patches, internationalization, or general
+infrastructure help:
 
        Lluís Batlle i Rossell <viric@viric.name>
+      Felipe Castro <fefcas@gmail.com>
       Daniel Clark <dclark@pobox.com>
    Alexandru Cojocaru <xojoc@gmx.com>
        Aleix Conchillo Flaqué <aconchillo@gmail.com>
+      Rafael Ferreira <rafael.f.f1@gmail.com>
      Matthew Lien <bluet@bluet.org>
         Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
        Jason Self <jself@gnu.org>
