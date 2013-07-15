@@ -144,10 +144,10 @@ affine transformation (scale, rotation, shear, etc.)")
               "0k7662qix7zzh7mf6ikdj594n8jpbfm25z8swz64zbm86kgk1shs"))))
    (build-system gnu-build-system)
    (propagated-inputs
-    `(("harfbuzz" ,harfbuzz)))
-   (inputs
     `(("cairo" ,cairo)
-      ("pkg-config" ,pkg-config)
+      ("harfbuzz" ,harfbuzz)))
+   (inputs
+    `(("pkg-config" ,pkg-config)
       ("zlib" ,zlib)))
    (synopsis "GNOME text and font handling library")
    (description
@@ -194,12 +194,12 @@ in the GNOME project.")
              (base32
               "18qdvb7nxi25hfnpmcy01p3majw9jnx83ikm263dk9rrjazvqrnc"))))
    (build-system gnu-build-system)
-   (inputs
+   (propagated-inputs
     `(("atk" ,atk)
-      ("cairo" ,cairo)
       ("gdk-pixbuf" ,gdk-pixbuf)
-      ("pango" ,pango)
-      ("pkg-config" ,pkg-config)))
+      ("pango" ,pango)))
+   (inputs
+    `(("pkg-config" ,pkg-config)))
    (arguments
     `(#:phases
       (alist-replace
