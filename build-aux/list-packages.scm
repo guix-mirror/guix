@@ -74,6 +74,17 @@ exec guile -l "$0"                              \
 
     (->sxml (package-license package)))
 
+  (define (status package)
+    (define (url system)
+      `(a (@ (href ,(string-append "http://hydra.gnu.org/job/gnu/master/"
+                                   (package-full-name package) "."
+                                   system)))
+          ,system))
+
+    `(div "status: "
+          ,(url "x86_64-linux") " "
+          ,(url "i686-linux")))
+
   (define (package-logo name)
     (and=> (lookup-gnu-package name)
            gnu-package-logo))
@@ -103,7 +114,8 @@ exec guile -l "$0"                              \
                  (p ,(package-description package))
                  ,(license package)
                  (a (@ (href ,(package-home-page package)))
-                    ,(package-home-page package)))))))
+                    ,(package-home-page package))
+                 ,(status package))))))
 
 (define (packages->sxml packages)
   "Return an HTML page as SXML describing PACKAGES."
@@ -118,7 +130,10 @@ exec guile -l "$0"                              \
          (a (@ (href "manual/guix.html#GNU-Distribution"))
             "GNU system distribution")
          " of "
-         (a (@ (href "/software/guix/guix.html")) "GNU Guix") ".")
+         (a (@ (href "/software/guix/guix.html")) "GNU Guix") ".  "
+         "Our " (a (@ (href "http://hydra.gnu.org/jobset/gnu/master"))
+                   "continuous integration system")
+         " shows their current build status.")
     (table (@ (style "border: none;"))
            ,@(map package->sxml packages))))
 
