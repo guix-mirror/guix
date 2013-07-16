@@ -93,7 +93,7 @@ SYSTEM."
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
   (define system
-    (or (assoc-ref arguments system)
+    (or (assoc-ref arguments 'system)
         (%current-system)))
 
   (define job-name
