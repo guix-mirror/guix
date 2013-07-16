@@ -67,12 +67,15 @@
 
 (define (package-job store job-name package system)
   "Return a job called JOB-NAME that builds PACKAGE on SYSTEM."
-  `(,job-name . ,(cut package->alist store package system)))
+  (let ((job-name (symbol-append job-name (string->symbol ".")
+                                 (string->symbol system))))
+    `(,job-name . ,(cut package->alist store package system))))
 
 (define (package-cross-job store job-name package target system)
   "Return a job called TARGET.JOB-NAME that cross-builds PACKAGE for TARGET on
 SYSTEM."
-  `(,(symbol-append (string->symbol target) (string->symbol ".") job-name) .
+  `(,(symbol-append (string->symbol target) (string->symbol ".") job-name
+                    (string->symbol ".") (string->symbol system)) .
     ,(cute package->alist store package system
            (cut package-cross-derivation <> <> target <>))))
 
