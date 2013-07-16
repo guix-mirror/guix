@@ -130,8 +130,8 @@ SYSTEM."
                   (fold-packages (lambda (package result)
                                    (if (member package base-packages)
                                        result
-                                       (append (package-job store (job-name package)
-                                                            package system)
-                                               result)))
+                                       (cons (package-job store (job-name package)
+                                                          package system)
+                                             result)))
                                  (cross-jobs system)))
                 systems)))
