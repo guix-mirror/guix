@@ -1754,7 +1754,7 @@ reason.
 @chapter Contributing
 
 This project is a cooperative effort, and we need your help to make it
-grow!  Please get in touch with us on @email{bug-guix@@gnu.org}.  We
+grow!  Please get in touch with us on @email{guix-devel@@gnu.org}.  We
 welcome ideas, bug reports, patches, and anything that may be helpful to
 the project.
 
