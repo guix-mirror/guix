@@ -95,14 +95,21 @@ SYSTEM."
 
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
-  (define system
-    (or (assoc-ref arguments 'system)
-        (%current-system)))
+  (define systems
+    (match (filter-map (match-lambda
+                        (('system . value)
+                         value)
+                        (_ #f))
+                       arguments)
+      ((lst ..1)
+       lst)
+      (_
+       (list (%current-system)))))
 
   (define job-name
     (compose string->symbol package-full-name))
 
-  (define cross-jobs
+  (define (cross-jobs system)
     (append-map (lambda (target)
                   (map (lambda (package)
                          (package-cross-job store (job-name package)
@@ -119,10 +126,12 @@ SYSTEM."
                                         (((_ inputs _ ...) ...)
                                          inputs))))
                                     %final-inputs))))
-    (fold-packages (lambda (package result)
-                     (if (member package base-packages)
-                         result
-                         (cons (package-job store (job-name package)
-                                            package system)
-                               result)))
-                   cross-jobs)))
+    (append-map (lambda (system)
+                  (fold-packages (lambda (package result)
+                                   (if (member package base-packages)
+                                       result
+                                       (append (package-job store (job-name package)
+                                                            package system)
+                                               result)))
+                                 (cross-jobs system)))
+                systems)))
