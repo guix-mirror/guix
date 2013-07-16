@@ -36,12 +36,63 @@ to download a substitute.
 
 See the manual for details.
 
+*** New ‘--key-download’ option for “guix refresh”
+
+See the manual for details.
 
 ** Programming interfaces
+
+*** New ‘package-cross-derivation’ procedure in (guix derivations)
+
+See the manual for details.
+
+*** New ‘%current-target-system’ SRFI-39 parameter
+
+This parameter is like ‘%current-system’, but for cross-compilation.  It
+allows code in package definitions (such as in the ‘arguments’ field) to know
+whether it is being cross-compiled, and what the target system is.
 
 *** New (guix hash) module; new ‘open-sha256-port’ and ‘sha256-port’ procedures
 
 This improves performance of SHA256 computations.
+
+
+** GNU distribution
+
+*** Major updates
+
+FIXME
+
+*** Noteworthy new packages
+
+FIXME
+
+*** Binary packages now available for i686-linux
+
+The build farm at http://hydra.gnu.org now provides 32-bit GNU/Linux binaries
+(i686-linux), in addition to the x86_64-linux binaries.  Both can be
+transparently used as substitutes for local builds on these platforms.
+
+*** Debug info packages
+
+Some packages now have a “debug” output containing debugging information.  The
+“debug” output can be used by GDB, and can be installed separately from the
+other outputs of the package.  See “Installing Debugging Files” in the manual.
+
+*** Bootstrap binaries can be cross-compiled
+
+The distribution can now be ported to new architectures (currently
+GNU/Linux-only) by cross-compiling the “bootstrap binaries”.  See “Porting”
+in the manual.
+
+*** Bootstrapping documented
+
+See “Bootstrapping” in the manual, for information on how the GNU
+distribution builds “from scratch”.
+
+** Internationalization
+
+New translations: eo, pt_BR.
 
 ** Bugs fixed
 *** “guix --help” now works when using Guile 2.0.5
@@ -58,6 +109,12 @@ Previously it would fail when rebuilding a multiple-output derivation when
 some (but not all) of its outputs were already present.  See
 http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00038.html and
 https://github.com/NixOS/nix/issues/122 .
+
+
+*** ‘guix package -i foo:out’ no longer removes other outputs of ‘foo’
+
+Previously only the ‘out’ output of package ‘foo’ would be kept in the
+profile.
 
 * Changes in 0.2 (since 0.1)
 
