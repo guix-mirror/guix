@@ -70,7 +70,7 @@ from a command line or use a GUI application.")
     (version "1.7.8")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://archive.apache.org/dist/subversion/subversion-"
+             (uri (string-append "http://archive.apache.org/dist/subversion/subversion-"
                                  version ".tar.bz2"))
              (sha256
               (base32
