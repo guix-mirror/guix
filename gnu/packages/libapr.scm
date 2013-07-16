@@ -28,14 +28,14 @@
 (define-public libapr
   (package
     (name "libapr")
-    (version "1.4.6")
+    (version "1.4.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/apr/apr-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1g0w9396akmhhrmjzmcwddny5ms43zvj2mrpdkyfcqxizrh5wqwv"))))
+               "0884csfk3f530yscak0jlr6w929s3ys0n7fpwdg3dii1sgwd5f31"))))
     (build-system gnu-build-system)
     (arguments
       `(#:patches (list (assoc-ref %build-inputs
@@ -60,14 +60,14 @@ around or take advantage of platform-specific deficiencies or features.")
 (define-public libaprutil
   (package
     (name "libaprutil")
-    (version "1.5.1")
+    (version "1.5.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/apr/apr-util-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0832cb90zd7zqhhdx0v3i8viw1rmn0d945qbk1zid3cnky9r0s19"))))
+               "19qjxpckb9p4j9pbk8kcirg6k5vqnjrqhnk9xx2c5m9964p3vkls"))))
     (build-system gnu-build-system)
     (inputs
       `(("libapr" ,libapr)))
