@@ -36,6 +36,7 @@
              (base32 "09ibrz1df5ajqcm9vmx6zw8qama2rzf0961yhmmfsy629qfhyrk0"))))
    (build-system gnu-build-system)
    (inputs `(("libusb" ,libusb)))
+   (outputs '("out" "debug"))
    (home-page "http://www.phidgets.com/")
    (license lgpl3+)
    (synopsis "C library to manipulate Phidgets")
