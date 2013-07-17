@@ -28,9 +28,14 @@
              (srfi srfi-1)
              (srfi srfi-26))
 
+(define %supported-systems
+  '("x86_64-linux" "i686-linux"))
+
 (let* ((store  (open-connection))
-       (native (map (cut package-derivation store <>)
-                    (list %bootstrap-tarballs emacs)))
+       (native (append-map (lambda (system)
+                             (map (cut package-derivation store <> system)
+                                  (list %bootstrap-tarballs emacs)))
+                           %supported-systems))
        (cross  (map (cut package-cross-derivation store
                          %bootstrap-tarballs <>)
                     '("mips64el-linux-gnuabi64")))
