@@ -162,7 +162,7 @@ is not covered here.  Please see the files @file{README} and
 GNU Guix depends on the following packages:
 
 @itemize
-@item @url{http://gnu.org/software/guile/, GNU Guile 2.0.x};
+@item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.5 or later;
 @item @url{http://gnupg.org/, GNU libgcrypt}
 @end itemize
 

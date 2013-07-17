@@ -20,7 +20,7 @@ Guix is based on the [[http://nixos.org/nix/][Nix]] package manager.
 
 GNU Guix currently depends on the following packages:
 
-  - [[http://gnu.org/software/guile/][GNU Guile 2.0.x]]
+  - [[http://gnu.org/software/guile/][GNU Guile 2.0.x]], version 2.0.5 or later
   - [[http://gnupg.org/][GNU libgcrypt]]
 
 Unless `--disable-daemon' was passed, the following packages are needed:
