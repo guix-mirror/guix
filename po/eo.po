@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: guix 0.2-pre5\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
-"POT-Creation-Date: 2013-07-14 16:36+0200\n"
+"POT-Creation-Date: 2013-07-17 10:50+0200\n"
 "PO-Revision-Date: 2013-05-22 16:24-0300\n"
 "Last-Translator: Felipe Castro <fefcas@gmail.com>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
@@ -683,32 +683,32 @@ msgstr ""
 msgid "Please change the owner of `~a' to user ~s.~%"
 msgstr ""
 
-#: guix/scripts/package.scm:719
+#: guix/scripts/package.scm:725
 #, scheme-format
 msgid "The following package would be removed:~% ~{~a~%~}~%"
 msgstr "La jena pako devos esti forigata:~% ~{~a~%~}~%"
 
-#: guix/scripts/package.scm:724
+#: guix/scripts/package.scm:730
 #, scheme-format
 msgid "The following package will be removed:~% ~{~a~%~}~%"
 msgstr "La jena pako estos forigata:~% ~{~a~%~}~%"
 
-#: guix/scripts/package.scm:736
+#: guix/scripts/package.scm:742
 #, scheme-format
 msgid "The following package would be installed:~%~{~a~%~}~%"
 msgstr "La jena pako estus instalata:~% ~{~a~%~}~%"
 
-#: guix/scripts/package.scm:741
+#: guix/scripts/package.scm:747
 #, scheme-format
 msgid "The following package will be installed:~%~{~a~%~}~%"
 msgstr "La jena pako estos instalata:~% ~{~a~%~}~%"
 
-#: guix/scripts/package.scm:850
+#: guix/scripts/package.scm:859
 #, scheme-format
 msgid "nothing to be done~%"
 msgstr "nenio por fari~%"
 
-#: guix/scripts/package.scm:861
+#: guix/scripts/package.scm:870
 #, fuzzy, scheme-format
 msgid "~a package in profile~%"
 msgstr "~a: pako ne trovita~%"
