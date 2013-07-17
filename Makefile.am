@@ -74,12 +74,24 @@ MODULES =					\
 # first to avoid errors on systems where (gnutls) is unavailable.
 guix/scripts/download.go: guix/build/download.go
 
+
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
 
 nobase_dist_guilemodule_DATA = $(MODULES)
-
-
 nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
+
+# Do we need to provide our own non-broken (srfi srfi-37) module?
+if INSTALL_SRFI_37
+
+nobase_nodist_guilemodule_DATA += srfi/srfi-37.scm
+GOBJECTS += srfi/srfi-37.go
+
+srfi/srfi-37.scm: srfi/srfi-37.scm.in
+	$(MKDIR_P) srfi
+	cp "$<" "$@"
+
+endif INSTALL_SRFI_37
+
 
 SCM_TESTS =					\
   tests/base32.scm				\
@@ -133,6 +145,7 @@ EXTRA_DIST =					\
   build-aux/download.scm			\
   build-aux/list-packages.scm			\
   build-aux/sync-synopses.scm			\
+  srfi/srfi-37.scm.in				\
   srfi/srfi-64.scm				\
   srfi/srfi-64.upstream.scm			\
   tests/test.drv				\

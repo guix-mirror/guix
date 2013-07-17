@@ -51,6 +51,10 @@ fi
 dnl Make sure we have a full-fledged Guile.
 GUIX_ASSERT_GUILE_FEATURES([regex posix socket net-db threads])
 
+dnl Check whether (srfi srfi-37) works, and provide our own if it doesn't.
+GUIX_CHECK_SRFI_37
+AM_CONDITIONAL([INSTALL_SRFI_37], [test "x$ac_cv_guix_srfi_37_broken" = xyes])
+
 AC_ARG_WITH([nix-prefix],
   [AS_HELP_STRING([--with-nix-prefix=DIR], [search for Nix in DIR])],
   [case "$withval" in
