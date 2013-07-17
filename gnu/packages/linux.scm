@@ -42,6 +42,22 @@
           ((string-prefix? "arm" arch) "arm")
           (else arch))))
 
+(define (linux-libre-urls version)
+  "Return a list of URLs for Linux-Libre VERSION."
+  (list (string-append
+         "http://linux-libre.fsfla.org/pub/linux-libre/releases/"
+         version "-gnu/linux-libre-" version "-gnu.tar.xz")
+
+        ;; XXX: Work around <http://bugs.gnu.org/14851>.
+        (string-append
+         "ftp://alpha.gnu.org/gnu/guix/mirror/linux-libre-"
+         version "-gnu.tar.xz")
+
+        ;; Maybe this URL will become valid eventually.
+        (string-append
+         "mirror://gnu/linux-libre/" version "-gnu/linux-libre-"
+         version "-gnu.tar.xz")))
+
 (define-public linux-libre-headers
   (let* ((version* "3.3.8")
          (build-phase
@@ -69,9 +85,7 @@
     (version version*)
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "http://linux-libre.fsfla.org/pub/linux-libre/releases/3.3.8-gnu/linux-libre-"
-                   version "-gnu.tar.xz"))
+             (uri (linux-libre-urls version))
              (sha256
               (base32
                "0jkfh0z1s6izvdnc3njm39dhzp1cg8i06jv06izwqz9w9qsprvnl"))))
@@ -175,9 +189,7 @@
     (version version*)
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "http://linux-libre.fsfla.org/pub/linux-libre/releases/3.3.8-gnu/linux-libre-"
-                   version "-gnu.tar.xz"))
+             (uri (linux-libre-urls version))
              (sha256
               (base32
                "0jkfh0z1s6izvdnc3njm39dhzp1cg8i06jv06izwqz9w9qsprvnl"))))
