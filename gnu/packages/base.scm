@@ -519,7 +519,7 @@ with the Linux kernel.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "08jzd8y2xkgd89wqrv3835pqr48yjabaczxr2rmg42zaykr11an0"))))
+               "011v63ppr73vhjgxv00inkn5pc7z48i8lhbapkpdq3kfczq9c76d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
