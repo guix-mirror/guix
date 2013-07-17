@@ -59,13 +59,20 @@ This improves performance of SHA256 computations.
 
 ** GNU distribution
 
-*** Major updates
+*** 33 new packages
 
-FIXME
+alsa-lib, babel, cairo, cvs, gcal, gcc-cross-mips64el-linux-gnuabi64, gd,
+gdk-pixbuf, graphviz, grue-hunter, gtk+, gts, harfbuzz, imagemagick, iproute2,
+iptables, libspectre, mpg321, noweb, pango, plotutils, privoxy, pytz, racket,
+rubber, rush, strace, tk, torsocks, unrtf, vc-dwim, wordnet, xlockmore
 
-*** Noteworthy new packages
+*** 25 package updates
 
-FIXME
+automake 1.14, ed 1.9, freeipmi 1.2.8, gawk 4.1.0, gcc 4.8.1, gettext 0.18.3,
+glib 2.37.1, gmp 5.1.2, gnutls 3.2.1, gzip 1.6, help2man 1.43.3, libapr 1.4.8,
+libaprutil 1.5.2, libassuan 2.1.1, libffi 3.0.13, libgc 7.2d, libgpg-error
+1.12, libidn 1.28, libpng 1.5.17, lout 3.40, lsh 2.1, nettle 2.7.1, qemu
+1.5.1, tzdata 2013d, xorriso 1.3.0
 
 *** Binary packages now available for i686-linux
 
@@ -110,11 +117,16 @@ some (but not all) of its outputs were already present.  See
 http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00038.html and
 https://github.com/NixOS/nix/issues/122 .
 
-
 *** ‘guix package -i foo:out’ no longer removes other outputs of ‘foo’
 
 Previously only the ‘out’ output of package ‘foo’ would be kept in the
 profile.
+
+*** Replacement (srfi srfi-37) provided if the user’s one is broken
+
+When the user’s (srfi srfi-37) is affected by http://bugs.gnu.org/13176 (Guile
+< 2.0.9), a replacement with the bug fix is provided.  This bug would affect
+command-line argument processing in some cases.
 
 * Changes in 0.2 (since 0.1)
 
