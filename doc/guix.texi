@@ -1482,34 +1482,15 @@ tight integration of GNU components, and an emphasis on programs and
 tools that help users exert that freedom.
 
 @menu
-* Packaging Guidelines::        What goes into the distribution.
 * Installing Debugging Files::  Feeding the debugger.
 * Package Modules::             Packages from the programmer's viewpoint.
+* Adding New Packages::         Growing the distribution.
 * Bootstrapping::               GNU/Linux built from scratch.
 * Porting::                     Targeting another platform or kernel.
 @end menu
 
 Building this distribution is a cooperative effort, and you are invited
 to join!  @ref{Contributing}, for information about how you can help.
-
-@node Packaging Guidelines
-@section Packaging Guidelines
-
-@c Adapted from http://www.gnu.org/philosophy/philosophy.html.
-
-The GNU operating system has been developed so that users can have
-freedom in their computing.  GNU is @dfn{free software}, meaning that
-users have the @url{http://www.gnu.org/philosophy/free-sw.html,four
-essential freedoms}: to run the program, to study and change the program
-in source code form, to redistribute exact copies, and to distribute
-modified versions.  Packages found in the GNU distribution provide only
-software that conveys these four freedoms.
-
-In addition, the GNU distribution follow the
-@url{http://www.gnu.org/distros/free-system-distribution-guidelines.html,free
-software distribution guidelines}.  Among other things, these guidelines
-reject non-free firmware, recommendations of non-free software, and
-discuss ways to deal with trademarks and patents.
 
 
 @node Installing Debugging Files
@@ -1575,8 +1556,9 @@ the load.  To check whether a package has a @code{debug} output, use
 
 From a programming viewpoint, the package definitions of the
 distribution are provided by Guile modules in the @code{(gnu packages
-...)} name space---for instance, the @code{(gnu packages emacs)} module
-exports a variable named @code{emacs}, which is bound to a
+...)} name space (@pxref{Modules, Guile modules,, guile, GNU Guile
+Reference Manual}).  For instance, the @code{(gnu packages emacs)}
+module exports a variable named @code{emacs}, which is bound to a
 @code{<package>} object (@pxref{Defining Packages}).  The @code{(gnu
 packages)} module provides facilities for searching for packages.
 
@@ -1584,7 +1566,87 @@ The distribution is fully @dfn{bootstrapped} and @dfn{self-contained}:
 each package is built based solely on other packages in the
 distribution.  The root of this dependency graph is a small set of
 @dfn{bootstrap binaries}, provided by the @code{(gnu packages
-bootstrap)} module.  More on this in the next section.
+bootstrap)} module.  For more information on bootstrapping,
+@ref{Bootstrapping}.
+
+@node Adding New Packages
+@section Adding New Packages
+
+The GNU distribution is nascent and may well lack some of your favorite
+packages.  This section describes how you can help make the distribution
+grow.  @ref{Contributing}, for additional information on how you can
+help.
+
+@menu
+* Packaging Guidelines::        What goes into the distribution.
+* From the Source Tarball to the Package::     The story of a package.
+@end menu
+
+@node Packaging Guidelines
+@subsection Packaging Guidelines
+
+@c Adapted from http://www.gnu.org/philosophy/philosophy.html.
+
+The GNU operating system has been developed so that users can have
+freedom in their computing.  GNU is @dfn{free software}, meaning that
+users have the @url{http://www.gnu.org/philosophy/free-sw.html,four
+essential freedoms}: to run the program, to study and change the program
+in source code form, to redistribute exact copies, and to distribute
+modified versions.  Packages found in the GNU distribution provide only
+software that conveys these four freedoms.
+
+In addition, the GNU distribution follow the
+@url{http://www.gnu.org/distros/free-system-distribution-guidelines.html,free
+software distribution guidelines}.  Among other things, these guidelines
+reject non-free firmware, recommendations of non-free software, and
+discuss ways to deal with trademarks and patents.
+
+@node From the Source Tarball to the Package
+@subsection From the Source Tarball, to the Package Definition, to the Binary Package
+
+Free software packages are usually distributed in the form of
+@dfn{source code tarballs}---typically @file{tar.gz} files that contain
+all the source files.  Adding a package to the distribution means
+essentially two things: adding a @dfn{recipe} that describes how to
+build the package, including a list of other packages required to build
+it, and adding @dfn{package meta-data} along with that recipe, such as a
+description and licensing information.
+
+In Guix all this information is embodied in @dfn{package definitions}.
+Package definitions provide a high-level view of the package.  They are
+written using the syntax of the Scheme programming language; in fact,
+for each package we define a variable bound to the package definition,
+and export that variable from a module (@pxref{Package Modules}).
+However, in-depth Scheme knowledge is @emph{not} a prerequisite for
+creating packages.  For more information on package definitions,
+@ref{Defining Packages}.
+
+Once a package definition is in place, stored in a file in the Guix
+source tree, it can be tested using the @command{guix build} command
+(@pxref{Invoking guix build}).  For example, assuming the new package is
+called @code{gnew}, you may run this command from the Guix build tree:
+
+@example
+./pre-inst-env guix build gnew --keep-failed
+@end example
+
+Using @code{--keep-failed} makes it easier to debug build failures since
+it provides access to the failed build tree.
+
+Once your package builds correctly, please send us a patch
+(@pxref{Contributing}).  Well, if you need help, we will be happy to
+help you too.  Once the patch is committed in the Guix repository, the
+new package automatically gets built on the supported platforms by
+@url{http://hydra.gnu.org/gnu/master, our continuous integration
+system}.
+
+@cindex substituter
+Users can obtain the new package definition simply by running
+@command{guix pull} (@pxref{Invoking guix pull}).  When
+@code{hydra.gnu.org} is done building the package, installing the
+package automatically downloads binaries from there (except when using
+@code{--no-substitutes}).  The only place where human intervention is
+needed is to review and apply the patch.
 
 
 @node Bootstrapping
@@ -1756,7 +1818,8 @@ reason.
 This project is a cooperative effort, and we need your help to make it
 grow!  Please get in touch with us on @email{guix-devel@@gnu.org}.  We
 welcome ideas, bug reports, patches, and anything that may be helpful to
-the project.
+the project.  We particularly welcome help on packaging (@pxref{Adding
+New Packages}).
 
 Please see the
 @url{http://git.savannah.gnu.org/cgit/guix.git/tree/HACKING,
