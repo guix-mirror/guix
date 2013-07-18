@@ -33,23 +33,16 @@ When `--disable-daemon' was passed, you instead need the following:
 
   - [[http://nixos.org/nix/][Nix]]
 
-Optionally, packages from Nixpkgs may be transparently reused from Guix.
-For this to work, you need to have a checkout of the Nixpkgs repository;
-the `--with-nixpkgs' option allows you to let `configure' know where the
-Nixpkgs checkout is.
+* Installation
 
-  - [[http://nixos.org/nixpkgs/][Nixpkgs]]
+See the manual for the installation instructions, either by running
 
-When building Guix from a checkout, the following packages are also
-required:
+  info -f doc/guix.info "(guix) Installation"
 
-  - [[http://www.gnu.org/software/autoconf/][GNU Autoconf]]
-  - [[http://www.gnu.org/software/automake/][GNU Automake]]
-  - [[http://www.gnu.org/software/gettext/][GNU Gettext]]
+or by checking the [[http://www.gnu.org/software/guix/manual/guix.html#Installation][web copy of the manual]].
 
-Run the "bootstrap" script to download the Nix daemon and to generate the
-build system infrastructure using autoconf. It reports an error if an
-inappropriate version of the above packages is being used.
+For information on installation from a Git checkout, please see the ‘HACKING’
+file.
 
 * Installing Guix from Guix
 

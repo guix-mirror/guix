@@ -12,14 +12,25 @@ Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 
 * Building from Git
 
-First, make sure that Autoconf (>= 2.69), Automake, and pkg-config are
-installed.  Run ‘./bootstrap’ that, among other things, invokes ‘git submodule
-update’, or you might get the following error
+When building Guix from a checkout, the following packages are required in
+addition to those mentioned in the installation instructions:
+
+  - [[http://www.gnu.org/software/autoconf/][GNU Autoconf]]
+  - [[http://www.gnu.org/software/automake/][GNU Automake]]
+  - [[http://www.gnu.org/software/gettext/][GNU Gettext]]
+  - [[http://www.graphviz.org/][Graphviz]]
+
+Run ‘./bootstrap’ to download the Nix daemon source code and to generate the
+build system infrastructure using autoconf.  It reports an error if an
+inappropriate version of the above packages is being used.
+
+The ‘bootstrap’ script, among other things, invokes ‘git submodule update’; if
+you didn’t run it, you may get the following error:
 
   make: *** No rule to make target `nix/libstore/schema.sql', needed by
   `nix/libstore/schema.sql.hh'
 
-Then, as always, run ‘./configure’.  If you get an error like this one
+Then, as always, run ‘./configure’.  If you get an error like this one:
 
   ./configure: line 6755: `PKG_CHECK_MODULES(GUILE, guile-2.0 >= 2.0.5)'
 
@@ -32,17 +43,9 @@ installed Automake in ‘/usr/local’, it wouldn’t look for ‘.m4’ files i
 
 See “info '(automake) Macro Search Path'” for more information.
 
-After that you should proceed with ‘make’.  You might also get this error
-
-  /bin/bash: dot: command not found
-  make[2]: *** [doc/images/bootstrap-graph.png] Error 127
-
-This one is easy to handle; just install Graphviz.  It is not listed as a
-requirement because the resulting images should come with a tarball.
-
 Finally, you have to invoke ‘make check’ to run tests.  If anything fails,
 take a look at “info '(guix) Installation'” or send a message to
-<bug-guix@gnu.org>.
+<guix-devel@gnu.org>.
 
 * Running Guix before it is installed
 
