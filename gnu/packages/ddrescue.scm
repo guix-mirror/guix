@@ -20,24 +20,25 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module ((gnu packages compression) #:select (lzip)))
 
 (define-public ddrescue
   (package
     (name "ddrescue")
-    (version "1.16")
+    (version "1.17")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/ddrescue/ddrescue-"
-                          version ".tar.gz"))
+                          version ".tar.lz"))
       (sha256
        (base32
-        "1rixya7p8c4jrn4p0flf6h5dqwybrilf3hrj4r7x41h3zgjz5cvn"))))
+        "0bvmsbzli2j4czwkabzs978n1y6vx31axh02kpgcf7033cc6rydy"))))
     (build-system gnu-build-system)
-    (home-page
-     "http://www.gnu.org/software/ddrescue/ddrescue.html")
+    (home-page "http://www.gnu.org/software/ddrescue/ddrescue.html")
     (synopsis "Data recovery utility")
+    (native-inputs `(("lzip" ,lzip)))
     (description
      "GNU Ddrescue is a data recovery tool.  It copies data from one
 file or block device (e.g., hard disk, CD-ROM) to another, trying hard to
