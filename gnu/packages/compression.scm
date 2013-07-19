@@ -200,3 +200,24 @@ compression ratio.
 LZO is written in ANSI C.  Both the source code and the compressed data
 format are designed to be portable across platforms.")
     (license license:gpl2+)))
+
+(define-public lzip
+  (package
+    (name "lzip")
+    (version "1.14")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://savannah/lzip/lzip-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "1rybhk2pxpfh2789ck9mrkdv3bpx7b7miwndlshb5vb02m9crxbz"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.nongnu.org/lzip/lzip.html")
+    (synopsis "Lossless data compressor based on the LZMA algorithm")
+    (description
+     "Lzip is a lossless data compressor with a user interface similar to the
+one of gzip or bzip2.  Lzip decompresses almost as fast as gzip and compresses
+more than bzip2, which makes it well suited for software distribution and data
+archiving.  Lzip is a clean implementation of the LZMA algorithm.")
+    (license license:gpl3+)))
