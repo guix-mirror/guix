@@ -101,19 +101,6 @@ The Guildhall is Guile’s packaging system.  It should be easy to add a
 ‘guildhall-build-system’ that does the right thing based on guildhall
 recipes.
 
-* gnu-build-system: produce a ‘debug’ derivation
-
-Set a .gnu_debuglink in the main derivations to point to the sibling
-file name (only the basename, to not retain a dependency on the ‘debug’
-derivation.)
-
-For /nix/store/xyz-foobar/bin/foo, we should have
-/nix/store/abc-foobar-debug/lib/nix/store/xyz-foobar/bin/foo.debug (info
-"(gdb) Separate Debug Files").
-
-Users should have a default GDB setting with ~/.guix-profile/lib/debug
-as their ‘debug-file-directory’.
-
 * build-expression->derivation: define `%system' in the builder
 
 Would allow build expressions to have system-dependent code, like
@@ -128,6 +115,11 @@ Would allow build expressions to have system-dependent code, like
 Support sophisticated collision handling when building a union: check
 whether the colliding files are identical, honor per-package priorities,
 etc.
+
+* add GUIX_ALLOW_EXPENSIVE_TESTS
+
+Tests that need to download stuff or otherwise take a long time would only be
+run when that is defined.
 
 * guix package
 
