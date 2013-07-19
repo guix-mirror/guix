@@ -165,6 +165,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/wordnet.scm			\
   gnu/packages/xlockmore.scm			\
   gnu/packages/xml.scm				\
+  gnu/packages/xnee.scm				\
   gnu/packages/xorg.scm				\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
