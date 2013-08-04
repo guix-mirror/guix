@@ -104,12 +104,13 @@ exec guile -l "$0"                              \
                                     description-id)))
                ,(package-synopsis package))
             (div (@ (id ,description-id)
-                    (style "position: relative; display: none;"))
+                    (class "package-description")
+                    (style "display: none;"))
                  ,(match (package-logo (package-name package))
                     ((? string? url)
                      `(img (@ (src ,url)
                               (height "35em")
-                              (style "float: left; padding-right: 1em;"))))
+                              (class "package-logo"))))
                     (_ #f))
                  (p ,(package-description package))
                  ,(license package)
@@ -121,7 +122,7 @@ exec guile -l "$0"                              \
   "Return an HTML page as SXML describing PACKAGES."
   `(div
     (h2 "GNU Guix Package List")
-    (div (@ (style "margin-bottom: 5em;"))
+    (div (@ (id "intro"))
          (div
           (img (@ (src "graphics/guix-logo.small.png")
                   (alt "GNU Guix and the GNU System")
@@ -134,7 +135,7 @@ exec guile -l "$0"                              \
          "Our " (a (@ (href "http://hydra.gnu.org/jobset/gnu/master"))
                    "continuous integration system")
          " shows their current build status.")
-    (table (@ (style "border: none;"))
+    (table (@ (id "packages"))
            ,@(map package->sxml packages))))
 
 
@@ -155,8 +156,6 @@ with gnu.org server-side include and all that."
 <!-- Parent-Version: 1.70 $ -->
 
 <title>GNU Guix - GNU Distribution - GNU Project</title>
-<!--#include virtual=\"/server/banner.html\" -->
-
 <script language=\"javascript\" type=\"text/javascript\">
 // license: CC0
 function show_hide(idThing)
@@ -170,7 +169,23 @@ function show_hide(idThing)
     }
   }
 }
-</script>")
+</script>
+<style>
+div#intro {
+margin-bottom: 5em;
+}
+table#packages {
+border: none;
+}
+div.package-description {
+position: relative;
+}
+img.package-logo {
+float: left; padding-right: 1em;
+}
+</style>
+<!--#include virtual=\"/server/banner.html\" -->
+")
    (display (sxml->xml (packages->sxml packages)))
    (format #t "<!--#include virtual=\"/server/footer.html\" -->
 <div id=\"footer\">
