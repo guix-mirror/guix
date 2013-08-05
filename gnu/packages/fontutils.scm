@@ -64,14 +64,14 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
 (define-public fontconfig
   (package
    (name "fontconfig")
-   (version "2.10.91")
+   (version "2.10.93")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "http://www.freedesktop.org/software/fontconfig/release/fontconfig-"
                    version ".tar.bz2"))
             (sha256 (base32
-                     "1vk37q3zj8bjppj3l0pkby1psialpwl263jqf6pbih2hx5a7jwm4"))))
+                     "172j5vsgx2xplsk5mrxrspbn5lrswq6gnxkxjgcrx0j8i0kiz47a"))))
    (build-system gnu-build-system)
    (inputs `(("expat" ,expat)
              ("freetype" ,freetype)
