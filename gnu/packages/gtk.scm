@@ -211,7 +211,7 @@ in the GNOME project.")
            (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits ."))
           (apply configure args)))
       %standard-phases)))
-   (synopsis "multi-platform toolkit for creating graphical user interfaces")
+   (synopsis "Cross-platform toolkit for creating graphical user interfaces")
    (description
     "GTK+, or the GIMP Toolkit, is a multi-platform toolkit for creating
 graphical user interfaces. Offering a complete set of widgets, GTK+ is
