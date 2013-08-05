@@ -110,14 +110,14 @@ affine transformation (scale, rotation, shear, etc.)")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "0.9.18")
+   (version "0.9.19")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.freedesktop.org/software/harfbuzz/release/harfbuzz-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "026rlwspf1zn5akds9fwibpqpn47kmlnmqm5fi0cp4k4dnygpw7y"))))
+              "0d9g02m5n28lp1bfkl8wxblfmfd43yr1ny68x2fsvxj71l30znnj"))))
    (build-system gnu-build-system)
    (inputs
     `(("cairo" ,cairo)
