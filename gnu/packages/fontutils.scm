@@ -76,6 +76,10 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
    (inputs `(("expat" ,expat)
              ("freetype" ,freetype)
              ("pkg-config" ,pkg-config)))
+   (arguments
+     `(#:configure-flags
+        ;; point to user profile instead of /usr/share/fonts in /etc/fonts.conf
+        `("--with-default-fonts=~/.guix-profile/share/fonts")))
    (synopsis "Fontconfig, a library for configuring and customising font access.")
    (description
     "Fontconfig can discover new fonts when installed automatically;
