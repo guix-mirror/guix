@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages gnutls)
@@ -71,8 +72,7 @@
 
        ;; TODO: Add the optional dependencies.
        ("xlibs" ,libx11)
-       ("libXaw" ,libxaw)                    ; XXX: eventually replace by GTK+
-       ;; ("gtk+" ,gtk+)
+       ("gtk+" ,gtk+)
        ("libXft" ,libxft)
        ("libtiff" ,libtiff)
        ;; ("libungif" ,libungif)
