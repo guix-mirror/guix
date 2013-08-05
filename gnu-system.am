@@ -24,6 +24,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages.scm				\
   gnu/packages/acl.scm				\
   gnu/packages/algebra.scm			\
+  gnu/packages/apr.scm           \
   gnu/packages/aspell.scm			\
   gnu/packages/attr.scm				\
   gnu/packages/autotools.scm			\
@@ -87,7 +88,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
   gnu/packages/lesstif.scm			\
-  gnu/packages/libapr.scm			\
   gnu/packages/libdaemon.scm			\
   gnu/packages/libevent.scm			\
   gnu/packages/libffi.scm			\
@@ -173,6 +173,7 @@ GNU_SYSTEM_MODULES =				\
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
 dist_patch_DATA =						\
+  gnu/packages/patches/apr-skip-getservbyname-test.patch \
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
@@ -196,7 +197,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-default-utf8.patch			\
   gnu/packages/patches/guile-linux-syscalls.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
-  gnu/packages/patches/libapr-skip-getservbyname-test.patch	\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/m4-gets-undeclared.patch			\

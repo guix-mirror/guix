@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages libapr)
+(define-module (gnu packages apr)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -25,9 +25,9 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages autotools))
 
-(define-public libapr
+(define-public apr
   (package
-    (name "libapr")
+    (name "apr")
     (version "1.4.8")
     (source (origin
              (method url-fetch)
@@ -44,7 +44,7 @@
     (inputs `(("perl" ,perl)
               ("libtool" ,libtool)
               ("patch/skip-test"
-               ,(search-patch "libapr-skip-getservbyname-test.patch"))))
+               ,(search-patch "apr-skip-getservbyname-test.patch"))))
     (home-page "http://apr.apache.org/")
     (synopsis "The Apache Portable Runtime Library")
     (description
@@ -57,9 +57,9 @@ built, relieving them of the need to code special-case conditions to work
 around or take advantage of platform-specific deficiencies or features.")
     (license asl2.0)))
 
-(define-public libaprutil
+(define-public apr-util
   (package
-    (name "libaprutil")
+    (name "apr-util")
     (version "1.5.2")
     (source (origin
              (method url-fetch)
@@ -70,19 +70,19 @@ around or take advantage of platform-specific deficiencies or features.")
                "19qjxpckb9p4j9pbk8kcirg6k5vqnjrqhnk9xx2c5m9964p3vkls"))))
     (build-system gnu-build-system)
     (inputs
-      `(("libapr" ,libapr)))
+      `(("apr" ,apr)))
     (arguments
      '(#:phases
        (alist-replace
         'configure
         (lambda* (#:key inputs outputs #:allow-other-keys)
           (let ((out (assoc-ref outputs "out"))
-                (libapr (assoc-ref inputs "libapr")))
+                (apr (assoc-ref inputs "apr")))
             (setenv "CONFIG_SHELL" (which "bash"))
             (zero?
              (system* "./configure"
                       (string-append "--prefix=" out)
-                      (string-append "--with-apr=" libapr)))))
+                      (string-append "--with-apr=" apr)))))
         %standard-phases)))
     (home-page "http://apr.apache.org/")
     (synopsis "One of the Apache Portable Runtime Library companions")
