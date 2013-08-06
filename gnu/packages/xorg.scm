@@ -384,6 +384,11 @@ tracking.")
         ("font-util", font-util)
         ("mkfontdir" ,mkfontdir)
         ("pkg-config" ,pkg-config)))
+    (arguments
+      `(#:configure-flags (list
+        ;; install fonts into subdirectory of package output instead of
+        ;; font-util-?.?.?/share/fonts/X11
+        (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -410,6 +415,9 @@ tracking.")
         ("font-util", font-util)
         ("mkfontdir" ,mkfontdir)
         ("pkg-config" ,pkg-config)))
+    (arguments
+      `(#:configure-flags (list
+        (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -1004,6 +1012,9 @@ tracking.")
         ("font-util" ,font-util)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
+    (arguments
+      `(#:configure-flags (list
+        (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -1055,6 +1066,9 @@ tracking.")
         ("font-util" ,font-util)
         ("bdftopcf" ,bdftopcf)
         ("pkg-config" ,pkg-config)))
+    (arguments
+      `(#:configure-flags (list
+        (string-append "--with-fontrootdir=" %output "/share/fonts/X11"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
