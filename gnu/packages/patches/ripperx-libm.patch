@@ -1,0 +1,12 @@
+diff -r -u ripperX-2.7.3.old/src/Makefile.in ripperX-2.7.3.new/src/Makefile.in
+--- ripperX-2.7.3.old/src/Makefile.in	2008-01-25 10:53:50.000000000 +0100
++++ ripperX-2.7.3.new/src/Makefile.in	2013-08-07 16:14:21.000000000 +0200
+@@ -43,7 +43,7 @@
+ 
+ ripperX_LDADD = \
+ 	$(INTLLIBS) \
+-	$(GTK_LIBS)
++	$(GTK_LIBS) -lm
+ 
+ AM_CPPFLAGS = \
+ 	-DG_LOG_DOMAIN=\"ripperX\" \

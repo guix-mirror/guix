@@ -19,8 +19,13 @@
 (define-module (gnu packages mp3)
   #:use-module ((guix licenses)
                 #:renamer (symbol-prefix-proc 'license:))
+  #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages oggvorbis)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
@@ -222,3 +227,41 @@ use with CD-recording software).")
     (synopsis "MPEG Audio Layer III (MP3) encoder")
     (description "LAME is a high quality MPEG Audio Layer III (MP3) encoder.")
     (license license:lgpl2.0)))
+
+(define-public ripperx
+  (package
+   (name "ripperx")
+   (version "2.7.3")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/ripperx/ripperx/"
+                                version "/ripperX-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "130rsb2ly0l6hz728m9qr605ir4073xfl2acvf83id63kxfzjn3x"))))
+   (build-system gnu-build-system)
+   (propagated-inputs
+    `(("gs-fonts" ,gs-fonts)
+      ("cdparanoia" ,cdparanoia)
+      ("flac" ,flac)
+      ("lame" ,lame)
+      ("vorbis-tools" ,vorbis-tools)))
+   (inputs
+    `(("patch/libm" ,(search-patch "ripperx-libm.patch"))
+      ("glib" ,glib)
+      ("gtk+" ,gtk+)
+      ("id3lib" ,id3lib)
+      ("pkg-config" ,pkg-config)))
+   (arguments
+    `(#:patches
+      ;; see http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=713684
+      (list (assoc-ref %build-inputs "patch/libm"))))
+   (synopsis "GTK program to rip and encode CD audio tracks")
+   (description
+    "RipperX is a GTK program to rip CD audio tracks and encode them to the
+Ogg, MP3, or FLAC formats. It's goal is to be easy to use, requiring only
+a few mouse clicks to convert an entire album. It supports CDDB lookups
+for album and track information.")
+   (license license:gpl2)
+   (home-page "http://sourceforge.net/projects/ripperx/")))

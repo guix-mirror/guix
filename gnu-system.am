@@ -211,6 +211,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/python-fix-dbm.patch			\
   gnu/packages/patches/qemu-multiple-smb-shares.patch		\
   gnu/packages/patches/readline-link-ncurses.patch		\
+  gnu/packages/patches/ripperx-libm.patch    \
   gnu/packages/patches/scheme48-tests.patch			\
   gnu/packages/patches/tar-gets-undeclared.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
