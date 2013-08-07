@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,7 +20,7 @@
 (define-module (gnu packages cdrom)
   #:use-module (guix download)
   #:use-module (guix packages)
-  #:use-module ((guix licenses) #:select (lgpl2.1+ gpl3+))
+  #:use-module ((guix licenses) #:select (lgpl2.1+ gpl2 gpl3+))
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
@@ -113,3 +114,31 @@ images and it writes the session results to optical media or to filesystem
 objects.  Vice versa xorriso is able to copy file objects out of ISO 9660
 filesystems.")
     (license gpl3+)))
+
+(define-public cdparanoia
+  (package
+    (name "cdparanoia")
+    (version "10.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://downloads.xiph.org/releases/cdparanoia/cdparanoia-III-"
+                                 version ".src.tgz"))
+             (sha256
+              (base32
+               "1pv4zrajm46za0f6lv162iqffih57a8ly4pc69f7y0gfyigb8p80"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("patch/fpic" ,(search-patch "cdparanoia-fpic.patch"))))
+    (arguments
+     `(#:tests? #f ; there is no check target
+       #:patches (list (assoc-ref %build-inputs "patch/fpic"))))
+    (home-page "http://www.xiph.org/paranoia/")
+    (synopsis "audio CD reading utility which includes extra data verification features")
+    (description "Cdparanoia retrieves audio tracks from CDDA capable CDROM
+drives.  The data can be saved to a file or directed to standard output
+in WAV, AIFF, AIFF-C or raw format.  Most ATAPI, SCSI and  several
+proprietary CDROM drive makes are supported; cdparanoia can determine if the
+target drive is CDDA capable.  In addition to simple reading, cdparanoia adds
+extra-robust data verification, synchronization, error handling and scratch
+reconstruction capability.")
+    (license gpl2))) ; libraries under lgpl2.1

@@ -1,0 +1,60 @@
+diff -r -u cdparanoia-III-10.2.old/interface/Makefile.in cdparanoia-III-10.2.new/interface/Makefile.in
+--- cdparanoia-III-10.2.old/interface/Makefile.in	2008-08-21 18:08:54.000000000 +0200
++++ cdparanoia-III-10.2.new/interface/Makefile.in	2013-08-07 18:48:32.000000000 +0200
+@@ -7,7 +7,7 @@
+ srcdir=@srcdir@
+ 
+ @SET_MAKE@
+-FLAGS=@SBPCD_H@ @UCDROM_H@ @TYPESIZES@ @CFLAGS@
++FLAGS=@SBPCD_H@ @UCDROM_H@ @TYPESIZES@ @CFLAGS@ -fPIC
+ OPT=@OPT@ $(FLAGS)
+ DEBUG=@DEBUG@ -DCDDA_TEST
+ CC=@CC@
+@@ -33,7 +33,7 @@
+ 
+ slib:	
+ 	$(MAKE) lessmessy
+-	$(MAKE) libcdda_interface.so CFLAGS="$(OPT) -fpic" 
++	$(MAKE) libcdda_interface.so CFLAGS="$(OPT)" 
+ 	[ -e libcdda_interface.so.0 ] || ln -s libcdda_interface.so libcdda_interface.so.0
+ 
+ test:	
+@@ -46,7 +46,7 @@
+ 	$(RANLIB) libcdda_interface.a
+ 
+ libcdda_interface.so: 	$(OFILES)	
+-	$(CC) -fpic -shared -o libcdda_interface.so.0.$(VERSION) -Wl,-soname -Wl,libcdda_interface.so.0 $(OFILES) $(LIBS)
++	$(CC) -fPIC -shared -o libcdda_interface.so.0.$(VERSION) -Wl,-soname -Wl,libcdda_interface.so.0 $(OFILES) $(LIBS)
+ 	[ -e libcdda_interface.so.0 ] || ln -s libcdda_interface.so.0.$(VERSION) libcdda_interface.so.0
+ 	[ -e libcdda_interface.so ] || ln -s libcdda_interface.so.0.$(VERSION) libcdda_interface.so
+ 
+diff -r -u cdparanoia-III-10.2.old/paranoia/Makefile.in cdparanoia-III-10.2.new/paranoia/Makefile.in
+--- cdparanoia-III-10.2.old/paranoia/Makefile.in	2008-09-04 21:02:47.000000000 +0200
++++ cdparanoia-III-10.2.new/paranoia/Makefile.in	2013-08-07 18:49:54.000000000 +0200
+@@ -9,7 +9,7 @@
+ 
+ @SET_MAKE@
+ FLAGS=@TYPESIZES@ @CFLAGS@
+-OPT=@OPT@ $(FLAGS)
++OPT=@OPT@ $(FLAGS) -fPIC
+ DEBUG=@DEBUG@ 
+ CC=@CC@
+ LD=@CC@
+@@ -34,7 +34,7 @@
+ 
+ slib:	
+ 	$(MAKE) lessmessy
+-	$(MAKE) libcdda_paranoia.so CFLAGS="$(OPT) -fpic" 
++	$(MAKE) libcdda_paranoia.so CFLAGS="$(OPT)" 
+ 
+ #test:	$(TFILES)
+ #
+@@ -44,7 +44,7 @@
+ 	$(RANLIB) libcdda_paranoia.a
+ 
+ libcdda_paranoia.so: 	$(OFILES)	
+-	$(CC) -fpic -shared -o libcdda_paranoia.so.0.$(VERSION) -Wl,-soname -Wl,libcdda_paranoia.so.0 $(OFILES) -L ../interface -lcdda_interface
++	$(CC) -fPIC -shared -o libcdda_paranoia.so.0.$(VERSION) -Wl,-soname -Wl,libcdda_paranoia.so.0 $(OFILES) -L ../interface -lcdda_interface
+ 	[ -e libcdda_paranoia.so.0 ] || ln -s libcdda_paranoia.so.0.$(VERSION) libcdda_paranoia.so.0
+ 	[ -e libcdda_paranoia.so ] || ln -s libcdda_paranoia.so.0.$(VERSION) libcdda_paranoia.so
+ 
