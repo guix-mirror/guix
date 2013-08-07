@@ -205,3 +205,20 @@ This package contains the binary.")
 frontends, as an mp3 player and as an mp3 to wave file decoder (primarily for
 use with CD-recording software).")
     (license license:gpl2)))
+
+(define-public lame
+  (package
+    (name "lame")
+    (version "3.99.5")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/lame/lame/3.99/lame-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "1zr3kadv35ii6liia0bpfgxpag27xcivp571ybckpbz4b10nnd14"))))
+    (build-system gnu-build-system)
+    (home-page "http://lame.sourceforge.net/")
+    (synopsis "MPEG Audio Layer III (MP3) encoder")
+    (description "LAME is a high quality MPEG Audio Layer III (MP3) encoder.")
+    (license license:lgpl2.0)))
