@@ -25,7 +25,9 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gd)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages pdf)
@@ -41,37 +43,40 @@
 (define texlive-extra-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2012/texlive-20120701-extra.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2013/texlive-20130530-extra.tar.xz")
     (sha256 (base32
-              "0cb8fnv4x281gy5ka779f00ssdmdpjj4x3pkh9j9vq45hrwg3522"))))
+              "15r1qyn7x1iamiiycylx8vzsg27h1r962v6dz9q70f9pdp2rjr6s"))))
 
 (define texlive-texmf-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2012/texlive-20120701-texmf.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2013/texlive-20130530-texmf.tar.xz")
     (sha256 (base32
-              "1fn1dg9k7pnh8a80j23zfkbrfnqyc4c2w4ss30dpkqj490nxsywq"))))
+              "09kza0ha0x9cm4k2qm9w31h3g94y9hy17jahnnsirqyy8rpdqgwg"))))
 
 (define-public texlive
   (package
    (name "texlive")
-   (version "2012")
+   (version "2013")
    (source (origin
             (method url-fetch)
-            (uri "ftp://tug.org/historic/systems/texlive/2012/texlive-20120701-source.tar.xz")
+            (uri "ftp://tug.org/historic/systems/texlive/2013/texlive-20130530-source.tar.xz")
             (sha256 (base32
-                     "10bcrdfsqnc6y3gqcb8ndnjy07i5kz63as39irbq4gmcbmyn2rln"))))
+                     "1m3ripkmra53jwkaqcxxhabc3yvqrfm7pfxldnqirp849hp861d9"))))
    (build-system gnu-build-system)
    (inputs `(("texlive-extra-src" ,texlive-extra-src)
              ("texlive-texmf-src" ,texlive-texmf-src)
+             ("cairo" ,cairo)
              ("fontconfig" ,fontconfig)
              ("freetype" ,freetype)
+             ("gd" ,gd)
              ("icu4c" ,icu4c)
              ("ghostscript" ,ghostscript)
              ("libpng" ,libpng)
              ("libxaw" ,libxaw)
              ("libxt" ,libxt)
              ("perl" ,perl)
+             ("pixman" ,pixman)
              ("poppler" ,poppler)
              ("pkg-config" ,pkg-config)
              ;; FIXME: Add interpreters fontforge and ruby,
@@ -87,18 +92,21 @@
     `(#:out-of-source? #t
       #:configure-flags
        `("--disable-native-texlive-build"
-         ;; Although the texmf and texmf-dist data is taken from
-         ;; texlive-texmf, setting datarootdir is still useful:
+         ;; Although the texmf-dist data is taken from texlive-texmf,
+         ;; setting datarootdir is still useful:
          ;; "make install" creates symbolic links to scripts in this place.
          ,(string-append "--datarootdir=" (assoc-ref %outputs "data"))
          ,(string-append "--infodir=" (assoc-ref %outputs "out") "/share/info")
          ,(string-append "--mandir=" (assoc-ref %outputs "out") "/share/man")
+         "--with-system-cairo"
          "--with-system-freetype2"
-         ;; "--with-system-gd"
-         ;; "--with-system-graphite"
+         "--with-system-gd"
+         ;; "--with-system-graphite2"  ; requires cmake build system
+         ;; "--with-system-harfbuzz"   ; requires --with-system-graphite2
          "--with-system-icu"
          "--with-system-libgs"
          "--with-system-libpng"
+         "--with-system-pixman"
          "--with-system-poppler"
          "--with-system-t1lib"
          "--with-system-teckit"
@@ -131,9 +139,8 @@
                '("latex"  "pdflatex" "xelatex" "lualatex")))
              (with-directory-excursion (string-append out "/share/man/man1/")
                (symlink "luatex.1" "lualatex.1"))
-             ;; Delete texmf and texmf-dist from "data", since they
-             ;; will be reinstalled from texlive-texmf.
-             (system* "rm" "-r" (string-append data "/texmf"))
+             ;; Delete texmf-dist from "data", since it will be reinstalled
+             ;; from texlive-texmf.
              (system* "rm" "-r" (string-append data "/texmf-dist"))
              ;; Unpack texlive-extra and install tlpkg.
              (mkdir "texlive-extra")
@@ -148,18 +155,17 @@
                (apply unpack (list #:source texlive-texmf))
                (apply patch-source-shebangs (list #:source texlive-texmf))
                ;; Register "data" for kpathsea in texmf.cnf.
-               (substitute* "texmf/web2c/texmf.cnf"
+               (substitute* "texmf-dist/web2c/texmf.cnf"
                  (("TEXMFROOT = \\$SELFAUTOPARENT")
                  (string-append "TEXMFROOT = " data)))
-               (system* "mv" "texmf" data)
                (system* "mv" "texmf-dist" data)
                (chdir ".."))
              ;; texmf.cnf must also be placed in "out", since kpsewhich does
              ;; not know about "data" until it has found this file.
-             (mkdir (string-append out "/share/texmf"))
-             (mkdir (string-append out "/share/texmf/web2c"))
-             (copy-file (string-append data "/texmf/web2c/texmf.cnf")
-               (string-append out "/share/texmf/web2c/texmf.cnf"))))
+             (mkdir (string-append out "/share/texmf-dist"))
+             (mkdir (string-append out "/share/texmf-dist/web2c"))
+             (copy-file (string-append data "/texmf-dist/web2c/texmf.cnf")
+               (string-append out "/share/texmf-dist/web2c/texmf.cnf"))))
        (alist-cons-after 'patch-shebangs 'texconfig
          (lambda* (#:key outputs #:allow-other-keys)
            (let ((out (assoc-ref outputs "out")))
