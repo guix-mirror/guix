@@ -5,6 +5,7 @@ exec guile -l "$0"                              \
 !#
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,7 +66,8 @@ exec guile -l "$0"                              \
         (let ((uri (license-uri license)))
           (case (and=> (and uri (string->uri uri)) uri-scheme)
             ((http https)
-             `(div (a (@ (href ,uri))
+             `(div (a (@ (href ,uri)
+                         (title "Link to the full license"))
                       ,(license-name license))))
             (else
              `(div ,(license-name license) " ("
@@ -78,7 +80,8 @@ exec guile -l "$0"                              \
     (define (url system)
       `(a (@ (href ,(string-append "http://hydra.gnu.org/job/gnu/master/"
                                    (package-full-name package) "."
-                                   system)))
+                                   system))
+             (title "View the status of this architecture's build at Hydra"))
           ,system))
 
     `(div "status: "
@@ -92,9 +95,12 @@ exec guile -l "$0"                              \
   (let ((description-id (symbol->string
                          (gensym (package-name package)))))
    `(tr (td ,(if (gnu-package? package)
-                 `(img (@ (src "/graphics/gnu-head-mini.png")))
+                 `(img (@ (src "/graphics/gnu-head-mini.png")
+                          (alt "Part of GNU")
+                          (title "Part of GNU")))
                  ""))
-        (td (a (@ (href ,(source-url package)))
+        (td (a (@ (href ,(source-url package))
+                  (title "Link to the Guix package source code"))
                ,(package-name package) " "
                ,(package-version package)))
         (td (@ (colspan "2") (height "0"))
@@ -104,7 +110,6 @@ exec guile -l "$0"                              \
                                     description-id)))
                ,(package-synopsis package))
             (div (@ (id ,description-id)
-                    (class "package-description")
                     (style "display: none;"))
                  ,(match (package-logo (package-name package))
                     ((? string? url)
@@ -114,7 +119,8 @@ exec guile -l "$0"                              \
                     (_ #f))
                  (p ,(package-description package))
                  ,(license package)
-                 (a (@ (href ,(package-home-page package)))
+                 (a (@ (href ,(package-home-page package))
+                       (title "Link to the package's website"))
                     ,(package-home-page package))
                  ,(status package))))))
 
@@ -127,16 +133,93 @@ exec guile -l "$0"                              \
           (img (@ (src "graphics/guix-logo.small.png")
                   (alt "GNU Guix and the GNU System")
                   (height "83em"))))
-         "This web page lists the packages currently provided by the "
-         (a (@ (href "manual/guix.html#GNU-Distribution"))
-            "GNU system distribution")
-         " of "
-         (a (@ (href "/software/guix/guix.html")) "GNU Guix") ".  "
-         "Our " (a (@ (href "http://hydra.gnu.org/jobset/gnu/master"))
-                   "continuous integration system")
-         " shows their current build status.")
+         (p "This web page lists the packages currently provided by the "
+            (a (@ (href "manual/guix.html#GNU-Distribution"))
+               "GNU system distribution")
+            " of "
+            (a (@ (href "/software/guix/guix.html")) "GNU Guix") ".  "
+            "Our " (a (@ (href "http://hydra.gnu.org/jobset/gnu/master"))
+                      "continuous integration system")
+            " shows their current build status."))
     (table (@ (id "packages"))
-           ,@(map package->sxml packages))))
+           (tr (th "GNU?")
+               (th "Package version")
+               (th "Package details"))
+           ,@(map package->sxml packages))
+    (a (@ (href "#intro")
+          (title "Back to top.")
+          (id "top"))
+       "^")))
+
+
+(define (insert-css)
+  "Return the CSS for the list-packages page."
+  (format #t
+"<style>
+a {transition: all 0.3s}
+div#intro {margin-bottom: 5em}
+div#intro div, div#intro p {padding:0.5em}
+div#intro div {float:left}
+table#packages, table#packages tr, table#packages tbody, table#packages td,
+table#packages th {border: 0px solid black}
+div.package-description {position: relative}
+table#packages tr:nth-child(even) {background-color: #FFF}
+table#packages tr:nth-child(odd) {background-color: #EEE}
+table#packages tr:hover, table#packages tr:focus, table#packages tr:active {background-color: #DDD}
+table#packages tr:first-child, table#packages tr:first-child:hover, table#packages tr:first-child:focus, table#packages tr:first-child:active {
+background-color: #333;
+color: #fff;
+}
+table#packages td
+{
+margin:0px;
+padding:0.2em 0.5em;
+}
+table#packages td:first-child {
+width:10%;
+text-align:center;
+}
+table#packages td:nth-child(2){width:30%;}
+table#packages td:last-child {width:60%}
+img.package-logo {
+float: left;
+padding-right: 1em;
+}
+table#packages span a {float: right}
+a#top {
+position:fixed;
+right:2%;
+bottom:2%;
+font-size:150%;
+background-color:#EEE;
+padding:1.125% 0.75% 0% 0.75%;
+text-decoration:none;
+color:#000;
+border-radius:5px;
+}
+a#top:hover, a#top:focus {
+background-color:#333;
+color:#fff;
+}
+</style>"))
+
+(define (insert-js)
+  "Return the JavaScript for the list-packages page."
+  (format #t
+"<script language=\"javascript\" type=\"text/javascript\">
+// license: CC0
+function show_hide(idThing)
+{
+    var thing = document.getElementById(idThing);
+    if (thing) {
+      if (thing.style.display == \"none\") {
+        thing.style.display = \"\";
+      } else {
+        thing.style.display = \"none\";
+      }
+    }
+}
+</script>"))
 
 
 (define (list-packages . args)
@@ -154,39 +237,13 @@ with gnu.org server-side include and all that."
                           (string<? (package-name p1) (package-name p2))))))
    (format #t "<!--#include virtual=\"/server/html5-header.html\" -->
 <!-- Parent-Version: 1.70 $ -->
-
 <title>GNU Guix - GNU Distribution - GNU Project</title>
-<script language=\"javascript\" type=\"text/javascript\">
-// license: CC0
-function show_hide(idThing)
-{
-  var thing = document.getElementById(idThing);
-  if (thing) {
-    if (thing.style.display == \"none\") {
-      thing.style.display = \"\";
-    } else {
-      thing.style.display = \"none\";
-    }
-  }
-}
-</script>
-<style>
-div#intro {
-margin-bottom: 5em;
-}
-table#packages {
-border: none;
-}
-div.package-description {
-position: relative;
-}
-img.package-logo {
-float: left; padding-right: 1em;
-}
-</style>
-<!--#include virtual=\"/server/banner.html\" -->
 ")
-   (display (sxml->xml (packages->sxml packages)))
+   (insert-css)
+   (insert-js)
+   (format #t "<!--#include virtual=\"/server/banner.html\" -->")
+
+   (sxml->xml (packages->sxml packages))
    (format #t "<!--#include virtual=\"/server/footer.html\" -->
 <div id=\"footer\">
 
