@@ -486,7 +486,7 @@ found."
        (format (current-error-port)
                (_ "guix: missing command name~%"))
        (show-guix-usage))
-      (("--help")
+      ((or ("-h") ("--help"))
        (show-guix-help))
       (("--version")
        (show-version-and-exit "guix"))
