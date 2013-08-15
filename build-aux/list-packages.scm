@@ -206,7 +206,7 @@ color:#fff;
 (define (insert-js)
   "Return the JavaScript for the list-packages page."
   (format #t
-"<script language=\"javascript\" type=\"text/javascript\">
+"<script type=\"text/javascript\">
 // license: CC0
 function show_hide(idThing)
 {
