@@ -693,9 +693,9 @@ tracking.")
 ;;     (license non-free)))
 
 
-(define-public font-bitstream-type1
+(define-public font-luxi-ttf
   (package
-    (name "font-bitstream-type1")
+    (name "font-luxi-ttf")
     (version "1.0.3")
     (source
       (origin
@@ -712,8 +712,9 @@ tracking.")
       `(("mkfontdir" ,mkfontdir)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Luxi fonts by Bigelow & Holmes, Inc.")
+    (description "Luxi fonts is a family of sans-serif fonts for the X Window
+System.  This package provides the TrueType (TTF) files.")
     (license license:x11)))
 
 
