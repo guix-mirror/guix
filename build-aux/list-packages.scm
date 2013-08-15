@@ -103,7 +103,7 @@ exec guile -l "$0"                              \
                   (title "Link to the Guix package source code"))
                ,(package-name package) " "
                ,(package-version package)))
-        (td (@ (colspan "2") (height "0"))
+        (td (@ (colspan "2"))
             (a (@ (href "javascript:void(0)")
                   (title "show/hide package description")
                   (onClick ,(format #f "javascript:show_hide('~a')"
