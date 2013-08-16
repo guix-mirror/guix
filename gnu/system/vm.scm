@@ -44,7 +44,7 @@
                                              #:key
                                              (linux linux-libre)
                                              (initrd qemu-initrd)
-                                             (qemu qemu-kvm/smb-shares)
+                                             (qemu qemu/smb-shares)
                                              (env-vars '())
                                              (modules '())
                                              (guile-for-build
