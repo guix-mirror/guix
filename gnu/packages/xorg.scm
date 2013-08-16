@@ -4949,3 +4949,55 @@ package provides the TrueType (TTF) files.")
     (license
      (license:x11-style
       "https://www-old.gnome.org/fonts/#Final_Bitstream_Vera_Fonts"))))
+
+(define-public freefont-ttf
+  (package
+    (name "freefont")
+    (version "20100919")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/freefont/freefont-ttf-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "1q3h5jp1mbdkinkwxy0lfd0a1q7azlbagraydlzaa2ng82836wg4"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (srfi srfi-26))
+
+                   (let ((tar      (string-append (assoc-ref %build-inputs
+                                                             "tar")
+                                                  "/bin/tar"))
+                         (PATH     (string-append (assoc-ref %build-inputs
+                                                             "gzip")
+                                                  "/bin"))
+                         (font-dir (string-append %output
+                                                  "/share/fonts/truetype"))
+                         (doc-dir  (string-append %output "/share/doc/"
+                                                  ,name "-" ,version)))
+                     (setenv "PATH" PATH)
+                     (system* tar "xvf" (assoc-ref %build-inputs "source"))
+
+                     (mkdir-p font-dir)
+                     (mkdir-p doc-dir)
+                     (chdir (string-append "freefont-" ,version))
+                     (for-each (lambda (file)
+                                 (let ((dir (if (string-suffix? "ttf" file)
+                                                font-dir
+                                                doc-dir)))
+                                   (copy-file file
+                                              (string-append dir "/" file))))
+                               (find-files "." ""))))))
+    (native-inputs `(("source" ,source)
+                     ("tar" ,tar)
+                     ("gzip" ,gzip)))
+    (home-page "http://www.gnu.org/software/freefont/")
+    (synopsis "Outline fonts covering the Universal Character Set (UCS)")
+    (description
+     "The GNU Freefont project aims to provide a set of free outline
+ (PostScript Type0, TrueType, OpenType...) fonts covering the ISO
+10646/Unicode UCS (Universal Character Set).")
+   (license license:gpl3+)))
