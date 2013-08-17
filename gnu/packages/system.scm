@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +22,8 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages ncurses))
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages linux))
 
 (define-public pies
   (package
@@ -87,3 +88,56 @@ ftp(d), hostname, ifconfig, inetd, logger, ping, rcp, rexec(d),
 rlogin(d), rsh(d), syslogd, talk(d), telnet(d), tftp(d), traceroute,
 uucpd, and whois.")
     (license gpl3+)))
+
+(define-public shadow
+  (package
+    (name "shadow")
+    (version "4.1.5.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://pkg-shadow.alioth.debian.org/releases/shadow-"
+                   version ".tar.bz2"))
+             (sha256
+              (base32
+               "1yvqx57vzih0jdy3grir8vfbkxp0cl0myql37bnmi2yn90vk6cma"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(;; Assume System V `setpgrp (void)', which is the default on GNU
+       ;; variants (`AC_FUNC_SETPGRP' is not cross-compilation capable.)
+       #:configure-flags '("--with-libpam" "ac_cv_func_setpgrp_void=yes")
+
+       #:phases (alist-cons-before
+                 'build 'set-nscd-file-name
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; Use the right file name for nscd.
+                   (let ((libc (assoc-ref inputs "libc")))
+                     (substitute* "lib/nscd.c"
+                       (("/usr/sbin/nscd")
+                        (string-append libc "/sbin/nscd")))))
+                 (alist-cons-after
+                  'install 'remove-groups
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    ;; Remove `groups', which is already provided by Coreutils.
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bin (string-append out "/bin"))
+                           (man (string-append out "/share/man/man1")))
+                      (delete-file (string-append bin "/groups"))
+                      (for-each delete-file (find-files man "^groups\\."))
+                      #t))
+                  %standard-phases))))
+
+    (inputs (if (string-suffix? "-linux"
+                                (or (%current-target-system)
+                                    (%current-system)))
+                `(("linux-pam" ,linux-pam))
+                '()))
+    (home-page "http://pkg-shadow.alioth.debian.org/")
+    (synopsis "Authentication-related tools such as passwd, su, and login")
+    (description
+     "Shadow provides a number of authentication-related tools, including:
+login, passwd, su, groupadd, and useradd.")
+
+    ;; The `vipw' program is GPLv2+.
+    ;; libmisc/salt.c is public domain.
+    (license bsd-3)))
