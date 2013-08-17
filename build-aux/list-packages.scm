@@ -113,7 +113,7 @@ exec guile -l "$0"                              \
                  ,(match (package-logo (package-name package))
                     ((? string? url)
                      `(img (@ (src ,url)
-                              (height "35em")
+                              (height "35")
                               (class "package-logo")
                               (alt ("Logo of " ,(package-name package))))))
                     (_ #f))
@@ -132,7 +132,7 @@ exec guile -l "$0"                              \
          (div
           (img (@ (src "graphics/guix-logo.small.png")
                   (alt "GNU Guix and the GNU System")
-                  (height "83em"))))
+                  (height "83"))))
          (p "This web page lists the packages currently provided by the "
             (a (@ (href "manual/guix.html#GNU-Distribution"))
                "GNU system distribution")
