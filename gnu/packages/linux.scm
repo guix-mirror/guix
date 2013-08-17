@@ -235,9 +235,15 @@
        ;; ("cracklib" ,cracklib)
        ))
     (arguments
-     ;; XXX: Tests won't run in chroot, presumably because /etc/pam.d
-     ;; isn't available.
-     '(#:tests? #f))
+     '(;; Most users, such as `shadow', expect the headers to be under
+       ;; `security'.
+       #:configure-flags (list (string-append "--includedir="
+                                              (assoc-ref %outputs "out")
+                                              "/include/security"))
+
+       ;; XXX: Tests won't run in chroot, presumably because /etc/pam.d
+       ;; isn't available.
+       #:tests? #f))
     (home-page "http://www.linux-pam.org/")
     (synopsis "Pluggable authentication modules for Linux")
     (description
