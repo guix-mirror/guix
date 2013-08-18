@@ -4995,7 +4995,7 @@ package provides the TrueType (TTF) files.")
                      ("tar" ,tar)
                      ("gzip" ,gzip)))
     (home-page "http://www.gnu.org/software/freefont/")
-    (synopsis "Outline fonts covering the Universal Character Set (UCS)")
+    (synopsis "Unicode-encoded outline fonts")
     (description
      "The GNU Freefont project aims to provide a set of free outline
  (PostScript Type0, TrueType, OpenType...) fonts covering the ISO
