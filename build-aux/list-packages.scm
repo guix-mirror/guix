@@ -244,7 +244,8 @@ with gnu.org server-side include and all that."
    (format #t "<!--#include virtual=\"/server/banner.html\" -->")
 
    (sxml->xml (packages->sxml packages))
-   (format #t "<!--#include virtual=\"/server/footer.html\" -->
+   (format #t "</div>
+<!--#include virtual=\"/server/footer.html\" -->
 <div id=\"footer\">
 
 <p>Please send general FSF &amp; GNU inquiries to
