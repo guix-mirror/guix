@@ -34,7 +34,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages bash))
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages file))
 
 (define-public dbus
   (package
@@ -161,6 +162,9 @@ dynamic loading, and an object system.")
      `(;; Propagate gettext because users expect it to be there, and so does
        ;; the `intltool-update' script.
        ("gettext" ,guix:gettext)
+
+       ;; `file' is used by `intltool-update' too.
+       ("file" ,file)
 
        ("perl-xml-parser" ,perl-xml-parser)
        ("perl" ,perl)))
