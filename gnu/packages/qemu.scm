@@ -24,6 +24,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages python)
@@ -72,7 +73,22 @@
                                (string-append "--prefix=" out)
                                (string-append "--smbd=" samba
                                               "/sbin/smbd")))))
-                 %standard-phases)))
+                 (alist-cons-after
+                  'install 'install-info
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    ;; Install the Info manual, unless Texinfo is missing.
+                    (or (not (assoc-ref inputs "texinfo"))
+                        (let ((out (assoc-ref outputs "out")))
+                          (and (zero? (system* "make" "info"))
+                               (let ((infodir (string-append out "/share/info")))
+                                 (mkdir-p infodir)
+                                 (for-each (lambda (info)
+                                             (copy-file
+                                              info
+                                              (string-append infodir "/" info)))
+                                           (find-files "." "\\.info$"))
+                                 #t)))))
+                  %standard-phases))))
 
     (inputs                                       ; TODO: Add optional inputs.
      `(;; ("mesa" ,mesa)
@@ -92,7 +108,8 @@
        ("zlib" ,zlib)
        ("attr" ,attr)
        ("samba" ,samba)))                         ; an optional dependency
-    (native-inputs `(("perl" ,perl)))
+    (native-inputs `(("texinfo" ,texinfo)
+                     ("perl" ,perl)))
 
     (home-page "http://www.qemu-project.org")
     (synopsis "Machine emulator and virtualizer")
