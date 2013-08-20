@@ -29,7 +29,33 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages qemu)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages cdrom))
+  #:use-module (gnu packages cdrom)
+  #:use-module (srfi srfi-1))
+
+(define qemu-for-tests
+  ;; Newer QEMU versions, such as 1.5.1, no longer support the 'shutdown'
+  ;; instruction.  This leads to test hangs, as reported at
+  ;; <https://bugs.launchpad.net/bugs/947597> and fixed at
+  ;; <http://bzr.savannah.gnu.org/lh/grub/trunk/grub/revision/4828>.
+  ;; Work around it by using an older QEMU.
+  (package (inherit qemu)
+    (version "1.3.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "1bqfrb5dlsxm8gxhkksz8qzi5fhj3xqhxyfwbqcphhcv1kpyfwip"))))
+
+    ;; With recent GLib versions, we get a test failure:
+    ;;   ERROR:tests/rtc-test.c:176:check_time: assertion failed (ABS(t - s) <= wiggle): (382597824 <= 2)
+    ;; Simply disable the tests.
+    (arguments `(#:tests? #f
+                          ,@(package-arguments qemu)))
+
+    ;; The manual fails to build with Texinfo 5.x.
+    (native-inputs (alist-delete "texinfo" (package-native-inputs qemu)))))
 
 (define-public grub
   (package
@@ -70,7 +96,7 @@
 
        ;; Dependencies for the test suite.  The "real" QEMU is needed here,
        ;; because several targets are used.
-       ("qemu" ,qemu)
+       ("qemu" ,qemu-for-tests)
        ("xorriso" ,xorriso)))
     (home-page "http://www.gnu.org/software/grub/")
     (synopsis "GRand unified boot loader")
