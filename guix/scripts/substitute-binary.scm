@@ -416,9 +416,17 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
       ;; XXX: We're not in control, so we always return anyway.
       n))
 
-  (make-custom-binary-input-port "progress-port-proc"
-                                 read! #f #f
-                                 (cut close-port port)))
+  ;; Since `http-fetch' in Guile 2.0.5 returns all the data once it's done,
+  ;; don't pretend to report any progress in that case.
+  (if (version>? (version) "2.0.5")
+      (make-custom-binary-input-port "progress-port-proc"
+                                     read! #f #f
+                                     (cut close-port port))
+      (begin
+        (format (current-error-port) (_ "Downloading, please wait...~%"))
+        (format (current-error-port)
+                (_ "(Please consider upgrading Guile to get proper progress report.)~%"))
+        port)))
 
 (define %cache-url
   (or (getenv "GUIX_BINARY_SUBSTITUTE_URL")
