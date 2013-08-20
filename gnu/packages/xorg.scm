@@ -622,6 +622,32 @@ tracking.")
 ;;     (license non-free)))
 ;; 
 ;; 
+;; (define-public font-bh-ttf
+;;   (package
+;;     (name "font-luxi-ttf")
+;;     (version "1.0.3")
+;;     (source
+;;       (origin
+;;         (method url-fetch)
+;;         (uri (string-append
+;;                "mirror://xorg/X11R7.7/src/everything/font-bh-ttf-"
+;;                version
+;;                ".tar.bz2"))
+;;         (sha256
+;;           (base32
+;;             "0pyjmc0ha288d4i4j0si4dh3ncf3jiwwjljvddrb0k8v4xiyljqv"))))
+;;     (build-system gnu-build-system)
+;;     (inputs
+;;       `(("mkfontdir" ,mkfontdir)
+;;         ("pkg-config" ,pkg-config)))
+;;     (home-page "http://www.x.org/wiki/")
+;;     (synopsis "Luxi fonts by Bigelow & Holmes, Inc.")
+;;     (description "Luxi fonts is a family of sans-serif fonts for the X Window
+;; System.  This package provides the TrueType (TTF) files.")
+;;     (license license:x11)))
+;;     (license non-free)))
+;;
+;;
 ;; (define-public font-bh-type1
 ;;   (package
 ;;     (name "font-bh-type1")
@@ -695,31 +721,6 @@ tracking.")
 ;;     (synopsis "xorg implementation of the X Window System")
 ;;     (description "X.org provides an implementation of the X Window System")
 ;;     (license non-free)))
-
-
-(define-public font-luxi-ttf
-  (package
-    (name "font-luxi-ttf")
-    (version "1.0.3")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/font-bh-ttf-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "0pyjmc0ha288d4i4j0si4dh3ncf3jiwwjljvddrb0k8v4xiyljqv"))))
-    (build-system gnu-build-system)
-    (inputs
-      `(("mkfontdir" ,mkfontdir)
-        ("pkg-config" ,pkg-config)))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "Luxi fonts by Bigelow & Holmes, Inc.")
-    (description "Luxi fonts is a family of sans-serif fonts for the X Window
-System.  This package provides the TrueType (TTF) files.")
-    (license license:x11)))
 
 
 (define-public font-cronyx-cyrillic
