@@ -18,7 +18,8 @@
 
 (define-module (gnu packages indent)
   #:use-module (gnu packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses)
+                #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -40,5 +41,5 @@
 from one style of writing C to another. Indent understands a substantial
 amount about the syntax of C, but it also attempts to cope with incomplete
 and misformed syntax. The GNU style of indenting is the default.")
-   (license gpl3+)
+   (license license:gpl3+)
    (home-page "http://www.gnu.org/software/indent/")))
