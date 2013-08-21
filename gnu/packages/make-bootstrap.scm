@@ -451,6 +451,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   ;; than in hard-coded configure-time paths.
   (let* ((guile (package (inherit guile-2.0)
                   (name (string-append (package-name guile-2.0) "-static"))
+                  (synopsis "Statically-linked and relocatable Guile")
                   (inputs
                    `(("patch/relocatable"
                       ,(search-patch "guile-relocatable.patch"))
@@ -542,7 +543,8 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        #t
                        '(zero? (system* guile2 "--version")))))))))
     (inputs `(("guile" ,%guile-static)))
-    (outputs '("out"))))
+    (outputs '("out"))
+    (synopsis "Minimal statically-linked and relocatable Guile")))
 
 (define (tarball-package pkg)
   "Return a package containing a tarball of PKG."
