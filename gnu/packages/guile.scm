@@ -250,7 +250,7 @@ many readers as needed).")
     (arguments
      '(#:configure-flags (list (string-append "--with-guilesitedir="
                                               (assoc-ref %outputs "out")
-                                              "/share/guile/site"))
+                                              "/share/guile/site/2.0"))
        #:phases (alist-cons-after
                  'install 'post-install
                  (lambda* (#:key outputs #:allow-other-keys)
