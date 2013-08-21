@@ -109,3 +109,14 @@ index 5d0db23..8266247 100644
                           (enum iconv_ilseq_handler) handler, NULL,
                           &buf, &len);
  
+--- guile-2.0.9/libguile/ports.c	2013-08-21 11:08:50.000000000 +0200
++++ guile-2.0.9/libguile/ports.c	2013-08-21 11:09:47.000000000 +0200
+@@ -2512,7 +2512,7 @@ scm_i_port_iconv_descriptors (SCM port,
+       const char *precise_encoding;
+ 
+       if (!pt->encoding)
+-        pt->encoding = "ISO-8859-1";
++        pt->encoding = "UTF-8";
+ 
+       /* If the specified encoding is UTF-16 or UTF-32, then make
+          that more precise by deciding what byte order to use. */
