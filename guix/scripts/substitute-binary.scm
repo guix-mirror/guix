@@ -143,9 +143,8 @@ again."
 provide."
   (case (uri-scheme uri)
     ((file)
-     (let ((port (open-input-file (uri-path uri))))
-       (unless buffered?
-         (setvbuf port _IONBF))
+     (let ((port (open-file (uri-path uri)
+                            (if buffered? "rb" "r0b"))))
        (values port (stat:size (stat port)))))
     ((http)
      ;; On Guile 2.0.5, `http-fetch' fetches the whole thing at once.  So

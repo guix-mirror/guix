@@ -103,7 +103,7 @@
 
 (test-assert "filtered-port, file"
   (let* ((file  (search-path %load-path "guix.scm"))
-         (input (open-file file "r0")))
+         (input (open-file file "r0b")))
     (let*-values (((compressed pids1)
                    (filtered-port `(,%gzip "-c" "--fast") input))
                   ((decompressed pids2)
