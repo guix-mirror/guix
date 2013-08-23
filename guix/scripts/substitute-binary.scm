@@ -155,7 +155,7 @@ provide."
      ;; and then cancel with:
      ;;   sudo tc qdisc del dev eth0 root
      (let ((port #f))
-       (with-timeout (if (or timeout? (version>? (version) "2.0.5"))
+       (with-timeout (if (or timeout? (guile-version>? "2.0.5"))
                          %fetch-timeout
                          0)
          (begin
@@ -417,7 +417,7 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
 
   ;; Since `http-fetch' in Guile 2.0.5 returns all the data once it's done,
   ;; don't pretend to report any progress in that case.
-  (if (version>? (version) "2.0.5")
+  (if (guile-version>? "2.0.5")
       (make-custom-binary-input-port "progress-port-proc"
                                      read! #f #f
                                      (cut close-port port))

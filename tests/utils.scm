@@ -66,6 +66,12 @@
            ("nixpkgs" "1.0pre22125_a28fe19")
            ("gtk2" "2.38.0"))))
 
+(test-assert "guile-version>? 1.8"
+  (guile-version>? "1.8"))
+
+(test-assert "guile-version>? 10.5"
+  (not (guile-version>? "10.5")))
+
 (test-equal "string-tokenize*"
   '(("foo")
     ("foo" "bar" "baz")

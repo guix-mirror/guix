@@ -133,7 +133,7 @@ closed it will also close PORT, unless the KEEP-ALIVE? is true."
              (get-bytevector-all (response-port r))))))
 
  ;; Install this patch only on Guile 2.0.5.
- (when (version>? "2.0.6" (version))
+ (unless (guile-version>? "2.0.5")
    (module-set! (resolve-module '(web response))
                 'read-response-body read-response-body*)))
 
@@ -163,7 +163,7 @@ unbuffered port, suitable for use in `filtered-port'."
                      ;; Try hard to use the API du jour to get an input port.
                      ;; On Guile 2.0.5 and before, we can only get a string or
                      ;; bytevector, and not an input port.  Work around that.
-                     (if (version>? (version) "2.0.7")
+                     (if (guile-version>? "2.0.7")
                          (http-get uri #:streaming? #t #:port port) ; 2.0.9+
                          (if (defined? 'http-get*)
                              (http-get* uri #:decode-body? text?
