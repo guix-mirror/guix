@@ -121,6 +121,11 @@ etc.
 Tests that need to download stuff or otherwise take a long time would only be
 run when that is defined.
 
+* add "guix challenge"
+
+Would download a substitute, and compare its contents against a (hopefully
+locally-built) copy.
+
 * guix package
 
 ** add ‘--list-generations’, and ‘--delete-generations’
