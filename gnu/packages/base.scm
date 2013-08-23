@@ -566,7 +566,7 @@ with the Linux kernel.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "13xd30ngwhqmj7w216ghd5knvg047hzpc0xca5l297g5cwb62hza"))))))
+                            "1dh7nzmfxs8fps4bzcd2lz5fz24zxy2123a99avxsk34jh6bk7id"))))))
     (home-page "http://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
