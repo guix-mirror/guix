@@ -197,10 +197,11 @@ DISK-IMAGE-SIZE bytes and return it."
                     (call-with-output-file "/fs/boot/grub/grub.cfg"
                       (lambda (p)
                         (display "
-set timeout=10
+set default=1
+set timeout=5
 search.file /boot/bzImage
 
-menuentry \"Boot-to-Guile! Happy Birthday Guile 2.0! (Guile, Guix & co.)\" {
+menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
   linux /boot/bzImage --repl
   initrd /boot/initrd
 }" p)))
@@ -209,7 +210,8 @@ menuentry \"Boot-to-Guile! Happy Birthday Guile 2.0! (Guile, Guix & co.)\" {
                                    "--boot-directory" "/fs/boot"
                                    "/dev/vda"))
                          (zero?
-                          (system* umount "/fs"))))))))
+                          (system* umount "/fs"))
+                         (reboot)))))))
    `(("parted" ,parted)
      ("grub" ,grub)
      ("e2fsprogs" ,e2fsprogs)
