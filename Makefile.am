@@ -142,6 +142,7 @@ EXTRA_DIST =					\
   TODO						\
   .dir-locals.el				\
   build-aux/hydra/gnu-system.scm		\
+  build-aux/hydra/guix.scm			\
   build-aux/check-available-binaries.scm	\
   build-aux/download.scm			\
   build-aux/list-packages.scm			\
