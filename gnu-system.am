@@ -159,6 +159,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/tmux.scm				\
   gnu/packages/tor.scm				\
   gnu/packages/unrtf.scm			\
+  gnu/packages/valgrind.scm			\
   gnu/packages/version-control.scm		\
   gnu/packages/vim.scm				\
   gnu/packages/vpn.scm				\
@@ -220,6 +221,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/tar-gets-undeclared.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
+  gnu/packages/patches/valgrind-glibc.patch			\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
   gnu/packages/patches/xpdf-constchar.patch
