@@ -102,6 +102,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/libunistring.scm			\
   gnu/packages/libusb.scm			\
   gnu/packages/libunwind.scm			\
+  gnu/packages/lightning.scm			\
   gnu/packages/linux.scm			\
   gnu/packages/linux-initrd.scm			\
   gnu/packages/lout.scm				\
