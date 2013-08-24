@@ -22,7 +22,15 @@
                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages algebra)
+  #:use-module (gnu packages compression)
+  #:use-module ((gnu packages gettext)
+                #:renamer (symbol-prefix-proc 'gnu:))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages xml))
 
 (define-public units
   (package
@@ -58,3 +66,43 @@ file to suit your needs.  You can also use your own data file to supplement
 the standard data file.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/units/")))
+
+(define-public pspp
+  (package
+    (name "pspp")
+    (version "0.8.0a")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/pspp/pspp-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "1pgkb3z8b4wk4gymnafclhkrqq7n05wq83mra3v53jdl6bnllmyq"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gettext" ,gnu:gettext)
+       ("gsl" ,gsl)
+       ("libxml2" ,libxml2)
+       ("readline" ,readline)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       `("--without-cairo" ; FIXME: tests currently fail for lack of font
+         "--without-gui"))) ; FIXME: package missing dependencies
+    (home-page "http://www.gnu.org/software/pspp/")
+    (synopsis "Statistical analysis")
+    (description
+     "PSPP is a program for statistical analysis of sampled data.  It is a
+free replacement for the proprietary program SPSS, and appears very similar
+to it.
+
+PSPP can perform descriptive statistics, T-tests, anova, linear and logistic
+regression, cluster analysis, factor analysis, non-parametric tests and
+more.  Its backend is designed to perform its analyses as fast as possible,
+regardless of the size of the input data.  You can use PSPP with its
+graphical interface or the more traditional syntax commands.")
+    (license license:gpl3+)))
