@@ -24,7 +24,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages.scm				\
   gnu/packages/acl.scm				\
   gnu/packages/algebra.scm			\
-  gnu/packages/apr.scm           \
+  gnu/packages/apr.scm				\
   gnu/packages/aspell.scm			\
   gnu/packages/attr.scm				\
   gnu/packages/autotools.scm			\
@@ -54,7 +54,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/fdisk.scm			\
   gnu/packages/file.scm				\
   gnu/packages/flex.scm				\
-  gnu/packages/fonts.scm         \
+  gnu/packages/fonts.scm			\
   gnu/packages/fontutils.scm			\
   gnu/packages/freeipmi.scm			\
   gnu/packages/gawk.scm				\
@@ -66,6 +66,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/geeqie.scm			\
   gnu/packages/gettext.scm			\
   gnu/packages/ghostscript.scm			\
+  gnu/packages/gkrellm.scm			\
   gnu/packages/glib.scm				\
   gnu/packages/global.scm			\
   gnu/packages/gnupg.scm			\
@@ -178,11 +179,11 @@ GNU_SYSTEM_MODULES =				\
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
 dist_patch_DATA =						\
-  gnu/packages/patches/apr-skip-getservbyname-test.patch \
+  gnu/packages/patches/apr-skip-getservbyname-test.patch	\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
-  gnu/packages/patches/cdparanoia-fpic.patch       \
+  gnu/packages/patches/cdparanoia-fpic.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
@@ -216,7 +217,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/python-fix-dbm.patch			\
   gnu/packages/patches/qemu-multiple-smb-shares.patch		\
   gnu/packages/patches/readline-link-ncurses.patch		\
-  gnu/packages/patches/ripperx-libm.patch    \
+  gnu/packages/patches/ripperx-libm.patch			\
   gnu/packages/patches/scheme48-tests.patch			\
   gnu/packages/patches/tar-gets-undeclared.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
