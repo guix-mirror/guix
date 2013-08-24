@@ -250,7 +250,11 @@ corresponds to the arguments expected by `set-path-environment-variable'."
   (match source
     (($ <origin> uri method sha256 name)
      (method store uri 'sha256 sha256 name
-             #:system system))))
+             #:system system))
+    ((and (? string?) (? store-path?) file)
+     file)
+    ((? string? file)
+     (add-to-store store (basename file) #t "sha256" file))))
 
 (define (transitive-inputs inputs)
   (let loop ((inputs  inputs)

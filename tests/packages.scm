@@ -99,7 +99,27 @@
                    ("d" ,d) ("d/x" "something.drv"))
                  (pk 'x (package-transitive-inputs e))))))
 
-(test-skip (if (not %store) 6 0))
+(test-skip (if (not %store) 8 0))
+
+(test-assert "package-source-derivation, file"
+  (let* ((file    (search-path %load-path "guix.scm"))
+         (package (package (inherit (dummy-package "p"))
+                    (source file)))
+         (source  (package-source-derivation %store
+                                             (package-source package))))
+    (and (store-path? source)
+         (valid-path? %store source)
+         (equal? (call-with-input-file source get-bytevector-all)
+                 (call-with-input-file file get-bytevector-all)))))
+
+(test-assert "package-source-derivation, store path"
+  (let* ((file    (add-to-store %store "guix.scm" #t "sha256"
+                                (search-path %load-path "guix.scm")))
+         (package (package (inherit (dummy-package "p"))
+                    (source file)))
+         (source  (package-source-derivation %store
+                                             (package-source package))))
+    (string=? file source)))
 
 (test-assert "return values"
   (let-values (((drv-path drv)
