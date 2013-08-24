@@ -244,6 +244,17 @@ The @code{guix-daemon} program may then be run as @code{root} with:
 # guix-daemon --build-users-group=guix-builder
 @end example
 
+@noindent
+This way, the daemon starts build processes in a chroot, under one of
+the @code{guix-builder} users.  On GNU/Linux, by default, the chroot
+environment contains nothing but the @code{/dev} and @code{/proc}
+directories@footnote{On some systems @code{/dev/shm}, which supports
+shared memory, is a symlink to another directory such as
+@code{/run/shm}, that is @emph{not} is the chroot.  When that is the
+case, shared memory support is unavailable in the chroot environment.
+The workaround is to make sure that @file{/dev/shm} is directly a
+@code{tmpfs} mount point.}.
+
 Guix may also be used in a single-user setup, with @command{guix-daemon}
 running as an unprivileged user.  However, to maximize non-interference
 of build processes, the daemon still needs to perform certain operations
