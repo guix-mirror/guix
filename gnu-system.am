@@ -69,6 +69,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gkrellm.scm			\
   gnu/packages/glib.scm				\
   gnu/packages/global.scm			\
+  gnu/packages/gnunet.scm			\
   gnu/packages/gnupg.scm			\
   gnu/packages/gnutls.scm			\
   gnu/packages/gperf.scm			\
