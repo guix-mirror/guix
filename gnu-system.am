@@ -130,6 +130,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/oggvorbis.scm			\
   gnu/packages/openldap.scm			\
   gnu/packages/openssl.scm			\
+  gnu/packages/package-management.scm		\
   gnu/packages/parted.scm			\
   gnu/packages/patchelf.scm			\
   gnu/packages/pcre.scm				\
