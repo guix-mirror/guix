@@ -115,6 +115,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/m4.scm				\
   gnu/packages/mailutils.scm			\
   gnu/packages/make-bootstrap.scm		\
+  gnu/packages/maths.scm			\
   gnu/packages/mit-krb5.scm			\
   gnu/packages/mp3.scm				\
   gnu/packages/multiprecision.scm		\
