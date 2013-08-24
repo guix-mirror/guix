@@ -32,7 +32,8 @@
             package-with-explicit-inputs
             package-with-extra-configure-variable
             static-libgcc-package
-            static-package))
+            static-package
+            dist-package))
 
 ;; Commentary:
 ;;
@@ -40,6 +41,11 @@
 ;; something compatible ("./configure && make && make install").
 ;;
 ;; Code:
+
+(define %default-modules
+  ;; Build-side modules imported and used by default.
+  '((guix build gnu-build-system)
+    (guix build utils)))
 
 (define* (package-with-explicit-inputs p inputs
                                        #:optional
@@ -152,6 +158,38 @@ use `--strip-all' as the arguments to `strip'."
               ''("--strip-all")
               flags)))))))
 
+(define* (dist-package p source)
+  "Return a package that runs takes source files from the SOURCE directory,
+runs `make distcheck' and whose result is one or more source tarballs."
+  (let ((s source))
+    (package (inherit p)
+      (name (string-append (package-name p) "-dist"))
+      (source s)
+      (arguments
+       ;; Use the right phases and modules.
+       (let* ((args (default-keyword-arguments (package-arguments p)
+                      `(#:phases #f
+                        #:modules ,%default-modules
+                        #:imported-modules ,%default-modules))))
+         (substitute-keyword-arguments args
+           ((#:modules modules)
+            `((guix build gnu-dist)
+              ,@modules))
+           ((#:imported-modules modules)
+            `((guix build gnu-dist)
+              ,@modules))
+           ((#:phases _)
+            '%dist-phases))))
+      (native-inputs
+       ;; Add autotools & co. as inputs.
+       (let ((ref (lambda (module var)
+                    (module-ref (resolve-interface module) var))))
+         `(("autoconf" ,(ref '(gnu packages autotools) 'autoconf))
+           ("automake" ,(ref '(gnu packages autotools) 'automake))
+           ("libtool"  ,(ref '(gnu packages autotools) 'libtool) "bin")
+           ("gettext"  ,(ref '(gnu packages gettext) 'gettext))
+           ("texinfo"  ,(ref '(gnu packages texinfo) 'texinfo))))))))
+
 
 (define %store
   ;; Store passed to STANDARD-INPUTS.
@@ -227,10 +265,8 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
                     (phases '%standard-phases)
                     (system (%current-system))
                     (implicit-inputs? #t)    ; useful when bootstrapping
-                    (imported-modules '((guix build gnu-build-system)
-                                        (guix build utils)))
-                    (modules '((guix build gnu-build-system)
-                               (guix build utils))))
+                    (imported-modules %default-modules)
+                    (modules %default-modules))
   "Return a derivation called NAME that builds from tarball SOURCE, with
 input derivation INPUTS, using the usual procedure of the GNU Build
 System.  The builder is run with GUILE, or with the distro's final Guile
