@@ -19,12 +19,16 @@
 (define-module (gnu packages gnunet)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module ((gnu packages gettext)
                 #:renamer (symbol-prefix-proc 'gnu:))
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gnutls)
   #:use-module (gnu packages libjpeg)
   #:use-module (gnu packages libtiff)
   #:use-module (gnu packages oggvorbis)
+  #:use-module (gnu packages openssl)
   #:use-module (gnu packages pkg-config)
   #:use-module ((guix licenses)
                 #:renamer (symbol-prefix-proc 'license:))
@@ -93,3 +97,42 @@ PAX, CPIO, ISO9660, SHAR, RAW, XAR FLV, REAL, RIFF (AVI), MPEG, QT and ASF.
 Also, various additional MIME types are detected.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/libextractor/")))
+
+(define-public libmicrohttpd
+  (package
+   (name "libmicrohttpd")
+   (version "0.9.29")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
+                                version ".tar.gz"))
+            (sha256
+             (base32
+              "169qpbmqprm296kicym63njxqf3qnjkk16qar73b813l7mj4jn8s"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("curl" ,curl)
+      ("gnutls" ,gnutls)
+      ("libgcrypt" ,libgcrypt)
+      ("openssl" ,openssl)
+      ("zlib" ,zlib)))
+   (synopsis "C library implementing an HTTP 1.1 server")
+   (description
+    "GNU libmicrohttpd is a small C library that is supposed to make it
+easy to run an HTTP server as part of another application.  Key features
+that distinguish GNU Libmicrohttpd from other projects are:
+C library is fast and small;
+API is simple, expressive and fully reentrant;
+implementation is HTTP 1.1 compliant;
+HTTP server can listen on multiple ports;
+four different threading models (select, poll, pthread, thread pool);
+supported platforms include GNU/Linux, FreeBSD, OpenBSD, NetBSD, Android,
+OS X, W32, Symbian and z/OS;
+support for IPv6;
+support for SHOUTcast;
+support for incremental processing of POST data (optional);
+support for basic and digest authentication (optional);
+support for SSL3 and TLS (requires libgcrypt and libgnutls, optional);
+binary is only about 32k (without TLS/SSL support and other optional features).")
+   (license license:lgpl2.1+)
+   (home-page "http://www.gnu.org/software/libmicrohttpd/")))
