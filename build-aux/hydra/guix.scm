@@ -43,6 +43,7 @@
              (guix build-system gnu)
              (gnu packages package-management)
              (srfi srfi-1)
+             (srfi srfi-26)
              (ice-9 match))
 
 ;; XXX: Debugging hack: since `hydra-eval-guile-jobs' redirects the output
