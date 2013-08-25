@@ -191,7 +191,8 @@ S/MIME.")
                      "1g1jly3wl4ks6h8ydkygyl2c4i7v3z91rg42005m6vm70y1d8b3d"))))
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)
-             ("python" ,python)))
+             ("python" ,python)
+             ("gpg" ,gnupg)))
    (arguments
     `(#:tests? #f
       #:phases
@@ -203,16 +204,19 @@ S/MIME.")
         (lambda* (#:key #:allow-other-keys) #t)
        (alist-replace
         'install
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let* ((out (assoc-ref outputs "out"))
+                 (gpg (string-append (assoc-ref inputs "gpg")
+                                     "/bin/gpg2")))
             (mkdir out)
             (mkdir (string-append out "/bin"))
-            (for-each
-              (lambda (filename)
-                (copy-file filename (string-append out "/bin/" filename)))
-              '("pius" "pius-keyring-mgr" "pius-party-worksheet"))))
+            (for-each (lambda (file)
+                        (substitute* file
+                          (("/usr/bin/gpg") gpg))
+                        (copy-file file (string-append out "/bin/" file)))
+                      '("pius" "pius-keyring-mgr" "pius-party-worksheet"))))
        %standard-phases)))))
-   (synopsis "programs to simplify gnupg key signing")
+   (synopsis "Programs to simplify GnuPG key signing")
    (description
     "Pius (PGP Individual UID Signer) helps attendees of PGP keysigning
 parties. It is the main utility and makes it possible to quickly and easily
