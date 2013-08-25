@@ -75,8 +75,7 @@ containing a Git checkout of Guix."
                         ;; Comment out `git' invocations, since Hydra provides
                         ;; us with a checkout that includes sub-modules.
                         (substitute* "bootstrap"
-                          (("git submodule init")
-                           "true\n")))
+                          (("git ") "true git ")))
                       ,p)))))))
 
 (define (hydra-jobs store arguments)
