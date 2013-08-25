@@ -99,7 +99,9 @@
        "http://ramses.wh2.tu-dresden.de/pub/mirrors/kernel.org/"
        "http://linux-kernel.uio.no/pub/"
        "http://kernel.osuosl.org/pub/"
-       "ftp://ftp.funet.fi/pub/mirrors/ftp.kernel.org/pub/")
+       "ftp://ftp.funet.fi/pub/mirrors/ftp.kernel.org/pub/"
+       "http://ftp.be.debian.org/pub/"
+       "http://mirror.linux.org.au/")
       (apache             ; from http://www.apache.org/mirrors/dist.html
        "http://www.eu.apache.org/dist/"
        "http://www.us.apache.org/dist/"
