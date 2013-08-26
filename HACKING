@@ -127,7 +127,7 @@ expression” of Nettle.
 Development is done using the Git distributed version control system.  Thus,
 access to the repository is not strictly necessary.  We welcome contributions
 in the form of patches as produced by ‘git format-patch’ sent to
-bug-guix@gnu.org.  Please write commit logs in the [[http://www.gnu.org/prep/standards/html_node/Change-Logs.html#Change-Logs][GNU ChangeLog format]].
+guix-devel@gnu.org.  Please write commit logs in the [[http://www.gnu.org/prep/standards/html_node/Change-Logs.html#Change-Logs][GNU ChangeLog format]].
 
 As you become a regular contributor, you may find it convenient to have write
 access to the repository (see below.)
@@ -137,9 +137,9 @@ access to the repository (see below.)
 For frequent contributors, having write access to the repository is
 convenient.  When you deem it necessary, feel free to ask for it on the
 mailing list.  When you get commit access, please make sure to follow the
-policy below (discussions of the policy can take place on bug-guix@gnu.org.)
+policy below (discussions of the policy can take place on guix-devel@gnu.org.)
 
-Non-trivial patches should always be posted to bug-guix@gnu.org (trivial
+Non-trivial patches should always be posted to guix-devel@gnu.org (trivial
 patches include fixing typos, etc.)
 
 For patches that just add a new package, and a simple one, it’s OK to commit,
@@ -149,7 +149,7 @@ package upgrades.  We have a mailing list for commit notifications
 (guix-commits@gnu.org), so people can notice.  Before pushing your changes,
 make sure to run ‘git pull --rebase’.
 
-For anything else, please post to bug-guix@gnu.org and leave time for a
+For anything else, please post to guix-devel@gnu.org and leave time for a
 review, without committing anything.  If you didn’t receive any reply
 after two weeks, and if you’re confident, it’s OK to commit.
 
