@@ -298,4 +298,38 @@ flexibility in specifying when jobs should be run.  Mcron was written by Dale
 Mellor.")
     (license gpl3+)))
 
+(define-public guile-lib
+  (package
+    (name "guile-lib")
+    (version "0.2.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://savannah/guile-lib/guile-lib-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "1f9n2b5b5r75lzjinyk6zp6g20g60msa0jpfrk5hhg4j8cy0ih4b"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'configure 'patch-module-dir
+                 (lambda _
+                   (substitute* "src/Makefile.in"
+                     (("^moddir[[:blank:]]*=[[:blank:]]*([[:graph:]]+)" _ rhs)
+                      (string-append "moddir = " rhs "/2.0\n"))))
+                 %standard-phases)))
+    (inputs `(("guile" ,guile-2.0)))
+    (home-page "http://www.nongnu.org/guile-lib/")
+    (synopsis "Collection of useful Guile Scheme modules")
+    (description
+     "guile-lib is intended as an accumulation place for pure-scheme Guile
+modules, allowing for people to cooperate integrating their generic Guile
+modules into a coherent library.  Think \"a down-scaled, limited-scope CPAN
+for Guile\".")
+
+    ;; The whole is under GPLv3+, but some modules are under laxer
+    ;; distribution terms such as LGPL and public domain.  See `COPYING' for
+    ;; details.
+    (license gpl3+)))
+
 ;;; guile.scm ends here
