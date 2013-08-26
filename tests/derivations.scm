@@ -376,7 +376,7 @@
            (and (valid-path? %store p)
                 (file-exists? (string-append p "/good")))))))
 
-(test-skip (if (%guile-for-build) 0 7))
+(test-skip (if (%guile-for-build) 0 8))
 
 (test-assert "build-expression->derivation and derivation-prerequisites"
   (let-values (((drv-path drv)
@@ -651,6 +651,38 @@ Deriver: ~a~%"
     (and (string=? (derivation-path->output-path final1)
                    (derivation-path->output-path final2))
          (build-derivations %store (list final1 final2)))))
+
+(test-assert "build-expression->derivation with #:dependency-graphs"
+  (let* ((input   (add-text-to-store %store "foo" "hello"
+                                     (list %bash %mkdir)))
+         (builder '(copy-file "input" %output))
+         (drv     (build-expression->derivation %store "dependency-graphs"
+                                                (%current-system)
+                                                builder '()
+                                                #:dependency-graphs
+                                                `(("input" . ,input))))
+         (out     (derivation-path->output-path drv)))
+    (define (deps path . deps)
+      (let ((count (length deps)))
+        (string-append path "\n\n" (number->string count) "\n"
+                       (string-join (sort deps string<?) "\n")
+                       (if (zero? count) "" "\n"))))
+
+    (and (build-derivations %store (list drv))
+         (equal? (call-with-input-file out get-string-all)
+                 (string-concatenate
+                  (map cdr
+                       (sort (map (lambda (p d)
+                                    (cons p (apply deps p d)))
+                                  (list input %bash %mkdir)
+                                  (list (list %bash %mkdir)
+                                        '() '()))
+                             (lambda (x y)
+                               (match x
+                                 ((p1 . _)
+                                  (match y
+                                    ((p2 . _)
+                                     (string<? p1 p2)))))))))))))
 
 (test-end)
 

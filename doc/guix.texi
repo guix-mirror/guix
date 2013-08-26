@@ -1153,7 +1153,7 @@ As can be guessed, this primitive is cumbersome to use directly.  An
 improved variant is @code{build-expression->derivation}, which allows
 the caller to directly pass a Guile expression as the build script:
 
-@deffn {Scheme Procedure} build-expression->derivation @var{store} @var{name} @var{system} @var{exp} @var{inputs} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:env-vars '()] [#:modules '()] [#:guile-for-build #f]
+@deffn {Scheme Procedure} build-expression->derivation @var{store} @var{name} @var{system} @var{exp} @var{inputs} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:env-vars '()] [#:modules '()] [#:dependency-graphs #f] [#:guile-for-build #f]
 Return a derivation that executes Scheme expression @var{exp} as a
 builder for derivation @var{name}.  @var{inputs} must be a list of
 @code{(name drv-path sub-drv)} tuples; when @var{sub-drv} is omitted,
@@ -1174,6 +1174,8 @@ terminates by passing the result of @var{exp} to @code{exit}; thus, when
 @var{exp} is built using @var{guile-for-build} (a derivation).  When
 @var{guile-for-build} is omitted or is @code{#f}, the value of the
 @code{%guile-for-build} fluid is used instead.
+
+See the @code{derivation} procedure for the meaning of @var{dependency-graphs}.
 @end deffn
 
 @noindent

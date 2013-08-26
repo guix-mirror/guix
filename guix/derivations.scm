@@ -743,7 +743,8 @@ they can refer to each other."
                                        hash hash-algo
                                        (env-vars '())
                                        (modules '())
-                                       guile-for-build)
+                                       guile-for-build
+                                       dependency-graphs)
   "Return a derivation that executes Scheme expression EXP as a builder
 for derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV)
 tuples; when SUB-DRV is omitted, \"out\" is assumed.  MODULES is a list
@@ -760,7 +761,9 @@ builder terminates by passing the result of EXP to `exit'; thus, when
 EXP returns #f, the build is considered to have failed.
 
 EXP is built using GUILE-FOR-BUILD (a derivation).  When GUILE-FOR-BUILD is
-omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
+omitted or is #f, the value of the `%guile-for-build' fluid is used instead.
+
+See the `derivation' procedure for the meaning of DEPENDENCY-GRAPHS."
   (define guile-drv
     (or guile-for-build (%guile-for-build)))
 
@@ -877,4 +880,5 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
                                env-vars)
 
                 #:hash hash #:hash-algo hash-algo
-                #:outputs outputs)))
+                #:outputs outputs
+                #:dependency-graphs dependency-graphs)))
