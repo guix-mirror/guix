@@ -1113,13 +1113,18 @@ derivations as Scheme objects, along with procedures to create and
 otherwise manipulate derivations.  The lowest-level primitive to create
 a derivation is the @code{derivation} procedure:
 
-@deffn {Scheme Procedure} derivation @var{store} @var{name} @var{builder} @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:hash-mode #f] [#:inputs '()] [#:env-vars '()] [#:system (%current-system)]
+@deffn {Scheme Procedure} derivation @var{store} @var{name} @var{builder} @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:hash-mode #f] [#:inputs '()] [#:env-vars '()] [#:system (%current-system)] [#:dependency-graphs #f]
 Build a derivation with the given arguments.  Return the resulting store
 path and @code{<derivation>} object.
 
 When @var{hash}, @var{hash-algo}, and @var{hash-mode} are given, a
 @dfn{fixed-output derivation} is created---i.e., one whose result is
 known in advance, such as a file download.
+
+When @var{dependency-graphs} is true, it must be a list of file
+name/store path pairs.  In that case, the reference graph of each store
+path is exported in the build environment in the corresponding file, in
+a simple text format.
 @end deffn
 
 @noindent

@@ -50,19 +50,23 @@
   (let ((drv (package-derivation %store %bootstrap-guile)))
     (%guile-for-build drv)))
 
-(define %bash
-  (let ((bash (search-bootstrap-binary "bash" (%current-system))))
+(define (bootstrap-binary name)
+  (let ((bin (search-bootstrap-binary name (%current-system))))
     (and %store
-         (add-to-store %store "bash" #t "sha256" bash))))
+         (add-to-store %store name #t "sha256" bin))))
 
-(define (directory-contents dir)
+(define %bash
+  (bootstrap-binary "bash"))
+(define %mkdir
+  (bootstrap-binary "mkdir"))
+
+(define* (directory-contents dir #:optional (slurp get-bytevector-all))
   "Return an alist representing the contents of DIR."
   (define prefix-len (string-length dir))
   (sort (file-system-fold (const #t)                   ; enter?
                           (lambda (path stat result)   ; leaf
                             (alist-cons (string-drop path prefix-len)
-                                        (call-with-input-file path
-                                          get-bytevector-all)
+                                        (call-with-input-file path slurp)
                                         result))
                           (lambda (path stat result) result)      ; down
                           (lambda (path stat result) result)      ; up
@@ -84,7 +88,7 @@
     (and (equal? b1 b2)
          (equal? d1 d2))))
 
-(test-skip (if %store 0 11))
+(test-skip (if %store 0 12))
 
 (test-assert "add-to-store, flat"
   (let* ((file (search-path %load-path "language/tree-il/spec.scm"))
@@ -291,6 +295,56 @@
          (let ((p (derivation-path->output-path udrv)))
            (and (valid-path? %store p)
                 (equal? '(one two) (call-with-input-file p read)))))))
+
+(test-assert "derivation with #:dependency-graphs"
+  (let* ((input1  (add-text-to-store %store "foo" "hello"
+                                     (list %bash)))
+         (input2  (add-text-to-store %store "bar"
+                                     (number->string (random 7777))
+                                     (list input1)))
+         (builder (add-text-to-store %store "build-graph"
+                                     (format #f "
+~a $out
+ (while read l ; do echo $l ; done) < bash > $out/bash
+ (while read l ; do echo $l ; done) < input1 > $out/input1
+ (while read l ; do echo $l ; done) < input2 > $out/input2"
+                                             %mkdir)
+                                     (list %mkdir)))
+         (drv     (derivation %store "closure-graphs"
+                              %bash `(,builder)
+                              #:dependency-graphs
+                              `(("bash" . ,%bash)
+                                ("input1" . ,input1)
+                                ("input2" . ,input2))
+                              #:inputs `((,%bash) (,builder))))
+         (out     (derivation-path->output-path drv)))
+    (define (deps path . deps)
+      (let ((count (length deps)))
+        (string-append path "\n\n" (number->string count) "\n"
+                       (string-join (sort deps string<?) "\n")
+                       (if (zero? count) "" "\n"))))
+
+    (and (build-derivations %store (list drv))
+         (equal? (directory-contents out get-string-all)
+                 `(("/bash"   . ,(string-append %bash "\n\n0\n"))
+                   ("/input1" . ,(if (string>? input1 %bash)
+                                     (string-append (deps %bash)
+                                                    (deps input1 %bash))
+                                     (string-append (deps input1 %bash)
+                                                    (deps %bash))))
+                   ("/input2" . ,(string-concatenate
+                                  (map cdr
+                                       (sort
+                                        (map (lambda (p d)
+                                               (cons p (apply deps p d)))
+                                             (list %bash input1 input2)
+                                             (list '() (list %bash) (list input1)))
+                                        (lambda (x y)
+                                          (match x
+                                            ((p1 . _)
+                                             (match y
+                                               ((p2 . _)
+                                                (string<? p1 p2)))))))))))))))
 
 
 (define %coreutils
