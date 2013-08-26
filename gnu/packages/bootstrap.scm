@@ -184,9 +184,10 @@ cd $out
 $out/bin/guile --version~%"
                                                           mkdir xz guile tar)
                                                   (list mkdir xz guile tar))))
-                         (derivation store name system
-                                     bash `(,builder) '()
-                                     `((,bash) (,builder)))))))))
+                         (derivation store name
+                                     bash `(,builder)
+                                     #:system system
+                                     #:inputs `((,bash) (,builder)))))))))
    (package
      (name "guile-bootstrap")
      (version "2.0")

@@ -497,8 +497,11 @@ the derivation called NAME with hash HASH."
                   name
                   (string-append name "-" output))))
 
-(define* (derivation store name system builder args env-vars inputs
-                     #:key (outputs '("out")) hash hash-algo hash-mode)
+(define* (derivation store name builder args
+                     #:key
+                     (system (%current-system)) (env-vars '())
+                     (inputs '()) (outputs '("out"))
+                     hash hash-algo hash-mode)
   "Build a derivation with the given arguments.  Return the resulting
 store path and <derivation> object.  When HASH, HASH-ALGO, and HASH-MODE
 are given, a fixed-output derivation is created---i.e., one whose result is
@@ -747,8 +750,8 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
 
   (define module-form?
     (match-lambda
-      (((or 'define-module 'use-modules) _ ...) #t)
-      (_ #f)))
+     (((or 'define-module 'use-modules) _ ...) #t)
+     (_ #f)))
 
   (define source-path
     ;; When passed an input that is a source, return its path; otherwise
@@ -833,22 +836,25 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
                                           #:system system)))
          (go-dir   (and go-drv
                         (derivation-path->output-path go-drv))))
-    (derivation store name system guile
+    (derivation store name guile
                 `("--no-auto-compile"
                   ,@(if mod-dir `("-L" ,mod-dir) '())
                   ,builder)
 
+                #:system system
+
+                #:inputs `((,(or guile-for-build (%guile-for-build)))
+                           (,builder)
+                           ,@(map cdr inputs)
+                           ,@(if mod-drv `((,mod-drv) (,go-drv)) '()))
+
                 ;; When MODULES is non-empty, shamelessly clobber
                 ;; $GUILE_LOAD_COMPILED_PATH.
-                (if go-dir
-                    `(("GUILE_LOAD_COMPILED_PATH" . ,go-dir)
-                      ,@(alist-delete "GUILE_LOAD_COMPILED_PATH"
-                                      env-vars))
-                    env-vars)
+                #:env-vars (if go-dir
+                               `(("GUILE_LOAD_COMPILED_PATH" . ,go-dir)
+                                 ,@(alist-delete "GUILE_LOAD_COMPILED_PATH"
+                                                 env-vars))
+                               env-vars)
 
-                `((,(or guile-for-build (%guile-for-build)))
-                  (,builder)
-                  ,@(map cdr inputs)
-                  ,@(if mod-drv `((,mod-drv) (,go-drv)) '()))
                 #:hash hash #:hash-algo hash-algo
                 #:outputs outputs)))

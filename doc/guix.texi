@@ -1113,7 +1113,7 @@ derivations as Scheme objects, along with procedures to create and
 otherwise manipulate derivations.  The lowest-level primitive to create
 a derivation is the @code{derivation} procedure:
 
-@deffn {Scheme Procedure} derivation @var{store} @var{name} @var{system} @var{builder} @var{args} @var{env-vars} @var{inputs} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:hash-mode #f]
+@deffn {Scheme Procedure} derivation @var{store} @var{name} @var{builder} @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:hash-mode #f] [#:inputs '()] [#:env-vars '()] [#:system (%current-system)]
 Build a derivation with the given arguments.  Return the resulting store
 path and @code{<derivation>} object.
 
@@ -1137,9 +1137,9 @@ to a Bash executable in the store:
     (let ((builder   ; add the Bash script to the store
            (add-text-to-store store "my-builder.sh"
                               "echo hello world > $out\n" '())))
-      (derivation store "foo" (%current-system)
+      (derivation store "foo"
                   bash `("-e" ,builder)
-                  '(("HOME" . "/homeless")) '())))
+                  #:env-vars '(("HOME" . "/homeless")))))
   list)
 @result{} ("/nix/store/@dots{}-foo.drv" #<<derivation> @dots{}>)
 @end lisp

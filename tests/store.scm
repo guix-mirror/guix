@@ -80,9 +80,9 @@
 ;;          (b  (add-text-to-store %store "link-builder"
 ;;                                 (format #f "echo ~a > $out" p1)
 ;;                                 '()))
-;;          (d1 (derivation %store "link" (%current-system)
-;;                          "/bin/sh" `("-e" ,b) '()
-;;                          `((,b) (,p1))))
+;;          (d1 (derivation %store "link"
+;;                          "/bin/sh" `("-e" ,b)
+;;                          #:inputs `((,b) (,p1))))
 ;;          (p2 (derivation-path->output-path d1)))
 ;;     (and (add-temp-root %store p2)
 ;;          (build-derivations %store (list d1))
@@ -130,9 +130,10 @@
          (s (add-to-store %store "bash" #t "sha256"
                           (search-bootstrap-binary "bash"
                                                    (%current-system))))
-         (d (derivation %store "the-thing" (%current-system)
-                        s `("-e" ,b) `(("foo" . ,(random-text)))
-                        `((,b) (,s))))
+         (d (derivation %store "the-thing"
+                        s `("-e" ,b)
+                        #:env-vars `(("foo" . ,(random-text)))
+                        #:inputs `((,b) (,s))))
          (o (derivation-path->output-path d)))
     (and (build-derivations %store (list d))
          (equal? (query-derivation-outputs %store d)

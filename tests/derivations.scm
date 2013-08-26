@@ -106,9 +106,9 @@
   (let* ((builder  (add-text-to-store %store "my-builder.sh"
                                       "echo hello, world\n"
                                       '()))
-         (drv-path (derivation %store "foo" (%current-system)
+         (drv-path (derivation %store "foo"
                                %bash `("-e" ,builder)
-                               '(("HOME" . "/homeless")) '())))
+                               #:env-vars '(("HOME" . "/homeless")))))
     (and (store-path? drv-path)
          (valid-path? %store drv-path))))
 
@@ -118,12 +118,12 @@
                                     "echo hello, world > \"$out\"\n"
                                     '()))
                 ((drv-path drv)
-                 (derivation %store "foo" (%current-system)
+                 (derivation %store "foo"
                              %bash `(,builder)
-                             '(("HOME" . "/homeless")
-                               ("zzz"  . "Z!")
-                               ("AAA"  . "A!"))
-                             `((,builder))))
+                             #:env-vars '(("HOME" . "/homeless")
+                                          ("zzz"  . "Z!")
+                                          ("AAA"  . "A!"))
+                             #:inputs `((,builder))))
                 ((succeeded?)
                  (build-derivations %store (list drv-path))))
     (and succeeded?
@@ -139,18 +139,17 @@
                       "(while read line ; do echo \"$line\" ; done) < $in > $out"
                       '()))
          (input      (search-path %load-path "ice-9/boot-9.scm"))
+         (input*     (add-to-store %store (basename input)
+                                   #t "sha256" input))
          (drv-path   (derivation %store "derivation-with-input-file"
-                                 (%current-system)
                                  %bash `(,builder)
-                                 `(("in"
-                                    ;; Cheat to pass the actual file
-                                    ;; name to the builder.
-                                    . ,(add-to-store %store
-                                                     (basename input)
-                                                     #t "sha256"
-                                                     input)))
-                                 `((,builder)
-                                   (,input)))))   ; ← local file name
+
+                                 ;; Cheat to pass the actual file name to the
+                                 ;; builder.
+                                 #:env-vars `(("in" . ,input*))
+
+                                 #:inputs `((,builder)
+                                            (,input))))) ; ← local file name
     (and (build-derivations %store (list drv-path))
          ;; Note: we can't compare the files because the above trick alters
          ;; the contents.
@@ -160,10 +159,9 @@
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
                                         "echo -n hello > $out" '()))
          (hash       (sha256 (string->utf8 "hello")))
-         (drv-path   (derivation %store "fixed" (%current-system)
+         (drv-path   (derivation %store "fixed"
                                  %bash `(,builder)
-                                 '()
-                                 `((,builder))    ; optional
+                                 #:inputs `((,builder)) ; optional
                                  #:hash hash #:hash-algo 'sha256))
          (succeeded? (build-derivations %store (list drv-path))))
     (and succeeded?
@@ -178,13 +176,11 @@
          (builder2   (add-text-to-store %store "fixed-builder2.sh"
                                         "echo hey; echo -n hello > $out" '()))
          (hash       (sha256 (string->utf8 "hello")))
-         (drv-path1  (derivation %store "fixed" (%current-system)
+         (drv-path1  (derivation %store "fixed"
                                  %bash `(,builder1)
-                                 '() `()
                                  #:hash hash #:hash-algo 'sha256))
-         (drv-path2  (derivation %store "fixed" (%current-system)
+         (drv-path2  (derivation %store "fixed"
                                  %bash `(,builder2)
-                                 '() `()
                                  #:hash hash #:hash-algo 'sha256))
          (succeeded? (build-derivations %store
                                         (list drv-path1 drv-path2))))
@@ -201,27 +197,25 @@
          (builder2   (add-text-to-store %store "fixed-builder2.sh"
                                         "echo hey; echo -n hello > $out" '()))
          (hash       (sha256 (string->utf8 "hello")))
-         (fixed1     (derivation %store "fixed" (%current-system)
+         (fixed1     (derivation %store "fixed"
                                  %bash `(,builder1)
-                                 '() `()
                                  #:hash hash #:hash-algo 'sha256))
-         (fixed2     (derivation %store "fixed" (%current-system)
+         (fixed2     (derivation %store "fixed"
                                  %bash `(,builder2)
-                                 '() `()
                                  #:hash hash #:hash-algo 'sha256))
          (fixed-out  (derivation-path->output-path fixed1))
          (builder3   (add-text-to-store
                       %store "final-builder.sh"
                       ;; Use Bash hackery to avoid Coreutils.
                       "echo $in ; (read -u 3 c; echo $c) 3< $in > $out" '()))
-         (final1     (derivation %store "final" (%current-system)
+         (final1     (derivation %store "final"
                                  %bash `(,builder3)
-                                 `(("in" . ,fixed-out))
-                                 `((,builder3) (,fixed1))))
-         (final2     (derivation %store "final" (%current-system)
+                                 #:env-vars `(("in" . ,fixed-out))
+                                 #:inputs `((,builder3) (,fixed1))))
+         (final2     (derivation %store "final"
                                  %bash `(,builder3)
-                                 `(("in" . ,fixed-out))
-                                 `((,builder3) (,fixed2))))
+                                 #:env-vars `(("in" . ,fixed-out))
+                                 #:inputs `((,builder3) (,fixed2))))
          (succeeded? (build-derivations %store
                                         (list final1 final2))))
     (and succeeded?
@@ -232,12 +226,12 @@
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
                                         "echo one > $out ; echo two > $second"
                                         '()))
-         (drv-path   (derivation %store "fixed" (%current-system)
+         (drv-path   (derivation %store "fixed"
                                  %bash `(,builder)
-                                 '(("HOME" . "/homeless")
-                                   ("zzz"  . "Z!")
-                                   ("AAA"  . "A!"))
-                                 `((,builder))
+                                 #:env-vars '(("HOME" . "/homeless")
+                                              ("zzz"  . "Z!")
+                                              ("AAA"  . "A!"))
+                                 #:inputs `((,builder))
                                  #:outputs '("out" "second")))
          (succeeded? (build-derivations %store (list drv-path))))
     (and succeeded?
@@ -255,10 +249,9 @@
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
                                         "echo one > $out ; echo two > $AAA"
                                         '()))
-         (drv-path   (derivation %store "fixed" (%current-system)
+         (drv-path   (derivation %store "fixed"
                                  %bash `(,builder)
-                                 '()
-                                 `((,builder))
+                                 #:inputs `((,builder))
                                  #:outputs '("out" "AAA")))
          (succeeded? (build-derivations %store (list drv-path))))
     (and succeeded?
@@ -273,10 +266,9 @@
   (let* ((builder1   (add-text-to-store %store "my-mo-builder.sh"
                                         "echo one > $out ; echo two > $two"
                                         '()))
-         (mdrv       (derivation %store "multiple-output" (%current-system)
+         (mdrv       (derivation %store "multiple-output"
                                  %bash `(,builder1)
-                                 '()
-                                 `((,builder1))
+                                 #:inputs `((,builder1))
                                  #:outputs '("out" "two")))
          (builder2   (add-text-to-store %store "my-mo-user-builder.sh"
                                         "read x < $one;
@@ -284,16 +276,17 @@
                                          echo \"($x $y)\" > $out"
                                         '()))
          (udrv       (derivation %store "multiple-output-user"
-                                 (%current-system)
                                  %bash `(,builder2)
-                                 `(("one" . ,(derivation-path->output-path
-                                              mdrv "out"))
-                                   ("two" . ,(derivation-path->output-path
-                                              mdrv "two")))
-                                 `((,builder2)
-                                   ;; two occurrences of MDRV:
-                                   (,mdrv)
-                                   (,mdrv "two")))))
+                                 #:env-vars `(("one"
+                                               . ,(derivation-path->output-path
+                                                   mdrv "out"))
+                                              ("two"
+                                               . ,(derivation-path->output-path
+                                                   mdrv "two")))
+                                 #:inputs `((,builder2)
+                                            ;; two occurrences of MDRV:
+                                            (,mdrv)
+                                            (,mdrv "two")))))
     (and (build-derivations %store (list (pk 'udrv udrv)))
          (let ((p (derivation-path->output-path udrv)))
            (and (valid-path? %store p)
@@ -314,14 +307,14 @@
                              "echo $PATH ; mkdir --version ; mkdir $out ; touch $out/good"
                              '()))
          (drv-path
-          (derivation %store "foo" (%current-system)
+          (derivation %store "foo"
                       %bash `(,builder)
-                      `(("PATH" .
-                         ,(string-append
-                           (derivation-path->output-path %coreutils)
-                           "/bin")))
-                      `((,builder)
-                        (,%coreutils))))
+                      #:env-vars `(("PATH" .
+                                    ,(string-append
+                                      (derivation-path->output-path %coreutils)
+                                      "/bin")))
+                      #:inputs `((,builder)
+                                 (,%coreutils))))
          (succeeded?
           (build-derivations %store (list drv-path))))
     (and succeeded?
