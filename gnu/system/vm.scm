@@ -40,8 +40,10 @@
 ;;;
 ;;; Code:
 
-(define* (expression->derivation-in-linux-vm store name system exp inputs
+(define* (expression->derivation-in-linux-vm store name exp
                                              #:key
+                                             (system (%current-system))
+                                             (inputs '())
                                              (linux linux-libre)
                                              (initrd qemu-initrd)
                                              (qemu qemu/smb-shares)
@@ -150,7 +152,7 @@ DISK-IMAGE-SIZE bytes and return it."
                      (inputs '()))
   "Return a bootable, stand-alone QEMU image."
   (expression->derivation-in-linux-vm
-   store "qemu-image" system
+   store "qemu-image"
    `(let ((parted  (string-append (assoc-ref %build-inputs "parted")
                                   "/sbin/parted"))
           (mkfs    (string-append (assoc-ref %build-inputs "e2fsprogs")
@@ -212,19 +214,20 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
                          (zero?
                           (system* umount "/fs"))
                          (reboot)))))))
-   `(("parted" ,parted)
-     ("grub" ,grub)
-     ("e2fsprogs" ,e2fsprogs)
-     ("linux" ,linux-libre)
-     ("initrd" ,qemu-initrd)
+   #:system system
+   #:inputs `(("parted" ,parted)
+              ("grub" ,grub)
+              ("e2fsprogs" ,e2fsprogs)
+              ("linux" ,linux-libre)
+              ("initrd" ,qemu-initrd)
 
-     ;; For shell scripts.
-     ("sed" ,(car (assoc-ref %final-inputs "sed")))
-     ("grep" ,(car (assoc-ref %final-inputs "grep")))
-     ("coreutils" ,(car (assoc-ref %final-inputs "coreutils")))
-     ("findutils" ,(car (assoc-ref %final-inputs "findutils")))
-     ("gawk" ,(car (assoc-ref %final-inputs "gawk")))
-     ("util-linux" ,util-linux))
+              ;; For shell scripts.
+              ("sed" ,(car (assoc-ref %final-inputs "sed")))
+              ("grep" ,(car (assoc-ref %final-inputs "grep")))
+              ("coreutils" ,(car (assoc-ref %final-inputs "coreutils")))
+              ("findutils" ,(car (assoc-ref %final-inputs "findutils")))
+              ("gawk" ,(car (assoc-ref %final-inputs "gawk")))
+              ("util-linux" ,util-linux))
    #:make-disk-image? #t
    #:disk-image-size disk-image-size))
 
@@ -241,13 +244,12 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
       (lambda ()
         (parameterize ((%guile-for-build (package-derivation store guile-final)))
           (expression->derivation-in-linux-vm
-           store "vm-test" (%current-system)
+           store "vm-test"
            '(begin
               (display "hello from boot!\n")
               (call-with-output-file "/xchg/hello"
                 (lambda (p)
-                  (display "world" p))))
-           '())))
+                  (display "world" p)))))))
       (lambda ()
         (close-connection store)))))
 
