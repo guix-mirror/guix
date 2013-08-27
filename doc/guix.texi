@@ -1113,7 +1113,7 @@ derivations as Scheme objects, along with procedures to create and
 otherwise manipulate derivations.  The lowest-level primitive to create
 a derivation is the @code{derivation} procedure:
 
-@deffn {Scheme Procedure} derivation @var{store} @var{name} @var{builder} @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:hash-mode #f] [#:inputs '()] [#:env-vars '()] [#:system (%current-system)] [#:dependency-graphs #f]
+@deffn {Scheme Procedure} derivation @var{store} @var{name} @var{builder} @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:hash-mode #f] [#:inputs '()] [#:env-vars '()] [#:system (%current-system)] [#:references-graphs #f]
 Build a derivation with the given arguments.  Return the resulting store
 path and @code{<derivation>} object.
 
@@ -1121,7 +1121,7 @@ When @var{hash}, @var{hash-algo}, and @var{hash-mode} are given, a
 @dfn{fixed-output derivation} is created---i.e., one whose result is
 known in advance, such as a file download.
 
-When @var{dependency-graphs} is true, it must be a list of file
+When @var{references-graphs} is true, it must be a list of file
 name/store path pairs.  In that case, the reference graph of each store
 path is exported in the build environment in the corresponding file, in
 a simple text format.
@@ -1153,7 +1153,7 @@ As can be guessed, this primitive is cumbersome to use directly.  An
 improved variant is @code{build-expression->derivation}, which allows
 the caller to directly pass a Guile expression as the build script:
 
-@deffn {Scheme Procedure} build-expression->derivation @var{store} @var{name} @var{system} @var{exp} @var{inputs} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:env-vars '()] [#:modules '()] [#:dependency-graphs #f] [#:guile-for-build #f]
+@deffn {Scheme Procedure} build-expression->derivation @var{store} @var{name} @var{system} @var{exp} @var{inputs} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:env-vars '()] [#:modules '()] [#:references-graphs #f] [#:guile-for-build #f]
 Return a derivation that executes Scheme expression @var{exp} as a
 builder for derivation @var{name}.  @var{inputs} must be a list of
 @code{(name drv-path sub-drv)} tuples; when @var{sub-drv} is omitted,
@@ -1175,7 +1175,7 @@ terminates by passing the result of @var{exp} to @code{exit}; thus, when
 @var{guile-for-build} is omitted or is @code{#f}, the value of the
 @code{%guile-for-build} fluid is used instead.
 
-See the @code{derivation} procedure for the meaning of @var{dependency-graphs}.
+See the @code{derivation} procedure for the meaning of @var{references-graphs}.
 @end deffn
 
 @noindent

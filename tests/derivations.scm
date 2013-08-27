@@ -296,7 +296,7 @@
            (and (valid-path? %store p)
                 (equal? '(one two) (call-with-input-file p read)))))))
 
-(test-assert "derivation with #:dependency-graphs"
+(test-assert "derivation with #:references-graphs"
   (let* ((input1  (add-text-to-store %store "foo" "hello"
                                      (list %bash)))
          (input2  (add-text-to-store %store "bar"
@@ -312,7 +312,7 @@
                                      (list %mkdir)))
          (drv     (derivation %store "closure-graphs"
                               %bash `(,builder)
-                              #:dependency-graphs
+                              #:references-graphs
                               `(("bash" . ,%bash)
                                 ("input1" . ,input1)
                                 ("input2" . ,input2))
@@ -652,14 +652,14 @@ Deriver: ~a~%"
                    (derivation-path->output-path final2))
          (build-derivations %store (list final1 final2)))))
 
-(test-assert "build-expression->derivation with #:dependency-graphs"
+(test-assert "build-expression->derivation with #:references-graphs"
   (let* ((input   (add-text-to-store %store "foo" "hello"
                                      (list %bash %mkdir)))
          (builder '(copy-file "input" %output))
-         (drv     (build-expression->derivation %store "dependency-graphs"
+         (drv     (build-expression->derivation %store "references-graphs"
                                                 (%current-system)
                                                 builder '()
-                                                #:dependency-graphs
+                                                #:references-graphs
                                                 `(("input" . ,input))))
          (out     (derivation-path->output-path drv)))
     (define (deps path . deps)

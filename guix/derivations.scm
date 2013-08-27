@@ -502,13 +502,13 @@ the derivation called NAME with hash HASH."
                      (system (%current-system)) (env-vars '())
                      (inputs '()) (outputs '("out"))
                      hash hash-algo hash-mode
-                     dependency-graphs)
+                     references-graphs)
   "Build a derivation with the given arguments.  Return the resulting
 store path and <derivation> object.  When HASH, HASH-ALGO, and HASH-MODE
 are given, a fixed-output derivation is created---i.e., one whose result is
 known in advance, such as a file download.
 
-When DEPENDENCY-GRAPHS is true, it must be a list of file name/store path
+When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs.  In that case, the reference graph of each store path is exported in
 the build environment in the corresponding file, in a simple text format."
   (define direct-store-path?
@@ -549,7 +549,7 @@ the build environment in the corresponding file, in a simple text format."
     ;; Some options are passed to the build daemon via the env. vars of
     ;; derivations (urgh!).  We hide that from our API, but here is the place
     ;; where we kludgify those options.
-    (match dependency-graphs
+    (match references-graphs
       (((file . path) ...)
        (let ((value (map (cut string-append <> " " <>)
                          file path)))
@@ -744,7 +744,7 @@ they can refer to each other."
                                        (env-vars '())
                                        (modules '())
                                        guile-for-build
-                                       dependency-graphs)
+                                       references-graphs)
   "Return a derivation that executes Scheme expression EXP as a builder
 for derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV)
 tuples; when SUB-DRV is omitted, \"out\" is assumed.  MODULES is a list
@@ -763,7 +763,7 @@ EXP returns #f, the build is considered to have failed.
 EXP is built using GUILE-FOR-BUILD (a derivation).  When GUILE-FOR-BUILD is
 omitted or is #f, the value of the `%guile-for-build' fluid is used instead.
 
-See the `derivation' procedure for the meaning of DEPENDENCY-GRAPHS."
+See the `derivation' procedure for the meaning of REFERENCES-GRAPHS."
   (define guile-drv
     (or guile-for-build (%guile-for-build)))
 
@@ -881,4 +881,4 @@ See the `derivation' procedure for the meaning of DEPENDENCY-GRAPHS."
 
                 #:hash hash #:hash-algo hash-algo
                 #:outputs outputs
-                #:dependency-graphs dependency-graphs)))
+                #:references-graphs references-graphs)))
