@@ -23,6 +23,7 @@
 @title GNU Guix Reference Manual
 @subtitle Using the GNU Guix Functional Package Manager
 @author Ludovic Courtès
+@author Andreas Enge
 @author Nikita Karetnikov
 
 @page
@@ -30,7 +31,7 @@
 Edition @value{EDITION} @*
 @value{UPDATED} @*
 
-Copyright @copyright{} @value{YEARS} Ludovic Court@`es
+Copyright @copyright{} @value{YEARS} Ludovic Court@`es, Andreas Enge, Nikita Karetnikov
 
 @quotation
 Permission is granted to copy, distribute and/or modify this document
@@ -63,17 +64,6 @@ Documentation License.''
 
 This document describes GNU Guix version @value{VERSION}, a functional
 package management tool written for the GNU system.
-
-@quotation
-Copyright @copyright{} @value{YEARS} Ludovic Courtès
-
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
-copy of the license is included in the section entitled ``GNU Free
-Documentation License.''
-@end quotation
 
 @menu
 * Introduction::                What is Guix about?
@@ -1502,7 +1492,7 @@ tools that help users exert that freedom.
 @menu
 * Installing Debugging Files::  Feeding the debugger.
 * Package Modules::             Packages from the programmer's viewpoint.
-* Adding New Packages::         Growing the distribution.
+* Packaging Guidelines::        Growing the distribution.
 * Bootstrapping::               GNU/Linux built from scratch.
 * Porting::                     Targeting another platform or kernel.
 @end menu
@@ -1587,40 +1577,13 @@ distribution.  The root of this dependency graph is a small set of
 bootstrap)} module.  For more information on bootstrapping,
 @ref{Bootstrapping}.
 
-@node Adding New Packages
-@section Adding New Packages
+@node Packaging Guidelines
+@section Packaging Guidelines
 
 The GNU distribution is nascent and may well lack some of your favorite
 packages.  This section describes how you can help make the distribution
 grow.  @ref{Contributing}, for additional information on how you can
 help.
-
-@menu
-* Packaging Guidelines::        What goes into the distribution.
-* From the Source Tarball to the Package::     The story of a package.
-@end menu
-
-@node Packaging Guidelines
-@subsection Packaging Guidelines
-
-@c Adapted from http://www.gnu.org/philosophy/philosophy.html.
-
-The GNU operating system has been developed so that users can have
-freedom in their computing.  GNU is @dfn{free software}, meaning that
-users have the @url{http://www.gnu.org/philosophy/free-sw.html,four
-essential freedoms}: to run the program, to study and change the program
-in source code form, to redistribute exact copies, and to distribute
-modified versions.  Packages found in the GNU distribution provide only
-software that conveys these four freedoms.
-
-In addition, the GNU distribution follow the
-@url{http://www.gnu.org/distros/free-system-distribution-guidelines.html,free
-software distribution guidelines}.  Among other things, these guidelines
-reject non-free firmware, recommendations of non-free software, and
-discuss ways to deal with trademarks and patents.
-
-@node From the Source Tarball to the Package
-@subsection From the Source Tarball, to the Package Definition, to the Binary Package
 
 Free software packages are usually distributed in the form of
 @dfn{source code tarballs}---typically @file{tar.gz} files that contain
@@ -1665,6 +1628,30 @@ Users can obtain the new package definition simply by running
 package automatically downloads binaries from there (except when using
 @code{--no-substitutes}).  The only place where human intervention is
 needed is to review and apply the patch.
+
+
+@menu
+* Software Freedom::                         What may go into the distribution.
+@end menu
+
+@node Software Freedom
+@subsection Software Freedom
+
+@c Adapted from http://www.gnu.org/philosophy/philosophy.html.
+
+The GNU operating system has been developed so that users can have
+freedom in their computing.  GNU is @dfn{free software}, meaning that
+users have the @url{http://www.gnu.org/philosophy/free-sw.html,four
+essential freedoms}: to run the program, to study and change the program
+in source code form, to redistribute exact copies, and to distribute
+modified versions.  Packages found in the GNU distribution provide only
+software that conveys these four freedoms.
+
+In addition, the GNU distribution follow the
+@url{http://www.gnu.org/distros/free-system-distribution-guidelines.html,free
+software distribution guidelines}.  Among other things, these guidelines
+reject non-free firmware, recommendations of non-free software, and
+discuss ways to deal with trademarks and patents.
 
 
 @node Bootstrapping
@@ -1836,8 +1823,8 @@ reason.
 This project is a cooperative effort, and we need your help to make it
 grow!  Please get in touch with us on @email{guix-devel@@gnu.org}.  We
 welcome ideas, bug reports, patches, and anything that may be helpful to
-the project.  We particularly welcome help on packaging (@pxref{Adding
-New Packages}).
+the project.  We particularly welcome help on packaging
+(@pxref{Packaging Guidelines}).
 
 Please see the
 @url{http://git.savannah.gnu.org/cgit/guix.git/tree/HACKING,
