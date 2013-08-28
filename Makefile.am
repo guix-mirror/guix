@@ -61,6 +61,7 @@ MODULES =					\
   guix/build/cmake-build-system.scm		\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
+  guix/build/linux-initrd.scm			\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
   guix/build/utils.scm				\
