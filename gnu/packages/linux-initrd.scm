@@ -19,10 +19,14 @@
 (define-module (gnu packages linux-initrd)
   #:use-module (guix utils)
   #:use-module (guix licenses)
+  #:use-module (guix build-system)
+  #:use-module ((guix derivations)
+                #:select (imported-modules compiled-modules %guile-for-build))
   #:use-module (gnu packages)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages guile)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
   #:use-module (guix packages)
@@ -38,6 +42,49 @@
 ;;; Code:
 
 
+(define-syntax-rule (raw-build-system (store system name inputs) body ...)
+  "Lift BODY to a package build system."
+  ;; TODO: Generalize.
+  (build-system
+   (name "raw")
+   (description "Raw build system")
+   (build (lambda* (store name source inputs #:key system #:allow-other-keys)
+            (parameterize ((%guile-for-build (package-derivation store
+                                                                 guile-2.0)))
+              body ...)))))
+
+(define (module-package modules)
+  "Return a package that contains all of MODULES, a list of Guile module
+names."
+  (package
+    (name "guile-modules")
+    (version "0")
+    (source #f)
+    (build-system (raw-build-system (store system name inputs)
+                    (imported-modules store modules
+                                      #:name name
+                                      #:system system)))
+    (synopsis "Set of Guile modules")
+    (description synopsis)
+    (license gpl3+)
+    (home-page "http://www.gnu.org/software/guix/")))
+
+(define (compiled-module-package modules)
+  "Return a package that contains the .go files corresponding to MODULES, a
+list of Guile module names."
+  (package
+    (name "guile-compiled-modules")
+    (version "0")
+    (source #f)
+    (build-system (raw-build-system (store system name inputs)
+                    (compiled-modules store modules
+                                      #:name name
+                                      #:system system)))
+    (synopsis "Set of compiled Guile modules")
+    (description synopsis)
+    (license gpl3+)
+    (home-page "http://www.gnu.org/software/guix/")))
+
 (define* (expression->initrd exp
                              #:key
                              (guile %guile-static-stripped)
@@ -45,12 +92,13 @@
                              (gzip gzip)
                              (name "guile-initrd")
                              (system (%current-system))
+                             (modules '())
                              (linux #f)
                              (linux-modules '()))
   "Return a package that contains a Linux initrd (a gzipped cpio archive)
 containing GUILE and that evaluates EXP upon booting.  LINUX-MODULES is a list
-of `.ko' file names to be copied from LINUX into the initrd."
-  ;; TODO: Add a `modules' parameter.
+of `.ko' file names to be copied from LINUX into the initrd.  MODULES is a
+list of Guile module names to be embedded in the initrd."
 
   ;; General Linux overview in `Documentation/early-userspace/README' and
   ;; `Documentation/filesystems/ramfs-rootfs-initramfs.txt'.
@@ -67,12 +115,22 @@ of `.ko' file names to be copied from LINUX into the initrd."
                     (rnrs bytevectors)
                     ((system foreign) #:select (sizeof)))
 
-       (let ((guile (assoc-ref %build-inputs "guile"))
-             (cpio  (string-append (assoc-ref %build-inputs "cpio")
-                                   "/bin/cpio"))
-             (gzip  (string-append (assoc-ref %build-inputs "gzip")
-                                   "/bin/gzip"))
-             (out   (assoc-ref %outputs "out")))
+       (let ((guile   (assoc-ref %build-inputs "guile"))
+             (cpio    (string-append (assoc-ref %build-inputs "cpio")
+                                     "/bin/cpio"))
+             (gzip    (string-append (assoc-ref %build-inputs "gzip")
+                                     "/bin/gzip"))
+             (modules (assoc-ref %build-inputs "modules"))
+             (gos     (assoc-ref %build-inputs "modules/compiled"))
+             (scm-dir (string-append "share/guile/" (effective-version)))
+             (go-dir  (format #f ".cache/guile/ccache/~a-~a-~a-~a"
+                              (effective-version)
+                              (if (eq? (native-endianness) (endianness little))
+                                  "LE"
+                                  "BE")
+                              (sizeof '*)
+                              (effective-version)))
+             (out     (assoc-ref %outputs "out")))
          (mkdir out)
          (mkdir "contents")
          (with-directory-excursion "contents"
@@ -84,19 +142,23 @@ of `.ko' file names to be copied from LINUX into the initrd."
            (chmod "init" #o555)
            (chmod "bin/guile" #o555)
 
-           ;; Compile `init'.
-           (let ((go-dir (format #f ".cache/guile/ccache/~a-~a-~a-~a"
-                                 (effective-version)
-                                 (if (eq? (native-endianness) (endianness little))
-                                     "LE"
-                                     "BE")
-                                 (sizeof '*)
-                                 (effective-version))))
-             (mkdir-p go-dir)
-             (compile-file "init"
-                           #:opts %auto-compilation-options
-                           #:output-file (string-append go-dir "/init.go")))
+           ;; Copy Guile modules.
+           (chmod scm-dir #o777)
+           (copy-recursively modules scm-dir
+                             #:follow-symlinks? #t)
+           (copy-recursively gos (string-append "lib/guile/"
+                                                (effective-version) "/ccache")
+                             #:follow-symlinks? #t)
 
+           ;; Compile `init'.
+           (mkdir-p go-dir)
+           (set! %load-path (cons modules %load-path))
+           (set! %load-compiled-path (cons gos %load-compiled-path))
+           (compile-file "init"
+                         #:opts %auto-compilation-options
+                         #:output-file (string-append go-dir "/init.go"))
+
+           ;; Copy Linux modules.
            (let* ((linux      (assoc-ref %build-inputs "linux"))
                   (module-dir (and linux
                                    (string-append linux "/lib/modules"))))
@@ -161,6 +223,8 @@ of `.ko' file names to be copied from LINUX into the initrd."
       (inputs `(("guile" ,guile)
                 ("cpio" ,cpio)
                 ("gzip" ,gzip)
+                ("modules" ,(module-package modules))
+                ("modules/compiled" ,(compiled-module-package modules))
                 ,@(if linux
                       `(("linux" ,linux))
                       '())))

@@ -61,6 +61,8 @@
             derivation
 
             %guile-for-build
+            imported-modules
+            compiled-modules
             build-expression->derivation
             imported-files))
 
