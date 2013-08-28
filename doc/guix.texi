@@ -1631,7 +1631,10 @@ needed is to review and apply the patch.
 
 
 @menu
-* Software Freedom::                         What may go into the distribution.
+* Software Freedom::     What may go into the distribution.
+* Package Naming::       What's in a name?
+* Version Numbers::      When the name is not enough.
+* Python Modules::       Taming the snake.
 @end menu
 
 @node Software Freedom
@@ -1652,6 +1655,83 @@ In addition, the GNU distribution follow the
 software distribution guidelines}.  Among other things, these guidelines
 reject non-free firmware, recommendations of non-free software, and
 discuss ways to deal with trademarks and patents.
+
+
+@node Package Naming
+@subsection Package Naming
+
+A package has actually two names associated to it:
+First, there is the name of the @emph{Scheme variable}, the one following
+@code{define-public}. By this name, the package can be made known in the
+Scheme code, for instance as input to another package.
+Second, there is the string in the @code{name} field of a package definition.
+This name is used by the package manager.
+
+Both are usually the same and correspond to the lowercase conversion of the
+project name chosen by upstream. For instance, the GNUnet project is packaged
+as @code{gnunet}. We do not add @code{lib} prefixes for library packages,
+unless these are already part of the official project name.
+But see @ref{Python Modules} for special rules concerning modules for
+the Python language.
+
+
+@node Version Numbers
+@subsection Version Numbers
+
+We usually package only the latest version of a given free software
+project. But sometimes, for instance for incompatible library versions,
+two (or more) versions of the same package are needed. These require different
+Scheme variable names. We use the name as defined in @ref {Package Naming}
+for the most recent version; previous versions use the same name, suffixed
+by @code{-} and the smallest prefix of the version number that may
+distinguish the two versions.
+
+The name inside the package definition is the same for all versions of a
+package and does not contain any version number.
+
+For instance, the versions 2.24.20 and 3.9.12 of GTK+ may be packaged as follows:
+@example
+(define-public gtk+
+  (package
+   (name "gtk+")
+   (version "3.9.12")
+   ...))
+(define-public gtk+-2
+  (package
+   (name "gtk+")
+   (version "2.24.20")
+   ...))
+@end example
+If we also wanted GTK+ 3.8.2, this would be packaged as
+@example
+(define-public gtk+-3.8
+  (package
+   (name "gtk+")
+   (version "3.8.2")
+   ...))
+@end example
+
+
+@node Python Modules
+@subsection Python Modules
+
+We currently package Python 2 and Python 3, under the Scheme variable names
+@code{python-2} and @code{python} as explained in @ref{Version Numbers}.
+To avoid confusion and naming clashes with other programming languages, it
+seems desirable that the name of a package for a Python module contains
+the word @code{python}.
+Some modules are compatible with only one version of Python, others with both.
+If the package Foo compiles only with Python 3, we name it
+@code{python-foo}; if it compiles only with Python 2, we name it
+@code{python2-foo}. If it is compatible with both versions, we create two
+packages with the corresponding names.
+
+If a project already contains the word @code{python}, we drop this;
+for instance, the module python-dateutil is packaged under the names
+@code{python-dateutil} and @code{python2-dateutil}.
+
+
+
 
 
 @node Bootstrapping
