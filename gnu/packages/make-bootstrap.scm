@@ -127,7 +127,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                       ;; cross-compiling).
                       (inputs (match (assoc "perl" (package-inputs coreutils))
                                 (#f '())
-                                (x  (list x))))))
+                                (x  (list x))))
+
+                      ;; Remove the `debug' output.
+                      (outputs '("out"))))
         (bzip2 (package (inherit bzip2)
                  (arguments
                   (substitute-keyword-arguments (package-arguments bzip2)
