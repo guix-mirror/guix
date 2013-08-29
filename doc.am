@@ -28,12 +28,16 @@ dist_infoimage_DATA = doc/images/bootstrap-graph.png
 
 # Try hard to obtain an image size and aspect that's reasonable for inclusion
 # in an Info or PDF document.
-DOT_OPTIONS =						\
-  -Tpng -Gratio=.9 -Gnodesep=.005 -Granksep=.00005	\
+DOT_OPTIONS =					\
+  -Gratio=.9 -Gnodesep=.005 -Granksep=.00005	\
   -Nfontsize=9 -Nheight=.1 -Nwidth=.1
 
 .dot.png:
 	$(DOT) -Tpng $(DOT_OPTIONS) < "$<" > "$@.tmp"
+	mv "$@.tmp" "$@"
+
+.dot.pdf:
+	$(DOT) -Tpdf $(DOT_OPTIONS) < "$<" > "$@.tmp"
 	mv "$@.tmp" "$@"
 
 .dot.eps:
@@ -43,6 +47,6 @@ DOT_OPTIONS =						\
 # We cannot add new dependencies to `doc/guix.pdf' & co. (info "(automake)
 # Extending").  Using the `-local' rules is imperfect, because they may be
 # triggered after the main rule.  Oh, well.
-pdf-local: doc/images/bootstrap-graph.png
+pdf-local: doc/images/bootstrap-graph.pdf
 info-local: doc/images/bootstrap-graph.png
 ps-local: doc/images/bootstrap-graph.eps
