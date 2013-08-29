@@ -121,6 +121,10 @@ AC_CACHE_SAVE
 
 m4_include([config-daemon.ac])
 
+dnl `dot' (from the Graphviz package) is only needed for maintainers.
+dnl See `HACKING' for more info.
+AM_MISSING_PROG([DOT], [dot])
+
 AC_CONFIG_FILES([Makefile
                  po/Makefile.in
 		 guix/config.scm])

@@ -33,11 +33,11 @@ DOT_OPTIONS =						\
   -Nfontsize=9 -Nheight=.1 -Nwidth=.1
 
 .dot.png:
-	dot -Tpng $(DOT_OPTIONS) < "$<" > "$@.tmp"
+	$(DOT) -Tpng $(DOT_OPTIONS) < "$<" > "$@.tmp"
 	mv "$@.tmp" "$@"
 
 .dot.eps:
-	dot -Teps $(DOT_OPTIONS) < "$<" > "$@.tmp"
+	$(DOT) -Teps $(DOT_OPTIONS) < "$<" > "$@.tmp"
 	mv "$@.tmp" "$@"
 
 # We cannot add new dependencies to `doc/guix.pdf' & co. (info "(automake)
