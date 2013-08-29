@@ -1768,7 +1768,7 @@ re-create them if needed (more on that later.)
 
 @c As of Emacs 24.3, Info-mode displays the image, but since it's a
 @c large image, it's hard to scroll.  Oh well.
-@image{images/bootstrap-graph,,,Dependency graph of the early bootstrap derivations}
+@image{images/bootstrap-graph,6in,,Dependency graph of the early bootstrap derivations}
 
 The figure above shows the very beginning of the dependency graph of the
 distribution, corresponding to the package definitions of the @code{(gnu
