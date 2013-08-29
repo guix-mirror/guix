@@ -78,32 +78,6 @@ solve the shortest vector problem.")
    (license lgpl2.1+)
    (home-page "http://perso.ens-lyon.fr/damien.stehle/fplll/")))
 
-(define-public gsl
-  (package
-    (name "gsl")
-    (version "1.15")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/gsl/gsl-"
-                          version ".tar.gz"))
-      (sha256
-       (base32
-        "18qf6jzz1r3mzb5qynywv4xx3z9g61hgkbpkdrhbgqh2g7jhgfc5"))))
-    (build-system gnu-build-system)
-    (home-page "http://www.gnu.org/software/gsl/")
-    (synopsis "Numerical library for C and C++")
-    (description
-     "The GNU Scientific Library (GSL) is a numerical library for C
-and C++ programmers.  It is free software under the GNU General
-Public License.
-
-The library provides a wide range of mathematical routines such
-as random number generators, special functions and least-squares
-fitting.  There are over 1000 functions in total with an
-extensive test suite.")
-    (license gpl3+)))
-
 (define-public pari-gp
   (package
    (name "pari-gp")
