@@ -88,6 +88,40 @@ guix-devel@gnu.org.  Please write commit logs in the [[http://www.gnu.org/prep/s
 As you become a regular contributor, you may find it convenient to have write
 access to the repository (see below.)
 
+* Coding Style
+
+In general our code follows the [[info:standards][GNU Coding Standards]] (GCS).  However, the GCS
+do not say much about Scheme, so here are some additional rules.
+
+** Programming Paradigm
+
+Scheme code in Guix is written in a purely functional style.  One exception is
+code that involves input/output, and procedures that implement low-level
+concepts, such as the ‘memoize’ procedure.
+
+** Modules
+
+Guile modules that are meant to be used on the builder side must live in the
+(guix build …) name space.  They must not refer to other Guix or GNU modules.
+However, it is OK for a “host-side” module to use a build-side module.
+
+Modules that deal with the broader GNU system should be in the (gnu …) name
+space rather than (guix …).
+
+** Formatting Code
+
+When writing Scheme code, we follow common wisdom among Scheme programmers.
+In general, we follow the [[http://mumble.net/~campbell/scheme/style.txt][Riastradh's Lisp Style Rules]].  This document happens
+to describe the conventions mostly used in Guile’s code too.  It is very
+thoughtful and well written, so please do read it.
+
+In addition, we require all top-level procedures to carry a docstring.  This
+requirement can be relaxed for simple private procedures in the (guix build …)
+name space, though.
+
+Procedures should not have more than four positional parameters.  Use keyword
+parameters for procedures that take more than four parameters.
+
 * Commit Access
 
 For frequent contributors, having write access to the repository is
