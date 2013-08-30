@@ -1,0 +1,122 @@
+Bigloo 4.0b removes `xml-attribute-encode', which leads to a build failure
+in Hop.
+
+This patch allows Hop to be compiled with Bigloo 4.0b.
+
+
+changeset:   3327:3515f7f1aef2
+branch:      2.4.x
+user:        Manuel Serrano <Manuel.Serrano@inria.fr>
+date:        Wed Jul 31 12:41:10 2013 +0200
+summary:     Fix serialization bug
+
+diff -r 7244c4d30ad4 -r 3515f7f1aef2 runtime/js_comp.scm
+--- a/runtime/js_comp.scm	Fri Jul 19 08:28:13 2013 +0200
++++ b/runtime/js_comp.scm	Wed Jul 31 12:41:10 2013 +0200
+@@ -143,10 +143,17 @@
+       (display "{ " op)
+       (display-seq fields op
+ 	 (lambda (f op)
++	    (let ((iv (class-field-info f)))
+ 	    (display "'" op)
+ 	    (display (class-field-name f) op)
+ 	    (display "': " op)
+-	    (compile ((class-field-accessor f) obj) op)))
++	       (cond
++		  ((and (pair? iv) (memq :client iv))
++		   =>
++		   (lambda (x)
++		      (compile (when (pair? (cdr x)) (cadr x)) op)))
++		  (else 
++		   (compile ((class-field-accessor f) obj) op))))))
+       (display "}" op))
+    
+    (let ((klass (object-class obj)))
+diff -r 7244c4d30ad4 -r 3515f7f1aef2 runtime/xml.scm
+--- a/runtime/xml.scm	Fri Jul 19 08:28:13 2013 +0200
++++ b/runtime/xml.scm	Wed Jul 31 12:41:10 2013 +0200
+@@ -55,6 +55,7 @@
+ 	    (generic xml-write-attribute ::obj ::obj ::output-port ::xml-backend)
+ 	    (generic xml-write-expression ::obj ::output-port)
+ 	    (xml-write-attributes ::pair-nil ::output-port ::xml-backend)
++	    (xml-attribute-encode obj)
+ 
+ 	    (xml->string ::obj ::xml-backend)
+ 	    
+@@ -613,6 +614,52 @@
+ 	 (display ">" p))))
+ 
+ ;*---------------------------------------------------------------------*/
++;*    xml-attribute-encode ...                                         */
++;*---------------------------------------------------------------------*/
++(define (xml-attribute-encode obj)
++   (if (not (string? obj))
++       obj
++       (let ((ol (string-length obj)))
++	  (define (count str ol)
++	     (let loop ((i 0)
++			(j 0))
++		(if (=fx i ol)
++		    j
++		    (let ((c (string-ref str i)))
++		       ;; attribute values should escape &#...
++		       (if (or (char=? c #\') (char=? c #\&))
++			   (loop (+fx i 1) (+fx j 5))
++			   (loop (+fx i 1) (+fx j 1)))))))
++	  (define (encode str ol nl)
++	     (if (=fx nl ol)
++		 obj
++		 (let ((nstr (make-string nl)))
++		    (let loop ((i 0)
++			       (j 0))
++		       (if (=fx j nl)
++			   nstr
++			   (let ((c (string-ref str i)))
++			      (case c
++				 ((#\')
++				  (string-set! nstr j #\&)
++				  (string-set! nstr (+fx j 1) #\#)
++				  (string-set! nstr (+fx j 2) #\3)
++				  (string-set! nstr (+fx j 3) #\9)
++				  (string-set! nstr (+fx j 4) #\;)
++				  (loop (+fx i 1) (+fx j 5)))
++				 ((#\&)
++				  (string-set! nstr j #\&)
++				  (string-set! nstr (+fx j 1) #\#)
++				  (string-set! nstr (+fx j 2) #\3)
++				  (string-set! nstr (+fx j 3) #\8)
++				  (string-set! nstr (+fx j 4) #\;)
++				  (loop (+fx i 1) (+fx j 5)))
++				 (else
++				  (string-set! nstr j c)
++				  (loop (+fx i 1) (+fx j 1))))))))))
++	  (encode obj ol (count obj ol)))))
++
++;*---------------------------------------------------------------------*/
+ ;*    xml-write-attributes ...                                         */
+ ;*---------------------------------------------------------------------*/
+ (define (xml-write-attributes attr p backend)
+diff -r 7244c4d30ad4 -r 3515f7f1aef2 share/hop-serialize.js
+--- a/share/hop-serialize.js	Fri Jul 19 08:28:13 2013 +0200
++++ b/share/hop-serialize.js	Wed Jul 31 12:41:10 2013 +0200
+@@ -942,7 +942,7 @@
+ 	 case 0x2e /* . */: return null;
+ 	 case 0x3c /* < */: return read_cnst();
+          case 0x22 /* " */: return read_string( s );
+-         case 0x25 /* " */: return decodeURIComponent( read_string( s ) );
++         case 0x25 /* % */: return decodeURIComponent( read_string( s ) );
+          case 0x55 /* U */: return read_string( s );
+ 	 case 0x5b /* [ */: return read_vector( read_size( s ) );
+ 	 case 0x28 /* ( */: return read_list( read_size( s ) );
+diff -r 7244c4d30ad4 -r 3515f7f1aef2 src/main.scm
+--- a/src/main.scm	Fri Jul 19 08:28:13 2013 +0200
++++ b/src/main.scm	Wed Jul 31 12:41:10 2013 +0200
+@@ -59,8 +59,6 @@
+    (for-each register-srfi! (cons 'hop-server (hop-srfis)))
+    ;; set the library load path
+    (bigloo-library-path-set! (hop-library-path))
+-   ;; define the Hop macros
+-   (hop-install-expanders!)
+    ;; setup the hop readers
+    (bigloo-load-reader-set! hop-read)
+    (bigloo-load-module-set!
