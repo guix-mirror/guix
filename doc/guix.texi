@@ -1696,7 +1696,7 @@ the Python language.
 We usually package only the latest version of a given free software
 project. But sometimes, for instance for incompatible library versions,
 two (or more) versions of the same package are needed. These require different
-Scheme variable names. We use the name as defined in @ref {Package Naming}
+Scheme variable names. We use the name as defined in @ref{Package Naming}
 for the most recent version; previous versions use the same name, suffixed
 by @code{-} and the smallest prefix of the version number that may
 distinguish the two versions.
