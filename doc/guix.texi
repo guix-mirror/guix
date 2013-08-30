@@ -1597,7 +1597,7 @@ bootstrap)} module.  For more information on bootstrapping,
 
 The GNU distribution is nascent and may well lack some of your favorite
 packages.  This section describes how you can help make the distribution
-grow.  @ref{Contributing}, for additional information on how you can
+grow.  @xref{Contributing}, for additional information on how you can
 help.
 
 Free software packages are usually distributed in the form of
@@ -1675,18 +1675,19 @@ discuss ways to deal with trademarks and patents.
 @node Package Naming
 @subsection Package Naming
 
-A package has actually two names associated to it:
+A package has actually two names associated with it:
 First, there is the name of the @emph{Scheme variable}, the one following
-@code{define-public}. By this name, the package can be made known in the
-Scheme code, for instance as input to another package.
-Second, there is the string in the @code{name} field of a package definition.
-This name is used by the package manager.
+@code{define-public}.  By this name, the package can be made known in the
+Scheme code, for instance as input to another package.  Second, there is
+the string in the @code{name} field of a package definition.  This name
+is used by package management commands such as
+@command{guix package} and @command{guix build}.
 
 Both are usually the same and correspond to the lowercase conversion of the
-project name chosen by upstream. For instance, the GNUnet project is packaged
-as @code{gnunet}. We do not add @code{lib} prefixes for library packages,
-unless these are already part of the official project name.
-But see @ref{Python Modules} for special rules concerning modules for
+project name chosen upstream.  For instance, the GNUnet project is packaged
+as @code{gnunet}.  We do not add @code{lib} prefixes for library packages,
+unless these are already part of the official project name.  But see
+@ref{Python Modules} for special rules concerning modules for
 the Python language.
 
 
@@ -1694,9 +1695,10 @@ the Python language.
 @subsection Version Numbers
 
 We usually package only the latest version of a given free software
-project. But sometimes, for instance for incompatible library versions,
-two (or more) versions of the same package are needed. These require different
-Scheme variable names. We use the name as defined in @ref{Package Naming}
+project.  But sometimes, for instance for incompatible library versions,
+two (or more) versions of the same package are needed.  These require
+different Scheme variable names.  We use the name as defined
+in @ref{Package Naming}
 for the most recent version; previous versions use the same name, suffixed
 by @code{-} and the smallest prefix of the version number that may
 distinguish the two versions.
@@ -1705,6 +1707,7 @@ The name inside the package definition is the same for all versions of a
 package and does not contain any version number.
 
 For instance, the versions 2.24.20 and 3.9.12 of GTK+ may be packaged as follows:
+
 @example
 (define-public gtk+
   (package
@@ -1735,6 +1738,7 @@ We currently package Python 2 and Python 3, under the Scheme variable names
 To avoid confusion and naming clashes with other programming languages, it
 seems desirable that the name of a package for a Python module contains
 the word @code{python}.
+
 Some modules are compatible with only one version of Python, others with both.
 If the package Foo compiles only with Python 3, we name it
 @code{python-foo}; if it compiles only with Python 2, we name it
