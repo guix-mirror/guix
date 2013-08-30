@@ -115,9 +115,14 @@ In general, we follow the [[http://mumble.net/~campbell/scheme/style.txt][Riastr
 to describe the conventions mostly used in Guile’s code too.  It is very
 thoughtful and well written, so please do read it.
 
-In addition, we require all top-level procedures to carry a docstring.  This
-requirement can be relaxed for simple private procedures in the (guix build …)
-name space, though.
+Some special forms introduced in Guix, such as the ‘substitute*’ macro, have
+special indentation rules.  These are defined in the .dir-locals.el file,
+which Emacs automatically uses.  If you do not use Emacs, please make sure to
+let your editor know the rules.
+
+We require all top-level procedures to carry a docstring.  This requirement
+can be relaxed for simple private procedures in the (guix build …) name space,
+though.
 
 Procedures should not have more than four positional parameters.  Use keyword
 parameters for procedures that take more than four parameters.
