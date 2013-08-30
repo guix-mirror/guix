@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,27 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages linux))
+
+(define-public htop
+  (package
+   (name "htop")
+   (version "1.0.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/htop/"
+                  version "/htop-" version ".tar.gz"))
+            (sha256
+             (base32
+              "18fqrhvnm7h4c3939av8lpiwrwxbyw6hcly0jvq0vkjf0ixnaq7f"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("ncurses" ,ncurses)))
+   (home-page "http://htop.sourceforge.net/")
+   (synopsis "Interactive process viewer")
+   (description
+    "This is htop, an interactive process viewer.  It is a text-mode
+application (for console or X terminals) and requires ncurses.")
+   (license gpl2)))
 
 (define-public pies
   (package
