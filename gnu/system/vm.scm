@@ -28,6 +28,7 @@
   #:use-module (gnu packages linux-initrd)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (expression->derivation-in-linux-vm
@@ -53,6 +54,7 @@
                                               (%guile-for-build))
 
                                              (make-disk-image? #f)
+                                             (references-graphs #f)
                                              (disk-image-size
                                               (* 100 (expt 2 20))))
   "Evaluate EXP in a QEMU virtual machine running LINUX with INITRD.  In the
@@ -61,7 +63,11 @@ its output files in the `/xchg' directory, which is copied to the derivation's
 output when the VM terminates.
 
 When MAKE-DISK-IMAGE? is true, then create a QEMU disk image of
-DISK-IMAGE-SIZE bytes and return it."
+DISK-IMAGE-SIZE bytes and return it.
+
+When REFERENCES-GRAPHS is true, it must be a list of file name/store path
+pairs, as for `derivation'.  The files containing the reference graphs are
+made available under the /xchg CIFS share."
   (define input-alist
     (map (match-lambda
           ((input package)
@@ -77,8 +83,10 @@ DISK-IMAGE-SIZE bytes and return it."
 
   (define builder
     ;; Code that launches the VM that evaluates EXP.
-    `(begin
-       (use-modules (guix build utils))
+    `(let ()
+       (use-modules (guix build utils)
+                    (srfi srfi-1)
+                    (ice-9 rdelim))
 
        (let ((out     (assoc-ref %outputs "out"))
              (cu      (string-append (assoc-ref %build-inputs "coreutils")
@@ -104,6 +112,17 @@ DISK-IMAGE-SIZE bytes and return it."
               '(begin))
 
          (mkdir "xchg")
+
+         ;; Copy the reference-graph files under xchg/ so EXP can access it.
+         (begin
+           ,@(match references-graphs
+               (((graph-files . _) ...)
+                (map (lambda (file)
+                       `(copy-file ,file
+                                   ,(string-append "xchg/" file)))
+                     graph-files))
+               (#f '())))
+
          (and (zero?
                (system* qemu "-nographic" "-no-reboot"
                         "-net" "nic,model=e1000"
@@ -139,9 +158,11 @@ DISK-IMAGE-SIZE bytes and return it."
                                                      ,@sub-drv)))
                                            inputs))
                                   #:env-vars env-vars
-                                  #:modules `((guix build utils)
-                                              ,@modules)
-                                  #:guile-for-build guile-for-build)))
+                                  #:modules (delete-duplicates
+                                             `((guix build utils)
+                                               ,@modules))
+                                  #:guile-for-build guile-for-build
+                                  #:references-graphs references-graphs)))
 
 (define* (qemu-image store #:key
                      (name "qemu-image")
