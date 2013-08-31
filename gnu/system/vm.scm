@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu system vm)
+  #:use-module (guix config)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
@@ -28,6 +29,8 @@
   #:use-module (gnu packages linux-initrd)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
+  #:use-module ((gnu packages system)
+                #:select (shadow))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -175,77 +178,150 @@ made available under the /xchg CIFS share."
                      (disk-image-size (* 100 (expt 2 20)))
                      (linux linux-libre)
                      (initrd qemu-initrd)
-                     (inputs '()))
-  "Return a bootable, stand-alone QEMU image."
+                     (inputs '())
+                     (inputs-to-copy '())
+                     (boot-expression #f))
+  "Return a bootable, stand-alone QEMU image.
+
+INPUTS-TO-COPY is a list of inputs (as for packages) whose closure is copied
+into the image being built.
+
+When BOOT-EXPRESSION is true, it is an expression to evaluate when the basic
+initialization is done.  A typical example is `(execl ...)' to launch the init
+process."
+  (define input->name+derivation
+    (match-lambda
+     ((name (? package? package))
+      `(,name . ,(derivation-path->output-path
+                  (package-derivation store package system))))
+     ((name (? package? package) sub-drv)
+      `(,name . ,(derivation-path->output-path
+                  (package-derivation store package system)
+                  sub-drv)))))
+
+  (define loader
+    (and boot-expression
+         (add-text-to-store store "loader"
+                            (object->string boot-expression)
+                            '())))
+
   (expression->derivation-in-linux-vm
    store "qemu-image"
-   `(let ((parted  (string-append (assoc-ref %build-inputs "parted")
-                                  "/sbin/parted"))
-          (mkfs    (string-append (assoc-ref %build-inputs "e2fsprogs")
-                                  "/sbin/mkfs.ext3"))
-          (grub    (string-append (assoc-ref %build-inputs "grub")
-                                  "/sbin/grub-install"))
-          (umount  (string-append (assoc-ref %build-inputs "util-linux")
-                                  "/bin/umount")) ; XXX: add to Guile
-          (initrd  (string-append (assoc-ref %build-inputs "initrd")
-                                  "/initrd"))
-          (linux   (string-append (assoc-ref %build-inputs "linux")
-                                  "/bzImage"))
-          (makedev (lambda (major minor)
-                     (+ (* major 256) minor))))
+   `(let ()
+      (use-modules (ice-9 rdelim)
+                   (srfi srfi-1)
+                   (guix build utils))
 
-      ;; GRUB is full of shell scripts.
-      (setenv "PATH"
-              (string-append (dirname grub) ":"
-                             (assoc-ref %build-inputs "coreutils") "/bin:"
-                             (assoc-ref %build-inputs "findutils") "/bin:"
-                             (assoc-ref %build-inputs "sed") "/bin:"
-                             (assoc-ref %build-inputs "grep") "/bin:"
-                             (assoc-ref %build-inputs "gawk") "/bin"))
+      (let ((parted  (string-append (assoc-ref %build-inputs "parted")
+                                    "/sbin/parted"))
+            (mkfs    (string-append (assoc-ref %build-inputs "e2fsprogs")
+                                    "/sbin/mkfs.ext3"))
+            (grub    (string-append (assoc-ref %build-inputs "grub")
+                                    "/sbin/grub-install"))
+            (umount  (string-append (assoc-ref %build-inputs "util-linux")
+                                    "/bin/umount")) ; XXX: add to Guile
+            (initrd  (string-append (assoc-ref %build-inputs "initrd")
+                                    "/initrd"))
+            (linux   (string-append (assoc-ref %build-inputs "linux")
+                                    "/bzImage"))
+            (makedev (lambda (major minor)
+                       (+ (* major 256) minor))))
 
-      (display "creating partition table...\n")
-      (mknod "/dev/vda" 'block-special #o644 (makedev 8 0))
-      (and (zero? (system* parted "/dev/vda" "mklabel" "msdos"
-                           "mkpart" "primary" "ext2" "1MiB"
-                           ,(format #f "~aB"
-                                    (- disk-image-size
-                                       (* 5 (expt 2 20))))))
-           (begin
-             (display "creating ext3 partition...\n")
-             (mknod "/dev/vda1" 'block-special #o644 (makedev 8 1))
-             (and (zero? (system* mkfs "-F" "/dev/vda1"))
-                  (begin
-                    (display "mounting partition...\n")
-                    (mkdir "/fs")
-                    (mount "/dev/vda1" "/fs" "ext3")
-                    (mkdir "/fs/boot")
-                    (mkdir "/fs/boot/grub")
-                    (copy-file linux "/fs/boot/bzImage")
-                    (copy-file initrd "/fs/boot/initrd")
-                    (call-with-output-file "/fs/boot/grub/grub.cfg"
-                      (lambda (p)
-                        (display "
+        (define (read-reference-graph port)
+          ;; Return a list of store paths from the reference graph at PORT.
+          ;; The data at PORT is the format produced by #:references-graphs.
+          (let loop ((line   (read-line port))
+                     (result '()))
+            (cond ((eof-object? line)
+                   (delete-duplicates result))
+                  ((string-prefix? "/" line)
+                   (loop (read-line port)
+                         (cons line result)))
+                  (else
+                   (loop (read-line port)
+                         result)))))
+
+        (define (things-to-copy)
+          ;; Return the list of store files to copy to the image.
+          (define (graph-from-file file)
+            (call-with-input-file file
+              read-reference-graph))
+
+          ,(match inputs-to-copy
+             (((graph-files . _) ...)
+              `(let* ((graph-files ',(map (cut string-append "/xchg/" <>)
+                                          graph-files))
+                      (paths       (append-map graph-from-file graph-files)))
+                 (delete-duplicates paths)))
+             (#f ''())))
+
+        ;; GRUB is full of shell scripts.
+        (setenv "PATH"
+                (string-append (dirname grub) ":"
+                               (assoc-ref %build-inputs "coreutils") "/bin:"
+                               (assoc-ref %build-inputs "findutils") "/bin:"
+                               (assoc-ref %build-inputs "sed") "/bin:"
+                               (assoc-ref %build-inputs "grep") "/bin:"
+                               (assoc-ref %build-inputs "gawk") "/bin"))
+
+        (display "creating partition table...\n")
+        (mknod "/dev/vda" 'block-special #o644 (makedev 8 0))
+        (and (zero? (system* parted "/dev/vda" "mklabel" "msdos"
+                             "mkpart" "primary" "ext2" "1MiB"
+                             ,(format #f "~aB"
+                                      (- disk-image-size
+                                         (* 5 (expt 2 20))))))
+             (begin
+               (display "creating ext3 partition...\n")
+               (mknod "/dev/vda1" 'block-special #o644 (makedev 8 1))
+               (and (zero? (system* mkfs "-F" "/dev/vda1"))
+                    (begin
+                      (display "mounting partition...\n")
+                      (mkdir "/fs")
+                      (mount "/dev/vda1" "/fs" "ext3")
+                      (mkdir-p "/fs/boot/grub")
+                      (copy-file linux "/fs/boot/bzImage")
+                      (copy-file initrd "/fs/boot/initrd")
+
+                      ;; Populate the image's store.
+                      (mkdir-p (string-append "/fs" ,%store-directory))
+                      (for-each (lambda (thing)
+                                  (copy-recursively thing
+                                                    (string-append "/fs"
+                                                                   thing)))
+                                (things-to-copy))
+
+                      (call-with-output-file "/fs/boot/grub/grub.cfg"
+                        (lambda (p)
+                          (format p "
 set default=1
 set timeout=5
 search.file /boot/bzImage
 
 menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
-  linux /boot/bzImage --repl
+  linux /boot/bzImage --root=/dev/vda1 ~a
   initrd /boot/initrd
-}" p)))
-                    (and (zero?
-                          (system* grub "--no-floppy"
-                                   "--boot-directory" "/fs/boot"
-                                   "/dev/vda"))
-                         (zero?
-                          (system* umount "/fs"))
-                         (reboot)))))))
+}"
+                                  ,(if loader
+                                       (string-append "--load=" loader)
+                                       ""))))
+                      (and (zero?
+                            (system* grub "--no-floppy"
+                                     "--boot-directory" "/fs/boot"
+                                     "/dev/vda"))
+                           (zero?
+                            (system* umount "/fs"))
+                           (reboot))))))))
    #:system system
    #:inputs `(("parted" ,parted)
               ("grub" ,grub)
               ("e2fsprogs" ,e2fsprogs)
               ("linux" ,linux-libre)
-              ("initrd" ,qemu-initrd)
+              ("initrd" ,initrd)
+
+              ,@(if loader
+                    `(("loader" ,loader))
+                    '())
 
               ;; For shell scripts.
               ("sed" ,(car (assoc-ref %final-inputs "sed")))
@@ -253,9 +329,13 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
               ("coreutils" ,(car (assoc-ref %final-inputs "coreutils")))
               ("findutils" ,(car (assoc-ref %final-inputs "findutils")))
               ("gawk" ,(car (assoc-ref %final-inputs "gawk")))
-              ("util-linux" ,util-linux))
+              ("util-linux" ,util-linux)
+
+              ,@inputs-to-copy)
    #:make-disk-image? #t
-   #:disk-image-size disk-image-size))
+   #:disk-image-size disk-image-size
+   #:references-graphs (map input->name+derivation inputs-to-copy)
+   #:modules '((guix build utils))))
 
 
 ;;;
@@ -286,7 +366,13 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
         (set! store (open-connection)))
       (lambda ()
         (parameterize ((%guile-for-build (package-derivation store guile-final)))
-          (qemu-image store #:disk-image-size (* 30 (expt 2 20)))))
+          (let* ((drv   (package-derivation store shadow))
+                 (login (string-append (derivation-path->output-path drv)
+                                       "/bin/login")))
+           (qemu-image store
+                       #:boot-expression `(execl ,login "login" "tty1")
+                       #:disk-image-size (* 400 (expt 2 20))
+                       #:inputs-to-copy `(("shadow" ,shadow))))))
       (lambda ()
         (close-connection store)))))
 
