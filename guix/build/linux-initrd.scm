@@ -23,6 +23,7 @@
             linux-command-line
             configure-qemu-networking
             mount-qemu-smb-share
+            bind-mount
             load-linux-module*
             device-number))
 
@@ -91,6 +92,12 @@ Vanilla QEMU's `-smb' option just exports a /qemu share, whereas our
   (let ((server "10.0.2.4"))
     (mount (string-append "//" server share) mount-point "cifs" 0
            (string->pointer "guest,sec=none"))))
+
+(define (bind-mount source target)
+  "Bind-mount SOURCE at TARGET."
+  (define MS_BIND 4096)                           ; from libc's <sys/mount.h>
+
+  (mount source target "" MS_BIND))
 
 (define (load-linux-module* file)
   "Load Linux module from FILE, the name of a `.ko' file."

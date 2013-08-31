@@ -242,6 +242,7 @@ the Linux kernel.")
                    (srfi srfi-26)
                    (ice-9 match)
                    ((system base compile) #:select (compile-file))
+                   (guix build utils)
                    (guix build linux-initrd))
 
       (display "Welcome, this is GNU's early boot Guile.\n")
@@ -278,8 +279,7 @@ the Linux kernel.")
         (mount-essential-file-systems #:root "/root")
 
         (mkdir "/root/xchg")
-        (mkdir "/root/nix")
-        (mkdir "/root/nix/store")
+        (mkdir-p "/root/nix/store")
 
         (mkdir "/root/dev")
         (mknod "/root/dev/null" 'char-special #o666 (device-number 1 3))
@@ -288,6 +288,19 @@ the Linux kernel.")
         ;; Mount the host's store and exchange directory.
         (mount-qemu-smb-share "/store" "/root/nix/store")
         (mount-qemu-smb-share "/xchg" "/root/xchg")
+
+        ;; Copy the directories that contain .scm and .go files so that the
+        ;; child process in the chroot can load modules (we would bind-mount
+        ;; them but for some reason that fails with EINVAL -- XXX).
+        (mkdir "/root/share")
+        (mkdir "/root/lib")
+        (mount "none" "/root/share" "tmpfs")
+        (mount "none" "/root/lib" "tmpfs")
+        (copy-recursively "/share" "/root/share"
+                          #:log (%make-void-port "w"))
+        (copy-recursively "/lib" "/root/lib"
+                          #:log (%make-void-port "w"))
+
 
         (if to-load
             (begin
@@ -298,7 +311,10 @@ the Linux kernel.")
               (match (primitive-fork)
                 (0
                  (chroot "/root")
-                 (load-compiled "/loader.go"))
+                 (load-compiled "/loader.go")
+
+                 ;; TODO: Remove /lib, /share, and /loader.go.
+                 )
                 (pid
                  (format #t "boot file loaded under PID ~a~%" pid)
                  (let ((status (waitpid pid)))
@@ -308,7 +324,8 @@ the Linux kernel.")
               (display "entering a warm and cozy REPL\n")
               ((@ (system repl repl) start-repl))))))
    #:name "qemu-initrd"
-   #:modules '((guix build linux-initrd))
+   #:modules '((guix build utils)
+               (guix build linux-initrd))
    #:linux linux-libre
    #:linux-modules '("cifs.ko" "md4.ko" "ecb.ko")))
 
