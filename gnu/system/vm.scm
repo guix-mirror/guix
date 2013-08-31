@@ -70,10 +70,12 @@ pairs, as for `derivation'.  The files containing the reference graphs are
 made available under the /xchg CIFS share."
   (define input-alist
     (map (match-lambda
-          ((input package)
+          ((input (? package? package))
            `(,input . ,(package-output store package "out" system)))
-          ((input package sub-drv)
-           `(,input . ,(package-output store package sub-drv system))))
+          ((input (? package? package) sub-drv)
+           `(,input . ,(package-output store package sub-drv system)))
+          ((input (and (? string?) (? store-path?) file))
+           `(,input . ,file)))
          inputs))
 
   (define exp*
@@ -153,9 +155,12 @@ made available under the /xchg CIFS share."
                                     ("coreutils" ,(->drv coreutils))
                                     ("builder" ,user-builder)
                                     ,@(map (match-lambda
-                                            ((name package sub-drv ...)
+                                            ((name (? package? package)
+                                                   sub-drv ...)
                                              `(,name ,(->drv package)
-                                                     ,@sub-drv)))
+                                                     ,@sub-drv))
+                                            ((name (? string? file))
+                                             `(,name ,file)))
                                            inputs))
                                   #:env-vars env-vars
                                   #:modules (delete-duplicates
