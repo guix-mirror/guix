@@ -176,6 +176,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/xml.scm				\
   gnu/packages/xnee.scm				\
   gnu/packages/xorg.scm				\
+  gnu/packages/yasm.scm				\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
   gnu/system/vm.scm
