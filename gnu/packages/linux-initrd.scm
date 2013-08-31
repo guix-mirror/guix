@@ -270,6 +270,11 @@ the Linux kernel.")
         (unless (configure-qemu-networking)
           (display "network interface is DOWN\n"))
 
+        ;; Make the device nodes for QEMU's hard disk and partitions.
+        (mknod "/dev/vda" 'block-special #o644 (device-number 8 0))
+        (mknod "/dev/vda1" 'block-special #o644 (device-number 8 1))
+        (mknod "/dev/vda2" 'block-special #o644 (device-number 8 2))
+
         ;; Prepare the real root file system under /root.
         (unless (file-exists? "/root")
           (mkdir "/root"))
