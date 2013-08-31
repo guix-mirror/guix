@@ -161,7 +161,11 @@ data types.")
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "0hsbwqjnhr85a2w252c8d3yj8d9i5sy8s6a6cfk6zqqhp3234nvl"))))))
+        "0hsbwqjnhr85a2w252c8d3yj8d9i5sy8s6a6cfk6zqqhp3234nvl"))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "PYTHONPATH")
+            (directories '("lib/python3.3/site-packages")))))))
 
 (define-public pytz
   (package
