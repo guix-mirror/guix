@@ -185,3 +185,28 @@ The intltool collection can be used to do these things:
     Merge back the translations from .po files into .xml, .desktop and
     oaf files. This merge step will happen at build resp. installation time.")
     (license license:gpl2+)))
+
+(define-public dbus-glib
+  (package
+    (name "dbus-glib")
+    (version "0.100.2")
+    (source (origin
+             (method url-fetch)
+             (uri
+              (string-append "http://dbus.freedesktop.org/releases/dbus-glib/dbus-glib-"
+                             version ".tar.gz"))
+             (sha256
+              (base32
+               "1ibav91yg70f2l3l18cr0hf4mna1h9d4mrg0c60w4l8zjbd45fx5"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("dbus" ,dbus)
+       ("expat" ,expat)
+       ("glib" ,glib)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://dbus.freedesktop.org/doc/dbus-glib/")
+    (synopsis "D-Bus GLib bindings")
+    (description
+     "GLib bindings for D-Bus.  The package is obsolete and superseded
+by GDBus included in Glib.")
+    (license license:gpl2)))                     ; or Academic Free License 2.1
