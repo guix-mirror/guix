@@ -31,7 +31,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
 
-(define-public python
+(define-public python-2
   (package
     (name "python")
     (version "2.7.5")
@@ -150,6 +150,18 @@ expression of procedural code; full modularity, supporting hierarchical
 packages; exception-based error handling; and very high level dynamic
 data types.")
     (license psfl)))
+
+(define-public python
+  (package (inherit python-2)
+    (version "3.3.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://www.python.org/ftp/python/"
+                          version "/Python-" version ".tar.xz"))
+      (sha256
+       (base32
+        "0hsbwqjnhr85a2w252c8d3yj8d9i5sy8s6a6cfk6zqqhp3234nvl"))))))
 
 (define-public pytz
   (package
