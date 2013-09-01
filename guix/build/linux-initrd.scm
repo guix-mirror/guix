@@ -21,6 +21,7 @@
   #:use-module (system foreign)
   #:export (mount-essential-file-systems
             linux-command-line
+            make-essential-device-nodes
             configure-qemu-networking
             mount-qemu-smb-share
             bind-mount
@@ -58,6 +59,37 @@
   (string-tokenize
    (call-with-input-file "/proc/cmdline"
      get-string-all)))
+
+(define* (make-essential-device-nodes #:key (root "/"))
+  "Make essential device nodes under ROOT/dev."
+  ;; The hand-made udev!
+
+  (define (scope dir)
+    (string-append root
+                   (if (string-suffix? "/" root)
+                       ""
+                       "/")
+                   dir))
+
+  (unless (file-exists? (scope "dev"))
+    (mkdir (scope "dev")))
+
+  ;; Make the device nodes for QEMU's hard disk and partitions.
+  (mknod (scope "dev/vda") 'block-special #o644 (device-number 8 0))
+  (mknod (scope "dev/vda1") 'block-special #o644 (device-number 8 1))
+  (mknod (scope "dev/vda2") 'block-special #o644 (device-number 8 2))
+
+  ;; TTYs.
+  (let loop ((n 0))
+    (and (< n 50)
+         (let ((name (format #f "dev/tty~a" n)))
+           (mknod (scope name) 'block-special #o644
+                  (device-number 4 n))
+           (loop (+ 1 n)))))
+
+  ;; Other useful nodes.
+  (mknod (scope "dev/null") 'char-special #o666 (device-number 1 3))
+  (mknod (scope "dev/zero") 'char-special #o666 (device-number 1 5)))
 
 (define %host-qemu-ipv4-address
   (inet-pton AF_INET "10.0.2.10"))

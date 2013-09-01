@@ -270,10 +270,8 @@ the Linux kernel.")
         (unless (configure-qemu-networking)
           (display "network interface is DOWN\n"))
 
-        ;; Make the device nodes for QEMU's hard disk and partitions.
-        (mknod "/dev/vda" 'block-special #o644 (device-number 8 0))
-        (mknod "/dev/vda1" 'block-special #o644 (device-number 8 1))
-        (mknod "/dev/vda2" 'block-special #o644 (device-number 8 2))
+        ;; Make /dev nodes.
+        (make-essential-device-nodes)
 
         ;; Prepare the real root file system under /root.
         (unless (file-exists? "/root")
@@ -287,8 +285,7 @@ the Linux kernel.")
         (mkdir-p "/root/nix/store")
 
         (mkdir "/root/dev")
-        (mknod "/root/dev/null" 'char-special #o666 (device-number 1 3))
-        (mknod "/root/dev/zero" 'char-special #o666 (device-number 1 5))
+        (make-essential-device-nodes #:root "/root/dev")
 
         ;; Mount the host's store and exchange directory.
         (mount-qemu-smb-share "/store" "/root/nix/store")
