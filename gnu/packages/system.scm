@@ -141,3 +141,53 @@ login, passwd, su, groupadd, and useradd.")
     ;; The `vipw' program is GPLv2+.
     ;; libmisc/salt.c is public domain.
     (license bsd-3)))
+
+(define-public mingetty
+  (package
+    (name "mingetty")
+    (version "1.08")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/mingetty/mingetty-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "05yxrp44ky2kg6qknk1ih0kvwkgbn9fbz77r3vci7agslh5wjm8g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (alist-replace 'configure
+                               (lambda* (#:key inputs outputs
+                                         #:allow-other-keys)
+                                 (let* ((out    (assoc-ref outputs "out"))
+                                        (man8   (string-append
+                                                 out "/share/man/man8"))
+                                        (sbin   (string-append out "/sbin"))
+                                        (shadow (assoc-ref inputs "shadow"))
+                                        (login  (string-append shadow
+                                                               "/bin/login")))
+                                   (substitute* "Makefile"
+                                     (("^SBINDIR.*")
+                                      (string-append "SBINDIR = " out
+                                                     "/sbin\n"))
+                                     (("^MANDIR.*")
+                                      (string-append "MANDIR = " out
+                                                     "/share/man/man8\n")))
+
+                                   ;; Pick the right 'login' by default.
+                                   (substitute* "mingetty.c"
+                                     (("\"/bin/login\"")
+                                      (string-append "\"" login "\"")))
+
+                                   (mkdir-p sbin)
+                                   (mkdir-p man8)))
+                               %standard-phases)
+       #:tests? #f))                              ; no tests
+    (inputs `(("shadow" ,shadow)))
+
+    (home-page "http://sourceforge.net/projects/mingetty")
+    (synopsis "Getty for the text console")
+    (description
+     "Small console getty that is started on the Linux text console,
+asks for a login name and then transfers over to 'login'.  It is extended to
+allow automatic login and starting any app.")
+    (license gpl2+)))
