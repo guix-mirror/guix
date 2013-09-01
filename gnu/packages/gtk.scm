@@ -60,14 +60,14 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.12.14")
+   (version "1.12.16")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "04xcykglff58ygs0dkrmmnqljmpjwp2qgwcz8sijqkdpz7ix3l4n"))))
+              "0inqwsylqkrzcjivdirkjx5nhdgxbdc62fq284c3xppinfg9a195"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
