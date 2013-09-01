@@ -21,10 +21,33 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages linux))
+
+(define-public dfc
+  (package
+   (name "dfc")
+   (version "3.0.3")
+   (source
+    (origin
+     (method url-fetch)
+      (uri (string-append
+            "http://projects.gw-computing.net/attachments/download/78/dfc-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "1b4hfqv23l87cb37fxwzfk2sgspkyxpr3ig2hsd23hr6mm982j7z"))))
+   (build-system cmake-build-system)
+   (arguments '(#:tests? #f)) ; There are no tests.
+   (home-page "http://projects.gw-computing.net/projects/dfc")
+   (synopsis "Display file system space usage using graphs and colors")
+   (description
+    "dfc (df color) is a modern version of df.  It uses colors, draws pretty
+graphs and can export its output to different formats.")
+   (license bsd-3)))
 
 (define-public htop
   (package
