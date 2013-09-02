@@ -31,7 +31,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python))
 
-(define-public python
+(define-public python-2
   (package
     (name "python")
     (version "2.7.5")
@@ -151,8 +151,8 @@ packages; exception-based error handling; and very high level dynamic
 data types.")
     (license psfl)))
 
-(define-public python-3
-  (package (inherit python)
+(define-public python
+  (package (inherit python-2)
     (version "3.3.2")
     (source
      (origin
