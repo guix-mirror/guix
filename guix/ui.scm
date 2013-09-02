@@ -242,6 +242,7 @@ available for download."
                                        (substitutable-path-info store
                                                                 download)))))
                      download)))
+    ;; TODO: Show the installed size of DOWNLOAD.
     (if dry-run?
         (begin
           (format (current-error-port)

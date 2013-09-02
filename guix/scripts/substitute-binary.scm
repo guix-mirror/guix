@@ -508,8 +508,13 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
         ;; Tell the daemon what the expected hash of the Nar itself is.
         (format #t "~a~%" (narinfo-hash narinfo))
 
-        (format (current-error-port) "downloading `~a' from `~a'...~%"
-                store-path (uri->string uri))
+        (format (current-error-port) "downloading `~a' from `~a'~:[~*~; (~,1f MiB installed)~]...~%"
+                store-path (uri->string uri)
+
+                ;; Use the Nar size as an estimate of the installed size.
+                (narinfo-size narinfo)
+                (and=> (narinfo-size narinfo)
+                       (cute / <> (expt 2. 20))))
         (let*-values (((raw download-size)
                        ;; Note that Hydra currently generates Nars on the fly
                        ;; and doesn't specify a Content-Length, so
