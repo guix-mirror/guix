@@ -105,7 +105,22 @@ single leaf."
 the DIRECTORIES."
   (define (file-tree dir)
     ;; Return the contents of DIR as a tree.
-    (match (file-system-fold (const #t)
+
+    (define (others-have-it? subdir)
+      ;; Return #t if other elements of DIRECTORIES have SUBDIR.
+      (let ((subdir (substring subdir (string-length dir))))
+        (any (lambda (other)
+               (and (not (string=? other dir))
+                    (file-exists? (string-append other "/" subdir))))
+             directories)))
+
+    (match (file-system-fold (lambda (subdir stat result) ; enter?
+                               ;; No need to traverse DIR since there's
+                               ;; nothing to union it with.  Thus, we avoid
+                               ;; creating a gazillon symlinks (think
+                               ;; share/emacs/24.3, share/texmf, etc.)
+                               (or (string=? subdir dir)
+                                   (others-have-it? subdir)))
                              (lambda (file stat result) ; leaf
                                (match result
                                  (((siblings ...) rest ...)
@@ -117,7 +132,12 @@ the DIRECTORIES."
                                  (((leaves ...) (siblings ...) rest ...)
                                   `(((,(basename dir) ,@leaves) ,@siblings)
                                     ,@rest))))
-                             (const #f)                 ; skip
+                             (lambda (dir stat result)  ; skip
+                               ;; DIR is not available elsewhere, so treat it
+                               ;; as a leaf.
+                               (match result
+                                 (((siblings ...) rest ...)
+                                  `((,dir ,@siblings) ,@rest))))
                              (lambda (file stat errno result)
                                (format (current-error-port) "union-build: ~a: ~a~%"
                                        file (strerror errno)))
@@ -158,8 +178,9 @@ the DIRECTORIES."
   (mkdir output)
   (let loop ((tree (delete-duplicate-leaves
                     (cons "."
-                          (tree-union (append-map (compose tree-leaves file-tree)
-                                                  directories)))
+                          (tree-union
+                           (append-map (compose tree-leaves file-tree)
+                                       (delete-duplicates directories))))
                     leaf=?
                     resolve-collision))
              (dir  '()))
