@@ -41,6 +41,7 @@
              (guix packages)
              (guix utils)
              (guix build-system gnu)
+             (gnu packages version-control)
              (gnu packages package-management)
              (srfi srfi-1)
              (srfi srfi-26)
@@ -76,7 +77,9 @@ containing a Git checkout of Guix."
                         ;; us with a checkout that includes sub-modules.
                         (substitute* "bootstrap"
                           (("git ") "true git ")))
-                      ,p)))))))
+                      ,p))))
+      (native-inputs `(("git" ,git)
+                       ,@(package-native-inputs dist))))))
 
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
