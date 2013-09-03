@@ -44,7 +44,7 @@
 
        ;; Dependencies used for the tests and for `event_rpcgen.py'.
        ("which" ,which)
-       ("python" ,python)))
+       ("python" ,python-wrapper)))
     (arguments
      '(#:patches (list (assoc-ref %build-inputs "patch/dns-tests"))))
     (home-page "http://libevent.org/")

@@ -94,7 +94,7 @@
      `(;; ("mesa" ,mesa)
        ;; ("libaio" ,libaio)
        ("glib" ,glib)
-       ("python" ,python)
+       ("python" ,python-wrapper)
        ("ncurses" ,ncurses)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-8)

@@ -120,7 +120,7 @@ UnZip recreates the stored directory structure by default.")
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)     ; for the documentation
               ("pkg-config" ,pkg-config)
-              ("python" ,python) ; for the documentation
+              ("python" ,python-wrapper) ; for the documentation
               ("zip" ,zip) ; to create test files
               ("zlib" ,zlib)))
     (arguments

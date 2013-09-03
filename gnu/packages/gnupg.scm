@@ -191,7 +191,7 @@ S/MIME.")
                      "1g1jly3wl4ks6h8ydkygyl2c4i7v3z91rg42005m6vm70y1d8b3d"))))
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)
-             ("python" ,python)
+             ("python" ,python-wrapper)
              ("gpg" ,gnupg)))
    (arguments
     `(#:tests? #f

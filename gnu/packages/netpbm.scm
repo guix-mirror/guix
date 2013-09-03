@@ -57,7 +57,7 @@
              ("libxml2" ,libxml2)
              ("perl" ,perl)
              ("pkg-config" ,pkg-config)
-             ("python" ,python)
+             ("python" ,python-wrapper)
              ("zlib" ,zlib)))
    (arguments
     `(#:phases
