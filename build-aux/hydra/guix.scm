@@ -43,6 +43,7 @@
              (guix build-system gnu)
              (gnu packages version-control)
              (gnu packages package-management)
+             (gnu packages graphviz)
              (srfi srfi-1)
              (srfi srfi-26)
              (ice-9 match))
@@ -79,6 +80,7 @@ containing a Git checkout of Guix."
                           (("git ") "true git ")))
                       ,p))))
       (native-inputs `(("git" ,git)
+                       ("graphviz" ,graphviz)
                        ,@(package-native-inputs dist))))))
 
 (define (hydra-jobs store arguments)
