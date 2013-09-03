@@ -106,6 +106,8 @@ files."
                      (when (string-suffix? ".scm" file)
                        (let ((go (string-append (string-drop-right file 4)
                                                 ".go")))
+                         (format (current-error-port)
+                                 "compiling '~a'...~%" file)
                          (compile-file file
                                        #:output-file go
                                        #:opts %auto-compilation-options))))
@@ -114,7 +116,9 @@ files."
                    ;; download), we must build it first to avoid errors since
                    ;; (gnutls) is unavailable.
                    (cons (string-append out "/guix/build/download.scm")
-                         (find-files out "\\.scm")))
+
+                         ;; Sort the file names to get deterministic results.
+                         (sort (find-files out "\\.scm") string<?)))
 
          ;; Remove the "fake" (guix config).
          (delete-file (string-append out "/guix/config.scm"))
