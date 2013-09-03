@@ -40,7 +40,7 @@
 
   ;; Do not use `@' to avoid introducing circular dependencies.
   (let ((module (resolve-interface '(gnu packages cmake))))
-    (module-ref module cmake)))
+    (module-ref module 'cmake)))
 
 (define* (cmake-build store name source inputs
                      #:key (guile #f)
