@@ -29,7 +29,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial))
 
 (define-public python-2
   (package
@@ -166,6 +167,31 @@ data types.")
      (list (search-path-specification
             (variable "PYTHONPATH")
             (directories '("lib/python3.3/site-packages")))))))
+
+(define-public python-wrapper
+  (package (inherit python)
+    (name "python-wrapper")
+    (source #f)
+    (build-system trivial-build-system)
+    (inputs `(("python" ,python)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((bin (string-append (assoc-ref %outputs "out") "/bin"))
+                 (python (string-append (assoc-ref %build-inputs "python") "/bin/")))
+                (mkdir-p bin)
+                (for-each
+                  (lambda (old new)
+                    (symlink (string-append python old)
+                             (string-append bin "/" new)))
+                  `("python3", "pydoc3", "idle3")
+                  `("python",  "pydoc",  "idle"))))))
+    (description (string-append (package-description python)
+     "\n\nThis wrapper package provides symbolic links to the python binaries
+      without version suffix."))))
+
 
 (define-public pytz
   (package
