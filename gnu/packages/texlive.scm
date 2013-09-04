@@ -81,7 +81,7 @@
              ("pkg-config" ,pkg-config)
              ;; FIXME: Add interpreters fontforge and ruby,
              ;; once they are available.
-             ("python" ,python-wrapper)
+             ("python" ,python-2) ; incompatible with Python 3 (print syntax)
              ("tcsh" ,tcsh)
              ("teckit" ,teckit)
              ("t1lib" ,t1lib)
