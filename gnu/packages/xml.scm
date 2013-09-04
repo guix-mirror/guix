@@ -66,7 +66,7 @@ things the parser might find in the XML document (like start tags).")
     (home-page "http://www.xmlsoft.org/")
     (synopsis "libxml2, a C parser for XML")
     (inputs `(("perl" ,perl)
-              ("python" ,python-wrapper)
+              ("python" ,python-2) ; incompatible with Python 3 (print syntax)
               ("zlib" ,zlib)))
     (arguments
      `(#:phases
