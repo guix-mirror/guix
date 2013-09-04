@@ -4169,7 +4169,7 @@ tracking.")
         ("libxml2" ,libxml2)
         ("makedepend" ,makedepend)
         ("pkg-config" ,pkg-config)
-        ("python" ,python-wrapper)))
+        ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
     (arguments
       `(#:configure-flags
          `("--with-gallium-drivers=r600,svga,swrast") ; drop r300 from the default list as it requires llvm
