@@ -210,7 +210,8 @@ process."
    `(let ()
       (use-modules (ice-9 rdelim)
                    (srfi srfi-1)
-                   (guix build utils))
+                   (guix build utils)
+                   (guix build linux-initrd))
 
       (let ((parted  (string-append (assoc-ref %build-inputs "parted")
                                     "/sbin/parted"))
@@ -223,9 +224,7 @@ process."
             (initrd  (string-append (assoc-ref %build-inputs "initrd")
                                     "/initrd"))
             (linux   (string-append (assoc-ref %build-inputs "linux")
-                                    "/bzImage"))
-            (makedev (lambda (major minor)
-                       (+ (* major 256) minor))))
+                                    "/bzImage")))
 
         (define (read-reference-graph port)
           ;; Return a list of store paths from the reference graph at PORT.
@@ -265,7 +264,6 @@ process."
                                (assoc-ref %build-inputs "gawk") "/bin"))
 
         (display "creating partition table...\n")
-        (mknod "/dev/vda" 'block-special #o644 (makedev 8 0))
         (and (zero? (system* parted "/dev/vda" "mklabel" "msdos"
                              "mkpart" "primary" "ext2" "1MiB"
                              ,(format #f "~aB"
@@ -273,7 +271,6 @@ process."
                                          (* 5 (expt 2 20))))))
              (begin
                (display "creating ext3 partition...\n")
-               (mknod "/dev/vda1" 'block-special #o644 (makedev 8 1))
                (and (zero? (system* mkfs "-F" "/dev/vda1"))
                     (begin
                       (display "mounting partition...\n")
@@ -290,6 +287,9 @@ process."
                                                     (string-append "/fs"
                                                                    thing)))
                                 (things-to-copy))
+
+                      ;; Populate /dev.
+                      (make-essential-device-nodes #:root "/fs")
 
                       (call-with-output-file "/fs/boot/grub/grub.cfg"
                         (lambda (p)
@@ -335,7 +335,8 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
    #:make-disk-image? #t
    #:disk-image-size disk-image-size
    #:references-graphs (map input->name+derivation inputs-to-copy)
-   #:modules '((guix build utils))))
+   #:modules '((guix build utils)
+               (guix build linux-initrd))))
 
 
 ;;;

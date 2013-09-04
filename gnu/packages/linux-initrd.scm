@@ -284,8 +284,9 @@ the Linux kernel.")
         (mkdir "/root/xchg")
         (mkdir-p "/root/nix/store")
 
-        (mkdir "/root/dev")
-        (make-essential-device-nodes #:root "/root/dev")
+        (unless (file-exists? "/root/dev")
+          (mkdir "/root/dev")
+          (make-essential-device-nodes #:root "/root"))
 
         ;; Mount the host's store and exchange directory.
         (mount-qemu-smb-share "/store" "/root/nix/store")
