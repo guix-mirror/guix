@@ -4139,9 +4139,9 @@ tracking.")
 (define-public mesa
   (package
     (name "mesa")
-    ;; In newer versions (9.0.5 and 9.1 tested), "make" results in an
+    ;; In newer versions (9.0.5, 9.1 and 9.2 tested), "make" results in an
     ;; infinite configure loop, see
-    ;; https://bugs.freedesktop.org/show_bug.cgi?id=61527
+    ;; https://bugs.freedesktop.org/show_bug.cgi?id=58812
     (version "8.0.5")
     (source
       (origin
