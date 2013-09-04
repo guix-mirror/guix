@@ -193,9 +193,9 @@ data types.")
       without version suffix."))))
 
 
-(define-public pytz
+(define-public python-pytz
   (package
-    (name "pytz")
+    (name "python-pytz")
     (version "2013b")
     (source
      (origin
@@ -213,9 +213,14 @@ data types.")
 using Python 2.4 or higher and provides access to the Olson timezone database.")
     (license x11)))
 
-(define-public babel
+(define-public python2-pytz
+  (package (inherit python-pytz)
+    (name "python2-pytz")
+    (arguments `(#:python ,python-2))))
+
+(define-public python-babel
   (package
-    (name "babel")
+    (name "python-babel")
     (version "0.9.6")
     (source
      (origin
@@ -227,7 +232,7 @@ using Python 2.4 or higher and provides access to the Olson timezone database.")
         "03vmr54jq5vf3qw6kpdv7cdk7x7i2jhzyf1mawv2gk8zrxg0hfja"))))
     (build-system python-build-system)
     (inputs
-     `(("pytz" ,pytz)))
+     `(("python-pytz" ,python-pytz)))
     (home-page "http://babel.edgewall.org/")
     (synopsis
      "Tools for internationalizing Python applications")
@@ -238,3 +243,10 @@ using Python 2.4 or higher and provides access to the Olson timezone database.")
 access to various locale display names, localized number and date formatting,
 etc. ")
     (license bsd-3)))
+
+(define-public python2-babel
+  (package (inherit python-babel)
+    (name "python2-babel")
+    (inputs
+     `(("python2-pytz" ,python2-pytz)))
+    (arguments `(#:python ,python-2))))
