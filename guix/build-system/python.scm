@@ -39,13 +39,11 @@
   "Return the default Python package."
   ;; Lazily resolve the binding to avoid a circular dependency.
   (let ((python (resolve-interface '(gnu packages python))))
-    (module-ref python 'python)))
+    (module-ref python 'python-wrapper)))
 
 (define* (python-build store name source inputs
                        #:key
                        (python (default-python))
-                       (python-version
-                        (string-take (package-version (default-python)) 3))
                        (tests? #t)
                        (configure-flags ''())
                        (phases '(@ (guix build python-build-system)
@@ -62,6 +60,7 @@
                                   (guix build utils))))
   "Build SOURCE using PYTHON, and with INPUTS.  This assumes that SOURCE
 provides a 'setup.py' file as its build system."
+
   (define python-search-paths
     (append (package-native-search-paths python)
             (standard-search-paths)))
@@ -78,7 +77,6 @@ provides a 'setup.py' file as its build system."
                      #:test-target "test"
                      #:tests? ,tests?
                      #:outputs %outputs
-                     #:python-version ,python-version
                      #:search-paths ',(map search-path-specification->sexp
                                            (append python-search-paths
                                                    search-paths))

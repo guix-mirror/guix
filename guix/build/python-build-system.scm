@@ -53,7 +53,7 @@
         (zero? (apply system* "python" args)))
       (error "no setup.py found")))
 
-(define* (wrap #:key outputs python-version #:allow-other-keys)
+(define* (wrap #:key inputs outputs #:allow-other-keys)
   (define (list-of-files dir)
     (map (cut string-append dir "/" <>)
          (or (scandir dir (lambda (f)
@@ -69,6 +69,8 @@
                 outputs))
 
   (let* ((out  (assoc-ref outputs "out"))
+         (python (assoc-ref inputs "python"))
+         (python-version (string-take (string-take-right python 5) 3))
          (var `("PYTHONPATH" prefix
                 ,(cons (string-append out "/lib/python"
                                       python-version "/site-packages")
