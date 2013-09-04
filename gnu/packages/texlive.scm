@@ -202,7 +202,7 @@ world.")
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))                    ; no `check' target
     (inputs `(("texinfo" ,texinfo)
-              ("python" ,python-wrapper)
+              ("python" ,python-2) ; incompatible with Python 3 (print syntax)
               ("which" ,which)))
     (home-page "https://launchpad.net/rubber")
     (synopsis "Rubber, a wrapper for LaTeX and friends")
