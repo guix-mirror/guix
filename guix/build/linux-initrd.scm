@@ -80,10 +80,12 @@
   (mknod (scope "dev/vda2") 'block-special #o644 (device-number 8 2))
 
   ;; TTYs.
+  (mknod (scope "dev/tty") 'char-special #o600
+         (device-number 5 0))
   (let loop ((n 0))
     (and (< n 50)
          (let ((name (format #f "dev/tty~a" n)))
-           (mknod (scope name) 'block-special #o644
+           (mknod (scope name) 'char-special #o600
                   (device-number 4 n))
            (loop (+ 1 n)))))
 
