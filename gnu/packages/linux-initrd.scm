@@ -332,4 +332,70 @@ the Linux kernel.")
    #:linux linux-libre
    #:linux-modules '("cifs.ko" "md4.ko" "ecb.ko")))
 
+(define-public gnu-system-initrd
+  ;; Initrd for the GNU system itself, with nothing QEMU-specific.
+  (expression->initrd
+   '(begin
+      (use-modules (srfi srfi-1)
+                   (srfi srfi-26)
+                   (ice-9 match)
+                   (guix build utils)
+                   (guix build linux-initrd))
+
+      (display "Welcome, this is GNU's early boot Guile.\n")
+      (display "Use '--repl' for an initrd REPL.\n\n")
+
+      (mount-essential-file-systems)
+      (let* ((args    (linux-command-line))
+             (option  (lambda (opt)
+                        (let ((opt (string-append opt "=")))
+                          (and=> (find (cut string-prefix? opt <>)
+                                       args)
+                                 (lambda (arg)
+                                   (substring arg (+ 1 (string-index arg #\=))))))))
+             (to-load (option "--load"))
+             (root    (option "--root")))
+
+        (when (member "--repl" args)
+          ((@ (system repl repl) start-repl)))
+
+        ;; Make /dev nodes.
+        (make-essential-device-nodes)
+
+        ;; Prepare the real root file system under /root.
+        (unless (file-exists? "/root")
+          (mkdir "/root"))
+        (if root
+            ;; Assume ROOT has a usable /dev tree.
+            (mount root "/root" "ext3")
+            (begin
+              (mount "none" "/root" "tmpfs")
+              (make-essential-device-nodes #:root "/root")))
+
+        (mount-essential-file-systems #:root "/root")
+
+        ;; XXX: We don't copy our fellow Guile modules to /root (see
+        ;; 'qemu-initrd'), so if TO-LOAD tries to load a module (which can
+        ;; happen if it throws, to display the exception!), then we're
+        ;; screwed.  Hopefully TO-LOAD is a simple expression that just does
+        ;; '(execlp ...)'.
+
+        (if to-load
+            (begin
+              (format #t "loading '~a'...\n" to-load)
+              (chroot "/root")
+              (primitive-load to-load)
+              (format (current-error-port)
+                      "boot program '~a' terminated, rebooting~%")
+              (sleep 2)
+              (reboot))
+            (begin
+              (display "no init file passed via '--exec'\n")
+              (display "entering a warm and cozy REPL\n")
+              ((@ (system repl repl) start-repl))))))
+   #:name "qemu-system-initrd"
+   #:modules '((guix build linux-initrd)
+               (guix build utils))
+   #:linux linux-libre))
+
 ;;; linux-initrd.scm ends here

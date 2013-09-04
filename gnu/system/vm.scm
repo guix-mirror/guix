@@ -21,7 +21,11 @@
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
-  #:use-module ((gnu packages base) #:select (%final-inputs guile-final))
+  #:use-module ((gnu packages base) #:select (%final-inputs
+                                              guile-final
+                                              coreutils))
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages bash)
   #:use-module (gnu packages qemu)
   #:use-module (gnu packages parted)
   #:use-module (gnu packages grub)
@@ -30,7 +34,7 @@
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
   #:use-module ((gnu packages system)
-                #:select (shadow))
+                #:select (mingetty))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
@@ -177,11 +181,14 @@ made available under the /xchg CIFS share."
                      (system (%current-system))
                      (disk-image-size (* 100 (expt 2 20)))
                      (linux linux-libre)
+                     (linux-arguments '())
                      (initrd qemu-initrd)
                      (inputs '())
                      (inputs-to-copy '())
                      (boot-expression #f))
-  "Return a bootable, stand-alone QEMU image.
+  "Return a bootable, stand-alone QEMU image.  The returned image is a full
+disk image, with a GRUB installation whose default entry boots LINUX, with the
+arguments LINUX-ARGUMENTS, and using INITRD as its initial RAM disk.
 
 INPUTS-TO-COPY is a list of inputs (as for packages) whose closure is copied
 into the image being built.
@@ -197,13 +204,9 @@ process."
      ((name (? package? package) sub-drv)
       `(,name . ,(derivation-path->output-path
                   (package-derivation store package system)
-                  sub-drv)))))
-
-  (define loader
-    (and boot-expression
-         (add-text-to-store store "loader"
-                            (object->string boot-expression)
-                            '())))
+                  sub-drv)))
+     ((input (and (? string?) (? store-path?) file))
+      `(,input . ,file))))
 
   (expression->derivation-in-linux-vm
    store "qemu-image"
@@ -299,12 +302,10 @@ set timeout=5
 search.file /boot/bzImage
 
 menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
-  linux /boot/bzImage --root=/dev/vda1 ~a
+  linux /boot/bzImage ~a
   initrd /boot/initrd
 }"
-                                  ,(if loader
-                                       (string-append "--load=" loader)
-                                       ""))))
+                                  ,(string-join linux-arguments))))
                       (and (zero?
                             (system* grub "--no-floppy"
                                      "--boot-directory" "/fs/boot"
@@ -318,10 +319,6 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
               ("e2fsprogs" ,e2fsprogs)
               ("linux" ,linux-libre)
               ("initrd" ,initrd)
-
-              ,@(if loader
-                    `(("loader" ,loader))
-                    '())
 
               ;; For shell scripts.
               ("sed" ,(car (assoc-ref %final-inputs "sed")))
@@ -367,13 +364,31 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
         (set! store (open-connection)))
       (lambda ()
         (parameterize ((%guile-for-build (package-derivation store guile-final)))
-          (let* ((drv   (package-derivation store shadow))
-                 (login (string-append (derivation-path->output-path drv)
-                                       "/bin/login")))
+          (let* ((out   (derivation-path->output-path
+                         (package-derivation store mingetty)))
+                 (getty (string-append out "/sbin/mingetty"))
+                 (boot  (add-text-to-store store "boot"
+                                           (object->string
+                                            `(begin
+                                               ;; Become the session leader,
+                                               ;; so that mingetty can do
+                                               ;; 'TIOCSCTTY'.
+                                               (setsid)
+
+                                               ;; Directly into mingetty.
+                                               (execl ,getty "mingetty"
+                                                      "--noclear" "tty1")))
+                                           (list out))))
            (qemu-image store
-                       #:boot-expression `(execl ,login "login" "tty1")
+                       #:initrd gnu-system-initrd
+                       #:linux-arguments `("--root=/dev/vda1"
+                                           ,(string-append "--load=" boot))
                        #:disk-image-size (* 400 (expt 2 20))
-                       #:inputs-to-copy `(("shadow" ,shadow))))))
+                       #:inputs-to-copy `(("boot" ,boot)
+                                          ("coreutils" ,coreutils)
+                                          ("bash" ,bash)
+                                          ("guile" ,guile-2.0)
+                                          ("mingetty" ,mingetty))))))
       (lambda ()
         (close-connection store)))))
 
