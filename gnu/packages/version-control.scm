@@ -58,7 +58,9 @@
      ;; require Zsh.
      `(("gettext" ,guix:gettext)))
     (arguments
-     `(#:tests? #f)) ; no test target
+     `(#:tests? #f ; no test target
+       #:python ,python-2)) ; Python 3 apparently not yet supported, see
+                            ; https://answers.launchpad.net/bzr/+question/229048
     (home-page "https://gnu.org/software/bazaar")
     (synopsis "Decentralized revision control system")
     (description
