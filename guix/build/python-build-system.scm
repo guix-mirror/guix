@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -45,13 +46,15 @@
           (zero? (apply system* "python" args)))
         (error "no setup.py found"))))
 
-(define* (check #:key outputs #:allow-other-keys)
+(define* (check #:key outputs tests? test-target #:allow-other-keys)
   "Run the test suite of a given Python package."
-  (if (file-exists? "setup.py")
-      (let ((args `("setup.py" "check")))
-        (format #t "running 'python' with arguments ~s~%" args)
-        (zero? (apply system* "python" args)))
-      (error "no setup.py found")))
+  (if tests?
+    (if (file-exists? "setup.py")
+        (let ((args `("setup.py" ,test-target)))
+          (format #t "running 'python' with arguments ~s~%" args)
+          (zero? (apply system* "python" args)))
+        (error "no setup.py found"))
+    #t))
 
 (define* (wrap #:key inputs outputs #:allow-other-keys)
   (define (list-of-files dir)
