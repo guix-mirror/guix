@@ -206,6 +206,7 @@ data types.")
        (base32
         "19giwgfcrg0nr1gdv49qnmf2jb2ilkcfc7qyqvfpz4dp0p64ksv5"))))
     (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; no test target
     (home-page "https://launchpad.net/pytz")
     (synopsis "The Python timezone library.")
     (description
@@ -233,6 +234,7 @@ using Python 2.4 or higher and provides access to the Olson timezone database.")
     (build-system python-build-system)
     (inputs
      `(("python-pytz" ,python-pytz)))
+    (arguments `(#:tests? #f)) ; no test target
     (home-page "http://babel.edgewall.org/")
     (synopsis
      "Tools for internationalizing Python applications")
