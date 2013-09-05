@@ -217,7 +217,7 @@ using Python 2.4 or higher and provides access to the Olson timezone database.")
 (define-public python2-pytz
   (package (inherit python-pytz)
     (name "python2-pytz")
-    (arguments `(#:python ,python-2))))
+    (arguments (append (package-arguments python-pytz) `(#:python ,python-2)))))
 
 (define-public python-babel
   (package
@@ -251,4 +251,4 @@ etc. ")
     (name "python2-babel")
     (inputs
      `(("python2-pytz" ,python2-pytz)))
-    (arguments `(#:python ,python-2))))
+    (arguments (append (package-arguments python-babel) `(#:python ,python-2)))))
