@@ -183,6 +183,7 @@ made available under the /xchg CIFS share."
                      (linux linux-libre)
                      (linux-arguments '())
                      (initrd qemu-initrd)
+                     (populate #f)
                      (inputs '())
                      (inputs-to-copy '()))
   "Return a bootable, stand-alone QEMU image.  The returned image is a full
@@ -190,7 +191,11 @@ disk image, with a GRUB installation whose default entry boots LINUX, with the
 arguments LINUX-ARGUMENTS, and using INITRD as its initial RAM disk.
 
 INPUTS-TO-COPY is a list of inputs (as for packages) whose closure is copied
-into the image being built."
+into the image being built.
+
+When POPULATE is true, it must be the store file name of a Guile script to run
+in the disk image partition once it has been populated with INPUTS-TO-COPY.
+It can be used to provide additional files, such as /etc files."
   (define input->name+derivation
     (match-lambda
      ((name (? package? package))
@@ -289,6 +294,13 @@ into the image being built."
                       ;; Populate /dev.
                       (make-essential-device-nodes #:root "/fs")
 
+                      (and=> (assoc-ref %build-inputs "populate")
+                             (lambda (populate)
+                               (chdir "/fs")
+                               (primitive-load populate)
+                               (chdir "/")))
+
+                      ;; TODO: Move to a GRUB menu builder.
                       (call-with-output-file "/fs/boot/grub/grub.cfg"
                         (lambda (p)
                           (format p "
@@ -323,6 +335,10 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
               ("gawk" ,(car (assoc-ref %final-inputs "gawk")))
               ("util-linux" ,util-linux)
 
+              ,@(if populate
+                    `(("populate" ,populate))
+                    '())
+
               ,@inputs-to-copy)
    #:make-disk-image? #t
    #:disk-image-size disk-image-size
@@ -352,6 +368,23 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
       (lambda ()
         (close-connection store)))))
 
+(define (/etc/shadow store accounts)
+  "Return a /etc/shadow file for ACCOUNTS."
+  (define contents
+    (let loop ((accounts accounts)
+               (result   '()))
+      (match accounts
+        (((name uid gid comment home-dir shell) rest ...)
+         (loop rest
+               (cons (string-append name "::" (number->string uid)
+                                    ":" (number->string gid)
+                                    comment ":" home-dir ":" shell)
+                     result)))
+        (()
+         (string-concatenate-reverse result)))))
+
+  (add-text-to-store store "shadow" contents '()))
+
 (define (example2)
   (let ((store #f))
     (dynamic-wind
@@ -359,7 +392,21 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
         (set! store (open-connection)))
       (lambda ()
         (parameterize ((%guile-for-build (package-derivation store guile-final)))
-          (let* ((out   (derivation-path->output-path
+          (let* ((bash-drv  (package-derivation store bash))
+                 (bash-file (string-append (derivation-path->output-path bash-drv)
+                                           "/bin/bash"))
+                 (passwd    (/etc/shadow store
+                                         `(("root" 0 0 "System administrator" "/"
+                                            ,bash-file))))
+                 (populate
+                  (add-text-to-store store "populate-qemu-image"
+                                     (object->string
+                                      `(begin
+                                         (mkdir-p "etc")
+                                         (symlink ,(substring passwd 1)
+                                                  "etc/shadow")))
+                                     (list passwd)))
+                 (out   (derivation-path->output-path
                          (package-derivation store mingetty)))
                  (getty (string-append out "/sbin/mingetty"))
                  (boot  (add-text-to-store store "boot"
@@ -375,6 +422,7 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
                                                       "--noclear" "tty1")))
                                            (list out))))
            (qemu-image store
+                       #:populate populate
                        #:initrd gnu-system-initrd
                        #:linux-arguments `("--root=/dev/vda1"
                                            ,(string-append "--load=" boot))
@@ -383,7 +431,9 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
                                           ("coreutils" ,coreutils)
                                           ("bash" ,bash)
                                           ("guile" ,guile-2.0)
-                                          ("mingetty" ,mingetty))))))
+                                          ("mingetty" ,mingetty)
+
+                                          ("shadow" ,passwd))))))
       (lambda ()
         (close-connection store)))))
 
