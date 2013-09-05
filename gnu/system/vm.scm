@@ -184,18 +184,13 @@ made available under the /xchg CIFS share."
                      (linux-arguments '())
                      (initrd qemu-initrd)
                      (inputs '())
-                     (inputs-to-copy '())
-                     (boot-expression #f))
+                     (inputs-to-copy '()))
   "Return a bootable, stand-alone QEMU image.  The returned image is a full
 disk image, with a GRUB installation whose default entry boots LINUX, with the
 arguments LINUX-ARGUMENTS, and using INITRD as its initial RAM disk.
 
 INPUTS-TO-COPY is a list of inputs (as for packages) whose closure is copied
-into the image being built.
-
-When BOOT-EXPRESSION is true, it is an expression to evaluate when the basic
-initialization is done.  A typical example is `(execl ...)' to launch the init
-process."
+into the image being built."
   (define input->name+derivation
     (match-lambda
      ((name (? package? package))
