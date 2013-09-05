@@ -35,26 +35,32 @@
 ;;
 ;; Code:
 
+
+(define (call-setuppy command params)
+  (if (file-exists? "setup.py")
+      (begin
+         (format #t "running \"python setup.py\" with command ~s and parameters ~s~%"
+                command params)
+         (zero? (apply system* "python" "setup.py" command params)))
+      (error "no setup.py found")))
+
+(define* (build #:rest empty)
+  "Build a given Python package."
+  (call-setuppy "build" '()))
+
+(define* (check #:key tests? test-target #:allow-other-keys)
+  "Run the test suite of a given Python package."
+  (if tests?
+    (call-setuppy test-target '())
+    #t))
+
 (define* (install #:key outputs (configure-flags '())
                   #:allow-other-keys)
   "Install a given Python package."
-  (let ((out (assoc-ref outputs "out")))
-    (if (file-exists? "setup.py")
-        (let ((args `("setup.py" "install" ,(string-append "--prefix=" out)
-                      ,@configure-flags)))
-          (format #t "running 'python' with arguments ~s~%" args)
-          (zero? (apply system* "python" args)))
-        (error "no setup.py found"))))
-
-(define* (check #:key outputs tests? test-target #:allow-other-keys)
-  "Run the test suite of a given Python package."
-  (if tests?
-    (if (file-exists? "setup.py")
-        (let ((args `("setup.py" ,test-target)))
-          (format #t "running 'python' with arguments ~s~%" args)
-          (zero? (apply system* "python" args)))
-        (error "no setup.py found"))
-    #t))
+  (let* ((out (assoc-ref outputs "out"))
+         (params (append (list (string-append "--prefix=" out))
+                         configure-flags)))
+        (call-setuppy "install" params)))
 
 (define* (wrap #:key inputs outputs #:allow-other-keys)
   (define (list-of-files dir)
@@ -92,11 +98,12 @@
    'install 'wrap
    wrap
    (alist-replace
-    'check check
-    (alist-replace 'install install
-                   (alist-delete 'configure
-                                (alist-delete 'build
-                                              gnu:%standard-phases))))))
+    'build build
+    (alist-replace
+     'check check
+     (alist-replace 'install install
+                    (alist-delete 'configure
+                                               gnu:%standard-phases))))))
 
 (define* (python-build #:key inputs (phases %standard-phases)
                        #:allow-other-keys #:rest args)
