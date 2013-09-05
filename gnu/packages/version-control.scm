@@ -88,7 +88,7 @@ from a command line or use a GUI application.")
       ("gettext" ,guix:gettext)
       ("openssl" ,openssl)
       ("perl" ,perl)
-      ("python" ,python) ; CAVEAT: incompatible with python-3 according to INSTALL
+      ("python" ,python-2) ; CAVEAT: incompatible with python-3 according to INSTALL
       ("zlib" ,zlib)))
    (arguments
     `(#:make-flags `("V=1") ; more verbose compilation
