@@ -218,7 +218,7 @@ applying standard ITS rules, as well as extension rules specific to ITS Tool.
 ITS also provides an industry standard way for authors to override translation
 information in their documents, such as whether a particular element should be
 translated.")
-    (license gpl3+)))
+    (license license:gpl3+)))
 
 (define-public dbus-glib
   (package
