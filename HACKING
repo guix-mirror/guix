@@ -108,6 +108,18 @@ However, it is OK for a “host-side” module to use a build-side module.
 Modules that deal with the broader GNU system should be in the (gnu …) name
 space rather than (guix …).
 
+** Data Types and Pattern Matching
+
+The tendency in classical Lisp is to use lists to represent everything, and
+then to browse them “by hand” using ‘car’, ‘cdr’, ‘cadr’, and co.  There are
+several problems with that style, notably the fact that it is hard to read,
+error-prone, and a hindrance to proper type error reports.
+
+Guix code should define appropriate data types (for instance, using
+‘define-record-type*’) rather than abuse lists.  In addition, it should use
+pattern matching, via Guile’s (ice-9 match) module, especially when matching
+lists.
+
 ** Formatting Code
 
 When writing Scheme code, we follow common wisdom among Scheme programmers.
