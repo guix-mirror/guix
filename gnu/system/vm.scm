@@ -180,15 +180,13 @@ made available under the /xchg CIFS share."
                      (name "qemu-image")
                      (system (%current-system))
                      (disk-image-size (* 100 (expt 2 20)))
-                     (linux linux-libre)
-                     (linux-arguments '())
-                     (initrd qemu-initrd)
+                     grub-configuration
                      (populate #f)
                      (inputs '())
                      (inputs-to-copy '()))
   "Return a bootable, stand-alone QEMU image.  The returned image is a full
-disk image, with a GRUB installation whose default entry boots LINUX, with the
-arguments LINUX-ARGUMENTS, and using INITRD as its initial RAM disk.
+disk image, with a GRUB installation that uses GRUB-CONFIGURATION as its
+configuration file.
 
 INPUTS-TO-COPY is a list of inputs (as for packages) whose closure is copied
 into the image being built.
@@ -224,10 +222,7 @@ It can be used to provide additional files, such as /etc files."
                                     "/sbin/grub-install"))
             (umount  (string-append (assoc-ref %build-inputs "util-linux")
                                     "/bin/umount")) ; XXX: add to Guile
-            (initrd  (string-append (assoc-ref %build-inputs "initrd")
-                                    "/initrd"))
-            (linux   (string-append (assoc-ref %build-inputs "linux")
-                                    "/bzImage")))
+            (grub.cfg (assoc-ref %build-inputs "grub.cfg")))
 
         (define (read-reference-graph port)
           ;; Return a list of store paths from the reference graph at PORT.
@@ -280,8 +275,7 @@ It can be used to provide additional files, such as /etc files."
                       (mkdir "/fs")
                       (mount "/dev/vda1" "/fs" "ext3")
                       (mkdir-p "/fs/boot/grub")
-                      (copy-file linux "/fs/boot/bzImage")
-                      (copy-file initrd "/fs/boot/initrd")
+                      (symlink grub.cfg "/fs/boot/grub/grub.cfg")
 
                       ;; Populate the image's store.
                       (mkdir-p (string-append "/fs" ,%store-directory))
@@ -289,7 +283,7 @@ It can be used to provide additional files, such as /etc files."
                                   (copy-recursively thing
                                                     (string-append "/fs"
                                                                    thing)))
-                                (things-to-copy))
+                                (cons grub.cfg (things-to-copy)))
 
                       ;; Populate /dev.
                       (make-essential-device-nodes #:root "/fs")
@@ -300,32 +294,17 @@ It can be used to provide additional files, such as /etc files."
                                (primitive-load populate)
                                (chdir "/")))
 
-                      ;; TODO: Move to a GRUB menu builder.
-                      (call-with-output-file "/fs/boot/grub/grub.cfg"
-                        (lambda (p)
-                          (format p "
-set default=1
-set timeout=5
-search.file /boot/bzImage
-
-menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
-  linux /boot/bzImage ~a
-  initrd /boot/initrd
-}"
-                                  ,(string-join linux-arguments))))
                       (and (zero?
                             (system* grub "--no-floppy"
                                      "--boot-directory" "/fs/boot"
                                      "/dev/vda"))
-                           (zero?
-                            (system* umount "/fs"))
+                           (zero? (system* umount "/fs"))
                            (reboot))))))))
    #:system system
    #:inputs `(("parted" ,parted)
               ("grub" ,grub)
               ("e2fsprogs" ,e2fsprogs)
-              ("linux" ,linux-libre)
-              ("initrd" ,initrd)
+              ("grub.cfg" ,grub-configuration)
 
               ;; For shell scripts.
               ("sed" ,(car (assoc-ref %final-inputs "sed")))
@@ -420,14 +399,21 @@ menuentry \"Boot-to-Guile! (GNU System technology preview)\" {
                                                ;; Directly into mingetty.
                                                (execl ,getty "mingetty"
                                                       "--noclear" "tty1")))
-                                           (list out))))
+                                           (list out)))
+                 (entries  (list (menu-entry
+                                  (label "Boot-to-Guile! (GNU System technology preview)")
+                                  (linux linux-libre)
+                                  (linux-arguments `("--root=/dev/vda1"
+                                                     ,(string-append "--load=" boot)))
+                                  (initrd gnu-system-initrd))))
+                 (grub.cfg (grub-configuration-file store entries)))
            (qemu-image store
+                       #:grub-configuration grub.cfg
                        #:populate populate
-                       #:initrd gnu-system-initrd
-                       #:linux-arguments `("--root=/dev/vda1"
-                                           ,(string-append "--load=" boot))
                        #:disk-image-size (* 400 (expt 2 20))
                        #:inputs-to-copy `(("boot" ,boot)
+                                          ("linux" ,linux-libre)
+                                          ("initrd" ,gnu-system-initrd)
                                           ("coreutils" ,coreutils)
                                           ("bash" ,bash)
                                           ("guile" ,guile-2.0)
