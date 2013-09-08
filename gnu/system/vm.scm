@@ -75,6 +75,9 @@ DISK-IMAGE-SIZE bytes and return it.
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs, as for `derivation'.  The files containing the reference graphs are
 made available under the /xchg CIFS share."
+  ;; FIXME: Allow use of macros from other modules, as done in
+  ;; `build-expression->derivation'.
+
   (define input-alist
     (map (match-lambda
           ((input (? package? package))
@@ -293,6 +296,19 @@ It can be used to provide additional files, such as /etc files."
                                (chdir "/fs")
                                (primitive-load populate)
                                (chdir "/")))
+
+                      (display "clearing file timestamps...\n")
+                      (for-each (lambda (file)
+                                  (let ((s (lstat file)))
+                                    ;; XXX: Guile uses libc's 'utime' function
+                                    ;; (not 'futime'), so the timestamp of
+                                    ;; symlinks cannot be changed, and there
+                                    ;; are symlinks here pointing to
+                                    ;; /nix/store, which is the host,
+                                    ;; read-only store.
+                                    (unless (eq? (stat:type s) 'symlink)
+                                      (utime file 0 0 0 0))))
+                                (find-files "/fs" ".*"))
 
                       (and (zero?
                             (system* grub "--no-floppy"
