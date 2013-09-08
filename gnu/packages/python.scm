@@ -28,6 +28,7 @@
   #:use-module (gnu packages patchelf)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build-system trivial))
@@ -215,9 +216,7 @@ using Python 2.4 or higher and provides access to the Olson timezone database.")
     (license x11)))
 
 (define-public python2-pytz
-  (package (inherit python-pytz)
-    (name "python2-pytz")
-    (arguments (append (package-arguments python-pytz) `(#:python ,python-2)))))
+  (package-with-python2 python-pytz))
 
 (define-public python-babel
   (package
@@ -247,8 +246,4 @@ etc. ")
     (license bsd-3)))
 
 (define-public python2-babel
-  (package (inherit python-babel)
-    (name "python2-babel")
-    (inputs
-     `(("python2-pytz" ,python2-pytz)))
-    (arguments (append (package-arguments python-babel) `(#:python ,python-2)))))
+  (package-with-python2 python-babel))

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,7 +26,9 @@
   #:use-module (guix build-system)
   #:use-module (guix build-system gnu)
   #:use-module (ice-9 match)
-  #:export (python-build
+  #:use-module (srfi srfi-26)
+  #:export (package-with-python2
+            python-build
             python-build-system))
 
 ;; Commentary:
@@ -40,6 +43,55 @@
   ;; Lazily resolve the binding to avoid a circular dependency.
   (let ((python (resolve-interface '(gnu packages python))))
     (module-ref python 'python-wrapper)))
+
+(define (default-python2)
+  "Return the default Python 2 package."
+  (let ((python (resolve-interface '(gnu packages python))))
+    (module-ref python 'python-2)))
+
+(define (package-with-explicit-python p python old-prefix new-prefix)
+  "Create a package with the same fields as P, which is assumed to use
+PYTHON-BUILD-SYSTEM, such that it is compiled with PYTHON instead.  The
+inputs are changed recursively accordingly.  If the name of P starts with
+OLD-PREFIX, this is replaced by NEW-PREFIX; otherwise, NEW-PREFIX is
+prepended to the name."
+  (let* ((build-system (package-build-system p))
+         (rewrite-if-package
+          (lambda (content)
+            ;; CONTENT may be a string (e.g., for patches), in which case it
+            ;; is returned, or a package, which is rewritten with the new
+            ;; PYTHON and NEW-PREFIX.
+            (if (package? content)
+                (package-with-explicit-python content python
+                                              old-prefix new-prefix)
+                content)))
+         (rewrite
+           (match-lambda
+             ((name content . rest)
+              (append (list name (rewrite-if-package content)) rest)))))
+    (package (inherit p)
+      (name
+        (let ((name (package-name p)))
+          (if (eq? build-system python-build-system)
+              (string-append new-prefix
+                             (if (string-prefix? old-prefix name)
+                                 (substring name (string-length old-prefix))
+                                 name))
+              name)))
+      (arguments
+        (let ((arguments (package-arguments p)))
+          (if (eq? build-system python-build-system)
+              (if (member #:python arguments)
+                  (substitute-keyword-arguments arguments ((#:python p) python))
+                  (append arguments `(#:python ,python)))
+              arguments)))
+      (inputs
+        (map rewrite (package-inputs p)))
+      (native-inputs
+        (map rewrite (package-native-inputs p))))))
+
+(define package-with-python2
+  (cut package-with-explicit-python <> (default-python2) "python-" "python2-"))
 
 (define* (python-build store name source inputs
                        #:key
