@@ -79,7 +79,7 @@ SYSTEM."
     ,(cute package->alist store package system
            (cut package-cross-derivation <> <> target <>))))
 
-(define %packages-to-cross-build
+(define %core-packages
   (list gmp mpfr mpc coreutils findutils diffutils patch sed grep
         gawk gettext hello guile-2.0
         %bootstrap-binaries-tarball
@@ -88,6 +88,9 @@ SYSTEM."
         %gcc-bootstrap-tarball
         %guile-bootstrap-tarball
         %bootstrap-tarballs))
+
+(define %packages-to-cross-build
+  %core-packages)
 
 (define %cross-targets
   '("mips64el-linux-gnu"
@@ -105,6 +108,11 @@ SYSTEM."
        lst)
       (_
        (list (%current-system)))))
+
+  (define subset
+    (match (assoc-ref arguments 'subset)
+      ("core" 'core)                              ; only build core packages
+      (_ 'all)))                                  ; build everything
 
   (define job-name
     (compose string->symbol package-full-name))
@@ -127,11 +135,23 @@ SYSTEM."
                                          inputs))))
                                     %final-inputs))))
     (append-map (lambda (system)
-                  (fold-packages (lambda (package result)
-                                   (if (member package base-packages)
-                                       result
-                                       (cons (package-job store (job-name package)
-                                                          package system)
-                                             result)))
-                                 (cross-jobs system)))
+                  (case subset
+                    ((all)
+                     ;; Build everything.
+                     (fold-packages (lambda (package result)
+                                      (if (member package base-packages)
+                                          result
+                                          (cons (package-job store (job-name package)
+                                                             package system)
+                                                result)))
+                                    (cross-jobs system)))
+                    ((core)
+                     ;; Build core packages only.
+                     (append (map (lambda (package)
+                                    (package-job store (job-name package)
+                                                 package system))
+                                  %core-packages)
+                             (cross-jobs system)))
+                    (else
+                     (error "unknown subset" subset))))
                 systems)))

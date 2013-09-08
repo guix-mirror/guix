@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,7 +34,7 @@
 (define-public python
   (package
     (name "python")
-    (version "2.7.4")
+    (version "2.7.5")
     (source
      (origin
       (method url-fetch)
@@ -41,10 +42,52 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "0bdn4dylm92n2dsvqvjfyask9jbz88aan5hi4lgkawkxs2v6wqmn"))))
+        "1c8xan2dlsqfq8q82r3mhl72v3knq3qyn71fjq89xikx2smlqg7k"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:tests? #f ; XXX: some tests fail
+     `(#:tests? #f
+;;       258 tests OK.
+;;       103 tests failed:
+;;          test_bz2 test_distutils test_file test_file2k test_popen2
+;;          test_shutil test_signal test_site test_slice test_smtplib
+;;          test_smtpnet test_socket test_socketserver test_softspace
+;;          test_sort test_sqlite test_ssl test_startfile test_str
+;;          test_strftime test_string test_stringprep test_strop test_strptime
+;;          test_strtod test_struct test_structmembers test_structseq
+;;          test_subprocess test_sunaudiodev test_sundry test_symtable
+;;          test_syntax test_sys test_sys_setprofile test_sys_settrace
+;;          test_sysconfig test_tarfile test_tcl test_telnetlib test_tempfile
+;;          test_textwrap test_thread test_threaded_import
+;;          test_threadedtempfile test_threading test_threading_local
+;;          test_threadsignals test_time test_timeout test_tk test_tokenize
+;;          test_tools test_trace test_traceback test_transformer
+;;          test_ttk_guionly test_ttk_textonly test_tuple test_typechecks
+;;          test_ucn test_unary test_undocumented_details test_unicode
+;;          test_unicode_file test_unicodedata test_univnewlines
+;;          test_univnewlines2k test_unpack test_urllib test_urllib2
+;;          test_urllib2_localnet test_urllib2net test_urllibnet test_urlparse
+;;          test_userdict test_userlist test_userstring test_uu test_uuid
+;;          test_wait3 test_wait4 test_warnings test_wave test_weakref
+;;          test_weakset test_whichdb test_winreg test_winsound test_with
+;;          test_wsgiref test_xdrlib test_xml_etree test_xml_etree_c
+;;          test_xmllib test_xmlrpc test_xpickle test_xrange test_zipfile
+;;          test_zipfile64 test_zipimport test_zipimport_support test_zlib
+;;       31 tests skipped:
+;;          test_aepack test_al test_applesingle test_ascii_formatd test_bsddb
+;;          test_bsddb185 test_bsddb3 test_cd test_cl test_codecmaps_cn
+;;          test_codecmaps_hk test_codecmaps_jp test_codecmaps_kr
+;;          test_codecmaps_tw test_ctypes test_curses test_dl test_gdb test_gl
+;;          test_imageop test_imgfile test_ioctl test_kqueue
+;;          test_linuxaudiodev test_macos test_macostools test_msilib
+;;          test_multiprocessing test_ossaudiodev test_pep277
+;;          test_scriptpackages
+;;       7 skips unexpected on linux2:
+;;          test_ascii_formatd test_bsddb test_bsddb3 test_ctypes test_gdb
+;;          test_ioctl test_multiprocessing
+;;    One of the typical errors:
+;;    test_unicode
+;;    test test_unicode crashed -- <type 'exceptions.OSError'>: [Errno 2] No such file or directory
+       #:test-target "test"
        #:configure-flags
         (let ((bz2 (assoc-ref %build-inputs "bzip2"))
               (gdbm (assoc-ref %build-inputs "gdbm"))
@@ -107,6 +150,22 @@ expression of procedural code; full modularity, supporting hierarchical
 packages; exception-based error handling; and very high level dynamic
 data types.")
     (license psfl)))
+
+(define-public python-3
+  (package (inherit python)
+    (version "3.3.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://www.python.org/ftp/python/"
+                          version "/Python-" version ".tar.xz"))
+      (sha256
+       (base32
+        "0hsbwqjnhr85a2w252c8d3yj8d9i5sy8s6a6cfk6zqqhp3234nvl"))))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "PYTHONPATH")
+            (directories '("lib/python3.3/site-packages")))))))
 
 (define-public pytz
   (package

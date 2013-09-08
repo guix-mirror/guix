@@ -156,50 +156,79 @@ exec guile -l "$0"                              \
   "Return the CSS for the list-packages page."
   (format #t
 "<style>
-a {transition: all 0.3s}
-div#intro {margin-bottom: 5em}
-div#intro div, div#intro p {padding:0.5em}
-div#intro div {float:left}
-table#packages, table#packages tr, table#packages tbody, table#packages td,
-table#packages th {border: 0px solid black}
-div.package-description {position: relative}
-table#packages tr:nth-child(even) {background-color: #FFF}
-table#packages tr:nth-child(odd) {background-color: #EEE}
-table#packages tr:hover, table#packages tr:focus, table#packages tr:active {background-color: #DDD}
-table#packages tr:first-child, table#packages tr:first-child:hover, table#packages tr:first-child:focus, table#packages tr:first-child:active {
-background-color: #333;
-color: #fff;
+/* license: CC0 */
+a {
+    transition: all 0.3s;
 }
-table#packages td
-{
-margin:0px;
-padding:0.2em 0.5em;
+div#intro {
+    margin-bottom: 2em;
+}
+div#intro div, div#intro p {
+    padding:0.5em;
+}
+div#intro div {
+    float:left;
+}
+div#intro img {
+    float:left;
+    padding:0.75em;
+}
+table#packages, table#packages tr, table#packages tbody, table#packages td, table#packages th {
+    border: 0px solid black;
+    clear: both;
+}
+table#packages tr:nth-child(even) {
+    background-color: #FFF;
+}
+table#packages tr:nth-child(odd) {
+    background-color: #EEE;
+}
+table#packages tr:hover, table#packages tr:focus, table#packages tr:active {
+    background-color: #DDD;
+}
+table#packages tr:first-child, table#packages tr:first-child:hover, table#packages tr:first-child:focus, table#packages tr:first-child:active {
+    background-color: #333;
+    color: #fff;
+}
+table#packages td {
+    margin:0px;
+    padding:0.2em 0.5em;
 }
 table#packages td:first-child {
-width:10%;
-text-align:center;
+    width:10%;
+    text-align:center;
 }
-table#packages td:nth-child(2){width:30%;}
-table#packages td:last-child {width:60%}
+table#packages td:nth-child(2) {
+    width:30%;
+}
+table#packages td:last-child {
+    width:60%;
+}
 img.package-logo {
-float: left;
-padding-right: 1em;
+    float: left;
+    padding: 0.75em;
 }
-table#packages span a {float: right}
+table#packages span {
+    font-weight: 700;
+}
+table#packages span a {
+    float: right;
+    font-weight: 500;
+}
 a#top {
-position:fixed;
-right:2%;
-bottom:2%;
-font-size:150%;
-background-color:#EEE;
-padding:1.125% 0.75% 0% 0.75%;
-text-decoration:none;
-color:#000;
-border-radius:5px;
+    position:fixed;
+    right:10px;
+    bottom:10px;
+    font-size:150%;
+    background-color:#EEE;
+    padding:10px 7.5px 0 7.5px;
+    text-decoration:none;
+    color:#000;
+    border-radius:5px;
 }
 a#top:hover, a#top:focus {
-background-color:#333;
-color:#fff;
+    background-color:#333;
+    color:#fff;
 }
 </style>"))
 

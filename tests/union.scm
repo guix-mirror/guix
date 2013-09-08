@@ -114,7 +114,17 @@
                 (file-exists? "bin/ld")
                 (file-exists? "lib/libc.so")
                 (directory-exists? "lib/gcc")
-                (file-exists? "include/unistd.h"))))))
+                (file-exists? "include/unistd.h")
+
+                ;; The 'include' sub-directory is only found in
+                ;; glibc-bootstrap, so it should be unified in a
+                ;; straightforward way, without traversing it.
+                (eq? 'symlink (stat:type (lstat "include")))
+
+                ;; Conversely, several inputs have a 'bin' sub-directory, so
+                ;; unifying it requires traversing them all, and creating a
+                ;; new 'bin' sub-directory in the profile.
+                (eq? 'directory (stat:type (lstat "bin"))))))))
 
 (test-end)
 

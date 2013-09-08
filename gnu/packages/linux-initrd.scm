@@ -19,10 +19,14 @@
 (define-module (gnu packages linux-initrd)
   #:use-module (guix utils)
   #:use-module (guix licenses)
+  #:use-module (guix build-system)
+  #:use-module ((guix derivations)
+                #:select (imported-modules compiled-modules %guile-for-build))
   #:use-module (gnu packages)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages guile)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
   #:use-module (guix packages)
@@ -38,6 +42,49 @@
 ;;; Code:
 
 
+(define-syntax-rule (raw-build-system (store system name inputs) body ...)
+  "Lift BODY to a package build system."
+  ;; TODO: Generalize.
+  (build-system
+   (name "raw")
+   (description "Raw build system")
+   (build (lambda* (store name source inputs #:key system #:allow-other-keys)
+            (parameterize ((%guile-for-build (package-derivation store
+                                                                 guile-2.0)))
+              body ...)))))
+
+(define (module-package modules)
+  "Return a package that contains all of MODULES, a list of Guile module
+names."
+  (package
+    (name "guile-modules")
+    (version "0")
+    (source #f)
+    (build-system (raw-build-system (store system name inputs)
+                    (imported-modules store modules
+                                      #:name name
+                                      #:system system)))
+    (synopsis "Set of Guile modules")
+    (description synopsis)
+    (license gpl3+)
+    (home-page "http://www.gnu.org/software/guix/")))
+
+(define (compiled-module-package modules)
+  "Return a package that contains the .go files corresponding to MODULES, a
+list of Guile module names."
+  (package
+    (name "guile-compiled-modules")
+    (version "0")
+    (source #f)
+    (build-system (raw-build-system (store system name inputs)
+                    (compiled-modules store modules
+                                      #:name name
+                                      #:system system)))
+    (synopsis "Set of compiled Guile modules")
+    (description synopsis)
+    (license gpl3+)
+    (home-page "http://www.gnu.org/software/guix/")))
+
 (define* (expression->initrd exp
                              #:key
                              (guile %guile-static-stripped)
@@ -45,12 +92,13 @@
                              (gzip gzip)
                              (name "guile-initrd")
                              (system (%current-system))
+                             (modules '())
                              (linux #f)
                              (linux-modules '()))
   "Return a package that contains a Linux initrd (a gzipped cpio archive)
 containing GUILE and that evaluates EXP upon booting.  LINUX-MODULES is a list
-of `.ko' file names to be copied from LINUX into the initrd."
-  ;; TODO: Add a `modules' parameter.
+of `.ko' file names to be copied from LINUX into the initrd.  MODULES is a
+list of Guile module names to be embedded in the initrd."
 
   ;; General Linux overview in `Documentation/early-userspace/README' and
   ;; `Documentation/filesystems/ramfs-rootfs-initramfs.txt'.
@@ -67,12 +115,22 @@ of `.ko' file names to be copied from LINUX into the initrd."
                     (rnrs bytevectors)
                     ((system foreign) #:select (sizeof)))
 
-       (let ((guile (assoc-ref %build-inputs "guile"))
-             (cpio  (string-append (assoc-ref %build-inputs "cpio")
-                                   "/bin/cpio"))
-             (gzip  (string-append (assoc-ref %build-inputs "gzip")
-                                   "/bin/gzip"))
-             (out   (assoc-ref %outputs "out")))
+       (let ((guile   (assoc-ref %build-inputs "guile"))
+             (cpio    (string-append (assoc-ref %build-inputs "cpio")
+                                     "/bin/cpio"))
+             (gzip    (string-append (assoc-ref %build-inputs "gzip")
+                                     "/bin/gzip"))
+             (modules (assoc-ref %build-inputs "modules"))
+             (gos     (assoc-ref %build-inputs "modules/compiled"))
+             (scm-dir (string-append "share/guile/" (effective-version)))
+             (go-dir  (format #f ".cache/guile/ccache/~a-~a-~a-~a"
+                              (effective-version)
+                              (if (eq? (native-endianness) (endianness little))
+                                  "LE"
+                                  "BE")
+                              (sizeof '*)
+                              (effective-version)))
+             (out     (assoc-ref %outputs "out")))
          (mkdir out)
          (mkdir "contents")
          (with-directory-excursion "contents"
@@ -84,19 +142,23 @@ of `.ko' file names to be copied from LINUX into the initrd."
            (chmod "init" #o555)
            (chmod "bin/guile" #o555)
 
-           ;; Compile `init'.
-           (let ((go-dir (format #f ".cache/guile/ccache/~a-~a-~a-~a"
-                                 (effective-version)
-                                 (if (eq? (native-endianness) (endianness little))
-                                     "LE"
-                                     "BE")
-                                 (sizeof '*)
-                                 (effective-version))))
-             (mkdir-p go-dir)
-             (compile-file "init"
-                           #:opts %auto-compilation-options
-                           #:output-file (string-append go-dir "/init.go")))
+           ;; Copy Guile modules.
+           (chmod scm-dir #o777)
+           (copy-recursively modules scm-dir
+                             #:follow-symlinks? #t)
+           (copy-recursively gos (string-append "lib/guile/"
+                                                (effective-version) "/ccache")
+                             #:follow-symlinks? #t)
 
+           ;; Compile `init'.
+           (mkdir-p go-dir)
+           (set! %load-path (cons modules %load-path))
+           (set! %load-compiled-path (cons gos %load-compiled-path))
+           (compile-file "init"
+                         #:opts %auto-compilation-options
+                         #:output-file (string-append go-dir "/init.go"))
+
+           ;; Copy Linux modules.
            (let* ((linux      (assoc-ref %build-inputs "linux"))
                   (module-dir (and linux
                                    (string-append linux "/lib/modules"))))
@@ -161,6 +223,8 @@ of `.ko' file names to be copied from LINUX into the initrd."
       (inputs `(("guile" ,guile)
                 ("cpio" ,cpio)
                 ("gzip" ,gzip)
+                ("modules" ,(module-package modules))
+                ("modules/compiled" ,(compiled-module-package modules))
                 ,@(if linux
                       `(("linux" ,linux))
                       '())))
@@ -174,26 +238,18 @@ the Linux kernel.")
 (define-public qemu-initrd
   (expression->initrd
    '(begin
-      (use-modules (rnrs io ports)
-                   (srfi srfi-1)
+      (use-modules (srfi srfi-1)
                    (srfi srfi-26)
                    (ice-9 match)
-                   ((system foreign) #:select (string->pointer))
-                   ((system base compile) #:select (compile-file)))
+                   ((system base compile) #:select (compile-file))
+                   (guix build utils)
+                   (guix build linux-initrd))
 
-      (display "Welcome, this is GNU/Guile!\n")
+      (display "Welcome, this is GNU's early boot Guile.\n")
       (display "Use '--repl' for an initrd REPL.\n\n")
 
-      (mkdir "/proc")
-      (mount "none" "/proc" "proc")
-
-      (mkdir "/sys")
-      (mount "none" "/sys" "sysfs")
-
-      (let* ((command (string-trim-both
-                       (call-with-input-file "/proc/cmdline"
-                         get-string-all)))
-             (args    (string-split command char-set:blank))
+      (mount-essential-file-systems)
+      (let* ((args    (linux-command-line))
              (option  (lambda (opt)
                         (let ((opt (string-append opt "=")))
                           (and=> (find (cut string-prefix? opt <>)
@@ -206,34 +262,16 @@ the Linux kernel.")
         (when (member "--repl" args)
           ((@ (system repl repl) start-repl)))
 
-        (let ((slurp (lambda (module)
-                       (call-with-input-file
-                           (string-append "/modules/" module)
-                         get-bytevector-all))))
-          (display "loading CIFS and companion modules...\n")
-          (for-each (compose load-linux-module slurp)
-                    (list "md4.ko" "ecb.ko" "cifs.ko")))
+        (display "loading CIFS and companion modules...\n")
+        (for-each (compose load-linux-module*
+                           (cut string-append "/modules/" <>))
+                  (list "md4.ko" "ecb.ko" "cifs.ko"))
 
-        ;; See net/slirp.c for default QEMU networking values.
-        (display "configuring network...\n")
-        (let* ((sock    (socket AF_INET SOCK_STREAM 0))
-               (address (make-socket-address AF_INET
-                                             (inet-pton AF_INET
-                                                        "10.0.2.10")
-                                             0))
-               (flags   (network-interface-flags sock "eth0")))
-          (set-network-interface-address sock "eth0" address)
-          (set-network-interface-flags sock "eth0"
-                                       (logior flags IFF_UP))
-          (if (logand (network-interface-flags sock "eth0") IFF_UP)
-              (display "network interface is up\n")
-              (display "network interface is DOWN\n"))
+        (unless (configure-qemu-networking)
+          (display "network interface is DOWN\n"))
 
-          (mkdir "/etc")
-          (call-with-output-file "/etc/resolv.conf"
-            (lambda (p)
-              (display "nameserver 10.0.2.3\n" p)))
-          (sleep 1))
+        ;; Make /dev nodes.
+        (make-essential-device-nodes)
 
         ;; Prepare the real root file system under /root.
         (unless (file-exists? "/root")
@@ -241,27 +279,31 @@ the Linux kernel.")
         (if root
             (mount root "/root" "ext3")
             (mount "none" "/root" "tmpfs"))
-        (mkdir "/root/proc")
-        (mount "none" "/root/proc" "proc")
-        (mkdir "/root/sys")
-        (mount "none" "/root/sys" "sysfs")
-        (mkdir "/root/xchg")
-        (mkdir "/root/nix")
-        (mkdir "/root/nix/store")
+        (mount-essential-file-systems #:root "/root")
 
-        (mkdir "/root/dev")
-        (let ((makedev (lambda (major minor)
-                         (+ (* major 256) minor))))
-          (mknod "/root/dev/null" 'char-special #o666 (makedev 1 3))
-          (mknod "/root/dev/zero" 'char-special #o666 (makedev 1 5)))
+        (mkdir "/root/xchg")
+        (mkdir-p "/root/nix/store")
+
+        (unless (file-exists? "/root/dev")
+          (mkdir "/root/dev")
+          (make-essential-device-nodes #:root "/root"))
 
         ;; Mount the host's store and exchange directory.
-        (display "mounting QEMU's SMB shares...\n")
-        (let ((server "10.0.2.4"))
-          (mount (string-append "//" server "/store") "/root/nix/store" "cifs" 0
-                 (string->pointer "guest,sec=none"))
-          (mount (string-append "//" server "/xchg") "/root/xchg" "cifs" 0
-                 (string->pointer "guest,sec=none")))
+        (mount-qemu-smb-share "/store" "/root/nix/store")
+        (mount-qemu-smb-share "/xchg" "/root/xchg")
+
+        ;; Copy the directories that contain .scm and .go files so that the
+        ;; child process in the chroot can load modules (we would bind-mount
+        ;; them but for some reason that fails with EINVAL -- XXX).
+        (mkdir "/root/share")
+        (mkdir "/root/lib")
+        (mount "none" "/root/share" "tmpfs")
+        (mount "none" "/root/lib" "tmpfs")
+        (copy-recursively "/share" "/root/share"
+                          #:log (%make-void-port "w"))
+        (copy-recursively "/lib" "/root/lib"
+                          #:log (%make-void-port "w"))
+
 
         (if to-load
             (begin
@@ -272,7 +314,10 @@ the Linux kernel.")
               (match (primitive-fork)
                 (0
                  (chroot "/root")
-                 (load-compiled "/loader.go"))
+                 (load-compiled "/loader.go")
+
+                 ;; TODO: Remove /lib, /share, and /loader.go.
+                 )
                 (pid
                  (format #t "boot file loaded under PID ~a~%" pid)
                  (let ((status (waitpid pid)))
@@ -282,7 +327,75 @@ the Linux kernel.")
               (display "entering a warm and cozy REPL\n")
               ((@ (system repl repl) start-repl))))))
    #:name "qemu-initrd"
+   #:modules '((guix build utils)
+               (guix build linux-initrd))
    #:linux linux-libre
    #:linux-modules '("cifs.ko" "md4.ko" "ecb.ko")))
+
+(define-public gnu-system-initrd
+  ;; Initrd for the GNU system itself, with nothing QEMU-specific.
+  (expression->initrd
+   '(begin
+      (use-modules (srfi srfi-1)
+                   (srfi srfi-26)
+                   (ice-9 match)
+                   (guix build utils)
+                   (guix build linux-initrd))
+
+      (display "Welcome, this is GNU's early boot Guile.\n")
+      (display "Use '--repl' for an initrd REPL.\n\n")
+
+      (mount-essential-file-systems)
+      (let* ((args    (linux-command-line))
+             (option  (lambda (opt)
+                        (let ((opt (string-append opt "=")))
+                          (and=> (find (cut string-prefix? opt <>)
+                                       args)
+                                 (lambda (arg)
+                                   (substring arg (+ 1 (string-index arg #\=))))))))
+             (to-load (option "--load"))
+             (root    (option "--root")))
+
+        (when (member "--repl" args)
+          ((@ (system repl repl) start-repl)))
+
+        ;; Make /dev nodes.
+        (make-essential-device-nodes)
+
+        ;; Prepare the real root file system under /root.
+        (unless (file-exists? "/root")
+          (mkdir "/root"))
+        (if root
+            ;; Assume ROOT has a usable /dev tree.
+            (mount root "/root" "ext3")
+            (begin
+              (mount "none" "/root" "tmpfs")
+              (make-essential-device-nodes #:root "/root")))
+
+        (mount-essential-file-systems #:root "/root")
+
+        ;; XXX: We don't copy our fellow Guile modules to /root (see
+        ;; 'qemu-initrd'), so if TO-LOAD tries to load a module (which can
+        ;; happen if it throws, to display the exception!), then we're
+        ;; screwed.  Hopefully TO-LOAD is a simple expression that just does
+        ;; '(execlp ...)'.
+
+        (if to-load
+            (begin
+              (format #t "loading '~a'...\n" to-load)
+              (chroot "/root")
+              (primitive-load to-load)
+              (format (current-error-port)
+                      "boot program '~a' terminated, rebooting~%")
+              (sleep 2)
+              (reboot))
+            (begin
+              (display "no init file passed via '--exec'\n")
+              (display "entering a warm and cozy REPL\n")
+              ((@ (system repl repl) start-repl))))))
+   #:name "qemu-system-initrd"
+   #:modules '((guix build linux-initrd)
+               (guix build utils))
+   #:linux linux-libre))
 
 ;;; linux-initrd.scm ends here

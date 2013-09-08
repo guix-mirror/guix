@@ -251,6 +251,7 @@ between Scheme and C# programs.")
                                         "\\.so$")))))
          %standard-phases))
        #:tests? #f                                ; no test suite
+       #:patches (list (assoc-ref %build-inputs "patch/bigloo-4.0b"))
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (ice-9 popen)
@@ -259,7 +260,10 @@ between Scheme and C# programs.")
                   (srfi srfi-1))))
     (inputs `(("bigloo" ,bigloo)
               ("which" ,which)
-              ("patchelf" ,patchelf)))
+              ("patchelf" ,patchelf)
+
+              ("patch/bigloo-4.0b"
+               ,(search-patch "hop-bigloo-4.0b.patch"))))
     (home-page "http://hop.inria.fr/")
     (synopsis "A multi-tier programming language for the Web 2.0")
     (description

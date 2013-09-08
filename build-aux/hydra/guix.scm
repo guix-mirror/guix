@@ -41,7 +41,9 @@
              (guix packages)
              (guix utils)
              (guix build-system gnu)
+             (gnu packages version-control)
              (gnu packages package-management)
+             (gnu packages graphviz)
              (srfi srfi-1)
              (srfi srfi-26)
              (ice-9 match))
@@ -75,9 +77,11 @@ containing a Git checkout of Guix."
                         ;; Comment out `git' invocations, since Hydra provides
                         ;; us with a checkout that includes sub-modules.
                         (substitute* "bootstrap"
-                          (("git submodule init")
-                           "true\n")))
-                      ,p)))))))
+                          (("git ") "true git ")))
+                      ,p))))
+      (native-inputs `(("git" ,git)
+                       ("graphviz" ,graphviz)
+                       ,@(package-native-inputs dist))))))
 
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."

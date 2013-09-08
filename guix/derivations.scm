@@ -61,6 +61,8 @@
             derivation
 
             %guile-for-build
+            imported-modules
+            compiled-modules
             build-expression->derivation
             imported-files))
 
@@ -497,12 +499,20 @@ the derivation called NAME with hash HASH."
                   name
                   (string-append name "-" output))))
 
-(define* (derivation store name system builder args env-vars inputs
-                     #:key (outputs '("out")) hash hash-algo hash-mode)
+(define* (derivation store name builder args
+                     #:key
+                     (system (%current-system)) (env-vars '())
+                     (inputs '()) (outputs '("out"))
+                     hash hash-algo hash-mode
+                     references-graphs)
   "Build a derivation with the given arguments.  Return the resulting
 store path and <derivation> object.  When HASH, HASH-ALGO, and HASH-MODE
 are given, a fixed-output derivation is created---i.e., one whose result is
-known in advance, such as a file download."
+known in advance, such as a file download.
+
+When REFERENCES-GRAPHS is true, it must be a list of file name/store path
+pairs.  In that case, the reference graph of each store path is exported in
+the build environment in the corresponding file, in a simple text format."
   (define direct-store-path?
     (let ((len (+ 1 (string-length (%store-prefix)))))
       (lambda (p)
@@ -537,7 +547,22 @@ known in advance, such as a file download."
                                            value))))
                                env-vars))))))
 
-  (define (env-vars-with-empty-outputs)
+  (define (user+system-env-vars)
+    ;; Some options are passed to the build daemon via the env. vars of
+    ;; derivations (urgh!).  We hide that from our API, but here is the place
+    ;; where we kludgify those options.
+    (match references-graphs
+      (((file . path) ...)
+       (let ((value (map (cut string-append <> " " <>)
+                         file path)))
+         ;; XXX: This all breaks down if an element of FILE or PATH contains
+         ;; white space.
+         `(("exportReferencesGraph" . ,(string-join value " "))
+           ,@env-vars)))
+      (#f
+       env-vars)))
+
+  (define (env-vars-with-empty-outputs env-vars)
     ;; Return a variant of ENV-VARS where each OUTPUTS is associated with an
     ;; empty string, even outputs that do not appear in ENV-VARS.
     (let ((e (map (match-lambda
@@ -569,7 +594,7 @@ known in advance, such as a file download."
                                                       #t "sha256" input)))
                               (make-derivation-input path '()))))
                           (delete-duplicates inputs)))
-         (env-vars   (env-vars-with-empty-outputs))
+         (env-vars   (env-vars-with-empty-outputs (user+system-env-vars)))
          (drv-masked (make-derivation outputs
                                       (filter (compose derivation-path?
                                                        derivation-input-path)
@@ -720,7 +745,8 @@ they can refer to each other."
                                        hash hash-algo
                                        (env-vars '())
                                        (modules '())
-                                       guile-for-build)
+                                       guile-for-build
+                                       references-graphs)
   "Return a derivation that executes Scheme expression EXP as a builder
 for derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV)
 tuples; when SUB-DRV is omitted, \"out\" is assumed.  MODULES is a list
@@ -737,7 +763,9 @@ builder terminates by passing the result of EXP to `exit'; thus, when
 EXP returns #f, the build is considered to have failed.
 
 EXP is built using GUILE-FOR-BUILD (a derivation).  When GUILE-FOR-BUILD is
-omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
+omitted or is #f, the value of the `%guile-for-build' fluid is used instead.
+
+See the `derivation' procedure for the meaning of REFERENCES-GRAPHS."
   (define guile-drv
     (or guile-for-build (%guile-for-build)))
 
@@ -747,8 +775,8 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
 
   (define module-form?
     (match-lambda
-      (((or 'define-module 'use-modules) _ ...) #t)
-      (_ #f)))
+     (((or 'define-module 'use-modules) _ ...) #t)
+     (_ #f)))
 
   (define source-path
     ;; When passed an input that is a source, return its path; otherwise
@@ -833,22 +861,26 @@ omitted or is #f, the value of the `%guile-for-build' fluid is used instead."
                                           #:system system)))
          (go-dir   (and go-drv
                         (derivation-path->output-path go-drv))))
-    (derivation store name system guile
+    (derivation store name guile
                 `("--no-auto-compile"
                   ,@(if mod-dir `("-L" ,mod-dir) '())
                   ,builder)
 
+                #:system system
+
+                #:inputs `((,(or guile-for-build (%guile-for-build)))
+                           (,builder)
+                           ,@(map cdr inputs)
+                           ,@(if mod-drv `((,mod-drv) (,go-drv)) '()))
+
                 ;; When MODULES is non-empty, shamelessly clobber
                 ;; $GUILE_LOAD_COMPILED_PATH.
-                (if go-dir
-                    `(("GUILE_LOAD_COMPILED_PATH" . ,go-dir)
-                      ,@(alist-delete "GUILE_LOAD_COMPILED_PATH"
-                                      env-vars))
-                    env-vars)
+                #:env-vars (if go-dir
+                               `(("GUILE_LOAD_COMPILED_PATH" . ,go-dir)
+                                 ,@(alist-delete "GUILE_LOAD_COMPILED_PATH"
+                                                 env-vars))
+                               env-vars)
 
-                `((,(or guile-for-build (%guile-for-build)))
-                  (,builder)
-                  ,@(map cdr inputs)
-                  ,@(if mod-drv `((,mod-drv) (,go-drv)) '()))
                 #:hash hash #:hash-algo hash-algo
-                #:outputs outputs)))
+                #:outputs outputs
+                #:references-graphs references-graphs)))

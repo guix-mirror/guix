@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,10 +21,54 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages linux))
+
+(define-public dfc
+  (package
+   (name "dfc")
+   (version "3.0.3")
+   (source
+    (origin
+     (method url-fetch)
+      (uri (string-append
+            "http://projects.gw-computing.net/attachments/download/78/dfc-"
+            version ".tar.gz"))
+      (sha256
+       (base32
+        "1b4hfqv23l87cb37fxwzfk2sgspkyxpr3ig2hsd23hr6mm982j7z"))))
+   (build-system cmake-build-system)
+   (arguments '(#:tests? #f)) ; There are no tests.
+   (home-page "http://projects.gw-computing.net/projects/dfc")
+   (synopsis "Display file system space usage using graphs and colors")
+   (description
+    "dfc (df color) is a modern version of df.  It uses colors, draws pretty
+graphs and can export its output to different formats.")
+   (license bsd-3)))
+
+(define-public htop
+  (package
+   (name "htop")
+   (version "1.0.2")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/htop/"
+                  version "/htop-" version ".tar.gz"))
+            (sha256
+             (base32
+              "18fqrhvnm7h4c3939av8lpiwrwxbyw6hcly0jvq0vkjf0ixnaq7f"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("ncurses" ,ncurses)))
+   (home-page "http://htop.sourceforge.net/")
+   (synopsis "Interactive process viewer")
+   (description
+    "This is htop, an interactive process viewer.  It is a text-mode
+application (for console or X terminals) and requires ncurses.")
+   (license gpl2)))
 
 (define-public pies
   (package
@@ -141,3 +186,53 @@ login, passwd, su, groupadd, and useradd.")
     ;; The `vipw' program is GPLv2+.
     ;; libmisc/salt.c is public domain.
     (license bsd-3)))
+
+(define-public mingetty
+  (package
+    (name "mingetty")
+    (version "1.08")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/mingetty/mingetty-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "05yxrp44ky2kg6qknk1ih0kvwkgbn9fbz77r3vci7agslh5wjm8g"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (alist-replace 'configure
+                               (lambda* (#:key inputs outputs
+                                         #:allow-other-keys)
+                                 (let* ((out    (assoc-ref outputs "out"))
+                                        (man8   (string-append
+                                                 out "/share/man/man8"))
+                                        (sbin   (string-append out "/sbin"))
+                                        (shadow (assoc-ref inputs "shadow"))
+                                        (login  (string-append shadow
+                                                               "/bin/login")))
+                                   (substitute* "Makefile"
+                                     (("^SBINDIR.*")
+                                      (string-append "SBINDIR = " out
+                                                     "/sbin\n"))
+                                     (("^MANDIR.*")
+                                      (string-append "MANDIR = " out
+                                                     "/share/man/man8\n")))
+
+                                   ;; Pick the right 'login' by default.
+                                   (substitute* "mingetty.c"
+                                     (("\"/bin/login\"")
+                                      (string-append "\"" login "\"")))
+
+                                   (mkdir-p sbin)
+                                   (mkdir-p man8)))
+                               %standard-phases)
+       #:tests? #f))                              ; no tests
+    (inputs `(("shadow" ,shadow)))
+
+    (home-page "http://sourceforge.net/projects/mingetty")
+    (synopsis "Getty for the text console")
+    (description
+     "Small console getty that is started on the Linux text console,
+asks for a login name and then transfers over to 'login'.  It is extended to
+allow automatic login and starting any app.")
+    (license gpl2+)))

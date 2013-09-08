@@ -189,6 +189,7 @@ than gzip and 15 % smaller output than bzip2.")
        (base32
         "0wryshs446s7cclrbjykyj766znhcpnr7s3cxy33ybfn6vwfcygz"))))
     (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--enable-shared")))
     (home-page "http://www.oberhumer.com/opensource/lzo")
     (synopsis
      "A data compresion library suitable for real-time data de-/compression")

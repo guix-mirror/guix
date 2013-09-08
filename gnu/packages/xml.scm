@@ -28,7 +28,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system perl))
+  #:use-module (guix build-system perl)
+  #:use-module (gnu packages linux))
 
 (define-public expat
   (package
@@ -138,3 +139,27 @@ then passed on to the Expat object on each parse call.  They can also be given
 as extra arguments to the parse methods, in which case they override options
 given at XML::Parser creation time.")
     (home-page "http://search.cpan.org/~toddr/XML-Parser-2.41/Parser.pm")))
+
+(define-public xmlto
+  (package
+    (name "xmlto")
+    (version "0.0.25")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append
+            "https://fedorahosted.org/releases/x/m/xmlto/xmlto-"
+            version ".tar.bz2"))
+      (sha256
+       (base32
+        "0dp5nxq491gymq806za0dk4hngfmq65ysrqbn0ypajqbbl6vf71n"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("util-linux" ,util-linux)))
+    (home-page "http://cyberelk.net/tim/software/xmlto/")
+    (synopsis "Front-end to an XSL toolchain")
+    (description
+     "Xmlto is a front-end to an XSL toolchain.  It chooses an appropriate
+stylesheet for the conversion you want and applies it using an external
+XSL-T processor.  It also performs any necessary post-processing.")
+    (license license:gpl2+)))

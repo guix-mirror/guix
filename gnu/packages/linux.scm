@@ -29,6 +29,7 @@
   #:use-module (gnu packages bdb)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages algebra)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -146,7 +147,7 @@
     (license gpl2+)))
 
 (define-public linux-libre
-  (let* ((version* "3.3.8")
+  (let* ((version* "3.11")
          (build-phase
           '(lambda* (#:key system #:allow-other-keys #:rest args)
              (let ((arch (car (string-split system #\-))))
@@ -192,9 +193,10 @@
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0jkfh0z1s6izvdnc3njm39dhzp1cg8i06jv06izwqz9w9qsprvnl"))))
+               "1vlk04xkvyy1kc9zz556md173rn1qzlnvhz7c9sljv4bpk3mdspl"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
+                     ("bc" ,bc)
                      ("module-init-tools" ,module-init-tools)))
     (arguments
      `(#:modules ((guix build gnu-build-system)

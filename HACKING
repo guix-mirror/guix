@@ -78,68 +78,75 @@ addition to that, you must not miss [[http://www.emacswiki.org/emacs/ParEdit][Pa
 directly operate on the syntax tree, such as raising an s-expression or
 wrapping it, swallowing or rejecting the following s-expression, etc.
 
-* Adding new packages
-
-Package recipes in Guix look like this:
-
-#+BEGIN_SRC scheme
-  (package
-    (name "nettle")
-    (version "2.5")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append "mirror://gnu/nettle/nettle-"
-                            version ".tar.gz"))
-        (sha256
-          (base32
-            "0wicr7amx01l03rm0pzgr1qvw3f9blaw17vjsy1301dh13ll58aa"))))
-    (build-system gnu-build-system)
-    (inputs `(("m4" ,m4)))
-    (propagated-inputs `(("gmp" ,gmp)))
-    (home-page
-      "http://www.lysator.liu.se/~nisse/nettle/")
-    (synopsis "GNU Nettle, a cryptographic library")
-    (description
-      "Nettle is a cryptographic library...")
-    (license gpl2+))
-#+END_SRC
-
-Such a recipe can be written by hand, and then tested by running
-‘./pre-inst-env guix build nettle’.
-
-When writing the recipe, the base32-encoded SHA256 hash of the source
-code tarball, which can be seen in the example above, can be obtained by
-running:
-
-  guix download http://ftp.gnu.org/gnu/nettle/nettle-2.5.tar.gz
-
-Alternatively, it is possible to semi-automatically import recipes from
-the [[http://nixos.org/nixpkgs/][Nixpkgs]] software distribution using this command:
-
-  guix import /path/to/nixpkgs/checkout nettle
-
-The command automatically fetches and converts to Guix the “Nix
-expression” of Nettle.
-
 * Submitting Patches
 
 Development is done using the Git distributed version control system.  Thus,
 access to the repository is not strictly necessary.  We welcome contributions
 in the form of patches as produced by ‘git format-patch’ sent to
-bug-guix@gnu.org.  Please write commit logs in the [[http://www.gnu.org/prep/standards/html_node/Change-Logs.html#Change-Logs][GNU ChangeLog format]].
+guix-devel@gnu.org.  Please write commit logs in the [[http://www.gnu.org/prep/standards/html_node/Change-Logs.html#Change-Logs][GNU ChangeLog format]].
 
 As you become a regular contributor, you may find it convenient to have write
 access to the repository (see below.)
+
+* Coding Style
+
+In general our code follows the [[info:standards][GNU Coding Standards]] (GCS).  However, the GCS
+do not say much about Scheme, so here are some additional rules.
+
+** Programming Paradigm
+
+Scheme code in Guix is written in a purely functional style.  One exception is
+code that involves input/output, and procedures that implement low-level
+concepts, such as the ‘memoize’ procedure.
+
+** Modules
+
+Guile modules that are meant to be used on the builder side must live in the
+(guix build …) name space.  They must not refer to other Guix or GNU modules.
+However, it is OK for a “host-side” module to use a build-side module.
+
+Modules that deal with the broader GNU system should be in the (gnu …) name
+space rather than (guix …).
+
+** Data Types and Pattern Matching
+
+The tendency in classical Lisp is to use lists to represent everything, and
+then to browse them “by hand” using ‘car’, ‘cdr’, ‘cadr’, and co.  There are
+several problems with that style, notably the fact that it is hard to read,
+error-prone, and a hindrance to proper type error reports.
+
+Guix code should define appropriate data types (for instance, using
+‘define-record-type*’) rather than abuse lists.  In addition, it should use
+pattern matching, via Guile’s (ice-9 match) module, especially when matching
+lists.
+
+** Formatting Code
+
+When writing Scheme code, we follow common wisdom among Scheme programmers.
+In general, we follow the [[http://mumble.net/~campbell/scheme/style.txt][Riastradh's Lisp Style Rules]].  This document happens
+to describe the conventions mostly used in Guile’s code too.  It is very
+thoughtful and well written, so please do read it.
+
+Some special forms introduced in Guix, such as the ‘substitute*’ macro, have
+special indentation rules.  These are defined in the .dir-locals.el file,
+which Emacs automatically uses.  If you do not use Emacs, please make sure to
+let your editor know the rules.
+
+We require all top-level procedures to carry a docstring.  This requirement
+can be relaxed for simple private procedures in the (guix build …) name space,
+though.
+
+Procedures should not have more than four positional parameters.  Use keyword
+parameters for procedures that take more than four parameters.
 
 * Commit Access
 
 For frequent contributors, having write access to the repository is
 convenient.  When you deem it necessary, feel free to ask for it on the
 mailing list.  When you get commit access, please make sure to follow the
-policy below (discussions of the policy can take place on bug-guix@gnu.org.)
+policy below (discussions of the policy can take place on guix-devel@gnu.org.)
 
-Non-trivial patches should always be posted to bug-guix@gnu.org (trivial
+Non-trivial patches should always be posted to guix-devel@gnu.org (trivial
 patches include fixing typos, etc.)
 
 For patches that just add a new package, and a simple one, it’s OK to commit,
@@ -149,7 +156,7 @@ package upgrades.  We have a mailing list for commit notifications
 (guix-commits@gnu.org), so people can notice.  Before pushing your changes,
 make sure to run ‘git pull --rebase’.
 
-For anything else, please post to bug-guix@gnu.org and leave time for a
+For anything else, please post to guix-devel@gnu.org and leave time for a
 review, without committing anything.  If you didn’t receive any reply
 after two weeks, and if you’re confident, it’s OK to commit.
 

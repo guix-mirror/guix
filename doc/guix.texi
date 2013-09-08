@@ -23,6 +23,7 @@
 @title GNU Guix Reference Manual
 @subtitle Using the GNU Guix Functional Package Manager
 @author Ludovic Courtès
+@author Andreas Enge
 @author Nikita Karetnikov
 
 @page
@@ -30,8 +31,9 @@
 Edition @value{EDITION} @*
 @value{UPDATED} @*
 
-Copyright @copyright{} @value{YEARS} Ludovic Court@`es
+Copyright @copyright{} @value{YEARS} Ludovic Court@`es, Andreas Enge, Nikita Karetnikov
 
+@ifinfo
 @quotation
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -40,6 +42,8 @@ Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
 copy of the license is included in the section entitled ``GNU Free
 Documentation License''.
 @end quotation
+@end ifinfo
+
 @end titlepage
 
 @copying
@@ -64,8 +68,9 @@ Documentation License.''
 This document describes GNU Guix version @value{VERSION}, a functional
 package management tool written for the GNU system.
 
+
 @quotation
-Copyright @copyright{} @value{YEARS} Ludovic Courtès
+Copyright @copyright{} @value{YEARS} Ludovic Courtès, Andreas Enge, Nikita Karetnikov
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.3 or
@@ -1113,13 +1118,18 @@ derivations as Scheme objects, along with procedures to create and
 otherwise manipulate derivations.  The lowest-level primitive to create
 a derivation is the @code{derivation} procedure:
 
-@deffn {Scheme Procedure} derivation @var{store} @var{name} @var{system} @var{builder} @var{args} @var{env-vars} @var{inputs} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:hash-mode #f]
+@deffn {Scheme Procedure} derivation @var{store} @var{name} @var{builder} @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:hash-mode #f] [#:inputs '()] [#:env-vars '()] [#:system (%current-system)] [#:references-graphs #f]
 Build a derivation with the given arguments.  Return the resulting store
 path and @code{<derivation>} object.
 
 When @var{hash}, @var{hash-algo}, and @var{hash-mode} are given, a
 @dfn{fixed-output derivation} is created---i.e., one whose result is
 known in advance, such as a file download.
+
+When @var{references-graphs} is true, it must be a list of file
+name/store path pairs.  In that case, the reference graph of each store
+path is exported in the build environment in the corresponding file, in
+a simple text format.
 @end deffn
 
 @noindent
@@ -1137,9 +1147,9 @@ to a Bash executable in the store:
     (let ((builder   ; add the Bash script to the store
            (add-text-to-store store "my-builder.sh"
                               "echo hello world > $out\n" '())))
-      (derivation store "foo" (%current-system)
+      (derivation store "foo"
                   bash `("-e" ,builder)
-                  '(("HOME" . "/homeless")) '())))
+                  #:env-vars '(("HOME" . "/homeless")))))
   list)
 @result{} ("/nix/store/@dots{}-foo.drv" #<<derivation> @dots{}>)
 @end lisp
@@ -1148,7 +1158,7 @@ As can be guessed, this primitive is cumbersome to use directly.  An
 improved variant is @code{build-expression->derivation}, which allows
 the caller to directly pass a Guile expression as the build script:
 
-@deffn {Scheme Procedure} build-expression->derivation @var{store} @var{name} @var{system} @var{exp} @var{inputs} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:env-vars '()] [#:modules '()] [#:guile-for-build #f]
+@deffn {Scheme Procedure} build-expression->derivation @var{store} @var{name} @var{system} @var{exp} @var{inputs} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:env-vars '()] [#:modules '()] [#:references-graphs #f] [#:guile-for-build #f]
 Return a derivation that executes Scheme expression @var{exp} as a
 builder for derivation @var{name}.  @var{inputs} must be a list of
 @code{(name drv-path sub-drv)} tuples; when @var{sub-drv} is omitted,
@@ -1169,6 +1179,8 @@ terminates by passing the result of @var{exp} to @code{exit}; thus, when
 @var{exp} is built using @var{guile-for-build} (a derivation).  When
 @var{guile-for-build} is omitted or is @code{#f}, the value of the
 @code{%guile-for-build} fluid is used instead.
+
+See the @code{derivation} procedure for the meaning of @var{references-graphs}.
 @end deffn
 
 @noindent
@@ -1495,7 +1507,7 @@ tools that help users exert that freedom.
 @menu
 * Installing Debugging Files::  Feeding the debugger.
 * Package Modules::             Packages from the programmer's viewpoint.
-* Adding New Packages::         Growing the distribution.
+* Packaging Guidelines::        Growing the distribution.
 * Bootstrapping::               GNU/Linux built from scratch.
 * Porting::                     Targeting another platform or kernel.
 @end menu
@@ -1580,40 +1592,13 @@ distribution.  The root of this dependency graph is a small set of
 bootstrap)} module.  For more information on bootstrapping,
 @ref{Bootstrapping}.
 
-@node Adding New Packages
-@section Adding New Packages
+@node Packaging Guidelines
+@section Packaging Guidelines
 
 The GNU distribution is nascent and may well lack some of your favorite
 packages.  This section describes how you can help make the distribution
-grow.  @ref{Contributing}, for additional information on how you can
+grow.  @xref{Contributing}, for additional information on how you can
 help.
-
-@menu
-* Packaging Guidelines::        What goes into the distribution.
-* From the Source Tarball to the Package::     The story of a package.
-@end menu
-
-@node Packaging Guidelines
-@subsection Packaging Guidelines
-
-@c Adapted from http://www.gnu.org/philosophy/philosophy.html.
-
-The GNU operating system has been developed so that users can have
-freedom in their computing.  GNU is @dfn{free software}, meaning that
-users have the @url{http://www.gnu.org/philosophy/free-sw.html,four
-essential freedoms}: to run the program, to study and change the program
-in source code form, to redistribute exact copies, and to distribute
-modified versions.  Packages found in the GNU distribution provide only
-software that conveys these four freedoms.
-
-In addition, the GNU distribution follow the
-@url{http://www.gnu.org/distros/free-system-distribution-guidelines.html,free
-software distribution guidelines}.  Among other things, these guidelines
-reject non-free firmware, recommendations of non-free software, and
-discuss ways to deal with trademarks and patents.
-
-@node From the Source Tarball to the Package
-@subsection From the Source Tarball, to the Package Definition, to the Binary Package
 
 Free software packages are usually distributed in the form of
 @dfn{source code tarballs}---typically @file{tar.gz} files that contain
@@ -1660,6 +1645,114 @@ package automatically downloads binaries from there (except when using
 needed is to review and apply the patch.
 
 
+@menu
+* Software Freedom::     What may go into the distribution.
+* Package Naming::       What's in a name?
+* Version Numbers::      When the name is not enough.
+* Python Modules::       Taming the snake.
+@end menu
+
+@node Software Freedom
+@subsection Software Freedom
+
+@c Adapted from http://www.gnu.org/philosophy/philosophy.html.
+
+The GNU operating system has been developed so that users can have
+freedom in their computing.  GNU is @dfn{free software}, meaning that
+users have the @url{http://www.gnu.org/philosophy/free-sw.html,four
+essential freedoms}: to run the program, to study and change the program
+in source code form, to redistribute exact copies, and to distribute
+modified versions.  Packages found in the GNU distribution provide only
+software that conveys these four freedoms.
+
+In addition, the GNU distribution follow the
+@url{http://www.gnu.org/distros/free-system-distribution-guidelines.html,free
+software distribution guidelines}.  Among other things, these guidelines
+reject non-free firmware, recommendations of non-free software, and
+discuss ways to deal with trademarks and patents.
+
+
+@node Package Naming
+@subsection Package Naming
+
+A package has actually two names associated with it:
+First, there is the name of the @emph{Scheme variable}, the one following
+@code{define-public}.  By this name, the package can be made known in the
+Scheme code, for instance as input to another package.  Second, there is
+the string in the @code{name} field of a package definition.  This name
+is used by package management commands such as
+@command{guix package} and @command{guix build}.
+
+Both are usually the same and correspond to the lowercase conversion of the
+project name chosen upstream.  For instance, the GNUnet project is packaged
+as @code{gnunet}.  We do not add @code{lib} prefixes for library packages,
+unless these are already part of the official project name.  But see
+@ref{Python Modules} for special rules concerning modules for
+the Python language.
+
+
+@node Version Numbers
+@subsection Version Numbers
+
+We usually package only the latest version of a given free software
+project.  But sometimes, for instance for incompatible library versions,
+two (or more) versions of the same package are needed.  These require
+different Scheme variable names.  We use the name as defined
+in @ref{Package Naming}
+for the most recent version; previous versions use the same name, suffixed
+by @code{-} and the smallest prefix of the version number that may
+distinguish the two versions.
+
+The name inside the package definition is the same for all versions of a
+package and does not contain any version number.
+
+For instance, the versions 2.24.20 and 3.9.12 of GTK+ may be packaged as follows:
+
+@example
+(define-public gtk+
+  (package
+   (name "gtk+")
+   (version "3.9.12")
+   ...))
+(define-public gtk+-2
+  (package
+   (name "gtk+")
+   (version "2.24.20")
+   ...))
+@end example
+If we also wanted GTK+ 3.8.2, this would be packaged as
+@example
+(define-public gtk+-3.8
+  (package
+   (name "gtk+")
+   (version "3.8.2")
+   ...))
+@end example
+
+
+@node Python Modules
+@subsection Python Modules
+
+We currently package Python 2 and Python 3, under the Scheme variable names
+@code{python-2} and @code{python} as explained in @ref{Version Numbers}.
+To avoid confusion and naming clashes with other programming languages, it
+seems desirable that the name of a package for a Python module contains
+the word @code{python}.
+
+Some modules are compatible with only one version of Python, others with both.
+If the package Foo compiles only with Python 3, we name it
+@code{python-foo}; if it compiles only with Python 2, we name it
+@code{python2-foo}. If it is compatible with both versions, we create two
+packages with the corresponding names.
+
+If a project already contains the word @code{python}, we drop this;
+for instance, the module python-dateutil is packaged under the names
+@code{python-dateutil} and @code{python2-dateutil}.
+
+
+
+
+
 @node Bootstrapping
 @section Bootstrapping
 
@@ -1694,7 +1787,7 @@ re-create them if needed (more on that later.)
 
 @c As of Emacs 24.3, Info-mode displays the image, but since it's a
 @c large image, it's hard to scroll.  Oh well.
-@image{images/bootstrap-graph,,,Dependency graph of the early bootstrap derivations}
+@image{images/bootstrap-graph,6in,,Dependency graph of the early bootstrap derivations}
 
 The figure above shows the very beginning of the dependency graph of the
 distribution, corresponding to the package definitions of the @code{(gnu
@@ -1829,8 +1922,8 @@ reason.
 This project is a cooperative effort, and we need your help to make it
 grow!  Please get in touch with us on @email{guix-devel@@gnu.org}.  We
 welcome ideas, bug reports, patches, and anything that may be helpful to
-the project.  We particularly welcome help on packaging (@pxref{Adding
-New Packages}).
+the project.  We particularly welcome help on packaging
+(@pxref{Packaging Guidelines}).
 
 Please see the
 @url{http://git.savannah.gnu.org/cgit/guix.git/tree/HACKING,

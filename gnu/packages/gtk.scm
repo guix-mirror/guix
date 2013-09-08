@@ -60,14 +60,14 @@ tools have full access to view and control running applications.")
 (define-public cairo
   (package
    (name "cairo")
-   (version "1.12.14")
+   (version "1.12.16")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://cairographics.org/releases/cairo-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "04xcykglff58ygs0dkrmmnqljmpjwp2qgwcz8sijqkdpz7ix3l4n"))))
+              "0inqwsylqkrzcjivdirkjx5nhdgxbdc62fq284c3xppinfg9a195"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("fontconfig" ,fontconfig)
@@ -110,14 +110,14 @@ affine transformation (scale, rotation, shear, etc.)")
 (define-public harfbuzz
   (package
    (name "harfbuzz")
-   (version "0.9.19")
+   (version "0.9.20")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.freedesktop.org/software/harfbuzz/release/harfbuzz-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "0d9g02m5n28lp1bfkl8wxblfmfd43yr1ny68x2fsvxj71l30znnj"))))
+              "0rxwvd8j4vcadlhx4a7la33clzggxziblx1k43ccbw5w7yh4yf43"))))
    (build-system gnu-build-system)
    (inputs
     `(("cairo" ,cairo)

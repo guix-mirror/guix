@@ -23,7 +23,6 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages algebra)
   #:use-module (gnu packages compression)
   #:use-module ((gnu packages gettext)
                 #:renamer (symbol-prefix-proc 'gnu:))
@@ -66,6 +65,45 @@ file to suit your needs.  You can also use your own data file to supplement
 the standard data file.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/units/")))
+
+(define-public gsl
+  (package
+    (name "gsl")
+    (version "1.15")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/gsl/gsl-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "18qf6jzz1r3mzb5qynywv4xx3z9g61hgkbpkdrhbgqh2g7jhgfc5"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+        (alist-replace
+         'configure
+         (lambda* (#:key target system outputs #:allow-other-keys #:rest args)
+           (let ((configure (assoc-ref %standard-phases 'configure)))
+             ;; disable numerically unstable test on i686, see thread at
+             ;; http://lists.gnu.org/archive/html/bug-gsl/2011-11/msg00019.html
+             (if (string=? (or target system) "i686-linux")
+                 (substitute* "ode-initval2/Makefile.in"
+                   (("TESTS = \\$\\(check_PROGRAMS\\)") "TESTS =")))
+             (apply configure args)))
+         %standard-phases)))
+    (home-page "http://www.gnu.org/software/gsl/")
+    (synopsis "Numerical library for C and C++")
+    (description
+     "The GNU Scientific Library (GSL) is a numerical library for C
+and C++ programmers.  It is free software under the GNU General
+Public License.
+
+The library provides a wide range of mathematical routines such
+as random number generators, special functions and least-squares
+fitting.  There are over 1000 functions in total with an
+extensive test suite.")
+    (license license:gpl3+)))
 
 (define-public pspp
   (package

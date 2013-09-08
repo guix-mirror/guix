@@ -100,7 +100,7 @@ rasterisation.")
 (define-public libdrm
   (package
     (name "libdrm")
-    (version "2.4.42")
+    (version "2.4.46")
     (source
       (origin
         (method url-fetch)
@@ -110,7 +110,7 @@ rasterisation.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1qbnpi64hyqzd650hj6jki1d50pzypdhj3rw9m3whwbqly110rz0"))))
+            "1wah4qmrrcv0gnx65lhrlxb6gprxch92wy8lhxv6102fml6k5krk"))))
     (build-system gnu-build-system)
     (inputs
       `(("libpciaccess" ,libpciaccess)
@@ -4139,9 +4139,9 @@ tracking.")
 (define-public mesa
   (package
     (name "mesa")
-    ;; In newer versions (9.0.5 and 9.1 tested), "make" results in an
+    ;; In newer versions (9.0.5, 9.1 and 9.2 tested), "make" results in an
     ;; infinite configure loop, see
-    ;; https://bugs.freedesktop.org/show_bug.cgi?id=61527
+    ;; https://bugs.freedesktop.org/show_bug.cgi?id=58812
     (version "8.0.5")
     (source
       (origin
