@@ -363,22 +363,28 @@ It can be used to provide additional files, such as /etc files."
       (lambda ()
         (close-connection store)))))
 
-(define (/etc/shadow store accounts)
-  "Return a /etc/shadow file for ACCOUNTS."
+(define* (passwd-file store accounts #:key shadow?)
+  "Return a password file for ACCOUNTS, a list of vectors as returned by
+'getpwnam'.  If SHADOW? is true, then it is a /etc/shadow file, otherwise it
+is a /etc/passwd file."
+  ;; XXX: The resulting file is world-readable, so don't rely on it!
   (define contents
     (let loop ((accounts accounts)
                (result   '()))
       (match accounts
-        (((name uid gid comment home-dir shell) rest ...)
+        ((#(name pass uid gid comment home-dir shell) rest ...)
          (loop rest
-               (cons (string-append name "::" (number->string uid)
+               (cons (string-append name
+                                    ":" (if shadow? pass "x")
+                                    ":" (number->string uid)
                                     ":" (number->string gid)
-                                    comment ":" home-dir ":" shell)
+                                    ":" comment ":" home-dir ":" shell)
                      result)))
         (()
          (string-concatenate-reverse result)))))
 
-  (add-text-to-store store "shadow" contents '()))
+  (add-text-to-store store (if shadow? "shadow" "passwd")
+                     contents '()))
 
 (define (example2)
   (let ((store #f))
@@ -390,16 +396,17 @@ It can be used to provide additional files, such as /etc files."
           (let* ((bash-drv  (package-derivation store bash))
                  (bash-file (string-append (derivation-path->output-path bash-drv)
                                            "/bin/bash"))
-                 (passwd    (/etc/shadow store
-                                         `(("root" 0 0 "System administrator" "/"
-                                            ,bash-file))))
+                 (accounts  (list (vector "root" "" 0 0 "System administrator"
+                                          "/" bash-file)))
+                 (passwd    (passwd-file store accounts))
+                 (shadow    (passwd-file store accounts #:shadow? #t))
                  (populate
                   (add-text-to-store store "populate-qemu-image"
                                      (object->string
                                       `(begin
                                          (mkdir-p "etc")
-                                         (symlink ,(substring passwd 1)
-                                                  "etc/shadow")))
+                                         (symlink ,shadow "etc/shadow")
+                                         (symlink ,passwd "etc/passwd")))
                                      (list passwd)))
                  (out   (derivation-path->output-path
                          (package-derivation store mingetty)))
