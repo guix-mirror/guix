@@ -442,7 +442,8 @@ is a /etc/passwd file."
                                           ("guile" ,guile-2.0)
                                           ("mingetty" ,mingetty)
 
-                                          ("shadow" ,passwd))))))
+                                          ("etc-passwd" ,passwd)
+                                          ("etc-shadow" ,shadow))))))
       (lambda ()
         (close-connection store)))))
 
