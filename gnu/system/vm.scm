@@ -367,21 +367,25 @@ It can be used to provide additional files, such as /etc files."
   "Return a password file for ACCOUNTS, a list of vectors as returned by
 'getpwnam'.  If SHADOW? is true, then it is a /etc/shadow file, otherwise it
 is a /etc/passwd file."
-  ;; XXX: The resulting file is world-readable, so don't rely on it!
+  ;; XXX: The resulting file is world-readable, so beware when SHADOW? is #t!
   (define contents
     (let loop ((accounts accounts)
                (result   '()))
       (match accounts
         ((#(name pass uid gid comment home-dir shell) rest ...)
          (loop rest
-               (cons (string-append name
-                                    ":" (if shadow? pass "x")
-                                    ":" (number->string uid)
-                                    ":" (number->string gid)
-                                    ":" comment ":" home-dir ":" shell)
+               (cons (if shadow?
+                         (string-append name
+                                        ":"       ; XXX: use (crypt PASS …)?
+                                        ":::::::")
+                         (string-append name
+                                        ":" "x"
+                                        ":" (number->string uid)
+                                        ":" (number->string gid)
+                                        ":" comment ":" home-dir ":" shell))
                      result)))
         (()
-         (string-concatenate-reverse result)))))
+         (string-join (reverse result) "\n" 'suffix)))))
 
   (add-text-to-store store (if shadow? "shadow" "passwd")
                      contents '()))
