@@ -386,7 +386,8 @@ the Linux kernel.")
               (chroot "/root")
               (primitive-load to-load)
               (format (current-error-port)
-                      "boot program '~a' terminated, rebooting~%")
+                      "boot program '~a' terminated, rebooting~%"
+                      to-load)
               (sleep 2)
               (reboot))
             (begin
