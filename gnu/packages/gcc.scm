@@ -221,7 +221,7 @@ used in the GNU system including the GNU/Linux variant.")
     (source (origin
              (method url-fetch)
              (uri (list (string-append
-                         "ftp://ftp.linux.student.kuleuven.be/pub/people/skimo/isl/isl-"
+                         "http://isl.gforge.inria.fr/isl-"
                          version
                          ".tar.bz2")
                         (string-append %gcc-infrastructure
@@ -231,7 +231,7 @@ used in the GNU system including the GNU/Linux variant.")
                "13d9cqa5rzhbjq0xf0b2dyxag7pqa72xj9dhsa03m8ccr1a4npq9"))))
     (build-system gnu-build-system)
     (inputs `(("gmp" ,gmp)))
-    (home-page "http://www.kotnet.org/~skimo/isl/")
+    (home-page "http://isl.gforge.inria.fr/")
     (synopsis
      "A library for manipulating sets and relations of integer points bounded
 by linear constraints")
