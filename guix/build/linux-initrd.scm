@@ -89,6 +89,10 @@
                   (device-number 4 n))
            (loop (+ 1 n)))))
 
+  ;; Rendez-vous point for syslogd.
+  (mknod (scope "dev/log") 'socket #o666 0)
+  (mknod (scope "dev/kmsg") 'char-special #o600 (device-number 1 11))
+
   ;; Other useful nodes.
   (mknod (scope "dev/null") 'char-special #o666 (device-number 1 3))
   (mknod (scope "dev/zero") 'char-special #o666 (device-number 1 5)))
