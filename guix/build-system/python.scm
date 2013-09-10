@@ -108,7 +108,6 @@ prepended to the name."
                                            (guix build gnu-build-system)
                                            (guix build utils)))
                        (modules '((guix build python-build-system)
-                                  (guix build gnu-build-system)
                                   (guix build utils))))
   "Build SOURCE using PYTHON, and with INPUTS.  This assumes that SOURCE
 provides a 'setup.py' file as its build system."
