@@ -1061,7 +1061,7 @@ argument.
 Return @code{#t} when @var{path} is a valid store path.
 @end deffn
 
-@deffn {Scheme Procedure} add-text-to-store @var{server} @var{name} @var{text} @var{references}
+@deffn {Scheme Procedure} add-text-to-store @var{server} @var{name} @var{text} [@var{references}]
 Add @var{text} under file @var{name} in the store, and return its store
 path.  @var{references} is the list of store paths referred to by the
 resulting store path.

@@ -68,8 +68,7 @@
 (test-skip (if %store 0 10))
 
 (test-assert "dead-paths"
-  (let ((p (add-text-to-store %store "random-text"
-                              (random-text) '())))
+  (let ((p (add-text-to-store %store "random-text" (random-text))))
     (member p (dead-paths %store))))
 
 ;; FIXME: Find a test for `live-paths'.
@@ -99,7 +98,7 @@
 
 (test-assert "references"
   (let* ((t1 (add-text-to-store %store "random1"
-                                (random-text) '()))
+                                (random-text)))
          (t2 (add-text-to-store %store "random2"
                                 (random-text) (list t1))))
     (and (equal? (list t1) (references %store t2))
