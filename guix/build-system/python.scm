@@ -128,6 +128,7 @@ provides a 'setup.py' file as its build system."
                      #:system ,system
                      #:test-target "test"
                      #:tests? ,tests?
+                     #:phases ,phases
                      #:outputs %outputs
                      #:search-paths ',(map search-path-specification->sexp
                                            (append python-search-paths
