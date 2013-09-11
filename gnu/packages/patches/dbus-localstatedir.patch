@@ -1,0 +1,30 @@
+Do not try to create $localstatedir and $sysconfdir since we cannot do this
+when they are /var and /etc.
+
+--- dbus-1.6.4/bus/Makefile.in	2013-09-11 16:15:13.000000000 +0200
++++ dbus-1.6.4/bus/Makefile.in	2013-09-11 16:15:15.000000000 +0200
+@@ -1510,9 +1510,6 @@ clean-local:
+ 	/bin/rm *.bb *.bbg *.da *.gcov || true
+ 
+ install-data-hook:
+-	$(mkinstalldirs) $(DESTDIR)$(localstatedir)/run/dbus
+-	$(mkinstalldirs) $(DESTDIR)$(configdir)/system.d
+-	$(mkinstalldirs) $(DESTDIR)$(configdir)/session.d
+ 	$(mkinstalldirs) $(DESTDIR)$(datadir)/dbus-1/services
+ 	$(mkinstalldirs) $(DESTDIR)$(datadir)/dbus-1/system-services
+ # Install dbus.socket as default implementation of a D-Bus stack.
+
+--- dbus-1.6.4/tools/Makefile.in	2013-09-11 16:10:31.000000000 +0200
++++ dbus-1.6.4/tools/Makefile.in	2013-09-11 16:10:32.000000000 +0200
+@@ -757,11 +757,6 @@ uninstall-am: uninstall-binPROGRAMS
+ 
+ 
+ # create the /var/lib/dbus directory for dbus-uuidgen
+-install-data-local:
+-	$(MKDIR_P) $(DESTDIR)$(localstatedir)/lib/dbus
+-
+-installcheck-local:
+-	test -d $(DESTDIR)$(localstatedir)/lib/dbus
+ 
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.

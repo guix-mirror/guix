@@ -50,9 +50,21 @@
               (base32
                "1wacqyfkcpayg7f8rvx9awqg275n5pksxq5q7y21lxjx85x6pfjz"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list ;; Install the system bus socket under /var.
+                               "--localstatedir=/var"
+
+                               ;; XXX: Fix the following to allow system-wide
+                               ;; config.
+                               ;; "--sysconfdir=/etc"
+
+                               "--with-session-socket-dir=/tmp")
+       #:patches (list (assoc-ref %build-inputs "patch/localstatedir"))))
     (inputs
      `(("expat" ,expat)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("patch/localstatedir"
+        ,(search-patch "dbus-localstatedir.patch"))))
     (home-page "http://dbus.freedesktop.org/")
     (synopsis "Message bus for inter-process communication (IPC)")
     (description
