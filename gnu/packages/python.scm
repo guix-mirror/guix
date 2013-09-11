@@ -222,20 +222,21 @@ using Python 2.4 or higher and provides access to the Olson timezone database.")
 (define-public python-babel
   (package
     (name "python-babel")
-    (version "0.9.6")
+    (version "1.3")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://ftp.edgewall.com/pub/babel/Babel-"
+      (uri (string-append "https://pypi.python.org/packages/source/B/Babel/Babel-"
                           version ".tar.gz"))
       (sha256
        (base32
-        "03vmr54jq5vf3qw6kpdv7cdk7x7i2jhzyf1mawv2gk8zrxg0hfja"))))
+        "0bnin777lc53nxd1hp3apq410jj5wx92n08h7h4izpl4f4sx00lz"))))
     (build-system python-build-system)
     (inputs
-     `(("python-pytz" ,python-pytz)))
+     `(("python-pytz" ,python-pytz)
+       ("python-setuptools" ,python-setuptools)))
     (arguments `(#:tests? #f)) ; no test target
-    (home-page "http://babel.edgewall.org/")
+    (home-page "http://babel.pocoo.org/")
     (synopsis
      "Tools for internationalizing Python applications")
     (description
