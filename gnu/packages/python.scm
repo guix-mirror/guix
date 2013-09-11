@@ -218,6 +218,7 @@ using Python 2.4 or higher and provides access to the Olson timezone database.")
 (define-public python2-pytz
   (package-with-python2 python-pytz))
 
+
 (define-public python-babel
   (package
     (name "python-babel")
@@ -247,6 +248,7 @@ etc. ")
 
 (define-public python2-babel
   (package-with-python2 python-babel))
+
 
 (define-public python-setuptools
   (package
@@ -283,3 +285,30 @@ Python 3 support.")
 
 (define-public python2-setuptools
   (package-with-python2 python-setuptools))
+
+
+(define-public python-dateutil
+  (package
+    (name "python-dateutil")
+    (version "1.5") ; last version for python < 3
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://labix.org/download/python-dateutil/python-dateutil-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0fqfglhy5khbvsipr3x7m6bcaqljh8xl5cw33vbfxy7qhmywm2n0"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://labix.org/python-dateutil")
+    (synopsis
+     "Extensions to the standard datetime module, available in Python 2.3+")
+    (description
+     "The dateutil module provides powerful extensions to the standard
+datetime module, available in Python 2.3+.")
+    (license psfl)))
+
+(define-public python2-dateutil
+  (package-with-python2 python-dateutil))
