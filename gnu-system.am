@@ -179,6 +179,10 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/yasm.scm				\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
+						\
+  gnu/system/grub.scm				\
+  gnu/system/linux.scm				\
+  gnu/system/shadow.scm				\
   gnu/system/vm.scm
 
 patchdir = $(guilemoduledir)/gnu/packages/patches

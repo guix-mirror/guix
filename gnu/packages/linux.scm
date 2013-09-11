@@ -32,18 +32,7 @@
   #:use-module (gnu packages algebra)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu)
-  #:use-module (guix store)
-  #:use-module (guix derivations)
-  #:use-module (guix records)
-  #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-26)
-  #:use-module (ice-9 match)
-  #:export (pam-service
-            pam-entry
-            pam-services->directory
-            %pam-other-services
-            unix-pam-service))
+  #:use-module (guix build-system gnu))
 
 (define-public (system->linux-architecture arch)
   "Return the Linux architecture name for ARCH, a Guix system name such as
@@ -270,111 +259,6 @@ Pluggable authentication modules are small shared object files that can
 be used through the PAM API to perform tasks, like authenticating a user
 at login.  Local and dynamic reconfiguration are its key features")
     (license bsd-3)))
-
-;; PAM services (see
-;; <http://www.linux-pam.org/Linux-PAM-html/sag-configuration-file.html>.)
-(define-record-type* <pam-service> pam-service
-  make-pam-service
-  pam-service?
-  (name       pam-service-name)                   ; string
-
-  ;; The four "management groups".
-  (account    pam-service-account                 ; list of <pam-entry>
-              (default '()))
-  (auth       pam-service-auth
-              (default '()))
-  (password   pam-service-password
-              (default '()))
-  (session    pam-service-session
-              (default '())))
-
-(define-record-type* <pam-entry> pam-entry
-  make-pam-entry
-  pam-entry?
-  (control    pam-entry-control)                  ; string
-  (module     pam-entry-module)                   ; file name
-  (arguments  pam-entry-arguments                 ; list of strings
-              (default '())))
-
-(define (pam-service->configuration service)
-  "Return the configuration string for SERVICE, to be dumped in
-/etc/pam.d/NAME, where NAME is the name of SERVICE."
-  (define (entry->string type entry)
-    (match entry
-      (($ <pam-entry> control module (arguments ...))
-       (string-append type "  "
-                      control " " module " "
-                      (string-join arguments)
-                      "\n"))))
-
-  (match service
-    (($ <pam-service> name account auth password session)
-     (string-concatenate
-      (append (map (cut entry->string "account" <>) account)
-              (map (cut entry->string "auth" <>) auth)
-              (map (cut entry->string "password" <>) password)
-              (map (cut entry->string "session" <>) session))))))
-
-(define (pam-services->directory store services)
-  "Return the derivation to build the configuration directory to be used as
-/etc/pam.d for SERVICES."
-  (let ((names (map pam-service-name services))
-        (files (map (match-lambda
-                     ((and service ($ <pam-service> name))
-                      (let ((config (pam-service->configuration service)))
-                        (add-text-to-store store
-                                           (string-append name ".pam")
-                                           config '()))))
-                    services)))
-    (define builder
-      '(begin
-         (use-modules (ice-9 match))
-
-         (let ((out (assoc-ref %outputs "out")))
-           (mkdir out)
-           (for-each (match-lambda
-                      ((name . file)
-                       (symlink file (string-append out "/" name))))
-                     %build-inputs)
-           #t)))
-
-    (build-expression->derivation store "pam.d" (%current-system)
-                                  builder
-                                  (zip names files))))
-
-(define %pam-other-services
-  ;; The "other" PAM configuration, which denies everything (see
-  ;; <http://www.linux-pam.org/Linux-PAM-html/sag-configuration-example.html>.)
-  (let ((deny (pam-entry
-               (control "required")
-               (module "pam_deny.so"))))
-    (pam-service
-     (name "other")
-     (account (list deny))
-     (auth (list deny))
-     (password (list deny))
-     (session (list deny)))))
-
-(define unix-pam-service
-  (let ((unix (pam-entry
-               (control "required")
-               (module "pam_unix.so"))))
-    (lambda* (name #:key allow-empty-passwords?)
-      "Return a standard Unix-style PAM service for NAME.  When
-ALLOW-EMPTY-PASSWORDS? is true, allow empty passwords."
-      ;; See <http://www.linux-pam.org/Linux-PAM-html/sag-configuration-example.html>.
-      (let ((name* name))
-        (pam-service
-         (name name*)
-         (account (list unix))
-         (auth (list (if allow-empty-passwords?
-                         (pam-entry
-                          (control "required")
-                          (module "pam_unix.so")
-                          (arguments '("nullok")))
-                         unix)))
-         (password (list unix))
-         (session (list unix)))))))
 
 
 ;;;
