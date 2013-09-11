@@ -38,7 +38,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (expression->derivation-in-linux-vm
-            qemu-image))
+            qemu-image
+            system-qemu-image))
 
 
 ;;; Commentary:
@@ -342,25 +343,8 @@ It can be used to provide additional files, such as /etc files."
 
 
 ;;;
-;;; Guile 2.0 potluck examples.
+;;; Stand-alone VM image.
 ;;;
-
-(define (example1)
-  (let ((store #f))
-    (dynamic-wind
-      (lambda ()
-        (set! store (open-connection)))
-      (lambda ()
-        (parameterize ((%guile-for-build (package-derivation store guile-final)))
-          (expression->derivation-in-linux-vm
-           store "vm-test"
-           '(begin
-              (display "hello from boot!\n")
-              (call-with-output-file "/xchg/hello"
-                (lambda (p)
-                  (display "world" p)))))))
-      (lambda ()
-        (close-connection store)))))
 
 (define* (passwd-file store accounts #:key shadow?)
   "Return a password file for ACCOUNTS, a list of vectors as returned by
@@ -389,89 +373,83 @@ is a /etc/passwd file."
   (add-text-to-store store (if shadow? "shadow" "passwd")
                      contents '()))
 
-(define (example2)
-  (let ((store #f))
-    (dynamic-wind
-      (lambda ()
-        (set! store (open-connection)))
-      (lambda ()
-        (define %pam-services
-          ;; Services known to PAM.
-          (list %pam-other-services
-                (unix-pam-service "login" #:allow-empty-passwords? #t)))
+(define (system-qemu-image store)
+  "Return the derivation of a QEMU image of the GNU system."
+  (define %pam-services
+    ;; Services known to PAM.
+    (list %pam-other-services
+          (unix-pam-service "login" #:allow-empty-passwords? #t)))
 
-        (parameterize ((%guile-for-build (package-derivation store guile-final)))
-          (let* ((bash-drv  (package-derivation store bash))
-                 (bash-file (string-append (derivation-path->output-path bash-drv)
-                                           "/bin/bash"))
-                 (accounts  (list (vector "root" "" 0 0 "System administrator"
-                                          "/" bash-file)))
-                 (passwd    (passwd-file store accounts))
-                 (shadow    (passwd-file store accounts #:shadow? #t))
-                 (pam.d-drv (pam-services->directory store %pam-services))
-                 (pam.d     (derivation-path->output-path pam.d-drv))
-                 (populate
-                  (add-text-to-store store "populate-qemu-image"
+  (parameterize ((%guile-for-build (package-derivation store guile-final)))
+    (let* ((bash-drv  (package-derivation store bash))
+           (bash-file (string-append (derivation-path->output-path bash-drv)
+                                     "/bin/bash"))
+           (accounts  (list (vector "root" "" 0 0 "System administrator"
+                                    "/" bash-file)))
+           (passwd    (passwd-file store accounts))
+           (shadow    (passwd-file store accounts #:shadow? #t))
+           (pam.d-drv (pam-services->directory store %pam-services))
+           (pam.d     (derivation-path->output-path pam.d-drv))
+           (populate
+            (add-text-to-store store "populate-qemu-image"
+                               (object->string
+                                `(begin
+                                   (mkdir-p "etc")
+                                   (symlink ,shadow "etc/shadow")
+                                   (symlink ,passwd "etc/passwd")
+                                   (symlink "/dev/null"
+                                            "etc/login.defs")
+                                   (symlink ,pam.d "etc/pam.d")
+                                   (mkdir-p "var/run")))
+                               (list passwd)))
+           (out     (derivation-path->output-path
+                     (package-derivation store mingetty)))
+           (getty   (string-append out "/sbin/mingetty"))
+           (iu-drv  (package-derivation store inetutils))
+           (syslogd (string-append (derivation-path->output-path iu-drv)
+                                   "/libexec/syslogd"))
+           (boot  (add-text-to-store store "boot"
                                      (object->string
                                       `(begin
-                                         (mkdir-p "etc")
-                                         (symlink ,shadow "etc/shadow")
-                                         (symlink ,passwd "etc/passwd")
-                                         (symlink "/dev/null"
-                                                  "etc/login.defs")
-                                         (symlink ,pam.d "etc/pam.d")
-                                         (mkdir-p "var/run")))
-                                     (list passwd)))
-                 (out   (derivation-path->output-path
-                         (package-derivation store mingetty)))
-                 (getty (string-append out "/sbin/mingetty"))
-                 (iu-drv  (package-derivation store inetutils))
-                 (syslogd (string-append (derivation-path->output-path iu-drv)
-                                         "/libexec/syslogd"))
-                 (boot  (add-text-to-store store "boot"
-                                           (object->string
-                                            `(begin
-                                               ;; Become the session leader,
-                                               ;; so that mingetty can do
-                                               ;; 'TIOCSCTTY'.
-                                               (setsid)
+                                         ;; Become the session leader,
+                                         ;; so that mingetty can do
+                                         ;; 'TIOCSCTTY'.
+                                         (setsid)
 
-                                               (when (zero? (primitive-fork))
-                                                 (format #t "starting syslogd as ~a~%"
-                                                         (getpid))
-                                                 (execl ,syslogd "syslogd"))
+                                         (when (zero? (primitive-fork))
+                                           (format #t "starting syslogd as ~a~%"
+                                                   (getpid))
+                                           (execl ,syslogd "syslogd"))
 
-                                               ;; Directly into mingetty. XXX
-                                               ;; (execl ,getty "mingetty"
-                                               ;;        "--noclear" "tty1")
-                                               (execl ,bash-file "bash")))
-                                           (list out)))
-                 (entries  (list (menu-entry
-                                  (label "Boot-to-Guile! (GNU System technology preview)")
-                                  (linux linux-libre)
-                                  (linux-arguments `("--root=/dev/vda1"
-                                                     ,(string-append "--load=" boot)))
-                                  (initrd gnu-system-initrd))))
-                 (grub.cfg (grub-configuration-file store entries)))
-            (build-derivations store (list pam.d-drv))
-            (qemu-image store
-                        #:grub-configuration grub.cfg
-                        #:populate populate
-                        #:disk-image-size (* 400 (expt 2 20))
-                        #:inputs-to-copy `(("boot" ,boot)
-                                           ("linux" ,linux-libre)
-                                           ("initrd" ,gnu-system-initrd)
-                                           ("coreutils" ,coreutils)
-                                           ("bash" ,bash)
-                                           ("guile" ,guile-2.0)
-                                           ("mingetty" ,mingetty)
-                                           ("inetutils" ,inetutils)
+                                         ;; Directly into mingetty. XXX
+                                         ;; (execl ,getty "mingetty"
+                                         ;;        "--noclear" "tty1")
+                                         (execl ,bash-file "bash")))
+                                     (list out)))
+           (entries  (list (menu-entry
+                            (label "Boot-to-Guile! (GNU System technology preview)")
+                            (linux linux-libre)
+                            (linux-arguments `("--root=/dev/vda1"
+                                               ,(string-append "--load=" boot)))
+                            (initrd gnu-system-initrd))))
+           (grub.cfg (grub-configuration-file store entries)))
+      (build-derivations store (list pam.d-drv))
+      (qemu-image store
+                  #:grub-configuration grub.cfg
+                  #:populate populate
+                  #:disk-image-size (* 400 (expt 2 20))
+                  #:inputs-to-copy `(("boot" ,boot)
+                                     ("linux" ,linux-libre)
+                                     ("initrd" ,gnu-system-initrd)
+                                     ("coreutils" ,coreutils)
+                                     ("bash" ,bash)
+                                     ("guile" ,guile-2.0)
+                                     ("mingetty" ,mingetty)
+                                     ("inetutils" ,inetutils)
 
-                                           ;; Configuration.
-                                           ("etc-pam.d" ,pam.d)
-                                           ("etc-passwd" ,passwd)
-                                           ("etc-shadow" ,shadow))))))
-      (lambda ()
-        (close-connection store)))))
+                                     ;; Configuration.
+                                     ("etc-pam.d" ,pam.d)
+                                     ("etc-passwd" ,passwd)
+                                     ("etc-shadow" ,shadow))))))
 
 ;;; vm.scm ends here
