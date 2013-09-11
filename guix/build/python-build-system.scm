@@ -54,12 +54,27 @@
     (call-setuppy test-target '())
     #t))
 
-(define* (install #:key outputs (configure-flags '())
+(define (get-python-version python)
+  (string-take (string-take-right python 5) 3))
+
+(define* (install #:key outputs inputs (configure-flags '())
                   #:allow-other-keys)
   "Install a given Python package."
   (let* ((out (assoc-ref outputs "out"))
          (params (append (list (string-append "--prefix=" out))
-                         configure-flags)))
+                         configure-flags))
+         (python-version (get-python-version (assoc-ref inputs "python")))
+         (old-path (getenv "PYTHONPATH"))
+         (add-path (string-append out "/lib/python" python-version
+                                  "/site-packages/")))
+        ;; create the module installation directory and add it to PYTHONPATH
+        ;; to make setuptools happy
+        (mkdir-p add-path)
+        (setenv "PYTHONPATH"
+                (string-append (if old-path
+                                   (string-append old-path ":")
+                                   "")
+                               add-path))
         (call-setuppy "install" params)))
 
 (define* (wrap #:key inputs outputs #:allow-other-keys)
@@ -79,10 +94,10 @@
 
   (let* ((out  (assoc-ref outputs "out"))
          (python (assoc-ref inputs "python"))
-         (python-version (string-take (string-take-right python 5) 3))
          (var `("PYTHONPATH" prefix
                 ,(cons (string-append out "/lib/python"
-                                      python-version "/site-packages")
+                                      (get-python-version python)
+                                      "/site-packages")
                        (search-path-as-string->list
                         (or (getenv "PYTHONPATH") ""))))))
     (for-each (lambda (dir)

@@ -262,25 +262,11 @@ etc. ")
         "0hl9sa5xr9bi2ifq51wy1bawsjv5nzvpbac7m9z1ciz778874csf"))))
     (build-system python-build-system)
     (arguments
-     `(#:tests? #f
+     `(#:tests? #f))
          ;;FIXME: test_sdist_with_utf8_encoded_filename fails in
          ;; /tmp/nix-build-python2-setuptools-1.1.4.drv-0/setuptools-1.1.4/setuptools/tests/test_sdist.py"
          ;; line 354
          ;; The tests pass with Python 2.7.5.
-       #:phases
-         (alist-replace
-          'install
-          (lambda* (#:key outputs #:allow-other-keys #:rest args)
-            (let* ((install (assoc-ref %standard-phases 'install))
-                   (out (assoc-ref outputs "out"))
-                   (python (assoc-ref %build-inputs "python"))
-                   (python-version (string-take (string-take-right python 5) 3))
-                   (path (string-append out "/lib/python" python-version
-                                        "/site-packages/")))
-              (mkdir-p path)
-              (setenv "PYTHONPATH" path)
-              (apply install args)))
-          %standard-phases)))
     (home-page "https://pypi.python.org/pypi/setuptools")
     (synopsis
      "Library designed to facilitate packaging Python projects")
