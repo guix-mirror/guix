@@ -95,7 +95,7 @@
   (make-regexp (string-append "^" (regexp-quote (basename profile))
                               "-([0-9]+)")))
 
-(define (profile-numbers profile)
+(define (generation-numbers profile)
   "Return the list of generation numbers of PROFILE, or '(0) if no
 former profiles were found."
   (define* (scandir name #:optional (select? (const #t))
@@ -144,7 +144,7 @@ former profiles were found."
                    (cute regexp-exec (profile-regexp profile) <>))
           profiles))))
 
-(define (previous-profile-number profile number)
+(define (previous-generation-number profile number)
   "Return the number of the generation before generation NUMBER of
 PROFILE, or 0 if none exists.  It could be NUMBER - 1, but it's not the
 case when generations have been deleted (there are \"holes\")."
@@ -153,7 +153,7 @@ case when generations have been deleted (there are \"holes\")."
               candidate
               highest))
         0
-        (profile-numbers profile)))
+        (generation-numbers profile)))
 
 (define (profile-derivation store packages)
   "Return a derivation that builds a profile (a user environment) with
@@ -205,7 +205,7 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
                                             packages)
                                 #:modules '((guix build union))))
 
-(define (profile-number profile)
+(define (generation-number profile)
   "Return PROFILE's number or 0.  An absolute file name must be used."
   (or (and=> (false-if-exception (regexp-exec (profile-regexp profile)
                                               (basename (readlink profile))))
@@ -214,17 +214,17 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
 
 (define (roll-back profile)
   "Roll back to the previous generation of PROFILE."
-  (let* ((number           (profile-number profile))
-         (previous-number  (previous-profile-number profile number))
-         (previous-profile (format #f "~a-~a-link"
-                                   profile previous-number))
-         (manifest         (string-append previous-profile "/manifest")))
+  (let* ((number              (generation-number profile))
+         (previous-number     (previous-generation-number profile number))
+         (previous-generation (format #f "~a-~a-link"
+                                      profile previous-number))
+         (manifest            (string-append previous-generation "/manifest")))
 
     (define (switch-link)
-      ;; Atomically switch PROFILE to the previous profile.
+      ;; Atomically switch PROFILE to the previous generation.
       (format #t (_ "switching from generation ~a to ~a~%")
               number previous-number)
-      (switch-symlinks profile previous-profile))
+      (switch-symlinks profile previous-generation))
 
     (cond ((not (file-exists? profile))           ; invalid profile
            (leave (_ "profile `~a' does not exist~%")
@@ -233,7 +233,7 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
            (format (current-error-port)
                    (_ "nothing to do: already at the empty profile~%")))
           ((or (zero? previous-number)            ; going to emptiness
-               (not (file-exists? previous-profile)))
+               (not (file-exists? previous-generation)))
            (let*-values (((drv-path drv)
                           (profile-derivation (%store) '()))
                          ((prof)
@@ -242,7 +242,7 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
              (when (not (build-derivations (%store) (list drv-path)))
                (leave (_ "failed to build the empty profile~%")))
 
-             (switch-symlinks previous-profile prof)
+             (switch-symlinks previous-generation prof)
              (switch-link)))
           (else (switch-link)))))                 ; anything else
 
@@ -846,7 +846,7 @@ more information.~%"))
                                      (%store) (manifest-packages
                                                (profile-manifest profile))))
                           (old-prof (derivation-path->output-path old-drv))
-                          (number   (profile-number profile))
+                          (number   (generation-number profile))
 
                           ;; Always use NUMBER + 1 for the new profile,
                           ;; possibly overwriting a "previous future
