@@ -20,12 +20,15 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses) #:select (bsd-3 psfl x11))
+  #:use-module ((guix licenses) #:select (zlib)
+                                #:renamer (symbol-prefix-proc 'license))
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages patchelf)
+  #:use-module (gnu packages sqlite)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -313,3 +316,31 @@ datetime module, available in Python 2.3+.")
 
 (define-public python2-dateutil
   (package-with-python2 python-dateutil))
+
+
+(define-public python2-pysqlite
+  (package
+    (name "python2-pysqlite")
+    (version "2.6.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://pysqlite.googlecode.com/files/pysqlite-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0nsqqfp072rgqbls100rdvbzkjkin7li3kprhfxlfqvzf608hlqd"))))
+    (build-system python-build-system)
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (arguments
+     `(#:python ,python-2 ; incompatible with Python 3
+       #:tests? #f)) ; no test target
+    (home-page "http://labix.org/python-dateutil")
+    (synopsis
+     "SQLite bindings for Python.")
+    (description
+     "Pysqlite provides SQLite bindings for Python that comply to the
+Database API 2.0T.")
+    (license zlib)))
+
