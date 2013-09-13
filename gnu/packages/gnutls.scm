@@ -54,7 +54,7 @@ portable, and only require an ANSI C89 platform.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.2.1")
+    (version "3.2.4")
     (source (origin
              (method url-fetch)
              (uri
@@ -64,20 +64,14 @@ portable, and only require an ANSI C89 platform.")
                              version ".tar.xz"))
              (sha256
               (base32
-               "1zi2kq3vcbqdy9khl7r6pgk4hgwibniasm9k6siasdvqjijq3ymb"))))
+               "0zvhzy87v9dfxfvmg1pl951kw55rp647cqdza8942fxq7spp158i"))))
     (build-system gnu-build-system)
-    (arguments
-      `(#:patches (list (assoc-ref %build-inputs
-                                   "patch/fix-tests"))
-        #:patch-flags '("-p0")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
      `(("guile" ,guile-2.0)
        ("zlib" ,guix:zlib)
-       ("perl" ,perl)
-       ("patch/fix-tests"
-        ,(search-patch "gnutls-fix-tests-on-32-bits-system.patch"))))
+       ("perl" ,perl)))
     (propagated-inputs
      `(("libtasn1" ,libtasn1)
        ("nettle" ,nettle)
