@@ -446,6 +446,30 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
 
 
 ;;;
+;;; Help.
+;;;
+
+(define (show-help)
+  (display (_ "Usage: guix substitute-binary [OPTION]...
+Internal tool to substitute a pre-built binary to a local build.\n"))
+  (display (_ "
+      --query            report on the availability of substitutes for the
+                         store file names passed on the standard input"))
+  (display (_ "
+      --substitute STORE-FILE DESTINATION
+                         download STORE-FILE and store it as a Nar in file
+                         DESTINATION"))
+  (newline)
+  (display (_ "
+  -h, --help             display this help and exit"))
+  (display (_ "
+  -V, --version          display version information and exit"))
+  (newline)
+  (show-bug-report-information))
+
+
+
+;;;
 ;;; Entry point.
 ;;;
 
@@ -536,7 +560,11 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
           (restore-file input destination)
           (every (compose zero? cdr waitpid) pids))))
      (("--version")
-      (show-version-and-exit "guix substitute-binary")))))
+      (show-version-and-exit "guix substitute-binary"))
+     (("--help")
+      (show-help))
+     (opts
+      (leave (_ "~a: unrecognized options~%") opts)))))
 
 
 ;;; Local Variables:
