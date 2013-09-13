@@ -19,7 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages python)
-  #:use-module ((guix licenses) #:select (bsd-3 psfl x11))
+  #:use-module ((guix licenses) #:select (bsd-3 bsd-style psfl x11))
   #:use-module ((guix licenses) #:select (zlib)
                                 #:renamer (symbol-prefix-proc 'license))
   #:use-module (gnu packages)
@@ -343,4 +343,39 @@ datetime module, available in Python 2.3+.")
      "Pysqlite provides SQLite bindings for Python that comply to the
 Database API 2.0T.")
     (license zlib)))
+
+
+(define-public python2-mechanize
+  (package
+    (name "python2-mechanize")
+    (version "0.2.5")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/m/mechanize/mechanize-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0rj7r166i1dyrq0ihm5rijfmvhs8a04im28lv05c0c3v206v4rrf"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (arguments
+     `(#:python ,python-2 ; apparently incompatible with Python 3
+       #:tests? #f))
+         ;; test fails with message
+         ;; AttributeError: 'module' object has no attribute 'test_pullparser'
+         ;; (python-3.3.2) or
+         ;; AttributeError: 'module' object has no attribute 'test_urllib2_localnet'
+         ;; (python-2.7.5).
+         ;; The source code is from March 2011 and probably not up-to-date
+         ;; with respect to python unit tests.
+    (home-page "http://wwwsearch.sourceforge.net/mechanize/")
+    (synopsis
+     "Stateful programmatic web browsing in Python")
+    (description
+     "Mechanize implements stateful programmatic web browsing in Python,
+after Andy Lester’s Perl module WWW::Mechanize.")
+    (license (bsd-style "file://COPYING"
+                        "See COPYING in the distribution."))))
 
