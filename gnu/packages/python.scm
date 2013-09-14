@@ -19,19 +19,24 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages python)
-  #:use-module ((guix licenses) #:select (bsd-3 psfl x11))
+  #:use-module ((guix licenses) #:select (bsd-3 bsd-style psfl x11))
+  #:use-module ((guix licenses) #:select (zlib)
+                                #:renamer (symbol-prefix-proc 'license))
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages patchelf)
+  #:use-module (gnu packages sqlite)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial))
 
-(define-public python
+(define-public python-2
   (package
     (name "python")
     (version "2.7.5")
@@ -151,8 +156,8 @@ packages; exception-based error handling; and very high level dynamic
 data types.")
     (license psfl)))
 
-(define-public python-3
-  (package (inherit python)
+(define-public python
+  (package (inherit python-2)
     (version "3.3.2")
     (source
      (origin
@@ -167,9 +172,34 @@ data types.")
             (variable "PYTHONPATH")
             (directories '("lib/python3.3/site-packages")))))))
 
-(define-public pytz
+(define-public python-wrapper
+  (package (inherit python)
+    (name "python-wrapper")
+    (source #f)
+    (build-system trivial-build-system)
+    (inputs `(("python" ,python)))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+         (begin
+           (use-modules (guix build utils))
+           (let ((bin (string-append (assoc-ref %outputs "out") "/bin"))
+                 (python (string-append (assoc-ref %build-inputs "python") "/bin/")))
+                (mkdir-p bin)
+                (for-each
+                  (lambda (old new)
+                    (symlink (string-append python old)
+                             (string-append bin "/" new)))
+                  `("python3", "pydoc3", "idle3")
+                  `("python",  "pydoc",  "idle"))))))
+    (description (string-append (package-description python)
+     "\n\nThis wrapper package provides symbolic links to the python binaries
+      without version suffix."))))
+
+
+(define-public python-pytz
   (package
-    (name "pytz")
+    (name "python-pytz")
     (version "2013b")
     (source
      (origin
@@ -180,6 +210,7 @@ data types.")
        (base32
         "19giwgfcrg0nr1gdv49qnmf2jb2ilkcfc7qyqvfpz4dp0p64ksv5"))))
     (build-system python-build-system)
+    (arguments `(#:tests? #f)) ; no test target
     (home-page "https://launchpad.net/pytz")
     (synopsis "The Python timezone library.")
     (description
@@ -187,22 +218,28 @@ data types.")
 using Python 2.4 or higher and provides access to the Olson timezone database.")
     (license x11)))
 
-(define-public babel
+(define-public python2-pytz
+  (package-with-python2 python-pytz))
+
+
+(define-public python-babel
   (package
-    (name "babel")
-    (version "0.9.6")
+    (name "python-babel")
+    (version "1.3")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://ftp.edgewall.com/pub/babel/Babel-"
+      (uri (string-append "https://pypi.python.org/packages/source/B/Babel/Babel-"
                           version ".tar.gz"))
       (sha256
        (base32
-        "03vmr54jq5vf3qw6kpdv7cdk7x7i2jhzyf1mawv2gk8zrxg0hfja"))))
+        "0bnin777lc53nxd1hp3apq410jj5wx92n08h7h4izpl4f4sx00lz"))))
     (build-system python-build-system)
     (inputs
-     `(("pytz" ,pytz)))
-    (home-page "http://babel.edgewall.org/")
+     `(("python-pytz" ,python-pytz)
+       ("python-setuptools" ,python-setuptools)))
+    (arguments `(#:tests? #f)) ; no test target
+    (home-page "http://babel.pocoo.org/")
     (synopsis
      "Tools for internationalizing Python applications")
     (description
@@ -212,3 +249,133 @@ using Python 2.4 or higher and provides access to the Olson timezone database.")
 access to various locale display names, localized number and date formatting,
 etc. ")
     (license bsd-3)))
+
+(define-public python2-babel
+  (package-with-python2 python-babel))
+
+
+(define-public python-setuptools
+  (package
+    (name "python-setuptools")
+    (version "1.1.4")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/s/setuptools/setuptools-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0hl9sa5xr9bi2ifq51wy1bawsjv5nzvpbac7m9z1ciz778874csf"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:tests? #f))
+         ;;FIXME: test_sdist_with_utf8_encoded_filename fails in
+         ;; /tmp/nix-build-python2-setuptools-1.1.4.drv-0/setuptools-1.1.4/setuptools/tests/test_sdist.py"
+         ;; line 354
+         ;; The tests pass with Python 2.7.5.
+    (home-page "https://pypi.python.org/pypi/setuptools")
+    (synopsis
+     "Library designed to facilitate packaging Python projects")
+    (description
+     "Setuptools is a fully-featured, stable library designed to facilitate
+packaging Python projects, where packaging includes:
+Python package and module definitions,
+distribution package metadata,
+test hooks,
+project installation,
+platform-specific details,
+Python 3 support.")
+    (license psfl)))
+
+(define-public python2-setuptools
+  (package-with-python2 python-setuptools))
+
+
+(define-public python-dateutil
+  (package
+    (name "python-dateutil")
+    (version "1.5") ; last version for python < 3
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://labix.org/download/python-dateutil/python-dateutil-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0fqfglhy5khbvsipr3x7m6bcaqljh8xl5cw33vbfxy7qhmywm2n0"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://labix.org/python-dateutil")
+    (synopsis
+     "Extensions to the standard datetime module, available in Python 2.3+")
+    (description
+     "The dateutil module provides powerful extensions to the standard
+datetime module, available in Python 2.3+.")
+    (license psfl)))
+
+(define-public python2-dateutil
+  (package-with-python2 python-dateutil))
+
+
+(define-public python2-pysqlite
+  (package
+    (name "python2-pysqlite")
+    (version "2.6.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://pysqlite.googlecode.com/files/pysqlite-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0nsqqfp072rgqbls100rdvbzkjkin7li3kprhfxlfqvzf608hlqd"))))
+    (build-system python-build-system)
+    (inputs
+     `(("sqlite" ,sqlite)))
+    (arguments
+     `(#:python ,python-2 ; incompatible with Python 3
+       #:tests? #f)) ; no test target
+    (home-page "http://labix.org/python-dateutil")
+    (synopsis
+     "SQLite bindings for Python.")
+    (description
+     "Pysqlite provides SQLite bindings for Python that comply to the
+Database API 2.0T.")
+    (license zlib)))
+
+
+(define-public python2-mechanize
+  (package
+    (name "python2-mechanize")
+    (version "0.2.5")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/m/mechanize/mechanize-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0rj7r166i1dyrq0ihm5rijfmvhs8a04im28lv05c0c3v206v4rrf"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (arguments
+     `(#:python ,python-2 ; apparently incompatible with Python 3
+       #:tests? #f))
+         ;; test fails with message
+         ;; AttributeError: 'module' object has no attribute 'test_pullparser'
+         ;; (python-3.3.2) or
+         ;; AttributeError: 'module' object has no attribute 'test_urllib2_localnet'
+         ;; (python-2.7.5).
+         ;; The source code is from March 2011 and probably not up-to-date
+         ;; with respect to python unit tests.
+    (home-page "http://wwwsearch.sourceforge.net/mechanize/")
+    (synopsis
+     "Stateful programmatic web browsing in Python")
+    (description
+     "Mechanize implements stateful programmatic web browsing in Python,
+after Andy Lester’s Perl module WWW::Mechanize.")
+    (license (bsd-style "file://COPYING"
+                        "See COPYING in the distribution."))))
+

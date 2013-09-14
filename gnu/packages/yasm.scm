@@ -40,7 +40,7 @@
         "0cfg7ji3ia2in628w42wrfvw2ixmmm4rghwmv2k202mraysgm3vn"))))
     (build-system gnu-build-system)
     (inputs
-     `(("python" ,python)
+     `(("python" ,python-wrapper)
        ("xmlto" ,xmlto)))
     (home-page "http://yasm.tortall.net/")
     (synopsis "Rewrite of the NASM assembler")

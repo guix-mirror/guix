@@ -120,7 +120,8 @@ UnZip recreates the stored directory structure by default.")
     (build-system gnu-build-system)
     (inputs `(("perl" ,perl)     ; for the documentation
               ("pkg-config" ,pkg-config)
-              ("python" ,python) ; for the documentation
+              ("python" ,python-2) ; for the documentation; Python 3 not supported,
+                ; http://forums.gentoo.org/viewtopic-t-863161-start-0.html
               ("zip" ,zip) ; to create test files
               ("zlib" ,zlib)))
     (arguments

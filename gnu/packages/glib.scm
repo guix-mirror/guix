@@ -104,7 +104,7 @@ shared NFS home directories.")
       ("gettext" ,guix:gettext)
       ("libffi" ,libffi)
       ("pkg-config" ,pkg-config)
-      ("python" ,python)
+      ("python" ,python-wrapper)
       ("zlib" ,zlib)
       ("perl" ,perl)                              ; needed by GIO tests
       ("dbus" ,dbus)                              ; for GDBus tests

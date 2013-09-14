@@ -66,7 +66,7 @@ things the parser might find in the XML document (like start tags).")
     (home-page "http://www.xmlsoft.org/")
     (synopsis "libxml2, a C parser for XML")
     (inputs `(("perl" ,perl)
-              ("python" ,python)
+              ("python" ,python-2) ; incompatible with Python 3 (print syntax)
               ("zlib" ,zlib)))
     (arguments
      `(#:phases
@@ -102,7 +102,7 @@ things the parser might find in the XML document (like start tags).")
     (synopsis "libxslt, a C library for applying XSLT stylesheets to XML documents")
     (inputs `(("libgcrypt" ,libgcrypt)
               ("libxml2" ,libxml2)
-              ("python" ,python)
+              ("python" ,python-wrapper)
               ("zlib" ,zlib)))
     (description
      "Libxslt is an XSLT C library developed for the GNOME project. It is

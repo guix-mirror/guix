@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -34,26 +35,49 @@
 ;;
 ;; Code:
 
-(define* (install #:key outputs (configure-flags '())
-                  #:allow-other-keys)
-  "Install a given Python package."
-  (let ((out (assoc-ref outputs "out")))
-    (if (file-exists? "setup.py")
-        (let ((args `("setup.py" "install" ,(string-append "--prefix=" out)
-                      ,@configure-flags)))
-          (format #t "running 'python' with arguments ~s~%" args)
-          (zero? (apply system* "python" args)))
-        (error "no setup.py found"))))
 
-(define* (check #:key outputs #:allow-other-keys)
-  "Run the test suite of a given Python package."
+(define (call-setuppy command params)
   (if (file-exists? "setup.py")
-      (let ((args `("setup.py" "check")))
-        (format #t "running 'python' with arguments ~s~%" args)
-        (zero? (apply system* "python" args)))
+      (begin
+         (format #t "running \"python setup.py\" with command ~s and parameters ~s~%"
+                command params)
+         (zero? (apply system* "python" "setup.py" command params)))
       (error "no setup.py found")))
 
-(define* (wrap #:key outputs python-version #:allow-other-keys)
+(define* (build #:rest empty)
+  "Build a given Python package."
+  (call-setuppy "build" '()))
+
+(define* (check #:key tests? test-target #:allow-other-keys)
+  "Run the test suite of a given Python package."
+  (if tests?
+    (call-setuppy test-target '())
+    #t))
+
+(define (get-python-version python)
+  (string-take (string-take-right python 5) 3))
+
+(define* (install #:key outputs inputs (configure-flags '())
+                  #:allow-other-keys)
+  "Install a given Python package."
+  (let* ((out (assoc-ref outputs "out"))
+         (params (append (list (string-append "--prefix=" out))
+                         configure-flags))
+         (python-version (get-python-version (assoc-ref inputs "python")))
+         (old-path (getenv "PYTHONPATH"))
+         (add-path (string-append out "/lib/python" python-version
+                                  "/site-packages/")))
+        ;; create the module installation directory and add it to PYTHONPATH
+        ;; to make setuptools happy
+        (mkdir-p add-path)
+        (setenv "PYTHONPATH"
+                (string-append (if old-path
+                                   (string-append old-path ":")
+                                   "")
+                               add-path))
+        (call-setuppy "install" params)))
+
+(define* (wrap #:key inputs outputs #:allow-other-keys)
   (define (list-of-files dir)
     (map (cut string-append dir "/" <>)
          (or (scandir dir (lambda (f)
@@ -69,9 +93,11 @@
                 outputs))
 
   (let* ((out  (assoc-ref outputs "out"))
+         (python (assoc-ref inputs "python"))
          (var `("PYTHONPATH" prefix
                 ,(cons (string-append out "/lib/python"
-                                      python-version "/site-packages")
+                                      (get-python-version python)
+                                      "/site-packages")
                        (search-path-as-string->list
                         (or (getenv "PYTHONPATH") ""))))))
     (for-each (lambda (dir)
@@ -87,11 +113,12 @@
    'install 'wrap
    wrap
    (alist-replace
-    'check check
-    (alist-replace 'install install
-                   (alist-delete 'configure
-                                (alist-delete 'build
-                                              gnu:%standard-phases))))))
+    'build build
+    (alist-replace
+     'check check
+     (alist-replace 'install install
+                    (alist-delete 'configure
+                                               gnu:%standard-phases))))))
 
 (define* (python-build #:key inputs (phases %standard-phases)
                        #:allow-other-keys #:rest args)

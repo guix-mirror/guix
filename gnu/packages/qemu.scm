@@ -94,7 +94,7 @@
      `(;; ("mesa" ,mesa)
        ;; ("libaio" ,libaio)
        ("glib" ,glib)
-       ("python" ,python)
+       ("python" ,python-2) ; incompatible with Python 3 according to error message
        ("ncurses" ,ncurses)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-8)

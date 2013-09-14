@@ -45,7 +45,7 @@
     `(("libgcrypt" ,libgcrypt)
       ("lvm2" ,lvm2)
       ("popt" ,popt)
-      ("python" ,python)
+      ("python" ,python-wrapper)
       ("util-linux" ,util-linux)))
    (synopsis "hard disk encryption tool")
    (description
