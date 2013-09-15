@@ -185,29 +185,32 @@ but ignore errors."
                     lstat))
 
 (define (find-files dir regexp)
-  "Return the list of files under DIR whose basename matches REGEXP."
+  "Return the lexicographically sorted list of files under DIR whose basename
+matches REGEXP."
   (define file-rx
     (if (regexp? regexp)
         regexp
         (make-regexp regexp)))
 
-  (file-system-fold (const #t)
-                    (lambda (file stat result)    ; leaf
-                      (if (regexp-exec file-rx (basename file))
-                          (cons file result)
-                          result))
-                    (lambda (dir stat result)     ; down
-                      result)
-                    (lambda (dir stat result)     ; up
-                      result)
-                    (lambda (file stat result)    ; skip
-                      result)
-                    (lambda (file stat errno result)
-                      (format (current-error-port) "find-files: ~a: ~a~%"
-                              file (strerror errno))
-                      #f)
-                    '()
-                    dir))
+  ;; Sort the result to get deterministic results.
+  (sort (file-system-fold (const #t)
+                          (lambda (file stat result)   ; leaf
+                            (if (regexp-exec file-rx (basename file))
+                                (cons file result)
+                                result))
+                          (lambda (dir stat result)    ; down
+                            result)
+                          (lambda (dir stat result)    ; up
+                            result)
+                          (lambda (file stat result)   ; skip
+                            result)
+                          (lambda (file stat errno result)
+                            (format (current-error-port) "find-files: ~a: ~a~%"
+                                    file (strerror errno))
+                            #f)
+                          '()
+                          dir)
+        string<?))
 
 
 ;;;
