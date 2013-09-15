@@ -409,7 +409,8 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 
    (arguments
     `(#:out-of-source? #t
-      #:patches (list (assoc-ref %build-inputs "patch/ld.so.cache"))
+      #:patches (list (assoc-ref %build-inputs "patch/ld.so.cache")
+                      (assoc-ref %build-inputs "patch/ldd"))
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"
@@ -421,7 +422,6 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
             (string-append "libc_cv_localedir="
                            (assoc-ref %outputs "locales")
                            "/share/locale")
-
 
             (string-append "--with-headers="
                            (assoc-ref %build-inputs "linux-headers")
@@ -496,6 +496,8 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 
    (inputs `(("patch/ld.so.cache"
               ,(search-patch "glibc-no-ld-so-cache.patch"))
+             ("patch/ldd"
+              ,(search-patch "glibc-ldd-x86_64.patch"))
              ("static-bash" ,(static-package bash-light))))
    (synopsis "The GNU C Library")
    (description
