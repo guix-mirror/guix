@@ -134,6 +134,7 @@
          (let ((path (derivation-output-path
                       (assoc-ref (derivation-outputs drv) "out"))))
            (and (valid-path? %store path)
+                (string=? (derivation-file-name drv) drv-path)
                 (string=? (call-with-input-file path read-line)
                           "hello, world"))))))
 

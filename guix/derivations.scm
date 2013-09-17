@@ -36,6 +36,7 @@
             derivation-system
             derivation-builder-arguments
             derivation-builder-environment-vars
+            derivation-file-name
             derivation-prerequisites
             derivation-prerequisites-to-build
 
@@ -71,7 +72,8 @@
 ;;;
 
 (define-record-type <derivation>
-  (make-derivation outputs inputs sources system builder args env-vars)
+  (make-derivation outputs inputs sources system builder args env-vars
+                   file-name)
   derivation?
   (outputs  derivation-outputs)      ; list of name/<derivation-output> pairs
   (inputs   derivation-inputs)       ; list of <derivation-input>
@@ -79,7 +81,8 @@
   (system   derivation-system)       ; string
   (builder  derivation-builder)      ; store path
   (args     derivation-builder-arguments)         ; list of strings
-  (env-vars derivation-builder-environment-vars)) ; list of name/value pairs
+  (env-vars derivation-builder-environment-vars)  ; list of name/value pairs
+  (file-name derivation-file-name))               ; the .drv file name
 
 (define-record-type <derivation-output>
   (make-derivation-output path hash-algo hash)
@@ -262,7 +265,8 @@ that second value is the empty list."
                              (make-input-drvs input-drvs)
                              input-srcs
                              system builder args
-                             (fold-right alist-cons '() var value)))
+                             (fold-right alist-cons '() var value)
+                             (port-filename drv-port)))
            (_
             (error "failed to parse derivation" drv-port result)))))
       ((? (cut eq? <> comma))
@@ -470,7 +474,8 @@ in SIZE bytes."
                                (make-derivation-input hash sub-drvs))))
                            inputs))
               (drv    (make-derivation outputs inputs sources
-                                       system builder args env-vars)))
+                                       system builder args env-vars
+                                       #f)))
 
          ;; XXX: At this point this remains faster than `port-sha256', because
          ;; the SHA256 port's `write' method gets called for every single
@@ -545,7 +550,8 @@ the build environment in the corresponding file, in a simple text format."
                                        (or (and=> (assoc-ref outputs name)
                                                   derivation-output-path)
                                            value))))
-                               env-vars))))))
+                               env-vars)
+                          #f)))))
 
   (define (user+system-env-vars)
     ;; Some options are passed to the build daemon via the env. vars of
@@ -578,6 +584,14 @@ the build environment in the corresponding file, in a simple text format."
             e
             outputs)))
 
+  (define (set-file-name drv file)
+    ;; Set FILE as the 'file-name' field of DRV.
+    (match drv
+      (($ <derivation> outputs inputs sources system builder
+          args env-vars)
+       (make-derivation outputs inputs sources system builder
+                        args env-vars file))))
+
   (let* ((outputs    (map (lambda (name)
                             ;; Return outputs with an empty path.
                             (cons name
@@ -604,17 +618,15 @@ the build environment in the corresponding file, in a simple text format."
                                                       (and (not (derivation-path? p))
                                                            p)))
                                                   inputs)
-                                      system builder args env-vars))
+                                      system builder args env-vars #f))
          (drv        (add-output-paths drv-masked)))
 
-    ;; (write-derivation drv-masked (current-error-port))
-    ;; (newline (current-error-port))
-    (values (add-text-to-store store (string-append name ".drv")
-                               (call-with-output-string
-                                (cut write-derivation drv <>))
-                               (map derivation-input-path
-                                    inputs))
-            drv)))
+    (let ((file (add-text-to-store store (string-append name ".drv")
+                                   (call-with-output-string
+                                    (cut write-derivation drv <>))
+                                   (map derivation-input-path
+                                        inputs))))
+      (values file (set-file-name drv file)))))
 
 
 ;;;
