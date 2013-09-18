@@ -79,7 +79,7 @@ containing a Git checkout of Guix."
                         ;; Tell Git to use the Nix checkout that Hydra gave us.
                         (zero?
                          (system* "git" "config" "submodule.nix-upstream.url"
-                                  nix-checkout)))
+                                  ,nix-checkout)))
                       ,p))))
       (native-inputs `(("git" ,git)
                        ("graphviz" ,graphviz)
