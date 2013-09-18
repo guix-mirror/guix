@@ -98,15 +98,16 @@ containing a Git checkout of Guix."
       (_
        (list (%current-system)))))
 
-  (define checkout
+  (define guix-checkout
     (assq-ref arguments 'guix))
 
   (define nix-checkout
     (assq-ref arguments 'nix))
 
   (format (current-error-port) "using checkout ~s (Nix: ~s)~%"
-          checkout nix-checkout)
-  (let ((directory (assq-ref checkout 'file-name)))
+          guix-checkout nix-checkout)
+  (let ((guix (assq-ref guix-checkout 'file-name))
+        (nix  (assq-ref nix-checkout 'file-name)))
     `((tarball . ,(cute package->alist store
-                        (tarball-package directory nix-checkout)
+                        (tarball-package guix nix)
                         (%current-system))))))
