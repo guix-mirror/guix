@@ -40,6 +40,7 @@
 (use-modules (guix store)
              (guix packages)
              (guix utils)
+             (guix derivations)
              (guix build-system gnu)
              (gnu packages version-control)
              (gnu packages package-management)

@@ -38,6 +38,7 @@
 
 (use-modules (guix store)
              (guix packages)
+             (guix derivations)
              ((guix utils) #:select (%current-system))
              (gnu packages)
              (gnu packages base)
