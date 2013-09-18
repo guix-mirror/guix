@@ -19,6 +19,7 @@
 (define-module (guix derivations)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-26)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
@@ -96,6 +97,17 @@
   derivation-input?
   (path            derivation-input-path)             ; store path
   (sub-derivations derivation-input-sub-derivations)) ; list of strings
+
+(set-record-type-printer! <derivation>
+                          (lambda (drv port)
+                            (format port "#<derivation ~a => ~a ~a>"
+                                    (derivation-file-name drv)
+                                    (string-join
+                                     (map (match-lambda
+                                           ((_ . output)
+                                            (derivation-output-path output)))
+                                          (derivation-outputs drv)))
+                                    (number->string (object-address drv) 16))))
 
 (define (fixed-output-derivation? drv)
   "Return #t if DRV is a fixed-output derivation, such as the result of a
