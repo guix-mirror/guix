@@ -108,7 +108,7 @@
                                         builder inputs
                                         #:modules '((guix build union)))))
     (and (build-derivations %store (list (pk 'drv drv)))
-         (with-directory-excursion (derivation-path->output-path drv)
+         (with-directory-excursion (derivation->output-path drv)
            (and (file-exists? "bin/touch")
                 (file-exists? "bin/gcc")
                 (file-exists? "bin/ld")

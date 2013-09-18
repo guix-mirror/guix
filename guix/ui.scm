@@ -210,27 +210,27 @@ derivations listed in DRV.  Return #t if there's something to build, #f
 otherwise.  When USE-SUBSTITUTES?, check and report what is prerequisites are
 available for download."
   (let*-values (((build download)
-                 (fold2 (lambda (drv-path build download)
-                          (let ((drv (call-with-input-file drv-path
-                                       read-derivation)))
-                            (let-values (((b d)
-                                          (derivation-prerequisites-to-build
-                                           store drv
-                                           #:use-substitutes?
-                                           use-substitutes?)))
-                              (values (append b build)
-                                      (append d download)))))
+                 (fold2 (lambda (drv build download)
+                          (let-values (((b d)
+                                        (derivation-prerequisites-to-build
+                                         store drv
+                                         #:use-substitutes?
+                                         use-substitutes?)))
+                            (values (append b build)
+                                    (append d download))))
                         '() '()
                         drv))
                 ((build)                          ; add the DRV themselves
                  (delete-duplicates
-                  (append (remove (compose (lambda (out)
-                                             (or (valid-path? store out)
-                                                 (and use-substitutes?
-                                                      (has-substitutes? store
-                                                                        out))))
-                                           derivation-path->output-path)
-                                  drv)
+                  (append (map derivation-file-name
+                               (remove (lambda (drv)
+                                         (let ((out (derivation->output-path
+                                                     drv)))
+                                           (or (valid-path? store out)
+                                               (and use-substitutes?
+                                                    (has-substitutes? store
+                                                                      out)))))
+                                       drv))
                           (map derivation-input-path build))))
                 ((download)                   ; add the references of DOWNLOAD
                  (if use-substitutes?

@@ -62,8 +62,8 @@ provides a `Makefile.PL' file as its build system."
     `(begin
        (use-modules ,@modules)
        (perl-build #:name ,name
-                   #:source ,(if (and source (derivation-path? source))
-                                 (derivation-path->output-path source)
+                   #:source ,(if (derivation? source)
+                                 (derivation->output-path source)
                                  source)
                    #:search-paths ',(map search-path-specification->sexp
                                          (append perl-search-paths

@@ -206,10 +206,10 @@ It can be used to provide additional files, such as /etc files."
   (define input->name+derivation
     (match-lambda
      ((name (? package? package))
-      `(,name . ,(derivation-path->output-path
+      `(,name . ,(derivation->output-path
                   (package-derivation store package system))))
      ((name (? package? package) sub-drv)
-      `(,name . ,(derivation-path->output-path
+      `(,name . ,(derivation->output-path
                   (package-derivation store package system)
                   sub-drv)))
      ((input (and (? string?) (? store-path?) file))
@@ -361,14 +361,14 @@ It can be used to provide additional files, such as /etc files."
 
   (parameterize ((%guile-for-build (package-derivation store guile-final)))
     (let* ((bash-drv  (package-derivation store bash))
-           (bash-file (string-append (derivation-path->output-path bash-drv)
+           (bash-file (string-append (derivation->output-path bash-drv)
                                      "/bin/bash"))
            (accounts  (list (vector "root" "" 0 0 "System administrator"
                                     "/" bash-file)))
            (passwd    (passwd-file store accounts))
            (shadow    (passwd-file store accounts #:shadow? #t))
            (pam.d-drv (pam-services->directory store %pam-services))
-           (pam.d     (derivation-path->output-path pam.d-drv))
+           (pam.d     (derivation->output-path pam.d-drv))
            (populate
             (add-text-to-store store "populate-qemu-image"
                                (object->string
@@ -381,11 +381,11 @@ It can be used to provide additional files, such as /etc files."
                                    (symlink ,pam.d "etc/pam.d")
                                    (mkdir-p "var/run")))
                                (list passwd)))
-           (out     (derivation-path->output-path
+           (out     (derivation->output-path
                      (package-derivation store mingetty)))
            (getty   (string-append out "/sbin/mingetty"))
            (iu-drv  (package-derivation store inetutils))
-           (syslogd (string-append (derivation-path->output-path iu-drv)
+           (syslogd (string-append (derivation->output-path iu-drv)
                                    "/libexec/syslogd"))
            (boot  (add-text-to-store store "boot"
                                      (object->string

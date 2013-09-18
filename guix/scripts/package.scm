@@ -234,12 +234,9 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
                    (_ "nothing to do: already at the empty profile~%")))
           ((or (zero? previous-number)            ; going to emptiness
                (not (file-exists? previous-generation)))
-           (let*-values (((drv-path drv)
-                          (profile-derivation (%store) '()))
-                         ((prof)
-                          (derivation-output-path
-                           (assoc-ref (derivation-outputs drv) "out"))))
-             (when (not (build-derivations (%store) (list drv-path)))
+           (let* ((drv  (profile-derivation (%store) '()))
+                  (prof (derivation->output-path drv "out")))
+             (when (not (build-derivations (%store) (list drv)))
                (leave (_ "failed to build the empty profile~%")))
 
              (switch-symlinks previous-generation prof)
@@ -558,7 +555,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
 
   (define (guile-missing?)
     ;; Return #t if %GUILE-FOR-BUILD is not available yet.
-    (let ((out (derivation-path->output-path (%guile-for-build))))
+    (let ((out (derivation->output-path (%guile-for-build))))
       (not (valid-path? (%store) out))))
 
   (define newest-available-packages
@@ -617,7 +614,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
        (case (version-compare candidate-version current-version)
          ((>) #t)
          ((<) #f)
-         ((=) (let ((candidate-path (derivation-path->output-path
+         ((=) (let ((candidate-path (derivation->output-path
                                      (package-derivation (%store) pkg))))
                 (not (string=? current-path candidate-path))))))
       (#f #f)))
@@ -808,7 +805,7 @@ more information.~%"))
                                  (match tuple
                                    ((name version sub-drv _ (deps ...))
                                     (let ((output-path
-                                           (derivation-path->output-path
+                                           (derivation->output-path
                                             drv sub-drv)))
                                       `(,name ,version ,sub-drv ,output-path
                                               ,(canonicalize-deps deps))))))
@@ -841,11 +838,11 @@ more information.~%"))
           (or dry-run?
               (and (build-derivations (%store) drv)
                    (let* ((prof-drv (profile-derivation (%store) packages))
-                          (prof     (derivation-path->output-path prof-drv))
+                          (prof     (derivation->output-path prof-drv))
                           (old-drv  (profile-derivation
                                      (%store) (manifest-packages
                                                (profile-manifest profile))))
-                          (old-prof (derivation-path->output-path old-drv))
+                          (old-prof (derivation->output-path old-drv))
                           (number   (generation-number profile))
 
                           ;; Always use NUMBER + 1 for the new profile,

@@ -987,8 +987,8 @@ The build actions it prescribes may then be realized by using the
 @code{build-derivations} procedure (@pxref{The Store}).
 
 @deffn {Scheme Procedure} package-derivation @var{store} @var{package} [@var{system}]
-Return the derivation path and corresponding @code{<derivation>} object
-of @var{package} for @var{system} (@pxref{Derivations}).
+Return the @code{<derivation>} object of @var{package} for @var{system}
+(@pxref{Derivations}).
 
 @var{package} must be a valid @code{<package>} object, and @var{system}
 must be a string denoting the target system type---e.g.,
@@ -1004,8 +1004,8 @@ package for some other system:
 
 @deffn {Scheme Procedure} package-cross-derivation @var{store} @
             @var{package} @var{target} [@var{system}]
-Return the derivation path and corresponding @code{<derivation>} object
-of @var{package} cross-built from @var{system} to @var{target}.
+Return the @code{<derivation>} object of @var{package} cross-built from
+@var{system} to @var{target}.
 
 @var{target} must be a valid GNU triplet denoting the target hardware
 and operating system, such as @code{"mips64el-linux-gnu"}
@@ -1068,8 +1068,9 @@ resulting store path.
 @end deffn
 
 @deffn {Scheme Procedure} build-derivations @var{server} @var{derivations}
-Build @var{derivations} (a list of derivation paths), and return when
-the worker is done building them.  Return @code{#t} on success.
+Build @var{derivations} (a list of @code{<derivation>} objects or
+derivation paths), and return when the worker is done building them.
+Return @code{#t} on success.
 @end deffn
 
 @c FIXME
@@ -1119,8 +1120,8 @@ otherwise manipulate derivations.  The lowest-level primitive to create
 a derivation is the @code{derivation} procedure:
 
 @deffn {Scheme Procedure} derivation @var{store} @var{name} @var{builder} @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:hash-mode #f] [#:inputs '()] [#:env-vars '()] [#:system (%current-system)] [#:references-graphs #f]
-Build a derivation with the given arguments.  Return the resulting store
-path and @code{<derivation>} object.
+Build a derivation with the given arguments, and return the resulting
+@code{<derivation>} object.
 
 When @var{hash}, @var{hash-algo}, and @var{hash-mode} are given, a
 @dfn{fixed-output derivation} is created---i.e., one whose result is
@@ -1142,16 +1143,13 @@ to a Bash executable in the store:
              (guix store)
              (guix derivations))
 
-(call-with-values
-  (lambda ()
-    (let ((builder   ; add the Bash script to the store
-           (add-text-to-store store "my-builder.sh"
-                              "echo hello world > $out\n" '())))
-      (derivation store "foo"
-                  bash `("-e" ,builder)
-                  #:env-vars '(("HOME" . "/homeless")))))
-  list)
-@result{} ("/nix/store/@dots{}-foo.drv" #<<derivation> @dots{}>)
+(let ((builder   ; add the Bash script to the store
+        (add-text-to-store store "my-builder.sh"
+                           "echo hello world > $out\n" '())))
+  (derivation store "foo"
+              bash `("-e" ,builder)
+              #:env-vars '(("HOME" . "/homeless"))))
+@result{} #<derivation /nix/store/@dots{}-foo.drv => /nix/store/@dots{}-foo>
 @end lisp
 
 As can be guessed, this primitive is cumbersome to use directly.  An
@@ -1196,8 +1194,7 @@ containing one file:
   (build-expression->derivation store "goo" (%current-system)
                                 builder '()))
 
-@result{} "/nix/store/@dots{}-goo.drv"
-@result{} #<<derivation> @dots{}>
+@result{} #<derivation /nix/store/@dots{}-goo.drv => @dots{}>
 @end lisp
 
 @cindex strata of code

@@ -120,8 +120,8 @@ provides a 'setup.py' file as its build system."
     `(begin
        (use-modules ,@modules)
        (python-build #:name ,name
-                     #:source ,(if (and source (derivation-path? source))
-                                   (derivation-path->output-path source)
+                     #:source ,(if (derivation? source)
+                                   (derivation->output-path source)
                                    source)
                      #:configure-flags ,configure-flags
                      #:system ,system

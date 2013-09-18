@@ -291,8 +291,8 @@ which could lead to gratuitous input divergence."
   (define builder
     `(begin
        (use-modules ,@modules)
-       (gnu-build #:source ,(if (and source (derivation-path? source))
-                                (derivation-path->output-path source)
+       (gnu-build #:source ,(if (derivation? source)
+                                (derivation->output-path source)
                                 source)
                   #:system ,system
                   #:outputs %outputs
@@ -319,8 +319,8 @@ which could lead to gratuitous input divergence."
     (match guile
       ((? package?)
        (package-derivation store guile system))
-      ((and (? string?) (? derivation-path?))
-       guile)
+      ;; ((and (? string?) (? derivation-path?))
+      ;;  guile)
       (#f                                         ; the default
        (let* ((distro (resolve-interface '(gnu packages base)))
               (guile  (module-ref distro 'guile-final)))
@@ -438,6 +438,8 @@ platform."
        (let ()
          (define %build-host-inputs
            ',(map (match-lambda
+                   ((name (? derivation? drv) sub ...)
+                    `(,name . ,(apply derivation->output-path drv sub)))
                    ((name (? derivation-path? drv-path) sub ...)
                     `(,name . ,(apply derivation-path->output-path
                                       drv-path sub)))
@@ -447,6 +449,8 @@ platform."
 
          (define %build-target-inputs
            ',(map (match-lambda
+                   ((name (? derivation? drv) sub ...)
+                    `(,name . ,(apply derivation->output-path drv sub)))
                    ((name (? derivation-path? drv-path) sub ...)
                     `(,name . ,(apply derivation-path->output-path
                                       drv-path sub)))
@@ -454,8 +458,8 @@ platform."
                     `(,name . ,path)))
                   (append (or implicit-target-inputs '()) inputs)))
 
-         (gnu-build #:source ,(if (and source (derivation-path? source))
-                                  (derivation-path->output-path source)
+         (gnu-build #:source ,(if (derivation? source)
+                                  (derivation->output-path source)
                                   source)
                     #:system ,system
                     #:target ,target
@@ -488,8 +492,8 @@ platform."
     (match guile
       ((? package?)
        (package-derivation store guile system))
-      ((and (? string?) (? derivation-path?))
-       guile)
+      ;; ((and (? string?) (? derivation-path?))
+      ;;  guile)
       (#f                                         ; the default
        (let* ((distro (resolve-interface '(gnu packages base)))
               (guile  (module-ref distro 'guile-final)))

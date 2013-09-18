@@ -250,7 +250,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                                    (derivations-from-package-expressions
                                     str package->derivation sys src?))
                                   (('argument . (? derivation-path? drv))
-                                   drv)
+                                   (call-with-input-file drv read-derivation))
                                   (('argument . (? string? x))
                                    (let ((p (find-package x)))
                                      (if src?
@@ -280,24 +280,23 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
 
           (if (assoc-ref opts 'derivations-only?)
               (begin
-                (format #t "~{~a~%~}" drv)
+                (format #t "~{~a~%~}" (map derivation-file-name drv))
                 (for-each (cut register-root <> <>)
-                          (map list drv) roots))
+                          (map (compose list derivation-file-name) drv)
+                          roots))
               (or (assoc-ref opts 'dry-run?)
                   (and (build-derivations (%store) drv)
                        (for-each (lambda (d)
-                                   (let ((drv (call-with-input-file d
-                                                read-derivation)))
-                                     (format #t "~{~a~%~}"
-                                             (map (match-lambda
-                                                   ((out-name . out)
-                                                    (derivation-path->output-path
-                                                     d out-name)))
-                                                  (derivation-outputs drv)))))
+                                   (format #t "~{~a~%~}"
+                                           (map (match-lambda
+                                                 ((out-name . out)
+                                                  (derivation->output-path
+                                                   d out-name)))
+                                                (derivation-outputs d))))
                                  drv)
                        (for-each (cut register-root <> <>)
                                  (map (lambda (drv)
                                         (map cdr
-                                             (derivation-path->output-paths drv)))
+                                             (derivation->output-paths drv)))
                                       drv)
                                  roots)))))))))

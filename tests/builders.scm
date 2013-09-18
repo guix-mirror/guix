@@ -70,10 +70,10 @@
                      "ftp://ftp.gnu.org/gnu/hello/hello-2.8.tar.gz"))
          (hash     (nix-base32-string->bytevector
                     "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))
-         (drv-path (url-fetch %store url 'sha256 hash
+         (drv      (url-fetch %store url 'sha256 hash
                               #:guile %bootstrap-guile))
-         (out-path (derivation-path->output-path drv-path)))
-    (and (build-derivations %store (list drv-path))
+         (out-path (derivation->output-path drv)))
+    (and (build-derivations %store (list drv))
          (file-exists? out-path)
          (valid-path? %store out-path))))
 
@@ -93,7 +93,7 @@
                               #:implicit-inputs? #f
                               #:guile %bootstrap-guile
                               #:search-paths %bootstrap-search-paths))
-         (out      (derivation-path->output-path build)))
+         (out      (derivation->output-path build)))
     (and (build-derivations %store (list (pk 'hello-drv build)))
          (valid-path? %store out)
          (file-exists? (string-append out "/bin/hello")))))

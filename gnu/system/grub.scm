@@ -56,7 +56,7 @@ search.file ~a~%"
             (any (match-lambda
                   (($ <menu-entry> _ linux)
                    (let* ((drv (package-derivation store linux system))
-                          (out (derivation-path->output-path drv)))
+                          (out (derivation->output-path drv)))
                      (string-append out "/bzImage"))))
                  entries)))
 
@@ -71,9 +71,9 @@ search.file ~a~%"
   initrd ~a/initrd
 }~%"
                 label
-                (derivation-path->output-path linux-drv)
+                (derivation->output-path linux-drv)
                 (string-join arguments)
-                (derivation-path->output-path initrd-drv))))))
+                (derivation->output-path initrd-drv))))))
 
   (add-text-to-store store "grub.cfg"
                      (string-append prologue

@@ -26,7 +26,6 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
-  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -370,8 +369,8 @@ information in exceptions."
 
 (define* (package-derivation store package
                              #:optional (system (%current-system)))
-  "Return the derivation path and corresponding <derivation> object of
-PACKAGE for SYSTEM."
+  "Return the <derivation> object of PACKAGE for SYSTEM."
+
   ;; Compute the derivation and cache the result.  Caching is important
   ;; because some derivations, such as the implicit inputs of the GNU build
   ;; system, will be queried many, many times in a row.
@@ -468,7 +467,5 @@ system identifying string)."
   "Return the output path of PACKAGE's OUTPUT for SYSTEM---where OUTPUT is the
 symbolic output name, such as \"out\".  Note that this procedure calls
 `package-derivation', which is costly."
-  (let-values (((_ drv)
-                (package-derivation store package system)))
-    (derivation-output-path
-     (assoc-ref (derivation-outputs drv) output))))
+  (let ((drv (package-derivation store package system)))
+    (derivation->output-path drv output)))
