@@ -606,6 +606,39 @@ library are installed in the profile, then @code{--search-paths} will
 suggest setting these variables to @code{@var{profile}/include} and
 @code{@var{profile}/lib}, respectively.
 
+@item --list-generations[=@var{pattern}]
+@itemx -l [@var{pattern}]
+Return a list of generations along with their creation dates.
+
+For each installed package, print the following items, separated by
+tabs: the name of a package, its version string, the part of the package
+that is installed (@pxref{Packages with Multiple Outputs}), and the
+location of this package in the store.
+
+When @var{pattern} is used, the command returns only matching
+generations.  Valid patterns include:
+
+@itemize
+@item @emph{Integers and comma-separated integers}.  Both patterns denote
+generation numbers.  For instance, @code{--list-generations=1} returns
+the first one.
+
+And @code{--list-generations=1,8,2} outputs three generations in the
+specified order.  Neither spaces nor trailing commas are allowed.
+
+@item @emph{Ranges}.  @code{--list-generations=2..9} prints the
+specified generations and everything in between.  Note that the start of
+a range must be lesser than its end.
+
+It is also possible to omit the endpoint.  For example,
+@code{--list-generations=2..}, returns all generations starting from the
+second one.
+
+@item @emph{Durations}.  You can also get the last @emph{N}@tie{}days, weeks,
+or months by passing an integer along with the first letter of the
+duration, e.g., @code{--list-generations=20d}.
+@end itemize
+
 @item --profile=@var{profile}
 @itemx -p @var{profile}
 Use @var{profile} instead of the user's default profile.

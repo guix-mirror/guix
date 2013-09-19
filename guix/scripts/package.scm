@@ -34,6 +34,7 @@
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
@@ -243,6 +244,74 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
              (switch-link)))
           (else (switch-link)))))                 ; anything else
 
+(define (generation-time profile number)
+  "Return the creation time of a generation in the UTC format."
+  (make-time time-utc 0
+             (stat:ctime (stat (format #f "~a-~a-link" profile number)))))
+
+(define* (matching-generations str #:optional (profile %current-profile))
+  "Return the list of available generations matching a pattern in STR.  See
+'string->generations' and 'string->duration' for the list of valid patterns."
+  (define (valid-generations lst)
+    (define (valid-generation? n)
+      (any (cut = n <>) (generation-numbers profile)))
+
+    (fold-right (lambda (x acc)
+                  (if (valid-generation? x)
+                      (cons x acc)
+                      acc))
+                '()
+                lst))
+
+  (define (filter-generations generations)
+    (match generations
+      (() '())
+      (('>= n)
+       (drop-while (cut > n <>)
+                   (generation-numbers profile)))
+      (('<= n)
+       (valid-generations (iota n 1)))
+      ((lst ..1)
+       (valid-generations lst))
+      (_ #f)))
+
+  (define (filter-by-duration duration)
+    (define (time-at-midnight time)
+      ;; Return TIME at midnight by setting nanoseconds, seconds, minutes, and
+      ;; hours to zeros.
+      (let ((d (time-utc->date time)))
+         (date->time-utc
+          (make-date 0 0 0 0
+                     (date-day d) (date-month d)
+                     (date-year d) (date-zone-offset d)))))
+
+    (define generation-ctime-alist
+      (map (lambda (number)
+             (cons number
+                   (time-second
+                    (time-at-midnight
+                     (generation-time profile number)))))
+           (generation-numbers profile)))
+
+    (match duration
+      (#f #f)
+      (res
+       (let ((s (time-second
+                 (subtract-duration (time-at-midnight (current-time))
+                                    duration))))
+         (delete #f (map (lambda (x)
+                           (and (<= s (cdr x))
+                                (first x)))
+                         generation-ctime-alist))))))
+
+  (cond ((string->generations str)
+         =>
+         filter-generations)
+        ((string->duration str)
+         =>
+         filter-by-duration)
+        (else #f)))
+
 (define (find-packages-by-description rx)
   "Search in SYNOPSIS and DESCRIPTION using RX.  Return a list of
 matching packages."
@@ -438,6 +507,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
       --roll-back        roll back to the previous generation"))
   (display (_ "
       --search-paths     display needed environment variable definitions"))
+  (display (_ "
+  -l, --list-generations[=PATTERN]
+                         list generations matching PATTERN"))
   (newline)
   (display (_ "
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
@@ -497,6 +569,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
         (option '("roll-back") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'roll-back? #t result)))
+        (option '(#\l "list-generations") #f #t
+                (lambda (opt name arg result)
+                  (cons `(query list-generations ,(or arg ""))
+                        result)))
         (option '("search-paths") #f #f
                 (lambda (opt name arg result)
                   (cons `(query search-paths) result)))
@@ -876,6 +952,37 @@ more information.~%"))
     ;; actually processed, #f otherwise.
     (let ((profile  (assoc-ref opts 'profile)))
       (match (assoc-ref opts 'query)
+        (('list-generations pattern)
+         (define (list-generation number)
+           (begin
+             (format #t "Generation ~a\t~a~%" number
+                     (date->string
+                      (time-utc->date
+                       (generation-time profile number))
+                      "~b ~d ~Y ~T"))
+             (for-each (match-lambda
+                        ((name version output location _)
+                         (format #t "  ~a\t~a\t~a\t~a~%"
+                                 name version output location)))
+                       (manifest-packages
+                        (profile-manifest
+                         (format #f "~a-~a-link" profile number))))
+             (newline)))
+
+         (cond ((not (file-exists? profile)) ; XXX: race condition
+                (leave (_ "profile '~a' does not exist~%")
+                       profile))
+               ((string-null? pattern)
+                (for-each list-generation
+                          (generation-numbers profile)))
+               ((matching-generations pattern profile)
+                =>
+                (cut for-each list-generation <>))
+               (else
+                (leave (_ "invalid syntax: ~a~%")
+                       pattern)))
+         #t)
+
         (('list-installed regexp)
          (let* ((regexp    (and regexp (make-regexp regexp)))
                 (manifest  (profile-manifest profile))

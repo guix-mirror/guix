@@ -28,12 +28,14 @@
   #:use-module ((guix licenses) #:select (license? license-name))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
   #:autoload   (ice-9 ftw)  (scandir)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
+  #:use-module (ice-9 regex)
   #:export (_
             N_
             leave
@@ -50,6 +52,8 @@
             fill-paragraph
             string->recutils
             package->recutils
+            string->generations
+            string->duration
             args-fold*
             run-guix-command
             program-name
@@ -403,6 +407,70 @@ WIDTH columns."
   (format port "description: ~a~%"
           (and=> (package-description p) description->recutils))
   (newline port))
+
+(define (string->generations str)
+  "Return the list of generations matching a pattern in STR.  This function
+accepts the following patterns: \"1\", \"1,2,3\", \"1..9\", \"1..\", \"..9\"."
+  (define (maybe-integer)
+    (let ((x (string->number str)))
+      (and (integer? x)
+           x)))
+
+  (define (maybe-comma-separated-integers)
+    (let ((lst (delete-duplicates
+                (map string->number
+                     (string-split str #\,)))))
+      (and (every integer? lst)
+           lst)))
+
+  (cond ((maybe-integer)
+         =>
+         list)
+        ((maybe-comma-separated-integers)
+         =>
+         identity)
+        ((string-match "^([0-9]+)\\.\\.([0-9]+)$" str)
+         =>
+         (lambda (match)
+           (let ((s (string->number (match:substring match 1)))
+                 (e (string->number (match:substring match 2))))
+             (and (every integer? (list s e))
+                  (<= s e)
+                  (iota (1+ (- e s)) s)))))
+        ((string-match "^([0-9]+)\\.\\.$" str)
+         =>
+         (lambda (match)
+           (let ((s (string->number (match:substring match 1))))
+             (and (integer? s)
+                  `(>= ,s)))))
+        ((string-match "^\\.\\.([0-9]+)$" str)
+         =>
+         (lambda (match)
+           (let ((e (string->number (match:substring match 1))))
+             (and (integer? e)
+                  `(<= ,e)))))
+        (else #f)))
+
+(define (string->duration str)
+  "Return the duration matching a pattern in STR.  This function accepts the
+following patterns: \"1d\", \"1w\", \"1m\"."
+  (define (hours->duration hours match)
+    (make-time time-duration 0
+               (* 3600 hours (string->number (match:substring match 1)))))
+
+  (cond ((string-match "^([0-9]+)d$" str)
+         =>
+         (lambda (match)
+           (hours->duration 24 match)))
+        ((string-match "^([0-9]+)w$" str)
+         =>
+         (lambda (match)
+           (hours->duration (* 24 7) match)))
+        ((string-match "^([0-9]+)m$" str)
+         =>
+         (lambda (match)
+           (hours->duration (* 24 30) match)))
+        (else #f)))
 
 (define (args-fold* options unrecognized-option-proc operand-proc . seeds)
   "A wrapper on top of `args-fold' that does proper user-facing error

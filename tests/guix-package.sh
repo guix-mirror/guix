@@ -81,6 +81,10 @@ then
         "name: hello"
     test "`guix package -s "n0t4r341p4ck4g3"`" = ""
 
+    # List generations.
+    test "`guix package -p "$profile" -l | cut -f1 | grep guile | head -n1`" \
+        = "  guile-bootstrap"
+
     # Remove a package.
     guix package --bootstrap -p "$profile" -r "guile-bootstrap"
     test -L "$profile-3-link"
