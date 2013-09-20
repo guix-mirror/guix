@@ -21,7 +21,7 @@
 (define-module (gnu packages python)
   #:use-module ((guix licenses) #:select (bsd-3 bsd-style psfl x11))
   #:use-module ((guix licenses) #:select (zlib)
-                                #:renamer (symbol-prefix-proc 'license))
+                                #:renamer (symbol-prefix-proc 'license:))
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gdbm)
@@ -342,7 +342,7 @@ datetime module, available in Python 2.3+.")
     (description
      "Pysqlite provides SQLite bindings for Python that comply to the
 Database API 2.0T.")
-    (license zlib)))
+    (license license:zlib)))
 
 
 (define-public python2-mechanize
