@@ -38,6 +38,7 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu system linux)
   #:use-module (gnu system grub)
+  #:use-module (gnu system dmd)
 
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -359,14 +360,27 @@ It can be used to provide additional files, such as /etc files."
     (list %pam-other-services
           (unix-pam-service "login" #:allow-empty-passwords? #t)))
 
+  (define %dmd-services
+    ;; Services run by dmd.
+    (list (mingetty-service store "tty1")
+          (mingetty-service store "tty2")
+          (mingetty-service store "tty3")
+          (syslog-service store)))
+
   (parameterize ((%guile-for-build (package-derivation store guile-final)))
     (let* ((bash-drv  (package-derivation store bash))
            (bash-file (string-append (derivation->output-path bash-drv)
                                      "/bin/bash"))
+           (dmd-drv   (package-derivation store dmd))
+           (dmd-file  (string-append (derivation->output-path dmd-drv)
+                                     "/bin/dmd"))
+           (dmd-conf  (dmd-configuration-file store %dmd-services))
            (accounts  (list (vector "root" "" 0 0 "System administrator"
                                     "/" bash-file)))
            (passwd    (passwd-file store accounts))
            (shadow    (passwd-file store accounts #:shadow? #t))
+           (group     (add-text-to-store store "group"
+                                         "root:x:0:\n"))
            (pam.d-drv (pam-services->directory store %pam-services))
            (pam.d     (derivation->output-path pam.d-drv))
            (populate
@@ -374,8 +388,10 @@ It can be used to provide additional files, such as /etc files."
                                (object->string
                                 `(begin
                                    (mkdir-p "etc")
+                                   (mkdir-p "var/log") ; for dmd
                                    (symlink ,shadow "etc/shadow")
                                    (symlink ,passwd "etc/passwd")
+                                   (symlink ,group "etc/group")
                                    (symlink "/dev/null"
                                             "etc/login.defs")
                                    (symlink ,pam.d "etc/pam.d")
@@ -383,28 +399,11 @@ It can be used to provide additional files, such as /etc files."
                                (list passwd)))
            (out     (derivation->output-path
                      (package-derivation store mingetty)))
-           (getty   (string-append out "/sbin/mingetty"))
-           (iu-drv  (package-derivation store inetutils))
-           (syslogd (string-append (derivation->output-path iu-drv)
-                                   "/libexec/syslogd"))
-           (boot  (add-text-to-store store "boot"
-                                     (object->string
-                                      `(begin
-                                         ;; Become the session leader,
-                                         ;; so that mingetty can do
-                                         ;; 'TIOCSCTTY'.
-                                         (setsid)
-
-                                         (when (zero? (primitive-fork))
-                                           (format #t "starting syslogd as ~a~%"
-                                                   (getpid))
-                                           (execl ,syslogd "syslogd"))
-
-                                         ;; Directly into mingetty. XXX
-                                         ;; (execl ,getty "mingetty"
-                                         ;;        "--noclear" "tty1")
-                                         (execl ,bash-file "bash")))
-                                     (list out)))
+           (boot    (add-text-to-store store "boot"
+                                       (object->string
+                                        `(execl ,dmd-file "dmd"
+                                                "--config" ,dmd-conf))
+                                       (list out)))
            (entries  (list (menu-entry
                             (label "Boot-to-Guile! (GNU System technology preview)")
                             (linux linux-libre)
@@ -424,11 +423,15 @@ It can be used to provide additional files, such as /etc files."
                                      ("bash" ,bash)
                                      ("guile" ,guile-2.0)
                                      ("mingetty" ,mingetty)
-                                     ("inetutils" ,inetutils)
+                                     ("dmd" ,dmd)
 
                                      ;; Configuration.
+                                     ("dmd.conf" ,dmd-conf)
                                      ("etc-pam.d" ,pam.d)
                                      ("etc-passwd" ,passwd)
-                                     ("etc-shadow" ,shadow))))))
+                                     ("etc-shadow" ,shadow)
+                                     ("etc-group" ,group)
+                                     ,@(append-map service-inputs
+                                                   %dmd-services))))))
 
 ;;; vm.scm ends here

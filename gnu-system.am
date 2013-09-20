@@ -180,6 +180,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
 						\
+  gnu/system/dmd.scm				\
   gnu/system/grub.scm				\
   gnu/system/linux.scm				\
   gnu/system/shadow.scm				\
