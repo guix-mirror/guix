@@ -379,3 +379,34 @@ after Andy Lester’s Perl module WWW::Mechanize.")
     (license (bsd-style "file://COPYING"
                         "See COPYING in the distribution."))))
 
+
+(define-public python-simplejson
+  (package
+    (name "python-simplejson")
+    (version "3.3.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/s/simplejson/simplejson-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "07wsry5j44l5zzm74l4j2bvasiq8n5m32f31n2p7c68i5vc6p2ks"))))
+    (build-system python-build-system)
+    (home-page "http://simplejson.readthedocs.org/en/latest/")
+    (synopsis
+     "Json library for Python")
+    (description
+     "JSON (JavaScript Object Notation) is a subset of JavaScript syntax
+(ECMA-262 3rd edition) used as a lightweight data interchange format.
+
+Simplejson exposes an API familiar to users of the standard library marshal
+and pickle modules.  It is the externally maintained version of the json
+library contained in Python 2.6, but maintains compatibility with Python 2.5
+and (currently) has significant performance advantages, even without using
+the optional C extension for speedups.  Simplejson is also supported on
+Python 3.3+.")
+    (license x11)))
+
+(define-public python2-simplejson
+  (package-with-python2 python-simplejson))
