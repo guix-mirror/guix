@@ -97,7 +97,7 @@
                               "-([0-9]+)")))
 
 (define (generation-numbers profile)
-  "Return the list of generation numbers of PROFILE, or '(0) if no
+  "Return the sorted list of generation numbers of PROFILE, or '(0) if no
 former profiles were found."
   (define* (scandir name #:optional (select? (const #t))
                     (entry<? (@ (ice-9 i18n) string-locale<?)))
@@ -140,10 +140,11 @@ former profiles were found."
     (()                                         ; no profiles
      '(0))
     ((profiles ...)                             ; former profiles around
-     (map (compose string->number
-                   (cut match:substring <> 1)
-                   (cute regexp-exec (profile-regexp profile) <>))
-          profiles))))
+     (sort (map (compose string->number
+                         (cut match:substring <> 1)
+                         (cute regexp-exec (profile-regexp profile) <>))
+                profiles)
+           <))))
 
 (define (previous-generation-number profile number)
   "Return the number of the generation before generation NUMBER of
