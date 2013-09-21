@@ -955,7 +955,7 @@ more information.~%"))
         (('list-generations pattern)
          (define (list-generation number)
            (begin
-             (format #t "Generation ~a\t~a~%" number
+             (format #t (_ "Generation ~a\t~a~%") number
                      (date->string
                       (time-utc->date
                        (generation-time profile number))
