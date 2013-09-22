@@ -79,6 +79,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/grub.scm				\
   gnu/packages/grue-hunter.scm			\
   gnu/packages/gsasl.scm			\
+  gnu/packages/gstreamer.scm			\
   gnu/packages/gtk.scm				\
   gnu/packages/guile.scm			\
   gnu/packages/gv.scm				\
