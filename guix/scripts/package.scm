@@ -965,9 +965,12 @@ more information.~%"))
                         ((name version output location _)
                          (format #t "  ~a\t~a\t~a\t~a~%"
                                  name version output location)))
-                       (manifest-packages
-                        (profile-manifest
-                         (format #f "~a-~a-link" profile number))))
+
+                       ;; Show most recently installed packages last.
+                       (reverse
+                        (manifest-packages
+                         (profile-manifest
+                          (format #f "~a-~a-link" profile number)))))
              (newline)))
 
          (cond ((not (file-exists? profile)) ; XXX: race condition
@@ -994,7 +997,9 @@ more information.~%"))
                                  (regexp-exec regexp name))
                          (format #t "~a\t~a\t~a\t~a~%"
                                  name (or version "?") output path))))
-                     installed)
+
+                     ;; Show most recently installed packages last.
+                     (reverse installed))
            #t))
 
         (('list-available regexp)

@@ -608,7 +608,9 @@ suggest setting these variables to @code{@var{profile}/include} and
 
 @item --list-generations[=@var{pattern}]
 @itemx -l [@var{pattern}]
-Return a list of generations along with their creation dates.
+Return a list of generations along with their creation dates; for each
+generation, show the installed packages, with the most recently
+installed packages shown last.
 
 For each installed package, print the following items, separated by
 tabs: the name of a package, its version string, the part of the package
@@ -692,9 +694,9 @@ version: 7.2alpha6
 
 @item --list-installed[=@var{regexp}]
 @itemx -I [@var{regexp}]
-List currently installed packages in the specified profile.  When
-@var{regexp} is specified, list only installed packages whose name
-matches @var{regexp}.
+List the currently installed packages in the specified profile, with the
+most recently installed packages shown last.  When @var{regexp} is
+specified, list only installed packages whose name matches @var{regexp}.
 
 For each installed package, print the following items, separated by
 tabs: the package name, its version string, the part of the package that
