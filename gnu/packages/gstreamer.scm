@@ -47,7 +47,7 @@
        ("glib" ,glib)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
-       ("python" ,python)))
+       ("python-wrapper" ,python-wrapper)))
     (home-page "http://gstreamer.freedesktop.org/")
     (synopsis
      "Multimedia library")
