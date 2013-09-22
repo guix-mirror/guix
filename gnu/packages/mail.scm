@@ -18,18 +18,20 @@
 
 (define-module (gnu packages mail)
   #:use-module (gnu packages)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages gnutls)
-  #:use-module (gnu packages gdbm)
-  #:use-module (gnu packages guile)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages dejagnu)
-  #:use-module (gnu packages m4)
-  #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages mysql)
   #:use-module (gnu packages autotools)
-  #:use-module (guix licenses)
+  #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages m4)
+  #:use-module (gnu packages mysql)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages texinfo)
+  #:use-module ((guix licenses)
+                #:select (gpl2+ gpl3+ lgpl3+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -104,3 +106,36 @@ message handling system.")
     (license
      ;; Libraries are under LGPLv3+, and programs under GPLv3+.
      (list gpl3+ lgpl3+))))
+
+(define-public fetchmail
+  (package
+    (name "fetchmail")
+    (version "6.3.26")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/fetchmail/branch_6.3/fetchmail-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0l78ayvi9dm8hd190gl139cs2xqsrf7r9ncilslw20mgvd6cbd3r"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags (list (string-append "--with-ssl="
+                                              (assoc-ref %build-inputs "openssl")))))
+    (home-page "http://fetchmail.berlios.de/")
+    (synopsis "Remote-mailr etrieval and forwarding utility")
+    (description
+     "Fetchmail is a full-featured, robust, well-documented remote-mail
+retrieval and forwarding utility intended to be used over on-demand
+TCP/IP links (such as SLIP or PPP connections).  It supports every
+remote-mail protocol now in use on the Internet: POP2, POP3, RPOP, APOP,
+KPOP, all flavors of IMAP, ETRN, and ODMR.  It can even support IPv6
+and IPSEC.
+
+Fetchmail retrieves mail from remote mail servers and forwards it via SMTP,
+so it can then be read by normal mail user agents such as mutt, elm
+or BSD Mail.  It allows all your system MTA's filtering, forwarding, and
+aliasing facilities to work just as they would on normal mail.")
+    (license gpl2+))) ; most files are actually public domain or x11
