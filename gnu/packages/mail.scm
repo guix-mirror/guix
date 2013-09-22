@@ -28,6 +28,7 @@
   #:use-module (gnu packages mysql)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
   #:use-module ((guix licenses)
@@ -139,3 +140,34 @@ so it can then be read by normal mail user agents such as mutt, elm
 or BSD Mail.  It allows all your system MTA's filtering, forwarding, and
 aliasing facilities to work just as they would on normal mail.")
     (license gpl2+))) ; most files are actually public domain or x11
+
+(define-public mutt
+  (package
+    (name "mutt")
+    (version "1.5.21")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "ftp://ftp.mutt.org/mutt/devel/mutt-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "1864cwz240gh0zy56fb47qqzwyf6ghg01037rb4p2kqgimpg6h91"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("openssl" ,openssl)
+       ("perl" ,perl)))
+    (arguments
+     `(#:configure-flags '("--enable-smtp"
+                           "--enable-imap"
+                           "--enable-pop"
+                           "--with-ssl"
+                           ;; so that mutt does not check whether the path
+                           ;; exists, which it does not in the chroot
+                           "--with-mailpath=/var/mail")))
+    (home-page "http://www.mutt.org/")
+    (synopsis "Mail client")
+    (description
+     "Mutt is a small but very powerful text-based mail client for Unix
+operating systems.")
+    (license gpl2+)))
