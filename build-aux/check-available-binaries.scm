@@ -49,7 +49,7 @@
             #f))))
 
   (let ((result (every (compose (warn (cut has-substitutes? store <>))
-                                derivation-path->output-path)
+                                derivation->output-path)
                        total)))
     (when result
       (format (current-error-port) "~a packages found substitutable~%"

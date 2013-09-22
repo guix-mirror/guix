@@ -214,6 +214,11 @@
     (license gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 
+
+;;;
+;;; Pluggable authentication modules (PAM).
+;;;
+
 (define-public linux-pam
   (package
     (name "linux-pam")
@@ -254,6 +259,11 @@ Pluggable authentication modules are small shared object files that can
 be used through the PAM API to perform tasks, like authenticating a user
 at login.  Local and dynamic reconfiguration are its key features")
     (license bsd-3)))
+
+
+;;;
+;;; Miscellaneous.
+;;;
 
 (define-public psmisc
   (package

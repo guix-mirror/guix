@@ -53,7 +53,7 @@
        ("gmp" ,gmp)
        ("readline" ,readline)
        ("ncurses" ,ncurses)
-       ("python" ,python)
+       ("python" ,python-wrapper)
        ("texinfo" ,texinfo)
        ("dejagnu" ,dejagnu)))
     (home-page "http://www.gnu.org/software/gdb/")

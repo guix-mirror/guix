@@ -58,7 +58,9 @@
      ;; require Zsh.
      `(("gettext" ,guix:gettext)))
     (arguments
-     `(#:tests? #f)) ; no test target
+     `(#:tests? #f ; no test target
+       #:python ,python-2)) ; Python 3 apparently not yet supported, see
+                            ; https://answers.launchpad.net/bzr/+question/229048
     (home-page "https://gnu.org/software/bazaar")
     (synopsis "Decentralized revision control system")
     (description
@@ -86,7 +88,7 @@ from a command line or use a GUI application.")
       ("gettext" ,guix:gettext)
       ("openssl" ,openssl)
       ("perl" ,perl)
-      ("python" ,python) ; CAVEAT: incompatible with python-3 according to INSTALL
+      ("python" ,python-2) ; CAVEAT: incompatible with python-3 according to INSTALL
       ("zlib" ,zlib)))
    (arguments
     `(#:make-flags `("V=1") ; more verbose compilation
@@ -126,7 +128,7 @@ everything from small to very large projects with speed and efficiency.")
       `(("apr" ,apr)
         ("apr-util" ,apr-util)
         ("perl" ,perl)
-        ("python" ,python)
+        ("python" ,python-2) ; incompatible with Python 3 (print syntax)
         ("sqlite" ,sqlite)
         ("zlib" ,zlib)))
     (home-page "http://subversion.apache.org/")

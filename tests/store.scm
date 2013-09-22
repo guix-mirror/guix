@@ -68,8 +68,7 @@
 (test-skip (if %store 0 10))
 
 (test-assert "dead-paths"
-  (let ((p (add-text-to-store %store "random-text"
-                              (random-text) '())))
+  (let ((p (add-text-to-store %store "random-text" (random-text))))
     (member p (dead-paths %store))))
 
 ;; FIXME: Find a test for `live-paths'.
@@ -83,7 +82,7 @@
 ;;          (d1 (derivation %store "link"
 ;;                          "/bin/sh" `("-e" ,b)
 ;;                          #:inputs `((,b) (,p1))))
-;;          (p2 (derivation-path->output-path d1)))
+;;          (p2 (derivation->output-path d1)))
 ;;     (and (add-temp-root %store p2)
 ;;          (build-derivations %store (list d1))
 ;;          (valid-path? %store p1)
@@ -99,7 +98,7 @@
 
 (test-assert "references"
   (let* ((t1 (add-text-to-store %store "random1"
-                                (random-text) '()))
+                                (random-text)))
          (t2 (add-text-to-store %store "random2"
                                 (random-text) (list t1))))
     (and (equal? (list t1) (references %store t2))
@@ -134,21 +133,21 @@
                         s `("-e" ,b)
                         #:env-vars `(("foo" . ,(random-text)))
                         #:inputs `((,b) (,s))))
-         (o (derivation-path->output-path d)))
+         (o (derivation->output-path d)))
     (and (build-derivations %store (list d))
-         (equal? (query-derivation-outputs %store d)
+         (equal? (query-derivation-outputs %store (derivation-file-name d))
                  (list o))
          (equal? (valid-derivers %store o)
-                 (list d)))))
+                 (list (derivation-file-name d))))))
 
 (test-assert "no substitutes"
   (let* ((s  (open-connection))
          (d1 (package-derivation s %bootstrap-guile (%current-system)))
          (d2 (package-derivation s %bootstrap-glibc (%current-system)))
-         (o  (map derivation-path->output-path (list d1 d2))))
+         (o  (map derivation->output-path (list d1 d2))))
     (set-build-options s #:use-substitutes? #f)
-    (and (not (has-substitutes? s d1))
-         (not (has-substitutes? s d2))
+    (and (not (has-substitutes? s (derivation-file-name d1)))
+         (not (has-substitutes? s (derivation-file-name d2)))
          (null? (substitutable-paths s o))
          (null? (substitutable-path-info s o)))))
 
@@ -157,7 +156,7 @@
 (test-assert "substitute query"
   (let* ((s   (open-connection))
          (d   (package-derivation s %bootstrap-guile (%current-system)))
-         (o   (derivation-path->output-path d))
+         (o   (derivation->output-path d))
          (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
                      (compose uri-path string->uri))))
     ;; Create fake substituter data, to be read by `substitute-binary'.
@@ -178,7 +177,8 @@ Deriver: ~a~%"
                 o                                   ; StorePath
                 (string-append dir "/example.nar")  ; URL
                 (%current-system)                   ; System
-                (basename d))))                     ; Deriver
+                (basename
+                 (derivation-file-name d)))))       ; Deriver
 
     ;; Remove entry from the local cache.
     (false-if-exception
@@ -192,7 +192,7 @@ Deriver: ~a~%"
          (equal? (list o) (substitutable-paths s (list o)))
          (match (pk 'spi (substitutable-path-info s (list o)))
            (((? substitutable? s))
-            (and (equal? (substitutable-deriver s) d)
+            (and (string=? (substitutable-deriver s) (derivation-file-name d))
                  (null? (substitutable-references s))
                  (equal? (substitutable-nar-size s) 1234)))))))
 
@@ -208,7 +208,7 @@ Deriver: ~a~%"
                '()
                #:guile-for-build
                (package-derivation s %bootstrap-guile (%current-system))))
-         (o   (derivation-path->output-path d))
+         (o   (derivation->output-path d))
          (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
                      (compose uri-path string->uri))))
     ;; Create fake substituter data, to be read by `substitute-binary'.
@@ -239,7 +239,8 @@ Deriver: ~a~%"
                   (compose bytevector->nix-base32-string sha256
                            get-bytevector-all))
                 (%current-system)                   ; System
-                (basename d))))                     ; Deriver
+                (basename
+                 (derivation-file-name d)))))       ; Deriver
 
     ;; Make sure we use `substitute-binary'.
     (set-build-options s #:use-substitutes? #t)
@@ -258,7 +259,7 @@ Deriver: ~a~%"
                '()
                #:guile-for-build
                (package-derivation s %bootstrap-guile (%current-system))))
-         (o   (derivation-path->output-path d))
+         (o   (derivation->output-path d))
          (dir (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
                      (compose uri-path string->uri))))
     ;; Create fake substituter data, to be read by `substitute-binary'.
@@ -280,7 +281,8 @@ Deriver: ~a~%"
                 o                                   ; StorePath
                 "does-not-exist.nar"                ; relative URL
                 (%current-system)                   ; System
-                (basename d))))                     ; Deriver
+                (basename
+                 (derivation-file-name d)))))       ; Deriver
 
     ;; Make sure we use `substitute-binary'.
     (set-build-options s #:use-substitutes? #t)

@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2012  Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012, 2013  Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -30,10 +30,10 @@ struct guix_hash_context
   gcry_md_hd_t md_handle;
 };
 
-extern void guix_hash_init (struct guix_hash_context *ctx, gcry_md_algo_t algo);
+extern void guix_hash_init (struct guix_hash_context *ctx, int algo);
 extern void guix_hash_update (struct guix_hash_context *ctx, const void *buffer,
 			      size_t len);
 extern void guix_hash_final (void *resbuf, struct guix_hash_context *ctx,
-			     gcry_md_algo_t algo);
+			     int algo);
 
 }

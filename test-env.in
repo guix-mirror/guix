@@ -69,5 +69,12 @@ then
     trap "kill $daemon_pid ; rm -rf $NIX_STATE_DIR" EXIT
 fi
 
+storedir="@storedir@"
+prefix="@prefix@"
+datarootdir="@datarootdir@"
+datadir="@datadir@"
+localstatedir="@localstatedir@"
+export storedir prefix datarootdir datadir localstatedir
+
 "@abs_top_builddir@/pre-inst-env" "$@"
 exit $?

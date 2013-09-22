@@ -35,9 +35,18 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages bash)
-  #:use-module (gnu packages file))
+  #:use-module (gnu packages file)
+  #:use-module (gnu packages xorg)
 
-(define-public dbus
+  ;; Export variables up-front to allow circular dependency with the 'xorg'
+  ;; module.
+  #:export (dbus
+            glib
+            dbus-glib
+            intltool
+            itstool))
+
+(define dbus
   (package
     (name "dbus")
     (version "1.6.4")
@@ -50,9 +59,26 @@
               (base32
                "1wacqyfkcpayg7f8rvx9awqg275n5pksxq5q7y21lxjx85x6pfjz"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list ;; Install the system bus socket under /var.
+                               "--localstatedir=/var"
+
+                               ;; XXX: Fix the following to allow system-wide
+                               ;; config.
+                               ;; "--sysconfdir=/etc"
+
+                               "--with-session-socket-dir=/tmp")
+       #:patches (list (assoc-ref %build-inputs "patch/localstatedir"))))
     (inputs
      `(("expat" ,expat)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("patch/localstatedir"
+        ,(search-patch "dbus-localstatedir.patch"))
+
+       ;; Add a dependency on libx11 so that 'dbus-launch' has support for
+       ;; '--autolaunch'.
+       ("libx11" ,libx11)))
+
     (home-page "http://dbus.freedesktop.org/")
     (synopsis "Message bus for inter-process communication (IPC)")
     (description
@@ -73,7 +99,7 @@ or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
 
-(define-public glib
+(define glib
   (package
    (name "glib")
    (version "2.37.1")
@@ -92,7 +118,7 @@ shared NFS home directories.")
       ("gettext" ,guix:gettext)
       ("libffi" ,libffi)
       ("pkg-config" ,pkg-config)
-      ("python" ,python)
+      ("python" ,python-wrapper)
       ("zlib" ,zlib)
       ("perl" ,perl)                              ; needed by GIO tests
       ("dbus" ,dbus)                              ; for GDBus tests
@@ -145,7 +171,7 @@ dynamic loading, and an object system.")
    (home-page "http://developer.gnome.org/glib/")
    (license license:lgpl2.0+)))                        ; some files are under lgpl2.1+
 
-(define-public intltool
+(define intltool
   (package
     (name "intltool")
     (version "0.50.2")
@@ -186,7 +212,7 @@ The intltool collection can be used to do these things:
     oaf files. This merge step will happen at build resp. installation time.")
     (license license:gpl2+)))
 
-(define-public itstool
+(define itstool
   (package
     (name "itstool")
     (version "1.2.0")
@@ -220,7 +246,7 @@ information in their documents, such as whether a particular element should be
 translated.")
     (license license:gpl3+)))
 
-(define-public dbus-glib
+(define dbus-glib
   (package
     (name "dbus-glib")
     (version "0.100.2")

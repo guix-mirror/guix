@@ -21,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages libdaemon)
   #:use-module (gnu packages pkg-config)
@@ -42,13 +43,15 @@
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-distro=none"
+                           "--localstatedir=/var" ; for the DBus socket
                            "--disable-python"
                            "--disable-mono"
                            "--disable-doxygen-doc"
                            "--disable-xmltoman"
                            "--enable-tests"
                            "--disable-qt3" "--disable-qt4"
-                           "--disable-gtk" "--disable-gtk3")))
+                           "--disable-gtk" "--disable-gtk3")
+       #:patches (list (assoc-ref %build-inputs "patch/localstatedir"))))
     (inputs
      `(("expat" ,expat)
        ("glib" ,glib)
@@ -56,7 +59,10 @@
        ("libdaemon" ,libdaemon)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
-       ("gdbm" ,gdbm)))
+       ("gdbm" ,gdbm)
+
+       ("patch/localstatedir"
+        ,(search-patch "avahi-localstatedir.patch"))))
     (synopsis "Avahi, an mDNS/DNS-SD implementation")
     (description
      "Avahi is a system which facilitates service discovery on a local

@@ -81,7 +81,7 @@
              ("pkg-config" ,pkg-config)
              ;; FIXME: Add interpreters fontforge and ruby,
              ;; once they are available.
-             ("python" ,python)
+             ("python" ,python-2) ; incompatible with Python 3 (print syntax)
              ("tcsh" ,tcsh)
              ("teckit" ,teckit)
              ("t1lib" ,t1lib)
@@ -202,7 +202,7 @@ world.")
     (build-system gnu-build-system)
     (arguments '(#:tests? #f))                    ; no `check' target
     (inputs `(("texinfo" ,texinfo)
-              ("python" ,python)
+              ("python" ,python-2) ; incompatible with Python 3 (print syntax)
               ("which" ,which)))
     (home-page "https://launchpad.net/rubber")
     (synopsis "Rubber, a wrapper for LaTeX and friends")

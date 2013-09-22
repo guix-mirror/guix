@@ -72,9 +72,9 @@ provides a 'CMakeLists.txt' file as its build system."
   (define builder
     `(begin
        (use-modules ,@modules)
-       (cmake-build #:source ,(if (and source (derivation-path? source))
-                                 (derivation-path->output-path source)
-                                 source)
+       (cmake-build #:source ,(if (derivation? source)
+                                  (derivation->output-path source)
+                                  source)
                     #:system ,system
                     #:outputs %outputs
                     #:inputs %build-inputs

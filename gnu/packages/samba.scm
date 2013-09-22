@@ -150,7 +150,7 @@ anywhere.")
        ("patchelf" ,patchelf)))                   ; for (guix build rpath)
     (native-inputs                                ; for the test suite
      `(("perl" ,perl)
-       ("python" ,python)))
+       ("python" ,python-wrapper)))
     (home-page "http://www.samba.org/")
     (synopsis
      "The standard Windows interoperability suite of programs for GNU and Unix")

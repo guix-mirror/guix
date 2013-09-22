@@ -117,6 +117,13 @@ SH_TESTS =					\
   tests/guix-hash.sh				\
   tests/guix-package.sh
 
+if BUILD_DAEMON
+
+SH_TESTS += tests/guix-register.sh
+
+endif BUILD_DAEMON
+
+
 TESTS = $(SCM_TESTS) $(SH_TESTS)
 
 TEST_EXTENSIONS = .scm .sh

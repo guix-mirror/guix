@@ -40,6 +40,7 @@
 (use-modules (guix store)
              (guix packages)
              (guix utils)
+             (guix derivations)
              (guix build-system gnu)
              (gnu packages version-control)
              (gnu packages package-management)
@@ -56,14 +57,15 @@
 (define* (package->alist store package system
                          #:optional (package-derivation package-derivation))
   "Convert PACKAGE to an alist suitable for Hydra."
-  `((derivation . ,(package-derivation store package system))
+  `((derivation . ,(derivation-file-name
+                    (package-derivation store package system)))
     (description . ,(package-synopsis package))
     (long-description . ,(package-description package))
     (license . ,(package-license package))
     (home-page . ,(package-home-page package))
     (maintainers . ("bug-guix@gnu.org"))))
 
-(define (tarball-package checkout)
+(define (tarball-package checkout nix-checkout)
   "Return a package that does `make distcheck' from CHECKOUT, a directory
 containing a Git checkout of Guix."
   (let ((dist (dist-package guix checkout)))
@@ -72,12 +74,12 @@ containing a Git checkout of Guix."
       (arguments (substitute-keyword-arguments (package-arguments dist)
                    ((#:phases p)
                     `(alist-cons-before
-                      'autoreconf 'patch-bootstrap-script
+                      'autoreconf 'set-nix-submodule
                       (lambda _
-                        ;; Comment out `git' invocations, since Hydra provides
-                        ;; us with a checkout that includes sub-modules.
-                        (substitute* "bootstrap"
-                          (("git ") "true git ")))
+                        ;; Tell Git to use the Nix checkout that Hydra gave us.
+                        (zero?
+                         (system* "git" "config" "submodule.nix-upstream.url"
+                                  ,nix-checkout)))
                       ,p))))
       (native-inputs `(("git" ,git)
                        ("graphviz" ,graphviz)
@@ -96,11 +98,16 @@ containing a Git checkout of Guix."
       (_
        (list (%current-system)))))
 
-  (define checkout
+  (define guix-checkout
     (assq-ref arguments 'guix))
 
-  (format (current-error-port) "using checkout ~s~%" checkout)
-  (let ((directory (assq-ref checkout 'file-name)))
+  (define nix-checkout
+    (assq-ref arguments 'nix))
+
+  (format (current-error-port) "using checkout ~s (Nix: ~s)~%"
+          guix-checkout nix-checkout)
+  (let ((guix (assq-ref guix-checkout 'file-name))
+        (nix  (assq-ref nix-checkout 'file-name)))
     `((tarball . ,(cute package->alist store
-                        (tarball-package directory)
+                        (tarball-package guix nix)
                         (%current-system))))))

@@ -19,9 +19,6 @@
 (define-module (gnu packages grub)
   #:use-module (guix download)
   #:use-module (guix packages)
-  #:use-module (guix records)
-  #:use-module (guix store)
-  #:use-module (guix derivations)
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
@@ -33,11 +30,7 @@
   #:use-module (gnu packages qemu)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages cdrom)
-  #:use-module (srfi srfi-1)
-  #:use-module (ice-9 match)
-  #:export (menu-entry
-            menu-entry?
-            grub-configuration-file))
+  #:use-module (srfi srfi-1))
 
 (define qemu-for-tests
   ;; Newer QEMU versions, such as 1.5.1, no longer support the 'shutdown'
@@ -117,56 +110,3 @@ computer starts.  It is responsible for loading and transferring control to
 the operating system kernel software (such as the Hurd or the Linux).  The
 kernel, in turn, initializes the rest of the operating system (e.g., GNU).")
     (license gpl3+)))
-
-
-;;;
-;;; Configuration.
-;;;
-
-(define-record-type* <menu-entry>
-  menu-entry make-menu-entry
-  menu-entry?
-  (label           menu-entry-label)
-  (linux           menu-entry-linux)
-  (linux-arguments menu-entry-linux-arguments
-                   (default '()))
-  (initrd          menu-entry-initrd))
-
-(define* (grub-configuration-file store entries
-                                  #:key (default-entry 1) (timeout 5)
-                                  (system (%current-system)))
-  "Return the GRUB configuration file in STORE for ENTRIES, a list of
-<menu-entry> objects, defaulting to DEFAULT-ENTRY and with the given TIMEOUT."
-  (define prologue
-    (format #f "
-set default=~a
-set timeout=~a
-search.file ~a~%"
-            default-entry timeout
-            (any (match-lambda
-                  (($ <menu-entry> _ linux)
-                   (let* ((drv (package-derivation store linux system))
-                          (out (derivation-path->output-path drv)))
-                     (string-append out "/bzImage"))))
-                 entries)))
-
-  (define entry->text
-    (match-lambda
-     (($ <menu-entry> label linux arguments initrd)
-      (let ((linux-drv  (package-derivation store linux system))
-            (initrd-drv (package-derivation store initrd system)))
-        ;; XXX: Assume that INITRD is a directory containing an 'initrd' file.
-        (format #f "menuentry ~s {
-  linux ~a/bzImage ~a
-  initrd ~a/initrd
-}~%"
-                label
-                (derivation-path->output-path linux-drv)
-                (string-join arguments)
-                (derivation-path->output-path initrd-drv))))))
-
-  (add-text-to-store store "grub.cfg"
-                     (string-append prologue
-                                    (string-concatenate
-                                     (map entry->text entries)))
-                     '()))

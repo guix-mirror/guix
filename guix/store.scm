@@ -452,7 +452,7 @@ encoding conversion errors."
                                        (string-list references))
                     #f
                     store-path)))
-    (lambda (server name text references)
+    (lambda* (server name text #:optional (references '()))
       "Add TEXT under file NAME in the store, and return its store path.
 REFERENCES is the list of store paths referred to by the resulting store
 path."

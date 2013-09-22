@@ -191,7 +191,7 @@ meaning that audio is compressed in FLAC without any loss in quality.")
              ("libogg" ,libogg)
              ("libpng" ,libpng)
              ("pkg-config" ,pkg-config)
-             ("python" ,python)
+             ("python" ,python-wrapper)
              ("zlib" ,zlib)))
    (synopsis "kate, a karaoke and text codec for embedding in ogg")
    (description

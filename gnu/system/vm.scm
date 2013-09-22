@@ -33,13 +33,20 @@
   #:use-module (gnu packages linux-initrd)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
-  #:use-module ((gnu packages system)
-                #:select (mingetty))
+  #:use-module (gnu packages system)
+
+  #:use-module (gnu system shadow)
+  #:use-module (gnu system linux)
+  #:use-module (gnu system grub)
+  #:use-module (gnu system dmd)
+
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+
   #:export (expression->derivation-in-linux-vm
-            qemu-image))
+            qemu-image
+            system-qemu-image))
 
 
 ;;; Commentary:
@@ -75,6 +82,9 @@ DISK-IMAGE-SIZE bytes and return it.
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs, as for `derivation'.  The files containing the reference graphs are
 made available under the /xchg CIFS share."
+  ;; FIXME: Allow use of macros from other modules, as done in
+  ;; `build-expression->derivation'.
+
   (define input-alist
     (map (match-lambda
           ((input (? package? package))
@@ -197,10 +207,10 @@ It can be used to provide additional files, such as /etc files."
   (define input->name+derivation
     (match-lambda
      ((name (? package? package))
-      `(,name . ,(derivation-path->output-path
+      `(,name . ,(derivation->output-path
                   (package-derivation store package system))))
      ((name (? package? package) sub-drv)
-      `(,name . ,(derivation-path->output-path
+      `(,name . ,(derivation->output-path
                   (package-derivation store package system)
                   sub-drv)))
      ((input (and (? string?) (? store-path?) file))
@@ -294,6 +304,19 @@ It can be used to provide additional files, such as /etc files."
                                (primitive-load populate)
                                (chdir "/")))
 
+                      (display "clearing file timestamps...\n")
+                      (for-each (lambda (file)
+                                  (let ((s (lstat file)))
+                                    ;; XXX: Guile uses libc's 'utime' function
+                                    ;; (not 'futime'), so the timestamp of
+                                    ;; symlinks cannot be changed, and there
+                                    ;; are symlinks here pointing to
+                                    ;; /nix/store, which is the host,
+                                    ;; read-only store.
+                                    (unless (eq? (stat:type s) 'symlink)
+                                      (utime file 0 0 0 0))))
+                                (find-files "/fs" ".*"))
+
                       (and (zero?
                             (system* grub "--no-floppy"
                                      "--boot-directory" "/fs/boot"
@@ -327,100 +350,88 @@ It can be used to provide additional files, such as /etc files."
 
 
 ;;;
-;;; Guile 2.0 potluck examples.
+;;; Stand-alone VM image.
 ;;;
 
-(define (example1)
-  (let ((store #f))
-    (dynamic-wind
-      (lambda ()
-        (set! store (open-connection)))
-      (lambda ()
-        (parameterize ((%guile-for-build (package-derivation store guile-final)))
-          (expression->derivation-in-linux-vm
-           store "vm-test"
-           '(begin
-              (display "hello from boot!\n")
-              (call-with-output-file "/xchg/hello"
-                (lambda (p)
-                  (display "world" p)))))))
-      (lambda ()
-        (close-connection store)))))
+(define (system-qemu-image store)
+  "Return the derivation of a QEMU image of the GNU system."
+  (define %pam-services
+    ;; Services known to PAM.
+    (list %pam-other-services
+          (unix-pam-service "login" #:allow-empty-passwords? #t)))
 
-(define (/etc/shadow store accounts)
-  "Return a /etc/shadow file for ACCOUNTS."
-  (define contents
-    (let loop ((accounts accounts)
-               (result   '()))
-      (match accounts
-        (((name uid gid comment home-dir shell) rest ...)
-         (loop rest
-               (cons (string-append name "::" (number->string uid)
-                                    ":" (number->string gid)
-                                    comment ":" home-dir ":" shell)
-                     result)))
-        (()
-         (string-concatenate-reverse result)))))
+  (define %dmd-services
+    ;; Services run by dmd.
+    (list (mingetty-service store "tty1")
+          (mingetty-service store "tty2")
+          (mingetty-service store "tty3")
+          (syslog-service store)))
 
-  (add-text-to-store store "shadow" contents '()))
+  (parameterize ((%guile-for-build (package-derivation store guile-final)))
+    (let* ((bash-drv  (package-derivation store bash))
+           (bash-file (string-append (derivation->output-path bash-drv)
+                                     "/bin/bash"))
+           (dmd-drv   (package-derivation store dmd))
+           (dmd-file  (string-append (derivation->output-path dmd-drv)
+                                     "/bin/dmd"))
+           (dmd-conf  (dmd-configuration-file store %dmd-services))
+           (accounts  (list (vector "root" "" 0 0 "System administrator"
+                                    "/" bash-file)))
+           (passwd    (passwd-file store accounts))
+           (shadow    (passwd-file store accounts #:shadow? #t))
+           (group     (add-text-to-store store "group"
+                                         "root:x:0:\n"))
+           (pam.d-drv (pam-services->directory store %pam-services))
+           (pam.d     (derivation->output-path pam.d-drv))
+           (populate
+            (add-text-to-store store "populate-qemu-image"
+                               (object->string
+                                `(begin
+                                   (mkdir-p "etc")
+                                   (mkdir-p "var/log") ; for dmd
+                                   (symlink ,shadow "etc/shadow")
+                                   (symlink ,passwd "etc/passwd")
+                                   (symlink ,group "etc/group")
+                                   (symlink "/dev/null"
+                                            "etc/login.defs")
+                                   (symlink ,pam.d "etc/pam.d")
+                                   (mkdir-p "var/run")))
+                               (list passwd)))
+           (out     (derivation->output-path
+                     (package-derivation store mingetty)))
+           (boot    (add-text-to-store store "boot"
+                                       (object->string
+                                        `(execl ,dmd-file "dmd"
+                                                "--config" ,dmd-conf))
+                                       (list out)))
+           (entries  (list (menu-entry
+                            (label "Boot-to-Guile! (GNU System technology preview)")
+                            (linux linux-libre)
+                            (linux-arguments `("--root=/dev/vda1"
+                                               ,(string-append "--load=" boot)))
+                            (initrd gnu-system-initrd))))
+           (grub.cfg (grub-configuration-file store entries)))
+      (build-derivations store (list pam.d-drv))
+      (qemu-image store
+                  #:grub-configuration grub.cfg
+                  #:populate populate
+                  #:disk-image-size (* 400 (expt 2 20))
+                  #:inputs-to-copy `(("boot" ,boot)
+                                     ("linux" ,linux-libre)
+                                     ("initrd" ,gnu-system-initrd)
+                                     ("coreutils" ,coreutils)
+                                     ("bash" ,bash)
+                                     ("guile" ,guile-2.0)
+                                     ("mingetty" ,mingetty)
+                                     ("dmd" ,dmd)
 
-(define (example2)
-  (let ((store #f))
-    (dynamic-wind
-      (lambda ()
-        (set! store (open-connection)))
-      (lambda ()
-        (parameterize ((%guile-for-build (package-derivation store guile-final)))
-          (let* ((bash-drv  (package-derivation store bash))
-                 (bash-file (string-append (derivation-path->output-path bash-drv)
-                                           "/bin/bash"))
-                 (passwd    (/etc/shadow store
-                                         `(("root" 0 0 "System administrator" "/"
-                                            ,bash-file))))
-                 (populate
-                  (add-text-to-store store "populate-qemu-image"
-                                     (object->string
-                                      `(begin
-                                         (mkdir-p "etc")
-                                         (symlink ,(substring passwd 1)
-                                                  "etc/shadow")))
-                                     (list passwd)))
-                 (out   (derivation-path->output-path
-                         (package-derivation store mingetty)))
-                 (getty (string-append out "/sbin/mingetty"))
-                 (boot  (add-text-to-store store "boot"
-                                           (object->string
-                                            `(begin
-                                               ;; Become the session leader,
-                                               ;; so that mingetty can do
-                                               ;; 'TIOCSCTTY'.
-                                               (setsid)
-
-                                               ;; Directly into mingetty.
-                                               (execl ,getty "mingetty"
-                                                      "--noclear" "tty1")))
-                                           (list out)))
-                 (entries  (list (menu-entry
-                                  (label "Boot-to-Guile! (GNU System technology preview)")
-                                  (linux linux-libre)
-                                  (linux-arguments `("--root=/dev/vda1"
-                                                     ,(string-append "--load=" boot)))
-                                  (initrd gnu-system-initrd))))
-                 (grub.cfg (grub-configuration-file store entries)))
-           (qemu-image store
-                       #:grub-configuration grub.cfg
-                       #:populate populate
-                       #:disk-image-size (* 400 (expt 2 20))
-                       #:inputs-to-copy `(("boot" ,boot)
-                                          ("linux" ,linux-libre)
-                                          ("initrd" ,gnu-system-initrd)
-                                          ("coreutils" ,coreutils)
-                                          ("bash" ,bash)
-                                          ("guile" ,guile-2.0)
-                                          ("mingetty" ,mingetty)
-
-                                          ("shadow" ,passwd))))))
-      (lambda ()
-        (close-connection store)))))
+                                     ;; Configuration.
+                                     ("dmd.conf" ,dmd-conf)
+                                     ("etc-pam.d" ,pam.d)
+                                     ("etc-passwd" ,passwd)
+                                     ("etc-shadow" ,shadow)
+                                     ("etc-group" ,group)
+                                     ,@(append-map service-inputs
+                                                   %dmd-services))))))
 
 ;;; vm.scm ends here

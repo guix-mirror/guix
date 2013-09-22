@@ -25,7 +25,39 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages linux))
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages pkg-config))
+
+(define-public dmd
+  (package
+    (name "dmd")
+    (version "-0.4")
+    (source (origin
+             (method url-fetch)
+
+             ;; XXX: Temporary location until dmd gets back home.
+             (uri (string-append
+                   "http://www.fdn.fr/~lcourtes/software/guix/dmd-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "094ja3xvk9ljghhxmy39if67cfjd1hy6m4svnp399n0wpxvaryvy"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--localstatedir=/var")))
+    (inputs `(("pkg-config" ,pkg-config)
+              ("guile" ,guile-2.0)))
+    (synopsis "Daemon managing daemons")
+    (description "'DMD' is a \"Daemon managing Daemons\" (or
+\"Daemons-managing Daemon\"?)---i.e. a service manager that provides a
+replacement for the service-managing capabilities of SysV-init (or any other
+init) with a both powerful and beautiful dependency-based system with a
+convenient interface.  It is intended for use on GNU/Hurd, but it is supposed
+to work on every POSIX-like system where Guile is available.  In particular,
+it has been tested on GNU/Linux.")
+    (license gpl3+)
+    (home-page "http://www.gnu.org/software/dmd/")))
 
 (define-public dfc
   (package

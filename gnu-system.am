@@ -69,6 +69,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gkrellm.scm			\
   gnu/packages/glib.scm				\
   gnu/packages/global.scm			\
+  gnu/packages/gnome.scm			\
   gnu/packages/gnunet.scm			\
   gnu/packages/gnupg.scm			\
   gnu/packages/gnutls.scm			\
@@ -79,6 +80,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/grub.scm				\
   gnu/packages/grue-hunter.scm			\
   gnu/packages/gsasl.scm			\
+  gnu/packages/gstreamer.scm			\
   gnu/packages/gtk.scm				\
   gnu/packages/guile.scm			\
   gnu/packages/gv.scm				\
@@ -113,7 +115,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lua.scm				\
   gnu/packages/lvm.scm				\
   gnu/packages/m4.scm				\
-  gnu/packages/mailutils.scm			\
+  gnu/packages/mail.scm				\
   gnu/packages/make-bootstrap.scm		\
   gnu/packages/maths.scm			\
   gnu/packages/mit-krb5.scm			\
@@ -179,17 +181,24 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/yasm.scm				\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
+						\
+  gnu/system/dmd.scm				\
+  gnu/system/grub.scm				\
+  gnu/system/linux.scm				\
+  gnu/system/shadow.scm				\
   gnu/system/vm.scm
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
 dist_patch_DATA =						\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
+  gnu/packages/patches/avahi-localstatedir.patch		\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/cdparanoia-fpic.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
+  gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
   gnu/packages/patches/emacs-configure-sh.patch			\
   gnu/packages/patches/findutils-absolute-paths.patch		\
@@ -203,7 +212,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-no-ld-so-cache.patch		\
-  gnu/packages/patches/gnutls-fix-tests-on-32-bits-system.patch	\
   gnu/packages/patches/grub-gets-undeclared.patch		\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
   gnu/packages/patches/guile-default-utf8.patch			\

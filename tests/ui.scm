@@ -20,6 +20,7 @@
 (define-module (test-ui)
   #:use-module (guix ui)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-64))
 
 ;; Test the (guix ui) module.
@@ -63,6 +64,90 @@ interface, and powerful string processing.")
    (fill-paragraph "Here is a very-very-long-word and that's it."
                    10)
    #\newline))
+
+(test-equal "integer"
+  '(1)
+  (string->generations "1"))
+
+(test-equal "comma-separated integers"
+  '(3 7 1 4 6)
+  (string->generations "3,7,1,4,6"))
+
+(test-equal "closed range"
+  '(4 5 6 7 8 9 10 11 12)
+  (string->generations "4..12"))
+
+(test-equal "closed range, equal endpoints"
+  '(3)
+  (string->generations "3..3"))
+
+(test-equal "indefinite end range"
+  '(>= 7)
+  (string->generations "7.."))
+
+(test-equal "indefinite start range"
+  '(<= 42)
+  (string->generations "..42"))
+
+(test-equal "integer, char"
+  #f
+  (string->generations "a"))
+
+(test-equal "comma-separated integers, consecutive comma"
+  #f
+  (string->generations "1,,2"))
+
+(test-equal "comma-separated integers, trailing comma"
+  #f
+  (string->generations "1,2,"))
+
+(test-equal "comma-separated integers, chars"
+  #f
+  (string->generations "a,b"))
+
+(test-equal "closed range, start > end"
+  #f
+  (string->generations "9..2"))
+
+(test-equal "closed range, chars"
+  #f
+  (string->generations "a..b"))
+
+(test-equal "indefinite end range, char"
+  #f
+  (string->generations "a.."))
+
+(test-equal "indefinite start range, char"
+  #f
+  (string->generations "..a"))
+
+(test-equal "duration, 1 day"
+  (make-time time-duration 0 (* 3600 24))
+  (string->duration "1d"))
+
+(test-equal "duration, 1 week"
+  (make-time time-duration 0 (* 3600 24 7))
+  (string->duration "1w"))
+
+(test-equal "duration, 1 month"
+  (make-time time-duration 0 (* 3600 24 30))
+  (string->duration "1m"))
+
+(test-equal "duration, 1 week == 7 days"
+  (string->duration "1w")
+  (string->duration "7d"))
+
+(test-equal "duration, 1 month == 30 days"
+  (string->duration "1m")
+  (string->duration "30d"))
+
+(test-equal "duration, integer"
+  #f
+  (string->duration "1"))
+
+(test-equal "duration, char"
+  #f
+  (string->duration "d"))
 
 (test-end "ui")
 

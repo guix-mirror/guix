@@ -16,20 +16,23 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages mailutils)
+(define-module (gnu packages mail)
   #:use-module (gnu packages)
-  #:use-module (gnu packages linux)
-  #:use-module (gnu packages gnutls)
-  #:use-module (gnu packages gdbm)
-  #:use-module (gnu packages guile)
-  #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages dejagnu)
-  #:use-module (gnu packages m4)
-  #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages mysql)
   #:use-module (gnu packages autotools)
-  #:use-module (guix licenses)
+  #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages m4)
+  #:use-module (gnu packages mysql)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages texinfo)
+  #:use-module ((guix licenses)
+                #:select (gpl2+ gpl3+ lgpl3+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -104,3 +107,67 @@ message handling system.")
     (license
      ;; Libraries are under LGPLv3+, and programs under GPLv3+.
      (list gpl3+ lgpl3+))))
+
+(define-public fetchmail
+  (package
+    (name "fetchmail")
+    (version "6.3.26")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/fetchmail/branch_6.3/fetchmail-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0l78ayvi9dm8hd190gl139cs2xqsrf7r9ncilslw20mgvd6cbd3r"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("openssl" ,openssl)))
+    (arguments
+     `(#:configure-flags (list (string-append "--with-ssl="
+                                              (assoc-ref %build-inputs "openssl")))))
+    (home-page "http://fetchmail.berlios.de/")
+    (synopsis "Remote-mailr etrieval and forwarding utility")
+    (description
+     "Fetchmail is a full-featured, robust, well-documented remote-mail
+retrieval and forwarding utility intended to be used over on-demand
+TCP/IP links (such as SLIP or PPP connections).  It supports every
+remote-mail protocol now in use on the Internet: POP2, POP3, RPOP, APOP,
+KPOP, all flavors of IMAP, ETRN, and ODMR.  It can even support IPv6
+and IPSEC.
+
+Fetchmail retrieves mail from remote mail servers and forwards it via SMTP,
+so it can then be read by normal mail user agents such as mutt, elm
+or BSD Mail.  It allows all your system MTA's filtering, forwarding, and
+aliasing facilities to work just as they would on normal mail.")
+    (license gpl2+))) ; most files are actually public domain or x11
+
+(define-public mutt
+  (package
+    (name "mutt")
+    (version "1.5.21")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "ftp://ftp.mutt.org/mutt/devel/mutt-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "1864cwz240gh0zy56fb47qqzwyf6ghg01037rb4p2kqgimpg6h91"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("openssl" ,openssl)
+       ("perl" ,perl)))
+    (arguments
+     `(#:configure-flags '("--enable-smtp"
+                           "--enable-imap"
+                           "--enable-pop"
+                           "--with-ssl"
+                           ;; so that mutt does not check whether the path
+                           ;; exists, which it does not in the chroot
+                           "--with-mailpath=/var/mail")))
+    (home-page "http://www.mutt.org/")
+    (synopsis "Mail client")
+    (description
+     "Mutt is a small but very powerful text-based mail client for Unix
+operating systems.")
+    (license gpl2+)))

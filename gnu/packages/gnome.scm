@@ -16,40 +16,42 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages yasm)
-  #:use-module (gnu packages)
-  #:use-module ((guix licenses)
-                #:renamer (symbol-prefix-proc 'license:))
+(define-module (gnu packages gnome)
+  #:use-module ((guix licenses) #:select (gpl2+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml))
 
-(define-public yasm
+(define-public gnome-doc-utils
   (package
-    (name "yasm")
-    (version "1.2.0")
+    (name "gnome-doc-utils")
+    (version "0.20.10")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.tortall.net/projects/yasm/releases/yasm-"
-                          version ".tar.gz"))
+      (uri (string-append "mirror://gnome/sources/" name "/0.20/"
+                          name "-" version ".tar.xz"))
       (sha256
        (base32
-        "0cfg7ji3ia2in628w42wrfvw2ixmmm4rghwmv2k202mraysgm3vn"))))
+        "19n4x25ndzngaciiyd8dd6s2mf9gv6nv3wv27ggns2smm7zkj1nb"))))
     (build-system gnu-build-system)
     (inputs
-     `(("python" ,python-wrapper)
-       ("xmlto" ,xmlto)))
-    (home-page "http://yasm.tortall.net/")
-    (synopsis "Rewrite of the NASM assembler")
+     `(("intltool" ,intltool)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("pkg-config" ,pkg-config)
+       ("python-2" ,python-2)))
+    (arguments
+     `(#:tests? #f)) ; tries to load http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd
+    (home-page "https://wiki.gnome.org/GnomeDocUtils")
+    (synopsis
+     "Documentation utilities for the Gnome project")
     (description
-     "Yasm is a complete rewrite of the NASM assembler.
-
-Yasm currently supports the x86 and AMD64 instruction sets, accepts NASM
-and GAS assembler syntaxes, outputs binary, ELF32, ELF64, 32 and 64-bit
-Mach-O, RDOFF2, COFF, Win32, and Win64 object formats, and generates source
-debugging information in STABS, DWARF 2, and CodeView 8 formats.")
-    (license (license:bsd-style "file://COPYING"
-                                "See COPYING in the distribution."))))
+     "Gnome-doc-utils is a collection of documentation utilities for the
+Gnome project.  It includes xml2po tool which makes it easier to translate
+and keep up to date translations of documentation.")
+    (license gpl2+))) ; xslt under lgpl

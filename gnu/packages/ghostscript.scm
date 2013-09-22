@@ -136,7 +136,7 @@ printing, and psresize, for adjusting page sizes.")
              ("libtiff" ,libtiff)
              ("perl" ,perl)
              ("pkg-config" ,pkg-config) ; needed to find libtiff
-             ("python" ,python)
+             ("python" ,python-wrapper)
              ("tcl" ,tcl)
              ("zlib" ,zlib)))
    (arguments

@@ -25,6 +25,8 @@ CLEANFILES += $(BUILT_SOURCES)
 
 noinst_LIBRARIES = libformat.a libutil.a libstore.a
 
+AM_CXXFLAGS = -Wall
+
 libformat_a_SOURCES =				\
   nix/boost/format/free_funcs.cc		\
   nix/boost/format/parsing.cc			\
@@ -119,6 +121,7 @@ libstore_a_CXXFLAGS =				\
   $(SQLITE3_CFLAGS) $(LIBGCRYPT_CFLAGS)
 
 bin_PROGRAMS = guix-daemon
+sbin_PROGRAMS = guix-register
 
 guix_daemon_SOURCES =				\
   nix/nix-daemon/nix-daemon.cc			\
@@ -134,6 +137,21 @@ guix_daemon_LDADD =				\
 
 guix_daemon_headers =				\
   nix/nix-daemon/shared.hh
+
+
+guix_register_SOURCES =				\
+  nix/guix-register/guix-register.cc
+
+guix_register_CPPFLAGS =			\
+  $(libutil_a_CPPFLAGS)				\
+  $(libstore_a_CPPFLAGS)			\
+  -I$(top_srcdir)/nix/libstore
+
+# XXX: Should we start using shared libs?
+guix_register_LDADD =				\
+  libstore.a libutil.a libformat.a -lbz2	\
+  $(SQLITE3_LIBS) $(LIBGCRYPT_LIBS)
+
 
 libexec_PROGRAMS = nix-setuid-helper
 nix_setuid_helper_SOURCES =			\

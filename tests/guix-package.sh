@@ -55,7 +55,7 @@ test "`guix package --search-paths -p "$profile" | wc -l`" = 0
 if guile -c '(getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)' 2> /dev/null
 then
     boot_make="(@@ (gnu packages base) gnu-make-boot0)"
-    boot_make_drv="`guix build -e "$boot_make" | tail -1`"
+    boot_make_drv="`guix build -e "$boot_make" | grep -v -e -debug`"
     guix package --bootstrap -p "$profile" -i "$boot_make_drv"
     test -L "$profile-2-link"
     test -f "$profile/bin/make" && test -f "$profile/bin/guile"
@@ -80,6 +80,10 @@ then
     test "`guix package -s "An example GNU package" | grep ^name:`" = \
         "name: hello"
     test "`guix package -s "n0t4r341p4ck4g3"`" = ""
+
+    # List generations.
+    test "`guix package -p "$profile" -l | cut -f1 | grep guile | head -n1`" \
+        = "  guile-bootstrap"
 
     # Remove a package.
     guix package --bootstrap -p "$profile" -r "guile-bootstrap"
