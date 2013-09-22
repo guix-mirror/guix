@@ -76,10 +76,11 @@
     ;; avoid stat'ing like crazy.
     (with-fluids ((%file-port-name-canonicalization #f))
       (let ((port (open-file file "rb")))
-        (catch #t (cut proc port)
-          (lambda args
-            (close-port port)
-            (apply throw args))))))
+        (dynamic-wind
+          (const #t)
+          (cut proc port)
+          (lambda ()
+            (close-port port))))))
 
   (write-string "contents" p)
   (write-long-long size p)
