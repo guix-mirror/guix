@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages mailutils)
+(define-module (gnu packages mail)
   #:use-module (gnu packages)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages gnutls)

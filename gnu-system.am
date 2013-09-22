@@ -115,7 +115,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lua.scm				\
   gnu/packages/lvm.scm				\
   gnu/packages/m4.scm				\
-  gnu/packages/mailutils.scm			\
+  gnu/packages/mail.scm				\
   gnu/packages/make-bootstrap.scm		\
   gnu/packages/maths.scm			\
   gnu/packages/mit-krb5.scm			\
