@@ -25,6 +25,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages icu4c)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages patchelf)
@@ -410,3 +411,30 @@ Python 3.3+.")
 
 (define-public python2-simplejson
   (package-with-python2 python-simplejson))
+
+
+(define-public python2-pyicu
+  (package
+    (name "python2-pyicu")
+    (version "1.5")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/P/PyICU/PyICU-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "011vwflpir8wvh48mvi6d9a7vw0f43bkwv0w6bzxbzmvz20ax5vm"))))
+    (build-system python-build-system)
+    (inputs
+     `(("icu4c" ,icu4c)))
+    (arguments
+     `(#:python ,python-2 ; Python 3 works also, but needs special care for
+                          ; linking with libpython3.3m
+       #:tests? #f)) ; no check target
+    (home-page "http://pyicu.osafoundation.org/")
+    (synopsis
+     "Python extension wrapping the ICU C++ API.")
+    (description
+     "PyICU is a python extension wrapping the ICU C++ API.")
+    (license x11)))
