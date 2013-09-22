@@ -25,6 +25,8 @@ CLEANFILES += $(BUILT_SOURCES)
 
 noinst_LIBRARIES = libformat.a libutil.a libstore.a
 
+AM_CXXFLAGS = -Wall
+
 libformat_a_SOURCES =				\
   nix/boost/format/free_funcs.cc		\
   nix/boost/format/parsing.cc			\
