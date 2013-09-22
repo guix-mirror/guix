@@ -76,3 +76,4 @@ stamp-h[0-9]
 /nix/scripts/substitute-binary
 /doc/images/bootstrap-graph.png
 /doc/images/bootstrap-graph.eps
+/guix-register
