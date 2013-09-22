@@ -1929,6 +1929,11 @@ tracking.")
       `(("libxcursor" ,libxcursor)
         ("pkg-config" ,pkg-config)
         ("xcursorgen" ,xcursorgen)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-cursordir="
+                            (assoc-ref %outputs "out")
+                            "/share/icons"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
