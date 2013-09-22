@@ -29,6 +29,7 @@ exec guile -l "$0"                              \
   #:use-module (guix gnu-maintenance)
   #:use-module (gnu packages)
   #:use-module (sxml simple)
+  #:use-module (sxml fold)
   #:use-module (web uri)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
@@ -48,8 +49,13 @@ exec guile -l "$0"                              \
               (equal? (gnu-package-name package) name))
             gnu))))
 
-(define (package->sxml package)
-  "Return HTML-as-SXML representing PACKAGE."
+(define (package->sxml package previous description-ids remaining)
+  "Return 3 values: the HTML-as-SXML for PACKAGE added to all previously
+collected package output in PREVIOUS, a list of DESCRIPTION-IDS and the number
+of packages still to be processed in REMAINING.  Also Introduces a call to the
+JavaScript prep_pkg_descs function as part of the output of PACKAGE, every
+time the length of DESCRIPTION-IDS, increasing, is 15 or when REMAINING,
+decreasing, is 1."
   (define (source-url package)
     (let ((loc (package-location package)))
       (and loc
@@ -92,37 +98,66 @@ exec guile -l "$0"                              \
     (and=> (lookup-gnu-package name)
            gnu-package-logo))
 
+  (define (insert-tr description-id js?)
+    (define (insert-js-call description-ids)
+      "Return an sxml call to prep_pkg_descs, with up to 15 elements of
+description-ids as formal parameters."
+      `(script (@ (type "text/javascript"))
+               ,(format #f "prep_pkg_descs(~a)"
+                        (string-append "'"
+                                       (string-join description-ids "', '")
+                                       "'"))))
+
+    (let ((description-ids (cons description-id description-ids)))
+      `(tr (td ,(if (gnu-package? package)
+                    `(img (@ (src "/graphics/gnu-head-mini.png")
+                             (alt "Part of GNU")
+                             (title "Part of GNU")))
+                    ""))
+           (td (a (@ (href ,(source-url package))
+                     (title "Link to the Guix package source code"))
+                  ,(package-name package) " "
+                  ,(package-version package)))
+           (td (span ,(package-synopsis package))
+               (div (@ (id ,description-id))
+                    ,(match (package-logo (package-name package))
+                       ((? string? url)
+                        `(img (@ (src ,url)
+                                 (height "35")
+                                 (class "package-logo")
+                                 (alt ("Logo of " ,(package-name package))))))
+                       (_ #f))
+                    (p ,(package-description package))
+                    ,(license package)
+                    (a (@ (href ,(package-home-page package))
+                          (title "Link to the package's website"))
+                       ,(package-home-page package))
+                    ,(status package)
+                    ,(if js?
+                         (insert-js-call description-ids)
+                         ""))))))
+
   (let ((description-id (symbol->string
                          (gensym (package-name package)))))
-   `(tr (td ,(if (gnu-package? package)
-                 `(img (@ (src "/graphics/gnu-head-mini.png")
-                          (alt "Part of GNU")
-                          (title "Part of GNU")))
-                 ""))
-        (td (a (@ (href ,(source-url package))
-                  (title "Link to the Guix package source code"))
-               ,(package-name package) " "
-               ,(package-version package)))
-        (td (a (@ (href "javascript:void(0)")
-                  (title "show/hide package description")
-                  (onClick ,(format #f "javascript:show_hide('~a')"
-                                    description-id)))
-               ,(package-synopsis package))
-            (div (@ (id ,description-id)
-                    (style "display: none;"))
-                 ,(match (package-logo (package-name package))
-                    ((? string? url)
-                     `(img (@ (src ,url)
-                              (height "35")
-                              (class "package-logo")
-                              (alt ("Logo of " ,(package-name package))))))
-                    (_ #f))
-                 (p ,(package-description package))
-                 ,(license package)
-                 (a (@ (href ,(package-home-page package))
-                       (title "Link to the package's website"))
-                    ,(package-home-page package))
-                 ,(status package))))))
+    (cond ((= remaining 1)              ; Last package in packages
+           (values
+            (reverse                              ; Fold has reversed packages
+             (cons (insert-tr description-id 'js) ; Prefix final sxml
+                   previous))
+            '()                            ; No more work to do
+            0))                            ; End of the line
+          ((= (length description-ids) 15) ; Time for a JS call
+           (values
+            (cons (insert-tr description-id 'js)
+                  previous)    ; Prefix new sxml
+            '()                ; Reset description-ids
+            (1- remaining)))   ; Reduce remaining
+          (else                ; Insert another row, and build description-ids
+           (values
+            (cons (insert-tr description-id #f)
+                  previous)                       ; Prefix new sxml
+            (cons description-id description-ids) ; Update description-ids
+            (1- remaining))))))                   ; Reduce remaining
 
 (define (packages->sxml packages)
   "Return an HTML page as SXML describing PACKAGES."
@@ -145,7 +180,7 @@ exec guile -l "$0"                              \
            (tr (th "GNU?")
                (th "Package version")
                (th "Package details"))
-           ,@(map package->sxml packages))
+           ,@(fold-values package->sxml packages '() '() (length packages)))
     (a (@ (href "#intro")
           (title "Back to top.")
           (id "top"))
@@ -239,14 +274,45 @@ a#top:hover, a#top:focus {
 // license: CC0
 function show_hide(idThing)
 {
+  if(document.getElementById && document.createTextNode) {
     var thing = document.getElementById(idThing);
+    /* Used to change the link text, depending on whether description is
+       collapsed or expanded */
+    var thingLink = thing.previousSibling.lastChild.firstChild;
     if (thing) {
       if (thing.style.display == \"none\") {
         thing.style.display = \"\";
+        thingLink.data = 'Collapse';
       } else {
         thing.style.display = \"none\";
+        thingLink.data = 'Expand';
       }
     }
+  }
+}
+/* Add controllers used for collapse/expansion of package descriptions */
+function prep(idThing)
+{
+  var tdThing = document.getElementById(idThing).parentNode;
+  if (tdThing) {
+    var aThing = tdThing.firstChild.appendChild(document.createElement('a'));
+    aThing.setAttribute('href', 'javascript:void(0)');
+    aThing.setAttribute('title', 'show/hide package description');
+    aThing.appendChild(document.createTextNode('Expand'));
+    aThing.onclick=function(){show_hide(idThing);};
+    /* aThing.onkeypress=function(){show_hide(idThing);}; */
+  }
+}
+/* Take n element IDs, prepare them for javascript enhanced
+   display and hide the IDs by default. */
+function prep_pkg_descs()
+{
+  if(document.getElementById && document.createTextNode) {
+    for(var i=0; i<arguments.length; i++) {
+      prep(arguments[i])
+      show_hide(arguments[i]);
+    }
+  }
 }
 </script>"))
 
