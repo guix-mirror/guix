@@ -19,6 +19,7 @@
 (define-module (gnu packages mail)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages gnutls)
@@ -154,7 +155,8 @@ aliasing facilities to work just as they would on normal mail.")
                "1864cwz240gh0zy56fb47qqzwyf6ghg01037rb4p2kqgimpg6h91"))))
     (build-system gnu-build-system)
     (inputs
-     `(("ncurses" ,ncurses)
+     `(("cyrus-sasl" ,cyrus-sasl)
+       ("ncurses" ,ncurses)
        ("openssl" ,openssl)
        ("perl" ,perl)))
     (arguments
@@ -162,6 +164,7 @@ aliasing facilities to work just as they would on normal mail.")
                            "--enable-imap"
                            "--enable-pop"
                            "--with-ssl"
+                           "--with-sasl"
                            ;; so that mutt does not check whether the path
                            ;; exists, which it does not in the chroot
                            "--with-mailpath=/var/mail")))
