@@ -111,6 +111,9 @@ then
         test "`readlink_base "$profile"`" = "$profile-0-link"
     done
 
+    # Test that '--list-generations' does not output the zeroth generation.
+    test -z "`guix package -p "$profile" -l 0`"
+
     # Reinstall after roll-back to the empty profile.
     guix package --bootstrap -p "$profile" -e "$boot_make"
     test "`readlink_base "$profile"`" = "$profile-1-link"

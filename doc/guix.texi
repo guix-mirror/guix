@@ -583,9 +583,8 @@ When combined with options such as @code{--install}, roll back occurs
 before any other actions.
 
 When rolling back from the first generation that actually contains
-installed packages, the profile is made to point to the @dfn{empty
-profile}, also known as @dfn{profile zero}---i.e., it contains no files
-apart from its own meta-data.
+installed packages, the profile is made to point to the @dfn{zeroth
+generation}, which contains no files apart from its own meta-data.
 
 Installing, removing, or upgrading packages from a generation that has
 been rolled back to overwrites previous future generations.  Thus, the
@@ -683,7 +682,8 @@ Multiple Outputs}), and the source location of its definition.
 @itemx -l [@var{pattern}]
 Return a list of generations along with their creation dates; for each
 generation, show the installed packages, with the most recently
-installed packages shown last.
+installed packages shown last.  Note that the zeroth generation is never
+shown.
 
 For each installed package, print the following items, separated by
 tabs: the name of a package, its version string, the part of the package

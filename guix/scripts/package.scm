@@ -955,7 +955,7 @@ more information.~%"))
       (match (assoc-ref opts 'query)
         (('list-generations pattern)
          (define (list-generation number)
-           (begin
+           (unless (zero? number)
              (format #t (_ "Generation ~a\t~a~%") number
                      (date->string
                       (time-utc->date
