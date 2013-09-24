@@ -23,6 +23,8 @@
   #:use-module (guix records)
   #:use-module ((gnu packages system)
                 #:select (mingetty inetutils))
+  #:use-module ((gnu packages package-management)
+                #:select (guix))
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:export (service?
@@ -36,6 +38,7 @@
 
             syslog-service
             mingetty-service
+            guix-service
             dmd-configuration-file))
 
 ;;; Commentary:
@@ -104,6 +107,17 @@
      (inputs `(("inetutils" ,inetutils)
                ("syslog.conf" ,syslog.conf))))))
 
+(define* (guix-service store #:key (guix guix))
+  "Return a service that runs the build daemon from GUIX."
+  (let* ((drv    (package-derivation store guix))
+         (daemon (string-append (derivation->output-path drv)
+                                "/bin/guix-daemon")))
+    (service
+     (provision '(guix-daemon))
+     (start `(make-forkexec-constructor ,daemon))
+     (inputs `(("guix" ,guix))))))
+
+
 (define (dmd-configuration-file store services)
   "Return the dmd configuration file for SERVICES."
   (define config

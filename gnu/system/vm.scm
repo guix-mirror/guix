@@ -382,7 +382,8 @@ It can be used to provide additional files, such as /etc files."
     (list (mingetty-service store "tty1")
           (mingetty-service store "tty2")
           (mingetty-service store "tty3")
-          (syslog-service store)))
+          (syslog-service store)
+          (guix-service store #:guix guix-0.4)))
 
   (parameterize ((%guile-for-build (package-derivation store guile-final)))
     (let* ((bash-drv  (package-derivation store bash))
