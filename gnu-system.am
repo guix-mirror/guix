@@ -222,7 +222,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/m4-gets-undeclared.patch			\
   gnu/packages/patches/m4-readlink-EINVAL.patch			\
-  gnu/packages/patches/m4-s_isdir.patch				\
   gnu/packages/patches/make-impure-dirs.patch			\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/perl-no-sys-dirs.patch			\

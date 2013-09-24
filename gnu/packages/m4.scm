@@ -26,14 +26,14 @@
 (define-public m4
   (package
    (name "m4")
-   (version "1.4.16")
+   (version "1.4.17")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/m4/m4-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "035r7ma272j2cwni2961jp22k6bn3n9xwn3b3qbcn2yrvlghql22"))))
+              "0w0da1chh12mczxa5lnwzjk9czi3dq6gnnndbpa6w4rj76b1yklf"))))
    (build-system gnu-build-system)
    (arguments
     ;; XXX: Disable tests on those platforms with know issues.
@@ -41,10 +41,8 @@
                              '("x86_64-darwin"
                                "i686-cygwin"
                                "i686-sunos")))
-      #:patches (list (assoc-ref %build-inputs "patch/s_isdir")
-                      (assoc-ref %build-inputs
-                                 "patch/readlink-EINVAL")
-                      (assoc-ref %build-inputs "patch/gets"))
+      #:patches (list (assoc-ref %build-inputs
+                                 "patch/readlink-EINVAL"))
       #:phases (alist-cons-before
                 'check 'pre-check
                 (lambda* (#:key inputs #:allow-other-keys)
@@ -57,10 +55,8 @@
                       (("/bin/sh")
                        (format #f "~a/bin/bash" bash)))))
                 %standard-phases)))
-   (inputs `(("patch/s_isdir" ,(search-patch "m4-s_isdir.patch"))
-             ("patch/readlink-EINVAL"
-              ,(search-patch "m4-readlink-EINVAL.patch"))
-             ("patch/gets" ,(search-patch "m4-gets-undeclared.patch"))))
+   (inputs `(("patch/readlink-EINVAL"
+              ,(search-patch "m4-readlink-EINVAL.patch"))))
    (synopsis "Macro processor")
    (description
     "GNU M4 is an implementation of the traditional Unix macro processor.  It
