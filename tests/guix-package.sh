@@ -85,6 +85,10 @@ then
     test "`guix package -p "$profile" -l | cut -f1 | grep guile | head -n1`" \
         = "  guile-bootstrap"
 
+    # Exit with 1 when a generation does not exist.
+    if guix package -p "$profile" --list-generations=42;
+    then false; else true; fi
+
     # Remove a package.
     guix package --bootstrap -p "$profile" -r "guile-bootstrap"
     test -L "$profile-3-link"
