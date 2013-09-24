@@ -107,10 +107,16 @@ Guix is based on the Nix package manager.")
 (define-public guix-0.4
   ;; XXX: Hack to allow the use of a 0.4ish tarball.  This assumes that you
   ;; have run 'make dist' in your build tree.  Remove when 0.4 is out.
-  (package (inherit guix)
-    (version "0.4rc")
-    (source (let ((builddir (dirname
-                             (canonicalize-path
-                              (dirname (search-path %load-path
-                                                    "guix/config.scm"))))))
-              (string-append builddir "/guix-0.4.tar.gz")))))
+  (let* ((builddir (dirname
+                    (canonicalize-path
+                     (dirname (search-path %load-path
+                                           "guix/config.scm")))))
+         (tarball  (string-append builddir "/guix-0.4.tar.gz")))
+    (package (inherit guix)
+      (version "0.4rc")
+      (source (if (file-exists? tarball)
+                  tarball
+                  (begin
+                    (format (current-error-port)
+                            "warning: 'guix-0.4.tar.gz' not found~%")
+                    (package-source guix)))))))
