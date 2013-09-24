@@ -31,6 +31,7 @@
   #:use-module (gnu packages grub)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages linux-initrd)
+  #:use-module (gnu packages package-management)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
   #:use-module (gnu packages system)
@@ -191,6 +192,7 @@ made available under the /xchg CIFS share."
                      (system (%current-system))
                      (disk-image-size (* 100 (expt 2 20)))
                      grub-configuration
+                     (initialize-store? #f)
                      (populate #f)
                      (inputs '())
                      (inputs-to-copy '()))
@@ -199,7 +201,8 @@ disk image, with a GRUB installation that uses GRUB-CONFIGURATION as its
 configuration file.
 
 INPUTS-TO-COPY is a list of inputs (as for packages) whose closure is copied
-into the image being built.
+into the image being built.  When INITIALIZE-STORE? is true, initialize the
+store database in the image so that Guix can be used in the image.
 
 When POPULATE is true, it must be the store file name of a Guile script to run
 in the disk image partition once it has been populated with INPUTS-TO-COPY.
@@ -297,6 +300,20 @@ It can be used to provide additional files, such as /etc files."
 
                       ;; Populate /dev.
                       (make-essential-device-nodes #:root "/fs")
+
+                      ;; Optionally, register the inputs in the image's store.
+                      (let* ((guix     (assoc-ref %build-inputs "guix"))
+                             (register (string-append guix
+                                                      "/sbin/guix-register")))
+                        ,@(if initialize-store?
+                              (match inputs-to-copy
+                                (((graph-files . _) ...)
+                                 (map (lambda (closure)
+                                        `(system* register "--prefix" "/fs"
+                                                  ,(string-append "/xchg/"
+                                                                  closure)))
+                                      graph-files)))
+                              '(#f)))
 
                       (and=> (assoc-ref %build-inputs "populate")
                              (lambda (populate)
@@ -415,7 +432,8 @@ It can be used to provide additional files, such as /etc files."
       (qemu-image store
                   #:grub-configuration grub.cfg
                   #:populate populate
-                  #:disk-image-size (* 400 (expt 2 20))
+                  #:disk-image-size (* 500 (expt 2 20))
+                  #:initialize-store? #t
                   #:inputs-to-copy `(("boot" ,boot)
                                      ("linux" ,linux-libre)
                                      ("initrd" ,gnu-system-initrd)
@@ -424,6 +442,7 @@ It can be used to provide additional files, such as /etc files."
                                      ("guile" ,guile-2.0)
                                      ("mingetty" ,mingetty)
                                      ("dmd" ,dmd)
+                                     ("guix" ,guix-0.4)
 
                                      ;; Configuration.
                                      ("dmd.conf" ,dmd-conf)
