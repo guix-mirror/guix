@@ -22,7 +22,7 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (gnu packages guile)
-  #:use-module ((gnu packages compression) #:select (bzip2))
+  #:use-module ((gnu packages compression) #:select (bzip2 gzip))
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages pkg-config))
@@ -41,6 +41,7 @@
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
+                          "--localstatedir=/var"
                           (string-append "--with-libgcrypt-prefix="
                                          (assoc-ref %build-inputs
                                                     "libgcrypt")))
@@ -70,6 +71,8 @@
                                 "/20130105/guile-2.0.7.tar.xz"))
                           (sha256 hash)))))
        `(("bzip2" ,bzip2)
+         ("gzip" ,gzip)
+
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
          ("guile" ,guile-2.0)
