@@ -75,7 +75,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
     case 'p':
       {
 	prefix = canonPath (arg);
-	settings.nixStore = NIX_STORE_DIR;
+	settings.nixStore = prefix + NIX_STORE_DIR;
 	settings.nixDataDir = prefix + NIX_DATA_DIR;
 	settings.nixLogDir = prefix + NIX_LOG_DIR;
 	settings.nixStateDir = prefix + NIX_STATE_DIR;
@@ -169,7 +169,15 @@ main (int argc, char *argv[])
     {
       argp_parse (&argp, argc, argv, 0, 0, 0);
 
+      /* Instantiate the store.  This creates any missing directories among
+	 'settings.nixStore', 'settings.nixDBPath', etc.  */
       LocalStore store;
+
+      /* Under the --prefix tree, the final name of the store will be
+	 NIX_STORE_DIR.  Set it here so that the database uses file names
+	 prefixed by NIX_STORE_DIR and not PREFIX + NIX_STORE_DIR.  */
+      settings.nixStore = NIX_STORE_DIR;
+
       register_validity (&store, *input);
     }
   catch (std::exception &e)
