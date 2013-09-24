@@ -29,11 +29,11 @@
   #:use-module ((gnu packages gettext)
                 #:renamer (symbol-prefix-proc 'gnu:))
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gperf)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages m4)
-  #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -3114,9 +3114,9 @@ tracking.")
     (license license:x11)))
 
 
-(define-public xkbcomp
+(define xkbcomp-intermediate ; used as input for xkeyboard-config
   (package
-    (name "xkbcomp")
+    (name "xkbcomp-intermediate")
     (version "1.2.4")
     (source
       (origin
@@ -3138,6 +3138,18 @@ tracking.")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
     (license license:x11)))
+
+(define-public xkbcomp ; using xkeyboard-config as input
+  (package (inherit xkbcomp-intermediate)
+    (name "xkbcomp")
+    (inputs
+      `(,@(package-inputs xkbcomp-intermediate)
+        ("xkeyboard-config" ,xkeyboard-config)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-xkb-config-root="
+                            (assoc-ref %build-inputs "xkeyboard-config")
+                            "/share/X11/xkb"))))))
 
 
 (define-public xkbevd
@@ -3212,7 +3224,7 @@ tracking.")
         ("intltool" ,intltool)
         ("libx11" ,libx11)
         ("pkg-config" ,pkg-config)
-        ("xkbcomp" ,xkbcomp)))
+        ("xkbcomp-intermediate" ,xkbcomp-intermediate)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -4262,6 +4274,7 @@ emulation to complete hardware acceleration for modern GPUs.")
         ("dbus" ,dbus)
         ("dmxproto" ,dmxproto)
         ("libdmx" ,libdmx)
+        ("libgcrypt" ,libgcrypt)
         ("libxau" ,libxau)
         ("libxaw" ,libxaw)
         ("libxdmcp" ,libxdmcp)
@@ -4273,7 +4286,6 @@ emulation to complete hardware acceleration for modern GPUs.")
         ("libxt" ,libxt)
         ("libxv" ,libxv)
         ("mesa" ,mesa)
-        ("openssl" ,openssl)
         ("pkg-config" ,pkg-config)
         ("python" ,python-wrapper)
         ("recordproto" ,recordproto)
@@ -4284,10 +4296,30 @@ emulation to complete hardware acceleration for modern GPUs.")
         ("xf86dgaproto" ,xf86dgaproto)
         ("xf86driproto" ,xf86driproto)
         ("xf86vidmodeproto" ,xf86vidmodeproto)
-;;        ("xkbutils" ,xkbutils)
-;;        ("xkeyboard-config" ,xkeyboard-config)
+        ("xkbcomp" ,xkbcomp)
+        ("xkeyboard-config" ,xkeyboard-config)
         ("xtrans" ,xtrans)
         ("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-xkb-path="
+                            (assoc-ref %build-inputs "xkeyboard-config")
+                            "/share/X11/xkb")
+             (string-append "--with-xkb-output="
+                            "/tmp") ; FIXME: This is a bit doubtful; where should
+                                    ; the compiled keyboard maps go?
+             (string-append "--with-xkb-bin-directory="
+                            (assoc-ref %build-inputs "xkbcomp")
+                            "/bin"))
+       #:phases
+        (alist-replace
+         'configure
+         (lambda* (#:key outputs #:allow-other-keys #:rest args)
+           (let ((configure (assoc-ref %standard-phases 'configure)))
+             (substitute* (find-files "." "\\.c$")
+               (("/bin/sh") (which "sh")))
+             (apply configure args)))
+         %standard-phases)))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
