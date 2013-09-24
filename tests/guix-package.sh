@@ -79,7 +79,7 @@ then
     # Search.
     test "`guix package -s "An example GNU package" | grep ^name:`" = \
         "name: hello"
-    test "`guix package -s "n0t4r341p4ck4g3"`" = ""
+    test -z "`guix package -s "n0t4r341p4ck4g3"`"
 
     # List generations.
     test "`guix package -p "$profile" -l | cut -f1 | grep guile | head -n1`" \
