@@ -21,6 +21,8 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix records)
+  #:use-module ((gnu packages base)
+                #:select (glibc-final))
   #:use-module ((gnu packages system)
                 #:select (mingetty inetutils))
   #:use-module ((gnu packages package-management)
@@ -39,6 +41,7 @@
             host-name-service
             syslog-service
             mingetty-service
+            nscd-service
             guix-service
             static-networking-service
 
@@ -86,6 +89,24 @@
 
      (start `(make-forkexec-constructor ,mingetty-bin "--noclear" ,tty))
      (inputs `(("mingetty" ,mingetty))))))
+
+(define* (nscd-service store
+                       #:key (glibc glibc-final))
+  "Return a service that runs libc's name service cache daemon (nscd)."
+  (let ((nscd (string-append (package-output store glibc) "/sbin/nscd")))
+    (service
+     (provision '(nscd))
+     (start `(make-forkexec-constructor ,nscd "-f" "/dev/null"))
+
+     ;; XXX: Local copy of 'make-kill-destructor' because the one upstream
+     ;; uses the broken 'opt-lambda' macro.
+     (stop  `(lambda* (#:optional (signal SIGTERM))
+               (lambda (pid . args)
+                 (kill pid signal)
+                 #f)))
+
+     (respawn? #f)
+     (inputs `(("glibc" ,glibc))))))
 
 (define (syslog-service store)
   "Return a service that runs 'syslogd' with reasonable default settings."

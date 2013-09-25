@@ -456,6 +456,7 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
           (mingetty-service store "tty6")
           (syslog-service store)
           (guix-service store #:guix guix-0.4)
+          (nscd-service store)
 
           ;; QEMU networking settings.
           (static-networking-service store "eth0" "10.0.2.10")))
@@ -517,8 +518,8 @@ You can log in as 'root' with no password.
 "))
 
            (populate `((directory "/etc")
-                       (directory "/var/log")
-                       (directory "/var/run")
+                       (directory "/var/log")     ; for dmd
+                       (directory "/var/run/nscd")
                        ("/etc/shadow" -> ,shadow)
                        ("/etc/passwd" -> ,passwd)
                        ("/etc/login.defs" -> "/dev/null")
