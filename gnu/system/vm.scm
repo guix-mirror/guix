@@ -428,6 +428,9 @@ input tuples."
     (list (mingetty-service store "tty1")
           (mingetty-service store "tty2")
           (mingetty-service store "tty3")
+          (mingetty-service store "tty4")
+          (mingetty-service store "tty5")
+          (mingetty-service store "tty6")
           (syslog-service store)
           (guix-service store #:guix guix-0.4)))
 
