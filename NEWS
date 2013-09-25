@@ -10,6 +10,94 @@ Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
+* Changes in 0.4 (since 0.3)
+
+** Package management
+
+*** New ‘--list-generations’ and ‘--delete-generations’ options
+
+The ‘guix package’ command has these two new options, which make it easier to
+deal with a profile’s generation.  See “Invoking guix package” in the manual.
+
+*** New ‘guix-register’ program
+
+This program allows the meta-data of a new store to be initialized, by
+copying info from an existing store.  It is mostly an internal tool.
+
+** Programming interfaces
+
+*** New API to bootstrap Autotools-based packages
+
+The (guix build-system gnu) has a new ‘dist-package’ procedure that takes a
+package object and source directory, and returns a new package object that
+runs ‘./bootstrap && make dist’ or anything similar.
+
+*** ‘derivation’ and related procedures have a #:references-graphs parameter
+
+This parameter instructs the build daemon to populate the derivation’s build
+tree with files containing the list of references of the given store files.
+This is useful to write code that copies a packages and all its dependencies
+to another storage device, such as a QEMU disk image.
+
+*** Extended API to build a GNU system virtual machine image
+
+The (gnu system vm) module has been augmented in many ways: the ‘qemu-image’
+procedure can now populate and initialize the image’s store; the new
+‘system-qemu-image’ procedure returns a QEMU image that runs dmd as its init
+system, has ‘login’ running on several consoles, has a set of installed
+packages, and where Guix can be used.
+
+New (gnu system …) modules have been added to handle the configuration of the
+various parts of a GNU/Linux system.  For instance, (gnu system dmd) provides
+support for instantiating dmd services; (gnu system linux) helps with Linux
+PAM configuration; and so on.
+
+*** <derivation> objects supersede .drv file names in the API
+
+‘derivation’ and similar procedures no longer return two values (a
+<derivation> and a .drv file name); they now return a single value, which is
+a <derivation> object.  The <derivation> object embeds the corresponding .drv
+file name.  See “Derivations” in the manual for details.
+
+** GNU distribution
+
+*** XXX new packages
+
+*** XXX package updates
+
+*** Fontconfig font search path made more convenient
+
+Fontconfig, the library used by many graphical applications, such as those
+based on GTK+, now knows where to find the default set of fonts.  Additional
+fonts installed in the user profile are automatically picked up.
+
+*** More GUI applications
+
+The ‘emacs’ and ‘racket’ packages are now linked against GTK+.  New GTK+
+applications have been added (see above.)
+
+*** Packaging guidelines
+
+The documentation of packaging guidelines has been augmented.  See the manual
+under “GNU Distribution”.
+
+*** Support for Python 3 along with Python 2
+
+Python 3 has been added to the distribution, and Python packages that support
+it are now built for both Python 2 and Python 3.  See the “Python Modules”
+section of the manual for details.
+
+** Internationalization
+
+Updated translations: eo.
+
+** Bugs fixed
+
+*** The dependency graph image has correct size in PDF output
+*** Hop 2.4 builds with newer Bigloo (http://bugs.gnu.org/15194)
+*** Xorg server test suite no longer fails (http://bugs.gnu.org/15392)
+*** Workarounds for Guile 2.0.5 now work on Debian derivatives
+
 
 * Changes in 0.3 (since 0.2)
 
