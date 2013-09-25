@@ -432,10 +432,18 @@ input tuples."
 
 (define (system-qemu-image store)
   "Return the derivation of a QEMU image of the GNU system."
+  (define motd
+    (add-text-to-store store "motd" "
+Happy birthday, GNU!                                http://www.gnu.org/gnu30
+
+"))
+
   (define %pam-services
     ;; Services known to PAM.
     (list %pam-other-services
-          (unix-pam-service "login" #:allow-empty-passwords? #t)))
+          (unix-pam-service "login"
+                            #:allow-empty-passwords? #t
+                            #:motd motd)))
 
   (define %dmd-services
     ;; Services run by dmd.
@@ -487,6 +495,16 @@ alias ls='ls -p --color'
 alias ll='ls -l'
 ")))
 
+           (issue    (add-text-to-store store "issue" "
+This is an alpha preview of the GNU system.  Welcome.
+
+This image features the GNU Guix package manager, which was used to
+build it (http://www.gnu.org/software/guix/).  The init system is
+GNU dmd (http://www.gnu.org/software/dmd/).
+
+You can log in as 'root' with no password.
+"))
+
            (populate `((directory "/etc")
                        (directory "/var/log")
                        (directory "/var/run")
@@ -494,7 +512,8 @@ alias ll='ls -l'
                        ("/etc/passwd" -> ,passwd)
                        ("/etc/login.defs" -> "/dev/null")
                        ("/etc/pam.d" -> ,pam.d)
-                       ("/etc/profile" -> ,bashrc)))
+                       ("/etc/profile" -> ,bashrc)
+                       ("/etc/issue" -> ,issue)))
            (out     (derivation->output-path
                      (package-derivation store mingetty)))
            (boot    (add-text-to-store store "boot"
@@ -525,11 +544,13 @@ alias ll='ls -l'
 
                                      ;; Configuration.
                                      ("dmd.conf" ,dmd-conf)
-                                     ("etc-pam.d" ,pam.d)
+                                     ("etc-pam.d" ,pam.d-drv)
                                      ("etc-passwd" ,passwd)
                                      ("etc-shadow" ,shadow)
                                      ("etc-group" ,group)
                                      ("etc-bashrc" ,bashrc)
+                                     ("etc-issue" ,issue)
+                                     ("etc-motd" ,motd)
                                      ,@(append-map service-inputs
                                                    %dmd-services))))))
 
