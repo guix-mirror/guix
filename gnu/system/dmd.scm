@@ -40,6 +40,8 @@
             syslog-service
             mingetty-service
             guix-service
+            static-networking-service
+
             dmd-configuration-file))
 
 ;;; Commentary:
@@ -130,6 +132,22 @@
      (provision '(guix-daemon))
      (start `(make-forkexec-constructor ,daemon))
      (inputs `(("guix" ,guix))))))
+
+(define* (static-networking-service store interface ip
+                                    #:key (inetutils inetutils))
+  "Return a service that starts INTERFACE with address IP."
+
+  ;; TODO: Eventually we should do this using Guile's networking procedures,
+  ;; like 'configure-qemu-networking' does, but the patch that does this is
+  ;; not yet in stock Guile.
+  (let ((ifconfig (string-append (package-output store inetutils)
+                                 "/bin/ifconfig")))
+    (service
+     (provision '(networking))
+     (start `(make-forkexec-constructor ,ifconfig ,interface ,ip "up"))
+     (stop  `(make-forkexec-constructor ,ifconfig ,interface "down"))
+     (respawn? #f)
+     (inputs `(("inetutils" ,inetutils))))))
 
 
 (define (dmd-configuration-file store services)

@@ -455,7 +455,15 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
           (mingetty-service store "tty5")
           (mingetty-service store "tty6")
           (syslog-service store)
-          (guix-service store #:guix guix-0.4)))
+          (guix-service store #:guix guix-0.4)
+
+          ;; QEMU networking settings.
+          (static-networking-service store "eth0" "10.0.2.10")))
+
+  (define resolv.conf
+    ;; Name resolution for default QEMU settings.
+    (add-text-to-store store "resolv.conf"
+                       "nameserver 10.0.2.3\n"))
 
   (parameterize ((%guile-for-build (package-derivation store guile-final)))
     (let* ((bash-drv  (package-derivation store bash))
@@ -480,6 +488,7 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                        ("dmd" ,dmd)
                        ("gcc" ,gcc-final)
                        ("libc" ,glibc-final)
+                       ("inetutils" ,inetutils)
                        ("guix" ,guix-0.4)))
 
            ;; TODO: Replace with a real profile with a manifest.
@@ -514,6 +523,7 @@ You can log in as 'root' with no password.
                        ("/etc/passwd" -> ,passwd)
                        ("/etc/login.defs" -> "/dev/null")
                        ("/etc/pam.d" -> ,pam.d)
+                       ("/etc/resolv.conf" -> ,resolv.conf)
                        ("/etc/profile" -> ,bashrc)
                        ("/etc/issue" -> ,issue)
                        (directory "/var/nix/gcroots")
@@ -552,6 +562,7 @@ You can log in as 'root' with no password.
                                      ("etc-passwd" ,passwd)
                                      ("etc-shadow" ,shadow)
                                      ("etc-group" ,group)
+                                     ("etc-resolv.conf" ,resolv.conf)
                                      ("etc-bashrc" ,bashrc)
                                      ("etc-issue" ,issue)
                                      ("etc-motd" ,motd)
