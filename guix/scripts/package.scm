@@ -214,6 +214,15 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
              (compose string->number (cut match:substring <> 1)))
       0))
 
+(define (link-to-empty-profile generation)
+  "Link GENERATION, a string, to the empty profile."
+  (let* ((drv  (profile-derivation (%store) '()))
+         (prof (derivation->output-path drv "out")))
+    (when (not (build-derivations (%store) (list drv)))
+          (leave (_ "failed to build the empty profile~%")))
+
+    (switch-symlinks generation prof)))
+
 (define (roll-back profile)
   "Roll back to the previous generation of PROFILE."
   (let* ((number              (generation-number profile))
@@ -236,13 +245,8 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
                    (_ "nothing to do: already at the empty profile~%")))
           ((or (zero? previous-number)            ; going to emptiness
                (not (file-exists? previous-generation)))
-           (let* ((drv  (profile-derivation (%store) '()))
-                  (prof (derivation->output-path drv "out")))
-             (when (not (build-derivations (%store) (list drv)))
-               (leave (_ "failed to build the empty profile~%")))
-
-             (switch-symlinks previous-generation prof)
-             (switch-link)))
+           (link-to-empty-profile previous-generation)
+           (switch-link))
           (else (switch-link)))))                 ; anything else
 
 (define (generation-time profile number)
