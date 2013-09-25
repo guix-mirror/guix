@@ -38,9 +38,10 @@ cp -r "$to_copy" "$new_store_dir"
 copied="$new_store_dir/`basename $to_copy`"
 
 # Create a file representing a closure with zero references, and with an empty
-# "deriver" field.
+# "deriver" field.  Note that we give the file name as it appears in the
+# original store, and 'guix-register' translates it to match the prefix.
 cat >> "$closure" <<EOF
-$copied
+$to_copy
 
 0
 EOF
@@ -49,26 +50,37 @@ EOF
 guix-register -p "$new_store" < "$closure"
 
 # Doing it a second time shouldn't hurt.
-guix-register -p "$new_store" "$closure"
+guix-register --prefix "$new_store" "$closure"
 
 # Now make sure this is recognized as valid.
 
 NIX_IGNORE_SYMLINK_STORE=1
 NIX_STORE_DIR="$new_store_dir"
-NIX_LOCALSTATE_DIR="$new_store$localstatedir"
+NIX_STATE_DIR="$new_store$localstatedir"
 NIX_LOG_DIR="$new_store$localstatedir/log/nix"
 NIX_DB_DIR="$new_store$localstatedir/nix/db"
 
-export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR NIX_LOCALSTATE_DIR	\
+export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR NIX_STATE_DIR	\
   NIX_LOG_DIR NIX_DB_DIR
 
 guix-daemon --disable-chroot &
 subdaemon_pid=$!
 exit_hook="kill $subdaemon_pid"
 
+final_name="$storedir/`basename $to_copy`"
+
 # At this point the copy in $new_store must be valid, and unreferenced.
+# The database under $new_store uses the $final_name, but we can't use
+# that name in a 'valid-path?' query because 'assertStorePath' would kill
+# us because of the wrong prefix.  So we just list dead paths instead.
 guile -c "
    (use-modules (guix store))
    (define s (open-connection))
-   (exit (and (valid-path? s \"$copied\")
-              (equal? (list \"$copied\") (dead-paths s))))"
+   (exit (equal? (list \"$copied\") (dead-paths s)))"
+
+# When 'sqlite3' is available, check the name in the database.
+if type -P sqlite3
+then
+    echo "select * from ValidPaths where path=\"$final_name\";" | \
+	sqlite3 $NIX_DB_DIR/db.sqlite
+fi

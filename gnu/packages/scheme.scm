@@ -32,6 +32,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages libphidget)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libjpeg)
   #:use-module ((gnu packages gtk) #:select (cairo pango))
@@ -358,12 +359,15 @@ implementation techniques and as an expository tool.")
      '(#:phases
        (let* ((gui-libs
                (lambda (inputs)
-                 ;; FIXME: Add GTK+ and GDK for DrRacket.
-                 (let ((glib     (string-append (assoc-ref inputs "glib") "/lib"))
-                       (cairo    (string-append (assoc-ref inputs "cairo") "/lib"))
-                       (pango    (string-append (assoc-ref inputs "pango") "/lib"))
-                       (libjpeg  (string-append (assoc-ref inputs "libjpeg") "/lib")))
-                   (list glib cairo pango libjpeg)))))
+                 (define (lib input)
+                   (string-append (assoc-ref inputs input) "/lib"))
+
+                 (list (lib "glib")
+                       (lib "cairo")
+                       (lib "pango")
+                       (lib "libjpeg")
+                       (lib "gtk")
+                       (lib "gdk-pixbuf")))))
          (alist-cons-before
           'configure 'pre-configure
           (lambda* (#:key inputs #:allow-other-keys)
@@ -397,7 +401,9 @@ implementation techniques and as an expository tool.")
               ("glib" ,glib)                      ; for DrRacket
               ("cairo" ,cairo)
               ("pango" ,pango)
-              ("libjpeg" ,libjpeg-8)))
+              ("libjpeg" ,libjpeg-8)
+              ("gdk-pixbuf" ,gdk-pixbuf)
+              ("gtk" ,gtk+)))
     (home-page "http://racket-lang.org")
     (synopsis "Implementation of Scheme and related languages")
     (description

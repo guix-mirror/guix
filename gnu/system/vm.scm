@@ -23,6 +23,8 @@
   #:use-module (guix packages)
   #:use-module ((gnu packages base) #:select (%final-inputs
                                               guile-final
+                                              gcc-final
+                                              glibc-final
                                               coreutils))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bash)
@@ -31,6 +33,7 @@
   #:use-module (gnu packages grub)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages linux-initrd)
+  #:use-module (gnu packages package-management)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
   #:use-module (gnu packages system)
@@ -91,6 +94,10 @@ made available under the /xchg CIFS share."
            `(,input . ,(package-output store package "out" system)))
           ((input (? package? package) sub-drv)
            `(,input . ,(package-output store package sub-drv system)))
+          ((input (? derivation? drv))
+           `(,input . ,(derivation->output-path drv)))
+          ((input (? derivation? drv) sub-drv)
+           `(,input . ,(derivation->output-path drv sub-drv)))
           ((input (and (? string?) (? store-path?) file))
            `(,input . ,file)))
          inputs))
@@ -177,7 +184,8 @@ made available under the /xchg CIFS share."
                                              `(,name ,(->drv package)
                                                      ,@sub-drv))
                                             ((name (? string? file))
-                                             `(,name ,file)))
+                                             `(,name ,file))
+                                            (tuple tuple))
                                            inputs))
                                   #:env-vars env-vars
                                   #:modules (delete-duplicates
@@ -191,6 +199,7 @@ made available under the /xchg CIFS share."
                      (system (%current-system))
                      (disk-image-size (* 100 (expt 2 20)))
                      grub-configuration
+                     (initialize-store? #f)
                      (populate #f)
                      (inputs '())
                      (inputs-to-copy '()))
@@ -199,11 +208,13 @@ disk image, with a GRUB installation that uses GRUB-CONFIGURATION as its
 configuration file.
 
 INPUTS-TO-COPY is a list of inputs (as for packages) whose closure is copied
-into the image being built.
+into the image being built.  When INITIALIZE-STORE? is true, initialize the
+store database in the image so that Guix can be used in the image.
 
-When POPULATE is true, it must be the store file name of a Guile script to run
-in the disk image partition once it has been populated with INPUTS-TO-COPY.
-It can be used to provide additional files, such as /etc files."
+POPULATE is a list of directives stating directories or symlinks to be created
+in the disk image partition.  It is evaluated once the image has been
+populated with INPUTS-TO-COPY.  It can be used to provide additional files,
+such as /etc files."
   (define input->name+derivation
     (match-lambda
      ((name (? package? package))
@@ -213,6 +224,10 @@ It can be used to provide additional files, such as /etc files."
       `(,name . ,(derivation->output-path
                   (package-derivation store package system)
                   sub-drv)))
+     ((name (? derivation? drv))
+      `(,name . ,(derivation->output-path drv)))
+     ((name (? derivation? drv) sub-drv)
+      `(,name . ,(derivation->output-path drv sub-drv)))
      ((input (and (? string?) (? store-path?) file))
       `(,input . ,file))))
 
@@ -298,6 +313,36 @@ It can be used to provide additional files, such as /etc files."
                       ;; Populate /dev.
                       (make-essential-device-nodes #:root "/fs")
 
+                      ;; Optionally, register the inputs in the image's store.
+                      (let* ((guix     (assoc-ref %build-inputs "guix"))
+                             (register (string-append guix
+                                                      "/sbin/guix-register")))
+                        ,@(if initialize-store?
+                              (match inputs-to-copy
+                                (((graph-files . _) ...)
+                                 (map (lambda (closure)
+                                        `(system* register "--prefix" "/fs"
+                                                  ,(string-append "/xchg/"
+                                                                  closure)))
+                                      graph-files)))
+                              '(#f)))
+
+                      ;; Evaluate the POPULATE directives.
+                      ,@(let loop ((directives populate)
+                                   (statements '()))
+                          (match directives
+                            (()
+                             (reverse statements))
+                            ((('directory name) rest ...)
+                             (loop rest
+                                   (cons `(mkdir-p ,(string-append "/fs" name))
+                                         statements)))
+                            (((new '-> old) rest ...)
+                             (loop rest
+                                   (cons `(symlink ,old
+                                                   ,(string-append "/fs" new))
+                                         statements)))))
+
                       (and=> (assoc-ref %build-inputs "populate")
                              (lambda (populate)
                                (chdir "/fs")
@@ -337,8 +382,8 @@ It can be used to provide additional files, such as /etc files."
               ("gawk" ,(car (assoc-ref %final-inputs "gawk")))
               ("util-linux" ,util-linux)
 
-              ,@(if populate
-                    `(("populate" ,populate))
+              ,@(if initialize-store?
+                    `(("guix" ,guix-0.4))
                     '())
 
               ,@inputs-to-copy)
@@ -353,19 +398,73 @@ It can be used to provide additional files, such as /etc files."
 ;;; Stand-alone VM image.
 ;;;
 
+(define* (union store inputs
+                #:key (guile (%guile-for-build)) (system (%current-system))
+                (name "union"))
+  "Return a derivation that builds the union of INPUTS.  INPUTS is a list of
+input tuples."
+  (define builder
+    `(begin
+       (use-modules (guix build union))
+
+       (setvbuf (current-output-port) _IOLBF)
+       (setvbuf (current-error-port) _IOLBF)
+
+       (let ((output (assoc-ref %outputs "out"))
+             (inputs (map cdr %build-inputs)))
+         (format #t "building union `~a' with ~a packages...~%"
+                 output (length inputs))
+         (union-build output inputs))))
+
+  (build-expression->derivation store name system builder
+                                (map (match-lambda
+                                      ((name (? package? p))
+                                       `(,name ,(package-derivation store p
+                                                                    system)))
+                                      ((name (? package? p) output)
+                                       `(,name ,(package-derivation store p
+                                                                    system)
+                                               ,output))
+                                      (x x))
+                                     inputs)
+                                #:modules '((guix build union))
+                                #:guile-for-build guile))
+
 (define (system-qemu-image store)
   "Return the derivation of a QEMU image of the GNU system."
+  (define motd
+    (add-text-to-store store "motd" "
+Happy birthday, GNU!                                http://www.gnu.org/gnu30
+
+"))
+
   (define %pam-services
     ;; Services known to PAM.
     (list %pam-other-services
-          (unix-pam-service "login" #:allow-empty-passwords? #t)))
+          (unix-pam-service "login"
+                            #:allow-empty-passwords? #t
+                            #:motd motd)))
 
   (define %dmd-services
     ;; Services run by dmd.
-    (list (mingetty-service store "tty1")
+    (list (host-name-service store "gnu")
+          (mingetty-service store "tty1")
           (mingetty-service store "tty2")
           (mingetty-service store "tty3")
-          (syslog-service store)))
+          (mingetty-service store "tty4")
+          (mingetty-service store "tty5")
+          (mingetty-service store "tty6")
+          (syslog-service store)
+          (guix-service store #:guix guix-0.4)
+          (nscd-service store)
+
+          ;; QEMU networking settings.
+          (static-networking-service store "eth0" "10.0.2.10")))
+
+  (define resolv.conf
+    ;; Name resolution for default QEMU settings.
+    (add-text-to-store store "resolv.conf"
+                       "nameserver 10.0.2.3\n"))
 
   (parameterize ((%guile-for-build (package-derivation store guile-final)))
     (let* ((bash-drv  (package-derivation store bash))
@@ -383,20 +482,53 @@ It can be used to provide additional files, such as /etc files."
                                          "root:x:0:\n"))
            (pam.d-drv (pam-services->directory store %pam-services))
            (pam.d     (derivation->output-path pam.d-drv))
-           (populate
-            (add-text-to-store store "populate-qemu-image"
-                               (object->string
-                                `(begin
-                                   (mkdir-p "etc")
-                                   (mkdir-p "var/log") ; for dmd
-                                   (symlink ,shadow "etc/shadow")
-                                   (symlink ,passwd "etc/passwd")
-                                   (symlink ,group "etc/group")
-                                   (symlink "/dev/null"
-                                            "etc/login.defs")
-                                   (symlink ,pam.d "etc/pam.d")
-                                   (mkdir-p "var/run")))
-                               (list passwd)))
+
+           (packages `(("coreutils" ,coreutils)
+                       ("bash" ,bash)
+                       ("guile" ,guile-2.0)
+                       ("dmd" ,dmd)
+                       ("gcc" ,gcc-final)
+                       ("libc" ,glibc-final)
+                       ("inetutils" ,inetutils)
+                       ("guix" ,guix-0.4)))
+
+           ;; TODO: Replace with a real profile with a manifest.
+           ;; TODO: Generate bashrc from packages' search-paths.
+           (profile-drv (union store packages
+                               #:name "default-profile"))
+           (profile  (derivation->output-path profile-drv))
+           (bashrc   (add-text-to-store store "bashrc"
+                                        (string-append "
+export PS1='\\u@\\h\\$ '
+export PATH=$HOME/.guix-profile/bin:" profile "/bin:" profile "/sbin
+export CPATH=$HOME/.guix-profile/include:" profile "/include
+export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
+alias ls='ls -p --color'
+alias ll='ls -l'
+")))
+
+           (issue    (add-text-to-store store "issue" "
+This is an alpha preview of the GNU system.  Welcome.
+
+This image features the GNU Guix package manager, which was used to
+build it (http://www.gnu.org/software/guix/).  The init system is
+GNU dmd (http://www.gnu.org/software/dmd/).
+
+You can log in as 'root' with no password.
+"))
+
+           (populate `((directory "/etc")
+                       (directory "/var/log")     ; for dmd
+                       (directory "/var/run/nscd")
+                       ("/etc/shadow" -> ,shadow)
+                       ("/etc/passwd" -> ,passwd)
+                       ("/etc/login.defs" -> "/dev/null")
+                       ("/etc/pam.d" -> ,pam.d)
+                       ("/etc/resolv.conf" -> ,resolv.conf)
+                       ("/etc/profile" -> ,bashrc)
+                       ("/etc/issue" -> ,issue)
+                       (directory "/var/nix/gcroots")
+                       ("/var/nix/gcroots/default-profile" -> ,profile)))
            (out     (derivation->output-path
                      (package-derivation store mingetty)))
            (boot    (add-text-to-store store "boot"
@@ -405,32 +537,36 @@ It can be used to provide additional files, such as /etc files."
                                                 "--config" ,dmd-conf))
                                        (list out)))
            (entries  (list (menu-entry
-                            (label "Boot-to-Guile! (GNU System technology preview)")
+                            (label (string-append
+                                    "GNU System with Linux-Libre "
+                                    (package-version linux-libre)
+                                    " (technology preview)"))
                             (linux linux-libre)
                             (linux-arguments `("--root=/dev/vda1"
                                                ,(string-append "--load=" boot)))
                             (initrd gnu-system-initrd))))
            (grub.cfg (grub-configuration-file store entries)))
-      (build-derivations store (list pam.d-drv))
       (qemu-image store
                   #:grub-configuration grub.cfg
                   #:populate populate
-                  #:disk-image-size (* 400 (expt 2 20))
+                  #:disk-image-size (* 500 (expt 2 20))
+                  #:initialize-store? #t
                   #:inputs-to-copy `(("boot" ,boot)
                                      ("linux" ,linux-libre)
                                      ("initrd" ,gnu-system-initrd)
-                                     ("coreutils" ,coreutils)
-                                     ("bash" ,bash)
-                                     ("guile" ,guile-2.0)
-                                     ("mingetty" ,mingetty)
-                                     ("dmd" ,dmd)
+                                     ("pam.d" ,pam.d-drv)
+                                     ("profile" ,profile-drv)
 
                                      ;; Configuration.
                                      ("dmd.conf" ,dmd-conf)
-                                     ("etc-pam.d" ,pam.d)
+                                     ("etc-pam.d" ,pam.d-drv)
                                      ("etc-passwd" ,passwd)
                                      ("etc-shadow" ,shadow)
                                      ("etc-group" ,group)
+                                     ("etc-resolv.conf" ,resolv.conf)
+                                     ("etc-bashrc" ,bashrc)
+                                     ("etc-issue" ,issue)
+                                     ("etc-motd" ,motd)
                                      ,@(append-map service-inputs
                                                    %dmd-services))))))
 

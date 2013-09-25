@@ -79,11 +79,15 @@ then
     # Search.
     test "`guix package -s "An example GNU package" | grep ^name:`" = \
         "name: hello"
-    test "`guix package -s "n0t4r341p4ck4g3"`" = ""
+    test -z "`guix package -s "n0t4r341p4ck4g3"`"
 
     # List generations.
     test "`guix package -p "$profile" -l | cut -f1 | grep guile | head -n1`" \
         = "  guile-bootstrap"
+
+    # Exit with 1 when a generation does not exist.
+    if guix package -p "$profile" --list-generations=42;
+    then false; else true; fi
 
     # Remove a package.
     guix package --bootstrap -p "$profile" -r "guile-bootstrap"
@@ -107,10 +111,16 @@ then
         test "`readlink_base "$profile"`" = "$profile-0-link"
     done
 
+    # Test that '--list-generations' does not output the zeroth generation.
+    test -z "`guix package -p "$profile" -l 0`"
+
     # Reinstall after roll-back to the empty profile.
     guix package --bootstrap -p "$profile" -e "$boot_make"
     test "`readlink_base "$profile"`" = "$profile-1-link"
     test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
+
+    # Check that the first generation is the current one.
+    test "`guix package -p "$profile" -l 1 | cut -f3 | head -n1`" = "(current)"
 
     # Roll-back to generation 0, and install---all at once.
     guix package --bootstrap -p "$profile" --roll-back -i guile-bootstrap

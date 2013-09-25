@@ -125,9 +125,10 @@
   (let ((unix (pam-entry
                (control "required")
                (module "pam_unix.so"))))
-    (lambda* (name #:key allow-empty-passwords?)
+    (lambda* (name #:key allow-empty-passwords? motd)
       "Return a standard Unix-style PAM service for NAME.  When
-ALLOW-EMPTY-PASSWORDS? is true, allow empty passwords."
+ALLOW-EMPTY-PASSWORDS? is true, allow empty passwords.  When MOTD is true, it
+should be the name of a file used as the message-of-the-day."
       ;; See <http://www.linux-pam.org/Linux-PAM-html/sag-configuration-example.html>.
       (let ((name* name))
         (pam-service
@@ -140,6 +141,12 @@ ALLOW-EMPTY-PASSWORDS? is true, allow empty passwords."
                           (arguments '("nullok")))
                          unix)))
          (password (list unix))
-         (session (list unix)))))))
+         (session (if motd
+                      (list unix
+                            (pam-entry
+                             (control "optional")
+                             (module "pam_motd.so")
+                             (arguments (list (string-append "motd=" motd)))))
+                      (list unix))))))))
 
 ;;; linux.scm ends here

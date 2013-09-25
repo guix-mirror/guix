@@ -955,12 +955,16 @@ more information.~%"))
       (match (assoc-ref opts 'query)
         (('list-generations pattern)
          (define (list-generation number)
-           (begin
-             (format #t (_ "Generation ~a\t~a~%") number
-                     (date->string
-                      (time-utc->date
-                       (generation-time profile number))
-                      "~b ~d ~Y ~T"))
+           (unless (zero? number)
+             (let ((header (format #f (_ "Generation ~a\t~a") number
+                                   (date->string
+                                    (time-utc->date
+                                     (generation-time profile number))
+                                    "~b ~d ~Y ~T")))
+                   (current (generation-number profile)))
+               (if (= number current)
+                   (format #t (_ "~a\t(current)~%") header)
+                   (format #t "~a~%" header)))
              (for-each (match-lambda
                         ((name version output location _)
                          (format #t "  ~a\t~a\t~a\t~a~%"
@@ -977,11 +981,16 @@ more information.~%"))
                 (leave (_ "profile '~a' does not exist~%")
                        profile))
                ((string-null? pattern)
-                (for-each list-generation
-                          (generation-numbers profile)))
+                (let ((numbers (generation-numbers profile)))
+                  (if (equal? numbers '(0))
+                      (exit 1)
+                      (for-each list-generation numbers))))
                ((matching-generations pattern profile)
                 =>
-                (cut for-each list-generation <>))
+                (lambda (numbers)
+                  (if (null-list? numbers)
+                      (exit 1)
+                      (for-each list-generation numbers))))
                (else
                 (leave (_ "invalid syntax: ~a~%")
                        pattern)))

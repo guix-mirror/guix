@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,25 +24,37 @@
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages help2man)
-  #:use-module (gnu packages ncurses))
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages bash))
 
 (define-public zile
   (package
     (name "zile")
     (version "2.4.9")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/zile/zile-"
-                          version ".tar.gz"))
-      (sha256
-       (base32
-        "0j801c28ypm924rw3lqyb6khxyslg6ycrv16wmmwcam0mk3mj6f7"))))
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/zile/zile-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0j801c28ypm924rw3lqyb6khxyslg6ycrv16wmmwcam0mk3mj6f7"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'configure 'patch-/bin/sh
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((bash (assoc-ref inputs "bash")))
+                     ;; Refer to the actual shell.
+                     (substitute* '("lib/spawni.c" "src/funcs.c")
+                       (("/bin/sh")
+                        (string-append bash "/bin/sh")))))
+                 %standard-phases)))
     (inputs
      `(("boehm-gc" ,libgc)
        ("ncurses" ,ncurses)
-       ("perl" ,perl)
+       ("bash" ,bash)))
+    (native-inputs
+     `(("perl" ,perl)
        ("help2man" ,help2man)))
     (home-page "http://www.gnu.org/software/zile/")
     (synopsis "Zile is lossy Emacs, a lightweight Emacs clone")

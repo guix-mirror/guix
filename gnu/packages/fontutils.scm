@@ -19,6 +19,7 @@
 (define-module (gnu packages fontutils)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:renamer (symbol-prefix-proc 'license:))
@@ -75,11 +76,16 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
    (build-system gnu-build-system)
    (inputs `(("expat" ,expat)
              ("freetype" ,freetype)
+             ("gs-fonts" ,gs-fonts)
              ("pkg-config" ,pkg-config)))
    (arguments
      `(#:configure-flags
-        ;; point to user profile instead of /usr/share/fonts in /etc/fonts.conf
-        `("--with-default-fonts=~/.guix-profile/share/fonts")))
+               ;; point to user profile instead of /usr/share/fonts in /etc/fonts.conf
+        (list "--with-default-fonts=~/.guix-profile/share/fonts"
+              ;; register gs-fonts
+              (string-append "--with-add-fonts="
+                             (assoc-ref %build-inputs "gs-fonts")
+                             "/share/fonts"))))
    (synopsis "Fontconfig, a library for configuring and customising font access.")
    (description
     "Fontconfig can discover new fonts when installed automatically;

@@ -108,7 +108,7 @@ extensive test suite.")
 (define-public pspp
   (package
     (name "pspp")
-    (version "0.8.0a")
+    (version "0.8.1")
     (source
      (origin
       (method url-fetch)
@@ -116,7 +116,7 @@ extensive test suite.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "1pgkb3z8b4wk4gymnafclhkrqq7n05wq83mra3v53jdl6bnllmyq"))))
+        "0qhxsdbwxd3cn1shc13wxvx2lg32lp4z6sz24kv3jz7p5xfi8j7x"))))
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gnu:gettext)

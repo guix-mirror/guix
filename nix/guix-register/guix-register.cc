@@ -62,6 +62,10 @@ static const struct argp_option options[] =
     { 0, 0, 0, 0, 0 }
   };
 
+
+/* Prefix of the store being populated.  */
+static std::string prefix;
+
 /* Parse a single option. */
 static error_t
 parse_opt (int key, char *arg, struct argp_state *state)
@@ -70,7 +74,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
     {
     case 'p':
       {
-	string prefix = canonPath (arg);
+	prefix = canonPath (arg);
 	settings.nixStore = prefix + NIX_STORE_DIR;
 	settings.nixDataDir = prefix + NIX_DATA_DIR;
 	settings.nixLogDir = prefix + NIX_LOG_DIR;
@@ -128,15 +132,25 @@ register_validity (LocalStore *store, std::istream &input,
       ValidPathInfo info = decodeValidPathInfo (input, hashGiven);
       if (info.path == "")
 	break;
+
+      /* Rewrite the input to refer final name, as if we were in a chroot
+	 under PREFIX.  */
+      std::string final_prefix (NIX_STORE_DIR "/");
+      info.path = final_prefix + baseNameOf (info.path);
+
+      /* Keep its real path to canonicalize it and compute its hash.  */
+      std::string real_path;
+      real_path = prefix + "/" + settings.nixStore + "/" + baseNameOf (info.path);
+
       if (!store->isValidPath (info.path) || reregister)
 	{
 	  /* !!! races */
 	  if (canonicalise)
-	    canonicalisePathMetaData (info.path, -1);
+	    canonicalisePathMetaData (real_path, -1);
 
 	  if (!hashGiven)
 	    {
-	      HashResult hash = hashPath (htSHA256, info.path);
+	      HashResult hash = hashPath (htSHA256, real_path);
 	      info.hash = hash.first;
 	      info.narSize = hash.second;
 	    }
@@ -155,7 +169,15 @@ main (int argc, char *argv[])
     {
       argp_parse (&argp, argc, argv, 0, 0, 0);
 
+      /* Instantiate the store.  This creates any missing directories among
+	 'settings.nixStore', 'settings.nixDBPath', etc.  */
       LocalStore store;
+
+      /* Under the --prefix tree, the final name of the store will be
+	 NIX_STORE_DIR.  Set it here so that the database uses file names
+	 prefixed by NIX_STORE_DIR and not PREFIX + NIX_STORE_DIR.  */
+      settings.nixStore = NIX_STORE_DIR;
+
       register_validity (&store, *input);
     }
   catch (std::exception &e)

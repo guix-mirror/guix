@@ -21,8 +21,12 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix records)
+  #:use-module ((gnu packages base)
+                #:select (glibc-final))
   #:use-module ((gnu packages system)
                 #:select (mingetty inetutils))
+  #:use-module ((gnu packages package-management)
+                #:select (guix))
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:export (service?
@@ -34,8 +38,13 @@
             service-stop
             service-inputs
 
+            host-name-service
             syslog-service
             mingetty-service
+            nscd-service
+            guix-service
+            static-networking-service
+
             dmd-configuration-file))
 
 ;;; Commentary:
@@ -58,6 +67,14 @@
   (inputs        service-inputs                   ; list of inputs
                  (default '())))
 
+(define (host-name-service store name)
+  "Return a service that sets the host name to NAME."
+  (service
+   (provision '(host-name))
+   (start `(lambda _
+             (sethostname ,name)))
+   (respawn? #f)))
+
 (define (mingetty-service store tty)
   "Return a service to run mingetty on TTY."
   (let* ((mingetty-drv (package-derivation store mingetty))
@@ -65,8 +82,31 @@
                                       "/sbin/mingetty")))
     (service
      (provision (list (symbol-append 'term- (string->symbol tty))))
+
+     ;; Since the login prompt shows the host name, wait for the 'host-name'
+     ;; service to be done.
+     (requirement '(host-name))
+
      (start `(make-forkexec-constructor ,mingetty-bin "--noclear" ,tty))
      (inputs `(("mingetty" ,mingetty))))))
+
+(define* (nscd-service store
+                       #:key (glibc glibc-final))
+  "Return a service that runs libc's name service cache daemon (nscd)."
+  (let ((nscd (string-append (package-output store glibc) "/sbin/nscd")))
+    (service
+     (provision '(nscd))
+     (start `(make-forkexec-constructor ,nscd "-f" "/dev/null"))
+
+     ;; XXX: Local copy of 'make-kill-destructor' because the one upstream
+     ;; uses the broken 'opt-lambda' macro.
+     (stop  `(lambda* (#:optional (signal SIGTERM))
+               (lambda (pid . args)
+                 (kill pid signal)
+                 #f)))
+
+     (respawn? #f)
+     (inputs `(("glibc" ,glibc))))))
 
 (define (syslog-service store)
   "Return a service that runs 'syslogd' with reasonable default settings."
@@ -104,6 +144,33 @@
      (inputs `(("inetutils" ,inetutils)
                ("syslog.conf" ,syslog.conf))))))
 
+(define* (guix-service store #:key (guix guix))
+  "Return a service that runs the build daemon from GUIX."
+  (let* ((drv    (package-derivation store guix))
+         (daemon (string-append (derivation->output-path drv)
+                                "/bin/guix-daemon")))
+    (service
+     (provision '(guix-daemon))
+     (start `(make-forkexec-constructor ,daemon))
+     (inputs `(("guix" ,guix))))))
+
+(define* (static-networking-service store interface ip
+                                    #:key (inetutils inetutils))
+  "Return a service that starts INTERFACE with address IP."
+
+  ;; TODO: Eventually we should do this using Guile's networking procedures,
+  ;; like 'configure-qemu-networking' does, but the patch that does this is
+  ;; not yet in stock Guile.
+  (let ((ifconfig (string-append (package-output store inetutils)
+                                 "/bin/ifconfig")))
+    (service
+     (provision '(networking))
+     (start `(make-forkexec-constructor ,ifconfig ,interface ,ip "up"))
+     (stop  `(make-forkexec-constructor ,ifconfig ,interface "down"))
+     (respawn? #f)
+     (inputs `(("inetutils" ,inetutils))))))
+
+
 (define (dmd-configuration-file store services)
   "Return the dmd configuration file for SERVICES."
   (define config

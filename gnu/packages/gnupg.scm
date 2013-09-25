@@ -57,14 +57,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0gwnzqd64cpwdmk93nll54nidsr74jpimxzj4p4z7502ylwl66p4"))))
+               "1lar8y3lh61zl5flljpz540d78g99h4d5idfwrfw8lm3gm737xdw"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))
@@ -106,7 +106,7 @@ provided.")
 (define-public libksba
   (package
     (name "libksba")
-    (version "1.2.0")
+    (version "1.3.0")
     (source
      (origin
       (method url-fetch)
@@ -115,7 +115,7 @@ provided.")
             version ".tar.bz2"))
       (sha256
        (base32
-        "0jwk7hm3x3g4hd7l12z3d79dy7359x7lc88dq6z7q0ixn1jwxbq9"))))
+        "0w8rfb6yhcwkwzvjafrashcygy4hd9xwwmvlnkfd1m2h0paywqas"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))
@@ -131,7 +131,7 @@ specifications are building blocks of S/MIME and TLS.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.0.20")
+    (version "2.0.21")
     (source
      (origin
       (method url-fetch)
@@ -139,12 +139,10 @@ specifications are building blocks of S/MIME and TLS.")
                           ".tar.bz2"))
       (sha256
        (base32
-        "16mp0j5inrcqcb3fxbn0b3aamascy3n923wiy0y8marc0rzrp53f"))))
+        "1xgf1q1phdawk6y66haaqcvfnlsqk12jmjin1m2d5x6fqw18kpq0"))))
     (build-system gnu-build-system)
     (inputs
-     `(;; TODO: Add missing optional dep libusb.
-;;        ("libusb" ,libusb)
-       ("bzip2" ,guix:bzip2)
+     `(("bzip2" ,guix:bzip2)
        ("curl" ,curl)
        ("libassuan" ,libassuan)
        ("libgcrypt" ,libgcrypt)

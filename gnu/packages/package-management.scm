@@ -22,7 +22,7 @@
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (gnu packages guile)
-  #:use-module ((gnu packages compression) #:select (bzip2))
+  #:use-module ((gnu packages compression) #:select (bzip2 gzip))
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages pkg-config))
@@ -41,6 +41,7 @@
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
+                          "--localstatedir=/var"
                           (string-append "--with-libgcrypt-prefix="
                                          (assoc-ref %build-inputs
                                                     "libgcrypt")))
@@ -70,6 +71,8 @@
                                 "/20130105/guile-2.0.7.tar.xz"))
                           (sha256 hash)))))
        `(("bzip2" ,bzip2)
+         ("gzip" ,gzip)
+
          ("sqlite" ,sqlite)
          ("libgcrypt" ,libgcrypt)
          ("guile" ,guile-2.0)
@@ -100,3 +103,20 @@ A user-land free software distribution for GNU/Linux comes as part of Guix.
 
 Guix is based on the Nix package manager.")
     (license gpl3+)))
+
+(define-public guix-0.4
+  ;; XXX: Hack to allow the use of a 0.4ish tarball.  This assumes that you
+  ;; have run 'make dist' in your build tree.  Remove when 0.4 is out.
+  (let* ((builddir (dirname
+                    (canonicalize-path
+                     (dirname (search-path %load-path
+                                           "guix/config.scm")))))
+         (tarball  (string-append builddir "/guix-0.4.tar.gz")))
+    (package (inherit guix)
+      (version "0.4rc")
+      (source (if (file-exists? tarball)
+                  tarball
+                  (begin
+                    (format (current-error-port)
+                            "warning: 'guix-0.4.tar.gz' not found~%")
+                    (package-source guix)))))))
