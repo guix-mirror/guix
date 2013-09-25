@@ -515,7 +515,9 @@ You can log in as 'root' with no password.
                        ("/etc/login.defs" -> "/dev/null")
                        ("/etc/pam.d" -> ,pam.d)
                        ("/etc/profile" -> ,bashrc)
-                       ("/etc/issue" -> ,issue)))
+                       ("/etc/issue" -> ,issue)
+                       (directory "/var/nix/gcroots")
+                       ("/var/nix/gcroots/default-profile" -> ,profile)))
            (out     (derivation->output-path
                      (package-derivation store mingetty)))
            (boot    (add-text-to-store store "boot"
