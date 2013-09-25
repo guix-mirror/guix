@@ -462,8 +462,8 @@ system identifying string)."
                         #:outputs outputs #:system system
                         (args))))))))
 
-(define* (package-output store package output
-                         #:optional (system (%current-system)))
+(define* (package-output store package
+                         #:optional (output "out") (system (%current-system)))
   "Return the output path of PACKAGE's OUTPUT for SYSTEM---where OUTPUT is the
 symbolic output name, such as \"out\".  Note that this procedure calls
 `package-derivation', which is costly."
