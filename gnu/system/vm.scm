@@ -92,6 +92,10 @@ made available under the /xchg CIFS share."
            `(,input . ,(package-output store package "out" system)))
           ((input (? package? package) sub-drv)
            `(,input . ,(package-output store package sub-drv system)))
+          ((input (? derivation? drv))
+           `(,input . ,(derivation->output-path drv)))
+          ((input (? derivation? drv) sub-drv)
+           `(,input . ,(derivation->output-path drv sub-drv)))
           ((input (and (? string?) (? store-path?) file))
            `(,input . ,file)))
          inputs))
@@ -178,7 +182,8 @@ made available under the /xchg CIFS share."
                                              `(,name ,(->drv package)
                                                      ,@sub-drv))
                                             ((name (? string? file))
-                                             `(,name ,file)))
+                                             `(,name ,file))
+                                            (tuple tuple))
                                            inputs))
                                   #:env-vars env-vars
                                   #:modules (delete-duplicates
@@ -216,6 +221,10 @@ It can be used to provide additional files, such as /etc files."
       `(,name . ,(derivation->output-path
                   (package-derivation store package system)
                   sub-drv)))
+     ((name (? derivation? drv))
+      `(,name . ,(derivation->output-path drv)))
+     ((name (? derivation? drv) sub-drv)
+      `(,name . ,(derivation->output-path drv sub-drv)))
      ((input (and (? string?) (? store-path?) file))
       `(,input . ,file))))
 
