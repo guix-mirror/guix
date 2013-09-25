@@ -211,9 +211,10 @@ INPUTS-TO-COPY is a list of inputs (as for packages) whose closure is copied
 into the image being built.  When INITIALIZE-STORE? is true, initialize the
 store database in the image so that Guix can be used in the image.
 
-When POPULATE is true, it must be the store file name of a Guile script to run
-in the disk image partition once it has been populated with INPUTS-TO-COPY.
-It can be used to provide additional files, such as /etc files."
+POPULATE is a list of directives stating directories or symlinks to be created
+in the disk image partition.  It is evaluated once the image has been
+populated with INPUTS-TO-COPY.  It can be used to provide additional files,
+such as /etc files."
   (define input->name+derivation
     (match-lambda
      ((name (? package? package))
@@ -326,6 +327,22 @@ It can be used to provide additional files, such as /etc files."
                                       graph-files)))
                               '(#f)))
 
+                      ;; Evaluate the POPULATE directives.
+                      ,@(let loop ((directives populate)
+                                   (statements '()))
+                          (match directives
+                            (()
+                             (reverse statements))
+                            ((('directory name) rest ...)
+                             (loop rest
+                                   (cons `(mkdir-p ,(string-append "/fs" name))
+                                         statements)))
+                            (((new '-> old) rest ...)
+                             (loop rest
+                                   (cons `(symlink ,old
+                                                   ,(string-append "/fs" new))
+                                         statements)))))
+
                       (and=> (assoc-ref %build-inputs "populate")
                              (lambda (populate)
                                (chdir "/fs")
@@ -365,9 +382,6 @@ It can be used to provide additional files, such as /etc files."
               ("gawk" ,(car (assoc-ref %final-inputs "gawk")))
               ("util-linux" ,util-linux)
 
-              ,@(if populate
-                    `(("populate" ,populate))
-                    '())
               ,@(if initialize-store?
                     `(("guix" ,guix-0.4))
                     '())
@@ -473,21 +487,14 @@ alias ls='ls -p --color'
 alias ll='ls -l'
 ")))
 
-           (populate
-            (add-text-to-store store "populate-qemu-image"
-                               (object->string
-                                `(begin
-                                   (mkdir-p "etc")
-                                   (mkdir-p "var/log") ; for dmd
-                                   (symlink ,shadow "etc/shadow")
-                                   (symlink ,passwd "etc/passwd")
-                                   (symlink ,group "etc/group")
-                                   (symlink "/dev/null"
-                                            "etc/login.defs")
-                                   (symlink ,pam.d "etc/pam.d")
-                                   (symlink ,bashrc "etc/profile")
-                                   (mkdir-p "var/run")))
-                               (list passwd)))
+           (populate `((directory "/etc")
+                       (directory "/var/log")
+                       (directory "/var/run")
+                       ("/etc/shadow" -> ,shadow)
+                       ("/etc/passwd" -> ,passwd)
+                       ("/etc/login.defs" -> "/dev/null")
+                       ("/etc/pam.d" -> ,pam.d)
+                       ("/etc/profile" -> ,bashrc)))
            (out     (derivation->output-path
                      (package-derivation store mingetty)))
            (boot    (add-text-to-store store "boot"
