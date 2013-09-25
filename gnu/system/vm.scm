@@ -447,7 +447,8 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
 
   (define %dmd-services
     ;; Services run by dmd.
-    (list (mingetty-service store "tty1")
+    (list (host-name-service store "gnu")
+          (mingetty-service store "tty1")
           (mingetty-service store "tty2")
           (mingetty-service store "tty3")
           (mingetty-service store "tty4")
@@ -488,6 +489,7 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
            (profile  (derivation->output-path profile-drv))
            (bashrc   (add-text-to-store store "bashrc"
                                         (string-append "
+export PS1='\\u@\\h\\$ '
 export PATH=$HOME/.guix-profile/bin:" profile "/bin:" profile "/sbin
 export CPATH=$HOME/.guix-profile/include:" profile "/include
 export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib

@@ -36,6 +36,7 @@
             service-stop
             service-inputs
 
+            host-name-service
             syslog-service
             mingetty-service
             guix-service
@@ -61,6 +62,14 @@
   (inputs        service-inputs                   ; list of inputs
                  (default '())))
 
+(define (host-name-service store name)
+  "Return a service that sets the host name to NAME."
+  (service
+   (provision '(host-name))
+   (start `(lambda _
+             (sethostname ,name)))
+   (respawn? #f)))
+
 (define (mingetty-service store tty)
   "Return a service to run mingetty on TTY."
   (let* ((mingetty-drv (package-derivation store mingetty))
@@ -68,6 +77,11 @@
                                       "/sbin/mingetty")))
     (service
      (provision (list (symbol-append 'term- (string->symbol tty))))
+
+     ;; Since the login prompt shows the host name, wait for the 'host-name'
+     ;; service to be done.
+     (requirement '(host-name))
+
      (start `(make-forkexec-constructor ,mingetty-bin "--noclear" ,tty))
      (inputs `(("mingetty" ,mingetty))))))
 
