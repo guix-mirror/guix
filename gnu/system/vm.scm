@@ -23,6 +23,8 @@
   #:use-module (guix packages)
   #:use-module ((gnu packages base) #:select (%final-inputs
                                               guile-final
+                                              gcc-final
+                                              glibc-final
                                               coreutils))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bash)
@@ -366,6 +368,9 @@ It can be used to provide additional files, such as /etc files."
               ,@(if populate
                     `(("populate" ,populate))
                     '())
+              ,@(if initialize-store?
+                    `(("guix" ,guix-0.4))
+                    '())
 
               ,@inputs-to-copy)
    #:make-disk-image? #t
@@ -378,6 +383,38 @@ It can be used to provide additional files, such as /etc files."
 ;;;
 ;;; Stand-alone VM image.
 ;;;
+
+(define* (union store inputs
+                #:key (guile (%guile-for-build)) (system (%current-system))
+                (name "union"))
+  "Return a derivation that builds the union of INPUTS.  INPUTS is a list of
+input tuples."
+  (define builder
+    `(begin
+       (use-modules (guix build union))
+
+       (setvbuf (current-output-port) _IOLBF)
+       (setvbuf (current-error-port) _IOLBF)
+
+       (let ((output (assoc-ref %outputs "out"))
+             (inputs (map cdr %build-inputs)))
+         (format #t "building union `~a' with ~a packages...~%"
+                 output (length inputs))
+         (union-build output inputs))))
+
+  (build-expression->derivation store name system builder
+                                (map (match-lambda
+                                      ((name (? package? p))
+                                       `(,name ,(package-derivation store p
+                                                                    system)))
+                                      ((name (? package? p) output)
+                                       `(,name ,(package-derivation store p
+                                                                    system)
+                                               ,output))
+                                      (x x))
+                                     inputs)
+                                #:modules '((guix build union))
+                                #:guile-for-build guile))
 
 (define (system-qemu-image store)
   "Return the derivation of a QEMU image of the GNU system."
@@ -410,6 +447,29 @@ It can be used to provide additional files, such as /etc files."
                                          "root:x:0:\n"))
            (pam.d-drv (pam-services->directory store %pam-services))
            (pam.d     (derivation->output-path pam.d-drv))
+
+           (packages `(("coreutils" ,coreutils)
+                       ("bash" ,bash)
+                       ("guile" ,guile-2.0)
+                       ("dmd" ,dmd)
+                       ("gcc" ,gcc-final)
+                       ("libc" ,glibc-final)
+                       ("guix" ,guix-0.4)))
+
+           ;; TODO: Replace with a real profile with a manifest.
+           ;; TODO: Generate bashrc from packages' search-paths.
+           (profile-drv (union store packages
+                               #:name "default-profile"))
+           (profile  (derivation->output-path profile-drv))
+           (bashrc   (add-text-to-store store "bashrc"
+                                        (string-append "
+export PATH=$HOME/.guix-profile/bin:" profile "/bin:" profile "/sbin
+export CPATH=$HOME/.guix-profile/include:" profile "/include
+export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
+alias ls='ls -p --color'
+alias ll='ls -l'
+")))
+
            (populate
             (add-text-to-store store "populate-qemu-image"
                                (object->string
@@ -422,6 +482,7 @@ It can be used to provide additional files, such as /etc files."
                                    (symlink "/dev/null"
                                             "etc/login.defs")
                                    (symlink ,pam.d "etc/pam.d")
+                                   (symlink ,bashrc "etc/profile")
                                    (mkdir-p "var/run")))
                                (list passwd)))
            (out     (derivation->output-path
@@ -438,7 +499,6 @@ It can be used to provide additional files, such as /etc files."
                                                ,(string-append "--load=" boot)))
                             (initrd gnu-system-initrd))))
            (grub.cfg (grub-configuration-file store entries)))
-      (build-derivations store (list pam.d-drv))
       (qemu-image store
                   #:grub-configuration grub.cfg
                   #:populate populate
@@ -447,12 +507,8 @@ It can be used to provide additional files, such as /etc files."
                   #:inputs-to-copy `(("boot" ,boot)
                                      ("linux" ,linux-libre)
                                      ("initrd" ,gnu-system-initrd)
-                                     ("coreutils" ,coreutils)
-                                     ("bash" ,bash)
-                                     ("guile" ,guile-2.0)
-                                     ("mingetty" ,mingetty)
-                                     ("dmd" ,dmd)
-                                     ("guix" ,guix-0.4)
+                                     ("pam.d" ,pam.d-drv)
+                                     ("profile" ,profile-drv)
 
                                      ;; Configuration.
                                      ("dmd.conf" ,dmd-conf)
@@ -460,6 +516,7 @@ It can be used to provide additional files, such as /etc files."
                                      ("etc-passwd" ,passwd)
                                      ("etc-shadow" ,shadow)
                                      ("etc-group" ,group)
+                                     ("etc-bashrc" ,bashrc)
                                      ,@(append-map service-inputs
                                                    %dmd-services))))))
 
