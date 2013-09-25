@@ -956,11 +956,15 @@ more information.~%"))
         (('list-generations pattern)
          (define (list-generation number)
            (unless (zero? number)
-             (format #t (_ "Generation ~a\t~a~%") number
-                     (date->string
-                      (time-utc->date
-                       (generation-time profile number))
-                      "~b ~d ~Y ~T"))
+             (let ((header (format #f (_ "Generation ~a\t~a") number
+                                   (date->string
+                                    (time-utc->date
+                                     (generation-time profile number))
+                                    "~b ~d ~Y ~T")))
+                   (current (generation-number profile)))
+               (if (= number current)
+                   (format #t (_ "~a\t(current)~%") header)
+                   (format #t "~a~%" header)))
              (for-each (match-lambda
                         ((name version output location _)
                          (format #t "  ~a\t~a\t~a\t~a~%"

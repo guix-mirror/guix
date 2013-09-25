@@ -119,6 +119,9 @@ then
     test "`readlink_base "$profile"`" = "$profile-1-link"
     test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
 
+    # Check that the first generation is the current one.
+    test "`guix package -p "$profile" -l 1 | cut -f3 | head -n1`" = "(current)"
+
     # Roll-back to generation 0, and install---all at once.
     guix package --bootstrap -p "$profile" --roll-back -i guile-bootstrap
     test "`readlink_base "$profile"`" = "$profile-1-link"
