@@ -493,7 +493,10 @@ alias ll='ls -l'
                                                 "--config" ,dmd-conf))
                                        (list out)))
            (entries  (list (menu-entry
-                            (label "Boot-to-Guile! (GNU System technology preview)")
+                            (label (string-append
+                                    "GNU System with Linux-Libre "
+                                    (package-version linux-libre)
+                                    " (technology preview)"))
                             (linux linux-libre)
                             (linux-arguments `("--root=/dev/vda1"
                                                ,(string-append "--load=" boot)))
