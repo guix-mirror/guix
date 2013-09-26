@@ -459,7 +459,8 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
           (nscd-service store)
 
           ;; QEMU networking settings.
-          (static-networking-service store "eth0" "10.0.2.10")))
+          (static-networking-service store "eth0" "10.0.2.10"
+                                     #:gateway "10.0.2.2")))
 
   (define resolv.conf
     ;; Name resolution for default QEMU settings.
