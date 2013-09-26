@@ -730,6 +730,9 @@ If the current generation matches, it is deleted atomically---i.e., by
 switching to the previous available generation.  Note that the zeroth
 generation is never deleted.
 
+Note that deleting generations prevents roll-back to them.
+Consequently, this command must be used with care.
+
 @end table
 
 @node Packages with Multiple Outputs
@@ -796,6 +799,12 @@ cannot be deleted; any other file is considered @dfn{dead} and may be
 deleted.  The set of garbage collector roots includes default user
 profiles, and may be augmented with @command{guix build --root}, for
 example (@pxref{Invoking guix build}).
+
+Prior to running @code{guix gc --collect-garbage} to make space, it is
+often useful to remove old generations from user profiles; that way, old
+package builds referenced by those generations can be reclaimed.  This
+is achieved by running @code{guix package --delete-generations}
+(@pxref{Invoking guix package}).
 
 The @command{guix gc} command has three modes of operation: it can be
 used to garbage-collect any dead files (the default), to delete specific
