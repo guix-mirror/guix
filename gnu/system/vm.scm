@@ -295,7 +295,7 @@ such as /etc files."
              (begin
                (display "creating ext3 partition...\n")
                (and (zero? (system* mkfs "-F" "/dev/vda1"))
-                    (begin
+                    (let ((store (string-append "/fs" ,%store-directory)))
                       (display "mounting partition...\n")
                       (mkdir "/fs")
                       (mount "/dev/vda1" "/fs" "ext3")
@@ -303,7 +303,8 @@ such as /etc files."
                       (symlink grub.cfg "/fs/boot/grub/grub.cfg")
 
                       ;; Populate the image's store.
-                      (mkdir-p (string-append "/fs" ,%store-directory))
+                      (mkdir-p store)
+                      (chmod store #o1775)
                       (for-each (lambda (thing)
                                   (copy-recursively thing
                                                     (string-append "/fs"
@@ -337,6 +338,12 @@ such as /etc files."
                              (loop rest
                                    (cons `(mkdir-p ,(string-append "/fs" name))
                                          statements)))
+                            ((('directory name uid gid) rest ...)
+                             (let ((dir (string-append "/fs" name)))
+                               (loop rest
+                                     (cons* `(chown ,dir ,uid ,gid)
+                                            `(mkdir-p ,dir)
+                                            statements))))
                             (((new '-> old) rest ...)
                              (loop rest
                                    (cons `(symlink ,old
@@ -462,8 +469,10 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
           (static-networking-service store "eth0" "10.0.2.10"
                                      #:gateway "10.0.2.2")))
 
+  (define build-user-gid 30000)
+
   (define build-accounts
-    (guix-build-accounts store 10))
+    (guix-build-accounts store 10 #:gid build-user-gid))
 
   (define resolv.conf
     ;; Name resolution for default QEMU settings.
@@ -512,7 +521,7 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                                          (members '("guest")))
                                         (user-group
                                          (name "guixbuild")
-                                         (id 30000)
+                                         (id build-user-gid)
                                          (members (map user-account-name
                                                        build-accounts))))))
            (pam.d-drv (pam-services->directory store %pam-services))
@@ -552,7 +561,8 @@ GNU dmd (http://www.gnu.org/software/dmd/).
 You can log in as 'guest' or 'root' with no password.
 "))
 
-           (populate `((directory "/etc")
+           (populate `((directory "/nix/store" 0 ,build-user-gid)
+                       (directory "/etc")
                        (directory "/var/log")     ; for dmd
                        (directory "/var/run/nscd")
                        ("/etc/shadow" -> ,shadow)
@@ -568,7 +578,11 @@ You can log in as 'guest' or 'root' with no password.
                        ("/etc/rpc" -> ,etc-rpc)
                        (directory "/var/nix/gcroots")
                        ("/var/nix/gcroots/default-profile" -> ,profile)
-                       (directory "/home/guest")))
+                       (directory "/tmp")
+                       (directory "/var/nix/profiles/per-user/root" 0 0)
+                       (directory "/var/nix/profiles/per-user/guest"
+                                  1000 100)
+                       (directory "/home/guest" 1000 100)))
            (out     (derivation->output-path
                      (package-derivation store mingetty)))
            (boot    (add-text-to-store store "boot"
