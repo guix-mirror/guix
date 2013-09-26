@@ -30,6 +30,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages algebra)
+  #:use-module ((gnu packages gettext)
+                #:renamer (symbol-prefix-proc 'g:))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -565,4 +567,82 @@ consists of several tools, of which the most important are ip and tc.  ip
 controls IPv4 and IPv6 configuration and tc stands for traffic control.  Both
 tools print detailed usage messages and are accompanied by a set of
 manpages.")
+    (license gpl2+)))
+
+(define-public net-tools
+  ;; XXX: This package is basically unmaintained, but it provides a few
+  ;; commands not yet provided by Inetutils, such as 'route', so we have to
+  ;; live with it.
+  (package
+    (name "net-tools")
+    (version "1.60")
+    (home-page "http://www.tazenda.demon.co.uk/phil/net-tools/")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append home-page "/" name "-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "0yvxrzk0mzmspr7sa34hm1anw6sif39gyn85w4c5ywfn8inxvr3s"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'patch
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (define (apply-patch file)
+                     (zero? (system* "patch" "-p1" "--batch"
+                                     "--input" file)))
+
+                   (let ((patch.gz (assoc-ref inputs "patch")))
+                     (format #t "applying Debian patch set '~a'...~%"
+                             patch.gz)
+                     (system (string-append "gunzip < " patch.gz " > the-patch"))
+                     (pk 'here)
+                     (and (apply-patch "the-patch")
+                          (for-each apply-patch
+                                    (find-files "debian/patches"
+                                                "\\.patch")))))
+                 (alist-replace
+                  'configure
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "out")))
+                      (mkdir-p (string-append out "/bin"))
+                      (mkdir-p (string-append out "/sbin"))
+
+                      ;; Pretend we have everything...
+                      (system "yes | make config")
+
+                      ;; ... except we don't have libdnet, so remove that
+                      ;; definition.
+                      (substitute* '("config.make" "config.h")
+                        (("^.*HAVE_AFDECnet.*$") ""))))
+                  %standard-phases))
+
+       ;; Binaries that depend on libnet-tools.a don't declare that
+       ;; dependency, making it parallel-unsafe.
+       #:parallel-build? #f
+
+       #:tests? #f                                ; no test suite
+       #:make-flags (list "CC=gcc"
+                          (string-append "BASEDIR="
+                                         (assoc-ref %outputs "out")))))
+
+    ;; Use the big Debian patch set (the thing does not even compile out of
+    ;; the box.)
+    (inputs `(("patch" ,(origin
+                         (method url-fetch)
+                         (uri
+                          "http://ftp.de.debian.org/debian/pool/main/n/net-tools/net-tools_1.60-24.2.diff.gz")
+                         (sha256
+                          (base32
+                           "0p93lsqx23v5fv4hpbrydmfvw1ha2rgqpn2zqbs2jhxkzhjc030p"))))))
+    (native-inputs `(("gettext" ,g:gettext)))
+
+    (synopsis "Tools for controlling the network subsystem in Linux")
+    (description
+     "This package includes the important tools for controlling the network
+subsystem of the Linux kernel.  This includes arp, hostname, ifconfig,
+netstat, rarp and route.  Additionally, this package contains utilities
+relating to particular network hardware types (plipconfig, slattach) and
+advanced aspects of IP configuration (iptunnel, ipmaddr).")
     (license gpl2+)))
