@@ -23,10 +23,15 @@
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages guile)
+  #:use-module ((gnu packages base)
+                #:select (tar))
+  #:use-module ((gnu packages compression)
+                #:select (gzip))
   #:use-module (gnu packages pkg-config))
 
 (define-public dmd
@@ -265,3 +270,47 @@ login, passwd, su, groupadd, and useradd.")
 asks for a login name and then transfers over to 'login'.  It is extended to
 allow automatic login and starting any app.")
     (license gpl2+)))
+
+(define-public net-base
+  (package
+    (name "net-base")
+    (version "5.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://ftp.de.debian.org/debian/pool/main/n/netbase/netbase_"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "17l8xk2x632id5f9x9v5fs9wqc650hldd2lf3dh90r1zisj1ya8d"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils)
+                                (srfi srfi-26))
+
+                   (let* ((source (assoc-ref %build-inputs "source"))
+                          (tar    (assoc-ref %build-inputs "tar"))
+                          (gzip   (assoc-ref %build-inputs "gzip"))
+                          (output (assoc-ref %outputs "out"))
+                          (etc    (string-append output "/etc")))
+                     (setenv "PATH" (string-append gzip "/bin"))
+                     (system* (string-append tar "/bin/tar") "xvf"
+                              source)
+                     (chdir ,(string-append "netbase-" version))
+                     (mkdir-p etc)
+                     (for-each copy-file
+                               '("etc-services" "etc-protocols" "etc-rpc")
+                               (map (cut string-append etc "/" <>)
+                                    '("services" "protocols" "rpc")))
+                     #t))))
+    (native-inputs `(("tar" ,tar)
+                     ("gzip" ,gzip)))
+    (synopsis "IANA protocol, port, and RPC number assignments")
+    (description
+     "This package provides the /etc/services, /etc/protocols, and /etc/rpc
+files, which contain information about the IANA-assigned port, protocol, and
+ONC RPC numbers")
+    (home-page "http://packages.debian.org/sid/netbase")
+    (license gpl2)))
