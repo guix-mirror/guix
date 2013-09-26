@@ -223,6 +223,16 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
 
     (switch-symlinks generation prof)))
 
+(define (switch-to-previous-generation profile)
+  "Atomically switch PROFILE to the previous generation."
+  (let* ((number              (generation-number profile))
+         (previous-number     (previous-generation-number profile number))
+         (previous-generation (format #f "~a-~a-link"
+                                      profile previous-number)))
+    (format #t (_ "switching from generation ~a to ~a~%")
+            number previous-number)
+    (switch-symlinks profile previous-generation)))
+
 (define (roll-back profile)
   "Roll back to the previous generation of PROFILE."
   (let* ((number              (generation-number profile))
@@ -230,24 +240,18 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
          (previous-generation (format #f "~a-~a-link"
                                       profile previous-number))
          (manifest            (string-append previous-generation "/manifest")))
-
-    (define (switch-link)
-      ;; Atomically switch PROFILE to the previous generation.
-      (format #t (_ "switching from generation ~a to ~a~%")
-              number previous-number)
-      (switch-symlinks profile previous-generation))
-
-    (cond ((not (file-exists? profile))           ; invalid profile
-           (leave (_ "profile `~a' does not exist~%")
+    (cond ((not (file-exists? profile))                 ; invalid profile
+           (leave (_ "profile '~a' does not exist~%")
                   profile))
-          ((zero? number)                         ; empty profile
+          ((zero? number)                               ; empty profile
            (format (current-error-port)
                    (_ "nothing to do: already at the empty profile~%")))
-          ((or (zero? previous-number)            ; going to emptiness
+          ((or (zero? previous-number)                  ; going to emptiness
                (not (file-exists? previous-generation)))
            (link-to-empty-profile previous-generation)
-           (switch-link))
-          (else (switch-link)))))                 ; anything else
+           (switch-to-previous-generation profile))
+          (else
+           (switch-to-previous-generation profile)))))  ; anything else
 
 (define (generation-time profile number)
   "Return the creation time of a generation in the UTC format."
@@ -515,6 +519,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -l, --list-generations[=PATTERN]
                          list generations matching PATTERN"))
+  (display (_ "
+  -d, --delete-generations[=PATTERN]
+                         delete generations matching PATTERN"))
   (newline)
   (display (_ "
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
@@ -578,6 +585,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                 (lambda (opt name arg result)
                   (cons `(query list-generations ,(or arg ""))
                         result)))
+        (option '(#\d "delete-generations") #f #t
+                (lambda (opt name arg result)
+                  (alist-cons 'delete-generations (or arg "")
+                              result)))
         (option '("search-paths") #f #f
                 (lambda (opt name arg result)
                   (cons `(query search-paths) result)))
@@ -828,85 +839,146 @@ more information.~%"))
                        install))))
         (_ #f)))
 
+    (define current-generation-number
+      (generation-number profile))
+
+    (define (display-and-delete number)
+      (let ((generation (format #f "~a-~a-link" profile number)))
+        (unless (zero? number)
+          (format #t (_ "deleting ~a~%") generation)
+          (delete-file generation))))
+
+    (define (delete-generation number)
+      (let* ((previous-number (previous-generation-number profile number))
+             (previous-generation (format #f "~a-~a-link"
+                                          profile previous-number)))
+        (cond ((zero? number))  ; do not delete generation 0
+              ((and (= number current-generation-number)
+                    (not (file-exists? previous-generation)))
+               (link-to-empty-profile previous-generation)
+               (switch-to-previous-generation profile)
+               (display-and-delete number))
+              ((= number current-generation-number)
+               (roll-back profile)
+               (display-and-delete number))
+              (else
+               (display-and-delete number)))))
+
     ;; First roll back if asked to.
-    (if (and (assoc-ref opts 'roll-back?) (not dry-run?))
-        (begin
-          (roll-back profile)
-          (process-actions (alist-delete 'roll-back? opts)))
-        (let* ((installed (manifest-packages (profile-manifest profile)))
-               (upgrade-regexps (filter-map (match-lambda
-                                             (('upgrade . regexp)
-                                              (make-regexp (or regexp "")))
-                                             (_ #f))
-                                            opts))
-               (upgrade  (if (null? upgrade-regexps)
-                             '()
-                             (let ((newest (find-newest-available-packages)))
-                               (filter-map (match-lambda
-                                            ((name version output path _)
-                                             (and (any (cut regexp-exec <> name)
-                                                       upgrade-regexps)
-                                                  (upgradeable? name version path)
-                                                  (find-package name
-                                                                (or output "out"))))
-                                            (_ #f))
-                                           installed))))
-               (install  (append
-                          upgrade
-                          (filter-map (match-lambda
-                                       (('install . (? package? p))
-                                        (package->tuple p))
-                                       (('install . (? store-path?))
-                                        #f)
-                                       (('install . package)
-                                        (find-package package))
-                                       (_ #f))
-                                      opts)))
-               (drv      (filter-map (match-lambda
-                                      ((name version sub-drv
-                                             (? package? package)
-                                             (deps ...))
-                                       (check-package-freshness package)
-                                       (package-derivation (%store) package))
-                                      (_ #f))
-                                     install))
-               (install* (append
-                          (filter-map (match-lambda
-                                       (('install . (? package? p))
-                                        #f)
-                                       (('install . (? store-path? path))
-                                        (let-values (((name version)
-                                                      (package-name->name+version
-                                                       (store-path-package-name
-                                                        path))))
-                                          `(,name ,version #f ,path ())))
-                                       (_ #f))
-                                      opts)
-                          (map (lambda (tuple drv)
-                                 (match tuple
-                                   ((name version sub-drv _ (deps ...))
-                                    (let ((output-path
-                                           (derivation->output-path
-                                            drv sub-drv)))
-                                      `(,name ,version ,sub-drv ,output-path
-                                              ,(canonicalize-deps deps))))))
-                               install drv)))
-               (remove   (filter-map (match-lambda
-                                      (('remove . package)
-                                       package)
-                                      (_ #f))
-                                     opts))
-               (remove*  (filter-map (cut assoc <> installed) remove))
-               (packages (append install*
-                                 (fold (lambda (package result)
-                                         (match package
-                                           ((name _ out _ ...)
-                                            (filter (negate
-                                                     (cut same-package? <>
-                                                          name out))
-                                                    result))))
-                                       (fold alist-delete installed remove)
-                                       install*))))
+    (cond ((and (assoc-ref opts 'roll-back?) (not dry-run?))
+           (begin
+             (roll-back profile)
+             (process-actions (alist-delete 'roll-back? opts))))
+          ((and (assoc-ref opts 'delete-generations)
+                (not dry-run?))
+           (filter-map
+            (match-lambda
+             (('delete-generations . pattern)
+              (cond ((not (file-exists? profile)) ; XXX: race condition
+                     (leave (_ "profile '~a' does not exist~%")
+                            profile))
+                    ((string-null? pattern)
+                     (let ((numbers (generation-numbers profile)))
+                       (if (equal? numbers '(0))
+                           (exit 0)
+                           (for-each display-and-delete
+                                     (delete current-generation-number
+                                             numbers)))))
+                    ;; Do not delete the zeroth generation.
+                    ((equal? 0 (string->number pattern))
+                     (exit 0))
+                    ((matching-generations pattern profile)
+                     =>
+                     (lambda (numbers)
+                       (if (null-list? numbers)
+                           (exit 1)
+                           (for-each delete-generation numbers))))
+                    (else
+                     (leave (_ "invalid syntax: ~a~%")
+                            pattern)))
+
+              (process-actions
+               (alist-delete 'delete-generations opts)))
+             (_ #f))
+            opts))
+          (else
+           (let* ((installed (manifest-packages (profile-manifest profile)))
+                  (upgrade-regexps (filter-map (match-lambda
+                                                (('upgrade . regexp)
+                                                 (make-regexp (or regexp "")))
+                                                (_ #f))
+                                               opts))
+                  (upgrade (if (null? upgrade-regexps)
+                               '()
+                               (let ((newest (find-newest-available-packages)))
+                                 (filter-map
+                                  (match-lambda
+                                   ((name version output path _)
+                                    (and (any (cut regexp-exec <> name)
+                                              upgrade-regexps)
+                                         (upgradeable? name version path)
+                                         (find-package name
+                                                       (or output "out"))))
+                                   (_ #f))
+                                  installed))))
+                  (install (append
+                            upgrade
+                            (filter-map (match-lambda
+                                         (('install . (? package? p))
+                                          (package->tuple p))
+                                         (('install . (? store-path?))
+                                          #f)
+                                         (('install . package)
+                                          (find-package package))
+                                         (_ #f))
+                                        opts)))
+                  (drv (filter-map (match-lambda
+                                    ((name version sub-drv
+                                           (? package? package)
+                                           (deps ...))
+                                     (check-package-freshness package)
+                                     (package-derivation (%store) package))
+                                    (_ #f))
+                                   install))
+                  (install*
+                   (append
+                    (filter-map (match-lambda
+                                 (('install . (? package? p))
+                                  #f)
+                                 (('install . (? store-path? path))
+                                  (let-values (((name version)
+                                                (package-name->name+version
+                                                 (store-path-package-name
+                                                  path))))
+                                    `(,name ,version #f ,path ())))
+                                 (_ #f))
+                                opts)
+                    (map (lambda (tuple drv)
+                           (match tuple
+                                  ((name version sub-drv _ (deps ...))
+                                   (let ((output-path
+                                          (derivation->output-path
+                                           drv sub-drv)))
+                                     `(,name ,version ,sub-drv ,output-path
+                                             ,(canonicalize-deps deps))))))
+                         install drv)))
+                  (remove (filter-map (match-lambda
+                                       (('remove . package)
+                                        package)
+                                        (_ #f))
+                                      opts))
+                  (remove* (filter-map (cut assoc <> installed) remove))
+                  (packages
+                   (append install*
+                           (fold (lambda (package result)
+                                   (match package
+                                          ((name _ out _ ...)
+                                           (filter (negate
+                                                    (cut same-package? <>
+                                                         name out))
+                                                   result))))
+                                 (fold alist-delete installed remove)
+                                 install*))))
 
           (when (equal? profile %current-profile)
             (ensure-default-profile))
@@ -950,7 +1022,7 @@ more information.~%"))
                                                count)
                                         count)
                                 (display-search-paths packages
-                                                      profile))))))))))
+                                                      profile)))))))))))
 
   (define (process-query opts)
     ;; Process any query specified by OPTS.  Return #t when a query was

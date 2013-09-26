@@ -714,6 +714,16 @@ or months by passing an integer along with the first letter of the
 duration, e.g., @code{--list-generations=20d}.
 @end itemize
 
+@item --delete-generations[=@var{pattern}]
+@itemx -d [@var{pattern}]
+Delete all generations except the current one.  Note that the zeroth
+generation is never deleted.
+
+This command accepts the same patterns as @option{--list-generations}.
+When @var{pattern} is specified, delete the matching generations.  If
+the current generation matches, it is deleted atomically, i.e., by
+switching to the previous available generation.
+
 @end table
 
 @node Packages with Multiple Outputs

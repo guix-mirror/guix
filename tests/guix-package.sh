@@ -142,6 +142,17 @@ then
     # Make sure LIBRARY_PATH gets listed by `--search-paths'.
     guix package --bootstrap -p "$profile" -i guile-bootstrap -i gcc-bootstrap
     guix package --search-paths -p "$profile" | grep LIBRARY_PATH
+
+    # Delete the third generation and check that it was actually deleted.
+    guix package -p "$profile" --delete-generations=3
+    test -z "`guix package -p "$profile" -l 3`"
+
+    # Exit with 1 when a generation does not exist.
+    if guix package -p "$profile" --delete-generations=42;
+    then false; else true; fi
+
+    # Exit with 0 when trying to delete the zeroth generation.
+    guix package -p "$profile" --delete-generations=0
 fi
 
 # Make sure the `:' syntax works.
