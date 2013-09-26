@@ -178,10 +178,14 @@ true, it must be a string specifying the default network gateway."
      (start `(lambda _
                (and (zero? (system* ,ifconfig ,interface ,ip "up"))
                     ,(if gateway
-                         `(zero? (system* ,route "add" "-net" "default"
-                                          "gw" ,gateway))
+                         `(begin
+                            (sleep 3)             ; XXX
+                            (zero? (system* ,route "add" "-net" "default"
+                                            "gw" ,gateway)))
                          #t))))
-     (stop  `(make-forkexec-constructor ,ifconfig ,interface "down"))
+     (stop  `(lambda _
+               (system* ,ifconfig ,interface "down")
+               (system* ,route "del" "-net" "default")))
      (respawn? #f)
      (inputs `(("inetutils" ,inetutils)
                ,@(if gateway
