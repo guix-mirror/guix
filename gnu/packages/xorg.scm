@@ -2186,6 +2186,14 @@ tracking.")
               ("mtdev" ,mtdev)
               ("pkg-config" ,pkg-config)
               ("xorg-server" ,xorg-server)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-sdkdir="
+                            (assoc-ref %outputs "out")
+                            "/include/xorg")
+             (string-append "--with-xorg-conf-dir="
+                            (assoc-ref %outputs "out")
+                            "/share/X11/xorg.conf.d"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
