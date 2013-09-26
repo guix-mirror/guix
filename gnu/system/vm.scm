@@ -462,6 +462,9 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
           (static-networking-service store "eth0" "10.0.2.10"
                                      #:gateway "10.0.2.2")))
 
+  (define build-accounts
+    (guix-build-accounts store 10))
+
   (define resolv.conf
     ;; Name resolution for default QEMU settings.
     (add-text-to-store store "resolv.conf"
@@ -482,20 +485,21 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
            (dmd-file  (string-append (derivation->output-path dmd-drv)
                                      "/bin/dmd"))
            (dmd-conf  (dmd-configuration-file store %dmd-services))
-           (accounts  (list (user-account
-                             (name "root")
-                             (password "")
-                             (uid 0) (gid 0)
-                             (comment "System administrator")
-                             (home-directory "/")
-                             (shell bash-file))
-                            (user-account
-                             (name "guest")
-                             (password "")
-                             (uid 1000) (gid 100)
-                             (comment "Guest of GNU")
-                             (home-directory "/home/guest")
-                             (shell bash-file))))
+           (accounts  (cons* (user-account
+                              (name "root")
+                              (password "")
+                              (uid 0) (gid 0)
+                              (comment "System administrator")
+                              (home-directory "/")
+                              (shell bash-file))
+                             (user-account
+                              (name "guest")
+                              (password "")
+                              (uid 1000) (gid 100)
+                              (comment "Guest of GNU")
+                              (home-directory "/home/guest")
+                              (shell bash-file))
+                             build-accounts))
            (passwd    (passwd-file store accounts))
            (shadow    (passwd-file store accounts #:shadow? #t))
            (group     (group-file store
@@ -505,7 +509,12 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                                         (user-group
                                          (name "users")
                                          (id 100)
-                                         (members '("guest"))))))
+                                         (members '("guest")))
+                                        (user-group
+                                         (name "guixbuild")
+                                         (id 30000)
+                                         (members (map user-account-name
+                                                       build-accounts))))))
            (pam.d-drv (pam-services->directory store %pam-services))
            (pam.d     (derivation->output-path pam.d-drv))
 

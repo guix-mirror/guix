@@ -18,8 +18,14 @@
 
 (define-module (gnu system shadow)
   #:use-module (guix store)
-  #:use-module (ice-9 match)
   #:use-module (guix records)
+  #:use-module (guix packages)
+  #:use-module ((gnu packages system)
+                #:select (shadow))
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:export (user-account
             user-account?
             user-account-name
@@ -38,7 +44,8 @@
             user-group-members
 
             passwd-file
-            group-file))
+            group-file
+            guix-build-accounts))
 
 ;;; Commentary:
 ;;;
@@ -109,5 +116,26 @@ file."
 
   (add-text-to-store store (if shadow? "shadow" "passwd")
                      contents '()))
+
+(define* (guix-build-accounts store count #:key
+                              (first-uid 30001)
+                              (gid 30000)
+                              (shadow shadow))
+  "Return a list of COUNT user accounts for Guix build users, with UIDs
+starting at FIRST-UID, and under GID."
+  (let* ((gid*     gid)
+         (no-login (string-append (package-output store shadow) "/sbin/nologin")))
+    (unfold (cut > <> count)
+            (lambda (n)
+              (user-account
+               (name (format #f "guixbuilder~2,'0d" n))
+               (password "!")
+               (uid (+ first-uid n -1))
+               (gid gid*)
+               (comment (format #f "Guix Build User ~2d" n))
+               (home-directory "/var/empty")
+               (shell no-login)))
+            1+
+            1)))
 
 ;;; shadow.scm ends here

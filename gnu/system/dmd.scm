@@ -146,14 +146,16 @@
      (inputs `(("inetutils" ,inetutils)
                ("syslog.conf" ,syslog.conf))))))
 
-(define* (guix-service store #:key (guix guix))
+(define* (guix-service store #:key (guix guix) (builder-group "guixbuild"))
   "Return a service that runs the build daemon from GUIX."
   (let* ((drv    (package-derivation store guix))
          (daemon (string-append (derivation->output-path drv)
                                 "/bin/guix-daemon")))
     (service
      (provision '(guix-daemon))
-     (start `(make-forkexec-constructor ,daemon))
+     (start `(make-forkexec-constructor ,daemon
+                                        "--build-users-group"
+                                        ,builder-group))
      (inputs `(("guix" ,guix))))))
 
 (define* (static-networking-service store interface ip
