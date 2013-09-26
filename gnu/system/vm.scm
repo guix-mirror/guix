@@ -30,6 +30,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages qemu)
   #:use-module (gnu packages parted)
+  #:use-module (gnu packages zile)
   #:use-module (gnu packages grub)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages linux-initrd)
@@ -534,6 +535,9 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                        ("gcc" ,gcc-final)
                        ("libc" ,glibc-final)
                        ("inetutils" ,inetutils)
+                       ("procps" ,procps)
+                       ("psmisc" ,psmisc)
+                       ("zile" ,zile)
                        ("guix" ,guix-0.4)))
 
            ;; TODO: Replace with a real profile with a manifest.
@@ -603,7 +607,7 @@ You can log in as 'guest' or 'root' with no password.
       (qemu-image store
                   #:grub-configuration grub.cfg
                   #:populate populate
-                  #:disk-image-size (* 500 (expt 2 20))
+                  #:disk-image-size (* 550 (expt 2 20))
                   #:initialize-store? #t
                   #:inputs-to-copy `(("boot" ,boot)
                                      ("linux" ,linux-libre)
