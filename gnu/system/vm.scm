@@ -484,8 +484,10 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                              (shell bash-file))))
            (passwd    (passwd-file store accounts))
            (shadow    (passwd-file store accounts #:shadow? #t))
-           (group     (add-text-to-store store "group"
-                                         "root:x:0:\n"))
+           (group     (group-file store
+                                  (list (user-group
+                                         (name "root")
+                                         (id 0)))))
            (pam.d-drv (pam-services->directory store %pam-services))
            (pam.d     (derivation->output-path pam.d-drv))
 

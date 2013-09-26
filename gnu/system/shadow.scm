@@ -30,7 +30,15 @@
             user-account-home-directory
             user-account-shell
 
-            passwd-file))
+            user-group
+            user-group?
+            user-group-name
+            user-group-password
+            user-group-id
+            user-group-members
+
+            passwd-file
+            group-file))
 
 ;;; Commentary:
 ;;;
@@ -48,6 +56,31 @@
   (comment        user-account-comment (default ""))
   (home-directory user-account-home-directory)
   (shell          user-account-shell (default "/bin/sh")))
+
+(define-record-type* <user-group>
+  user-group make-user-group
+  user-group?
+  (name           user-group-name)
+  (password       user-group-password (default #f))
+  (id             user-group-id)
+  (members        user-group-members (default '())))
+
+(define (group-file store groups)
+  "Return a /etc/group file for GROUPS, a list of <user-group> objects."
+  (define contents
+    (let loop ((groups groups)
+               (result '()))
+      (match groups
+        ((($ <user-group> name _ gid (users ...)) rest ...)
+         ;; XXX: Ignore the group password.
+         (loop rest
+               (cons (string-append name "::" (number->string gid)
+                                    ":" (string-join users ","))
+                     result)))
+        (()
+         (string-join (reverse result) "\n" 'suffix)))))
+
+  (add-text-to-store store "group" contents))
 
 (define* (passwd-file store accounts #:key shadow?)
   "Return a password file for ACCOUNTS, a list of <user-account> objects.  If
