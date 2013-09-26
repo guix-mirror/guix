@@ -19,7 +19,18 @@
 (define-module (gnu system shadow)
   #:use-module (guix store)
   #:use-module (ice-9 match)
-  #:export (passwd-file))
+  #:use-module (guix records)
+  #:export (user-account
+            user-account?
+            user-account-name
+            user-account-pass
+            user-account-uid
+            user-account-gid
+            user-account-comment
+            user-account-home-directory
+            user-account-shell
+
+            passwd-file))
 
 ;;; Commentary:
 ;;;
@@ -27,16 +38,28 @@
 ;;;
 ;;; Code:
 
+(define-record-type* <user-account>
+  user-account make-user-account
+  user-account?
+  (name           user-account-name)
+  (password       user-account-pass (default ""))
+  (uid            user-account-uid)
+  (gid            user-account-gid)
+  (comment        user-account-comment (default ""))
+  (home-directory user-account-home-directory)
+  (shell          user-account-shell (default "/bin/sh")))
+
 (define* (passwd-file store accounts #:key shadow?)
-  "Return a password file for ACCOUNTS, a list of vectors as returned by
-'getpwnam'.  If SHADOW? is true, then it is a /etc/shadow file, otherwise it
-is a /etc/passwd file."
+  "Return a password file for ACCOUNTS, a list of <user-account> objects.  If
+SHADOW? is true, then it is a /etc/shadow file, otherwise it is a /etc/passwd
+file."
   ;; XXX: The resulting file is world-readable, so beware when SHADOW? is #t!
   (define contents
     (let loop ((accounts accounts)
                (result   '()))
       (match accounts
-        ((#(name pass uid gid comment home-dir shell) rest ...)
+        ((($ <user-account> name pass uid gid comment home-dir shell)
+          rest ...)
          (loop rest
                (cons (if shadow?
                          (string-append name

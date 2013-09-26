@@ -475,8 +475,13 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
            (dmd-file  (string-append (derivation->output-path dmd-drv)
                                      "/bin/dmd"))
            (dmd-conf  (dmd-configuration-file store %dmd-services))
-           (accounts  (list (vector "root" "" 0 0 "System administrator"
-                                    "/" bash-file)))
+           (accounts  (list (user-account
+                             (name "root")
+                             (password "")
+                             (uid 0) (gid 0)
+                             (comment "System administrator")
+                             (home-directory "/")
+                             (shell bash-file))))
            (passwd    (passwd-file store accounts))
            (shadow    (passwd-file store accounts #:shadow? #t))
            (group     (add-text-to-store store "group"
