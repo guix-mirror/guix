@@ -35,11 +35,8 @@
     (version "-0.4")
     (source (origin
              (method url-fetch)
-
-             ;; XXX: Temporary location until dmd gets back home.
-             (uri (string-append
-                   "http://www.fdn.fr/~lcourtes/software/guix/dmd-"
-                   version ".tar.gz"))
+             (uri (string-append "ftp://alpha.gnu.org/gnu/dmd/dmd-"
+                                 version ".tar.gz"))
              (sha256
               (base32
                "094ja3xvk9ljghhxmy39if67cfjd1hy6m4svnp399n0wpxvaryvy"))))
