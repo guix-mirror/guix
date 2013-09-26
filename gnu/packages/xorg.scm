@@ -2096,7 +2096,6 @@ tracking.")
     (license license:x11)))
 
 
-;; FIXME: Tries to install file joystick-properties.h into ...--xorg-server-1.12.2/include/xorg
 (define-public xf86-input-joystick
   (package
     (name "xf86-input-joystick")
@@ -2114,6 +2113,11 @@ tracking.")
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)
               ("xorg-server" ,xorg-server)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-sdkdir="
+                            (assoc-ref %outputs "out")
+                            "/include/xorg"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
