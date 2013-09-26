@@ -1,4 +1,4 @@
-#!@GUILE@ -s
+#!@GUILE@ --no-auto-compile
 -*- scheme -*-
 !#
 ;;; GNU Guix --- Functional package management for GNU
