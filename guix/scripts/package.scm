@@ -983,7 +983,7 @@ more information.~%"))
                ((string-null? pattern)
                 (let ((numbers (generation-numbers profile)))
                   (if (equal? numbers '(0))
-                      (exit 1)
+                      (exit 0)
                       (for-each list-generation numbers))))
                ((matching-generations pattern profile)
                 =>
