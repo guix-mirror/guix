@@ -167,6 +167,21 @@
            (equal? (call-with-input-file p get-bytevector-all)
                    (call-with-input-file i get-bytevector-all))))))
 
+(test-assert "trivial with source"
+  (let* ((i (search-path %load-path "ice-9/boot-9.scm"))
+         (p (package (inherit (dummy-package "trivial-with-source"))
+              (build-system trivial-build-system)
+              (source i)
+              (arguments
+               `(#:guile ,%bootstrap-guile
+                 #:builder (copy-file (assoc-ref %build-inputs "source")
+                                      %output)))))
+         (d (package-derivation %store p)))
+    (and (build-derivations %store (list d))
+         (let ((p (derivation->output-path d)))
+           (equal? (call-with-input-file p get-bytevector-all)
+                   (call-with-input-file i get-bytevector-all))))))
+
 (test-assert "trivial with system-dependent input"
   (let* ((p (package (inherit (dummy-package "trivial-system-dependent-input"))
               (build-system trivial-build-system)
