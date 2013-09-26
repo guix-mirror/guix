@@ -467,6 +467,13 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
     (add-text-to-store store "resolv.conf"
                        "nameserver 10.0.2.3\n"))
 
+  (define etc-services
+    (string-append (package-output store net-base) "/etc/services"))
+  (define etc-protocols
+    (string-append (package-output store net-base) "/etc/protocols"))
+  (define etc-rpc
+    (string-append (package-output store net-base) "/etc/rpc"))
+
   (parameterize ((%guile-for-build (package-derivation store guile-final)))
     (let* ((bash-drv  (package-derivation store bash))
            (bash-file (string-append (derivation->output-path bash-drv)
@@ -547,6 +554,9 @@ You can log in as 'guest' or 'root' with no password.
                        ("/etc/resolv.conf" -> ,resolv.conf)
                        ("/etc/profile" -> ,bashrc)
                        ("/etc/issue" -> ,issue)
+                       ("/etc/services" -> ,etc-services)
+                       ("/etc/protocols" -> ,etc-protocols)
+                       ("/etc/rpc" -> ,etc-rpc)
                        (directory "/var/nix/gcroots")
                        ("/var/nix/gcroots/default-profile" -> ,profile)
                        (directory "/home/guest")))
@@ -588,6 +598,7 @@ You can log in as 'guest' or 'root' with no password.
                                      ("etc-bashrc" ,bashrc)
                                      ("etc-issue" ,issue)
                                      ("etc-motd" ,motd)
+                                     ("net-base" ,net-base)
                                      ,@(append-map service-inputs
                                                    %dmd-services))))))
 
