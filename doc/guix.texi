@@ -711,18 +711,24 @@ second one.
 
 @item @emph{Durations}.  You can also get the last @emph{N}@tie{}days, weeks,
 or months by passing an integer along with the first letter of the
-duration, e.g., @code{--list-generations=20d}.
+duration.  For example, @code{--list-generations=20d} lists generations
+that are up to 20 days old.
 @end itemize
 
 @item --delete-generations[=@var{pattern}]
 @itemx -d [@var{pattern}]
-Delete all generations except the current one.  Note that the zeroth
-generation is never deleted.
+When @var{pattern} is omitted, delete all generations except the current
+one.
 
 This command accepts the same patterns as @option{--list-generations}.
-When @var{pattern} is specified, delete the matching generations.  If
-the current generation matches, it is deleted atomically, i.e., by
-switching to the previous available generation.
+When @var{pattern} is specified, delete the matching generations.  When
+@var{pattern} specifies a duration, generations @emph{older} than the
+specified duration match.  For instance, @code{--delete-generations=1m}
+deletes generations that are more than one month old.
+
+If the current generation matches, it is deleted atomically---i.e., by
+switching to the previous available generation.  Note that the zeroth
+generation is never deleted.
 
 @end table
 

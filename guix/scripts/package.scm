@@ -258,9 +258,12 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
   (make-time time-utc 0
              (stat:ctime (stat (format #f "~a-~a-link" profile number)))))
 
-(define* (matching-generations str #:optional (profile %current-profile))
+(define* (matching-generations str #:optional (profile %current-profile)
+                               #:key (duration-relation <=))
   "Return the list of available generations matching a pattern in STR.  See
-'string->generations' and 'string->duration' for the list of valid patterns."
+'string->generations' and 'string->duration' for the list of valid patterns.
+When STR is a duration pattern, return all the generations whose ctime has
+DURATION-RELATION with the current time."
   (define (valid-generations lst)
     (define (valid-generation? n)
       (any (cut = n <>) (generation-numbers profile)))
@@ -309,7 +312,7 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
                  (subtract-duration (time-at-midnight (current-time))
                                     duration))))
          (delete #f (map (lambda (x)
-                           (and (<= s (cdr x))
+                           (and (duration-relation s (cdr x))
                                 (first x)))
                          generation-ctime-alist))))))
 
@@ -887,7 +890,11 @@ more information.~%"))
                     ;; Do not delete the zeroth generation.
                     ((equal? 0 (string->number pattern))
                      (exit 0))
-                    ((matching-generations pattern profile)
+
+                    ;; If PATTERN is a duration, match generations that are
+                    ;; older than the specified duration.
+                    ((matching-generations pattern profile
+                                           #:duration-relation >)
                      =>
                      (lambda (numbers)
                        (if (null-list? numbers)

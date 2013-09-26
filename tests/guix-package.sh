@@ -168,6 +168,13 @@ then false; else true; fi
 # Check whether `--list-available' returns something sensible.
 guix package -p "$profile" -A 'gui.*e' | grep guile
 
+# There's no generation older than 12 months, so the following command should
+# have no effect.
+generation="`readlink_base "$profile"`"
+if guix package -p "$profile" --delete-generations=12m;
+then false; else true; fi
+test "`readlink_base "$profile"`" = "$generation"
+
 #
 # Try with the default profile.
 #
