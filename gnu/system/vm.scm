@@ -481,13 +481,24 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                              (uid 0) (gid 0)
                              (comment "System administrator")
                              (home-directory "/")
+                             (shell bash-file))
+                            (user-account
+                             (name "guest")
+                             (password "")
+                             (uid 1000) (gid 100)
+                             (comment "Guest of GNU")
+                             (home-directory "/home/guest")
                              (shell bash-file))))
            (passwd    (passwd-file store accounts))
            (shadow    (passwd-file store accounts #:shadow? #t))
            (group     (group-file store
                                   (list (user-group
                                          (name "root")
-                                         (id 0)))))
+                                         (id 0))
+                                        (user-group
+                                         (name "users")
+                                         (id 100)
+                                         (members '("guest"))))))
            (pam.d-drv (pam-services->directory store %pam-services))
            (pam.d     (derivation->output-path pam.d-drv))
 
@@ -522,7 +533,7 @@ This image features the GNU Guix package manager, which was used to
 build it (http://www.gnu.org/software/guix/).  The init system is
 GNU dmd (http://www.gnu.org/software/dmd/).
 
-You can log in as 'root' with no password.
+You can log in as 'guest' or 'root' with no password.
 "))
 
            (populate `((directory "/etc")
@@ -530,13 +541,15 @@ You can log in as 'root' with no password.
                        (directory "/var/run/nscd")
                        ("/etc/shadow" -> ,shadow)
                        ("/etc/passwd" -> ,passwd)
+                       ("/etc/group" -> ,group)
                        ("/etc/login.defs" -> "/dev/null")
                        ("/etc/pam.d" -> ,pam.d)
                        ("/etc/resolv.conf" -> ,resolv.conf)
                        ("/etc/profile" -> ,bashrc)
                        ("/etc/issue" -> ,issue)
                        (directory "/var/nix/gcroots")
-                       ("/var/nix/gcroots/default-profile" -> ,profile)))
+                       ("/var/nix/gcroots/default-profile" -> ,profile)
+                       (directory "/home/guest")))
            (out     (derivation->output-path
                      (package-derivation store mingetty)))
            (boot    (add-text-to-store store "boot"
