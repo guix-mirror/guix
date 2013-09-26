@@ -166,7 +166,7 @@ if guix package --bootstrap -i "guile-bootstrap:does-not-exist" -p "$profile";
 then false; else true; fi
 
 # Check whether `--list-available' returns something sensible.
-guix package -A 'gui.*e' | grep guile
+guix package -p "$profile" -A 'gui.*e' | grep guile
 
 #
 # Try with the default profile.
