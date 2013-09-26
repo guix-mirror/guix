@@ -2200,7 +2200,6 @@ tracking.")
     (license license:x11)))
 
 
-;; FIXME: Installation tries to create ...-xorg-server-1.12.2/share/X11/xorg.conf.d
 (define-public xf86-input-vmmouse
   (package
     (name "xf86-input-vmmouse")
@@ -2218,6 +2217,11 @@ tracking.")
     (build-system gnu-build-system)
     (inputs `(("pkg-config" ,pkg-config)
               ("xorg-server" ,xorg-server)))
+    (arguments
+     `(#:configure-flags
+       (list(string-append "--with-xorg-conf-dir="
+                            (assoc-ref %outputs "out")
+                            "/share/X11/xorg.conf.d"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
