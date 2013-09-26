@@ -210,6 +210,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/glib-tests-homedir.patch			\
   gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
+  gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-no-ld-so-cache.patch		\
   gnu/packages/patches/grub-gets-undeclared.patch		\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
@@ -221,7 +222,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/m4-gets-undeclared.patch			\
   gnu/packages/patches/m4-readlink-EINVAL.patch			\
-  gnu/packages/patches/m4-s_isdir.patch				\
   gnu/packages/patches/make-impure-dirs.patch			\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/perl-no-sys-dirs.patch			\

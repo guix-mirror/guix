@@ -115,9 +115,7 @@ files."
                    ;; download), we must build it first to avoid errors since
                    ;; (gnutls) is unavailable.
                    (cons (string-append out "/guix/build/download.scm")
-
-                         ;; Sort the file names to get deterministic results.
-                         (sort (find-files out "\\.scm") string<?)))
+                         (find-files out "\\.scm")))
 
          ;; Remove the "fake" (guix config).
          (delete-file (string-append out "/guix/config.scm"))

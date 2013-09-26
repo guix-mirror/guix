@@ -387,14 +387,14 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 (define-public glibc
   (package
    (name "glibc")
-   (version "2.17")
+   (version "2.18")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "0gmjnn4kma9vgizccw1jv979xw55a8n1nkk94gg0l3hy80vy6539"))))
+              "18spla703zav8dq9fw7rbzkyv9qfisxb26p7amg1x3wjh7iy3d1c"))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -409,7 +409,8 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 
    (arguments
     `(#:out-of-source? #t
-      #:patches (list (assoc-ref %build-inputs "patch/ld.so.cache"))
+      #:patches (list (assoc-ref %build-inputs "patch/ld.so.cache")
+                      (assoc-ref %build-inputs "patch/ldd"))
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"
@@ -421,7 +422,6 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
             (string-append "libc_cv_localedir="
                            (assoc-ref %outputs "locales")
                            "/share/locale")
-
 
             (string-append "--with-headers="
                            (assoc-ref %build-inputs "linux-headers")
@@ -496,6 +496,8 @@ BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
 
    (inputs `(("patch/ld.so.cache"
               ,(search-patch "glibc-no-ld-so-cache.patch"))
+             ("patch/ldd"
+              ,(search-patch "glibc-ldd-x86_64.patch"))
              ("static-bash" ,(static-package bash-light))))
    (synopsis "The GNU C Library")
    (description
