@@ -116,7 +116,4 @@ Guix is based on the Nix package manager.")
       (version "0.4rc")
       (source (if (file-exists? tarball)
                   tarball
-                  (begin
-                    (format (current-error-port)
-                            "warning: 'guix-0.4.tar.gz' not found~%")
-                    (package-source guix)))))))
+                  (package-source guix))))))
