@@ -61,9 +61,27 @@ file name.  See “Derivations” in the manual for details.
 
 ** GNU distribution
 
-*** XXX new packages
+*** 60 new packages
 
-*** XXX package updates
+apr, apr-util, cdparanoia, dbus-glib, dfc, dmd, dvdisaster, exiv2, fetchmail,
+freefont-ttf, freeglut, geeqie, git, gkrellm, glu, gnome-doc-utils,
+gst-plugins-base, gstreamer, guile-cairo, guile-lib, guile-xcb, guix, htop,
+itstool, lame, libextractor, libmicrohttpd, lightning, lzip, mingetty, mutt,
+net-base, net-tools, ocrad, pspp, python-babel, python-dateutil, python-pytz,
+python-setuptools, python-simplejson, python-wrapper, python2-babel,
+python2-dateutil, python2-mechanize, python2-pyicu, python2-pysqlite,
+python2-pytz, python2-setuptools, python2-simplejson, qemu-system-initrd,
+qemu-with-multiple-smb-shares, ripperx, shadow, ttf-bitstream-vera, units,
+valgrind, xmlto, xnee, yasm
+
+*** 27 package updates
+
+bigloo 4.0b, cairo 1.12.16, ddrescue 1.17, fontconfig 2.10.93, fplll 4.0.4,
+gcc 4.7.3, gcc 4.7.3, glibc 2.18, glibc 2.18, glibc-stripped-tarball 2.18,
+gnupg 2.0.21, gnutls 3.2.4, guile 2.0.9, guile 2.0.9, harfbuzz 0.9.21,
+imagemagick 6.8.6-9, libdrm 2.4.46, libgcrypt 1.5.3, libjpeg 9, libksba 1.3.0,
+linux-libre 3.11, m4 1.4.17, mpfrcx 0.4.2, pari-gp 2.5.4, python 2.7.5, python
+3.3.2, texlive 2013
 
 *** Fontconfig font search path made more convenient
 
@@ -93,11 +111,11 @@ Updated translations: eo.
 
 ** Bugs fixed
 
-*** The dependency graph image has correct size in PDF output
-*** Hop 2.4 builds with newer Bigloo (http://bugs.gnu.org/15194)
-*** Xorg server test suite no longer fails (http://bugs.gnu.org/15392)
 *** Workarounds for Guile 2.0.5 now work on Debian derivatives
-
+*** The dependency graph image has correct size in PDF output
+*** 'ldd' now works correctly on x86_64
+*** Xorg server test suite no longer fails (http://bugs.gnu.org/15392)
+*** Hop 2.4 builds with newer Bigloo (http://bugs.gnu.org/15194)
 
 * Changes in 0.3 (since 0.2)
 
