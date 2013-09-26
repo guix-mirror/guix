@@ -363,8 +363,7 @@ the Linux kernel.")
         (make-essential-device-nodes)
 
         ;; Prepare the real root file system under /root.
-        (unless (file-exists? "/root")
-          (mkdir "/root"))
+        (mkdir-p "/root")
         (if root
             ;; Assume ROOT has a usable /dev tree.
             (mount root "/root" "ext3")
@@ -373,6 +372,9 @@ the Linux kernel.")
               (make-essential-device-nodes #:root "/root")))
 
         (mount-essential-file-systems #:root "/root")
+
+        (mkdir-p "/root/tmp")
+        (mount "none" "/root/tmp" "tmpfs")
 
         ;; XXX: We don't copy our fellow Guile modules to /root (see
         ;; 'qemu-initrd'), so if TO-LOAD tries to load a module (which can
