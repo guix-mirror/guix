@@ -122,24 +122,16 @@
               (base32
                "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))))
     (build-system gnu-build-system)
-    (inputs
-     ;; The upstream tarball lacks man pages, and building them would require
-     ;; DocBook & co.  Thus, use Gentoo's pre-built man pages.
-     `(("man-pages"
-        ,(origin
-          (method url-fetch)
-          (uri (string-append
-                "http://distfiles.gentoo.org/distfiles/module-init-tools-" version
-                "-man.tar.bz2"))
-          (sha256
-           (base32
-            "1j1nzi87kgsh4scl645fhwhjvljxj83cmdasa4n4p5krhasgw358"))))))
     (arguments
+     ;; FIXME: The upstream tarball lacks man pages, and building them would
+     ;; require DocBook & co.  We used to use Gentoo's pre-built man pages,
+     ;; but they vanished.  In the meantime, fake it.
      '(#:phases (alist-cons-before
-                 'unpack 'unpack-man-pages
-                 (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((man-pages (assoc-ref inputs "man-pages")))
-                     (zero? (system* "tar" "xvf" man-pages))))
+                 'configure 'fake-docbook
+                 (lambda _
+                   (substitute* "Makefile.in"
+                     (("^DOCBOOKTOMAN.*$")
+                      "DOCBOOKTOMAN = true\n")))
                  %standard-phases)))
     (home-page "http://www.kernel.org/pub/linux/utils/kernel/module-init-tools/")
     (synopsis "Tools for loading and managing Linux kernel modules")
