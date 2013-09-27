@@ -594,8 +594,7 @@ You can log in as 'guest' or 'root' with no password.
            (boot    (add-text-to-store store "boot"
                                        (object->string
                                         `(execl ,dmd-file "dmd"
-                                                "--config" ,dmd-conf))
-                                       (list out)))
+                                                "--config" ,dmd-conf))))
            (entries  (list (menu-entry
                             (label (string-append
                                     "GNU System with Linux-Libre "
