@@ -30,14 +30,14 @@
 (define-public guix
   (package
     (name "guix")
-    (version "0.3")
+    (version "0.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0xpfdmlfkkpmgrb8lpaqs5wxx31m4jslajs6b9waz5wp91zk7fix"))))
+               "1mmh28ds5p8mpzm2yfvgm6z92wgknqc3dlw6r6z16s13sk386igk"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
@@ -104,16 +104,3 @@ A user-land free software distribution for GNU/Linux comes as part of Guix.
 Guix is based on the Nix package manager.")
     (license gpl3+)))
 
-(define-public guix-0.4
-  ;; XXX: Hack to allow the use of a 0.4ish tarball.  This assumes that you
-  ;; have run 'make dist' in your build tree.  Remove when 0.4 is out.
-  (let* ((builddir (dirname
-                    (canonicalize-path
-                     (dirname (search-path %load-path
-                                           "guix/config.scm")))))
-         (tarball  (string-append builddir "/guix-0.4.tar.gz")))
-    (package (inherit guix)
-      (version "0.4rc")
-      (source (if (file-exists? tarball)
-                  tarball
-                  (package-source guix))))))

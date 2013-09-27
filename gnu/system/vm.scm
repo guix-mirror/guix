@@ -390,7 +390,7 @@ such as /etc files."
               ("util-linux" ,util-linux)
 
               ,@(if initialize-store?
-                    `(("guix" ,guix-0.4))
+                    `(("guix" ,guix))
                     '())
 
               ,@inputs-to-copy)
@@ -462,7 +462,7 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
           (mingetty-service store "tty5")
           (mingetty-service store "tty6")
           (syslog-service store)
-          (guix-service store #:guix guix-0.4)
+          (guix-service store)
           (nscd-service store)
 
           ;; QEMU networking settings.
@@ -540,7 +540,7 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                        ("procps" ,procps)
                        ("psmisc" ,psmisc)
                        ("zile" ,zile)
-                       ("guix" ,guix-0.4)))
+                       ("guix" ,guix)))
 
            ;; TODO: Replace with a real profile with a manifest.
            ;; TODO: Generate bashrc from packages' search-paths.
