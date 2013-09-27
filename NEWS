@@ -115,6 +115,7 @@ Updated translations: eo.
 *** The dependency graph image has correct size in PDF output
 *** 'ldd' now works correctly on x86_64
 *** Xorg server test suite no longer fails (http://bugs.gnu.org/15392)
+*** module-init-tools now builds (http://bugs.gnu.org/15182, http://bugs.gnu.org/15187)
 *** Hop 2.4 builds with newer Bigloo (http://bugs.gnu.org/15194)
 
 * Changes in 0.3 (since 0.2)
