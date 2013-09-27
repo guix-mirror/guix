@@ -537,9 +537,9 @@ Thus, when installing MPC, the MPFR and GMP libraries also get installed
 in the profile; removing MPC also removes MPFR and GMP---unless they had
 also been explicitly installed independently.
 
-Besides, packages sometime rely on the definition of environment
+Besides, packages sometimes rely on the definition of environment
 variables for their search paths (see explanation of
-@code{--search-paths} below.)  Any missing or possibly incorrect
+@code{--search-paths} below).  Any missing or possibly incorrect
 environment variable definitions are reported here.
 
 @c XXX: keep me up-to-date
@@ -1838,7 +1838,7 @@ Binutils, libc, and the other packages mentioned above---the
 @dfn{bootstrap binaries}.
 
 These bootstrap binaries are ``taken for granted'', though we can also
-re-create them if needed (more on that later.)
+re-create them if needed (more on that later).
 
 @unnumberedsubsec Preparing to Use the Bootstrap Binaries
 
@@ -1966,7 +1966,7 @@ In practice, there may be some complications.  First, it may be that the
 extended GNU triplet that specifies an ABI (like the @code{eabi} suffix
 above) is not recognized by all the GNU tools.  Typically, glibc
 recognizes some of these, whereas GCC uses an extra @code{--with-abi}
-configure flag (see @code{gcc.scm} for examples of how to handle this.)
+configure flag (see @code{gcc.scm} for examples of how to handle this).
 Second, some of the required packages could fail to build for that
 platform.  Lastly, the generated binaries could be broken for some
 reason.
