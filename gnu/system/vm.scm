@@ -21,11 +21,10 @@
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
-  #:use-module ((gnu packages base) #:select (%final-inputs
-                                              guile-final
-                                              gcc-final
-                                              glibc-final
-                                              coreutils))
+  #:use-module ((gnu packages base)
+                #:select (%final-inputs
+                          guile-final gcc-final glibc-final
+                          coreutils findutils grep sed))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages qemu)
@@ -535,6 +534,9 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                        ("gcc" ,gcc-final)
                        ("libc" ,glibc-final)
                        ("inetutils" ,inetutils)
+                       ("findutils" ,findutils)
+                       ("grep" ,grep)
+                       ("sed" ,sed)
                        ("procps" ,procps)
                        ("psmisc" ,psmisc)
                        ("zile" ,zile)
