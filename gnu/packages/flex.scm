@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,9 +24,10 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages indent))
+  #:use-module (gnu packages indent)
+  #:export (flex))
 
-(define-public flex
+(define flex
   (package
     (name "flex")
     (version "2.5.37")

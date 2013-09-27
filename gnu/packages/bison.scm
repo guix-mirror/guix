@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,12 +22,15 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages m4)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages flex)
+  #:use-module (srfi srfi-1)
+  #:export (bison))
 
-(define-public bison
+(define bison
   (package
     (name "bison")
-    (version "2.7.1")
+    (version "3.0")
     (source
      (origin
       (method url-fetch)
@@ -35,9 +38,19 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1yx7isx67sdmyijvihgyra1f59fwdz7sqriginvavfj5yb5ss2dl"))))
+        "1j14fqgi9wzqgsy4fhkcdrv4hv6rrvhvn84axs520w9b022mbb79"))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)))
+    (native-inputs `(("perl" ,perl)
+
+                     ;; We need Flex for the test suite, and Flex needs Bison.
+                     ;; To break the cycle, we remove Bison from the inputs of
+                     ;; Flex, and disable Flex's test suite, since it requires
+                     ;; Bison.
+                     ("flex" ,(package (inherit flex)
+                                (arguments '(#:tests? #f))
+                                (inputs
+                                 (alist-delete "bison"
+                                               (package-inputs flex)))))))
     (propagated-inputs `(("m4" ,m4)))
     (home-page "http://www.gnu.org/software/bison/")
     (synopsis "Parser generator")
