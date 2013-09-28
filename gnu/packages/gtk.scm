@@ -33,6 +33,8 @@
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define-public atk
@@ -219,3 +221,62 @@ suitable for projects ranging from small one-off tools to complete
 application suites.")
    (license license:lgpl2.0+)
    (home-page "http://www.gtk.org/")))
+
+
+;;;
+;;; Guile bindings.
+;;;
+
+(define-public guile-cairo
+  (package
+    (name "guile-cairo")
+    (version "1.4.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://download.gna.org/guile-cairo/guile-cairo-"
+                   version
+                   ".tar.gz"))
+             (sha256
+              (base32
+               "1f5nd9n46n6cwfl1byjml02q3y2hgn7nkx98km1czgwarxl7ws3x"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'configure 'set-module-directory
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Install modules under $out/share/guile/site/2.0.
+                   (let ((out (assoc-ref outputs "out")))
+                     (substitute* "Makefile.in"
+                       (("scmdir = ([[:graph:]]+).*" _ value)
+                        (string-append "scmdir = " value "/2.0\n")))
+                     (substitute* "cairo/Makefile.in"
+                       (("moduledir = ([[:graph:]]+).*" _ value)
+                        (string-append "moduledir = "
+                                       "$(prefix)/share/guile/site/2.0/cairo\n'")))))
+                 (alist-cons-after
+                  'install 'install-missing-file
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    ;; By default 'vector-types.scm' is not installed, so do
+                    ;; it here.
+                    (let ((out (assoc-ref outputs "out")))
+                      (copy-file "cairo/vector-types.scm"
+                                 (string-append out "/share/guile/site/2.0"
+                                                "/cairo/vector-types.scm"))))
+                  %standard-phases))))
+    (inputs
+     `(("guile-lib" ,guile-lib)
+       ("expat" ,expat)
+       ("cairo" ,cairo)
+       ("pkg-config" ,pkg-config)
+       ("guile" ,guile-2.0)))
+    (home-page "http://www.nongnu.org/guile-cairo/")
+    (synopsis "Cairo bindings for GNU Guile")
+    (description
+     "Guile-Cairo wraps the Cairo graphics library for Guile Scheme.
+Guile-Cairo is complete, wrapping almost all of the Cairo API.  It is API
+stable, providing a firm base on which to do graphics work.  Finally, and
+importantly, it is pleasant to use.  You get a powerful and well-maintained
+graphics library with all of the benefits of Scheme: memory management,
+exceptions, macros, and a dynamic programming environment.")
+    (license license:lgpl3+)))
