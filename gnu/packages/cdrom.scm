@@ -92,14 +92,14 @@ well as utility programs such as an audio CD player and an extractor.")
 (define-public xorriso
   (package
     (name "xorriso")
-    (version "1.3.0")
+    (version "1.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xorriso/xorriso-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1gvyf1ppq764hsk8iyffip7h1dnz2b9k2cchf7himnns03aadavn"))))
+               "1z04580nkkziy2flbxjjx0q6vp9p7vcp7yp0agx2aqz3l1vjcwhf"))))
     (build-system gnu-build-system)
     (inputs
      `(("acl" ,acl)
