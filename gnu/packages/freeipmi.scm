@@ -27,14 +27,14 @@
 (define-public freeipmi
   (package
     (name "freeipmi")
-    (version "1.2.8")
+    (version "1.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/freeipmi/freeipmi-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0aqbjlqv8nh5nnfx5icyvcvws87xnwqjqsfszjx0jqb539snrc58"))))
+               "1gz2r3zp8ag4cd5cflh4fy8mpvwcx1wdr37mkqkph3m5lx2w48qb"))))
     (build-system gnu-build-system)
     (inputs
      `(("readline" ,readline) ("libgcrypt" ,libgcrypt)))
