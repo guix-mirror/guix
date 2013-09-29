@@ -112,7 +112,19 @@ superior compression ratio of gzip is just a bonus.")
                                     base libdir)
                             (copy-file file
                                        (string-append libdir "/" base))))
-                        (find-files "." "^libbz2\\.so"))))))
+                        (find-files "." "^libbz2\\.so")))))
+        (set-cross-environment
+         '(lambda* (#:key target #:allow-other-keys)
+            (substitute* (find-files "." "Makefile")
+              (("CC=.*$")
+               (string-append "CC = " target "-gcc\n"))
+              (("AR=.*$")
+               (string-append "AR = " target "-ar\n"))
+              (("RANLIB=.*$")
+               (string-append "RANLIB = " target "-ranlib\n"))
+              (("^all:(.*)test" _ prerequisites)
+               ;; Remove 'all' -> 'test' dependency.
+               (string-append "all:" prerequisites "\n"))))))
     (package
       (name "bzip2")
       (version "1.0.6")
@@ -129,15 +141,34 @@ superior compression ratio of gzip is just a bonus.")
                     (guix build utils)
                     (srfi srfi-1))
          #:phases
-         (alist-cons-before
-          'build 'build-shared-lib ,build-shared-lib
-          (alist-cons-after
-           'install 'fix-man-dir ,fix-man-dir
-           (alist-cons-after
-            'install 'install-shared-lib ,install-shared-lib
-            (alist-delete 'configure %standard-phases))))
+         ,(if (%current-target-system)
+
+              ;; Cross-compilation: use the cross tools.
+              `(alist-cons-before
+                'build 'build-shared-lib ,build-shared-lib
+                (alist-cons-after
+                 'install 'fix-man-dir ,fix-man-dir
+                 (alist-cons-after
+                  'install 'install-shared-lib ,install-shared-lib
+                  (alist-replace 'configure ,set-cross-environment
+                                 %standard-phases))))
+
+              ;; Native compilation: build the shared library.
+              `(alist-cons-before
+                'build 'build-shared-lib ,build-shared-lib
+                (alist-cons-after
+                 'install 'fix-man-dir ,fix-man-dir
+                 (alist-cons-after
+                  'install 'install-shared-lib ,install-shared-lib
+                  (alist-delete 'configure %standard-phases)))))
+
          #:make-flags (list (string-append "PREFIX="
-                                           (assoc-ref %outputs "out")))))
+                                           (assoc-ref %outputs "out")))
+
+         ;; Don't attempt to run the tests when cross-compiling.
+         ,@(if (%current-target-system)
+               '(#:tests? #f)
+               '())))
       (synopsis "high-quality data compression program")
       (description
        "bzip2 is a freely available, patent free (see below), high-quality data
