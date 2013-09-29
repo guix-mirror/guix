@@ -90,7 +90,11 @@ from a command line or use a GUI application.")
       ("openssl" ,openssl)
       ("perl" ,perl)
       ("python" ,python-2) ; CAVEAT: incompatible with python-3 according to INSTALL
-      ("zlib" ,zlib)))
+      ("zlib" ,zlib)
+
+      ;; For 'git-svn'.
+      ("subversion" ,subversion)))
+   (outputs '("out" "svn"))
    (arguments
     `(#:make-flags `("V=1") ; more verbose compilation
       #:test-target "test"
@@ -105,7 +109,42 @@ from a command line or use a GUI application.")
                    (("/bin/sh") (which "sh"))
                    (("/usr/bin/perl") (which "perl"))
                    (("/usr/bin/python") (which "python"))))))
-         %standard-phases)))
+        (alist-cons-after
+         'install 'split
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let* ((out      (assoc-ref outputs "out"))
+                  (svn      (assoc-ref outputs "svn"))
+                  (git-svn  (string-append out "/libexec/git-core/git-svn"))
+                  (git-svn* (string-append svn "/libexec/git-core/git-svn")))
+             (mkdir-p (string-append svn "/libexec/git-core"))
+             (copy-file git-svn git-svn*)
+             (delete-file git-svn)
+             (chmod git-svn* #o555)
+
+             ;; Tell 'git-svn' where Subversion is.
+             (wrap-program git-svn*
+                           `("PATH" ":" prefix
+                             (,(string-append (assoc-ref inputs "subversion")
+                                              "/bin"))))
+
+             ;; Tell 'git' to look for core programs in the user's profile.
+             ;; This allows user to install other outputs of this package and
+             ;; have them transparently taken into account.  There's a
+             ;; 'GIT_EXEC_PATH' environment variable, but it's supposed to
+             ;; specify a single directory, not a search path.
+             (wrap-program (string-append out "/bin/git")
+                           `("PATH" ":" prefix
+                             ("$HOME/.guix-profile/libexec/git-core"))
+                           `("PERL5LIB" ":" prefix
+                             (,(string-append (assoc-ref inputs "subversion")
+                                              "/lib/perl5/site_perl")))
+
+                           ;; XXX: The .so for SVN/Core.pm lacks a RUNPATH, so
+                           ;; help it find 'libsvn_client-1.so'.
+                           `("LD_LIBRARY_PATH" ":" prefix
+                             (,(string-append (assoc-ref inputs "subversion")
+                                              "/lib"))))))
+         %standard-phases))))
    (synopsis "Distributed version control system")
    (description
     "Git is a free distributed version control system designed to handle
