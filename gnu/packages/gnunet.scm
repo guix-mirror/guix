@@ -101,14 +101,14 @@ Also, various additional MIME types are detected.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.29")
+   (version "0.9.30")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "169qpbmqprm296kicym63njxqf3qnjkk16qar73b813l7mj4jn8s"))))
+              "0v30w90qx8wpg5ksy97f5r4acpwd4q7q2v508mcss00vzj18rx40"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
