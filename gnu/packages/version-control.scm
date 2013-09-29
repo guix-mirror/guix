@@ -38,7 +38,8 @@
   #:use-module (gnu packages system)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages emacs)
-  #:use-module (gnu packages compression))
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages swig))
 
 (define-public bazaar
   (package
@@ -124,6 +125,30 @@ everything from small to very large projects with speed and efficiency.")
               (base32
                "11inl9n1riahfnbk1fax0dysm2swakzhzhpmm2zvga6fikcx90zw"))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-after
+                 'install 'instal-perl-bindings
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Follow the instructions from
+                   ;; 'subversion/bindings/swig/INSTALL'.
+                   (let ((out (assoc-ref outputs "out")))
+                     (and (zero? (system* "make" "swig-pl-lib"))
+                          ;; FIXME: Test failures.
+                          ;; (zero? (system* "make" "check-swig-pl"))
+                          (zero? (system* "make" "install-swig-pl-lib"))
+
+                          ;; Set the right installation prefix.
+                          (with-directory-excursion
+                              "subversion/bindings/swig/perl/native"
+                            (and (zero?
+                                  (system* "perl" "Makefile.PL"
+                                           (string-append "PREFIX=" out)))
+                                 (zero?
+                                  (system* "make" "install")))))))
+                 %standard-phases)))
+    (native-inputs
+      ;; For the Perl bindings.
+      `(("swig" ,swig)))
     (inputs
       `(("apr" ,apr)
         ("apr-util" ,apr-util)
