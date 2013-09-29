@@ -39,7 +39,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages swig))
+  #:use-module (gnu packages swig)
+  #:use-module (gnu packages tcl))
 
 (define-public bazaar
   (package
@@ -93,12 +94,25 @@ from a command line or use a GUI application.")
       ("zlib" ,zlib)
 
       ;; For 'git-svn'.
-      ("subversion" ,subversion)))
-   (outputs '("out" "svn"))
+      ("subversion" ,subversion)
+
+      ;; For 'git gui', 'gitk', and 'git citool'.
+      ("tcl" ,tcl)
+      ("tk" ,tk)))
+   (outputs '("out"                               ; the core
+              "svn"                               ; git-svn
+              "gui"))                             ; gitk, git gui
    (arguments
     `(#:make-flags `("V=1") ; more verbose compilation
       #:test-target "test"
       #:tests? #f ; FIXME: Many tests are failing
+
+      ;; The explicit --with-tcltk forces the build system to hardcode the
+      ;; absolute file name to 'wish'.
+      #:configure-flags (list (string-append "--with-tcltk="
+                                             (assoc-ref %build-inputs "tk")
+                                             "/bin/wish8.6")) ; XXX
+
       #:phases
        (alist-replace
         'configure
@@ -112,14 +126,28 @@ from a command line or use a GUI application.")
         (alist-cons-after
          'install 'split
          (lambda* (#:key inputs outputs #:allow-other-keys)
+           ;; Split the binaries to the various outputs.
            (let* ((out      (assoc-ref outputs "out"))
                   (svn      (assoc-ref outputs "svn"))
+                  (gui      (assoc-ref outputs "gui"))
+                  (gitk     (string-append out "/bin/gitk"))
+                  (gitk*    (string-append gui "/bin/gitk"))
+                  (git-gui  (string-append out "/libexec/git-core/git-gui"))
+                  (git-gui* (string-append gui "/libexec/git-core/git-gui"))
+                  (git-cit  (string-append out "/libexec/git-core/git-citool"))
+                  (git-cit* (string-append gui "/libexec/git-core/git-citool"))
                   (git-svn  (string-append out "/libexec/git-core/git-svn"))
                   (git-svn* (string-append svn "/libexec/git-core/git-svn")))
+             (mkdir-p (string-append gui "/bin"))
+             (mkdir-p (string-append gui "/libexec/git-core"))
              (mkdir-p (string-append svn "/libexec/git-core"))
-             (copy-file git-svn git-svn*)
-             (delete-file git-svn)
-             (chmod git-svn* #o555)
+
+             (for-each (lambda (old new)
+                         (copy-file old new)
+                         (delete-file old)
+                         (chmod new #o555))
+                       (list gitk git-gui git-cit git-svn)
+                       (list gitk* git-gui* git-cit* git-svn*))
 
              ;; Tell 'git-svn' where Subversion is.
              (wrap-program git-svn*
