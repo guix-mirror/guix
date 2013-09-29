@@ -40,17 +40,8 @@
        (base32
         "1j14fqgi9wzqgsy4fhkcdrv4hv6rrvhvn84axs520w9b022mbb79"))))
     (build-system gnu-build-system)
-    (native-inputs `(("perl" ,perl)
-
-                     ;; We need Flex for the test suite, and Flex needs Bison.
-                     ;; To break the cycle, we remove Bison from the inputs of
-                     ;; Flex, and disable Flex's test suite, since it requires
-                     ;; Bison.
-                     ("flex" ,(package (inherit flex)
-                                (arguments '(#:tests? #f))
-                                (inputs
-                                 (alist-delete "bison"
-                                               (package-inputs flex)))))))
+    (native-inputs `(("perl" ,perl)))
+    (inputs `(("flex" ,flex)))
     (propagated-inputs `(("m4" ,m4)))
     (home-page "http://www.gnu.org/software/bison/")
     (synopsis "Parser generator")

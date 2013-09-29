@@ -25,6 +25,7 @@
   #:use-module (gnu packages m4)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages indent)
+  #:use-module (srfi srfi-1)
   #:export (flex))
 
 (define flex
@@ -41,9 +42,26 @@
     (build-system gnu-build-system)
     (arguments
      '(#:patches (list (assoc-ref %build-inputs "patch/bison-tests"))))
-    (inputs `(("patch/bison-tests" ,(search-patch "flex-bison-tests.patch"))
-              ("bison" ,bison)
-              ("indent" ,indent)))
+    (inputs
+     (let ((bison-for-tests
+            ;; Work around an incompatibility with Bison 3.0:
+            ;; <http://lists.gnu.org/archive/html/bug-bison/2013-09/msg00014.html>.
+            (package (inherit bison)
+              (version "2.7.1")
+              (source (origin
+                       (method url-fetch)
+                       (uri (string-append "mirror://gnu/bison/bison-"
+                                           version ".tar.xz"))
+                       (sha256
+                        (base32
+                         "1yx7isx67sdmyijvihgyra1f59fwdz7sqriginvavfj5yb5ss2dl"))))
+
+              ;; Unlike Bison 3.0, this version did not need Flex for its
+              ;; tests, so it allows us to break the cycle.
+              (inputs (alist-delete "flex" (package-inputs bison))))))
+       `(("patch/bison-tests" ,(search-patch "flex-bison-tests.patch"))
+         ("bison" ,bison-for-tests)
+         ("indent" ,indent))))
     (propagated-inputs `(("m4" ,m4)))
     (home-page "http://flex.sourceforge.net/")
     (synopsis "A fast lexical analyser generator")
