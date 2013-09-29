@@ -173,6 +173,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/vpn.scm				\
   gnu/packages/w3m.scm				\
   gnu/packages/wdiff.scm			\
+  gnu/packages/web.scm                          \
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
   gnu/packages/wordnet.scm			\
