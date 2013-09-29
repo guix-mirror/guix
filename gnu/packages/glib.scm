@@ -26,9 +26,12 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages flex)
   #:use-module ((gnu packages gettext)
                 #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -170,6 +173,49 @@ and interfaces for such runtime functionality as an event loop, threads,
 dynamic loading, and an object system.")
    (home-page "http://developer.gnome.org/glib/")
    (license license:lgpl2.0+)))                        ; some files are under lgpl2.1+
+
+(define-public gobject-introspection
+  (package
+    (name "gobject-introspection")
+    (version "1.38.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://ftp.gnome.org/pub/GNOME/sources/"
+                   "gobject-introspection/"
+                   (substring version 0 (string-rindex version #\.))
+                   "/gobject-introspection-"
+                   version ".tar.xz"))
+             (sha256
+              (base32 "0wvxyvgajmms2bb6k3pf1rdpnd79xdxamykzvxzmcyn1ag9yax9m"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("bison" ,bison)
+       ("cairo" ,cairo)
+       ("flex" ,flex)
+       ("glib" ,glib)
+       ("libffi" ,libffi)
+       ("pkg-config" ,pkg-config)
+       ("python-2" ,python-2)))
+    (arguments
+     `(#:phases
+        (alist-replace
+         'configure
+         (lambda* (#:key #:allow-other-keys #:rest args)
+          (let ((configure (assoc-ref %standard-phases 'configure)))
+           ;; giscanner/sourcescanner.py looks for 'CC', let's set it here.
+           (setenv "CC" "gcc")
+           (apply configure args)))
+         %standard-phases)))
+    (home-page "https://wiki.gnome.org/GObjectIntrospection")
+    (synopsis "Generate interface introspection data for GObject libraries")
+    (description
+     "GObject introspection is a middleware layer between C libraries (using
+GObject) and language bindings.  The C library can be scanned at compile time
+and generate a metadata file, in addition to the actual native C library.  Then
+at runtime, language bindings can read this metadata and automatically provide
+bindings to call into the C library.")
+    ; Some bits are distributed under the LGPL2+, others under the GPL2+
+    (license license:gpl2+)))
 
 (define intltool
   (package
