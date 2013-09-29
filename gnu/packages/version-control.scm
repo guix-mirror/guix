@@ -125,16 +125,7 @@ from a command line or use a GUI application.")
              (wrap-program git-svn*
                            `("PATH" ":" prefix
                              (,(string-append (assoc-ref inputs "subversion")
-                                              "/bin"))))
-
-             ;; Tell 'git' to look for core programs in the user's profile.
-             ;; This allows user to install other outputs of this package and
-             ;; have them transparently taken into account.  There's a
-             ;; 'GIT_EXEC_PATH' environment variable, but it's supposed to
-             ;; specify a single directory, not a search path.
-             (wrap-program (string-append out "/bin/git")
-                           `("PATH" ":" prefix
-                             ("$HOME/.guix-profile/libexec/git-core"))
+                                              "/bin")))
                            `("PERL5LIB" ":" prefix
                              (,(string-append (assoc-ref inputs "subversion")
                                               "/lib/perl5/site_perl")))
@@ -143,7 +134,16 @@ from a command line or use a GUI application.")
                            ;; help it find 'libsvn_client-1.so'.
                            `("LD_LIBRARY_PATH" ":" prefix
                              (,(string-append (assoc-ref inputs "subversion")
-                                              "/lib"))))))
+                                              "/lib"))))
+
+             ;; Tell 'git' to look for core programs in the user's profile.
+             ;; This allows user to install other outputs of this package and
+             ;; have them transparently taken into account.  There's a
+             ;; 'GIT_EXEC_PATH' environment variable, but it's supposed to
+             ;; specify a single directory, not a search path.
+             (wrap-program (string-append out "/bin/git")
+                           `("PATH" ":" prefix
+                             ("$HOME/.guix-profile/libexec/git-core")))))
          %standard-phases))))
    (synopsis "Distributed version control system")
    (description
