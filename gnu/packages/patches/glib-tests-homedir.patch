@@ -15,18 +15,18 @@ chroot build environment.  Thus, disable them.
  
    ret = g_test_run();
 
---- glib-2.34.3/gio/tests/gdbus-peer.c	2013-01-16 17:38:09.000000000 +0100
-+++ glib-2.34.3/gio/tests/gdbus-peer.c	2013-01-16 17:38:12.000000000 +0100
-@@ -1828,11 +1828,6 @@ main (int   argc,
- 
+--- glib-2.38.0.orig/gio/tests/gdbus-peer.c     2013-08-08 12:00:40.000000000 +0200
++++ glib-2.38.0/gio/tests/gdbus-peer.c  2013-09-30 19:36:40.000000000 +0200
+@@ -1746,11 +1746,6 @@
+
    g_test_add_func ("/gdbus/peer-to-peer", test_peer);
    g_test_add_func ("/gdbus/delayed-message-processing", delayed_message_processing);
 -  g_test_add_func ("/gdbus/nonce-tcp", test_nonce_tcp);
+-
 -  g_test_add_func ("/gdbus/tcp-anonymous", test_tcp_anonymous);
 -  g_test_add_func ("/gdbus/credentials", test_credentials);
--  g_test_add_func ("/gdbus/overflow", test_overflow);
 -  g_test_add_func ("/gdbus/codegen-peer-to-peer", codegen_test_peer);
- 
+
    ret = g_test_run();
  
 --- glib-2.37.1/gio/tests/gdbus-exit-on-close.c	2013-06-07 23:41:34.000000000 +0200

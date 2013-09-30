@@ -105,14 +105,14 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.37.1")
+   (version "2.38.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
-                                name "/2.37/"
+                                name "/" (string-take version 4) "/"
                                 name "-" version ".tar.xz"))
             (sha256
-             (base32 "1lp705q0g9jlfj24x8fpgjh7awmmara5iyj9kz5lhd49sr9s813k"))))
+             (base32 "0cpzqadqk6z6bmb79p04pykxc8x57rvshh33414cnk41bvgaf4vm"))))
    (build-system gnu-build-system)
    (outputs '("out"                        ; everything
               "doc"))                      ; 20 MiB of GTK-Doc reference
@@ -153,13 +153,7 @@ shared NFS home directories.")
                                  "glib/tests/utils.c"
                                  "tests/spawn-test.c")
                     (("/bin/sh")
-                     (string-append (assoc-ref inputs "bash") "/bin/sh")))
-
-                  ;; Honor $(TESTS_ENVIRONMENT).
-                  (substitute* (find-files "." "^Makefile(\\.in)?$")
-                    (("^GTESTER[[:blank:]]*=(.*)$" _ rest)
-                     (string-append "GTESTER = $(TESTS_ENVIRONMENT) "
-                                    rest))))
+                     (string-append (assoc-ref inputs "bash") "/bin/sh"))))
                 %standard-phases)
 
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.

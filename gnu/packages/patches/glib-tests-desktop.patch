@@ -53,36 +53,55 @@ database, the `update-desktop-database' program, which we don't provide.
 -----------------------------
 The hunk below removes tests that depend on `gdbus-testserver.py',
 because that script depends on python-gobject.
-
---- glib-2.34.3/gio/tests/Makefile.in	2012-11-26 20:08:54.000000000 +0100
-+++ glib-2.34.3/gio/tests/Makefile.in	2013-01-17 23:09:44.000000000 +0100
-@@ -60,15 +60,8 @@ DIST_COMMON = $(srcdir)/Makefile.am $(sr
- noinst_PROGRAMS = $(am__EXEEXT_6) $(am__EXEEXT_8)
- @HAVE_DBUS_DAEMON_TRUE@am__append_1 = \
- @HAVE_DBUS_DAEMON_TRUE@	actions 		\
--@HAVE_DBUS_DAEMON_TRUE@	gdbus-connection	\
--@HAVE_DBUS_DAEMON_TRUE@	gdbus-connection-loss	\
--@HAVE_DBUS_DAEMON_TRUE@	gdbus-connection-slow	\
- @HAVE_DBUS_DAEMON_TRUE@	gdbus-names		\
--@HAVE_DBUS_DAEMON_TRUE@	gdbus-proxy		\
- @HAVE_DBUS_DAEMON_TRUE@	gdbus-proxy-threads	\
--@HAVE_DBUS_DAEMON_TRUE@	gdbus-proxy-well-known-name \
--@HAVE_DBUS_DAEMON_TRUE@	gdbus-introspection	\
--@HAVE_DBUS_DAEMON_TRUE@	gdbus-threading		\
- @HAVE_DBUS_DAEMON_TRUE@	gdbus-export		\
- @HAVE_DBUS_DAEMON_TRUE@	gdbus-error		\
- @HAVE_DBUS_DAEMON_TRUE@	gdbus-bz627724		\
-
+ 
+--- glib-2.38.0.orig/gio/tests/Makefile.in	2013-09-23 23:07:46.000000000 +0200
++++ glib-2.38.0/gio/tests/Makefile.in	2013-09-30 21:55:35.000000000 +0200
+@@ -172,19 +172,12 @@
+ @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-auth				\
+ @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-bz627724				\
+ @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-close-pending			\
+-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-connection			\
+-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-connection-loss			\
+-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-connection-slow			\
+ @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-error				\
+ @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-exit-on-close			\
+ @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-export				\
+-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-introspection			\
+ @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-names				\
+-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-proxy				\
+ @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-proxy-threads			\
+-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-proxy-well-known-name		\
+ @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-test-codegen			\
+-@HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gdbus-threading				\
+ @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	gmenumodel				\
+ @HAVE_DBUS_DAEMON_TRUE@@OS_UNIX_TRUE@	$(NULL)
+ 
 
 The test below depends on the availability /etc/passwd to dbus-daemon.
 
---- glib-2.34.3/gio/tests/gdbus-auth.c	2013-01-19 14:32:14.000000000 +0100
-+++ glib-2.34.3/gio/tests/gdbus-auth.c	2013-01-19 14:32:20.000000000 +0100
-@@ -264,6 +264,7 @@ main (int   argc,
+--- glib-2.38.0.orig/gio/tests/gdbus-auth.c     2013-05-07 20:26:07.000000000 +0200
++++ glib-2.38.0/gio/tests/gdbus-auth.c  2013-09-30 19:42:27.000000000 +0200
+@@ -284,6 +284,7 @@
  {
    gint ret;
- 
+
 +  return 0;
    setlocale (LC_ALL, "C");
+
+   temp_dbus_keyrings_setup ();
+
+
+The test dbus-appinfo is dropped as it hangs indefinitely since 2.37.5, see
+   https://launchpad.net/ubuntu/+source/glib2.0/2.37.5-1ubuntu1
+
+--- glib-2.38.0.orig/gio/tests/dbus-appinfo.c   2013-09-05 12:43:41.000000000 +0200
++++ glib-2.38.0/gio/tests/dbus-appinfo.c        2013-09-30 21:57:21.000000000 +0200
+@@ -278,6 +278,7 @@
+ int
+ main (int argc, char **argv)
+ {
++  return 0;
+   g_test_init (&argc, &argv, NULL);
  
-   g_type_init ();
+   session_bus_up ();
+
