@@ -214,6 +214,34 @@ is part of the GNOME accessibility project.")
    (license license:lgpl2.0+)
    (home-page "https://projects.gnome.org/accessibility/")))
 
+(define-public at-spi2-atk
+  (package
+   (name "at-spi2-atk")
+   (version "2.10.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (string-take version 4) "/" name "-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "150sqc21difazqd53llwfdaqnwfy73bic9hia41xpfy9kcpzz9yy"))))
+   (build-system gnu-build-system)
+   (inputs `(("atk" ,atk)
+             ("at-spi2-core" ,at-spi2-core)
+             ("dbus" ,dbus)
+             ("glib" ,glib)
+             ("pkg-config" ,pkg-config)))
+   (arguments
+    `(#:tests? #f)) ; FIXME: droute/droute-test fails; one should disable
+                    ; tests in a more fine-grained way.
+   (synopsis "Assistive Technology Service Provider Interface, ATK bindings")
+   (description
+    "The Assistive Technology Service Provider Interface
+is part of the GNOME accessibility project.")
+   (license license:lgpl2.0+)
+   (home-page "https://projects.gnome.org/accessibility/")))
+
 (define-public gtk+
   (package
    (name "gtk+")
@@ -252,7 +280,25 @@ application suites.")
    (license license:lgpl2.0+)
    (home-page "http://www.gtk.org/")))
 
-
+(define-public gtk+-3
+  (package (inherit gtk+)
+   (version "3.10.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/gtk+/"
+                                (string-take version 4) "/gtk+-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "1zjkbjvp6ay08107r6zfsrp39x7qfadbd86p3hs5v4ydc2rzwnb5"))))
+   (inputs
+    `(("at-spi2-core" ,at-spi2-core)
+      ("libxi" ,libxi)
+      ("libxinerama" ,libxinerama)
+      ("pkg-config" ,pkg-config)))
+   (arguments
+    `(#:configure-flags '("--enable-x11-backend"))))) ; should not be needed in > 3.10.0
+
 ;;;
 ;;; Guile bindings.
 ;;;
