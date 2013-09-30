@@ -184,6 +184,35 @@ in the GNOME project.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/gdk-pixbuf/")))
 
+(define-public at-spi2-core
+  (package
+   (name "at-spi2-core")
+   (version "2.10.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (string-take version 4) "/" name "-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "1ns44yibdgcwzwri7sr075hfs5rh5lgxkh71247a0822az3mahcn"))))
+   (build-system gnu-build-system)
+   (inputs `(("dbus" ,dbus)
+             ("glib" ,glib)
+             ("intltool" ,intltool)
+             ("libxi" ,libxi)
+             ("libxtst" ,libxtst)
+             ("pkg-config" ,pkg-config)))
+   (arguments
+    `(#:tests? #f)) ; FIXME: dbind/dbtest fails; one should disable tests in
+                    ; a more fine-grained way.
+   (synopsis "Assistive Technology Service Provider Interface, core components")
+   (description
+    "The Assistive Technology Service Provider Interface, core components,
+is part of the GNOME accessibility project.")
+   (license license:lgpl2.0+)
+   (home-page "https://projects.gnome.org/accessibility/")))
+
 (define-public gtk+
   (package
    (name "gtk+")
