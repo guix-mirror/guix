@@ -40,14 +40,15 @@
 (define-public atk
   (package
    (name "atk")
-   (version "2.8.0")
+   (version "2.10.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/atk/2.8/atk-"
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (string-take version 4) "/" name "-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1x3dd3hg9l1j9dq70xwph13vxdp6a9wbfcnryryf1wr6c8bij9dj"))))
+              "1c2hbg66wfvibsz2ia0ri48yr62751fn950i97c53j3b0fjifsb3"))))
    (build-system gnu-build-system)
    (inputs `(("glib" ,glib)
              ("pkg-config" ,pkg-config)))
