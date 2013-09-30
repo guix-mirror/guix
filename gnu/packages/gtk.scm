@@ -280,24 +280,6 @@ application suites.")
    (license license:lgpl2.0+)
    (home-page "http://www.gtk.org/")))
 
-(define-public gtk+-3
-  (package (inherit gtk+)
-   (version "3.10.0")
-   (source (origin
-            (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/gtk+/"
-                                (string-take version 4) "/gtk+-"
-                                version ".tar.xz"))
-            (sha256
-             (base32
-              "1zjkbjvp6ay08107r6zfsrp39x7qfadbd86p3hs5v4ydc2rzwnb5"))))
-   (inputs
-    `(("at-spi2-core" ,at-spi2-core)
-      ("libxi" ,libxi)
-      ("libxinerama" ,libxinerama)
-      ("pkg-config" ,pkg-config)))
-   (arguments
-    `(#:configure-flags '("--enable-x11-backend"))))) ; should not be needed in > 3.10.0
 
 ;;;
 ;;; Guile bindings.
