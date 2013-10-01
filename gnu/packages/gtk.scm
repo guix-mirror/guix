@@ -295,11 +295,15 @@ application suites.")
             (sha256
              (base32
               "1zjkbjvp6ay08107r6zfsrp39x7qfadbd86p3hs5v4ydc2rzwnb5"))))
-   (inputs
+   (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
+      ("atk" ,atk)
+      ("gdk-pixbuf" ,gdk-pixbuf)
       ("libxi" ,libxi)
       ("libxinerama" ,libxinerama)
-      ("libxml2" ,libxml2)
+      ("pango" ,pango)))
+   (inputs
+    `(("libxml2" ,libxml2)
       ("perl" ,perl)
       ("pkg-config" ,pkg-config)
       ("python-wrapper" ,python-wrapper)
