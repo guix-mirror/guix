@@ -246,21 +246,24 @@ is part of the GNOME accessibility project.")
 (define-public gtk+-2
   (package
    (name "gtk+")
-   (version "2.24.20")
+   (version "2.24.21")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/gtk+/2.24/gtk+-"
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (string-take version 4) "/" name "-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "18qdvb7nxi25hfnpmcy01p3majw9jnx83ikm263dk9rrjazvqrnc"))))
+              "1qyw73pr9ryqhir2h1kbx3vm70km4dg2fxrgkrdlpv0rvlb94bih"))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf)
       ("pango" ,pango)))
    (inputs
-    `(("pkg-config" ,pkg-config)))
+    `(("perl" ,perl)
+      ("pkg-config" ,pkg-config)
+      ("python-wrapper" ,python-wrapper)))
    (arguments
     `(#:phases
       (alist-replace
