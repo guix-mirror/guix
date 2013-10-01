@@ -250,7 +250,7 @@ use with CD-recording software).")
    (inputs
     `(("patch/libm" ,(search-patch "ripperx-libm.patch"))
       ("glib" ,glib)
-      ("gtk+" ,gtk+)
+      ("gtk+" ,gtk+-2)
       ("id3lib" ,id3lib)
       ("pkg-config" ,pkg-config)))
    (arguments

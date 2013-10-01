@@ -160,7 +160,7 @@ reconstruction capability.")
     (build-system gnu-build-system)
     (inputs
      `(("gettext" ,gnu:gettext)
-       ("gtk+" ,gtk+)
+       ("gtk+" ,gtk+-2)
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (arguments

@@ -72,7 +72,7 @@
 
        ;; TODO: Add the optional dependencies.
        ("xlibs" ,libx11)
-       ("gtk+" ,gtk+)
+       ("gtk+" ,gtk+-2)
        ("libXft" ,libxft)
        ("libtiff" ,libtiff)
        ;; ("libungif" ,libungif)

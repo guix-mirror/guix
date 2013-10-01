@@ -35,7 +35,6 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages libjpeg)
-  #:use-module ((gnu packages gtk) #:select (cairo pango))
   #:use-module (ice-9 match))
 
 (define-public mit-scheme
