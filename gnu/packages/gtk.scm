@@ -31,6 +31,7 @@
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages libtiff)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages guile)
@@ -242,7 +243,7 @@ is part of the GNOME accessibility project.")
    (license license:lgpl2.0+)
    (home-page "https://projects.gnome.org/accessibility/")))
 
-(define-public gtk+
+(define-public gtk+-2
   (package
    (name "gtk+")
    (version "2.24.20")
@@ -280,6 +281,42 @@ application suites.")
    (license license:lgpl2.0+)
    (home-page "http://www.gtk.org/")))
 
+(define-public gtk+
+  (package (inherit gtk+-2)
+   (version "3.10.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://gnome/sources/gtk+/"
+                                (string-take version 4) "/gtk+-"
+                                version ".tar.xz"))
+            (sha256
+             (base32
+              "1zjkbjvp6ay08107r6zfsrp39x7qfadbd86p3hs5v4ydc2rzwnb5"))))
+   (inputs
+    `(("at-spi2-atk" ,at-spi2-atk)
+      ("libxi" ,libxi)
+      ("libxinerama" ,libxinerama)
+      ("libxml2" ,libxml2)
+      ("perl" ,perl)
+      ("pkg-config" ,pkg-config)
+      ("python-wrapper" ,python-wrapper)
+      ("xorg-server" ,xorg-server)))
+   (arguments
+    `(#:configure-flags '("--enable-x11-backend") ; should not be needed in > 3.10.0
+      #:phases
+      (alist-replace
+       'configure
+       (lambda* (#:key #:allow-other-keys #:rest args)
+         (let ((configure (assoc-ref %standard-phases 'configure)))
+           ;; Disable most tests, failing in the chroot with the message:
+           ;; D-Bus library appears to be incorrectly set up; failed to read
+           ;; machine uuid: Failed to open "/etc/machine-id": No such file or
+           ;; directory.
+           ;; See the manual page for dbus-uuidgen to correct this issue.
+           (substitute* "testsuite/Makefile.in"
+            (("SUBDIRS = gdk gtk a11y css reftests") "SUBDIRS = gdk"))
+           (apply configure args)))
+       %standard-phases)))))
 
 ;;;
 ;;; Guile bindings.
