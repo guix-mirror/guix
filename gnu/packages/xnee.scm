@@ -22,8 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages gtk))
+  #:use-module (gnu packages pkg-config))
 
 (define-public xnee
   (package
@@ -42,7 +41,6 @@
        ("pkg-config" ,pkg-config)
        ("inputproto" ,inputproto)
        ("libxi" ,libxi)
-       ("gtk+" ,gtk+)
        ("libxtst" ,libxtst)
        ("xextproto" ,xextproto)
        ("libxext" ,libxext)
