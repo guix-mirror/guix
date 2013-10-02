@@ -24,6 +24,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libpng)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml))
@@ -82,6 +83,31 @@ and keep up to date translations of documentation.")
     (description
      "Gsettings-desktop-schemas contains a collection of GSettings schemas
 for settings shared by various components of the GNOME desktop.")
+    (license lgpl2.1+)))
+
+(define-public icon-naming-utils
+  (package
+    (name "icon-naming-utils")
+    (version "0.8.90")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://tango.freedesktop.org/releases/icon-naming-utils-"
+                          version ".tar.bz2"))
+      (sha256
+       (base32
+        "1mc3v28fdfqanx3lqx233vcr4glb4c2376k0kx2v91a4vxwqcdxi"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("perl" ,perl)
+       ("perl-xml-simple" ,perl-xml-simple)))
+    (home-page "http://tango.freedesktop.org/Standard_Icon_Naming_Specification")
+    (synopsis
+     "Utility to implement the Freedesktop Icon Naming Specification")
+    (description
+     "To help with the transition to the Freedesktop Icon Naming
+Specification, the icon naming utility maps the icon names used by the
+GNOME and KDE desktops to the icon names proposed in the specification.")
     (license lgpl2.1+)))
 
 (define-public libnotify
