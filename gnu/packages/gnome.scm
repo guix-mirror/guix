@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gnome)
-  #:use-module ((guix licenses) #:select (gpl2+ lgpl2.1+ lgpl3))
+  #:use-module ((guix licenses) #:select (gpl2 gpl2+ lgpl2.1+ lgpl3))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -135,6 +135,28 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
     (description
      "Icons for the GNOME desktop.")
     (license lgpl3))) ; or Creative Commons BY-SA 3.0
+
+(define-public hicolor-icon-theme
+  (package
+    (name "hicolor-icon-theme")
+    (version "0.12")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://icon-theme.freedesktop.org/releases/hicolor-icon-theme-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0wzc7g4ldb2l8zc0x2785ck808c03i857jji942ikakyc68adp4y"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:tests? #f)) ; no check target
+    (home-page "http://icon-theme.freedesktop.org/releases/")
+    (synopsis
+     "Freedesktop icon theme")
+    (description
+     "Freedesktop icon theme.")
+    (license gpl2)))
 
 (define-public libnotify
   (package
