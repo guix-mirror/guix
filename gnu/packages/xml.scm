@@ -140,6 +140,29 @@ as extra arguments to the parse methods, in which case they override options
 given at XML::Parser creation time.")
     (home-page "http://search.cpan.org/~toddr/XML-Parser-2.41/Parser.pm")))
 
+(define-public perl-xml-simple
+  (package
+    (name "perl-xml-simple")
+    (version "2.20")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GR/GRANTM/XML-Simple-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0jj3jiray1l4pi9wkjcpxjc3v431whdwx5aqnhgdm4i7h3817zsw"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-xml-parser" ,perl-xml-parser)))
+    (license (package-license perl))
+    (synopsis "Perl module for easy reading/writing of XML files")
+    (description
+     "The XML::Simple module provides a simple API layer on top of an
+underlying XML parsing module (either XML::Parser or one of the SAX2
+parser modules).")
+    (home-page "http://search.cpan.org/~grantm/XML-Simple-2.20/lib/XML/Simple.pm")))
+
 (define-public xmlto
   (package
     (name "xmlto")
