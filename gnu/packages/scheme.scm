@@ -402,7 +402,7 @@ implementation techniques and as an expository tool.")
               ("pango" ,pango)
               ("libjpeg" ,libjpeg-8)
               ("gdk-pixbuf" ,gdk-pixbuf)
-              ("gtk" ,gtk+)))
+              ("gtk" ,gtk+-2)))
     (home-page "http://racket-lang.org")
     (synopsis "Implementation of Scheme and related languages")
     (description
