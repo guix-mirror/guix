@@ -264,8 +264,9 @@ The intltool collection can be used to do these things:
               (base32
                "1akq75aflihm3y7js8biy7b5mw2g11vl8yq90gydnwlwp0zxdzj6"))))
     (build-system gnu-build-system)
-    (inputs
-     `(("python-wrapper" ,python-wrapper)))
+    (propagated-inputs
+     `(("libxml2" ,libxml2)
+       ("python-2" ,python-2)))
     (home-page "http://www.itstool.org")
     (synopsis "Tool to translate XML documents with PO files")
     (description
