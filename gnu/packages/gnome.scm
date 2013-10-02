@@ -58,6 +58,32 @@ Gnome project.  It includes xml2po tool which makes it easier to translate
 and keep up to date translations of documentation.")
     (license gpl2+))) ; xslt under lgpl
 
+(define-public gsettings-desktop-schemas
+  (package
+    (name "gsettings-desktop-schemas")
+    (version "3.10.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnome/sources/" name "/"
+                          (string-copy version 0 (string-rindex version #\.)) "/"
+                          name "-" version ".tar.xz"))
+      (sha256
+       (base32
+        "1km8qxwrzvravmg8j680qv64bwnwbdgrmy8bqmhs0dgxn2b1as6a"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://launchpad.net/gsettings-desktop-schemas")
+    (synopsis
+     "GNOME settings for various desktop components")
+    (description
+     "Gsettings-desktop-schemas contains a collection of GSettings schemas
+for settings shared by various components of the GNOME desktop.")
+    (license lgpl2.1+)))
+
 (define-public libnotify
   (package
     (name "libnotify")
