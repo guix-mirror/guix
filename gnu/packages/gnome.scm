@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gnome)
-  #:use-module ((guix licenses) #:select (gpl2+ lgpl2.1+))
+  #:use-module ((guix licenses) #:select (gpl2+ lgpl2.1+ lgpl3))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -109,6 +109,32 @@ for settings shared by various components of the GNOME desktop.")
 Specification, the icon naming utility maps the icon names used by the
 GNOME and KDE desktops to the icon names proposed in the specification.")
     (license lgpl2.1+)))
+
+(define-public gnome-icon-theme
+  (package
+    (name "gnome-icon-theme")
+    (version "3.10.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnome/sources/" name "/"
+                          (string-copy version 0 (string-rindex version #\.)) "/"
+                          name "-" version ".tar.xz"))
+      (sha256
+       (base32
+        "1xinbgkkvlhazj887ajcl13i7kdc1wcca02jwxzvjrvchjsp4m66"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("icon-naming-utils" ,icon-naming-utils)
+       ("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://art.gnome.org/")
+    (synopsis
+     "GNOME icon theme")
+    (description
+     "Icons for the GNOME desktop.")
+    (license lgpl3))) ; or Creative Commons BY-SA 3.0
 
 (define-public libnotify
   (package
