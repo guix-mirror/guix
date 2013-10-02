@@ -48,6 +48,11 @@
 
 (test-begin "monads")
 
+(test-assert "monad?"
+  (and (every monad? %monads)
+       (every (compose procedure? monad-bind) %monads)
+       (every (compose procedure? monad-return) %monads)))
+
 ;; The 3 "monad laws": <http://www.haskell.org/haskellwiki/Monad_laws>.
 
 (test-assert "left identity"

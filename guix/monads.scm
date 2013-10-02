@@ -17,14 +17,16 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix monads)
-  #:use-module (guix records)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module ((system syntax)
+                #:select (syntax-local-binding))
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:export (;; Monads.
-            monad
+            define-monad
             monad?
             monad-bind
             monad-return
@@ -72,10 +74,39 @@
 ;;;
 ;;; Code:
 
-(define-record-type* <monad> monad make-monad
+;; Record type for monads manipulated at run time.
+(define-record-type <monad>
+  (make-monad bind return)
   monad?
   (bind   monad-bind)
   (return monad-return))                         ; TODO: Add 'plus' and 'zero'
+
+(define-syntax define-monad
+  (lambda (s)
+    "Define the monad under NAME, with the given bind and return methods."
+    (define prefix (string->symbol "% "))
+    (define (make-rtd-name name)
+      (datum->syntax name
+                     (symbol-append prefix (syntax->datum name) '-rtd)))
+
+    (syntax-case s (bind return)
+      ((_ name (bind b) (return r))
+       (with-syntax ((rtd (make-rtd-name #'name)))
+         #`(begin
+             (define rtd
+               ;; The record type, for use at run time.
+               (make-monad b r))
+
+             (define-syntax name
+               ;; An "inlined record", for use at expansion time.  The goal is
+               ;; to allow 'bind' and 'return' to be resolved at expansion
+               ;; time, in the common case where the monad is accessed
+               ;; directly as NAME.
+               (lambda (s)
+                 (syntax-case s (%bind %return)
+                   ((_ %bind)   #'b)
+                   ((_ %return) #'r)
+                   (_           #'rtd))))))))))
 
 (define-syntax-parameter >>=
   ;; The name 'bind' is already taken, so we choose this (obscure) symbol.
@@ -91,6 +122,15 @@
     "Evaluate BODY in the context of MONAD, and return its result."
     (syntax-case s ()
       ((_ monad body ...)
+       (eq? 'macro (syntax-local-binding #'monad))
+       ;; MONAD is a syntax transformer, so we can obtain the bind and return
+       ;; methods by directly querying it.
+       #'(syntax-parameterize ((>>=    (identifier-syntax (monad %bind)))
+                               (return (identifier-syntax (monad %return))))
+           body ...))
+      ((_ monad body ...)
+       ;; MONAD refers to the <monad> record that represents the monad at run
+       ;; time, so use the slow method.
        #'(syntax-parameterize ((>>=    (identifier-syntax
                                         (monad-bind monad)))
                                (return (identifier-syntax
@@ -209,16 +249,15 @@ lifted in MONAD, for which PROC returns true."
 ;;; Identity monad.
 ;;;
 
-(define (identity-return value)
+(define-inlinable (identity-return value)
   value)
 
-(define (identity-bind mvalue mproc)
+(define-inlinable (identity-bind mvalue mproc)
   (mproc mvalue))
 
-(define %identity-monad
-  (monad
-   (bind   identity-bind)
-   (return identity-return)))
+(define-monad %identity-monad
+  (bind   identity-bind)
+  (return identity-return))
 
 
 ;;;
@@ -226,23 +265,23 @@ lifted in MONAD, for which PROC returns true."
 ;;;
 
 ;; return:: a -> StoreM a
-(define (store-return value)
+(define-inlinable (store-return value)
   "Return VALUE from a monadic function."
   ;; The monadic value is just this.
   (lambda (store)
     value))
 
 ;; >>=:: StoreM a -> (a -> StoreM b) -> StoreM b
-(define (store-bind mvalue mproc)
+(define-inlinable (store-bind mvalue mproc)
+  "Bind MVALUE in MPROC."
   (lambda (store)
     (let* ((value   (mvalue store))
            (mresult (mproc value)))
       (mresult store))))
 
-(define %store-monad
-  (monad
-   (return store-return)
-   (bind   store-bind)))
+(define-monad %store-monad
+  (bind   store-bind)
+  (return store-return))
 
 
 (define (store-lift proc)
