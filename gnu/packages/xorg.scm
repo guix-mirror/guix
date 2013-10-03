@@ -4463,6 +4463,38 @@ emulation to complete hardware acceleration for modern GPUs.")
     (license license:x11)))
 
 
+(define-public xcb-util
+  (package
+    (name "xcb-util")
+    (version "0.3.9")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "1i0qbhqkcdlbbsj7ifkyjsffl61whj24d3zlg5pxf3xj1af2a4f6"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("libxcb" ,libxcb)))
+    (inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://cgit.freedesktop.org/xcb/util/")
+    (synopsis "Core XCB utility functions")
+    (description "The XCB util module provides a number of libraries which
+    sit on top of libxcb, the core X protocol library, and some of the
+    extension libraries.  These experimental libraries provide convenience
+functions and interfaces which make the raw X protocol more usable.  Some of
+the libraries also provide client-side code which is not strictly part of
+the X protocol but which has traditionally been provided by Xlib.
+
+The XCB util module provides the following libraries:
+aux: Convenient access to connection setup and some core requests.
+atom: Standard core X atom constants and atom caching.
+event: Some utilities that have little to do with events any more.")
+    (license license:x11)))
+
+
 (define-public xcb-util-wm
   (package
     (name "xcb-util-wm")
@@ -4487,7 +4519,11 @@ emulation to complete hardware acceleration for modern GPUs.")
     extension libraries.  These experimental libraries provide convenience
 functions and interfaces which make the raw X protocol more usable.  Some of
 the libraries also provide client-side code which is not strictly part of
-the X protocol but which has traditionally been provided by Xlib.")
+the X protocol but which has traditionally been provided by Xlib.
+
+The XCB util-wm module provides the following libraries:
+ewmh: Both client and window-manager helpers for EWMH.
+icccm: Both client and window-manager helpers for ICCCM.")
     (license license:x11)))
 
 
