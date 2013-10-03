@@ -4249,6 +4249,8 @@ emulation to complete hardware acceleration for modern GPUs.")
         ("libxslt" ,libxslt)
         ("pkg-config" ,pkg-config)
         ("python" ,python-wrapper)))
+    (arguments
+     `(#:configure-flags '("--enable-xkb")))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
