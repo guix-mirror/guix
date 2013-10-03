@@ -4495,6 +4495,37 @@ event: Some utilities that have little to do with events any more.")
     (license license:x11)))
 
 
+(define-public xcb-util-image
+  (package
+    (name "xcb-util-image")
+    (version "0.3.9")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "1pr1l1nkg197gyl9d0fpwmn72jqpxjfgn9y13q4gawg1m873qnnk"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("libxcb" ,libxcb)))
+    (inputs
+     `(("pkg-config" ,pkg-config)
+       ("xcb-util" ,xcb-util)))
+    (home-page "http://cgit.freedesktop.org/xcb/util-image/")
+    (synopsis "XCB port of Xlib's XImage and XShmImage")
+    (description "The XCB util module provides a number of libraries which
+    sit on top of libxcb, the core X protocol library, and some of the
+    extension libraries.  These experimental libraries provide convenience
+functions and interfaces which make the raw X protocol more usable.  Some of
+the libraries also provide client-side code which is not strictly part of
+the X protocol but which has traditionally been provided by Xlib.
+
+The XCB util-image module provides the following library:
+image: Port of Xlib's XImage and XShmImage functions.")
+    (license license:x11)))
+
+
 (define-public xcb-util-wm
   (package
     (name "xcb-util-wm")
