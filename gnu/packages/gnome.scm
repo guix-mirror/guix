@@ -22,12 +22,51 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg))
+
+(define-public brasero
+  (package
+    (name "brasero")
+    (version "3.8.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/brasero/3.8/brasero-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1r5wjsrm47amdaf862ymkdlwlb636c45wg14x20hdr99c653d2nr"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("hicolor-icon-theme" ,hicolor-icon-theme)))
+    (inputs
+     `(("glib" ,glib)
+       ("gnome-doc-utils" ,gnome-doc-utils)
+       ("gstreamer" ,gstreamer)
+       ("gst-plugins-base" ,gst-plugins-base)
+       ("gtk+" ,gtk+)
+       ("intltool" ,intltool)
+       ("itstool" ,itstool)
+       ("libcanberra" ,libcanberra)
+       ("libice" ,libice)
+       ("libnotify" ,libnotify)
+       ("libsm" ,libsm)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://projects.gnome.org/brasero/")
+    (synopsis "CD/DVD burning tool for Gnome")
+    (description "Brasero is an application to burn CD/DVD for the Gnome
+Desktop.  It is designed to be as simple as possible and has some unique
+features to enable users to create their discs easily and quickly.")
+    (license gpl2+)))
 
 (define-public gnome-doc-utils
   (package
