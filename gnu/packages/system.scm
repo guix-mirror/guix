@@ -314,3 +314,26 @@ files, which contain information about the IANA-assigned port, protocol, and
 ONC RPC numbers")
     (home-page "http://packages.debian.org/sid/netbase")
     (license gpl2)))
+
+(define-public netcat
+  (package
+    (name "netcat")
+    (version "0.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/netcat/netcat-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "1frjcdkhkpzk0f84hx6hmw5l0ynpmji8vcbaxg8h5k2svyxz0nmm"))))
+    (build-system gnu-build-system)
+    (home-page "http://netcat.sourceforge.net")
+    (synopsis "Read and write data over TCP/IP")
+    (description
+     "Netcat is a featured networking utility which reads and writes data
+across network connections, using the TCP/IP protocol.  It is designed to be a
+reliable \"back-end\" tool that can be used directly or easily driven by other
+programs and scripts. At the same time, it is a feature-rich network debugging
+and exploration tool, since it can create almost any kind of connection you
+would need and has several interesting built-in capabilities.")
+    (license gpl2+)))
