@@ -4463,6 +4463,34 @@ emulation to complete hardware acceleration for modern GPUs.")
     (license license:x11)))
 
 
+(define-public xcb-util-wm
+  (package
+    (name "xcb-util-wm")
+    (version "0.3.9")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://xcb.freedesktop.org/dist/xcb-util-wm-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "0c30fj33gvwzwhyz1dhsfwni0ai16bxpvxb4l6c6s7vvj7drp3q3"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("libxcb" ,libxcb)))
+    (inputs
+     `(("m4" ,m4)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://cgit.freedesktop.org/xcb/util-wm/")
+    (synopsis "Client and window-manager helpers for ICCCM and EWMH")
+    (description "The XCB util modules provides a number of libraries which
+    sit on top of libxcb, the core X protocol library, and some of the
+    extension libraries.  These experimental libraries provide convenience
+functions and interfaces which make the raw X protocol more usable.  Some of
+the libraries also provide client-side code which is not strictly part of
+the X protocol but which has traditionally been provided by Xlib.")
+    (license license:x11)))
+
+
 ;; package outside the x.org system proper of height 5
 
 (define-public libxaw3d
