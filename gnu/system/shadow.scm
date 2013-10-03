@@ -20,6 +20,7 @@
   #:use-module (guix store)
   #:use-module (guix records)
   #:use-module (guix packages)
+  #:use-module (guix monads)
   #:use-module ((gnu packages system)
                 #:select (shadow))
   #:use-module (srfi srfi-1)
@@ -72,7 +73,7 @@
   (id             user-group-id)
   (members        user-group-members (default '())))
 
-(define (group-file store groups)
+(define (group-file groups)
   "Return a /etc/group file for GROUPS, a list of <user-group> objects."
   (define contents
     (let loop ((groups groups)
@@ -87,9 +88,9 @@
         (()
          (string-join (reverse result) "\n" 'suffix)))))
 
-  (add-text-to-store store "group" contents))
+  (text-file "group" contents))
 
-(define* (passwd-file store accounts #:key shadow?)
+(define* (passwd-file accounts #:key shadow?)
   "Return a password file for ACCOUNTS, a list of <user-account> objects.  If
 SHADOW? is true, then it is a /etc/shadow file, otherwise it is a /etc/passwd
 file."
@@ -114,28 +115,27 @@ file."
         (()
          (string-join (reverse result) "\n" 'suffix)))))
 
-  (add-text-to-store store (if shadow? "shadow" "passwd")
-                     contents '()))
+  (text-file (if shadow? "shadow" "passwd") contents))
 
-(define* (guix-build-accounts store count #:key
+(define* (guix-build-accounts count #:key
                               (first-uid 30001)
                               (gid 30000)
                               (shadow shadow))
   "Return a list of COUNT user accounts for Guix build users, with UIDs
 starting at FIRST-UID, and under GID."
-  (let* ((gid*     gid)
-         (no-login (string-append (package-output store shadow) "/sbin/nologin")))
-    (unfold (cut > <> count)
-            (lambda (n)
-              (user-account
-               (name (format #f "guixbuilder~2,'0d" n))
-               (password "!")
-               (uid (+ first-uid n -1))
-               (gid gid*)
-               (comment (format #f "Guix Build User ~2d" n))
-               (home-directory "/var/empty")
-               (shell no-login)))
-            1+
-            1)))
+  (mlet* %store-monad ((gid* -> gid)
+                       (no-login (package-file shadow "sbin/nologin")))
+    (return (unfold (cut > <> count)
+                    (lambda (n)
+                      (user-account
+                       (name (format #f "guixbuilder~2,'0d" n))
+                       (password "!")
+                       (uid (+ first-uid n -1))
+                       (gid gid*)
+                       (comment (format #f "Guix Build User ~2d" n))
+                       (home-directory "/var/empty")
+                       (shell no-login)))
+                    1+
+                    1))))
 
 ;;; shadow.scm ends here

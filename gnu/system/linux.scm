@@ -20,6 +20,7 @@
   #:use-module (guix store)
   #:use-module (guix records)
   #:use-module (guix derivations)
+  #:use-module (guix monads)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -81,17 +82,20 @@
               (map (cut entry->string "password" <>) password)
               (map (cut entry->string "session" <>) session))))))
 
-(define (pam-services->directory store services)
+(define (pam-services->directory services)
   "Return the derivation to build the configuration directory to be used as
 /etc/pam.d for SERVICES."
-  (let ((names (map pam-service-name services))
-        (files (map (match-lambda
+  (mlet %store-monad
+      ((names -> (map pam-service-name services))
+       (files (mapm %store-monad
+                    (match-lambda
                      ((and service ($ <pam-service> name))
                       (let ((config (pam-service->configuration service)))
-                        (add-text-to-store store
-                                           (string-append name ".pam")
-                                           config '()))))
-                    services)))
+                        (text-file (string-append name ".pam") config))))
+
+                    ;; XXX: Eventually, SERVICES may be a list of monadic
+                    ;; values instead of plain values.
+                    (map return services))))
     (define builder
       '(begin
          (use-modules (ice-9 match))
@@ -104,9 +108,7 @@
                      %build-inputs)
            #t)))
 
-    (build-expression->derivation store "pam.d" (%current-system)
-                                  builder
-                                  (zip names files))))
+    (derivation-expression "pam.d" (%current-system) builder (zip names files))))
 
 (define %pam-other-services
   ;; The "other" PAM configuration, which denies everything (see

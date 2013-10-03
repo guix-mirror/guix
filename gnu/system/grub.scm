@@ -21,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix records)
+  #:use-module (guix monads)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:export (menu-entry
@@ -42,43 +43,45 @@
                    (default '()))
   (initrd          menu-entry-initrd))
 
-(define* (grub-configuration-file store entries
+(define* (grub-configuration-file entries
                                   #:key (default-entry 1) (timeout 5)
                                   (system (%current-system)))
-  "Return the GRUB configuration file in STORE for ENTRIES, a list of
+  "Return the GRUB configuration file for ENTRIES, a list of
 <menu-entry> objects, defaulting to DEFAULT-ENTRY and with the given TIMEOUT."
-  (define prologue
+  (define (prologue kernel)
     (format #f "
 set default=~a
 set timeout=~a
 search.file ~a~%"
-            default-entry timeout
-            (any (match-lambda
-                  (($ <menu-entry> _ linux)
-                   (let* ((drv (package-derivation store linux system))
-                          (out (derivation->output-path drv)))
-                     (string-append out "/bzImage"))))
-                 entries)))
+            default-entry timeout kernel))
+
+  (define (bzImage)
+    (anym %store-monad
+          (match-lambda
+           (($ <menu-entry> _ linux)
+            (package-file linux "bzImage"
+                          #:system system)))
+          entries))
 
   (define entry->text
     (match-lambda
      (($ <menu-entry> label linux arguments initrd)
-      (let ((linux-drv  (package-derivation store linux system))
-            (initrd-drv (package-derivation store initrd system)))
+      (mlet %store-monad ((linux  (package-file linux "bzImage"
+                                                #:system system))
+                          (initrd (package-file initrd "initrd"
+                                                #:system system)))
         ;; XXX: Assume that INITRD is a directory containing an 'initrd' file.
-        (format #f "menuentry ~s {
-  linux ~a/bzImage ~a
-  initrd ~a/initrd
+        (return (format #f "menuentry ~s {
+  linux ~a ~a
+  initrd ~a
 }~%"
-                label
-                (derivation->output-path linux-drv)
-                (string-join arguments)
-                (derivation->output-path initrd-drv))))))
+                        label
+                        linux (string-join arguments) initrd))))))
 
-  (add-text-to-store store "grub.cfg"
-                     (string-append prologue
-                                    (string-concatenate
-                                     (map entry->text entries)))
-                     '()))
+  (mlet %store-monad ((kernel (bzImage))
+                      (body   (mapm %store-monad entry->text entries)))
+    (text-file "grub.cfg"
+               (string-append (prologue kernel)
+                              (string-concatenate body)))))
 
 ;;; grub.scm ends here
