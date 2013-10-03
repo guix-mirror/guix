@@ -40,6 +40,7 @@ MODULES =					\
   guix/records.scm				\
   guix/hash.scm					\
   guix/utils.scm				\
+  guix/monads.scm				\
   guix/serialization.scm			\
   guix/nar.scm					\
   guix/derivations.scm				\
@@ -107,6 +108,7 @@ SCM_TESTS =					\
   tests/packages.scm				\
   tests/snix.scm				\
   tests/store.scm				\
+  tests/monads.scm				\
   tests/nar.scm					\
   tests/union.scm
 

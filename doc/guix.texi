@@ -914,9 +914,10 @@ This chapter describes all these APIs in turn, starting from high-level
 package definitions.
 
 @menu
-* Defining Packages::   Defining new packages.
-* The Store::           Manipulating the package store.
-* Derivations::         Low-level interface to package derivations.
+* Defining Packages::           Defining new packages.
+* The Store::                   Manipulating the package store.
+* Derivations::                 Low-level interface to package derivations.
+* The Store Monad::             Purely functional interface to the store.
 @end menu
 
 @node Defining Packages
@@ -1133,6 +1134,11 @@ derivation paths), and return when the worker is done building them.
 Return @code{#t} on success.
 @end deffn
 
+Note that the @code{(guix monads)} module provides a monad as well as
+monadic versions of the above procedures, with the goal of making it
+more convenient to work with code that accesses the store (@pxref{The
+Store Monad}).
+
 @c FIXME
 @i{This section is currently incomplete.}
 
@@ -1271,6 +1277,143 @@ higher-level constructs such as @var{gnu-build-system} (@pxref{Defining
 Packages}).  For this reason, Guix modules that are meant to be used in
 the build stratum are kept in the @code{(guix build @dots{})} name
 space.
+
+@node The Store Monad
+@section The Store Monad
+
+@cindex monad
+
+The procedures that operate on the store described in the previous
+sections all take an open connection to the build daemon as their first
+argument.  Although the underlying model is functional, they either have
+side effects or depend on the current state of the store.
+
+The former is inconvenient: the connection to the build daemon has to be
+carried around in all those functions, making it impossible to compose
+functions that do not take that parameter with functions that do.  The
+latter can be problematic: since store operations have side effects
+and/or depend on external state, they have to be properly sequenced.
+
+@cindex monadic values
+@cindex monadic functions
+This is where the @code{(guix monads)} module comes in.  This module
+provides a framework for working with @dfn{monads}, and a particularly
+useful monad for our uses, the @dfn{store monad}.  Monads are a
+construct that allows two things: associating ``context'' with values
+(in our case, the context is the store), and building sequences of
+computations (here computations includes accesses to the store.)  Values
+in a monad---values that carry this additional context---are called
+@dfn{monadic values}; procedures that return such values are called
+@dfn{monadic procedures}.
+
+Consider this ``normal'' procedure:
+
+@example
+(define (profile.sh store)
+  ;; Return the name of a shell script in the store that
+  ;; initializes the 'PATH' environment variable.
+  (let* ((drv (package-derivation store coreutils))
+         (out (derivation->output-path drv)))
+    (add-text-to-store store "profile.sh"
+                       (format #f "export PATH=~a/bin" out))))
+@end example
+
+Using @code{(guix monads)}, it may be rewritten as a monadic function:
+
+@example
+(define (profile.sh)
+  ;; Same, but return a monadic value.
+  (mlet %store-monad ((bin (package-file coreutils "bin")))
+    (text-file "profile.sh"
+               (string-append "export PATH=" bin))))
+@end example
+
+There are two things to note in the second version: the @code{store}
+parameter is now implicit, and the monadic value returned by
+@code{package-file}---a wrapper around @code{package-derivation} and
+@code{derivation->output-path}---is @dfn{bound} using @code{mlet}
+instead of plain @code{let}.
+
+Calling the monadic @code{profile.sh} has no effect.  To get the desired
+effect, one must use @code{run-with-store}:
+
+@example
+(run-with-store (open-connection) (profile.sh))
+@result{} /nix/store/...-profile.sh
+@end example
+
+The main syntactic forms to deal with monads in general are described
+below.
+
+@deffn {Scheme Syntax} with-monad @var{monad} @var{body} ...
+Evaluate any @code{>>=} or @code{return} forms in @var{body} as being
+in @var{monad}.
+@end deffn
+
+@deffn {Scheme Syntax} return @var{val}
+Return a monadic value that encapsulates @var{val}.
+@end deffn
+
+@deffn {Scheme Syntax} >>= @var{mval} @var{mproc}
+@dfn{Bind} monadic value @var{mval}, passing its ``contents'' to monadic
+procedure @var{mproc}@footnote{This operation is commonly referred to as
+``bind'', but that name denotes an unrelated procedure in Guile.  Thus
+we use this somewhat cryptic symbol inherited from the Haskell
+language.}.
+@end deffn
+
+@deffn {Scheme Syntax} mlet @var{monad} ((@var{var} @var{mval}) ...) @
+       @var{body} ...
+@deffnx {Scheme Syntax} mlet* @var{monad} ((@var{var} @var{mval}) ...) @
+       @var{body} ...
+Bind the variables @var{var} to the monadic values @var{mval} in
+@var{body}.  The form (@var{var} -> @var{val}) binds @var{var} to the
+``normal'' value @var{val}, as per @code{let}.
+
+@code{mlet*} is to @code{mlet} what @code{let*} is to @code{let}
+(@pxref{Local Bindings,,, guile, GNU Guile Reference Manual}).
+@end deffn
+
+The interface to the store monad provided by @code{(guix monads)} is as
+follows.
+
+@defvr {Scheme Variable} %store-monad
+The store monad.  Values in the store monad encapsulate accesses to the
+store.  When its effect is needed, a value of the store monad must be
+``evaluated'' by passing it to the @code{run-with-store} procedure (see
+below.)
+@end defvr
+
+@deffn {Scheme Procedure} run-with-store @var{store} @var{mval} [#:guile-for-build] [#:system (%current-system)]
+Run @var{mval}, a monadic value in the store monad, in @var{store}, an
+open store connection.
+@end deffn
+
+@deffn {Monadic Procedure} text-file @var{name} @var{text}
+Return as a monadic value the absolute file name in the store of the file
+containing @var{text}.
+@end deffn
+
+@deffn {Monadic Procedure} package-file @var{package} [@var{file}] @
+       [#:system (%current-system)] [#:output "out"] Return as a monadic
+value in the absolute file name of @var{file} within the @var{output}
+directory of @var{package}.  When @var{file} is omitted, return the name
+of the @var{output} directory of @var{package}.
+@end deffn
+
+@deffn {Monadic Procedure} derivation-expression @var{name} @var{system} @
+       @var{exp} @var{inputs} [#:outputs '("out")] [#:hash #f] @
+       [#:hash-algo #f] [#:env-vars '()] [#:modules '()] @
+       [#:references-graphs #f] [#:guile-for-build #f]
+Monadic version of @code{build-expression->derivation}
+(@pxref{Derivations}).
+@end deffn
+
+@deffn {Monadic Procedure} package->derivation @var{package} [@var{system}]
+Monadic version of @code{package-derivation} (@pxref{Defining
+Packages}).
+@end deffn
+
 
 @c *********************************************************************
 @node Utilities
