@@ -4526,6 +4526,36 @@ image: Port of Xlib's XImage and XShmImage functions.")
     (license license:x11)))
 
 
+(define-public xcb-util-keysyms
+  (package
+    (name "xcb-util-keysyms")
+    (version "0.3.9")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://xcb.freedesktop.org/dist/" name "-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "0vjwk7vrcfnlhiadv445c6skfxmdrg5v4qf81y8s2s5xagqarqbv"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+     `(("libxcb" ,libxcb)))
+    (inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://cgit.freedesktop.org/xcb/util-keysyms/")
+    (synopsis "Standard X constants and conversion to/from keycodes")
+    (description "The XCB util module provides a number of libraries which
+    sit on top of libxcb, the core X protocol library, and some of the
+    extension libraries.  These experimental libraries provide convenience
+functions and interfaces which make the raw X protocol more usable.  Some of
+the libraries also provide client-side code which is not strictly part of
+the X protocol but which has traditionally been provided by Xlib.
+
+The XCB util-keysyms module provides the following library:
+keysyms: Standard X key constants and conversion to/from keycodes.")
+    (license license:x11)))
+
+
 (define-public xcb-util-wm
   (package
     (name "xcb-util-wm")
