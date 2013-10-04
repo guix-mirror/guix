@@ -143,6 +143,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/plotutils.scm			\
   gnu/packages/popt.scm				\
   gnu/packages/pth.scm				\
+  gnu/packages/pulseaudio.scm			\
   gnu/packages/python.scm			\
   gnu/packages/qemu.scm				\
   gnu/packages/qt.scm				\
