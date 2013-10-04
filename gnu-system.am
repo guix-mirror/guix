@@ -145,6 +145,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/pth.scm				\
   gnu/packages/python.scm			\
   gnu/packages/qemu.scm				\
+  gnu/packages/qt.scm				\
   gnu/packages/ratpoison.scm			\
   gnu/packages/readline.scm			\
   gnu/packages/recutils.scm			\
