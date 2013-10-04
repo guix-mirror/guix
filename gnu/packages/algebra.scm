@@ -164,3 +164,37 @@ compiler for the dc calculator.  This version has a single executable
 that both compiles the language and runs the resulting `byte code'. The
 byte code is not the dc language.")
     (license gpl2+)))
+
+(define-public fftw
+  (package
+    (name "fftw")
+    (version "3.3.3")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "ftp://ftp.fftw.org/pub/fftw/fftw-"
+                                 version".tar.gz"))
+             (sha256
+              (base32
+               "1wwp9b2va7vkq3ay7a9jk22nr4x5q6m37rzqy2j8y3d11c5grkc5"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-shared" "--enable-openmp")
+       #:phases (alist-cons-before
+                 'build 'no-native
+                 (lambda _
+                   ;; By default '-mtune=native' is used.  However, that may
+                   ;; cause the use of ISA extensions (SSE2, etc.) that are
+                   ;; not necessarily available on the user's machine when
+                   ;; that package is built on a different machine.
+                   (substitute* (find-files "." "Makefile$")
+                     (("-mtune=native") "")))
+                 %standard-phases)))
+    (native-inputs `(("perl" ,perl)))
+    (home-page "http://fftw.org")
+    (synopsis "Computing the discrete Fourier transform")
+    (description
+     "FFTW is a C subroutine library for computing the discrete Fourier
+transform (DFT) in one or more dimensions, of arbitrary input size, and of
+both real and complex data (as well as of even/odd data---i.e. the discrete
+cosine/ sine transforms or DCT/DST).")
+    (license gpl2+)))
