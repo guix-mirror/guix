@@ -170,7 +170,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
        ("check" ,check)))
     (propagated-inputs
      ;; 'libpulse*.la' contain `-lgdbm' and `-lcap', so propagate them.
-     `(;; ("libcap" ,libcap)
+     `(("libcap" ,libcap)
        ("gdbm" ,gdbm)))
     (home-page "http://www.pulseaudio.org/")
     (synopsis "Sound server")
