@@ -32,6 +32,7 @@
   #:use-module (gnu packages algebra)
   #:use-module ((gnu packages gettext)
                 #:renamer (symbol-prefix-proc 'g:))
+  #:use-module (gnu packages attr)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -638,3 +639,37 @@ netstat, rarp and route.  Additionally, this package contains utilities
 relating to particular network hardware types (plipconfig, slattach) and
 advanced aspects of IP configuration (iptunnel, ipmaddr).")
     (license gpl2+)))
+
+(define-public libcap
+  (package
+    (name "libcap")
+    (version "2.22")
+    (source (origin
+             (method url-fetch)
+
+             ;; Tarballs used to be available from
+             ;; <https://www.kernel.org/pub/linux/libs/security/linux-privs/>
+             ;; but they never came back after kernel.org was compromised.
+             (uri (string-append
+                   "mirror://debian/pool/main/libc/libcap2/libcap2_"
+                   version ".orig.tar.gz"))
+             (sha256
+              (base32
+               "07vjhkznm82p8dm4w6j8mmg7h5c70lp5s9bwwfdmgwpbixfydjp1"))))
+    (build-system gnu-build-system)
+    (arguments '(#:phases (alist-delete 'configure %standard-phases)
+                 #:tests? #f                      ; no 'check' target
+                 #:make-flags (list "lib=lib"
+                                    (string-append "prefix="
+                                                   (assoc-ref %outputs "out"))
+                                    "RAISE_SETFCAP=no")))
+    (native-inputs `(("perl" ,perl)))
+    (inputs `(("attr" ,attr)))
+    (home-page "https://sites.google.com/site/fullycapable/")
+    (synopsis "Library for working with POSIX capabilities")
+    (description
+     "libcap2 provides a programming interface to POSIX capabilities on
+Linux-based operating systems.")
+
+    ;; License is BSD-3 or GPLv2, at the user's choice.
+    (license gpl2)))
