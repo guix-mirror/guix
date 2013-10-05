@@ -45,6 +45,7 @@
   ;; module.
   #:export (dbus
             glib
+            gobject-introspection
             dbus-glib
             intltool
             itstool))
@@ -168,7 +169,7 @@ dynamic loading, and an object system.")
    (home-page "http://developer.gnome.org/glib/")
    (license license:lgpl2.0+)))                        ; some files are under lgpl2.1+
 
-(define-public gobject-introspection
+(define gobject-introspection
   (package
     (name "gobject-introspection")
     (version "1.38.0")
