@@ -30,9 +30,16 @@
                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:export (libogg
+            libvorbis
+            speex
+            ao
+            flac
+            libkate
+            vorbis-tools))
 
-(define-public libogg
+(define libogg
   (package
    (name "libogg")
    (version "1.3.0")
@@ -55,7 +62,7 @@ periodic timestamps for seeking.")
                                "See COPYING in the distribution."))
    (home-page "http://xiph.org/ogg/")))
 
-(define-public libvorbis
+(define libvorbis
   (package
    (name "libvorbis")
    (version "1.3.3")
@@ -80,7 +87,7 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
                                "See COPYING in the distribution."))
    (home-page "http://xiph.org/vorbis/")))
 
-(define-public speex
+(define speex
   (package
     (name "speex")
     (version "1.2rc1")
@@ -105,7 +112,7 @@ data (e.g., voice mail), and audio books.")
     (license (license:bsd-style "file://COPYING"
                                 "See COPYING in the distribution."))))
 
-(define-public ao
+(define ao
   (package
     (name "ao")
     (version "1.1.0")
@@ -146,7 +153,7 @@ OpenBSD's sndio.")
     (license license:gpl2+)
     (home-page "http://www.xiph.org/ao/")))
 
-(define-public flac
+(define flac
   (package
    (name "flac")
    (version "1.2.1")
@@ -174,7 +181,7 @@ meaning that audio is compressed in FLAC without any loss in quality.")
                                "See COPYING in the distribution.")) ; and LGPL and GPL
    (home-page "http://xiph.org/flac/")))
 
-(define-public libkate
+(define libkate
   (package
    (name "libkate")
    (version "0.4.1")
@@ -209,7 +216,7 @@ Kate stream.")
    (license license:bsd-3)
    (home-page "http://code.google.com/p/libkate/")))
 
-(define-public vorbis-tools
+(define vorbis-tools
   (package
    (name "vorbis-tools")
    (version "1.4.0")
