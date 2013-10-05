@@ -157,7 +157,11 @@
        "http://www.imagemagick.org/download"
        "ftp://mirror.searchdaimon.com/ImageMagick"
        "http://mirror.is.co.za/pub/imagemagick/"
-       "ftp://mirror.aarnet.edu.au/pub/imagemagick/"))))
+       "ftp://mirror.aarnet.edu.au/pub/imagemagick/")
+      (debian
+       "http://ftp.de.debian.org/debian/"
+       "http://ftp.fr.debian.org/debian/"
+       "http://ftp.debian.org/debian/"))))
 
 (define (gnutls-derivation store system)
   "Return the GnuTLS derivation for SYSTEM."
