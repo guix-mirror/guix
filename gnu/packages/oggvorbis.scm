@@ -26,6 +26,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages pulseaudio)
   #:use-module ((guix licenses)
                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
@@ -126,8 +127,12 @@ data (e.g., voice mail), and audio books.")
         "1m0v2y6bhr4iwsgdkc7b3y0qgpvpv1ifbxsy8n8ahsvjn6wmppi9"))))
     (build-system gnu-build-system)
     ;; FIXME: Add further backends, see the summary printed after configure.
+    ;; XXX: Should back-ends be pushed to different outputs?  For instance,
+    ;; "out" would include only the ALSA back-end, while "pulse" would
+    ;; contains 'lib/ao/plugins-4/libpulse.*'.
     (inputs `(("pkg-config" ,pkg-config)
-              ("alsa-lib" ,alsa-lib)))
+              ("alsa-lib" ,alsa-lib)
+              ("pulseaudio" ,pulseaudio)))
     (synopsis "Cross platform audio library")
     (description
      "Libao is a cross-platform audio library that allows programs to
