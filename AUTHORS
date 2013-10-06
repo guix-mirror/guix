@@ -5,11 +5,14 @@ build daemon whose code comes from Nix (see the manual for details.)
 Nix was initially written by Eelco Dolstra; other people have been
 contributing to it.  See `nix/AUTHORS' for details.
 
-GNU Guix was initiated by Ludovic Courtès <ludo@gnu.org>, but it would
-not be what it is without the contributions of the following people (in
+The fine people listed below have contributed code to GNU Guix (in
 alphabetical order):
 
-  Andreas Enge <andreas@enge.fr>
-  Nikita Karetnikov <nikita@karetnikov.org>
-  Cyril Roelandt <tipecaml@gmail.com>
-  Mark H. Weaver <mhw@netris.org>
+        Ludovic Courtès <ludo@gnu.org>
+        Andreas Enge <andreas@enge.fr>
+      Joshua S. Grant <youlysses@riseup.net>
+         Nikita Karetnikov <nikita@karetnikov.org>
+        Aljosha Papsch <misc@rpapsch.de>
+          Cyril Roelandt <tipecaml@gmail.com>
+           Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
+        Mark H. Weaver <mhw@netris.org>
