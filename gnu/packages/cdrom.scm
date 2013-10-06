@@ -27,10 +27,11 @@
   #:use-module (gnu packages compression)
   #:use-module ((gnu packages gettext) #:renamer (symbol-prefix-proc 'gnu:))
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages help2man)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages patchelf)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages which))
 
 (define-public libcddb
@@ -131,10 +132,29 @@ filesystems.")
                "1pv4zrajm46za0f6lv162iqffih57a8ly4pc69f7y0gfyigb8p80"))))
     (build-system gnu-build-system)
     (inputs
-     `(("patch/fpic" ,(search-patch "cdparanoia-fpic.patch"))))
+     `(("patch/fpic" ,(search-patch "cdparanoia-fpic.patch"))
+       ("patchelf" ,patchelf)))
     (arguments
      `(#:tests? #f ; there is no check target
-       #:patches (list (assoc-ref %build-inputs "patch/fpic"))))
+       #:patches (list (assoc-ref %build-inputs "patch/fpic"))
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build rpath)
+                  (srfi srfi-26))
+       #:imported-modules ((guix build gnu-build-system)
+                           (guix build utils)
+                           (guix build rpath))
+       #:phases
+        (alist-cons-after
+         'strip 'add-lib-to-runpath
+         (lambda* (#:key outputs #:allow-other-keys)
+           (let* ((out (assoc-ref outputs "out"))
+                  (lib (string-append out "/lib")))
+             ;; Add LIB to the RUNPATH of all the executables.
+             (with-directory-excursion out
+               (for-each (cut augment-rpath <> lib)
+                         (find-files "bin" ".*")))))
+         %standard-phases)))
     (home-page "http://www.xiph.org/paranoia/")
     (synopsis "audio CD reading utility which includes extra data verification features")
     (description "Cdparanoia retrieves audio tracks from CDDA capable CDROM
