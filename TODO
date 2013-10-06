@@ -28,11 +28,13 @@ Ideally, extend .nix-cache-info to include the server's public key, and also
 reply to requests for .narinfo.sig.
 Optionally, use Guile-Avahi to publish the service.
 
-** MAYBE Add a substituter that uses the GNUnet DHT
+** MAYBE Add a substituter that uses the GNUnet DHT or [[http://libswift.org][libswift]]
 
-Would be neat if binaries could be pushed to and pulled from the GNUnet
-DHT.  Guix users would sign their binaries, and define which binaries
-they trust.
+Would be neat if binaries could be pushed to and pulled from the GNUnet DHT or
+rather libswift (since DHTs aren’t suited for large payloads).  Guix users
+would sign their binaries, and define which binaries they trust.
+
+Use UPnP and similar to traverse NAT, like ‘filegive’ does.
 
 ** Add a remote build hook
 
