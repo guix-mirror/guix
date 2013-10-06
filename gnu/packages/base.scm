@@ -764,7 +764,10 @@ identifier SYSTEM."
      (native-inputs (alist-delete "texinfo"
                                   (package-native-inputs gcc-4.7))))))
 
-(define linux-libre-headers-boot0
+(define (linux-libre-headers-boot0)
+  "Return Linux-Libre header files for the bootstrap environment."
+  ;; Note: this is wrapped in a thunk to nicely handle circular dependencies
+  ;; between (gnu packages linux) and this module.
   (package-with-bootstrap-guile
    (package (inherit linux-libre-headers)
      (arguments `(#:guile ,%bootstrap-guile
@@ -809,7 +812,7 @@ identifier SYSTEM."
                             ;; install rpc/*.h.
                             "--enable-obsolete-rpc")
                       ,flags)))))
-     (propagated-inputs `(("linux-headers" ,linux-libre-headers-boot0)))
+     (propagated-inputs `(("linux-headers" ,(linux-libre-headers-boot0))))
      (inputs
       `( ;; A native GCC is needed to build `cross-rpcgen'.
         ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))
