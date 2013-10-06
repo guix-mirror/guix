@@ -18,6 +18,7 @@
 
 (define-module (gnu packages icu4c)
   #:use-module (gnu packages)
+  #:use-module (gnu packages patchelf)
   #:use-module (gnu packages perl)
   #:use-module (guix licenses)
   #:use-module (guix packages)
@@ -38,9 +39,18 @@
             (sha256 (base32
                      "13yz0kk6zsgj94idnlr3vbg8iph5z4ly4b4xrd5wfja7q3ijdx56"))))
    (build-system gnu-build-system)
-   (inputs `(("perl" ,perl)))
+   (inputs
+    `(("patchelf" ,patchelf)
+      ("perl" ,perl)))
    (arguments
-    `(#:phases
+    `(#:modules ((guix build gnu-build-system)
+                 (guix build utils)
+                 (guix build rpath)
+                 (srfi srfi-26))
+      #:imported-modules ((guix build gnu-build-system)
+                          (guix build utils)
+                          (guix build rpath))
+      #:phases
       (alist-replace
        'unpack
        (lambda* (#:key source #:allow-other-keys)
@@ -56,7 +66,16 @@
              (("`/bin/sh")
              (string-append "`" (which "bash"))))
            (apply configure args)))
-       %standard-phases))))
+       (alist-cons-after
+        'strip 'add-lib-to-runpath
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let* ((out (assoc-ref outputs "out"))
+                 (lib (string-append out "/lib")))
+            ;; Add LIB to the RUNPATH of all the libraries.
+            (with-directory-excursion out
+              (for-each (cut augment-rpath <> lib)
+                        (find-files "lib" ".*")))))
+        %standard-phases)))))
    (synopsis "ICU, International Components for Unicode")
    (description
     "ICU is a set of C/C++ and Java libraries providing Unicode and
