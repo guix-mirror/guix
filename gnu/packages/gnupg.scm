@@ -176,6 +176,37 @@ are available.  Version 2 of GnuPG also provides support for
 S/MIME.")
     (license gpl3+)))
 
+(define-public gpgme
+  (package
+    (name "gpgme")
+    (version "1.4.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnupg/gpgme/gpgme-" version
+                          ".tar.bz2"))
+      (sha256
+       (base32
+        "15h429h6pd67iiv580bjmwbkadpxsdppw0xrqpcm4dvm24jc271d"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gnupg" ,gnupg)
+       ("libassuan" ,libassuan)
+       ("libgpg-error" ,libgpg-error)))
+    (home-page "http://www.gnupg.org/related_software/gpgme/")
+    (synopsis "library providing simplified access to GnuPG functionality")
+    (description
+     "GnuPG Made Easy (GPGME) is a library designed to make access to GnuPG
+easier for applications.  It provides a High-Level Crypto API for encryption,
+decryption, signing, signature verification and key management.  Currently
+it uses GnuPG as its backend but the API isn't restricted to this engine.
+
+Because the direct use of GnuPG from an application can be a complicated
+programming task, it is suggested that all software should try to use GPGME
+instead.  This way bug fixes or improvements can be done at a central place
+and every application benefits from this.")
+    (license lgpl2.1+)))
+
 (define-public pius
   (package
    (name "pius")
