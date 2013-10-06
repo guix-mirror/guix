@@ -177,8 +177,16 @@ parser modules).")
        (base32
         "0dp5nxq491gymq806za0dk4hngfmq65ysrqbn0ypajqbbl6vf71n"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Make sure the reference to util-linux's 'getopt' is kept in 'xmlto'.
+     '(#:configure-flags (list (string-append "GETOPT="
+                                              (assoc-ref %build-inputs
+                                                         "util-linux")
+                                              "/bin/getopt"))))
     (inputs
-     `(("util-linux" ,util-linux)))
+     `(("util-linux" ,util-linux)                 ; for 'getopt'
+       ("libxml2" ,libxml2)                       ; for 'xmllint'
+       ("libxslt" ,libxslt)))                     ; for 'xsltproc'
     (home-page "http://cyberelk.net/tim/software/xmlto/")
     (synopsis "Front-end to an XSL toolchain")
     (description
