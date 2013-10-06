@@ -22,6 +22,7 @@
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
@@ -156,6 +157,7 @@ aliasing facilities to work just as they would on normal mail.")
     (build-system gnu-build-system)
     (inputs
      `(("cyrus-sasl" ,cyrus-sasl)
+       ("gpgme" ,gpgme)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
        ("perl" ,perl)))
@@ -163,6 +165,7 @@ aliasing facilities to work just as they would on normal mail.")
      `(#:configure-flags '("--enable-smtp"
                            "--enable-imap"
                            "--enable-pop"
+                           "--enable-gpgme"
                            "--with-ssl"
                            "--with-sasl"
                            ;; so that mutt does not check whether the path
