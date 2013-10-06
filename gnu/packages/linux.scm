@@ -32,7 +32,9 @@
   #:use-module (gnu packages algebra)
   #:use-module ((gnu packages gettext)
                 #:renamer (symbol-prefix-proc 'g:))
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages attr)
+  #:use-module (gnu packages xml)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -476,6 +478,48 @@ trace of all the system calls made by a another process/program.")
      "The Advanced Linux Sound Architecture (ALSA) provides audio and
 MIDI functionality to the Linux-based operating system.")
     (license lgpl2.1+)))
+
+(define-public alsa-utils
+  (package
+    (name "alsa-utils")
+    (version "1.0.27.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "ftp://ftp.alsa-project.org/pub/utils/alsa-utils-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "1sjjngnq50jv5ilwsb4zys6smifni3bd6fn28gbnhfrg14wsrgq2"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; XXX: Disable man page creation until we have DocBook.
+     '(#:configure-flags (list "--disable-xmlto"
+                               (string-append "--with-udev-rules-dir="
+                                              (assoc-ref %outputs "out")
+                                              "/lib/udev/rules.d"))
+       #:phases (alist-cons-before
+                 'install 'pre-install
+                 (lambda _
+                   ;; Don't try to mkdir /var/lib/alsa.
+                   (substitute* "Makefile"
+                     (("\\$\\(MKDIR_P\\) .*ASOUND_STATE_DIR.*")
+                      "true\n")))
+                 %standard-phases)))
+    (inputs
+     `(("libsamplerate" ,libsamplerate)
+       ("ncurses" ,ncurses)
+       ("alsa-lib" ,alsa-lib)
+       ("xmlto" ,xmlto)
+       ("gettext" ,g:gettext)))
+    (home-page "http://www.alsa-project.org/")
+    (synopsis "Utilities for the Advanced Linux Sound Architecture (ALSA)")
+    (description
+     "The Advanced Linux Sound Architecture (ALSA) provides audio and
+MIDI functionality to the Linux-based operating system.")
+
+    ;; This is mostly GPLv2+ but a few files such as 'alsactl.c' are
+    ;; GPLv2-only.
+    (license gpl2)))
 
 (define-public iptables
   (package
