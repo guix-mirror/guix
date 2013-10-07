@@ -382,3 +382,36 @@ importantly, it is pleasant to use.  You get a powerful and well-maintained
 graphics library with all of the benefits of Scheme: memory management,
 exceptions, macros, and a dynamic programming environment.")
     (license license:lgpl3+)))
+
+
+;;;
+;;; C++ bindings.
+;;;
+
+(define-public cairomm
+  (package
+    (name "cairomm")
+    (version "1.10.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://cairographics.org/releases/cairomm-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "13rrp96px95m6xnvmsaqb0wcqsnizg3bz334k0yhlyxf7v29d386"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; The examples lack -lcairo.
+     '(#:make-flags '("LDFLAGS=-lcairo")))
+    (inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("libsigc++" ,libsigc++)
+       ("freetype" ,freetype)
+       ("fontconfig" ,fontconfig)
+       ("cairo" ,cairo)))
+    (home-page "http://cairographics.org/")
+    (synopsis "C++ bindings to the Cairo 2D graphics library")
+    (description
+     "Cairomm provides a C++ programming interface to the Cairo 2D graphics
+library.")
+    (license license:lgpl2.0+)))
