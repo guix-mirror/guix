@@ -73,8 +73,6 @@ This should specify builder code to be run when building a user
 environment with ‘guix-package’.  For instance, Texinfo’s hook would
 create a new ‘dir’.
 
-** add ‘patches’ there
-
 ** extend ‘propagated-build-inputs’ with support for multiple outputs
 
 #+BEGIN_SRC scheme
