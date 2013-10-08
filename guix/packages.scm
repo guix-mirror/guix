@@ -37,6 +37,10 @@
             origin-method
             origin-sha256
             origin-file-name
+            origin-patches
+            origin-patch-flags
+            origin-patch-inputs
+            origin-patch-guile
             base32
 
             <search-path-specification>
@@ -101,7 +105,14 @@
   (uri       origin-uri)                          ; string
   (method    origin-method)                       ; symbol
   (sha256    origin-sha256)                       ; bytevector
-  (file-name origin-file-name (default #f)))      ; optional file name
+  (file-name origin-file-name (default #f))       ; optional file name
+  (patches   origin-patches (default '()))        ; list of file names
+  (patch-flags  origin-patch-flags                ; list of strings
+                (default '("-p1")))
+  (patch-inputs origin-patch-inputs               ; input list or #f
+                (default #f))
+  (patch-guile origin-patch-guile                 ; derivation or #f
+               (default #f)))
 
 (define-syntax base32
   (lambda (s)
@@ -243,13 +254,122 @@ corresponds to the arguments expected by `set-path-environment-variable'."
   "Return the full name of PACKAGE--i.e., `NAME-VERSION'."
   (string-append (package-name package) "-" (package-version package)))
 
+(define (%standard-patch-inputs)
+  (let ((ref (lambda (module var)
+               (module-ref (resolve-interface module) var))))
+    `(("tar"   ,(ref '(gnu packages base) 'tar))
+      ("xz"    ,(ref '(gnu packages compression) 'xz))
+      ("bzip2" ,(ref '(gnu packages compression) 'bzip2))
+      ("gzip"  ,(ref '(gnu packages compression) 'gzip))
+      ("lzip"  ,(ref '(gnu packages compression) 'lzip))
+      ("patch" ,(ref '(gnu packages base) 'patch)))))
+
+(define (default-guile store system)
+  "Return a derivation of d the default Guile package for SYSTEM."
+  (let* ((distro (resolve-interface '(gnu packages base)))
+         (guile  (module-ref distro 'guile-final)))
+    (package-derivation store guile system)))
+
+(define* (patch-and-repack store source patches inputs
+                           #:key
+                           (flags '("-p1"))
+                           (guile-for-build (%guile-for-build))
+                           (system (%current-system)))
+  "Unpack SOURCE (a derivation), apply all of PATCHES, and repack the tarball
+using the tools listed in INPUTS."
+  (define decompression-type
+    (let ((out (derivation->output-path source)))
+      (cond ((string-suffix? "gz" out)  "gzip")
+            ((string-suffix? "bz2" out) "bzip2")
+            ((string-suffix? "lz" out)  "lzip")
+            (else "xz"))))
+
+  (define original-file-name
+    (let ((out (derivation->output-path source)))
+      ;; Remove the store prefix plus the slash, hash, and hyphen.
+      (let* ((sans (string-drop out (+ (string-length (%store-prefix)) 1)))
+             (dash (string-index sans #\-)))
+        (string-drop sans (+ 1 dash)))))
+
+  (define patch-inputs
+    (map (lambda (number patch)
+           (list (string-append "patch" (number->string number))
+                 (add-to-store store (basename patch) #t
+                               "sha256" patch)))
+         (iota (length patches))
+
+         patches))
+
+  (define builder
+    `(begin
+       (use-modules (ice-9 ftw)
+                    (srfi srfi-1))
+
+       (let ((out     (assoc-ref %outputs "out"))
+             (xz      (assoc-ref %build-inputs "xz"))
+             (decomp  (assoc-ref %build-inputs ,decompression-type))
+             (source  (assoc-ref %build-inputs "source"))
+             (tar     (string-append (assoc-ref %build-inputs "tar")
+                                     "/bin/tar"))
+             (patch   (string-append (assoc-ref %build-inputs "patch")
+                                     "/bin/patch")))
+         (define (apply-patch input)
+           (let ((patch* (assoc-ref %build-inputs input)))
+             (format (current-error-port) "applying '~a'...~%" patch*)
+             (zero? (system* patch "--batch" ,@flags "--input" patch*))))
+
+         (setenv "PATH" (string-append xz "/bin" ":"
+                                       decomp "/bin"))
+         (and (zero? (system* tar "xvf" source))
+              (let ((directory (car (scandir "."
+                                             (lambda (name)
+                                               (not
+                                                (member name
+                                                        '("." ".."))))))))
+                (format (current-error-port)
+                        "source is under '~a'~%" directory)
+                (chdir directory)
+                (and (every apply-patch ',(map car patch-inputs))
+                     (begin (chdir "..") #t)
+                     (zero? (system* tar "cvfa" out directory))))))))
+
+
+  (let ((name   (string-append (file-sans-extension original-file-name)
+                               ".xz"))
+        (inputs (filter-map (match-lambda
+                             ((name (? package? p))
+                              (and (member name (cons decompression-type
+                                                      '("tar" "xz" "patch")))
+                                   (list name
+                                         (package-derivation store p
+                                                             system)))))
+                            (or inputs (%standard-patch-inputs)))))
+
+   (build-expression->derivation store name system builder
+                                 `(("source" ,source)
+                                   ,@inputs
+                                   ,@patch-inputs)
+                                 #:guile-for-build guile-for-build)))
+
 (define* (package-source-derivation store source
                                     #:optional (system (%current-system)))
   "Return the derivation path for SOURCE, a package source, for SYSTEM."
   (match source
-    (($ <origin> uri method sha256 name)
+    (($ <origin> uri method sha256 name ())
+     ;; No patches.
      (method store uri 'sha256 sha256 name
              #:system system))
+    (($ <origin> uri method sha256 name (patches ...) (flags ...)
+        inputs guile-for-build)
+     ;; One or more patches.
+     (let ((source (method store uri 'sha256 sha256 name
+                           #:system system)))
+       (patch-and-repack store source patches inputs
+                         #:flags flags
+                         #:system system
+                         #:guile-for-build (or guile-for-build
+                                               (%guile-for-build)
+                                               (default-guile store system)))))
     ((and (? string?) (? store-path?) file)
      file)
     ((? string? file)

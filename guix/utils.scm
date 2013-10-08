@@ -63,6 +63,7 @@
             package-name->name+version
             string-tokenize*
             file-extension
+            file-sans-extension
             call-with-temporary-output-file
             fold2
             filtered-port))
@@ -351,6 +352,13 @@ introduce the version part."
   "Return the extension of FILE or #f if there is none."
   (let ((dot (string-rindex file #\.)))
     (and dot (substring file (+ 1 dot) (string-length file)))))
+
+(define (file-sans-extension file)
+  "Return the substring of FILE without its extension, if any."
+  (let ((dot (string-rindex file #\.)))
+    (if dot
+        (substring file 0 dot)
+        file)))
 
 (define (string-tokenize* string separator)
   "Return the list of substrings of STRING separated by SEPARATOR.  This is
