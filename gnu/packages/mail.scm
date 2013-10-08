@@ -49,12 +49,11 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0szbqa12zqzldqyw97lxqax3ja2adis83i7brdfsxmrfw68iaf65"))))
+               "0szbqa12zqzldqyw97lxqax3ja2adis83i7brdfsxmrfw68iaf65"))
+             (patches (list (search-patch "m4-gets-undeclared.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(;; TODO: Add `--with-sql'.
-       #:patches (list (assoc-ref %build-inputs
-                                  "patch/gets-undeclared"))
        #:phases (alist-cons-before
                  'build 'pre-build
                  (lambda _
@@ -83,9 +82,7 @@
        ("readline" ,readline)
        ("linux-pam" ,linux-pam)
        ("libtool" ,libtool)
-       ("gdbm" ,gdbm)
-       ("patch/gets-undeclared"
-        ,(search-patch "m4-gets-undeclared.patch"))))
+       ("gdbm" ,gdbm)))
     (home-page "http://www.gnu.org/software/mailutils/")
     (synopsis "Utilities and library for reading and serving mail")
     (description

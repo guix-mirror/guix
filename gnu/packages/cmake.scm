@@ -36,11 +36,11 @@
                     (string-index version #\. (+ 1 (string-index version #\.))))
                    "/cmake-" version ".tar.gz"))
              (sha256
-              (base32 "1c8fj6i2x9sb39wc9av2ighj415mw33cxfrlfpafcvm0knrlylnf"))))
+              (base32 "1c8fj6i2x9sb39wc9av2ighj415mw33cxfrlfpafcvm0knrlylnf"))
+             (patches (list (search-patch "cmake-fix-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
-       #:patches (list (assoc-ref %build-inputs "fix-tests"))
        #:patch-flags '("-p0")
        #:phases (alist-replace
                  'configure
@@ -66,8 +66,7 @@
                              (string-append "--prefix=" out)))))
                  %standard-phases)))
     (inputs
-     `(("file" ,file)
-       ("fix-tests" ,(search-patch "cmake-fix-tests.patch"))))
+     `(("file" ,file)))
     (home-page "http://www.cmake.org/")
     (synopsis "A cross-platform, open-source build system")
     (description

@@ -35,11 +35,11 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1nsqk70ry3221sd62s4f0njcrncppszs4xxjcak13lxyfq2y0fs7"))))
+               "1nsqk70ry3221sd62s4f0njcrncppszs4xxjcak13lxyfq2y0fs7"))
+             (patches (list (search-patch "valgrind-glibc.patch")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:patches (list (assoc-ref %build-inputs "patch/glibc-2.17"))
-       #:phases (alist-cons-after
+     '(#:phases (alist-cons-after
                  'install 'patch-suppression-files
                  (lambda* (#:key outputs #:allow-other-keys)
                    ;; Don't assume the FHS.
@@ -52,10 +52,7 @@
                      #t))
                  %standard-phases)))
     (inputs `(;; GDB is needed to provide a sane default for `--db-command'.
-              ("gdb" ,gdb)
-
-              ("patch/glibc-2.17"
-               ,(search-patch "valgrind-glibc.patch"))))
+              ("gdb" ,gdb)))
     (native-inputs `(("perl" ,perl)))
     (home-page "http://www.valgrind.org/")
     (synopsis "Debugging and profiling tool suite")

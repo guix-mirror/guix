@@ -38,10 +38,9 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0ah5mi4j62b85a9rllv1004mzjb5cd0mn4glvz13p88rpx77pahp"))))
+               "0ah5mi4j62b85a9rllv1004mzjb5cd0mn4glvz13p88rpx77pahp"))
+             (patches (list (search-patch "flex-bison-tests.patch")))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:patches (list (assoc-ref %build-inputs "patch/bison-tests"))))
     (inputs
      (let ((bison-for-tests
             ;; Work around an incompatibility with Bison 3.0:
@@ -59,8 +58,7 @@
               ;; Unlike Bison 3.0, this version did not need Flex for its
               ;; tests, so it allows us to break the cycle.
               (inputs (alist-delete "flex" (package-inputs bison))))))
-       `(("patch/bison-tests" ,(search-patch "flex-bison-tests.patch"))
-         ("bison" ,bison-for-tests)
+       `(("bison" ,bison-for-tests)
          ("indent" ,indent))))
     (propagated-inputs `(("m4" ,m4)))
     (home-page "http://flex.sourceforge.net/")

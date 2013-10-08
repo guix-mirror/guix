@@ -239,7 +239,10 @@ use with CD-recording software).")
                                 version ".tar.gz"))
             (sha256
              (base32
-              "130rsb2ly0l6hz728m9qr605ir4073xfl2acvf83id63kxfzjn3x"))))
+              "130rsb2ly0l6hz728m9qr605ir4073xfl2acvf83id63kxfzjn3x"))
+            (patches
+             ;; see http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=713684
+             (list (search-patch "ripperx-libm.patch")))))
    (build-system gnu-build-system)
    (propagated-inputs
     `(("gs-fonts" ,gs-fonts)
@@ -248,15 +251,10 @@ use with CD-recording software).")
       ("lame" ,lame)
       ("vorbis-tools" ,vorbis-tools)))
    (inputs
-    `(("patch/libm" ,(search-patch "ripperx-libm.patch"))
-      ("glib" ,glib)
+    `(("glib" ,glib)
       ("gtk+" ,gtk+-2)
       ("id3lib" ,id3lib)
       ("pkg-config" ,pkg-config)))
-   (arguments
-    `(#:patches
-      ;; see http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=713684
-      (list (assoc-ref %build-inputs "patch/libm"))))
    (synopsis "GTK program to rip and encode CD audio tracks")
    (description
     "RipperX is a GTK program to rip CD audio tracks and encode them to the

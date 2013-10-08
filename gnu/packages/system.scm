@@ -143,22 +143,20 @@ it can replace the inetd utility!")
   (package
     (name "inetutils")
     (version "1.9.1")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/inetutils/inetutils-"
-                          version ".tar.gz"))
-      (sha256
-       (base32
-        "0azzg6njgq79byl6960kb0wihfhhzf49snslhxgvi30ribgfpa82"))))
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/inetutils/inetutils-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0azzg6njgq79byl6960kb0wihfhhzf49snslhxgvi30ribgfpa82"))
+             (patches
+              (list (search-patch "diffutils-gets-undeclared.patch")))))
     (build-system gnu-build-system)
-    (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))
-
-                 ;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
+    (arguments `(;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
                  ;; which is currently missing.
                  #:tests? #f))
-    (inputs `(("patch/gets" ,(search-patch "diffutils-gets-undeclared.patch"))
-              ("ncurses" ,ncurses)))
+    (inputs `(("ncurses" ,ncurses)))
     (home-page "http://www.gnu.org/software/inetutils/")
     (synopsis "Basic networking utilities")
     (description

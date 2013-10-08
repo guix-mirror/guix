@@ -54,19 +54,17 @@
   "Return a libc deriving from BASE whose `system' and `popen' functions looks
 for `sh' in $PATH, and without nscd, and with static NSS modules."
   (package (inherit base)
+    (source (origin (inherit (package-source base))
+              (patches (cons (search-patch "glibc-bootstrap-system.patch")
+                             (origin-patches (package-source base))))))
     (arguments
      (substitute-keyword-arguments (package-arguments base)
-       ((#:patches patches)
-        `(cons (assoc-ref %build-inputs "patch/system") ,patches))
        ((#:configure-flags flags)
         ;; Arrange so that getaddrinfo & co. do not contact the nscd,
         ;; and can use statically-linked NSS modules.
         `(cons* "--disable-nscd" "--disable-build-nscd"
                 "--enable-static-nss"
-                ,flags))))
-    (inputs
-     `(("patch/system" ,(search-patch "glibc-bootstrap-system.patch"))
-       ,@(package-inputs base)))))
+                ,flags))))))
 
 (define (package-with-relocatable-glibc p)
   "Return a variant of P that uses the libc as defined by
@@ -154,10 +152,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                 "xz_LDADD = -all-static")))
                            %standard-phases)))))
         (gawk (package (inherit gawk)
+                (source (origin (inherit (package-source gawk))
+                          (patches (cons (search-patch "gawk-shell.patch")
+                                         (origin-patches
+                                          (package-source gawk))))))
                 (arguments
-                 `(#:patches (list (assoc-ref %build-inputs "patch/sh"))
-
-                   ;; Starting from gawk 4.1.0, some of the tests for the
+                 `(;; Starting from gawk 4.1.0, some of the tests for the
                    ;; plug-in mechanism just fail on static builds:
                    ;;
                    ;; ./fts.awk:1: error: can't open shared library `filefuncs' for reading (No such file or directory)
@@ -173,10 +173,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                             (substitute* "configure"
                               (("-export-dynamic") "")))
                           ,phases)))))
-                (inputs `(("patch/sh" ,(search-patch "gawk-shell.patch"))
-                          ,@(if (%current-target-system)
-                                `(("bash" ,%bash-static))
-                                '())))))
+                (inputs (if (%current-target-system)
+                            `(("bash" ,%bash-static))
+                            '()))))
         (finalize (compose static-package
                            package-with-relocatable-glibc)))
     `(,@(map (match-lambda
@@ -452,17 +451,16 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   ;; A statically-linked Guile that is relocatable--i.e., it can search
   ;; .scm and .go files relative to its installation directory, rather
   ;; than in hard-coded configure-time paths.
-  (let* ((guile (package (inherit guile-2.0)
+  (let* ((patches* (cons* (search-patch "guile-relocatable.patch")
+                          (search-patch "guile-default-utf8.patch")
+                          (search-patch "guile-linux-syscalls.patch")
+                          (origin-patches (package-source guile-2.0))))
+         (source*  (origin (inherit (package-source guile-2.0))
+                     (patches patches*)))
+         (guile (package (inherit guile-2.0)
                   (name (string-append (package-name guile-2.0) "-static"))
+                  (source source*)
                   (synopsis "Statically-linked and relocatable Guile")
-                  (inputs
-                   `(("patch/relocatable"
-                      ,(search-patch "guile-relocatable.patch"))
-                     ("patch/utf8"
-                      ,(search-patch "guile-default-utf8.patch"))
-                     ("patch/syscalls"
-                      ,(search-patch "guile-linux-syscalls.patch"))
-                     ,@(package-inputs guile-2.0)))
                   (propagated-inputs
                    `(("bdw-gc" ,libgc)
                      ,@(alist-delete "bdw-gc"
@@ -491,13 +489,6 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                                    (string-trim-right ldadd)
                                                    " -ldl\n"))))
                                %standard-phases)
-
-                     ;; Allow Guile to be relocated, as is needed during
-                     ;; bootstrap.
-                     #:patches
-                     (list (assoc-ref %build-inputs "patch/relocatable")
-                           (assoc-ref %build-inputs "patch/utf8")
-                           (assoc-ref %build-inputs "patch/syscalls"))
 
                      ;; There are uses of `dynamic-link' in
                      ;; {foreign,coverage}.test that don't fly here.

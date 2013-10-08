@@ -27,20 +27,15 @@
   (package
     (name "cpio")
     (version "2.11")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/cpio/cpio-"
-                          version ".tar.bz2"))
-      (sha256
-       (base32
-        "1gavgpzqwgkpagjxw72xgxz52y1ifgz0ckqh8g7cckz7jvyhp0mv"))))
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/cpio/cpio-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "1gavgpzqwgkpagjxw72xgxz52y1ifgz0ckqh8g7cckz7jvyhp0mv"))
+             (patches (list (search-patch "cpio-gets-undeclared.patch")))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:patches (list (assoc-ref %build-inputs
-                                  "patch/gets"))))
-    (inputs
-     `(("patch/gets" ,(search-patch "cpio-gets-undeclared.patch"))))
     (home-page "https://www.gnu.org/software/cpio/")
     (synopsis "Manage cpio and tar file archives")
     (description

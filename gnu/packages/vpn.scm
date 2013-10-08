@@ -41,16 +41,13 @@
             (uri (string-append "http://www.unix-ag.uni-kl.de/~massar/vpnc/vpnc-"
                                 version ".tar.gz"))
             (sha256 (base32
-                     "1128860lis89g1s21hqxvap2nq426c9j4bvgghncc1zj0ays7kj6"))))
+                     "1128860lis89g1s21hqxvap2nq426c9j4bvgghncc1zj0ays7kj6"))
+            (patches (list (search-patch "vpnc-script.patch")))))
    (build-system gnu-build-system)
    (inputs `(("libgcrypt" ,libgcrypt)
-             ("perl" ,perl)
-             ("patch/script"
-                 ,(search-patch "vpnc-script.patch"))))
+             ("perl" ,perl)))
    (arguments
     `(#:tests? #f ; there is no check target
-      #:patches (list (assoc-ref %build-inputs
-                                 "patch/script"))
       #:phases
       (alist-replace
        'configure

@@ -37,16 +37,13 @@
                    "-stable.tar.gz"))
              (sha256
               (base32
-               "1xblymln9vihdmf1aqkp8chwvnhpdch3786bh30bj75slnl31992"))))
+               "1xblymln9vihdmf1aqkp8chwvnhpdch3786bh30bj75slnl31992"))
+             (patches (list (search-patch "libevent-dns-tests.patch")))))
     (build-system gnu-build-system)
     (inputs
-     `(("patch/dns-tests" ,(search-patch "libevent-dns-tests.patch"))
-
-       ;; Dependencies used for the tests and for `event_rpcgen.py'.
+     `(;; Dependencies used for the tests and for `event_rpcgen.py'.
        ("which" ,which)
        ("python" ,python-wrapper)))
-    (arguments
-     '(#:patches (list (assoc-ref %build-inputs "patch/dns-tests"))))
     (home-page "http://libevent.org/")
     (synopsis
      "libevent, an event notification library")

@@ -35,16 +35,13 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0884csfk3f530yscak0jlr6w929s3ys0n7fpwdg3dii1sgwd5f31"))))
+               "0884csfk3f530yscak0jlr6w929s3ys0n7fpwdg3dii1sgwd5f31"))
+             (patches
+              (list (search-patch "apr-skip-getservbyname-test.patch")))
+             (patch-flags '("-p0"))))
     (build-system gnu-build-system)
-    (arguments
-      `(#:patches (list (assoc-ref %build-inputs
-                                   "patch/skip-test"))
-        #:patch-flags '("-p0")))
     (inputs `(("perl" ,perl)
-              ("libtool" ,libtool)
-              ("patch/skip-test"
-               ,(search-patch "apr-skip-getservbyname-test.patch"))))
+              ("libtool" ,libtool)))
     (home-page "http://apr.apache.org/")
     (synopsis "The Apache Portable Runtime Library")
     (description

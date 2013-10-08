@@ -141,12 +141,10 @@ X11-system or any other graphical user interface. ")
                    (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                    ".tar.gz"))
             (sha256 (base32
-                     "0fjiwvic8mdxpkyccfp7zh26y9xnvkp0skqbyfkrjiacd191k82r"))))
+                     "0fjiwvic8mdxpkyccfp7zh26y9xnvkp0skqbyfkrjiacd191k82r"))
+            (patches (list (search-patch "teckit-cstdio.patch")))))
    (build-system gnu-build-system)
-   (inputs `(("patch/teckit" ,(search-patch "teckit-cstdio.patch"))
-             ("zlib" ,zlib)))
-   (arguments
-    `(#:patches (list (assoc-ref %build-inputs "patch/teckit"))))
+   (inputs `(("zlib" ,zlib)))
    (synopsis "TECkit, a toolkit for encoding conversions")
    (description
     "TECkit is a low-level toolkit intended to be used by other applications

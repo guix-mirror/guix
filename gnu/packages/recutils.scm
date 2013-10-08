@@ -36,16 +36,15 @@
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1v2xzwwwhc5j5kmvg4sv6baxjpsfqh8ln7ilv4mgb1408rs7xmky"))))
+              "1v2xzwwwhc5j5kmvg4sv6baxjpsfqh8ln7ilv4mgb1408rs7xmky"))
+            (patches
+             (list (search-patch "diffutils-gets-undeclared.patch")))))
    (build-system gnu-build-system)
    (inputs `(;; TODO: Enable optional deps when they're packaged.
              ;; ("curl" ,(nixpkgs-derivation "curl"))
              ("emacs" ,emacs)
              ("check" ,check)
-             ("bc" ,bc)
-             ("patch/gets"
-              ,(search-patch "diffutils-gets-undeclared.patch"))))
-   (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
+             ("bc" ,bc)))
    (synopsis "Manipulate plain text files as databases")
    (description
     "GNU recutils is a set of tools and libraries to access human-editable,

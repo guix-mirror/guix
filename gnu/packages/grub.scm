@@ -67,11 +67,11 @@
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0n64hpmsccvicagvr0c6v0kgp2yw0kgnd3jvsyd26cnwgs7c6kkq"))))
+               "0n64hpmsccvicagvr0c6v0kgp2yw0kgnd3jvsyd26cnwgs7c6kkq"))
+             (patches (list (search-patch "grub-gets-undeclared.patch")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:patches (list (assoc-ref %build-inputs "patch/gets"))
-       #:configure-flags '("--disable-werror")
+     '(#:configure-flags '("--disable-werror")
        #:phases (alist-cons-before
                  'patch-source-shebangs 'patch-stuff
                  (lambda _
@@ -87,9 +87,7 @@
        ("gettext" ,gnu:gettext)
        ("freetype" ,freetype)
        ;; ("libusb" ,libusb)
-       ("ncurses" ,ncurses)
-
-       ("patch/gets" ,(search-patch "grub-gets-undeclared.patch"))))
+       ("ncurses" ,ncurses)))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)

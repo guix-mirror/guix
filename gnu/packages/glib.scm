@@ -64,7 +64,8 @@
                              version ".tar.gz"))
              (sha256
               (base32
-               "1wacqyfkcpayg7f8rvx9awqg275n5pksxq5q7y21lxjx85x6pfjz"))))
+               "1wacqyfkcpayg7f8rvx9awqg275n5pksxq5q7y21lxjx85x6pfjz"))
+             (patches (list (search-patch "dbus-localstatedir.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags (list ;; Install the system bus socket under /var.
@@ -74,13 +75,10 @@
                                ;; config.
                                ;; "--sysconfdir=/etc"
 
-                               "--with-session-socket-dir=/tmp")
-       #:patches (list (assoc-ref %build-inputs "patch/localstatedir"))))
+                               "--with-session-socket-dir=/tmp")))
     (inputs
      `(("expat" ,expat)
        ("pkg-config" ,pkg-config)
-       ("patch/localstatedir"
-        ,(search-patch "dbus-localstatedir.patch"))
 
        ;; Add a dependency on libx11 so that 'dbus-launch' has support for
        ;; '--autolaunch'.
@@ -116,7 +114,10 @@ shared NFS home directories.")
                                 name "/" (string-take version 4) "/"
                                 name "-" version ".tar.xz"))
             (sha256
-             (base32 "0cpzqadqk6z6bmb79p04pykxc8x57rvshh33414cnk41bvgaf4vm"))))
+             (base32 "0cpzqadqk6z6bmb79p04pykxc8x57rvshh33414cnk41bvgaf4vm"))
+            (patches (list (search-patch "glib-tests-homedir.patch")
+                           (search-patch "glib-tests-desktop.patch")
+                           (search-patch "glib-tests-prlimit.patch")))))
    (build-system gnu-build-system)
    (outputs '("out"                        ; everything
               "doc"))                      ; 20 MiB of GTK-Doc reference
@@ -131,18 +132,9 @@ shared NFS home directories.")
       ("dbus" ,dbus)                              ; for GDBus tests
       ("bash" ,bash)
       ("tzdata" ,tzdata)                          ; for tests/gdatetime.c
-
-      ("patch/tests-homedir"
-       ,(search-patch "glib-tests-homedir.patch"))
-      ("patch/tests-desktop"
-       ,(search-patch "glib-tests-desktop.patch"))
-      ("patch/tests-prlimit"
-       ,(search-patch "glib-tests-prlimit.patch"))))
+      ))
    (arguments
-    '(#:patches (list (assoc-ref %build-inputs "patch/tests-homedir")
-                      (assoc-ref %build-inputs "patch/tests-desktop")
-                      (assoc-ref %build-inputs "patch/tests-prlimit"))
-      #:phases (alist-cons-before
+    '(#:phases (alist-cons-before
                 'build 'pre-build
                 (lambda* (#:key inputs outputs #:allow-other-keys)
                   ;; For tests/gdatetime.c.

@@ -48,14 +48,14 @@
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1385qzs3bsa52s5rcncbrkxlydkw0ajzrvfxgv8rws5fx512kakh"))))
+               "1385qzs3bsa52s5rcncbrkxlydkw0ajzrvfxgv8rws5fx512kakh"))
+             (patches (list (search-patch "emacs-configure-sh.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags
        (list (string-append "--with-crt-dir=" (assoc-ref %build-inputs "libc")
                             "/lib")
              "--with-gif=no")                     ; XXX: add libungif
-       #:patches (list (assoc-ref %build-inputs "patch/epaths"))
        #:phases (alist-cons-before
                  'configure 'fix-/bin/pwd
                  (lambda _
@@ -85,10 +85,7 @@
 
        ("libXpm" ,libxpm)
        ("libxml2" ,libxml2)
-       ("dbus" ,dbus)
-
-       ("patch/epaths" ,(search-patch "emacs-configure-sh.patch"))
-       ))
+       ("dbus" ,dbus)))
     (home-page "http://www.gnu.org/software/emacs/")
     (synopsis "The extensible, customizable, self-documenting text editor")
     (description

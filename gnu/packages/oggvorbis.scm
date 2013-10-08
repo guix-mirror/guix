@@ -168,16 +168,14 @@ OpenBSD's sndio.")
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1pry5lgzfg57pga1zbazzdd55fkgk3v5qy4axvrbny5lrr5s8dcn"))))
+              "1pry5lgzfg57pga1zbazzdd55fkgk3v5qy4axvrbny5lrr5s8dcn"))
+            (patches
+             (list (search-patch "flac-fix-memcmp-not-declared.patch")))))
    (build-system gnu-build-system)
    (arguments
-    `(#:parallel-tests? #f
-      #:patches (list (assoc-ref %build-inputs
-                                 "patch/memcmp"))))
+    `(#:parallel-tests? #f))
    ;; FIXME: configure also looks for xmms, input could be added once it exists
-   (inputs `(("libogg" ,libogg)
-             ("patch/memcmp"
-                 ,(search-patch "flac-fix-memcmp-not-declared.patch"))))
+   (inputs `(("libogg" ,libogg)))
    (synopsis "flac free lossless audio codec")
    (description
 "FLAC stands for Free Lossless Audio Codec, an audio format that is lossless,

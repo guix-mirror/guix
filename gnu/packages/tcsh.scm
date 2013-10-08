@@ -35,14 +35,14 @@
              (uri (string-append "ftp://ftp.astron.com/pub/tcsh/tcsh-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "1a4z9kwgx1iqqzvv64si34m60gj34p7lp6rrcrb59s7ka5wa476q"))))
+              (base32 "1a4z9kwgx1iqqzvv64si34m60gj34p7lp6rrcrb59s7ka5wa476q"))
+             (patches (list (search-patch "tcsh-fix-autotest.patch")))
+             (patch-flags '("-p0"))))
     (build-system gnu-build-system)
     (inputs
      `(("autoconf" ,autoconf)
        ("coreutils" ,coreutils)
-       ("ncurses" ,ncurses)
-       ("patch/skip-tests"
-        ,(search-patch "tcsh-fix-autotest.patch"))))
+       ("ncurses" ,ncurses)))
     (arguments
      `(#:phases
        (alist-replace
@@ -69,9 +69,7 @@
                  (bin (string-append out "/bin")))
            (with-directory-excursion bin
              (symlink "tcsh" "csh"))))
-         %standard-phases))
-        #:patches (list (assoc-ref %build-inputs "patch/skip-tests"))
-        #:patch-flags '("-p0")))
+         %standard-phases))))
     (home-page "http://www.tcsh.org/")
     (synopsis "A Unix shell based on csh")
     (description

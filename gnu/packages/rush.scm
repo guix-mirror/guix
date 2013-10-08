@@ -35,12 +35,9 @@
                    ".tar.gz"))
              (sha256
               (base32
-               "0fh0gbbp0iiq3wbkf503xb40r8ljk42vyj9bnlflbz82d6ipy1rm"))))
+               "0fh0gbbp0iiq3wbkf503xb40r8ljk42vyj9bnlflbz82d6ipy1rm"))
+             (patches (list (search-patch "cpio-gets-undeclared.patch")))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:patches (list (assoc-ref %build-inputs "patch/gets-undeclared"))))
-    (inputs `(("patch/gets-undeclared"
-               ,(search-patch "cpio-gets-undeclared.patch"))))
     (home-page "http://www.gnu.org/software/rush/")
     (synopsis "Restricted user (login) shell")
     (description

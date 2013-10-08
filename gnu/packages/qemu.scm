@@ -134,9 +134,5 @@ server and embedded PowerPC, and S390 guests.")
   ;; the store, and another one for exchanges with the host.
   (package (inherit qemu)
     (name "qemu-with-multiple-smb-shares")
-    (inputs `(,@(package-inputs qemu)
-              ("patch/smb-shares"
-               ,(search-patch "qemu-multiple-smb-shares.patch"))))
-    (arguments
-     `(#:patches (list (assoc-ref %build-inputs "patch/smb-shares"))
-       ,@(package-arguments qemu)))))
+    (source (origin (inherit (package-source qemu))
+              (patches (search-patch "qemu-multiple-smb-shares.patch"))))))

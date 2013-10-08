@@ -39,7 +39,8 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0j5b5ld6bjyh3qhd2nw0jb84znq0wqai7fsrdzg7bpg24jdp2wl3"))))
+               "0j5b5ld6bjyh3qhd2nw0jb84znq0wqai7fsrdzg7bpg24jdp2wl3"))
+             (patches (list (search-patch "avahi-localstatedir.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-distro=none"
@@ -50,8 +51,7 @@
                            "--disable-xmltoman"
                            "--enable-tests"
                            "--disable-qt3" "--disable-qt4"
-                           "--disable-gtk" "--disable-gtk3")
-       #:patches (list (assoc-ref %build-inputs "patch/localstatedir"))))
+                           "--disable-gtk" "--disable-gtk3")))
     (inputs
      `(("expat" ,expat)
        ("glib" ,glib)
@@ -59,10 +59,7 @@
        ("libdaemon" ,libdaemon)
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
-       ("gdbm" ,gdbm)
-
-       ("patch/localstatedir"
-        ,(search-patch "avahi-localstatedir.patch"))))
+       ("gdbm" ,gdbm)))
     (synopsis "Avahi, an mDNS/DNS-SD implementation")
     (description
      "Avahi is a system which facilitates service discovery on a local

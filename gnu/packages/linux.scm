@@ -333,13 +333,12 @@ providing the system administrator with some help in common tasks.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0d8mki0q4yamnkk4533kx8mc0jd879573srxhg6r2fs3lkc6iv8i"))))
+               "0d8mki0q4yamnkk4533kx8mc0jd879573srxhg6r2fs3lkc6iv8i"))
+             (patches (list (search-patch "procps-make-3.82.patch")))))
     (build-system gnu-build-system)
-    (inputs `(("ncurses" ,ncurses)
-              ("patch/make-3.82" ,(search-patch "procps-make-3.82.patch"))))
+    (inputs `(("ncurses" ,ncurses)))
     (arguments
-     '(#:patches (list (assoc-ref %build-inputs "patch/make-3.82"))
-       #:phases (alist-replace
+     '(#:phases (alist-replace
                  'configure
                  (lambda* (#:key outputs #:allow-other-keys)
                    ;; No `configure', just a single Makefile.

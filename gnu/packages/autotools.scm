@@ -141,20 +141,19 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0nc0zqq8j336kamizzd86wb19vhbwywv5avcjh3cyx230xfqy671"))))
+               "0nc0zqq8j336kamizzd86wb19vhbwywv5avcjh3cyx230xfqy671"))
+             (patches
+              (list (search-patch "automake-skip-amhello-tests.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("autoconf" ,autoconf-wrapper)
-       ("perl" ,perl)
-       ("patch/skip-amhello"
-        ,(search-patch "automake-skip-amhello-tests.patch"))))
+       ("perl" ,perl)))
     (native-search-paths
      (list (search-path-specification
             (variable "ACLOCAL_PATH")
             (directories '("share/aclocal")))))
     (arguments
-     '(#:patches (list (assoc-ref %build-inputs "patch/skip-amhello"))
-       #:modules ((guix build gnu-build-system)
+     '(#:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (srfi srfi-1)
                   (srfi srfi-26)

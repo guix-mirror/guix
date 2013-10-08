@@ -35,15 +35,13 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1arkyizn5wbgvbh53aziv3s6lmd3wm9lqzkhxb3hijlp1y124hjg"))))
+               "1arkyizn5wbgvbh53aziv3s6lmd3wm9lqzkhxb3hijlp1y124hjg"))
+             (patches (list (search-patch "plotutils-libpng-jmpbuf.patch")))))
     (build-system gnu-build-system)
-    (arguments '(#:patches (list (assoc-ref %build-inputs "patch/jmpbuf"))))
     (inputs `(("libpng" ,libpng)
               ("libx11" ,libx11)
               ("libxt" ,libxt)
-              ("libxaw" ,libxaw)
-              ("patch/jmpbuf"
-               ,(search-patch "plotutils-libpng-jmpbuf.patch"))))
+              ("libxaw" ,libxaw)))
     (home-page
      "http://www.gnu.org/software/plotutils/")
     (synopsis "Plotting utilities and library")

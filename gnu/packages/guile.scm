@@ -53,10 +53,10 @@
                                 ".tar.gz"))
             (sha256
              (base32
-              "0l200a0v7h8bh0cwz6v7hc13ds39cgqsmfrks55b1rbj5vniyiy3"))))
+              "0l200a0v7h8bh0cwz6v7hc13ds39cgqsmfrks55b1rbj5vniyiy3"))
+            (patches (list (search-patch "guile-1.8-cpp-4.5.patch")))))
    (build-system gnu-build-system)
    (arguments '(#:configure-flags '("--disable-error-on-warning")
-                #:patches (list (assoc-ref %build-inputs "patch/snarf"))
 
                 ;; Insert a phase before `configure' to patch things up.
                 #:phases (alist-cons-before
@@ -77,8 +77,7 @@
                              (substitute* "ice-9/popen.scm"
                                (("/bin/sh") (which "sh"))))
                            %standard-phases)))
-   (inputs `(("patch/snarf" ,(search-patch "guile-1.8-cpp-4.5.patch"))
-             ("gawk" ,gawk)
+   (inputs `(("gawk" ,gawk)
              ("readline" ,readline)))
 
    ;; Since `guile-1.8.pc' has "Libs: ... -lgmp -lltdl", these must be
@@ -281,13 +280,11 @@ menu.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0yvrfzzdy2m7fbqkr61fw01wd9r2jpnbyabxhcsfivgxywknl0fy"))))
+               "0yvrfzzdy2m7fbqkr61fw01wd9r2jpnbyabxhcsfivgxywknl0fy"))
+             (patches (list (search-patch "mcron-install.patch")))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:patches (list (assoc-ref %build-inputs "patch/install"))))
     (inputs
-     `(("ed" ,ed) ("which" ,which) ("guile" ,guile-1.8)
-       ("patch/install" ,(search-patch "mcron-install.patch"))))
+     `(("ed" ,ed) ("which" ,which) ("guile" ,guile-1.8)))
     (home-page "http://www.gnu.org/software/mcron/")
     (synopsis "Run jobs at scheduled times")
     (description

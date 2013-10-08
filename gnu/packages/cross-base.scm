@@ -74,6 +74,9 @@ GCC that does not target a libc; otherwise, target that libc."
     (name (string-append "gcc-cross-"
                          (if libc "" "sans-libc-")
                          target))
+    (source (origin (inherit (package-source gcc-4.7))
+              (patches
+               (list (search-patch "gcc-cross-environment-variables.patch")))))
     (arguments
      `(#:implicit-inputs? #f
        #:modules ((guix build gnu-build-system)
@@ -81,7 +84,6 @@ GCC that does not target a libc; otherwise, target that libc."
                   (ice-9 regex)
                   (srfi srfi-1)
                   (srfi srfi-26))
-       #:patches (list (assoc-ref %build-inputs "patch/cross-env-vars"))
 
        ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
            ((#:configure-flags flags)
@@ -177,10 +179,7 @@ GCC that does not target a libc; otherwise, target that libc."
             #f))))
 
     (native-inputs
-     `(("patch/cross-env-vars"
-        ,(search-patch "gcc-cross-environment-variables.patch"))
-
-       ("binutils-cross" ,xbinutils)
+     `(("binutils-cross" ,xbinutils)
 
        ;; Call it differently so that the builder can check whether the "libc"
        ;; input is #f.

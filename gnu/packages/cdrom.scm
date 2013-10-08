@@ -129,14 +129,13 @@ filesystems.")
                                  version ".src.tgz"))
              (sha256
               (base32
-               "1pv4zrajm46za0f6lv162iqffih57a8ly4pc69f7y0gfyigb8p80"))))
+               "1pv4zrajm46za0f6lv162iqffih57a8ly4pc69f7y0gfyigb8p80"))
+             (patches (list (search-patch "cdparanoia-fpic.patch")))))
     (build-system gnu-build-system)
     (inputs
-     `(("patch/fpic" ,(search-patch "cdparanoia-fpic.patch"))
-       ("patchelf" ,patchelf)))
+     `(("patchelf" ,patchelf)))
     (arguments
      `(#:tests? #f ; there is no check target
-       #:patches (list (assoc-ref %build-inputs "patch/fpic"))
        #:modules ((guix build gnu-build-system)
                   (guix build utils)
                   (guix build rpath)

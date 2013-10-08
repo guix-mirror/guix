@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,20 +27,19 @@
   (package
     (name "idutils")
     (version "4.6")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/idutils/idutils-"
-                          version ".tar.xz"))
-      (sha256
-       (base32
-        "1hmai3422iaqnp34kkzxdnywl7n7pvlxp11vrw66ybxn9wxg90c1"))))
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/idutils/idutils-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1hmai3422iaqnp34kkzxdnywl7n7pvlxp11vrw66ybxn9wxg90c1"))
+             (patches (list
+                       (search-patch "diffutils-gets-undeclared.patch")))))
     (build-system gnu-build-system)
     (inputs `(;; TODO: Add Emacs as an input for byte-compilation.
               ;; ("emacs" ,emacs)
-              ("patch/gets"
-               ,(search-patch "diffutils-gets-undeclared.patch"))))
-    (arguments `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
+              ))
     (home-page "http://www.gnu.org/software/idutils/")
     (synopsis "Identifier database utilities")
     (description
