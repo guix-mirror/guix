@@ -49,6 +49,21 @@ exec guile -l "$0"                              \
               (equal? (gnu-package-name package) name))
             gnu))))
 
+(define (list-join lst item)
+  "Join the items in LST by inserting ITEM between each pair of elements."
+  (let loop ((lst    lst)
+             (result '()))
+    (match lst
+      (()
+       (match (reverse result)
+         (()
+          '())
+         ((_ rest ...)
+          rest)))
+      ((head tail ...)
+       (loop tail
+             (cons* head item result))))))
+
 (define (package->sxml package previous description-ids remaining)
   "Return 3 values: the HTML-as-SXML for PACKAGE added to all previously
 collected package output in PREVIOUS, a list of DESCRIPTION-IDS and the number
@@ -81,6 +96,33 @@ decreasing, is 1."
        (#f "")))
 
     (->sxml (package-license package)))
+
+  (define (patches package)
+    (define (patch-url patch)
+      (string-append
+       "http://git.savannah.gnu.org/cgit/guix.git/tree/gnu/packages/patches/"
+       (basename patch)))
+
+    (match (and (origin? (package-source package))
+                (origin-patches (package-source package)))
+      ((patches ..1)
+       `(div "patches: "
+             ,(let loop ((patches patches)
+                         (number  1)
+                         (links   '()))
+                (match patches
+                  (()
+                   (list-join (reverse links) ", "))
+                  ((patch rest ...)
+                   (loop rest
+                         (+ 1 number)
+                         (cons `(a (@ (href ,(patch-url patch))
+                                      (title ,(string-append
+                                               "Link to "
+                                               (basename patch))))
+                                   ,(number->string number))
+                               links)))))))
+      (_ #f)))
 
   (define (status package)
     (define (url system)
@@ -133,6 +175,7 @@ description-ids as formal parameters."
                           (title "Link to the package's website"))
                        ,(package-home-page package))
                     ,(status package)
+                    ,(patches package)
                     ,(if js?
                          (insert-js-call description-ids)
                          ""))))))
