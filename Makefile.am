@@ -156,7 +156,7 @@ EXTRA_DIST =					\
   build-aux/check-available-binaries.scm	\
   build-aux/download.scm			\
   build-aux/list-packages.scm			\
-  build-aux/sync-synopses.scm			\
+  build-aux/sync-descriptions.scm		\
   srfi/srfi-37.scm.in				\
   srfi/srfi-64.scm				\
   srfi/srfi-64.upstream.scm			\
@@ -211,12 +211,12 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --with-nix-prefix="$(NIX_PREFIX)"		\
   --enable-daemon
 
-dist-hook: sync-synopses gen-ChangeLog assert-no-store-file-names
+dist-hook: sync-descriptions gen-ChangeLog assert-no-store-file-names
 distcheck-hook: assert-binaries-available
 
-sync-synopses:
+sync-descriptions:
 	-$(top_builddir)/pre-inst-env $(GUILE)		\
-	   $(top_srcdir)/build-aux/sync-synopses.scm
+	   $(top_srcdir)/build-aux/sync-descriptions.scm
 
 gen-ChangeLog:
 	if test -d .git; then				\
@@ -240,5 +240,5 @@ assert-binaries-available:
 	$(top_builddir)/pre-inst-env "$(GUILE)"				\
 	  "$(top_srcdir)/build-aux/check-available-binaries.scm"
 
-.PHONY: sync-synopses gen-ChangeLog
+.PHONY: sync-descriptions gen-ChangeLog
 .PHONY: assert-no-store-file-names assert-binaries-available

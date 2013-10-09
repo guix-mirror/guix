@@ -17,7 +17,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 ;;;
-;;; Report synopses that defer from those found in the GNU Womb.
+;;; Report package synopses and descriptions that defer from those found in
+;;; the GNU Womb.
 ;;;
 
 (use-modules (guix gnu-maintenance)
@@ -58,5 +59,17 @@
                 (format (guix-warning-port)
                         "~a: ~a: proposed synopsis: ~s~%"
                         (location->string loc) (package-name package)
-                        upstream)))))
+                        upstream)))
+
+            (let ((upstream   (gnu-package-doc-description descriptor))
+                  (downstream (package-description package))
+                  (loc        (or (package-field-location package 'description)
+                                  (package-location package))))
+              (when (and upstream
+                         (not (string=? (fill-paragraph upstream 100)
+                                        (fill-paragraph downstream 100))))
+                (format (guix-warning-port)
+                        "~a: ~a: proposed description:~%      ~a~%"
+                        (location->string loc) (package-name package)
+                        (fill-paragraph upstream 77 7))))))
           gnus)
