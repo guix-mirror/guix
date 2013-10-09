@@ -75,16 +75,18 @@
 ;;; List of GNU packages.
 ;;;
 
+(define %gnumaint-base-url
+  "http://cvs.savannah.gnu.org/viewvc/*checkout*/gnumaint/")
+
 (define %package-list-url
   (string->uri
-   (string-append "http://cvs.savannah.gnu.org/"
-                  "viewvc/*checkout*/gnumaint/"
-                  "gnupackages.txt?root=womb")))
+   (string-append %gnumaint-base-url "gnupackages.txt?root=womb")))
 
-(define %gsrc-package-list-url
-  ;; This file is normally kept in sync with GSRC.
-  ;; See <http://lists.gnu.org/archive/html/bug-guix/2013-04/msg00117.html>.
-  (string->uri "http://www.gnu.org/software/gsrc/MANIFEST.rec"))
+(define %package-description-url
+  ;; This file contains package descriptions in recutils format.
+  ;; See <https://lists.gnu.org/archive/html/guix-devel/2013-10/msg00071.html>.
+  (string->uri
+   (string-append %gnumaint-base-url "pkgdescr.txt?root=womb")))
 
 (define-record-type* <gnu-package-descriptor>
   gnu-package-descriptor
@@ -101,7 +103,7 @@
   (logo             gnu-package-logo)
   (doc-category     gnu-package-doc-category)
   (doc-summary      gnu-package-doc-summary)
-  (doc-description  gnu-package-doc-description)  ; taken from GSRC
+  (doc-description  gnu-package-doc-description)  ; taken from 'pkgdescr.txt'
   (doc-urls         gnu-package-doc-urls)         ; list of strings
   (download-url     gnu-package-download-url))
 
@@ -117,19 +119,19 @@
           (loop (recutils->alist port)
                 (cons alist result)))))
 
-  (define gsrc-description
-    (let ((gsrc (read-records (http-fetch %gsrc-package-list-url
-                                          #:text? #t))))
+  (define official-description
+    (let ((db (read-records (http-fetch %package-description-url
+                                        #:text? #t))))
       (lambda (name)
-        ;; Return the description found in GSRC for package NAME, or #f.
+        ;; Return the description found upstream for package NAME, or #f.
         (and=> (find (lambda (alist)
-                       (equal? name (assoc-ref alist "Upstream_name")))
-                     gsrc)
-               (cut assoc-ref <> "Blurb")))))
+                       (equal? name (assoc-ref alist "package")))
+                     db)
+               (cut assoc-ref <> "blurb")))))
 
   (map (lambda (alist)
          (let ((name (assoc-ref alist "package")))
-           (alist->record `(("description" . ,(gsrc-description name))
+           (alist->record `(("description" . ,(official-description name))
                             ,@alist)
                           make-gnu-package-descriptor
                           (list "package" "mundane-name" "copyright-holder"
