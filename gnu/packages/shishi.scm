@@ -48,9 +48,7 @@
     (home-page "http://www.gnu.org/software/shishi/")
     (synopsis "Implementation of the Kerberos 5 network security system")
     (description
-     "Shishi contains a library ('libshishi') that can be used by application
-developers to add support for Kerberos 5.  Shishi contains a command line
-utility ('shishi') that is used by users to acquire and manage tickets (and
-more).  The server side, a Key Distribution Center (KDC), is implemented by
-'shishid', and support X.509 authenticated TLS via GnuTLS.")
+     "Shishi is a free implementation of the Kerberos 5 network security
+system.  It is used to allow non-secure network nodes to communicate in a
+secure manner through client-server mutual authentication via tickets.")
     (license gpl3+)))

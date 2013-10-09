@@ -46,9 +46,10 @@
     (home-page "http://www.gnu.org/software/libtasn1/")
     (synopsis "ASN.1 library")
     (description
-     "Libtasn1 is the ASN.1 library used by GnuTLS, GNU Shishi and some
-other packages.  The goal of this implementation is to be highly
-portable, and only require an ANSI C89 platform.")
+     "Libtasn1 is a library implementing the ASN.1 notation.  It is used for
+transmitting machine-neutral encodings of data objects in computer
+networking, allowing for formal validation of data according to some
+specifications.")
     (license lgpl2.0+)))
 
 (define-public gnutls
@@ -79,15 +80,8 @@ portable, and only require an ANSI C89 platform.")
     (home-page "http://www.gnu.org/software/gnutls/")
     (synopsis "Transport layer security library")
     (description
-     "GnuTLS is a project that aims to develop a library which provides
-a secure layer, over a reliable transport layer. Currently the GnuTLS
-library implements the proposed standards by the IETF's TLS working
-group.
-
-Quoting from the TLS protocol specification:
-
-\"The TLS protocol provides communications privacy over the
-Internet. The protocol allows client/server applications to communicate
-in a way that is designed to prevent eavesdropping, tampering, or
-message forgery.\"")
+     "GnuTLS is a secure communications library implementing the SSL, TLS
+and DTLS protocols.  It is provided in the form of a C library to the
+protocols, as well as to parse and write X.5009, PKCS 12, OpenPGP and other
+required structures.")
     (license lgpl2.1+)))

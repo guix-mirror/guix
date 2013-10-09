@@ -85,13 +85,12 @@
                                    %standard-phases)))
      (synopsis "The GNU Bourne-Again SHell")
      (description
-      "Bash is the shell, or command language interpreter, that will appear in
-the GNU operating system.  Bash is an sh-compatible shell that incorporates
-useful features from the Korn shell (ksh) and C shell (csh).  It is intended
-to conform to the IEEE POSIX P1003.2/ISO 9945.2 Shell and Tools standard.  It
-offers functional improvements over sh for both programming and interactive
-use.  In addition, most sh scripts can be run by Bash without
-modification.")
+      "Bash is the shell, or commandline interpreter, of the GNU system.  It
+is compatible with the Bourne Shell, but it also integrates useful features
+from the Korn Shell and the C Shell and new improvements of its own.  It
+allows commandline editing, unlimited command history, shell functions and
+aliases, and job control while still allowing most sh scripts to be run
+without modification.")
      (license gpl3+)
      (home-page "http://www.gnu.org/software/bash/"))))
 

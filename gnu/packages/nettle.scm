@@ -41,20 +41,7 @@
     (home-page "http://www.lysator.liu.se/~nisse/nettle/")
     (synopsis "C library for low-level crytographic functionality")
     (description
-     "Nettle is a cryptographic library that is designed to fit easily
-in more or less any context: In crypto toolkits for object-oriented
-languages (C++, Python, Pike, ...), in applications like LSH or GNUPG,
-or even in kernel space.  In most contexts, you need more than the basic
-cryptographic algorithms, you also need some way to keep track of
-available algorithms, their properties and variants.  You often have
-some algorithm selection process, often dictated by a protocol you want
-to implement.
-
-And as the requirements of applications differ in subtle and not so
-subtle ways, an API that fits one application well can be a pain to use
-in a different context.  And that is why there are so many different
-cryptographic libraries around.  \nNettle tries to avoid this problem by
-doing one thing, the low-level crypto stuff, and providing a simple but
-general interface to it.  In particular, Nettle doesn't do algorithm
-selection.  It doesn't do memory allocation. It doesn't do any I/O.")
+     "Nettle is a low-level cryptographic library.  It is designed to fit in
+easily in almost any context.  It can be easily included in cryptographic
+toolkits for object-oriented languages or in applications themselves.")
     (license gpl2+)))

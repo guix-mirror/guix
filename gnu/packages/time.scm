@@ -51,14 +51,7 @@
     (home-page "http://www.gnu.org/software/time/")
     (synopsis "Run a command, then display its resource usage")
     (description
-     "The 'time' command runs another program, then displays information
-about the resources used by that program, collected by the system while
-the program was running.  You can select which information is reported
-and the format in which it is shown, or have 'time' save the information
-in a file instead of displaying it on the screen.
-
-The resources that 'time' can report on fall into the general categories
-of time, memory, and I/O and IPC calls.  Some systems do not provide
-much information about program resource use; 'time' reports unavailable
-information as zero values.")
+     "Time is a command that displays information about the resources that a
+program uses.  The display output of the program can be customized or saved
+to a file.")
     (license gpl2+)))

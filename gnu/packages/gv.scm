@@ -55,8 +55,8 @@
              ("zlib" ,zlib)))
    (synopsis "PostScript and PDF viewer using Ghostscript as a back-end")
    (description
-    "GNU gv allows to view and navigate through PostScript and PDF documents
-on an X display by providing a graphical user interface for the Ghostscript
-interpreter.")
+    "GV is a graphical user interface to the Ghostscript interpreter. With
+it, one can view and navigate through PostScript and PDF documents in X
+Windows.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/gv/")))

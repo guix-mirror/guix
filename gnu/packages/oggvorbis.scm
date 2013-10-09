@@ -105,10 +105,10 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
     (home-page "https://gnu.org/software/speex")
     (synopsis "Library for patent-free audio compression format")
     (description
-     "GNU Speex is a patent-free voice codec.  It is designed to
-compress voice at bitrates in the 2--45 kbps range.  Possible
-applications include VoIP, internet audio streaming, archiving of speech
-data (e.g., voice mail), and audio books.")
+     "Speex is a patent-free audio compression codec specially designed for
+speech.  It is well-adapted to internet applications, such as VoIP. It
+features compression of different bands in the same bitstream, intensity
+stereo encoding, and voice activity detection.")
     ;; 'src/getopt.c' is under LGPLv2+
     (license (license:bsd-style "file://COPYING"
                                 "See COPYING in the distribution."))))

@@ -37,15 +37,8 @@
 ;; FIXME: No Java and C# libraries are currently built.
    (synopsis "Internationalized string processing library")
    (description
-    "GNU Libidn is a fully documented implementation of the Stringprep,
-Punycode and IDNA specifications. Libidn's purpose is to encode and decode
-internationalised domain names.
-
-The library contains a generic Stringprep implementation. Profiles for
-Nameprep, iSCSI, SASL, XMPP and Kerberos V5 are included. Punycode and
-ASCII Compatible Encoding (ACE) via IDNA are supported. A mechanism to
-define Top-Level Domain (TLD) specific validation tables, and to compare
-strings against those tables, is included.
-Default tables for some TLDs are also included.")
+    "The GNU IDN Libary is an implementation of the Stringprep, Punycode
+and IDNA specifications.  These are used to encode and decode
+internationalized domain names.  It includes native C, C# and Java libraries.")
    (license lgpl2.1+)
    (home-page "http://www.gnu.org/software/libidn/")))

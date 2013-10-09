@@ -47,6 +47,6 @@
     (home-page "http://www.gnu.org/software/help2man/")
     (synopsis "Automatically generate man pages from program --help")
     (description
-     "help2man produces simple manual pages from the ‘--help’ and
-‘--version’ output of other commands.")
+     "help2man is a program that converts the output of standard \"--help\"
+and \"--version\" command-line arguments into a manual page automatically.")
     (license gpl3+)))

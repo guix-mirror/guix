@@ -95,9 +95,11 @@
 
    (synopsis "Scheme implementation intended especially for extensions")
    (description
-"GNU Guile 1.8 is an interpreter for the Scheme programming language,
-packaged as a library that can be embedded into programs to make them
-extensible.  It supports many SRFIs.")
+    "Guile is the GNU Ubiquitous Intelligent Language for Extensions, the
+official extension language of the GNU system.  It is an implementation of
+the Scheme language which can be easily embedded in other applications to
+provide a convenient means of extending the functionality of the application
+without requiring the source code to be rewritten.")
    (home-page "http://www.gnu.org/software/guile/")
    (license lgpl2.0+)))
 
@@ -164,12 +166,11 @@ extensible.  It supports many SRFIs.")
 
    (synopsis "Scheme implementation intended especially for extensions")
    (description
-"GNU Guile is an implementation of the Scheme programming language, with
-support for many SRFIs, packaged for use in a wide variety of environments.
-In addition to implementing the R5RS Scheme standard and a large subset of
-R6RS, Guile includes a module system, full access to POSIX system calls,
-networking support, multiple threads, dynamic linking, a foreign function
-call interface, and powerful string processing.")
+    "Guile is the GNU Ubiquitous Intelligent Language for Extensions, the
+official extension language of the GNU system.  It is an implementation of
+the Scheme language which can be easily embedded in other applications to
+provide a convenient means of extending the functionality of the application
+without requiring the source code to be rewritten.")
    (home-page "http://www.gnu.org/software/guile/")
    (license lgpl3+)))
 
@@ -264,10 +265,7 @@ many readers as needed).")
     (home-page "http://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
     (description
-     "GNU Guile-Ncurses is a library for the Guile Scheme interpreter that
-provides functions for creating text user interfaces.  The text user interface
-functionality is built on the ncurses libraries: curses, form, panel, and
-menu.")
+     "guile-ncurses provides guile bindings to the ncurses library.")
     (license lgpl3+)))
 
 (define-public mcron
@@ -288,11 +286,10 @@ menu.")
     (home-page "http://www.gnu.org/software/mcron/")
     (synopsis "Run jobs at scheduled times")
     (description
-     "The GNU package mcron (Mellor's cron) is a 100% compatible replacement
-for Vixie cron.  It is written in pure Guile, and allows configuration files
-to be written in scheme (as well as Vixie's original format) for infinite
-flexibility in specifying when jobs should be run.  Mcron was written by Dale
-Mellor.")
+     "Mcron is a complete replacement for Vixie cron.  It is used to run
+tasks on a schedule, such as every hour or every Monday.  Mcron is written in
+Guile, so its configuration can be written in Scheme, however the original
+cron format is also supported.")
     (license gpl3+)))
 
 (define-public guile-lib

@@ -43,22 +43,9 @@
     (home-page "http://www.gnu.org/software/idutils/")
     (synopsis "Identifier database utilities")
     (description
-     "An \"ID database\" is a binary file containing a list of file
-names, a list of tokens, and a sparse matrix indicating which
-tokens appear in which files.
-
-With this database and some tools to query it, many
-text-searching tasks become simpler and faster.  For example,
-you can list all files that reference a particular `\\#include'
-file throughout a huge source hierarchy, search for all the
-memos containing references to a project, or automatically
-invoke an editor on all files containing references to some
-function or variable.  Anyone with a large software project to
-maintain, or a large set of text files to organize, can benefit
-from the ID utilities.
-
-Although the name `ID' is short for `identifier', the ID
-utilities handle more than just identifiers; they also treat
-other kinds of tokens, most notably numeric constants, and the
-contents of certain character strings.")
+     "ID Utils provides tools to create an index if textual tokens used in a
+list of file names and to then query that index.  Thus, it allows the user
+to, for example, find all the uses of a particular function in all files of a
+large programming project.  In addition to handling textual tokens, it can
+also handle numeric constants and the contents of character strings.")
     (license gpl3+)))

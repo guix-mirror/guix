@@ -80,21 +80,11 @@
       ("zlib" ,zlib)))
    (synopsis "Library to extract meta-data from media files")
    (description
-    "GNU Libextractor is a library used to extract meta data from files.
-The goal is to provide developers of file-sharing networks, browsers or
-WWW-indexing bots with a universal library to obtain simple keywords and
-meta data to match against queries and to show to users instead of only
-relying on filenames. libextractor contains the shell command extract that,
-similar to the well-known file command, can extract meta data from a file
-and print the results to stdout.
-
-Currently, libextractor supports the following formats: HTML, MAN, PS, DVI,
-OLE2 (DOC, XLS, PPT), OpenOffice (sxw), StarOffice (sdw), FLAC,
-MP3 (ID3v1 and ID3v2), OGG, WAV, S3M (Scream Tracker 3), XM (eXtended Module),
-IT (Impulse Tracker), NSF(E) (NES music), SID (C64 music), EXIV2, JPEG, GIF,
-PNG, TIFF, DEB, RPM, TAR(.GZ), LZH, LHA, RAR, ZIP, CAB, 7-ZIP, AR, MTREE,
-PAX, CPIO, ISO9660, SHAR, RAW, XAR FLV, REAL, RIFF (AVI), MPEG, QT and ASF.
-Also, various additional MIME types are detected.")
+    "GNU Libextractor is a library for extracting metadata from files.  It
+supports a very large number of file formats, including audio files, document
+files, and archive files.  Each file format is implemented as a plugin, so
+new formats can be added easily.  The package also containes a command-line
+tool to extract metadata from a file and print the results.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/libextractor/")))
 
@@ -118,21 +108,11 @@ Also, various additional MIME types are detected.")
       ("zlib" ,zlib)))
    (synopsis "C library implementing an HTTP 1.1 server")
    (description
-    "GNU libmicrohttpd is a small C library that is supposed to make it
-easy to run an HTTP server as part of another application.  Key features
-that distinguish GNU Libmicrohttpd from other projects are:
-C library is fast and small;
-API is simple, expressive and fully reentrant;
-implementation is HTTP 1.1 compliant;
-HTTP server can listen on multiple ports;
-four different threading models (select, poll, pthread, thread pool);
-supported platforms include GNU/Linux, FreeBSD, OpenBSD, NetBSD, Android,
-OS X, W32, Symbian and z/OS;
-support for IPv6;
-support for SHOUTcast;
-support for incremental processing of POST data (optional);
-support for basic and digest authentication (optional);
-support for SSL3 and TLS (requires libgcrypt and libgnutls, optional);
-binary is only about 32k (without TLS/SSL support and other optional features).")
+    "Libmicrohttpd is a small, embeddable HTTP server implemented as a C
+library.  It makes it easy to run an HTTP server as part of another
+application.  The library is fully HTTP 1.1 compliant.  It can listen on
+multiple ports, supports four different threading models, and supports IPv6.
+ It also features security features such as basic and digest authentication
+and support for SSL3 and TLS.")
    (license license:lgpl2.1+)
    (home-page "http://www.gnu.org/software/libmicrohttpd/")))

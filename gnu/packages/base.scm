@@ -63,7 +63,10 @@
                                  (assoc-ref %build-inputs "gawk")))))
    (inputs `(("gawk" ,gawk)))
    (synopsis "Hello, GNU world: An example GNU package")
-   (description "Yeah...")
+   (description
+    "GNU Hello prints the message \"Hello, world!\" and then exits.  It
+serves as an example of standard GNU coding practices.  As such, it supports
+command-line arguments, multiple languages, and so on.")
    (home-page "http://www.gnu.org/software/hello/")
    (license gpl3+)))
 
@@ -81,9 +84,12 @@
    (build-system gnu-build-system)
    (synopsis "Print lines matching a pattern")
    (description
-    "The grep command searches one or more input files for lines containing a
-match to a specified pattern.  By default, grep prints the matching
-lines.")
+    "grep is a tool for finding text inside files.  Text is found by
+matching a pattern provided by the user in one or many files.  The pattern
+may be provided as a basic, extended, or Perl-style regular expression, as
+well as a list of fixed strings.  By default, the matching text is simply
+printed to the screen, however the output can be greatly customized to
+include, for example, line numbers.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/grep/")))
 
@@ -114,11 +120,10 @@ lines.")
                            (string-append bash "/bin/bash")))))
                     %standard-phases))))
    (description
-    "Sed (stream editor) isn't really a true text editor or text processor.
-Instead, it is used to filter text, i.e., it takes text input and performs
-some operation (or set of operations) on it and outputs the modified text.
-Sed is typically used for extracting part of a file using pattern matching or
-substituting multiple occurrences of a string within a file.")
+    "Sed is a non-interactive, text stream editor.  It receives a text
+input from a file or from standard input and it then applies a series of text
+editing commands to the stream and prints its output to standard output.  It
+is often used for substituting text patterns in a stream.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/sed/")))
 
@@ -139,16 +144,11 @@ substituting multiple occurrences of a string within a file.")
     `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
    (synopsis "Managing tar archives")
    (description
-    "The Tar program provides the ability to create tar archives, as well as
-various other kinds of manipulation.  For example, you can use Tar on
-previously created archives to extract files, to store additional files, or
-to update or list files which were already stored.
-
-Initially, tar archives were used to store files conveniently on magnetic
-tape.  The name \"Tar\" comes from this use; it stands for tape archiver.
-Despite the utility's name, Tar can direct its output to available devices,
-files, or other programs (using pipes), it can even access remote devices or
-files (as archives).")
+    "Tar provides the ability to create tar archives, as well as the
+ability to extract, update or list files in an existing archive.  It is
+useful for combining many files into one larger file, while maintaining
+directory structure and file information such as permissions and
+creation/modification dates.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/tar/")))
 
@@ -172,9 +172,11 @@ files (as archives).")
     )
    (synopsis "Apply differences to originals, with optional backups")
    (description
-    "GNU Patch takes a patch file containing a difference listing produced by
-the diff program and applies those differences to one or more original files,
-producing patched versions.")
+    "Patch is a program that applies changes to files based on differences
+laid out by the program \"diff\".  The changes may be applied to one or more
+files depending on the contents of the diff file.  It accepts several
+different diff formats.  It may also be used to revert previously applied
+differences.")
    (license gpl3+)
    (home-page "http://savannah.gnu.org/projects/patch/")))
 
@@ -192,31 +194,11 @@ producing patched versions.")
    (build-system gnu-build-system)
    (synopsis "Comparing and merging files")
    (description
-    "GNU Diffutils is a package of several programs related to finding
-differences between files.
-
-Computer users often find occasion to ask how two files differ. Perhaps one
-file is a newer version of the other file. Or maybe the two files started out
-as identical copies but were changed by different people.
-
-You can use the diff command to show differences between two files, or each
-corresponding file in two directories. diff outputs differences between files
-line by line in any of several formats, selectable by command line
-options. This set of differences is often called a ‘diff’ or ‘patch’. For
-files that are identical, diff normally produces no output; for
-binary (non-text) files, diff normally reports only that they are different.
-
-You can use the cmp command to show the offsets and line numbers where two
-files differ. cmp can also show all the characters that differ between the
-two files, side by side.
-
-You can use the diff3 command to show differences among three files. When two
-people have made independent changes to a common original, diff3 can report
-the differences between the original and the two changed versions, and can
-produce a merged file that contains both persons' changes together with
-warnings about conflicts.
-
-You can use the sdiff command to merge two files interactively.")
+    "Diffutils is a package containing several tool for finding the
+differences between files.  The diff command is used to show how two files
+differ, while cmp shows the offsets and line numbers where they differ. 
+diff3 allows you to compare three files.  Finally, sdiff offers an
+interactive means to merge two files.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/diffutils/")))
 
@@ -245,18 +227,12 @@ You can use the sdiff command to merge two files interactively.")
             '())))
    (synopsis "Operating on files matching given criteria")
    (description
-    "The GNU Find Utilities are the basic directory searching utilities of
-the GNU operating system.  These programs are typically used in conjunction
-with other programs to provide modular and powerful directory search and file
-locating capabilities to other commands.
-
-The tools supplied with this package are:
-
-  * find - search for files in a directory hierarchy;
-  * locate - list files in databases that match a pattern;
-  * updatedb - update a file name database;
-  * xargs - build and execute command lines from standard input.
-")
+    "Findutils supplies the basic file directory searching utilities of the
+GNU system.  It consists of two primary searching utilities: \"find\"
+recursively searches for files in a directory according to given criteria and
+\"locate\" lists files in a database that match a query.  Two auxiliary tools
+are included: \"updatedb\" updates a file name database and \"xargs\" may be used
+to apply commands to file search results.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/findutils/")))
 
@@ -297,9 +273,10 @@ The tools supplied with this package are:
                 %standard-phases)))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
-    "The GNU Core Utilities are the basic file, shell and text manipulation
-utilities of the GNU operating system.  These are the core utilities which
-are expected to exist on every operating system.")
+    "Coreutils includes all of the basic commandline tools that are
+expected in a POSIX system.  These provide the basic file, shell and text
+manipulation functions of the GNU system.  Most of these tools offer extended
+functionality beyond that which is outlined in the POSIX standard.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/coreutils/")))
 
@@ -332,13 +309,12 @@ are expected to exist on every operating system.")
                 %standard-phases)))
    (synopsis "Remake files automatically")
    (description
-    "Make is a tool which controls the generation of executables and other
-non-source files of a program from the program's source files.
-
-Make gets its knowledge of how to build your program from a file called the
-makefile, which lists each of the non-source files and how to compute it from
-other files. When you write a program, you should write a makefile for it, so
-that it is possible to use Make to build and install the program.")
+    "Make is a program that is used to control the production of
+executables or other files from their source files.  The process is
+controlled from a Makefile, in which the developer specifies how each file is
+generated from its source.  It has powerful dependency resolution and the
+ability to determine when files have to be regenerated after their sources
+change.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/make/")))
 
@@ -378,9 +354,11 @@ that it is possible to use Make to build and install the program.")
 
    (synopsis "Binary utilities: bfd gas gprof ld")
    (description
-    "The GNU Binutils are a collection of binary tools.  The main ones are
-`ld' (the GNU linker) and `as' (the GNU assembler).  They also include the
-BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc.")
+    "GNU Binutils is a collection of tools for working with binary files.
+Most notable are \"ld\", a linker, and \"as\", an assembler.  Several other tools
+are included, such as a program to display binary profiling information, a
+tool to list the strings in a binary file, and tools for working with
+archives.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/binutils/")))
 

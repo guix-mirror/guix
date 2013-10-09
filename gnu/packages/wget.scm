@@ -46,8 +46,8 @@
     (home-page "http://www.gnu.org/software/wget/")
     (synopsis "Non-interactive command-line utility for downloading files")
     (description
-     "GNU Wget is a free software package for retrieving files using HTTP,
-HTTPS and FTP, the most widely-used Internet protocols.  It is a
-non-interactive commandline tool, so it may easily be called from
-scripts, cron jobs, terminals without X-Windows support, etc.")
+     "Wget is a non-interactive tool for fetching files using the HTTP,
+HTTPS and FTP protocols.  It can resume interrupted downloads, use filename
+wild cards, supports proxies and cookies, and it can convert absolute links
+in downloaded documents to relative links.")
     (license gpl3+))) ; some files are under GPLv2+

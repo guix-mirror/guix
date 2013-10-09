@@ -207,7 +207,9 @@
                   (alist-delete 'configure %standard-phases)))
        #:tests? #f))
     (synopsis "100% free redistribution of a cleaned Linux kernel")
-    (description "Linux-Libre operating system kernel.")
+    (description
+     "Linux Libre is a free (as in freedom) variant of the Linux kernel. It
+has been modified to remove any non-free binary blobs.")
     (license gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 

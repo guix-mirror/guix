@@ -165,10 +165,10 @@ printing, and psresize, for adjusting page sizes.")
       %standard-phases)))))
    (synopsis "PostScript and PDF interpreter")
    (description
-    "GNU Ghostscript is an interpreter for PostScript and Portable Document
-Format (PDF) files.
-It consists of a PostScript interpreter layer, and a graphics
-library.")
+    "Ghostscript is an interpreter for the PostScript language and the PDF
+file format.  It also includes a C library that implements the graphics
+capabilities of the PostScript language.  It supports a wide variety of
+output file formats and printers.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/ghostscript/")))
 

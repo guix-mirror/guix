@@ -71,11 +71,10 @@ Daemon and possibly more in the future.")
     (home-page "http://gnupg.org/")
     (synopsis "Cryptographic function library")
     (description
-     "GNU Libgcrypt is a general purpose cryptographic library based on
-the code from GnuPG.  It provides functions for all
-cryptographic building blocks: symmetric ciphers, hash
-algorithms, MACs, public key algorithms, large integer
-functions, random numbers and a lot of supporting functions.")
+     "Libgcrypt is a general-purpose cryptographic library.  It provides the
+standard cryptographic building blocks such as symmetric ciphers, hash
+algorithms, public key algorithms, large integer functions and random number
+generation.")
     (license lgpl2.0+)))
 
 (define-public libassuan
@@ -165,15 +164,10 @@ specifications are building blocks of S/MIME and TLS.")
     (home-page "http://gnupg.org/")
     (synopsis "GNU Privacy Guard")
     (description
-     "GnuPG is the GNU project's complete and free implementation of
-the OpenPGP standard as defined by RFC4880.  GnuPG allows to
-encrypt and sign your data and communication, features a
-versatile key managment system as well as access modules for all
-kind of public key directories.  GnuPG, also known as GPG, is a
-command line tool with features for easy integration with other
-applications.  A wealth of frontend applications and libraries
-are available.  Version 2 of GnuPG also provides support for
-S/MIME.")
+     "The GNU Privacy Guard is a complete implementation of the OpenPGP
+standard.  It is used to encrypt and sign data and communication.  It
+features powerful key management and the ability to access public key
+servers.")
     (license gpl3+)))
 
 (define-public gpgme

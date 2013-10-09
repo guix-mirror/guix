@@ -85,9 +85,11 @@ caching facility provided by the library.")
     (home-page "http://www.gnu.org/software/libcdio/")
     (synopsis "CD Input and Control library")
     (description
-     "GNU libcdio is a library for OS-idependent CD-ROM and CD image access.
-It includes a library for working with ISO-9660 filesystems (libiso9660), as
-well as utility programs such as an audio CD player and an extractor.")
+     "The GNU Compact Disc Input and Control Library (libcdio) is a library
+for CD-ROM and CD image file access.  It allows the developer to add CD
+access to an application without having to worry about the OS- and
+device-dependent properties of CD-ROM or the specific details of CD image
+formats.")
     (license gpl3+)))
 
 (define-public xorriso
@@ -111,12 +113,11 @@ well as utility programs such as an audio CD player and an extractor.")
     (home-page "http://www.gnu.org/software/xorriso/")
     (synopsis "Create, manipulate, burn ISO-9660 filesystems")
     (description
-     "GNU xorriso copies file objects from POSIX compliant filesystems into
-Rock Ridge enhanced ISO 9660 filesystems and allows session-wise manipulation
-of such filesystems.  It can load the management information of existing ISO
-images and it writes the session results to optical media or to filesystem
-objects.  Vice versa xorriso is able to copy file objects out of ISO 9660
-filesystems.")
+     "xorriso is a tool for copying files to and from ISO 9660 Rock Ridge,
+a.k.a Compact Disc File System, filesystems and it allows session- wise
+manipulation of them.  It features a formatter and burner for CD DVD and BD. 
+It can operate on existing ISO images or it can create new ones.  xorriso can
+then be used to copy files directly into or out of ISO files.")
     (license gpl3+)))
 
 (define-public cdparanoia

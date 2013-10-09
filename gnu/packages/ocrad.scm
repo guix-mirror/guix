@@ -40,14 +40,7 @@
     (home-page "http://www.gnu.org/software/ocrad/")
     (synopsis "Optical character recognition based on feature extraction")
     (description
-     "GNU Ocrad is an OCR (Optical Character Recognition) program based on a
-feature extraction method.  It reads images in pbm (bitmap), pgm
- (greyscale) or ppm (color) formats and produces text in byte (8-bit)
-or UTF-8 formats.
-
-Also includes a layout analyser able to separate the columns or blocks of text
-normally found on printed pages.
-
-Ocrad can be used as a stand-alone console application, or as a backend to
-other programs.")
+     "Ocrad is an optical character recognition program based on a feature
+extraction method.  It can read images in PBM, PGM or PPM formats and it
+produces text in 8-bit or UTF-8 formats.")
     (license gpl3+)))

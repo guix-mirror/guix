@@ -44,8 +44,7 @@
     (home-page "http://www.nano-editor.org/")
     (synopsis "Small, user-friendly console text editor")
     (description
-     "GNU nano is designed to be a free replacement for the Pico text
-editor, part of the Pine email suite from The University of
-Washington. It aims to emulate Pico as closely as possible and perhaps
-include extra functionality.")
+     "nano is a small and simple text editor.  In addition to basic
+editing, it supports interactive search and replace, go to line and column
+number, auto-indentation and more.")
     (license gpl3+))) ; some files are under GPLv2+

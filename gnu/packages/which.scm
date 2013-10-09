@@ -38,10 +38,6 @@
     (home-page "https://gnu.org/software/which/")
     (synopsis "Find full path of shell commands")
     (description
-     "GNU Which takes one or more arguments. For each of its arguments
-it prints to stdout the full path of the executables that would have
-been executed when this argument had been entered at the shell
-prompt. It does this by searching for an executable or script in the
-directories listed in the environment variable PATH using the same
-algorithm as bash(1).")
+     "which is a program that prints the full paths of executables on a
+system.")
     (license gpl3+))) ; some files are under GPLv2+

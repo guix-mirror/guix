@@ -46,15 +46,8 @@
     (home-page "http://www.gnu.org/software/bison/")
     (synopsis "Parser generator")
     (description
-     "Bison is a general-purpose parser generator that converts an
-annotated context-free grammar into an LALR(1) or GLR parser for
-that grammar.  Once you are proficient with Bison, you can use
-it to develop a wide range of language parsers, from those used
-in simple desk calculators to complex programming languages.
-
-Bison is upward compatible with Yacc: all properly-written Yacc
-grammars ought to work with Bison with no change.  Anyone
-familiar with Yacc should be able to use Bison with little
-trouble.  You need to be fluent in C or C++ programming in order
-to use Bison.")
+     "Bison is a general-purpose parser generator.  It can build a
+deterministic LR or generalized LR parser from an annotated, context- free
+grammar.  It is versatile enough to have a wide variety of applications, from
+parsers for simple tools up to parsers for complex programming languages.")
     (license gpl3+)))

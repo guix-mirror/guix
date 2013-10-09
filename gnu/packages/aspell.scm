@@ -40,14 +40,8 @@
     (home-page "http://aspell.net/")
     (synopsis "Spell checker")
     (description
-     "GNU Aspell is a free spell checker designed to eventually replace
-Ispell.  It can either be used as a library or as an independent spell
-checker.  Its main feature is that it does a superior job of suggesting
-possible replacements for a misspelled word than just about any other
-spell checker out there for the English language.  Unlike Ispell, Aspell
-can also easily check documents in UTF-8 without having to use a special
-dictionary.  Aspell will also do its best to respect the current locale
-setting.  Other advantages over Ispell include support for using
-multiple dictionaries at once and intelligently handling personal
-dictionaries when more than one Aspell process is open at once.")
+     "Aspell is a spell-checker which can be used either as a library or as
+a standalone program.  Notable features of Aspell include its full support of
+documents written in the UTF-8 encoding and its ability to use multiple
+dictionaries, including personal ones.")
     (license lgpl2.1+)))

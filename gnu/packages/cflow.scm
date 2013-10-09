@@ -38,14 +38,8 @@
     (home-page "http://www.gnu.org/software/cflow/")
     (synopsis "Create a graph of control flow within a program")
     (description
-     "GNU cflow analyzes a collection of C source files and prints a
-graph, charting control flow within the program.
-
-GNU cflow is able to produce both direct and inverted flowgraphs
-for C sources.  Optionally a cross-reference listing can be
-generated.  Two output formats are implemented: POSIX and GNU
-(extended).
-
-The package also provides Emacs major mode for examining the
-produced flowcharts in Emacs.")
+     "cflow analyzes C source files and produces a graph charting the
+control flow of the program.  It can output the graph in several styles and
+in either the POSIX format or in an extended GNU format. cflow also includes
+a major mode for Emacs for examining the flowcharts that it produces.")
    (license gpl3+)))

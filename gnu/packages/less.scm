@@ -40,10 +40,9 @@
     (home-page "https://www.gnu.org/software/less/")
     (synopsis "Paginator for terminals")
     (description
-     "GNU less is a program similar to more, but which allows backward
-movement in the file as well as forward movement. Also, less does not
-have to read the entire input file before starting, so with large input
-files it starts up faster than text editors like vi. Less uses
-termcap (or terminfo on some systems), so it can run on a variety of
-terminals. There is even limited support for hardcopy terminals.")
+     "GNU less is a pager, a program that allows you to view large amounts
+of text in page-sized chunks.  Unlike traditional pagers, it allows both
+backwards and forwards movement through the document.  It also does not have
+to read the entire input file before starting, so it starts faster than most
+text editors.")
     (license gpl3+))) ; some files are under GPLv2+

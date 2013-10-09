@@ -46,12 +46,8 @@
     (home-page "http://www.gnu.org/software/global/")
     (synopsis "Cross-environment source code tag system")
     (description
-     "GNU GLOBAL is a source code tagging system that works the same way
-across diverse environments (Emacs, vi, less, Bash, web browser, etc).
-You can locate specified objects in source files and move there easily.
-It is useful for hacking a large project containing many
-subdirectories, many #ifdef and many main() functions.  It is similar
-to ctags or etags but is different from them at the point of
-independence of any editor.  It runs on a UNIX (POSIX) compatible
-operating system like GNU and BSD.")
+     "GLOBAL is a source code tagging system that functions in the same way
+across a wide array of environments, such as different text editors, shells
+and web browsers.  The resulting tags are useful for quickly moving around in
+a large, deeply nested project.")
     (license gpl3+)))

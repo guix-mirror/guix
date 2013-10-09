@@ -153,16 +153,10 @@ PARI is also available as a C library to allow for faster computations.")
     (home-page "http://www.gnu.org/software/bc/")
     (synopsis "Arbitrary precision numeric processing language")
     (description
-     "bc is an arbitrary precision numeric processing language. Syntax
-is similar to C, but differs in many substantial areas. It supports
-interactive execution of statements.  bc is a utility included in the
-POSIX P1003.2/D11 draft standard.
-
-Since the POSIX document does not specify how bc must be implemented,
-this version does not use the historical method of having bc be a
-compiler for the dc calculator.  This version has a single executable
-that both compiles the language and runs the resulting `byte code'. The
-byte code is not the dc language.")
+     "bc is an arbitrary precision numeric processing language.  It includes
+an interactive environment for evaluating mathematical statements.  Its
+syntax is similar to that of C, so basic usage is familiar.  It also includes
+\"dc\", a reverse-polish calculator.")
     (license gpl2+)))
 
 (define-public fftw

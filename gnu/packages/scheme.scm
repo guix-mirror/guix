@@ -109,10 +109,8 @@
     (synopsis "Scheme implementation with integrated editor and debugger")
     (description
      "MIT/GNU Scheme is an implementation of the Scheme programming
-language, providing an interpreter, compiler, source-code debugger,
-integrated Emacs-like editor, and a large runtime library.  MIT/GNU
-Scheme is best suited to programming large applications with a rapid
-development cycle.")
+language.  It provides an interpreter, a compiler and a debugger.  It also
+features an integrated Emacs-like editor and a large runtime library.")
     (license gpl2+)))
 
 (define-public bigloo

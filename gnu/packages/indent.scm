@@ -37,9 +37,9 @@
    (build-system gnu-build-system)
    (synopsis "Code reformatter")
    (description
-    "GNU Indent can be used to make code easier to read. It can also convert
-from one style of writing C to another. Indent understands a substantial
-amount about the syntax of C, but it also attempts to cope with incomplete
-and misformed syntax. The GNU style of indenting is the default.")
+    "Indent is a program that makes source code easier to read by
+reformatting it in a consistetn style.  It can change the style to one of
+several different styles such as GNU, BSD or K&R.  It has some flexibility to
+deal with incomplete or malformed syntax.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/indent/")))

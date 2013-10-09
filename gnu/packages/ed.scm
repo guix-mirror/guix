@@ -45,12 +45,9 @@
     (home-page "http://www.gnu.org/software/ed/")
     (synopsis "Line-oriented text editor")
     (description
-     "GNU ed is a line-oriented text editor.  It is used to create,
-display, modify and otherwise manipulate text files, both
-interactively and via shell scripts.  A restricted version of ed,
-red, can only edit files in the current directory and cannot
-execute shell commands.  Ed is the \"standard\" text editor in the
-sense that it is the original editor for Unix, and thus widely
-available.  For most purposes, however, it is superseded by
-full-screen editors such as GNU Emacs or GNU Moe.")
+     "Ed is a line-oriented text editor: rather than offering an overview of
+a document, ed performs editing one line at a time.  It can be operated both
+interactively and via shell scripts.  Its method of command input allows
+complex tasks to be performed in an automated way, however it has largely
+been superceded by full-screen editors like Emacs or Moe.")
     (license gpl3+)))

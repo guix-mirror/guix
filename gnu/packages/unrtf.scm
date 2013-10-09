@@ -49,9 +49,7 @@
     (home-page "http://www.gnu.org/software/unrtf")
     (synopsis "Convert Rich Text Format documents to other formats")
     (description
-     "UnRTF is a command-line program written in C which converts documents in
-Rich Text Format (.rtf) to HTML, LaTeX, troff macros, and RTF
-itself. Converting to HTML, it supports a number of features of Rich Text
-Format, such as changes to the text's font, underlines, text shadowing and
-outlining, and more.")
+     "UnRTF is a program for converting text documents from RTF to HTML,
+LaTeX, or troff macros.  It supports changes in font characteristics,
+underlines and strikethroughs, superscripts and subscripts, and more.")
     (license gpl2+)))

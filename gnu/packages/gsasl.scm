@@ -63,10 +63,12 @@
             ))
    (synopsis "Generic Security Service library")
    (description
-    "GNU GSS is an implementation of the Generic Security Service Application
-Program Interface (GSS-API). GSS-API is used by network servers to provide
-security services, e.g., to authenticate SMTP/IMAP clients against
-SMTP/IMAP servers. GSS consists of a library and a manual.")
+    "The GNU Generic Security Service provides a free implementation of the
+GSS-API specification.  It provides a generic application programming
+interface for programs to access security services. Security services present
+a generic, GSS interface, with which the calling application interacts via
+this library, freeing the application developer from needing to know about
+the underlying security implementation.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/gss/")))
 
@@ -91,25 +93,9 @@ SMTP/IMAP servers. GSS consists of a library and a manual.")
     `(("gnutls" ,gnutls)))
    (synopsis "Simple Authentication and Security Layer library")
    (description
-    "GNU SASL is an implementation of the Simple Authentication and Security
-Layer framework and a few common SASL mechanisms. SASL is used by network
-servers (e.g., IMAP, SMTP) to request authentication from clients, and in
-clients to authenticate against servers.
-
-GNU SASL consists of a library (libgsasl), a command line utility (gsasl)
-to access the library from the shell, and a manual. The library includes
-support for the framework (with authentication functions and application
-data privacy and integrity functions) and at least partial support for the
-CRAM-MD5, EXTERNAL, GSSAPI, ANONYMOUS, PLAIN, SECURID, DIGEST-MD5,
-SCRAM-SHA-1, SCRAM-SHA-1-PLUS, LOGIN, and NTLM mechanisms.
-
-The library is portable because it does not do network communication by
-itself, but rather leaves it up to the calling application. The library is
-flexible with regards to the authorization infrastructure used, as it
-utilises callbacks into the application to decide whether an user is
-authorised or not.
-
-The gsasl package distribution includes the library part as well,
-so there is no need to install two packages.")
+    "GNU SASL is an implementation of the Simple Authentication and
+Security Layer framework.  On network servers such as IMAP or SMTP servers,
+SASL is used to handle client/server authentication.  This package contains
+both a library and a command-line tool to access the library.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/gsasl/")))

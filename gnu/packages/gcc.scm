@@ -194,12 +194,9 @@ where the OS part is overloaded to denote a specific ABI---into GCC
       (properties `((gcc-libc . ,(assoc-ref inputs "libc"))))
       (synopsis "GNU Compiler Collection")
       (description
-       "The GNU Compiler Collection includes compiler front ends for C, C++,
-Objective-C, Fortran, OpenMP for C/C++/Fortran, Java, and Ada, as well as
-libraries for these languages (libstdc++, libgcj, libgomp,...).
-
-GCC development is a part of the GNU Project, aiming to improve the compiler
-used in the GNU system including the GNU/Linux variant.")
+       "GCC is the GNU Compiler Collection.  It provides compiler front-ends
+for several languages, including C, C++, Objective-C, Fortran, Java, Ada, and
+Go.  It also includes standard libraries for these languages.")
       (license gpl3+)
       (home-page "http://gcc.gnu.org/"))))
 

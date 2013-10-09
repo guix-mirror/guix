@@ -39,23 +39,11 @@
     (home-page "http://www.gnu.org/software/pth")
     (synopsis "Portable thread library")
     (description
-     "Pth is a very portable POSIX/ANSI-C based library for Unix
-platforms which provides non-preemptive priority-based scheduling for
-multiple threads of execution (aka ``multithreading'') inside
-event-driven applications. All threads run in the same address space of
-the server application, but each thread has it's own individual
-program-counter, run-time stack, signal mask and errno variable.
-
-The thread scheduling itself is done in a cooperative way, i.e., the
-threads are managed by a priority- and event-based non-preemptive
-scheduler. The intention is that this way one can achieve better
-portability and run-time performance than with preemptive
-scheduling. The event facility allows threads to wait until various
-types of events occur, including pending I/O on file descriptors,
-asynchronous signals, elapsed timers, pending I/O on message ports,
-thread and process termination, and even customized callback functions.
-
-Additionally Pth provides an optional emulation API for POSIX.1c
-threads (\"Pthreads\") which can be used for backward compatibility to
-existing multithreaded applications.")
+     "Pth is a portable library providing non-preemptive, priority-based
+scheduling for multiple execution threads.  Each thread has its own
+program-counter, run-time stack, signal mask and errno variable. Threads are
+scheduled in a cooperative way, rather than in the standard preemptive way,
+such that they are managed according to priority and events.  However, Pth
+also features emulation of POSIX.1c threads (\"Pthreads\") for backwards
+compatibility.")
     (license lgpl2.1+)))

@@ -48,6 +48,7 @@
     (home-page "https://www.gnu.org/software/fdisk/")
     (synopsis "Low-level disk partitioning and formatting")
     (description
-     "GNU Fdisk provides alternatives to util-linux fdisk and util-linux
-cfdisk.  It uses GNU Parted.")
+     "GNU fdisk provides a GNU version of the common disk partitioning tool
+fdisk.  fdisk is used for the creation and manipulation of disk partition
+tables, and it understands a variety of different formats.")
     (license gpl3+)))

@@ -47,8 +47,10 @@
              ("bc" ,bc)))
    (synopsis "Manipulate plain text files as databases")
    (description
-    "GNU recutils is a set of tools and libraries to access human-editable,
-text-based databases called recfiles.  The data is stored as a sequence of
-records, each record containing an arbitrary number of named fields.")
+    "Recutils is a set of tools and libraries for creating and
+manipulating text-based, human-editable databases.  Despite being text-based,
+databases created with Recutils carry all of the expected features such as
+unique fields, primary keys, time stamps and more. Many different field types
+are supported, as is encryption.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/recutils/")))

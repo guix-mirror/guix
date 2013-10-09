@@ -46,25 +46,11 @@
                   "--enable-cxx")))
    (synopsis "Multiple-precision arithmetic library")
    (description
-    "GMP is a free library for arbitrary precision arithmetic, operating on
-signed integers, rational numbers, and floating point numbers.  There is no
-practical limit to the precision except the ones implied by the available
-memory in the machine GMP runs on.  GMP has a rich set of functions, and the
-functions have a regular interface.
-
-The main target applications for GMP are cryptography applications and
-research, Internet security applications, algebra systems, computational
-algebra research, etc.
-
-GMP is carefully designed to be as fast as possible, both for small operands
-and for huge operands.  The speed is achieved by using fullwords as the basic
-arithmetic type, by using fast algorithms, with highly optimised assembly
-code for the most common inner loops for a lot of CPUs, and by a general
-emphasis on speed.
-
-GMP is faster than any other bignum library.  The advantage for GMP increases
-with the operand sizes for many operations, since GMP uses asymptotically
-faster algorithms.")
+    "GMP is a library for arbitrary precision arithmetic, operating on
+signed integers, rational numbers and floating point numbers.  The precision
+is only limited by the available memory.  The library is highly optimized,
+with a design focus on execution speed.  It is aimed at use in, for example,
+cryptography and computational algebra.")
    (license lgpl3+)
    (home-page "http://gmplib.org/")))
 
@@ -83,14 +69,8 @@ faster algorithms.")
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
    (synopsis "C library for arbitrary precision floating-point arithmetic")
    (description
-    "The GNU MPFR library is a C library for multiple-precision
-floating-point computations with correct rounding.  MPFR is based on the GMP
-multiple-precision library.
-
-The main goal of MPFR is to provide a library for multiple-precision
-floating-point computation which is both efficient and has a well-defined
-semantics.  It copies the good ideas from the ANSI/IEEE-754 standard for
-double-precision floating-point arithmetic (53-bit mantissa).")
+    "MPFR is a C library for performing multiple-precision, floating-point
+computations with correct rounding.")
    (license lgpl3+)
    (home-page "http://www.mpfr.org/")))
 
@@ -110,12 +90,7 @@ double-precision floating-point arithmetic (53-bit mantissa).")
                         ("mpfr" ,mpfr)))
    (synopsis "C library for arbitrary precision complex arithmetic")
    (description
-    "GNU MPC is a C library for the arithmetic of complex numbers with
-arbitrarily high precision and correct rounding of the result. It extends
-the principles of the IEEE-754 standard for fixed precision real floating
-point numbers to complex numbers, providing well-defined semantics for
-every operation. At the same time, speed of operation at high precision
-is a major design goal. The library is built upon and follows the same
-principles as GNU MPFR.")
+    "GNU MPC is a C library for performing arithmetic on complex numbers.
+It supports arbitrarily high precision and it correctly rounds the results.")
    (license lgpl3+)
    (home-page "http://mpc.multiprecision.org/")))

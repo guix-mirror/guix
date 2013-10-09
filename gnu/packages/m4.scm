@@ -59,18 +59,10 @@
               ,(search-patch "m4-readlink-EINVAL.patch"))))
    (synopsis "Macro processor")
    (description
-    "GNU M4 is an implementation of the traditional Unix macro processor.  It
-is mostly SVR4 compatible although it has some extensions (for example,
-handling more than 9 positional parameters to macros).  GNU M4 also has
-built-in functions for including files, running shell commands, doing
-arithmetic, etc.
-
-GNU M4 is a macro processor in the sense that it copies its input to the
-output expanding macros as it goes.  Macros are either builtin or
-user-defined and can take any number of arguments.  Besides just doing macro
-expansion, m4 has builtin functions for including named files, running UNIX
-commands, doing integer arithmetic, manipulating text in various ways,
-recursion etc...  m4 can be used either as a front-end to a compiler or as a
-macro processor in its own right.")
+    "GNU M4 is an implementation of the M4 macro language, which features
+some extensions over other implementations.  It is used as a macro processor,
+which means it processes text, expanding macros as it encounters them.  It
+also has some built-in functionns, for example to run shell commands or to do
+arithmetic.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/m4/")))

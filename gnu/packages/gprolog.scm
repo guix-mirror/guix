@@ -48,24 +48,8 @@
     (home-page "https://www.gnu.org/software/gprolog/")
     (synopsis "Prolog compiler")
     (description
-     "GNU Prolog is a free Prolog compiler with constraint solving over
-finite domains developed by Daniel Diaz.
-
-GNU Prolog accepts Prolog+constraint programs and produces native
-binaries (like gcc does from a C source).  The obtained executable is
-then stand-alone.  The size of this executable can be quite small since
-GNU Prolog can avoid to link the code of most unused built-in
-predicates.  The performances of GNU Prolog are very
-encouraging (comparable to commercial systems).
-
-Beside the native-code compilation, GNU Prolog offers a classical
-interactive interpreter (top-level) with a debugger.
-
-The Prolog part conforms to the ISO standard for Prolog with many
-extensions very useful in practice (e.g., global variables, OS
-interface, sockets).
-
-GNU Prolog also includes an efficient constraint solver over finite domains.
-This opens contraint logic programming to the user combining the power of
-constraint programming to the declarativity of logic programming.")
+     "GNU Prolog is a standards-compliant Prolog compiler with constraint
+solving over finite domains.  It accepts Prolog+ constraint programs and
+produces a compiled, native binary which can function in a stand- alone
+manner.  It also features an interactive interpreter.")
     (license (list gpl2+ lgpl3+))))

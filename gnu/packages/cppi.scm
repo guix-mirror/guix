@@ -37,9 +37,8 @@
     (home-page "http://www.gnu.org/software/cppi/")
     (synopsis "Indent C preprocessor directives to reflect nesting and more")
     (description
-     "GNU cppi indents C preprocessor directives to reflect their nesting and
-ensure that there is exactly one space character between each #if, #elif,
-#define directive and the following token.  The number of spaces between the
-`#' and the following directive must correspond to the level of nesting of
-that directive.")
+     "GNU Cppi processes C source code files to properly indent the
+preprocessor directives to reflect their nesting.  It also performs other
+standardizations, such as correcting the number of spaces between directives
+and the text following them.")
     (license gpl3+)))

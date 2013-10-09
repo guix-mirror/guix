@@ -99,12 +99,10 @@
     (home-page "http://www.gnu.org/software/grub/")
     (synopsis "GRand unified boot loader")
     (description
-     "GNU GRUB is a Multiboot boot loader. It was derived from GRUB, GRand
-Unified Bootloader, which was originally designed and implemented by Erich
-Stefan Boleyn.
-
-Briefly, the boot loader is the first software program that runs when a
-computer starts.  It is responsible for loading and transferring control to
-the operating system kernel software (such as the Hurd or the Linux).  The
-kernel, in turn, initializes the rest of the operating system (e.g., GNU).")
+     "GRUB is a multiboot bootloader.  It is used for initially loading the
+kernel of an operating system and then transfering control to it. The kernel
+then goes on to load the rest of the operating system.  As a multiboot boot
+loader, GRUB handles the presence of multiple operating systems installed on
+the same computer; upon booting the computer, the user is presented with a
+menu to select one of the installed operating systems.")
     (license gpl3+)))

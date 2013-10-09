@@ -36,9 +36,9 @@
     (build-system gnu-build-system)
     (synopsis "Library for generating assembly code at runtime")
     (description
-     "GNU lightning is a library that generates assembly language code at
-run-time; it is very fast, making it ideal for Just-In-Time compilers, and it
-abstracts over the target CPU, as it exposes to the clients a standardized
-RISC instruction set inspired by the MIPS and SPARC chips.")
+     "GNU Lightning is a library that generates assembly language code at
+run-time.  Thus, it is useful in creating Just-In-Time compilers.  It
+abstracts over the target CPU by exposing a standardized RISC instruction set
+to the clients.")
     (home-page "http://www.gnu.org/software/lightning/")
     (license gpl3+)))

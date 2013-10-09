@@ -38,20 +38,7 @@
    (build-system gnu-build-system)
    (synopsis "C library for manipulating Unicode strings")
    (description
-    "This library provides functions for manipulating Unicode strings and for
-manipulating C strings according to the Unicode standard.
-
-GNU libunistring is for you if your application involves non-trivial text
-processing, such as upper/lower case conversions, line breaking, operations
-on words, or more advanced analysis of text.  Text provided by the user can,
-in general, contain characters of all kinds of scripts.  The text processing
-functions provided by this library handle all scripts and all languages.
-
-libunistring is for you if your application already uses the ISO C / POSIX
-<ctype.h>, <wctype.h> functions and the text it operates on is provided by
-the user and can be in any language.
-
-libunistring is also for you if your application uses Unicode strings as
-internal in-memory representation.")
+    "Libunistring is a library providing functions to manipulate Unicode
+strings and for manipulating C strings according to the Unicode standard.")
    (home-page "http://www.gnu.org/software/libunistring/")
    (license lgpl3+)))

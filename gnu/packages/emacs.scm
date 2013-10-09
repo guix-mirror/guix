@@ -89,20 +89,13 @@
     (home-page "http://www.gnu.org/software/emacs/")
     (synopsis "The extensible, customizable, self-documenting text editor")
     (description
-     "GNU Emacs is an extensible, customizable text editor—and more.  At its
-core is an interpreter for Emacs Lisp, a dialect of the Lisp
-programming language with extensions to support text editing.
-
-The features of GNU Emacs include: content-sensitive editing modes,
-including syntax coloring, for a wide variety of file types including
-plain text, source code, and HTML; complete built-in documentation,
-including a tutorial for new users; full Unicode support for nearly all
-human languages and their scripts; highly customizable, using Emacs
-Lisp code or a graphical interface; a large number of extensions that
-add other functionality, including a project planner, mail and news
-reader, debugger interface, calendar, and more.  Many of these
-extensions are distributed with GNU Emacs; others are available
-separately.")
+     "Emacs is an extensible and highly customizable text editor.  It is
+based on an Emacs Lisp interpreter which has extensions to support text
+editing.  Due to its unique structure, it can be configured in an infinite
+multitude of ways, which has given rise to a vast array of packages that have
+been written for it that do everything from working as an email client to
+communicating online via IRC or XMPP.  Emacs is fully self-documenting and it
+features full Unicode support for nearly every human language.")
     (license gpl3+)))
 
 

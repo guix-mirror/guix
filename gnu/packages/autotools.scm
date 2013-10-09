@@ -52,13 +52,11 @@
      "http://www.gnu.org/software/autoconf/")
     (synopsis "Create source code configuration scripts")
     (description
-     "GNU Autoconf is an extensible package of M4 macros that produce
-shell scripts to automatically configure software source code
-packages.  These scripts can adapt the packages to many kinds of
-UNIX-like systems without manual user intervention.  Autoconf
-creates a configuration script for a package from a template
-file that lists the operating system features that the package
-can use, in the form of M4 macro calls.")
+     "Autoconf offers the developer a robust set of M4 macros which expand
+into shell code to test the features of Unix-like systems and to adapt
+automatically their software package to these systems.  The resulting shell
+scripts are self-contained and portable, freeing the user from needing to
+know anything about Autoconf or M4.")
     (license gpl3+))) ; some files are under GPLv2+
 
 (define-public autoconf-wrapper
@@ -202,9 +200,10 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
     (home-page "http://www.gnu.org/software/automake/")
     (synopsis "Making GNU standards-compliant Makefiles")
     (description
-     "GNU Automake is a tool for automatically generating
-`Makefile.in' files compliant with the GNU Coding
-Standards.  Automake requires the use of Autoconf.")
+     "Automake the part of the GNU build system for producing standards-
+compliant Makefiles.  Build requirements are entered in an intuitive format
+and then Automake works with Autoconf to produce a robust Makefile,
+simplifying the entire process for the developer.")
     (license gpl2+)))                      ; some files are under GPLv3+
 
 (define-public libtool
@@ -258,11 +257,8 @@ Standards.  Automake requires the use of Autoconf.")
                ,(search-patch "libtool-skip-tests.patch"))))
     (synopsis "Generic shared library support tools")
     (description
-     "GNU libtool is a generic library support script.  Libtool hides the
-complexity of using shared libraries behind a consistent, portable interface.
-
-To use libtool, add the new generic library building commands to your
-Makefile, Makefile.in, or Makefile.am.  See the documentation for
-details.")
+     "Libtool is a script to help in the creation of shared libraries.  By
+presenting a consistent, portable interface, it hides the complexity of
+building usable shared libraries.")
     (license gpl3+)
     (home-page "http://www.gnu.org/software/libtool/")))

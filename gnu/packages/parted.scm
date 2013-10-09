@@ -60,11 +60,6 @@
     (home-page "http://www.gnu.org/software/parted/")
     (synopsis "Disk partition editor")
     (description
-     "GNU Parted is an industrial-strength package for creating, destroying,
-resizing, checking and copying partitions, and the file systems on them.  This
-is useful for creating space for new operating systems, reorganising disk
-usage, copying data on hard disks and disk imaging.
-
-It contains a library, libparted, and a command-line frontend, parted, which
-also serves as a sample implementation and script backend.")
+     "Parted is a tool for creating and manipulating disk partition tables.
+It consists of a library and a command-line tool for performing these tasks.")
     (license gpl3+)))

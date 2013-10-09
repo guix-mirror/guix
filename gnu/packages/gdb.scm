@@ -59,7 +59,9 @@
     (home-page "http://www.gnu.org/software/gdb/")
     (synopsis "The GNU debugger")
     (description
-     "GDB, the GNU Project debugger, allows you to see what is going
-on `inside' another program while it executes -- or what another
-program was doing at the moment it crashed.")
+     "GDB is the GNU debugger.  With it, you can monitor what a program is
+doing while it runs or what it was doing just before a crash.  It allows you
+to specify the runtime conditions, to define breakpoints, and to change how
+the program is running to try to fix bugs.  It can be used to debug programs
+written in C, C++, Ada, Objective-C, Pascal and more.")
     (license gpl3+)))

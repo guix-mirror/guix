@@ -40,19 +40,8 @@
     (synopsis "Data recovery utility")
     (native-inputs `(("lzip" ,lzip)))
     (description
-     "GNU Ddrescue is a data recovery tool.  It copies data from one
-file or block device (e.g., hard disk, CD-ROM) to another, trying hard to
-rescue data in case of read errors.
-
-The basic operation of Ddrescue is fully automatic.  That is, you don't
-have to wait for an error, stop the program, read the log, run it in
-reverse mode, etc.
-
-If you use the logfile feature of Ddrescue, the data is rescued very
-efficiently (only the needed blocks are read).  Also, you can interrupt
-the rescue at any time and resume it later at the same point.
-
-Automatic merging of backups: If you have two or more damaged copies of
-a file and run Ddrescue on all of them, one at a time, with the same
-output file, you will probably obtain a complete and error-free file.")
+     "Ddrescue is a fully automated data recovery tool.  It copies data from
+one file to another, working to rescue data in case of read errors.  The
+program also includes a tool for manipulating its log- files, which are used
+to recover data more efficiently by only reading the necessary blocks.")
     (license gpl3+)))

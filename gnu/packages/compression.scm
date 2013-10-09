@@ -80,13 +80,7 @@ in compression.")
     ;; FIXME: The test suite wants `less', and optionally Perl.
     '(#:tests? #f))
    (description
-    "gzip (GNU zip) is a popular data compression program written by Jean-loup
-Gailly for the GNU project.  Mark Adler wrote the decompression part.
-
-We developed this program as a replacement for compress because of the Unisys
-and IBM patents covering the LZW algorithm used by compress.  These patents
-made it impossible for us to use compress, and we needed a replacement.  The
-superior compression ratio of gzip is just a bonus.")
+    "GNU Gzip is a data compression and decompression program.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/gzip/")))
 

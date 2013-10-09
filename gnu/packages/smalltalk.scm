@@ -49,13 +49,7 @@
     (home-page "https://www.gnu.org/software/smalltalk/")
     (synopsis "Smalltalk environment")
     (description
-     "GNU Smalltalk is a free implementation of the Smalltalk-80 language.
-
-In the Smalltalk language, everything is an object.  This includes numbers,
-executable procedures (methods), stack frames (called method contexts or block
-contexts), etc.  Each object is an \"instance\" of a \"class\".  A class can
-be thought of as a datatype and the set of functions that operate on that
-datatype.  An instance is a particular variable of that datatype.  When you
-want to perform an operation on an object, you send it a \"message\", and the
-object performs an operation that corresponds to that message.")
+     "GNU Smalltalk is a free implementation of the Smalltalk language.  It
+implements the ANSI standard for the language and also includes extra classes
+such as ones for networking and GUI programming.")
     (license gpl2+)))

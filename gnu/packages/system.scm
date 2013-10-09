@@ -51,13 +51,11 @@
     (inputs `(("pkg-config" ,pkg-config)
               ("guile" ,guile-2.0)))
     (synopsis "Daemon managing daemons")
-    (description "'DMD' is a \"Daemon managing Daemons\" (or
-\"Daemons-managing Daemon\"?)---i.e. a service manager that provides a
-replacement for the service-managing capabilities of SysV-init (or any other
-init) with a both powerful and beautiful dependency-based system with a
-convenient interface.  It is intended for use on GNU/Hurd, but it is supposed
-to work on every POSIX-like system where Guile is available.  In particular,
-it has been tested on GNU/Linux.")
+    (description
+     "DMD is a \"daemon-managing daemon,\" meaning it manages the execution of
+system services, replacing similar functionality found in typical init
+systems.  It provides dependency-handling through a convenient interface and
+is based on GNU Guile.")
     (license gpl3+)
     (home-page "http://www.gnu.org/software/dmd/")))
 
@@ -120,23 +118,10 @@ application (for console or X terminals) and requires ncurses.")
     (home-page "http://www.gnu.org/software/pies/")
     (synopsis "Program invocation and execution supervisor")
     (description
-     "The name Pies (pronounced \"p-yes\") stands for Program Invocation
-and Execution Supervisor.  This utility starts and controls execution of
-external programs, called components.  Each component is a stand-alone
-program, which is executed in the foreground.  Upon startup, pies reads
-the list of components from its configuration file, starts them, and
-remains in the background, controlling their execution.  If any of the
-components terminates, the default action of Pies is to restart it.
-However, it can also be programmed to perform a variety of another
-actions such as, e.g., sending mail notifications to the system
-administrator, invoking another external program, etc.
-
-Pies can be used for a wide variety of tasks.  Its most obious use is to
-put in backgound a program which normally cannot detach itself from the
-controlling terminal, such as, e.g., minicom.  It can launch and control
-components of some complex system, such as Jabberd or MeTA1 (and it
-offers much more control over them than the native utilities).  Finally,
-it can replace the inetd utility!")
+     "Pies is a program that supervises the invocation and executiton of
+other programs.  It reads the list of programs to be started from its
+configuration file, executes them, and then monitors their status,
+re-executing them as necessary.")
     (license gpl3+)))
 
 (define-public inetutils
@@ -160,10 +145,8 @@ it can replace the inetd utility!")
     (home-page "http://www.gnu.org/software/inetutils/")
     (synopsis "Basic networking utilities")
     (description
-     "The GNU network utilities suite provides the following tools:
-ftp(d), hostname, ifconfig, inetd, logger, ping, rcp, rexec(d),
-rlogin(d), rsh(d), syslogd, talk(d), telnet(d), tftp(d), traceroute,
-uucpd, and whois.")
+     "Inetutils is a collection of common network programs, such as an ftp
+client and server, a telnet client and server, and an rsh client and server.")
     (license gpl3+)))
 
 (define-public shadow

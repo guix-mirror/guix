@@ -130,14 +130,9 @@
      (self-native-input? #t)                      ; for `tic'
      (synopsis "Terminal emulation (termcap, terminfo) library")
      (description
-      "The Ncurses (new curses) library is a free software emulation of curses
-in System V Release 4.0, and more.  It uses Terminfo format, supports pads
-and color and multiple highlights and forms characters and function-key
-mapping, and has all the other SYSV-curses enhancements over BSD Curses.
-
-The ncurses code was developed under GNU/Linux.  It has been in use for some
-time with OpenBSD as the system curses library, and on FreeBSD and NetBSD as
-an external package.  It should port easily to any ANSI/POSIX-conforming
-UNIX.  It has even been ported to OS/2 Warp!")
+      "Ncurses is a library which provides capabilities to write text to a
+terminal in a terminal-independent manner.  It supports pads and color as
+well as multiple highlights and forms characters.  It is typically used to
+implement user interfaces for command-line applications.")
      (license x11)
      (home-page "http://www.gnu.org/software/ncurses/"))))

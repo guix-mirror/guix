@@ -86,23 +86,11 @@
     (home-page "http://www.gnu.org/software/mailutils/")
     (synopsis "Utilities and library for reading and serving mail")
     (description
-     "GNU Mailutils is a rich and powerful protocol-independent mail
-framework.  It contains a series of useful mail libraries, clients, and
-servers.  These are the primary mail utilities for the GNU system.  The
-central library is capable of handling electronic mail in various
-mailbox formats and protocols, both local and remote.  Specifically,
-this project contains a POP3 server, an IMAP4 server, and a Sieve mail
-filter.  It also provides a POSIX `mailx' client, and a collection of
-other handy tools.
-
-The GNU Mailutils libraries supply an ample set of primitives for
-handling electronic mail in programs written in C, C++, Python or
-Scheme.
-
-The utilities provided by Mailutils include imap4d and pop3d mail
-servers, mail reporting utility comsatd, general-purpose mail delivery
-agent maidag, mail filtering program sieve, and an implementation of MH
-message handling system.")
+     "Mailutils is a \"swiss army knife of electronic mail handling.\"  It is
+a suite of programs for managing, viewing and processing e-mail.  It contains
+both utilities and server daemons and all operate in a protocol-agnostic way.
+ The underlying libraries are also made available, making adding mail
+capabilities to new software simple.")
     (license
      ;; Libraries are under LGPLv3+, and programs under GPLv3+.
      (list gpl3+ lgpl3+))))
