@@ -447,8 +447,15 @@ location of DERIVATION."
                    (and=> (find-attribute-by-name "description" meta)
                           attribute-value)))
              (description
-              ,(and=> (find-attribute-by-name "longDescription" meta)
-                      attribute-value))
+              ;; Likewise, prefer the official description of GNU packages.
+              ,(or (false-if-exception
+                    (and=> (find (lambda (gnu-package)
+                                   (equal? (gnu-package-name gnu-package)
+                                           name))
+                                 (official-gnu-packages))
+                           gnu-package-doc-description))
+                   (and=> (find-attribute-by-name "longDescription" meta)
+                          attribute-value)))
              (license ,(and=> (find-attribute-by-name "license" meta)
                               (compose license-variable attribute-value))))
           loc))))))
