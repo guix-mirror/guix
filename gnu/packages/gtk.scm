@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,7 +54,7 @@
    (build-system gnu-build-system)
    (inputs `(("glib" ,glib)
              ("pkg-config" ,pkg-config)))
-   (synopsis "GNOME accessability toolkit")
+   (synopsis "GNOME accessibility toolkit")
    (description
     "ATK provides the set of accessibility interfaces that are implemented
 by other toolkits and applications. Using the ATK interfaces, accessibility
@@ -415,3 +416,80 @@ exceptions, macros, and a dynamic programming environment.")
      "Cairomm provides a C++ programming interface to the Cairo 2D graphics
 library.")
     (license license:lgpl2.0+)))
+
+(define-public pangomm
+  (package
+    (name "pangomm")
+    (version "2.34.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/pangomm/2.34/pangomm-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0hcyvv7c5zmivprdam6cp111i6hn2y5jsxzk00m6j9pncbzvp0hf"))))
+    (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("cairo" ,cairo)
+       ("cairomm" ,cairomm)
+       ("glibmm" ,glibmm)
+       ("pango" ,pango)))
+    (home-page "http://www.pango.org/")
+    (synopsis "C++ interface to the Pango text rendering library")
+    (description
+     "Pangomm provides a C++ programming interface to the Pango text rendering
+library.")
+    (license license:lgpl2.1+)))
+
+(define-public atkmm
+  (package
+    (name "atkmm")
+    (version "2.22.7")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/atkmm/2.22/atkmm-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "06zrf2ymml2dzp53sss0d4ch4dk9v09jm8rglnrmwk4v81mq9gxz"))))
+    (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("glibmm" ,glibmm) ("atk" ,atk)))
+    (home-page "http://www.gtkmm.org")
+    (synopsis "C++ interface to the ATK accessibility library")
+    (description
+     "ATKmm provides a C++ programming interface to the ATK accessibility
+toolkit.")
+    (license license:lgpl2.1+)))
+
+(define-public gtkmm
+  (package
+    (name "gtkmm")
+    (version "3.9.16")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/gtkmm/3.9/gtkmm-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0yf8wwv4w02p70nrxsbs0nhm0w4gkn2wggdjygd8vif062anf1rs"))))
+    (build-system gnu-build-system)
+    (inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     `(("pangomm" ,pangomm)
+       ("cairomm" ,cairomm)
+       ("atkmm" ,atkmm)
+       ("gtk+" ,gtk+)
+       ("glibmm" ,glibmm)))
+    (home-page "http://gtkmm.org/")
+    (synopsis
+     "C++ interface to the GTK+ graphical user interface library")
+    (description
+     "gtkmm is the official C++ interface for the popular GUI library GTK+.
+Highlights include typesafe callbacks, and a comprehensive set of widgets that
+are easily extensible via inheritance.  You can create user interfaces either
+in code or with the Glade User Interface designer, using libglademm.  There's
+extensive documentation, including API reference and a tutorial.")
+    (license license:lgpl2.1+)))
