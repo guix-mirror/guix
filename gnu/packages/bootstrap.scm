@@ -64,11 +64,21 @@
              #:guile %bootstrap-guile
              #:system system)))
 
+  (define %bootstrap-patch-inputs
+    ;; Packages used when an <origin> has a non-empty 'patches' field.
+    `(("tar"   ,%bootstrap-coreutils&co)
+      ("xz"    ,%bootstrap-coreutils&co)
+      ("bzip2" ,%bootstrap-coreutils&co)
+      ("gzip"  ,%bootstrap-coreutils&co)
+      ("patch" ,%bootstrap-coreutils&co)))
+
   (let ((orig-method (origin-method source)))
     (origin (inherit source)
       (method (cond ((eq? orig-method url-fetch)
                      (boot url-fetch))
-                    (else orig-method))))))
+                    (else orig-method)))
+      (patch-guile %bootstrap-guile)
+      (patch-inputs %bootstrap-patch-inputs))))
 
 (define (package-from-tarball name* source* program-to-test description*)
   "Return a package that correspond to the extraction of SOURCE*.
