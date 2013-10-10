@@ -77,6 +77,8 @@ X11 (yet).")
               (base32
                "1xl6n4ai0yfknaiawgyr0cyixk0d2j4262k13mmyj993nlnp81ac"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+     `(("mesa" ,mesa)))
     (inputs
      ;; FIXME: Add input ruby once available.
      `(("alsa-lib" ,alsa-lib)
@@ -93,7 +95,6 @@ X11 (yet).")
        ("libxi" ,libxi)
        ("libxkbcommon" ,libxkbcommon)
        ("libxrender" ,libxrender)
-       ("mesa" ,mesa)
        ("mysql" ,mysql)
        ("openssl" ,openssl)
        ("perl" ,perl)
