@@ -130,18 +130,15 @@ is often used for substituting text patterns in a stream.")
 (define-public tar
   (package
    (name "tar")
-   (version "1.26")
+   (version "1.27")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/tar/tar-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "0hbdkzmchq9ycr2x1pxqdcgdbaxksh8c6ac0jf75jajhcks6jlss"))))
+              "0yrwmx2f721ahpnki4fnzvnmrd3md3bq417icb4wrjky7k3caf12"))))
    (build-system gnu-build-system)
-   (inputs `(("patch/gets" ,(search-patch "tar-gets-undeclared.patch"))))
-   (arguments
-    `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
    (synopsis "Managing tar archives")
    (description
     "Tar provides the ability to create tar archives, as well as the
