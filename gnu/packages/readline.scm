@@ -45,15 +45,12 @@
                                    version ".tar.gz"))
                (sha256
                 (base32
-                 "10ckm2bd2rkxhvdmj7nmbsylmihw0abwcsnxf8y27305183rd9kr"))))
+                 "10ckm2bd2rkxhvdmj7nmbsylmihw0abwcsnxf8y27305183rd9kr"))
+               (patches (search-patch "readline-link-ncurses.patch"))
+               (patch-flags '("-p0"))))
       (build-system gnu-build-system)
       (propagated-inputs `(("ncurses" ,ncurses)))
-      (inputs `(("patch/link-ncurses"
-                 ,(search-patch "readline-link-ncurses.patch"))))
-      (arguments `(#:patches (list (assoc-ref %build-inputs
-                                              "patch/link-ncurses"))
-                   #:patch-flags '("-p0")
-                   #:configure-flags
+      (arguments `(#:configure-flags
                    (list (string-append "LDFLAGS=-Wl,-rpath -Wl,"
                                         (assoc-ref %build-inputs "ncurses")
                                         "/lib"))

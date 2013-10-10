@@ -209,19 +209,15 @@ interactive means to merge two files.")
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0amn0bbwqvsvvsh6drfwz20ydc2czk374lzw5kksbh6bf78k4ks3"))))
+              "0amn0bbwqvsvvsh6drfwz20ydc2czk374lzw5kksbh6bf78k4ks3"))
+            (patches (list (search-patch "findutils-absolute-paths.patch")))))
    (build-system gnu-build-system)
-   (native-inputs
-    `(("patch/absolute-paths"
-       ,(search-patch "findutils-absolute-paths.patch"))))
    (arguments
-    `(#:patches (list (assoc-ref %build-inputs "patch/absolute-paths"))
-
-      ;; Work around cross-compilation failure.
-      ;; See <http://savannah.gnu.org/bugs/?27299#comment1>.
-      ,@(if (%current-target-system)
-            '(#:configure-flags '("gl_cv_func_wcwidth_works=yes"))
-            '())))
+    ;; Work around cross-compilation failure.
+    ;; See <http://savannah.gnu.org/bugs/?27299#comment1>.
+    (if (%current-target-system)
+        '(#:configure-flags '("gl_cv_func_wcwidth_works=yes"))
+        '()))
    (synopsis "Operating on files matching given criteria")
    (description
     "Findutils supplies the basic file directory searching utilities of the
@@ -287,14 +283,12 @@ functionality beyond that which is outlined in the POSIX standard.")
                                 ".tar.bz2"))
             (sha256
              (base32
-              "0ri98385hsd7li6rh4l5afcq92v8l2lgiaz85wgcfh4w2wzsghg2"))))
+              "0ri98385hsd7li6rh4l5afcq92v8l2lgiaz85wgcfh4w2wzsghg2"))
+            (patches (list (search-patch "make-impure-dirs.patch")))))
    (build-system gnu-build-system)
-   (native-inputs
-    `(("patch/impure-dirs" ,(search-patch "make-impure-dirs.patch"))))
    (outputs '("out" "debug"))
    (arguments
-    '(#:patches (list (assoc-ref %build-inputs "patch/impure-dirs"))
-      #:phases (alist-cons-before
+    '(#:phases (alist-cons-before
                 'build 'set-default-shell
                 (lambda* (#:key inputs #:allow-other-keys)
                   ;; Change the default shell from /bin/sh.
@@ -325,7 +319,8 @@ change.")
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "15qhbkz3r266xaa52slh857qn3abw7rb2x2jnhpfrafpzrb4x4gy"))))
+              "15qhbkz3r266xaa52slh857qn3abw7rb2x2jnhpfrafpzrb4x4gy"))
+            (patches (list (search-patch "binutils-ld-new-dtags.patch")))))
    (build-system gnu-build-system)
 
    ;; Split Binutils in several outputs, mostly to avoid collisions in
@@ -334,11 +329,8 @@ change.")
               "lib"))                      ; libbfd.a, bfd.h, etc.
 
    ;; TODO: Add dependency on zlib + those for Gold.
-   (native-inputs
-    `(("patch/new-dtags" ,(search-patch "binutils-ld-new-dtags.patch"))))
    (arguments
-    `(#:patches (list (assoc-ref %build-inputs "patch/new-dtags"))
-      #:configure-flags '(;; Add `-static-libgcc' to not retain a dependency
+    `(#:configure-flags '(;; Add `-static-libgcc' to not retain a dependency
                           ;; on GCC when bootstrapping.
                           "LDFLAGS=-static-libgcc"
 
@@ -369,7 +361,10 @@ archives.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "18spla703zav8dq9fw7rbzkyv9qfisxb26p7amg1x3wjh7iy3d1c"))))
+              "18spla703zav8dq9fw7rbzkyv9qfisxb26p7amg1x3wjh7iy3d1c"))
+            (patches (map search-patch
+                          '("glibc-no-ld-so-cache.patch"
+                            "glibc-ldd-x86_64.patch")))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -384,8 +379,6 @@ archives.")
 
    (arguments
     `(#:out-of-source? #t
-      #:patches (list (assoc-ref %build-inputs "patch/ld.so.cache")
-                      (assoc-ref %build-inputs "patch/ldd"))
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"
@@ -469,11 +462,7 @@ archives.")
                    (zero? (system* "make" "localedata/install-locales")))
                  %standard-phases))))
 
-   (inputs `(("patch/ld.so.cache"
-              ,(search-patch "glibc-no-ld-so-cache.patch"))
-             ("patch/ldd"
-              ,(search-patch "glibc-ldd-x86_64.patch"))
-             ("static-bash" ,(static-package bash-light))))
+   (inputs `(("static-bash" ,(static-package bash-light))))
    (synopsis "The GNU C Library")
    (description
     "Any Unix-like operating system needs a C library: the library which
