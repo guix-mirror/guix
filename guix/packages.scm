@@ -109,9 +109,12 @@
   (patches   origin-patches (default '()))        ; list of file names
   (patch-flags  origin-patch-flags                ; list of strings
                 (default '("-p1")))
+
+  ;; Patching requires Guile, GNU Patch, and a few more.  These two fields are
+  ;; used to specify these dependencies when needed.
   (patch-inputs origin-patch-inputs               ; input list or #f
                 (default #f))
-  (patch-guile origin-patch-guile                 ; derivation or #f
+  (patch-guile origin-patch-guile                 ; package or #f
                (default #f)))
 
 (define-syntax base32
@@ -264,11 +267,10 @@ corresponds to the arguments expected by `set-path-environment-variable'."
       ("lzip"  ,(ref '(gnu packages compression) 'lzip))
       ("patch" ,(ref '(gnu packages base) 'patch)))))
 
-(define (default-guile store system)
-  "Return a derivation of d the default Guile package for SYSTEM."
-  (let* ((distro (resolve-interface '(gnu packages base)))
-         (guile  (module-ref distro 'guile-final)))
-    (package-derivation store guile system)))
+(define (default-guile)
+  "Return the default Guile package for SYSTEM."
+  (let ((distro (resolve-interface '(gnu packages base))))
+    (module-ref distro 'guile-final)))
 
 (define* (patch-and-repack store source patches inputs
                            #:key
@@ -363,13 +365,17 @@ using the tools listed in INPUTS."
         inputs guile-for-build)
      ;; One or more patches.
      (let ((source (method store uri 'sha256 sha256 name
-                           #:system system)))
+                           #:system system))
+           (guile  (match (or guile-for-build (%guile-for-build)
+                              (default-guile))
+                     ((? package? p)
+                      (package-derivation store p system))
+                     ((? derivation? drv)
+                      drv))))
        (patch-and-repack store source patches inputs
                          #:flags flags
                          #:system system
-                         #:guile-for-build (or guile-for-build
-                                               (%guile-for-build)
-                                               (default-guile store system)))))
+                         #:guile-for-build guile)))
     ((and (? string?) (? store-path?) file)
      file)
     ((? string? file)
