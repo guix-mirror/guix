@@ -120,7 +120,18 @@ X11 (yet).")
                               "-verbose"
                               "-prefix" out
                               "-opensource"
-                              "-confirm-license"))))
+                              "-confirm-license"
+                              ;; drop all special machine instructions
+                              "-no-sse2"
+                              "-no-sse3"
+                              "-no-ssse3"
+                              "-no-sse4.1"
+                              "-no-sse4.2"
+                              "-no-avx"
+                              "-no-avx2"
+                              "-no-neon"
+                              "-no-mips_dsp"
+                              "-no-mips_dspr2"))))
           %standard-phases)))
     (home-page "http://qt-project.org/")
     (synopsis "Cross-platform GUI library")
