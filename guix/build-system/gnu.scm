@@ -252,7 +252,6 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
                     (search-paths '())
                     (configure-flags ''())
                     (make-flags ''())
-                    (patches ''()) (patch-flags ''("--batch" "-p1"))
                     (out-of-source? #f)
                     (tests? #t)
                     (test-target "check")
@@ -300,8 +299,6 @@ which could lead to gratuitous input divergence."
                   #:search-paths ',(map search-path-specification->sexp
                                         (append implicit-search-paths
                                                 search-paths))
-                  #:patches ,patches
-                  #:patch-flags ,patch-flags
                   #:phases ,phases
                   #:configure-flags ,configure-flags
                   #:make-flags ,make-flags
@@ -390,7 +387,6 @@ inputs."
 
                           (configure-flags ''())
                           (make-flags ''())
-                          (patches ''()) (patch-flags ''("--batch" "-p1"))
                           (out-of-source? #f)
                           (tests? #f)             ; nothing can be done
                           (test-target "check")
@@ -473,8 +469,6 @@ platform."
                                              search-path-specification->sexp
                                              (append implicit-host-search-paths
                                                      native-search-paths))
-                    #:patches ,patches
-                    #:patch-flags ,patch-flags
                     #:phases ,phases
                     #:configure-flags ,configure-flags
                     #:make-flags ,make-flags

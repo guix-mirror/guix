@@ -47,7 +47,6 @@
                      (outputs '("out")) (configure-flags ''())
                      (search-paths '())
                      (make-flags ''())
-                     (patches ''()) (patch-flags ''("--batch" "-p1"))
                      (cmake (default-cmake))
                      (out-of-source? #f)
                      (tests? #t)
@@ -81,8 +80,6 @@ provides a 'CMakeLists.txt' file as its build system."
                     #:search-paths ',(map search-path-specification->sexp
                                           (append search-paths
                                                   (standard-search-paths)))
-                    #:patches ,patches
-                    #:patch-flags ,patch-flags
                     #:phases ,phases
                     #:configure-flags ,configure-flags
                     #:make-flags ,make-flags
