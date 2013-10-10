@@ -29,6 +29,7 @@
 #include <argp.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/stat.h>
 #include <exception>
 
 /* Variables used by `nix-daemon.cc'.  */
@@ -193,6 +194,11 @@ main (int argc, char *argv[])
       fprintf (stderr, "error: libgcrypt version mismatch\n");
       exit (EXIT_FAILURE);
     }
+
+  /* Set the umask so that the daemon does not end up creating group-writable
+     files, which would lead to "suspicious ownership or permission" errors.
+     See <http://lists.gnu.org/archive/html/bug-guix/2013-07/msg00033.html>.  */
+  umask (S_IWGRP | S_IWOTH);
 
 #ifdef HAVE_CHROOT
   settings.useChroot = true;
