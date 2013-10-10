@@ -27,6 +27,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages algebra)
   #:use-module ((gnu packages autotools) #:select (libtool))
   #:use-module (gnu packages gdbm)
@@ -184,4 +186,32 @@ mixing several sounds into one are easily achieved using a sound server. ")
     ;; PulseAudio is LGPLv2+, but some of the optional dependencies (GNU dbm,
     ;; FFTW, etc.) are GPL'd, so the result is effectively GPLv2+.  See
     ;; 'LICENSE' for details.
+    (license l:gpl2+)))
+
+(define-public pavucontrol
+  (package
+    (name "pavucontrol")
+    (version "2.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://freedesktop.org/software/pulseaudio/pavucontrol/pavucontrol-"
+                   version
+                   ".tar.xz"))
+             (sha256
+              (base32
+               "02s775m1531sshwlbvfddk3pz8zjmwkv1sgzggn386ja3gc9vwi2"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("intltool" ,intltool)
+       ("libcanberra" ,libcanberra)
+       ("gtkmm" ,gtkmm)
+       ("pulseaudio" ,pulseaudio)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://freedesktop.org/software/pulseaudio/pavucontrol/")
+    (synopsis "PulseAudio volume control")
+    (description
+     "PulseAudio Volume Control (pavucontrol) provides a GTK+
+graphical user interface to connect to a PulseAudio server and
+easily control the volume of all clients, sinks, etc.")
     (license l:gpl2+)))
