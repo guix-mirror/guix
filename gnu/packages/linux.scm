@@ -102,7 +102,8 @@
                   (guix build utils)
                   (srfi srfi-1))
        #:phases (alist-replace
-                 'build ,(build-phase (%current-system))
+                 'build ,(build-phase (or (%current-target-system)
+                                          (%current-system)))
                  (alist-replace
                   'install ,install-phase
                   (alist-delete 'configure %standard-phases)))
