@@ -86,7 +86,7 @@
   ;; This file contains package descriptions in recutils format.
   ;; See <https://lists.gnu.org/archive/html/guix-devel/2013-10/msg00071.html>.
   (string->uri
-   (string-append %gnumaint-base-url "pkgdescr.txt?root=womb")))
+   (string-append %gnumaint-base-url "pkgblurbs.txt?root=womb")))
 
 (define-record-type* <gnu-package-descriptor>
   gnu-package-descriptor
