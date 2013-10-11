@@ -180,6 +180,33 @@ everything from small to very large projects with speed and efficiency.")
    (license gpl2)
    (home-page "http://git-scm.com/")))
 
+(define-public mercurial
+  (package
+    (name "mercurial")
+    (version "2.7.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://mercurial.selenic.com/release/mercurial-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "121m8f7vmipmdg00cnzdz2rjkgydh28mwfirqkrbs5fv089vywl4"))))
+    (build-system python-build-system)
+    (arguments
+     `(;; Restrict to Python 2, as Python 3 would require
+       ;; the argument --c2to3.
+       #:python ,python-2
+       ;; FIXME: Disabled tests because they require the nose unit
+       ;; testing framework: https://nose.readthedocs.org/en/latest/ .
+       #:tests? #f))
+    (home-page "http://mercurial.selenic.com")
+    (synopsis "Decentralized version control system")
+    (description
+     "Mercurial is a free, distributed source control management tool.
+It efficiently handles projects of any size
+and offers an easy and intuitive interface.")
+    (license gpl2+)))
+
 (define-public subversion
   (package
     (name "subversion")
