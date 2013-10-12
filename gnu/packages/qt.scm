@@ -21,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
@@ -139,3 +140,45 @@ X11 (yet).")
     (description "Qt is a cross-platform application and UI framework for
 developers using C++ or QML, a CSS & JavaScript like language.")
     (license lgpl2.1)))
+
+(define-public qt-4
+  (package (inherit qt)
+    (version "4.8.5")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.qt-project.org/official_releases/qt/"
+                                 (string-copy version 0 (string-rindex version #\.))
+                                 "/" version
+                                 "/single/qt-everywhere-opensource-src-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0f51dbgn1dcck8pqimls2qyf1pfmsmyknh767cvw87c3d218ywpb"))
+             (patches (list (search-patch "qt4-tests.patch")))))
+    (arguments
+     `(#:phases
+         (alist-replace
+          'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* '("configure")
+                           (("/bin/pwd") (which "pwd")))
+              ;; do not pass "--enable-fast-install", which makes the
+              ;; configure process fail
+              (zero? (system* "./configure"
+                              "-verbose"
+                              "-prefix" out
+                              "-opensource"
+                              "-confirm-license"
+                              ;; drop all special machine instructions
+                              "-no-mmx"
+                              "-no-3dnow"
+                              "-no-sse"
+                              "-no-sse2"
+                              "-no-sse3"
+                              "-no-ssse3"
+                              "-no-sse4.1"
+                              "-no-sse4.2"
+                              "-no-avx"
+                              "-no-neon"))))
+          %standard-phases)))))
