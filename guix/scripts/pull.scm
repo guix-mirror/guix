@@ -47,6 +47,8 @@ files."
                     (ice-9 ftw)
                     (ice-9 match))
 
+       (setvbuf (current-output-port) _IOLBF)
+       (setvbuf (current-error-port) _IOLBF)
        (let ((out     (assoc-ref %outputs "out"))
              (tar     (assoc-ref %build-inputs "tar"))
              (gzip    (assoc-ref %build-inputs "gzip"))
@@ -66,27 +68,9 @@ files."
          (format #t "copying and compiling Guix to `~a'...~%" out)
 
          ;; Copy everything under guix/ and gnu/ plus guix.scm.
-         (file-system-fold (lambda (dir stat result) ; enter?
-                             (or (string-prefix? "./guix" dir)
-                                 (string-prefix? "./gnu" dir)
-                                 (string=? "." dir)))
-                           (lambda (file stat result) ; leaf
-                             (when (or (not (string=? (dirname file) "."))
-                                       (string=? (basename file) "guix.scm"))
-                               (let ((target (string-drop file 1)))
-                                 (copy-file file
-                                            (string-append out target)))))
-                           (lambda (dir stat result) ; down
-                             (mkdir (string-append out
-                                                   (string-drop dir 1))))
-                           (const #t)             ; up
-                           (const #t)             ; skip
-                           (lambda (file stat errno result)
-                             (error "cannot access file"
-                                    file (strerror errno)))
-                           #f
-                           "."
-                           lstat)
+         (copy-recursively "guix" (string-append out "/guix"))
+         (copy-recursively "gnu" (string-append out "/gnu"))
+         (copy-file "guix.scm" (string-append out "/guix.scm"))
 
          ;; Add a fake (guix config) module to allow the other modules to be
          ;; compiled.  The user's (guix config) is the one that will be used.
