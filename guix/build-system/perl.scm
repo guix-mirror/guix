@@ -35,9 +35,16 @@
 ;;
 ;; Code:
 
+(define (default-perl)
+  "Return the default Perl package."
+
+  ;; Do not use `@' to avoid introducing circular dependencies.
+  (let ((module (resolve-interface '(gnu packages perl))))
+    (module-ref module 'perl)))
+
 (define* (perl-build store name source inputs
                      #:key
-                     (perl (@ (gnu packages perl) perl))
+                     (perl (default-perl))
                      (search-paths '())
                      (tests? #t)
                      (make-maker-flags ''())
