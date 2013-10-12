@@ -135,4 +135,5 @@ server and embedded PowerPC, and S390 guests.")
   (package (inherit qemu)
     (name "qemu-with-multiple-smb-shares")
     (source (origin (inherit (package-source qemu))
-              (patches (search-patch "qemu-multiple-smb-shares.patch"))))))
+              (patches
+               (list (search-patch "qemu-multiple-smb-shares.patch")))))))
