@@ -137,13 +137,15 @@ files."
 
 (define %default-options
   ;; Alist of default option values.
-  '())
+  `((tarball-url . ,%snapshot-url)))
 
 (define (show-help)
   (display (_ "Usage: guix pull [OPTION]...
 Download and deploy the latest version of Guix.\n"))
   (display (_ "
       --verbose          produce verbose output"))
+  (display (_ "
+      --url=URL          download the Guix tarball from URL"))
   (display (_ "
       --bootstrap        use the bootstrap Guile to build the new Guix"))
   (newline)
@@ -159,6 +161,10 @@ Download and deploy the latest version of Guix.\n"))
   (list (option '("verbose") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'verbose? #t result)))
+        (option '("url") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'tarball-url arg
+                              (alist-delete 'tarball-url result))))
         (option '("bootstrap") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'bootstrap? #t result)))
@@ -182,10 +188,10 @@ Download and deploy the latest version of Guix.\n"))
                 %default-options))
 
   (with-error-handling
-    (let ((opts  (parse-options))
-          (store (open-connection)))
-      (let ((tarball (download-to-store store %snapshot-url
-                                        "guix-latest.tar.gz")))
+    (let* ((opts  (parse-options))
+           (store (open-connection))
+           (url   (assoc-ref opts 'tarball-url)))
+      (let ((tarball (download-to-store store url "guix-latest.tar.gz")))
         (unless tarball
           (leave (_ "failed to download up-to-date source, exiting\n")))
         (parameterize ((%guile-for-build
