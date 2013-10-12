@@ -31,7 +31,8 @@
   (define config-lookup
     (let ((config '(("prefix"         . "@prefix@")
                     ("datarootdir"    . "@datarootdir@")
-                    ("guilemoduledir" . "@guilemoduledir@")))
+                    ("guilemoduledir" . "@guilemoduledir@")
+                    ("localedir"      . "@localedir@")))
           (var-ref-regexp (make-regexp "\\$\\{([a-z]+)\\}")))
       (define (expand-var-ref match)
         (lookup (match:substring match 1)))
@@ -58,6 +59,7 @@
   (define (run-guix-main)
     (let ((guix-main (module-ref (resolve-interface '(guix ui))
                                  'guix-main)))
+      (bindtextdomain "guix" (config-lookup "localedir"))
       (apply guix-main (command-line))))
 
   (maybe-augment-load-paths!)

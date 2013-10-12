@@ -123,7 +123,7 @@ messages."
 (define (initialize-guix)
   "Perform the usual initialization for stand-alone Guix commands."
   (install-locale)
-  (textdomain "guix")
+  (textdomain %gettext-domain)
 
   ;; Ignore SIGPIPE.  If the daemon closes the connection, we prefer to be
   ;; notified via an EPIPE later.
