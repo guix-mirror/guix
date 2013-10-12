@@ -880,6 +880,12 @@ but it supports the following options:
 @item --verbose
 Produce verbose output, writing build logs to the standard error output.
 
+@item --url=@var{url}
+Download the source tarball of Guix from @var{url}.
+
+By default, the tarball is taken from its canonical address at
+@code{gnu.org}, for the stable branch of Guix.
+
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
 useful to Guix developers.
