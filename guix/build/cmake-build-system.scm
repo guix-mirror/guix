@@ -38,6 +38,8 @@
     (if (file-exists? "CMakeLists.txt")
         (let ((args `(,(string-append "-DCMAKE_INSTALL_PREFIX=" out)
                       ,@configure-flags)))
+          (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
+          (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))
           (format #t "running 'cmake' with arguments ~s~%" args)
           (zero? (apply system* "cmake" args)))
         (error "no CMakeLists.txt found"))))
