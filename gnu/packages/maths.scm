@@ -55,7 +55,7 @@ enough to be used effectively as a scientific calculator.")
 (define-public gsl
   (package
     (name "gsl")
-    (version "1.15")
+    (version "1.16")
     (source
      (origin
       (method url-fetch)
@@ -63,10 +63,11 @@ enough to be used effectively as a scientific calculator.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "18qf6jzz1r3mzb5qynywv4xx3z9g61hgkbpkdrhbgqh2g7jhgfc5"))))
+        "0lrgipi0z6559jqh82yx8n4xgnxkhzj46v96dl77hahdp58jzg3k"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:phases
+     `(#:parallel-tests? #f
+       #:phases
         (alist-replace
          'configure
          (lambda* (#:key target system outputs #:allow-other-keys #:rest args)
