@@ -41,7 +41,6 @@
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
-       #:patch-flags '("-p0")
        #:phases (alist-replace
                  'configure
                  (lambda* (#:key outputs #:allow-other-keys)
