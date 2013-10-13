@@ -287,7 +287,7 @@ application suites.")
 
 (define-public gtk+
   (package (inherit gtk+-2)
-   (version "3.10.0")
+   (version "3.10.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/gtk+/"
@@ -295,7 +295,7 @@ application suites.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1zjkbjvp6ay08107r6zfsrp39x7qfadbd86p3hs5v4ydc2rzwnb5"))))
+              "1f3a7r3z7i9xh5imlfpfcgyydzkj2fnd0v6ylvqxij0yzfbnhbn1"))))
    (propagated-inputs
     `(("at-spi2-atk" ,at-spi2-atk)
       ("atk" ,atk)
@@ -310,8 +310,7 @@ application suites.")
       ("python-wrapper" ,python-wrapper)
       ("xorg-server" ,xorg-server)))
    (arguments
-    `(#:configure-flags '("--enable-x11-backend") ; should not be needed in > 3.10.0
-      #:phases
+    `(#:phases
       (alist-replace
        'configure
        (lambda* (#:key #:allow-other-keys #:rest args)
