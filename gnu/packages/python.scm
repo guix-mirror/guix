@@ -19,7 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages python)
-  #:use-module ((guix licenses) #:select (bsd-3 bsd-style psfl x11))
+  #:use-module ((guix licenses) #:select (bsd-3 bsd-style psfl x11 gpl2+))
   #:use-module ((guix licenses) #:select (zlib)
                                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (gnu packages)
@@ -399,7 +399,7 @@ after Andy Lester’s Perl module WWW::Mechanize.")
      "Json library for Python")
     (description
      "JSON (JavaScript Object Notation) is a subset of JavaScript syntax
-(ECMA-262 3rd edition) used as a lightweight data interchange format.
+ (ECMA-262 3rd edition) used as a lightweight data interchange format.
 
 Simplejson exposes an API familiar to users of the standard library marshal
 and pickle modules.  It is the externally maintained version of the json
@@ -438,3 +438,29 @@ Python 3.3+.")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
     (license x11)))
+
+(define-public python2-dogtail
+  ;; Python 2 only, as it leads to "TabError: inconsistent use of tabs and
+  ;; spaces in indentation" with Python 3.
+  (package
+    (name "python2-dogtail")
+    (version "0.8.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://fedorahosted.org/released/dogtail/dogtail-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1yc4cg7ip87z15gyd4wy2vzbywrjc52a3m8r8gqy2b50d65llcg1"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2
+                 #:tests? #f))                    ; invalid command "test"
+    (home-page "https://fedorahosted.org/dogtail/")
+    (synopsis "GUI test tool and automation framework written in ​Python")
+    (description
+     "dogtail is a GUI test tool and automation framework written in Python.
+It uses Accessibility (a11y) technologies to communicate with desktop
+applications. dogtail scripts are written in Python and executed like any
+other Python program.")
+    (license gpl2+)))
