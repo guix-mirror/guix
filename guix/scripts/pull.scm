@@ -45,15 +45,54 @@ files."
        (use-modules (guix build utils)
                     (system base compile)
                     (ice-9 ftw)
-                    (ice-9 match))
+                    (ice-9 match)
+                    (srfi srfi-1)
+                    (srfi srfi-11)
+                    (srfi srfi-26))
 
        (setvbuf (current-output-port) _IOLBF)
        (setvbuf (current-error-port) _IOLBF)
+
        (let ((out     (assoc-ref %outputs "out"))
              (tar     (assoc-ref %build-inputs "tar"))
              (gzip    (assoc-ref %build-inputs "gzip"))
              (gcrypt  (assoc-ref %build-inputs "gcrypt"))
              (tarball (assoc-ref %build-inputs "tarball")))
+
+         (define* (compile-file* file #:key output-file (opts '()))
+           ;; Like 'compile-file', but remove any (guix …) and (gnu …) modules
+           ;; created during the process as an ugly workaround for
+           ;; <http://bugs.gnu.org/15602> (FIXME).  This ensures correctness,
+           ;; but is overly conservative and very slow.
+
+           (define (module-directory+file module)
+             ;; Return the directory for MODULE, like the 'dir-hint' in
+             ;; boot-9.scm.
+             (match (module-name module)
+               ((beginning ... last)
+                (values (string-concatenate
+                         (map (lambda (elt)
+                                (string-append (symbol->string elt)
+                                               file-name-separator-string))
+                              beginning))
+                        (symbol->string last)))))
+
+           (define (clear-module-tree! root)
+             ;; Delete all the modules under ROOT.
+             (hash-for-each (lambda (name module)
+                              (module-remove! root name)
+                              (let-values (((dir name)
+                                            (module-directory+file module)))
+                                (set-autoloaded! dir name #f))
+                              (clear-module-tree! module))
+                            (module-submodules root))
+             (hash-clear! (module-submodules root)))
+
+           (compile-file file #:output-file output-file #:opts opts)
+
+           (for-each (compose clear-module-tree! resolve-module)
+                     '((guix) (gnu))))
+
          (setenv "PATH" (string-append tar "/bin:" gzip "/bin"))
 
          (system* "tar" "xvf" tarball)
@@ -91,15 +130,12 @@ files."
                                                 ".go")))
                          (format (current-error-port)
                                  "compiling '~a'...~%" file)
-                         (compile-file file
-                                       #:output-file go
-                                       #:opts %auto-compilation-options))))
+                         (compile-file* file
+                                        #:output-file go
+                                        #:opts
+                                        %auto-compilation-options))))
 
-                   ;; XXX: Because of the autoload hack in (guix build
-                   ;; download), we must build it first to avoid errors since
-                   ;; (gnutls) is unavailable.
-                   (cons (string-append out "/guix/build/download.scm")
-                         (find-files out "\\.scm")))
+                   (find-files out "\\.scm"))
 
          ;; Remove the "fake" (guix config).
          (delete-file (string-append out "/guix/config.scm"))
