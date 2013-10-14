@@ -53,7 +53,8 @@
              (base32
               "1c2hbg66wfvibsz2ia0ri48yr62751fn950i97c53j3b0fjifsb3"))))
    (build-system gnu-build-system)
-   (inputs `(("glib" ,glib)))
+   (inputs `(("glib" ,glib)
+             ("gobject-introspection" ,gobject-introspection)))
    (native-inputs `(("pkg-config" ,pkg-config)))
    (synopsis "GNOME accessibility toolkit")
    (description
@@ -155,7 +156,8 @@ affine transformation (scale, rotation, shear, etc.)")
     `(("cairo" ,cairo)
       ("harfbuzz" ,harfbuzz)))
    (inputs
-    `(("zlib" ,zlib)))
+    `(("gobject-introspection" ,gobject-introspection)
+      ("zlib" ,zlib)))
    (native-inputs
     `(("pkg-config" ,pkg-config)))
    (synopsis "GNOME text and font handling library")
@@ -234,6 +236,7 @@ printing and other features typical of a source code editor.")
    (build-system gnu-build-system)
    (inputs
     `(("glib" ,glib)
+      ("gobject-introspection", gobject-introspection)
       ("libjpeg" ,libjpeg)
       ("libpng" ,libpng)
       ("libtiff" ,libtiff)))
@@ -365,17 +368,24 @@ application suites.")
       ("libxinerama" ,libxinerama)
       ("pango" ,pango)))
    (inputs
-    `(("libxml2" ,libxml2)))
+    `(("gobject-introspection" ,gobject-introspection)
+      ("libxml2" ,libxml2)))
    (native-inputs
      `(("perl" ,perl)
       ("pkg-config" ,pkg-config)
       ("python-wrapper" ,python-wrapper)
       ("xorg-server" ,xorg-server)))
    (arguments
-    `(#:phases
+    `(#:modules ((guix build gnome)
+                 (guix build gnu-build-system)
+                 (guix build utils))
+      #:imported-modules ((guix build gnome)
+                          (guix build gnu-build-system)
+                          (guix build utils))
+      #:phases
       (alist-replace
        'configure
-       (lambda* (#:key #:allow-other-keys #:rest args)
+       (lambda* (#:key inputs #:allow-other-keys #:rest args)
          (let ((configure (assoc-ref %standard-phases 'configure)))
            ;; Disable most tests, failing in the chroot with the message:
            ;; D-Bus library appears to be incorrectly set up; failed to read
@@ -384,6 +394,31 @@ application suites.")
            ;; See the manual page for dbus-uuidgen to correct this issue.
            (substitute* "testsuite/Makefile.in"
             (("SUBDIRS = gdk gtk a11y css reftests") "SUBDIRS = gdk"))
+
+	   ;; We need to tell GIR where it can find some of the required .gir
+           ;; files.
+           (substitute* "gdk/Makefile.in"
+            (("--add-include-path=../gdk")
+             (string-append
+              "--add-include-path=../gdk"
+              " --add-include-path=" (gir-directory inputs "gdk-pixbuf")
+              " --add-include-path=" (gir-directory inputs "pango")))
+            (("--includedir=\\.")
+             (string-append "--includedir=."
+              " --includedir=" (gir-directory inputs "gdk-pixbuf")
+              " --includedir=" (gir-directory inputs "pango"))))
+
+           (substitute* "gtk/Makefile.in"
+            (("--add-include-path=../gdk")
+             (string-append "--add-include-path=../gdk"
+              " --add-include-path=" (gir-directory inputs "atk")
+              " --add-include-path=" (gir-directory inputs "gdk-pixbuf")
+              " --add-include-path=" (gir-directory inputs "pango")))
+            (("--includedir=../gdk")
+             (string-append "--includedir=../gdk"
+              " --includedir=" (gir-directory inputs "atk")
+              " --includedir=" (gir-directory inputs "gdk-pixbuf")
+              " --includedir=" (gir-directory inputs "pango"))))
            (apply configure args)))
        %standard-phases)))))
 

@@ -184,9 +184,12 @@ dynamic loading, and an object system.")
        ("cairo" ,cairo)
        ("flex" ,flex)
        ("glib" ,glib)
-       ("libffi" ,libffi)
        ("pkg-config" ,pkg-config)
        ("python-2" ,python-2)))
+    (propagated-inputs
+     `(;; In practice, GIR users will need libffi when using
+       ;; gobject-introspection.
+       ("libffi" ,libffi)))
     (arguments
      `(#:phases
         (alist-replace
