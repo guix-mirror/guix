@@ -359,3 +359,67 @@ notification daemon, as defined in the Desktop Notifications spec. These
 notifications can be used to inform the user about an event or display
 some form of information without getting in the user's way.")
     (license lgpl2.1+)))
+
+(define-public libpeas
+  (package
+    (name "libpeas")
+    (version "1.9.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnome/sources/" name "/"
+                          (substring version 0 (string-rindex version #\.)) "/"
+                          name "-" version ".tar.xz"))
+      (sha256
+       (base32
+        "13fzyzv6c0cfdj83z1s16lv8k997wpnzyzr0wfwcfkcmvz64g1q0"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnome)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:imported-modules ((guix build gnome)
+                           (guix build gnu-build-system)
+                           (guix build utils))
+       #:phases
+        (alist-replace
+         'configure
+         (lambda* (#:key inputs #:allow-other-keys #:rest args)
+          (let ((configure (assoc-ref %standard-phases 'configure)))
+           (substitute* "libpeas-gtk/Makefile.in"
+            (("--add-include-path")
+             (string-append
+               " --add-include-path=" (gir-directory inputs "atk")
+               " --add-include-path=" (gir-directory inputs "gdk-pixbuf")
+               " --add-include-path=" (gir-directory inputs "gtk+")
+               " --add-include-path=" (gir-directory inputs "pango")
+               " --add-include-path")))
+           (substitute* "libpeas-gtk/Makefile.in"
+            (("--includedir=\\$\\(top_builddir")
+             (string-append
+              " --includedir=" (gir-directory inputs "atk")
+              " --includedir=" (gir-directory inputs "gdk-pixbuf")
+              " --includedir=" (gir-directory inputs "gtk+")
+              " --includedir=" (gir-directory inputs "pango")
+              " --includedir=$(top_builddir")))
+           (apply configure args)))
+         %standard-phases)))
+    (inputs
+     `(("atk" ,atk)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)
+       ("gtk+" ,gtk+)
+       ("intltool" ,intltool)
+       ("pango" ,pango)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://wiki.gnome.org/Libpeas")
+    (synopsis "GObject plugin system")
+    (description
+     "libpeas is a gobject-based plugins engine, and is targetted at giving
+every application the chance to assume its own extensibility.  It also has a
+set of features including, but not limited to: multiple extension points; on
+demand (lazy) programming language support for C, Python and JS; simplicity of
+the API")
+
+    (license lgpl2.0+)))
