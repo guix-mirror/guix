@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2013 David Thompson <dthompson2@worcester.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (guix build-system gnu)
   #:export (libogg
             libvorbis
+            libtheora
             speex
             ao
             flac
@@ -87,6 +89,29 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
    (license (license:bsd-style "file://COPYING"
                                "See COPYING in the distribution."))
    (home-page "http://xiph.org/vorbis/")))
+
+(define libtheora
+  (package
+    (name "libtheora")
+    (version "1.1.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://downloads.xiph.org/releases/theora/libtheora-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0q8wark9ribij57dciym5vdikg2464p8q2mgqvfb78ksjh4s8vgk"))))
+    (build-system gnu-build-system)
+    (inputs `(("libvorbis" ,libvorbis)))
+    ;; The .pc files refer to libogg.
+    (propagated-inputs `(("libogg" ,libogg)))
+    (synopsis "Library implementing the Theora video format")
+    (description
+     "The libtheora library implements the ogg theora video format,
+a fully open, non-proprietary, patent-and-royalty-free, general-purpose
+compressed video format.")
+    (license license:bsd-3)
+    (home-page "http://xiph.org/theora/")))
 
 (define speex
   (package
