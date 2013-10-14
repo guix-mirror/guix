@@ -253,8 +253,8 @@ and offers an easy and intuitive interface.")
     (home-page "http://subversion.apache.org/")
     (synopsis "Subversion, a revision control system")
     (description
-     "Subversion exists to be universally recognized and adopted as an
-open-source, centralized version control system characterized by its
+     "Subversion exists to be universally recognized and adopted as a
+centralized version control system characterized by its
 reliability as a safe haven for valuable data; the simplicity of its model and
 usage; and its ability to support the needs of a wide variety of users and
 projects, from individuals to large-scale enterprise operations.")
