@@ -65,7 +65,7 @@
          version "-gnu.tar.xz")))
 
 (define-public linux-libre-headers
-  (let* ((version* "3.3.8")
+  (let* ((version "3.3.8")
          (build-phase
           (lambda (arch)
             `(lambda _
@@ -85,10 +85,10 @@
                         (string-append out
                                        "/include/config/kernel.release")
                       (lambda (p)
-                        (format p "~a-default~%" ,version*))))))))
+                        (format p "~a-default~%" ,version))))))))
    (package
     (name "linux-libre-headers")
-    (version version*)
+    (version version)
     (source (origin
              (method url-fetch)
              (uri (linux-libre-urls version))
@@ -145,7 +145,7 @@
     (license gpl2+)))
 
 (define-public linux-libre
-  (let* ((version* "3.11")
+  (let* ((version "3.11")
          (build-phase
           '(lambda* (#:key system #:allow-other-keys #:rest args)
              (let ((arch (car (string-split system #\-))))
@@ -185,7 +185,7 @@
                                "modules_install"))))))
    (package
     (name "linux-libre")
-    (version version*)
+    (version version)
     (source (origin
              (method url-fetch)
              (uri (linux-libre-urls version))

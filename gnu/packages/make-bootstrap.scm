@@ -451,15 +451,15 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   ;; A statically-linked Guile that is relocatable--i.e., it can search
   ;; .scm and .go files relative to its installation directory, rather
   ;; than in hard-coded configure-time paths.
-  (let* ((patches* (cons* (search-patch "guile-relocatable.patch")
-                          (search-patch "guile-default-utf8.patch")
-                          (search-patch "guile-linux-syscalls.patch")
-                          (origin-patches (package-source guile-2.0))))
-         (source*  (origin (inherit (package-source guile-2.0))
-                     (patches patches*)))
+  (let* ((patches (cons* (search-patch "guile-relocatable.patch")
+                         (search-patch "guile-default-utf8.patch")
+                         (search-patch "guile-linux-syscalls.patch")
+                         (origin-patches (package-source guile-2.0))))
+         (source  (origin (inherit (package-source guile-2.0))
+                    (patches patches)))
          (guile (package (inherit guile-2.0)
                   (name (string-append (package-name guile-2.0) "-static"))
-                  (source source*)
+                  (source source)
                   (synopsis "Statically-linked and relocatable Guile")
                   (propagated-inputs
                    `(("bdw-gc" ,libgc)
