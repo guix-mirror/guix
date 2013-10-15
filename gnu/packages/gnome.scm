@@ -27,6 +27,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages perl)
@@ -49,6 +50,9 @@
     (build-system gnu-build-system)
     (propagated-inputs
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)
        ("gnome-doc-utils" ,gnome-doc-utils)
@@ -69,6 +73,47 @@
     (description "Brasero is an application to burn CD/DVD for the Gnome
 Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
+    (license gpl2+)))
+
+(define-public gnome-desktop
+  (package
+    (name "gnome-desktop")
+    (version "3.10.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnome/sources/" name "/3.10/"
+                          name "-" version ".tar.xz"))
+      (sha256
+       (base32
+        "0p5p6wvmy5zvcdnmp5h2biz7rjrcw99chq5kkwcnb68flcmkb1ry"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("gtk+" ,gtk+)
+       ("iso-codes" ,iso-codes)
+       ("itstool" ,itstool)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("libxkbfile" ,libxkbfile)
+       ("libxrandr" ,libxrandr)
+       ("xkeyboard-config" ,xkeyboard-config)))
+    (home-page "https://www.gnome.org/")
+    (synopsis
+     "libgnome-desktop, gnome-about, and desktop-wide documents")
+    (description
+     "The libgnome-desktop library provides API shared by several applications
+on the desktop, but that cannot live in the platform for various reasons. There
+is no API or ABI guarantee, although we are doing our best to provide
+stability. Documentation for the API is available with gtk-doc.
+
+The gnome-about program helps find which version of GNOME is installed.")
+    ; Some bits under the LGPL.
     (license gpl2+)))
 
 (define-public gnome-doc-utils
