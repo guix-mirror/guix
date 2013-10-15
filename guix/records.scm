@@ -73,7 +73,7 @@ thunked fields."
                 (memq (syntax->datum f) '#,thunked))
 
               (define (field-bindings field+value)
-                ;; Return field to value bindings, for use in `letrec*' below.
+                ;; Return field to value bindings, for use in 'let*' below.
                 (map (lambda (field+value)
                        (syntax-case field+value ()
                          ((field value)
@@ -85,7 +85,7 @@ thunked fields."
 
               (syntax-case s (inherit #,@fields)
                 ((_ (inherit orig-record) (field value) (... ...))
-                 #`(letrec* #,(field-bindings #'((field value) (... ...)))
+                 #`(let* #,(field-bindings #'((field value) (... ...)))
                      #,(record-inheritance #'orig-record
                                            #'((field value) (... ...)))))
                 ((_ (field value) (... ...))
@@ -116,8 +116,8 @@ thunked fields."
                                                       s)))))
                      (let ((fields (append fields (map car dflt))))
                        (cond ((lset= eq? fields 'expected)
-                              #`(letrec* #,(field-bindings
-                                            #'((field value) (... ...)))
+                              #`(let* #,(field-bindings
+                                         #'((field value) (... ...)))
                                   (ctor #,@(map field-value 'expected))))
                              ((pair? (lset-difference eq? fields 'expected))
                               (error* "extraneous field initializers ~a"

@@ -36,9 +36,9 @@
          (match (foo (bar 1))
            (($ <foo> 1 42) #t)))))
 
-(test-assert "define-record-type* with letrec* behavior"
+(test-assert "define-record-type* with let* behavior"
   ;; Make sure field initializers can refer to each other as if they were in
-  ;; a `letrec*'.
+  ;; a 'let*'.
   (begin
     (define-record-type* <bar> bar make-bar
       foo?
@@ -69,7 +69,7 @@
           (equal? c d)
           (match e (($ <foo> 42 77) #t))))))
 
-(test-assert "define-record-type* & inherit & letrec* behavior"
+(test-assert "define-record-type* & inherit & let* behavior"
   (begin
     (define-record-type* <foo> foo make-foo
       foo?
