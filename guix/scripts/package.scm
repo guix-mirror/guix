@@ -325,8 +325,8 @@ DURATION-RELATION with the current time."
         (else #f)))
 
 (define (find-packages-by-description rx)
-  "Search in SYNOPSIS and DESCRIPTION using RX.  Return a list of
-matching packages."
+  "Return the list of packages whose name, synopsis, or description matches
+RX."
   (define (same-location? p1 p2)
     ;; Compare locations of two packages.
     (equal? (package-location p1) (package-location p2)))
@@ -337,7 +337,8 @@ matching packages."
                      (define matches?
                        (cut regexp-exec rx <>))
 
-                     (if (or (and=> (package-synopsis package)
+                     (if (or (matches? (gettext (package-name package)))
+                             (and=> (package-synopsis package)
                                     (compose matches? gettext))
                              (and=> (package-description package)
                                     (compose matches? gettext)))
