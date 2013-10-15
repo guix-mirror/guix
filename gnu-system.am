@@ -101,6 +101,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/imagemagick.scm			\
   gnu/packages/indent.scm			\
   gnu/packages/irssi.scm			\
+  gnu/packages/iso-codes.scm			\
   gnu/packages/kde.scm				\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
