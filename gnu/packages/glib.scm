@@ -176,7 +176,8 @@ dynamic loading, and an object system.")
                    "/gobject-introspection-"
                    version ".tar.xz"))
              (sha256
-              (base32 "0wvxyvgajmms2bb6k3pf1rdpnd79xdxamykzvxzmcyn1ag9yax9m"))))
+              (base32 "0wvxyvgajmms2bb6k3pf1rdpnd79xdxamykzvxzmcyn1ag9yax9m"))
+             (patches (list (search-patch "gobject-introspection-cc.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("bison" ,bison)
@@ -192,8 +193,8 @@ dynamic loading, and an object system.")
          'configure
          (lambda* (#:key #:allow-other-keys #:rest args)
           (let ((configure (assoc-ref %standard-phases 'configure)))
-           ;; giscanner/sourcescanner.py looks for 'CC', let's set it here.
-           (setenv "CC" "gcc")
+           (substitute* "giscanner/sourcescanner.py"
+             (("GUIX_GCC_PATH") (which "gcc")))
            (apply configure args)))
          %standard-phases)))
     (home-page "https://wiki.gnome.org/GObjectIntrospection")
