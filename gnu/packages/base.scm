@@ -276,16 +276,17 @@ functionality beyond that which is outlined in the POSIX standard.")
 (define-public gnu-make
   (package
    (name "make")
-   (version "3.82")
+   (version "4.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/make/make-" version
                                 ".tar.bz2"))
             (sha256
              (base32
-              "0ri98385hsd7li6rh4l5afcq92v8l2lgiaz85wgcfh4w2wzsghg2"))
+              "1nyvn8mknw0mf7727lprva3lisl1y0n03lvar342rrpdmz3qc1p6"))
             (patches (list (search-patch "make-impure-dirs.patch")))))
    (build-system gnu-build-system)
+   (inputs `(("guile" ,guile-2.0)))
    (outputs '("out" "debug"))
    (arguments
     '(#:phases (alist-cons-before
@@ -364,7 +365,8 @@ archives.")
               "18spla703zav8dq9fw7rbzkyv9qfisxb26p7amg1x3wjh7iy3d1c"))
             (patches (map search-patch
                           '("glibc-no-ld-so-cache.patch"
-                            "glibc-ldd-x86_64.patch")))))
+                            "glibc-ldd-x86_64.patch"
+                            "glibc-make-4.0.patch")))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -560,6 +562,10 @@ and daylight-saving rules.")
             ((#:phases phases)
              `(alist-replace
                'build (lambda _
+                        ;; Don't attempt to build 'guile.c' since we don't
+                        ;; have Guile here.
+                        (substitute* "build.sh"
+                          (("guile\\.\\$\\{OBJEXT\\}") ""))
                         (zero? (system* "./build.sh")))
                (alist-replace
                 'install (lambda* (#:key outputs #:allow-other-keys)
@@ -991,6 +997,14 @@ store.")
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
+(define-public gnu-make-final
+  ;; The final GNU Make, which uses the final Guile.
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs gnu-make
+                                 `(("guile" ,guile-final)
+                                   ,@%boot4-inputs)
+                                 (current-source-location))))
+
 (define-public ld-wrapper
   ;; The final `ld' wrapper, which uses the final Guile.
   (package (inherit ld-wrapper-boot3)
@@ -1021,8 +1035,8 @@ store.")
                ("sed" ,sed)
                ("grep" ,grep)
                ("findutils" ,findutils)
-               ("gawk" ,gawk)
-               ("make" ,gnu-make)))
+               ("gawk" ,gawk)))
+      ("make" ,gnu-make-final)
       ("bash" ,bash-final)
       ("ld-wrapper" ,ld-wrapper)
       ("binutils" ,binutils-final)
