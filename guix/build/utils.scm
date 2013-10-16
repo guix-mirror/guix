@@ -207,7 +207,7 @@ matches REGEXP."
                           (lambda (file stat errno result)
                             (format (current-error-port) "find-files: ~a: ~a~%"
                                     file (strerror errno))
-                            #f)
+                            result)
                           '()
                           dir)
         string<?))
