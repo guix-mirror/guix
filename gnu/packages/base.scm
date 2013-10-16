@@ -1001,9 +1001,13 @@ store.")
                       '("guile" "bash"))))))
 
 (define-public %final-inputs
-  ;; Final derivations used as implicit inputs by `gnu-build-system'.
-  (let ((finalize (cut package-with-explicit-inputs <> %boot4-inputs
-                       (current-source-location))))
+  ;; Final derivations used as implicit inputs by 'gnu-build-system'.  We
+  ;; still use 'package-with-bootstrap-guile' so that the bootstrap tools are
+  ;; used for origins that have patches, thereby avoiding circular
+  ;; dependencies.
+  (let ((finalize (compose package-with-bootstrap-guile
+                           (cut package-with-explicit-inputs <> %boot4-inputs
+                                (current-source-location)))))
     `(,@(map (match-lambda
               ((name package)
                (list name (finalize package))))
