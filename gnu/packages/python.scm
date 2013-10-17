@@ -464,3 +464,29 @@ It uses Accessibility (a11y) technologies to communicate with desktop
 applications. dogtail scripts are written in Python and executed like any
 other Python program.")
     (license gpl2+)))
+
+(define-public scons
+  (package
+    (name "scons")
+    (version "2.1.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/scons/scons-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "07cjn4afb2cljjrd3cr7xf062qq58z8q96f58z6yplhdyqafsfa1"))))
+    (build-system python-build-system)
+    (arguments
+     ;; With Python 3.x, fails to build with a syntax error.
+     `(#:python ,python-2
+       #:tests? #f))                       ; no 'python setup.py test' command
+    (home-page "http://scons.org/")
+    (synopsis "Software construction tool written in Python")
+    (description
+     "SCons is a software construction tool.  Think of SCons as an improved,
+cross-platform substitute for the classic Make utility with integrated
+functionality similar to autoconf/automake and compiler caches such as ccache.
+In short, SCons is an easier, more reliable and faster way to build
+software.")
+    (license x11)))
