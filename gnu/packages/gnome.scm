@@ -137,10 +137,8 @@ and keep up to date translations of documentation.")
     (version "3.6.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "mirror://gnome/sources/evince/3.6/evince-"
-                   version
-                   ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/evince/3.6/evince-"
+                                 version ".tar.xz"))
              (sha256
               (base32
                "1da1pij030dh8mb0pr0jnyszgsbjnh8lc17rj5ii52j3kmbv51qv"))))
@@ -151,7 +149,19 @@ and keep up to date translations of documentation.")
        ;; FIXME: Tests fail with:
        ;;   ImportError: No module named gi.repository
        ;; Where should that module come from?
-       #:tests? #f ))
+       #:tests? #f
+
+       #:phases (alist-cons-after
+                 'install 'set-mime-search-path
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   ;; Wrap 'evince' so that it knows where MIME info is.
+                   (let ((out  (assoc-ref outputs "out"))
+                         (mime (assoc-ref inputs "shared-mime-info")))
+                     (wrap-program (string-append out "/bin/evince")
+                                   `("XDG_DATA_DIRS" ":" prefix
+                                     ,(list (string-append mime "/share")
+                                            (string-append out "/share"))))))
+                 %standard-phases)))
     (inputs
      `(("libspectre" ,libspectre)
        ;; ("djvulibre" ,djvulibre)
@@ -167,15 +177,15 @@ and keep up to date translations of documentation.")
        ("gtk+" ,gtk+)
        ("glib" ,glib)
        ("libxml2" ,libxml2)
-       ("perl-xml-parser" ,perl-xml-parser)
-       ("perl" ,perl)
-       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
        ("libsm" ,libsm)
        ("libice" ,libice)
+       ("shared-mime-info" ,shared-mime-info)
 
        ;; For tests.
        ("dogtail" ,python2-dogtail)))
+    (native-inputs
+     `(("intltool" ,intltool)))
     (home-page
      "http://www.gnome.org/projects/evince/")
     (synopsis "GNOME's document viewer")
@@ -183,8 +193,7 @@ and keep up to date translations of documentation.")
      "Evince is a document viewer for multiple document formats.  It
 currently supports PDF, PostScript, DjVu, TIFF and DVI.  The goal
 of Evince is to replace the multiple document viewers that exist
-on the GNOME Desktop with a single simple application.
-")
+on the GNOME Desktop with a single simple application.")
     (license gpl2+)))
 
 (define-public gsettings-desktop-schemas
