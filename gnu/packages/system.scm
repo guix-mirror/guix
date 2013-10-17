@@ -28,6 +28,8 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages guile)
+  #:use-module ((gnu packages gettext)
+                #:renamer (symbol-prefix-proc 'g:))
   #:use-module ((gnu packages base)
                 #:select (tar))
   #:use-module ((gnu packages compression)
@@ -74,6 +76,7 @@ is based on GNU Guile.")
         "1b4hfqv23l87cb37fxwzfk2sgspkyxpr3ig2hsd23hr6mm982j7z"))))
    (build-system cmake-build-system)
    (arguments '(#:tests? #f)) ; There are no tests.
+   (native-inputs `(("gettext" ,g:gettext)))
    (home-page "http://projects.gw-computing.net/projects/dfc")
    (synopsis "Display file system space usage using graphs and colors")
    (description
