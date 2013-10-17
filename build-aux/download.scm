@@ -45,7 +45,12 @@
   (match (string-tokenize file (char-set-complement (char-set #\/)))
     ((_ ... system basename)
      (string->uri (string-append %url-base "/" system
-                                 "/20130105/" basename)))))
+                                 (match system
+                                   ("mips64el-linux"
+                                    "/20131017/")
+                                   (_
+                                    "/20130105/"))
+                                 basename)))))
 
 (match (command-line)
   ((_ file expected-hash)
