@@ -264,6 +264,37 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
      "Icons for the GNOME desktop.")
     (license lgpl3))) ; or Creative Commons BY-SA 3.0
 
+(define-public shared-mime-info
+  (package
+    (name "shared-mime-info")
+    (version "1.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://freedesktop.org/~hadess/shared-mime-info-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0y5vi0vr6rbhvfzcfg57cfskn362bpvcpca9cy598nmr87i6lld5"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; The build system appears not to be parallel-safe.
+     '(#:parallel-build? #f))
+    (inputs
+     `(("glib" ,glib)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (home-page "http://freedesktop.org/wiki/Software/shared-mime-info")
+    (synopsis "Database of common MIME types")
+    (description
+     "The shared-mime-info package contains the core database of common types
+and the update-mime-database command used to extend it.  It requires glib2 to
+be installed for building the update command.  Additionally, it uses intltool
+for translations, though this is only a dependency for the maintainers.  This
+database is translated at Transifex.")
+    (license gpl2+)))
+
 (define-public hicolor-icon-theme
   (package
     (name "hicolor-icon-theme")
