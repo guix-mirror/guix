@@ -321,3 +321,25 @@ programs and scripts. At the same time, it is a feature-rich network debugging
 and exploration tool, since it can create almost any kind of connection you
 would need and has several interesting built-in capabilities.")
     (license gpl2+)))
+
+(define-public alive
+  (package
+    (name "alive")
+    (version "2.0.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/alive/alive-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1vrzg51ai68x9yld7vbgl58sxaw5qpx8rbakwcxn4cqq6vpxj38j"))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("alive_cv_nice_ping=yes")))
+    (inputs `(("guile" ,guile-2.0)
+              ("inetutils" ,inetutils)))
+    (home-page "http://www.gnu.org/software/alive/")
+    (synopsis "Autologin and keep-alive daemon")
+    (description
+     "GNU Alive sends periodic pings to a server, generally to keep a
+connection alive.")
+    (license gpl3+)))
