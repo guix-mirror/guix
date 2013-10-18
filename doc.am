@@ -21,7 +21,8 @@ info_TEXINFOS = doc/guix.texi
 EXTRA_DIST +=					\
   doc/fdl-1.3.texi				\
   doc/images/bootstrap-graph.dot		\
-  doc/images/bootstrap-graph.eps
+  doc/images/bootstrap-graph.eps		\
+  doc/images/bootstrap-graph.pdf
 
 infoimagedir = $(infodir)/images
 dist_infoimage_DATA = doc/images/bootstrap-graph.png
@@ -47,6 +48,6 @@ DOT_OPTIONS =					\
 # We cannot add new dependencies to `doc/guix.pdf' & co. (info "(automake)
 # Extending").  Using the `-local' rules is imperfect, because they may be
 # triggered after the main rule.  Oh, well.
-pdf-local: doc/images/bootstrap-graph.pdf
-info-local: doc/images/bootstrap-graph.png
-ps-local: doc/images/bootstrap-graph.eps
+pdf-local: $(top_srcdir)/doc/images/bootstrap-graph.pdf
+info-local: $(top_srcdir)/doc/images/bootstrap-graph.png
+ps-local: $(top_srcdir)/doc/images/bootstrap-graph.eps
