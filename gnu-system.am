@@ -142,6 +142,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/patchelf.scm			\
   gnu/packages/pcre.scm				\
   gnu/packages/pdf.scm				\
+  gnu/packages/pem.scm				\
   gnu/packages/perl.scm				\
   gnu/packages/pkg-config.scm			\
   gnu/packages/plotutils.scm			\
