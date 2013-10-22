@@ -26,6 +26,7 @@
   #:use-module (gnu packages compression)
   #:use-module ((gnu packages gettext)
                 #:renamer (symbol-prefix-proc 'gnu:))
+  #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
@@ -87,6 +88,33 @@ and C++.  It includes a wide range of mathematical routines, with over 1000
 functions in total.  Subject areas covered by the library include:
 differential equations, linear algebra, Fast Fourier Transforms and random
 numbers.")
+    (license license:gpl3+)))
+
+(define-public glpk
+  (package
+    (name "glpk")
+    (version "4.52.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/glpk/glpk-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0nz9ngmx23c8gbjr8l8ygnfaanxj2mwbl8awpg630bgrkxdnhc9j"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gmp" ,gmp)))
+    (arguments
+     `(#:configure-flags '("--with-gmp")))
+    (home-page "http://www.gnu.org/software/glpk/")
+    (synopsis "NU Linear Programming Kit, supporting the MathProg language")
+    (description
+     "GLPK is a C library for solving large-scale linear programming (LP),
+mixed integer programming (MIP), and other related problems.  It supports the
+GNU MathProg modeling language, a subset of the AMPL language, and features a
+translator for the language.  In addition to the C library, a stand-alone
+LP/MIP solver is included in the package.")
     (license license:gpl3+)))
 
 (define-public pspp
