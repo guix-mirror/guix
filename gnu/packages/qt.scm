@@ -149,7 +149,7 @@ developers using C++ or QML, a CSS & JavaScript like language.")
              (uri (string-append "http://download.qt-project.org/official_releases/qt/"
                                  (string-copy version 0 (string-rindex version #\.))
                                  "/" version
-                                 "/single/qt-everywhere-opensource-src-"
+                                 "/qt-everywhere-opensource-src-"
                                  version ".tar.gz"))
              (sha256
               (base32
