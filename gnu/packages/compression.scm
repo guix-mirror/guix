@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,8 @@
                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages which))
 
 (define-public zlib
   (package
@@ -246,4 +248,39 @@ format are designed to be portable across platforms.")
 one of gzip or bzip2.  Lzip decompresses almost as fast as gzip and compresses
 more than bzip2, which makes it well suited for software distribution and data
 archiving.  Lzip is a clean implementation of the LZMA algorithm.")
+    (license license:gpl3+)))
+
+(define-public sharutils
+  (package
+    (name "sharutils")
+    (version "4.14")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/sharutils/sharutils-"
+                          version ".tar.xz"))
+      (sha256
+       (base32
+        "033sq1v0cp0bi1mp320xaqwd4fhakqc5747hh6qa1asjrzpqiqza"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("which" ,which)))
+    (arguments
+     `(#:phases
+        (alist-cons-after
+         'patch-source-shebangs 'unpatch-source-shebang
+         ;; revert the patch-shebang phase on a script which is
+         ;; in fact test data
+         (lambda* (#:key #:allow-other-keys)
+           (substitute* "tests/shar-1.ok"
+             (((which "sh")) "/bin/sh")))
+         %standard-phases)))
+    (home-page "http://www.gnu.org/software/sharutils/")
+    (synopsis "Archives in shell scripts, uuencode/uudecode")
+    (description
+     "GNU sharutils is a package for manipulating shell archives. Shell
+archives are collections of files that can be unpacked using only the shell;
+an archive is a self-extracting shell script. The tools in the Sharutils
+package make working with shell archives more robust, offering compression,
+file-splitting and simple checksums.")
     (license license:gpl3+)))
