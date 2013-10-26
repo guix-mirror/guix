@@ -232,14 +232,14 @@ format are designed to be portable across platforms.")
 (define-public lzip
   (package
     (name "lzip")
-    (version "1.14")
+    (version "1.15")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/lzip/lzip-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1rybhk2pxpfh2789ck9mrkdv3bpx7b7miwndlshb5vb02m9crxbz"))))
+               "1dh5vmj5apizfawnsm50y7z064yx7cz3313przph16gwd3dgrlvw"))))
     (build-system gnu-build-system)
     (home-page "http://www.nongnu.org/lzip/lzip.html")
     (synopsis "Lossless data compressor based on the LZMA algorithm")
