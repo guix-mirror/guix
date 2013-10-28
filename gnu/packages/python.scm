@@ -19,7 +19,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages python)
-  #:use-module ((guix licenses) #:select (bsd-3 bsd-style psfl x11 gpl2+))
+  #:use-module ((guix licenses)
+                #:select (bsd-3 bsd-style psfl x11 gpl2+ lgpl2.1+))
   #:use-module ((guix licenses) #:select (zlib)
                                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (gnu packages)
@@ -465,6 +466,41 @@ applications. dogtail scripts are written in Python and executed like any
 other Python program.")
     (license gpl2+)))
 
+(define-public python2-empy
+  (package
+    (name "python2-empy")
+    (version "3.3")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.alcyone.com/software/empy/empy-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "01g8mmkfnvjdmlhsihwyx56lrg7r5m5d2fg6mnxsvy6g0dnl69f6"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases (alist-replace
+                 'check
+                 (lambda _
+                   (zero? (system* "./test.sh")))
+                 %standard-phases)))
+    (home-page "http://www.alcyone.com/software/empy/")
+    (synopsis "Templating system for Python")
+    (description
+     "EmPy is a system for embedding Python expressions and statements in
+template text; it takes an EmPy source file, processes it, and produces
+output.  This is accomplished via expansions, which are special signals to the
+EmPy system and are set off by a special prefix (by default the at sign, @).
+EmPy can expand arbitrary Python expressions and statements in this way, as
+well as a variety of special forms.  Textual data not explicitly delimited in
+this way is sent unaffected to the output, allowing Python to be used in
+effect as a markup language.  Also supported are callbacks via hooks,
+recording and playback via diversions, and dynamic, chainable filters.  The
+system is highly configurable via command line options and embedded
+commands.")
+    (license lgpl2.1+)))
+
 (define-public scons
   (package
     (name "scons")
@@ -490,3 +526,4 @@ functionality similar to autoconf/automake and compiler caches such as ccache.
 In short, SCons is an easier, more reliable and faster way to build
 software.")
     (license x11)))
+
