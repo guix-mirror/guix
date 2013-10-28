@@ -2086,6 +2086,13 @@ one:
 guix build --target=armv5tel-linux-gnueabi bootstrap-tarballs
 @end example
 
+Once these are built, the @code{(gnu packages bootstrap)} module needs
+to be updated to refer to these binaries on the target platform.  In
+addition, the @code{glibc-dynamic-linker} procedure in that module must
+be augmented to return the right file name for libc's dynamic linker on
+that platform; likewise, @code{system->linux-architecture} in @code{(gnu
+packages linux)} must be taught about the new platform.
+
 In practice, there may be some complications.  First, it may be that the
 extended GNU triplet that specifies an ABI (like the @code{eabi} suffix
 above) is not recognized by all the GNU tools.  Typically, glibc
