@@ -65,7 +65,6 @@
                                          (guix build gnu-build-system)
                                          (guix build utils)))
                      (modules '((guix build cmake-build-system)
-                                (guix build gnu-build-system)
                                 (guix build utils))))
   "Build SOURCE using CMAKE, and with INPUTS. This assumes that SOURCE
 provides a 'CMakeLists.txt' file as its build system."
