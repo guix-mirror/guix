@@ -403,6 +403,74 @@ return its return value."
        (format (current-error-port) "  interrupted by signal ~a~%" SIGINT)
        #f))))
 
+
+;;;
+;;; Package specifications.
+;;;
+
+(define newest-available-packages
+  (memoize find-newest-available-packages))
+
+(define (find-best-packages-by-name name version)
+  "If version is #f, return the list of packages named NAME with the highest
+version numbers; otherwise, return the list of packages named NAME and at
+VERSION."
+  (if version
+      (find-packages-by-name name version)
+      (match (vhash-assoc name (newest-available-packages))
+        ((_ version pkgs ...) pkgs)
+        (#f '()))))
+
+(define* (find-package name #:optional (output "out"))
+  "Find the package NAME; NAME may contain a version number and a
+sub-derivation name.  If the version number is not present, return the
+preferred newest version.  If the sub-derivation name is not present, use
+OUTPUT."
+  (define request name)
+
+  (define (ensure-output p sub-drv)
+    (if (member sub-drv (package-outputs p))
+        p
+        (leave (_ "package `~a' lacks output `~a'~%")
+               (package-full-name p)
+               sub-drv)))
+
+  (let*-values (((name sub-drv)
+                 (match (string-rindex name #\:)
+                   (#f    (values name output))
+                   (colon (values (substring name 0 colon)
+                                  (substring name (+ 1 colon))))))
+                ((name version)
+                 (package-name->name+version name)))
+    (match (find-best-packages-by-name name version)
+      ((p)
+       (list name (package-version p) sub-drv (ensure-output p sub-drv)
+             (package-transitive-propagated-inputs p)))
+      ((p p* ...)
+       (warning (_ "ambiguous package specification `~a'~%")
+                request)
+       (warning (_ "choosing ~a from ~a~%")
+                (package-full-name p)
+                (location->string (package-location p)))
+       (list name (package-version p) sub-drv (ensure-output p sub-drv)
+             (package-transitive-propagated-inputs p)))
+      (()
+       (leave (_ "~a: package not found~%") request)))))
+
+(define (upgradeable? name current-version current-path)
+  "Return #t if there's a version of package NAME newer than CURRENT-VERSION,
+or if the newest available version is equal to CURRENT-VERSION but would have
+an output path different than CURRENT-PATH."
+  (match (vhash-assoc name (newest-available-packages))
+    ((_ candidate-version pkg . rest)
+     (case (version-compare candidate-version current-version)
+       ((>) #t)
+       ((<) #f)
+       ((=) (let ((candidate-path (derivation->output-path
+                                   (package-derivation (%store) pkg))))
+              (not (string=? current-path candidate-path))))))
+    (#f #f)))
+
 (define ftp-open*
   ;; Memoizing version of `ftp-open'.  The goal is to avoid initiating a new
   ;; FTP connection for each package, esp. since most of them are to the same
@@ -437,6 +505,11 @@ but ~a is available upstream~%")
       (case key
         ((getaddrinfo-error ftp-error) #f)
         (else (apply throw key args))))))
+
+
+;;;
+;;; Search paths.
+;;;
 
 (define* (search-path-environment-variables packages profile
                                             #:optional (getenv getenv))
@@ -653,67 +726,6 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
     ;; Return #t if %GUILE-FOR-BUILD is not available yet.
     (let ((out (derivation->output-path (%guile-for-build))))
       (not (valid-path? (%store) out))))
-
-  (define newest-available-packages
-    (memoize find-newest-available-packages))
-
-  (define (find-best-packages-by-name name version)
-    (if version
-        (find-packages-by-name name version)
-        (match (vhash-assoc name (newest-available-packages))
-          ((_ version pkgs ...) pkgs)
-          (#f '()))))
-
-  (define* (find-package name #:optional (output "out"))
-    ;; Find the package NAME; NAME may contain a version number and a
-    ;; sub-derivation name.  If the version number is not present,
-    ;; return the preferred newest version.  If the sub-derivation name is not
-    ;; present, use OUTPUT.
-    (define request name)
-
-    (define (ensure-output p sub-drv)
-      (if (member sub-drv (package-outputs p))
-          p
-          (leave (_ "package `~a' lacks output `~a'~%")
-                 (package-full-name p)
-                 sub-drv)))
-
-    (let*-values (((name sub-drv)
-                   (match (string-rindex name #\:)
-                     (#f    (values name output))
-                     (colon (values (substring name 0 colon)
-                                    (substring name (+ 1 colon))))))
-                  ((name version)
-                   (package-name->name+version name)))
-      (match (find-best-packages-by-name name version)
-        ((p)
-         (list name (package-version p) sub-drv (ensure-output p sub-drv)
-               (package-transitive-propagated-inputs p)))
-        ((p p* ...)
-         (warning (_ "ambiguous package specification `~a'~%")
-                  request)
-         (warning (_ "choosing ~a from ~a~%")
-                  (package-full-name p)
-                  (location->string (package-location p)))
-         (list name (package-version p) sub-drv (ensure-output p sub-drv)
-               (package-transitive-propagated-inputs p)))
-        (()
-         (leave (_ "~a: package not found~%") request)))))
-
-  (define (upgradeable? name current-version current-path)
-    ;; Return #t if there's a version of package NAME newer than
-    ;; CURRENT-VERSION, or if the newest available version is equal to
-    ;; CURRENT-VERSION but would have an output path different than
-    ;; CURRENT-PATH.
-    (match (vhash-assoc name (newest-available-packages))
-      ((_ candidate-version pkg . rest)
-       (case (version-compare candidate-version current-version)
-         ((>) #t)
-         ((<) #f)
-         ((=) (let ((candidate-path (derivation->output-path
-                                     (package-derivation (%store) pkg))))
-                (not (string=? current-path candidate-path))))))
-      (#f #f)))
 
   (define (ensure-default-profile)
     ;; Ensure the default profile symlink and directory exist and are
