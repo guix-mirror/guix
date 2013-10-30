@@ -91,7 +91,9 @@
                 (default "out"))
   (path         manifest-entry-path)              ; store path
   (dependencies manifest-entry-dependencies       ; list of store paths
-                (default '())))
+                (default '()))
+  (inputs       manifest-entry-inputs             ; list of inputs to build
+                (default '())))                   ; this entry
 
 (define (profile-manifest profile)
   "Return the PROFILE's manifest."
@@ -173,6 +175,13 @@
                  (($ <manifest-entry> entry-name)
                   (string=? entry-name name)))
                 (manifest-entries manifest))))
+
+(define (manifest=? m1 m2)
+  "Return #t if manifests M1 and M2 are equal.  This differs from 'equal?' in
+that the 'inputs' field is ignored for the comparison, since it is know to
+have no effect on the manifest contents."
+  (equal? (manifest->sexp m1)
+          (manifest->sexp m2)))
 
 
 ;;;
@@ -258,31 +267,28 @@ the given MANIFEST."
 
        (let ((output (assoc-ref %outputs "out"))
              (inputs (map cdr %build-inputs)))
-         (format #t "building profile `~a' with ~a packages...~%"
+         (format #t "building profile '~a' with ~a packages...~%"
                  output (length inputs))
-         (union-build output inputs)
+         (union-build output inputs
+                      #:log-port (%make-void-port "w"))
          (call-with-output-file (string-append output "/manifest")
            (lambda (p)
              (pretty-print ',(manifest->sexp manifest) p))))))
-
-  (define ensure-valid-input
-    ;; If a package object appears in the given input, turn it into a
-    ;; derivation path.
-    (match-lambda
-     ((name (? package? p) sub-drv ...)
-      `(,name ,(package-derivation (%store) p) ,@sub-drv))
-     (input
-      input)))
 
   (build-expression->derivation store "profile"
                                 (%current-system)
                                 builder
                                 (append-map (match-lambda
                                              (($ <manifest-entry> name version
+                                                 output path deps (inputs ..1))
+                                              (map (cute lower-input
+                                                         (%store) <>)
+                                                   inputs))
+                                             (($ <manifest-entry> name version
                                                  output path deps)
-                                              `((,name ,path)
-                                                ,@(map ensure-valid-input
-                                                       deps))))
+                                              ;; Assume PATH and DEPS are
+                                              ;; already valid.
+                                              `((,name ,path) ,@deps)))
                                             (manifest-entries manifest))
                                 #:modules '((guix build union))))
 
@@ -428,6 +434,16 @@ RX."
       (string<? (package-name p1)
                 (package-name p2))))
    same-location?))
+
+(define* (lower-input store input #:optional (system (%current-system)))
+  "Lower INPUT so that it contains derivations instead of packages."
+  (match input
+    ((name (? package? package))
+     `(,name ,(package-derivation store package system)))
+    ((name (? package? package) output)
+     `(,name ,(package-derivation store package system)
+             ,output))
+    (_ input)))
 
 (define (input->name+path input)
   "Convert the name/package/sub-drv tuple INPUT to a name/store-path tuple."
@@ -790,12 +806,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
 
 (define (options->installable opts manifest)
   "Given MANIFEST, the current manifest, and OPTS, the result of 'args-fold',
-return two values: the new list of manifest entries, and the list of
-derivations that need to be built."
-  (define (canonicalize-deps deps)
-    ;; Remove duplicate entries from DEPS, a list of propagated inputs,
-    ;; where each input is a name/path tuple, and replace package objects with
-    ;; store paths.
+return the new list of manifest entries."
+  (define (deduplicate deps)
+    ;; Remove duplicate entries from DEPS, a list of propagated inputs, where
+    ;; each input is a name/path tuple.
     (define (same? d1 d2)
       (match d1
         ((_ p1)
@@ -809,12 +823,7 @@ derivations that need to be built."
                  (eq? p1 p2)))
            (_ #f)))))
 
-    (map (match-lambda
-          ((name package)
-           (list name (package-output (%store) package)))
-          ((name package output)
-           (list name (package-output (%store) package output))))
-         (delete-duplicates deps same?)))
+    (delete-duplicates deps same?))
 
   (define (package->manifest-entry p output)
     ;; Return a manifest entry for the OUTPUT of package P.
@@ -823,13 +832,15 @@ derivations that need to be built."
     ;; outputs (XXX).
     (let* ((output (or output (car (package-outputs p))))
            (path   (package-output (%store) p output))
-           (deps   (package-transitive-propagated-inputs p)))
+           (deps   (deduplicate (package-transitive-propagated-inputs p))))
       (manifest-entry
        (name (package-name p))
        (version (package-version p))
        (output output)
        (path path)
-       (dependencies (canonicalize-deps deps)))))
+       (dependencies (map input->name+path deps))
+       (inputs (cons (list (package-name p) p output)
+                     deps)))))
 
   (define upgrade-regexps
     (filter-map (match-lambda
@@ -895,15 +906,7 @@ derivations that need to be built."
                          (_ #f))
                         opts)))
 
-  (define derivations
-    (map (match-lambda
-          ((package output)
-           ;; FIXME: We should really depend on just OUTPUT rather than on all
-           ;; the outputs of PACKAGE.
-           (package-derivation (%store) package)))
-         (append packages-to-install packages-to-upgrade)))
-
-  (values (append to-upgrade to-install) derivations))
+  (append to-upgrade to-install))
 
 
 ;;;
@@ -1089,74 +1092,60 @@ more information.~%"))
              (_ #f))
             opts))
           (else
-           (let*-values (((manifest)
-                          (profile-manifest profile))
-                         ((install* drv)
-                          (options->installable opts manifest)))
-             (let* ((remove  (filter-map (match-lambda
-                                          (('remove . package)
-                                           package)
-                                          (_ #f))
-                                         opts))
-                    (remove* (filter (cut manifest-installed? manifest <>)
-                                     remove))
-                    (entries
-                     (append install*
-                             (fold (lambda (package result)
-                                     (match package
-                                       (($ <manifest-entry> name _ out _ ...)
-                                        (filter (negate
-                                                 (cut same-package? <>
-                                                      name out))
-                                                result))))
-                                   (manifest-entries
-                                    (manifest-remove manifest remove))
-                                   install*))))
+           (let* ((manifest (profile-manifest profile))
+                  (install* (options->installable opts manifest))
+                  (remove   (filter-map (match-lambda
+                                         (('remove . package)
+                                          package)
+                                         (_ #f))
+                                        opts))
+                  (remove*  (filter (cut manifest-installed? manifest <>)
+                                    remove))
+                  (entries
+                   (append install*
+                           (fold (lambda (package result)
+                                   (match package
+                                     (($ <manifest-entry> name _ out _ ...)
+                                      (filter (negate
+                                               (cut same-package? <>
+                                                    name out))
+                                              result))))
+                                 (manifest-entries
+                                  (manifest-remove manifest remove))
+                                 install*)))
+                  (new      (make-manifest entries)))
 
-               (when (equal? profile %current-profile)
-                 (ensure-default-profile))
+             (when (equal? profile %current-profile)
+               (ensure-default-profile))
 
-               (show-what-to-remove/install remove* install* dry-run?)
-               (show-what-to-build (%store) drv
-                                   #:use-substitutes? (assoc-ref opts 'substitutes?)
-                                   #:dry-run? dry-run?)
+             (if (manifest=? new manifest)
+                 (format (current-error-port) (_ "nothing to be done~%"))
+                 (let ((prof-drv (profile-derivation (%store) new)))
+                   (show-what-to-remove/install remove* install* dry-run?)
+                   (show-what-to-build (%store) (list prof-drv)
+                                       #:use-substitutes?
+                                       (assoc-ref opts 'substitutes?)
+                                       #:dry-run? dry-run?)
 
-               (or dry-run?
-                   (and (build-derivations (%store) drv)
-                        (let* ((prof-drv (profile-derivation (%store)
-                                                             (make-manifest
-                                                              entries)))
-                               (prof     (derivation->output-path prof-drv))
-                               (old-drv  (profile-derivation
-                                          (%store) (profile-manifest profile)))
-                               (old-prof (derivation->output-path old-drv))
-                               (number   (generation-number profile))
+                   (or dry-run?
+                       (let* ((prof     (derivation->output-path prof-drv))
+                              (number   (generation-number profile))
 
-                               ;; Always use NUMBER + 1 for the new profile,
-                               ;; possibly overwriting a "previous future
-                               ;; generation".
-                               (name     (format #f "~a-~a-link"
-                                                 profile (+ 1 number))))
-                          (if (string=? old-prof prof)
-                              (when (or (pair? install*) (pair? remove))
-                                (format (current-error-port)
-                                        (_ "nothing to be done~%")))
-                              (and (parameterize ((current-build-output-port
-                                                   ;; Output something when Guile
-                                                   ;; needs to be built.
-                                                   (if (or verbose? (guile-missing?))
-                                                       (current-error-port)
-                                                       (%make-void-port "w"))))
-                                     (build-derivations (%store) (list prof-drv)))
-                                   (let ((count (length entries)))
-                                     (switch-symlinks name prof)
-                                     (switch-symlinks profile name)
-                                     (format #t (N_ "~a package in profile~%"
-                                                    "~a packages in profile~%"
-                                                    count)
-                                             count)
-                                     (display-search-paths entries
-                                                           profile))))))))))))
+                              ;; Always use NUMBER + 1 for the new profile,
+                              ;; possibly overwriting a "previous future
+                              ;; generation".
+                              (name     (format #f "~a-~a-link"
+                                                profile (+ 1 number))))
+                         (and (build-derivations (%store) (list prof-drv))
+                              (let ((count (length entries)))
+                                (switch-symlinks name prof)
+                                (switch-symlinks profile name)
+                                (format #t (N_ "~a package in profile~%"
+                                               "~a packages in profile~%"
+                                               count)
+                                        count)
+                                (display-search-paths entries
+                                                      profile)))))))))))
 
   (define (process-query opts)
     ;; Process any query specified by OPTS.  Return #t when a query was
@@ -1266,6 +1255,7 @@ more information.~%"))
         (with-error-handling
           (parameterize ((%store (open-connection)))
             (set-build-options (%store)
+                               #:print-build-trace #f
                                #:fallback? (assoc-ref opts 'fallback?)
                                #:use-substitutes?
                                (assoc-ref opts 'substitutes?)
