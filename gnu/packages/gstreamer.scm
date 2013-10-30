@@ -80,11 +80,12 @@ This package provides the core library and elements.")
       (patches
         (list (search-patch "gstreamer-0.10-bison3.patch")
               (search-patch "gstreamer-0.10-silly-test.patch")))))
+    (propagated-inputs
+     `(("libxml2" ,libxml2)))
     (inputs
      `(("bison" ,bison)
        ("flex" ,flex)
        ("glib" ,glib)
-       ("libxml2" ,libxml2)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2)))))
