@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix config)
+  #:use-module (guix records)
   #:use-module ((guix build utils) #:select (directory-exists? mkdir-p))
   #:use-module ((guix ftp-client) #:select (ftp-open))
   #:use-module (ice-9 ftw)
@@ -33,6 +34,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
@@ -67,29 +69,115 @@
   ;; coexist with Nix profiles.
   (string-append %profile-directory "/guix-profile"))
 
+
+;;;
+;;; Manifests.
+;;;
+
+(define-record-type <manifest>
+  (manifest entries)
+  manifest?
+  (entries manifest-entries))                     ; list of <manifest-entry>
+
+;; Convenient alias, to avoid name clashes.
+(define make-manifest manifest)
+
+(define-record-type* <manifest-entry> manifest-entry
+  make-manifest-entry
+  manifest-entry?
+  (name         manifest-entry-name)              ; string
+  (version      manifest-entry-version)           ; string
+  (output       manifest-entry-output             ; string
+                (default "out"))
+  (path         manifest-entry-path)              ; store path
+  (dependencies manifest-entry-dependencies       ; list of store paths
+                (default '())))
+
 (define (profile-manifest profile)
   "Return the PROFILE's manifest."
-  (let ((manifest (string-append profile "/manifest")))
-    (if (file-exists? manifest)
-        (call-with-input-file manifest read)
-        '(manifest (version 1) (packages ())))))
+  (let ((file (string-append profile "/manifest")))
+    (if (file-exists? file)
+        (call-with-input-file file read-manifest)
+        (manifest '()))))
 
-(define (manifest-packages manifest)
-  "Return the packages listed in MANIFEST."
+(define (manifest->sexp manifest)
+  "Return a representation of MANIFEST as an sexp."
+  (define (entry->sexp entry)
+    (match entry
+      (($ <manifest-entry> name version path output (deps ...))
+       (list name version path output deps))))
+
   (match manifest
+    (($ <manifest> (entries ...))
+     `(manifest (version 1)
+                (packages ,(map entry->sexp entries))))))
+
+(define (sexp->manifest sexp)
+  "Parse SEXP as a manifest."
+  (match sexp
     (('manifest ('version 0)
                 ('packages ((name version output path) ...)))
-     (zip name version output path
-          (make-list (length name) '())))
+     (manifest
+      (map (lambda (name version output path)
+             (manifest-entry
+              (name name)
+              (version version)
+              (output output)
+              (path path)))
+           name version output path)))
 
     ;; Version 1 adds a list of propagated inputs to the
     ;; name/version/output/path tuples.
     (('manifest ('version 1)
-                ('packages (packages ...)))
-     packages)
+                ('packages ((name version output path deps) ...)))
+     (manifest
+      (map (lambda (name version output path deps)
+             (manifest-entry
+              (name name)
+              (version version)
+              (output output)
+              (path path)
+              (dependencies deps)))
+           name version output path deps)))
 
     (_
      (error "unsupported manifest format" manifest))))
+
+(define (read-manifest port)
+  "Return the packages listed in MANIFEST."
+  (sexp->manifest (read port)))
+
+(define (write-manifest manifest port)
+  "Write MANIFEST to PORT."
+  (write (manifest->sexp manifest) port))
+
+(define (remove-manifest-entry name lst)
+  "Remove the manifest entry named NAME from LST."
+  (remove (match-lambda
+           (($ <manifest-entry> entry-name)
+            (string=? name entry-name)))
+          lst))
+
+(define (manifest-remove manifest names)
+  "Remove entries for each of NAMES from MANIFEST."
+  (make-manifest (fold remove-manifest-entry
+                       (manifest-entries manifest)
+                       names)))
+
+(define (manifest-installed? manifest name)
+  "Return #t if MANIFEST has an entry for NAME, #f otherwise."
+  (define (->bool x)
+    (not (not x)))
+
+  (->bool (find (match-lambda
+                 (($ <manifest-entry> entry-name)
+                  (string=? entry-name name)))
+                (manifest-entries manifest))))
+
+
+;;;
+;;; Profiles.
+;;;
 
 (define (profile-regexp profile)
   "Return a regular expression that matches PROFILE's name and number."
@@ -157,17 +245,9 @@ case when generations have been deleted (there are \"holes\")."
         0
         (generation-numbers profile)))
 
-(define (profile-derivation store packages)
-  "Return a derivation that builds a profile (a user environment) with
-all of PACKAGES, a list of name/version/output/path/deps tuples."
-  (define packages*
-    ;; Turn any package object in PACKAGES into its output path.
-    (map (match-lambda
-          ((name version output path (deps ...))
-           `(,name ,version ,output ,path
-                   ,(map input->name+path deps))))
-         packages))
-
+(define (profile-derivation store manifest)
+  "Return a derivation that builds a profile (a user environment) with the
+given MANIFEST."
   (define builder
     `(begin
        (use-modules (ice-9 pretty-print)
@@ -183,9 +263,7 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
          (union-build output inputs)
          (call-with-output-file (string-append output "/manifest")
            (lambda (p)
-             (pretty-print '(manifest (version 1)
-                                      (packages ,packages*))
-                           p))))))
+             (pretty-print ',(manifest->sexp manifest) p))))))
 
   (define ensure-valid-input
     ;; If a package object appears in the given input, turn it into a
@@ -200,11 +278,12 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
                                 (%current-system)
                                 builder
                                 (append-map (match-lambda
-                                             ((name version output path deps)
+                                             (($ <manifest-entry> name version
+                                                 output path deps)
                                               `((,name ,path)
                                                 ,@(map ensure-valid-input
                                                        deps))))
-                                            packages)
+                                            (manifest-entries manifest))
                                 #:modules '((guix build union))))
 
 (define (generation-number profile)
@@ -216,7 +295,7 @@ all of PACKAGES, a list of name/version/output/path/deps tuples."
 
 (define (link-to-empty-profile generation)
   "Link GENERATION, a string, to the empty profile."
-  (let* ((drv  (profile-derivation (%store) '()))
+  (let* ((drv  (profile-derivation (%store) (manifest '())))
          (prof (derivation->output-path drv "out")))
     (when (not (build-derivations (%store) (list drv)))
           (leave (_ "failed to build the empty profile~%")))
@@ -513,11 +592,11 @@ but ~a is available upstream~%")
 ;;; Search paths.
 ;;;
 
-(define* (search-path-environment-variables packages profile
+(define* (search-path-environment-variables entries profile
                                             #:optional (getenv getenv))
   "Return environment variable definitions that may be needed for the use of
-PACKAGES in PROFILE.  Use GETENV to determine the current settings and report
-only settings not already effective."
+ENTRIES, a list of manifest entries, in PROFILE.  Use GETENV to determine the
+current settings and report only settings not already effective."
 
   ;; Prefer ~/.guix-profile to the real profile directory name.
   (let ((profile (if (and %user-environment-directory
@@ -530,9 +609,9 @@ only settings not already effective."
     ;; The search path info is not stored in the manifest.  Thus, we infer the
     ;; search paths from same-named packages found in the distro.
 
-    (define package-in-manifest->package
+    (define manifest-entry->package
       (match-lambda
-       ((name version _ ...)
+       (($ <manifest-entry> name version)
         (match (append (find-packages-by-name name version)
                        (find-packages-by-name name))
           ((p _ ...) p)
@@ -554,16 +633,16 @@ only settings not already effective."
                       variable
                       (string-join directories separator)))))))
 
-    (let* ((packages     (filter-map package-in-manifest->package packages))
+    (let* ((packages     (filter-map manifest-entry->package entries))
            (search-paths (delete-duplicates
                           (append-map package-native-search-paths
                                       packages))))
       (filter-map search-path-definition search-paths))))
 
-(define (display-search-paths packages profile)
+(define (display-search-paths entries profile)
   "Display the search path environment variables that may need to be set for
-PACKAGES, in the context of PROFILE."
-  (let ((settings (search-path-environment-variables packages profile)))
+ENTRIES, a list of manifest entries, in the context of PROFILE."
+  (let ((settings (search-path-environment-variables entries profile)))
     (unless (null? settings)
       (format #t (_ "The following environment variable definitions may be needed:~%"))
       (format #t "~{   ~a~%~}" settings))))
@@ -709,13 +788,14 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                   (cons `(query list-available ,(or arg ""))
                         result)))))
 
-(define (options->installable opts installed)
-  "Given INSTALLED, the set of currently installed packages, and OPTS, the
-result of 'args-fold', return two values: the new list of manifest entries,
-and the list of derivations that need to be built."
+(define (options->installable opts manifest)
+  "Given MANIFEST, the current manifest, and OPTS, the result of 'args-fold',
+return two values: the new list of manifest entries, and the list of
+derivations that need to be built."
   (define (canonicalize-deps deps)
     ;; Remove duplicate entries from DEPS, a list of propagated inputs,
-    ;; where each input is a name/path tuple.
+    ;; where each input is a name/path tuple, and replace package objects with
+    ;; store paths.
     (define (same? d1 d2)
       (match d1
         ((_ p1)
@@ -729,21 +809,27 @@ and the list of derivations that need to be built."
                  (eq? p1 p2)))
            (_ #f)))))
 
-    (delete-duplicates deps same?))
+    (map (match-lambda
+          ((name package)
+           (list name (package-output (%store) package)))
+          ((name package output)
+           (list name (package-output (%store) package output))))
+         (delete-duplicates deps same?)))
 
-  (define* (package->tuple p #:optional output)
-    ;; Convert package P to a manifest tuple.
+  (define (package->manifest-entry p output)
+    ;; Return a manifest entry for the OUTPUT of package P.
+    (check-package-freshness p)
     ;; When given a package via `-e', install the first of its
     ;; outputs (XXX).
-    (check-package-freshness p)
     (let* ((output (or output (car (package-outputs p))))
            (path   (package-output (%store) p output))
            (deps   (package-transitive-propagated-inputs p)))
-      `(,(package-name p)
-        ,(package-version p)
-        ,output
-        ,path
-        ,(canonicalize-deps deps))))
+      (manifest-entry
+       (name (package-name p))
+       (version (package-version p))
+       (output output)
+       (path path)
+       (dependencies (canonicalize-deps deps)))))
 
   (define upgrade-regexps
     (filter-map (match-lambda
@@ -759,7 +845,7 @@ and the list of derivations that need to be built."
       ((_ ...)
        (let ((newest (find-newest-available-packages)))
          (filter-map (match-lambda
-                      ((name version output path _)
+                      (($ <manifest-entry> name version output path _)
                        (and (any (cut regexp-exec <> name)
                                  upgrade-regexps)
                             (upgradeable? name version path)
@@ -769,12 +855,12 @@ and the list of derivations that need to be built."
                                     (specification->package+output name output))
                                 list))))
                       (_ #f))
-                     installed)))))
+                     (manifest-entries manifest))))))
 
   (define to-upgrade
     (map (match-lambda
           ((package output)
-           (package->tuple package output)))
+           (package->manifest-entry package output)))
          packages-to-upgrade))
 
   (define packages-to-install
@@ -792,7 +878,7 @@ and the list of derivations that need to be built."
   (define to-install
     (append (map (match-lambda
                   ((package output)
-                   (package->tuple package output)))
+                   (package->manifest-entry package output)))
                  packages-to-install)
             (filter-map (match-lambda
                          (('install . (? package?))
@@ -801,7 +887,11 @@ and the list of derivations that need to be built."
                           (let-values (((name version)
                                         (package-name->name+version
                                          (store-path-package-name path))))
-                            `(,name ,version #f ,path ())))
+                            (manifest-entry
+                             (name name)
+                             (version version)
+                             (output #f)
+                             (path path))))
                          (_ #f))
                         opts)))
 
@@ -888,17 +978,17 @@ more information.~%"))
     (define verbose? (assoc-ref opts 'verbose?))
     (define profile  (assoc-ref opts 'profile))
 
-    (define (same-package? tuple name out)
-      (match tuple
-        ((tuple-name _ tuple-output _ ...)
-         (and (equal? name tuple-name)
-              (equal? out tuple-output)))))
+    (define (same-package? entry name output)
+      (match entry
+        (($ <manifest-entry> entry-name _ entry-output _ ...)
+         (and (equal? name entry-name)
+              (equal? output entry-output)))))
 
     (define (show-what-to-remove/install remove install dry-run?)
       ;; Tell the user what's going to happen in high-level terms.
       ;; TODO: Report upgrades more clearly.
       (match remove
-        (((name version _ path _) ..1)
+        ((($ <manifest-entry> name version _ path _) ..1)
          (let ((len    (length name))
                (remove (map (cut format #f "  ~a-~a\t~a" <> <> <>)
                             name version path)))
@@ -915,7 +1005,7 @@ more information.~%"))
                        remove))))
         (_ #f))
       (match install
-        (((name version output path _) ..1)
+        ((($ <manifest-entry> name version output path _) ..1)
          (let ((len     (length name))
                (install (map (cut format #f "   ~a-~a\t~a\t~a" <> <> <> <>)
                              name version output path)))
@@ -999,26 +1089,28 @@ more information.~%"))
              (_ #f))
             opts))
           (else
-           (let*-values (((installed)
-                          (manifest-packages (profile-manifest profile)))
+           (let*-values (((manifest)
+                          (profile-manifest profile))
                          ((install* drv)
-                          (options->installable opts installed)))
-             (let* ((remove (filter-map (match-lambda
-                                         (('remove . package)
-                                          package)
-                                         (_ #f))
-                                        opts))
-                    (remove* (filter-map (cut assoc <> installed) remove))
-                    (packages
+                          (options->installable opts manifest)))
+             (let* ((remove  (filter-map (match-lambda
+                                          (('remove . package)
+                                           package)
+                                          (_ #f))
+                                         opts))
+                    (remove* (filter (cut manifest-installed? manifest <>)
+                                     remove))
+                    (entries
                      (append install*
                              (fold (lambda (package result)
                                      (match package
-                                       ((name _ out _ ...)
+                                       (($ <manifest-entry> name _ out _ ...)
                                         (filter (negate
                                                  (cut same-package? <>
                                                       name out))
                                                 result))))
-                                   (fold alist-delete installed remove)
+                                   (manifest-entries
+                                    (manifest-remove manifest remove))
                                    install*))))
 
                (when (equal? profile %current-profile)
@@ -1031,11 +1123,12 @@ more information.~%"))
 
                (or dry-run?
                    (and (build-derivations (%store) drv)
-                        (let* ((prof-drv (profile-derivation (%store) packages))
+                        (let* ((prof-drv (profile-derivation (%store)
+                                                             (make-manifest
+                                                              entries)))
                                (prof     (derivation->output-path prof-drv))
                                (old-drv  (profile-derivation
-                                          (%store) (manifest-packages
-                                                    (profile-manifest profile))))
+                                          (%store) (profile-manifest profile)))
                                (old-prof (derivation->output-path old-drv))
                                (number   (generation-number profile))
 
@@ -1055,14 +1148,14 @@ more information.~%"))
                                                        (current-error-port)
                                                        (%make-void-port "w"))))
                                      (build-derivations (%store) (list prof-drv)))
-                                   (let ((count (length packages)))
+                                   (let ((count (length entries)))
                                      (switch-symlinks name prof)
                                      (switch-symlinks profile name)
                                      (format #t (N_ "~a package in profile~%"
                                                     "~a packages in profile~%"
                                                     count)
                                              count)
-                                     (display-search-paths packages
+                                     (display-search-paths entries
                                                            profile))))))))))))
 
   (define (process-query opts)
@@ -1083,13 +1176,13 @@ more information.~%"))
                    (format #t (_ "~a\t(current)~%") header)
                    (format #t "~a~%" header)))
              (for-each (match-lambda
-                        ((name version output location _)
+                        (($ <manifest-entry> name version output location _)
                          (format #t "  ~a\t~a\t~a\t~a~%"
                                  name version output location)))
 
                        ;; Show most recently installed packages last.
                        (reverse
-                        (manifest-packages
+                        (manifest-entries
                          (profile-manifest
                           (format #f "~a-~a-link" profile number)))))
              (newline)))
@@ -1116,9 +1209,9 @@ more information.~%"))
         (('list-installed regexp)
          (let* ((regexp    (and regexp (make-regexp regexp)))
                 (manifest  (profile-manifest profile))
-                (installed (manifest-packages manifest)))
+                (installed (manifest-entries manifest)))
            (for-each (match-lambda
-                      ((name version output path _)
+                      (($ <manifest-entry> name version output path _)
                        (when (or (not regexp)
                                  (regexp-exec regexp name))
                          (format #t "~a\t~a\t~a\t~a~%"
@@ -1159,9 +1252,9 @@ more information.~%"))
 
         (('search-paths)
          (let* ((manifest (profile-manifest profile))
-                (packages (manifest-packages manifest))
-                (settings (search-path-environment-variables packages
-                                                             profile
+                (entries  (manifest-entries manifest))
+                (packages (map manifest-entry-name entries))
+                (settings (search-path-environment-variables entries profile
                                                              (const #f))))
            (format #t "~{~a~%~}" settings)
            #t))
