@@ -421,41 +421,43 @@ VERSION."
         ((_ version pkgs ...) pkgs)
         (#f '()))))
 
-(define* (find-package name #:optional (output "out"))
-  "Find the package NAME; NAME may contain a version number and a
-sub-derivation name.  If the version number is not present, return the
-preferred newest version.  If the sub-derivation name is not present, use
-OUTPUT."
-  (define request name)
+(define* (specification->package+output spec #:optional (output "out"))
+  "Find the package and output specified by SPEC, or #f and #f; SPEC may
+optionally contain a version number and an output name, as in these examples:
 
+  guile
+  guile-2.0.9
+  guile:debug
+  guile-2.0.9:debug
+
+If SPEC does not specify a version number, return the preferred newest
+version; if SPEC does not specify an output, return OUTPUT."
   (define (ensure-output p sub-drv)
     (if (member sub-drv (package-outputs p))
-        p
+        sub-drv
         (leave (_ "package `~a' lacks output `~a'~%")
                (package-full-name p)
                sub-drv)))
 
   (let*-values (((name sub-drv)
-                 (match (string-rindex name #\:)
-                   (#f    (values name output))
-                   (colon (values (substring name 0 colon)
-                                  (substring name (+ 1 colon))))))
+                 (match (string-rindex spec #\:)
+                   (#f    (values spec output))
+                   (colon (values (substring spec 0 colon)
+                                  (substring spec (+ 1 colon))))))
                 ((name version)
                  (package-name->name+version name)))
     (match (find-best-packages-by-name name version)
       ((p)
-       (list name (package-version p) sub-drv (ensure-output p sub-drv)
-             (package-transitive-propagated-inputs p)))
+       (values p (ensure-output p sub-drv)))
       ((p p* ...)
        (warning (_ "ambiguous package specification `~a'~%")
-                request)
+                spec)
        (warning (_ "choosing ~a from ~a~%")
                 (package-full-name p)
                 (location->string (package-location p)))
-       (list name (package-version p) sub-drv (ensure-output p sub-drv)
-             (package-transitive-propagated-inputs p)))
+       (values p (ensure-output p sub-drv)))
       (()
-       (leave (_ "~a: package not found~%") request)))))
+       (leave (_ "~a: package not found~%") spec)))))
 
 (define (upgradeable? name current-version current-path)
   "Return #t if there's a version of package NAME newer than CURRENT-VERSION,
@@ -707,6 +709,112 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                   (cons `(query list-available ,(or arg ""))
                         result)))))
 
+(define (options->installable opts installed)
+  "Given INSTALLED, the set of currently installed packages, and OPTS, the
+result of 'args-fold', return two values: the new list of manifest entries,
+and the list of derivations that need to be built."
+  (define (canonicalize-deps deps)
+    ;; Remove duplicate entries from DEPS, a list of propagated inputs,
+    ;; where each input is a name/path tuple.
+    (define (same? d1 d2)
+      (match d1
+        ((_ p1)
+         (match d2
+           ((_ p2) (eq? p1 p2))
+           (_      #f)))
+        ((_ p1 out1)
+         (match d2
+           ((_ p2 out2)
+            (and (string=? out1 out2)
+                 (eq? p1 p2)))
+           (_ #f)))))
+
+    (delete-duplicates deps same?))
+
+  (define* (package->tuple p #:optional output)
+    ;; Convert package P to a manifest tuple.
+    ;; When given a package via `-e', install the first of its
+    ;; outputs (XXX).
+    (check-package-freshness p)
+    (let* ((output (or output (car (package-outputs p))))
+           (path   (package-output (%store) p output))
+           (deps   (package-transitive-propagated-inputs p)))
+      `(,(package-name p)
+        ,(package-version p)
+        ,output
+        ,path
+        ,(canonicalize-deps deps))))
+
+  (define upgrade-regexps
+    (filter-map (match-lambda
+                 (('upgrade . regexp)
+                  (make-regexp (or regexp "")))
+                 (_ #f))
+                opts))
+
+  (define packages-to-upgrade
+    (match upgrade-regexps
+      (()
+       '())
+      ((_ ...)
+       (let ((newest (find-newest-available-packages)))
+         (filter-map (match-lambda
+                      ((name version output path _)
+                       (and (any (cut regexp-exec <> name)
+                                 upgrade-regexps)
+                            (upgradeable? name version path)
+                            (let ((output (or output "out")))
+                              (call-with-values
+                                  (lambda ()
+                                    (specification->package+output name output))
+                                list))))
+                      (_ #f))
+                     installed)))))
+
+  (define to-upgrade
+    (map (match-lambda
+          ((package output)
+           (package->tuple package output)))
+         packages-to-upgrade))
+
+  (define packages-to-install
+    (filter-map (match-lambda
+                 (('install . (? package? p))
+                  (list p "out"))
+                 (('install . (? string? spec))
+                  (and (not (store-path? spec))
+                       (let-values (((package output)
+                                     (specification->package+output spec)))
+                         (and package (list package output)))))
+                 (_ #f))
+                opts))
+
+  (define to-install
+    (append (map (match-lambda
+                  ((package output)
+                   (package->tuple package output)))
+                 packages-to-install)
+            (filter-map (match-lambda
+                         (('install . (? package?))
+                          #f)
+                         (('install . (? store-path? path))
+                          (let-values (((name version)
+                                        (package-name->name+version
+                                         (store-path-package-name path))))
+                            `(,name ,version #f ,path ())))
+                         (_ #f))
+                        opts)))
+
+  (define derivations
+    (map (match-lambda
+          ((package output)
+           ;; FIXME: We should really depend on just OUTPUT rather than on all
+           ;; the outputs of PACKAGE.
+           (package-derivation (%store) package)))
+         (append packages-to-install packages-to-upgrade)))
+
+  (values (append to-upgrade to-install) derivations))
+
 
 ;;;
 ;;; Entry point.
@@ -780,42 +888,11 @@ more information.~%"))
     (define verbose? (assoc-ref opts 'verbose?))
     (define profile  (assoc-ref opts 'profile))
 
-    (define (canonicalize-deps deps)
-      ;; Remove duplicate entries from DEPS, a list of propagated inputs,
-      ;; where each input is a name/path tuple.
-      (define (same? d1 d2)
-        (match d1
-          ((_ p1)
-           (match d2
-             ((_ p2) (eq? p1 p2))
-             (_      #f)))
-          ((_ p1 out1)
-           (match d2
-             ((_ p2 out2)
-              (and (string=? out1 out2)
-                   (eq? p1 p2)))
-             (_ #f)))))
-
-      (delete-duplicates deps same?))
-
     (define (same-package? tuple name out)
       (match tuple
         ((tuple-name _ tuple-output _ ...)
          (and (equal? name tuple-name)
               (equal? out tuple-output)))))
-
-    (define (package->tuple p)
-      ;; Convert package P to a tuple.
-      ;; When given a package via `-e', install the first of its
-      ;; outputs (XXX).
-      (let* ((out  (car (package-outputs p)))
-             (path (package-output (%store) p out))
-             (deps (package-transitive-propagated-inputs p)))
-        `(,(package-name p)
-          ,(package-version p)
-          ,out
-          ,p
-          ,(canonicalize-deps deps))))
 
     (define (show-what-to-remove/install remove install dry-run?)
       ;; Tell the user what's going to happen in high-level terms.
@@ -922,127 +999,71 @@ more information.~%"))
              (_ #f))
             opts))
           (else
-           (let* ((installed (manifest-packages (profile-manifest profile)))
-                  (upgrade-regexps (filter-map (match-lambda
-                                                (('upgrade . regexp)
-                                                 (make-regexp (or regexp "")))
-                                                (_ #f))
-                                               opts))
-                  (upgrade (if (null? upgrade-regexps)
-                               '()
-                               (let ((newest (find-newest-available-packages)))
-                                 (filter-map
-                                  (match-lambda
-                                   ((name version output path _)
-                                    (and (any (cut regexp-exec <> name)
-                                              upgrade-regexps)
-                                         (upgradeable? name version path)
-                                         (find-package name
-                                                       (or output "out"))))
-                                   (_ #f))
-                                  installed))))
-                  (install (append
-                            upgrade
-                            (filter-map (match-lambda
-                                         (('install . (? package? p))
-                                          (package->tuple p))
-                                         (('install . (? store-path?))
-                                          #f)
-                                         (('install . package)
-                                          (find-package package))
+           (let*-values (((installed)
+                          (manifest-packages (profile-manifest profile)))
+                         ((install* drv)
+                          (options->installable opts installed)))
+             (let* ((remove (filter-map (match-lambda
+                                         (('remove . package)
+                                          package)
                                          (_ #f))
-                                        opts)))
-                  (drv (filter-map (match-lambda
-                                    ((name version sub-drv
-                                           (? package? package)
-                                           (deps ...))
-                                     (check-package-freshness package)
-                                     (package-derivation (%store) package))
-                                    (_ #f))
-                                   install))
-                  (install*
-                   (append
-                    (filter-map (match-lambda
-                                 (('install . (? package? p))
-                                  #f)
-                                 (('install . (? store-path? path))
-                                  (let-values (((name version)
-                                                (package-name->name+version
-                                                 (store-path-package-name
-                                                  path))))
-                                    `(,name ,version #f ,path ())))
-                                 (_ #f))
-                                opts)
-                    (map (lambda (tuple drv)
-                           (match tuple
-                                  ((name version sub-drv _ (deps ...))
-                                   (let ((output-path
-                                          (derivation->output-path
-                                           drv sub-drv)))
-                                     `(,name ,version ,sub-drv ,output-path
-                                             ,(canonicalize-deps deps))))))
-                         install drv)))
-                  (remove (filter-map (match-lambda
-                                       (('remove . package)
-                                        package)
-                                        (_ #f))
-                                      opts))
-                  (remove* (filter-map (cut assoc <> installed) remove))
-                  (packages
-                   (append install*
-                           (fold (lambda (package result)
-                                   (match package
-                                          ((name _ out _ ...)
-                                           (filter (negate
-                                                    (cut same-package? <>
-                                                         name out))
-                                                   result))))
-                                 (fold alist-delete installed remove)
-                                 install*))))
+                                        opts))
+                    (remove* (filter-map (cut assoc <> installed) remove))
+                    (packages
+                     (append install*
+                             (fold (lambda (package result)
+                                     (match package
+                                       ((name _ out _ ...)
+                                        (filter (negate
+                                                 (cut same-package? <>
+                                                      name out))
+                                                result))))
+                                   (fold alist-delete installed remove)
+                                   install*))))
 
-          (when (equal? profile %current-profile)
-            (ensure-default-profile))
+               (when (equal? profile %current-profile)
+                 (ensure-default-profile))
 
-          (show-what-to-remove/install remove* install* dry-run?)
-          (show-what-to-build (%store) drv
-                              #:use-substitutes? (assoc-ref opts 'substitutes?)
-                              #:dry-run? dry-run?)
+               (show-what-to-remove/install remove* install* dry-run?)
+               (show-what-to-build (%store) drv
+                                   #:use-substitutes? (assoc-ref opts 'substitutes?)
+                                   #:dry-run? dry-run?)
 
-          (or dry-run?
-              (and (build-derivations (%store) drv)
-                   (let* ((prof-drv (profile-derivation (%store) packages))
-                          (prof     (derivation->output-path prof-drv))
-                          (old-drv  (profile-derivation
-                                     (%store) (manifest-packages
-                                               (profile-manifest profile))))
-                          (old-prof (derivation->output-path old-drv))
-                          (number   (generation-number profile))
+               (or dry-run?
+                   (and (build-derivations (%store) drv)
+                        (let* ((prof-drv (profile-derivation (%store) packages))
+                               (prof     (derivation->output-path prof-drv))
+                               (old-drv  (profile-derivation
+                                          (%store) (manifest-packages
+                                                    (profile-manifest profile))))
+                               (old-prof (derivation->output-path old-drv))
+                               (number   (generation-number profile))
 
-                          ;; Always use NUMBER + 1 for the new profile,
-                          ;; possibly overwriting a "previous future
-                          ;; generation".
-                          (name     (format #f "~a-~a-link"
-                                            profile (+ 1 number))))
-                     (if (string=? old-prof prof)
-                         (when (or (pair? install) (pair? remove))
-                           (format (current-error-port)
-                                   (_ "nothing to be done~%")))
-                         (and (parameterize ((current-build-output-port
-                                              ;; Output something when Guile
-                                              ;; needs to be built.
-                                              (if (or verbose? (guile-missing?))
-                                                  (current-error-port)
-                                                  (%make-void-port "w"))))
-                                (build-derivations (%store) (list prof-drv)))
-                              (let ((count (length packages)))
-                                (switch-symlinks name prof)
-                                (switch-symlinks profile name)
-                                (format #t (N_ "~a package in profile~%"
-                                               "~a packages in profile~%"
-                                               count)
-                                        count)
-                                (display-search-paths packages
-                                                      profile)))))))))))
+                               ;; Always use NUMBER + 1 for the new profile,
+                               ;; possibly overwriting a "previous future
+                               ;; generation".
+                               (name     (format #f "~a-~a-link"
+                                                 profile (+ 1 number))))
+                          (if (string=? old-prof prof)
+                              (when (or (pair? install*) (pair? remove))
+                                (format (current-error-port)
+                                        (_ "nothing to be done~%")))
+                              (and (parameterize ((current-build-output-port
+                                                   ;; Output something when Guile
+                                                   ;; needs to be built.
+                                                   (if (or verbose? (guile-missing?))
+                                                       (current-error-port)
+                                                       (%make-void-port "w"))))
+                                     (build-derivations (%store) (list prof-drv)))
+                                   (let ((count (length packages)))
+                                     (switch-symlinks name prof)
+                                     (switch-symlinks profile name)
+                                     (format #t (N_ "~a package in profile~%"
+                                                    "~a packages in profile~%"
+                                                    count)
+                                             count)
+                                     (display-search-paths packages
+                                                           profile))))))))))))
 
   (define (process-query opts)
     ;; Process any query specified by OPTS.  Return #t when a query was
