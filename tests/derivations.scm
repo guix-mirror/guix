@@ -260,6 +260,23 @@
            (and (eq? 'one (call-with-input-file one read))
                 (eq? 'two (call-with-input-file two read)))))))
 
+(test-assert "multiple-output derivation, derivation-path->output-path"
+  (let* ((builder    (add-text-to-store %store "builder.sh"
+                                        "echo one > $out ; echo two > $second"
+                                        '()))
+         (drv        (derivation %store "multiple"
+                                 %bash `(,builder)
+                                 #:outputs '("out" "second")))
+         (drv-file   (derivation-file-name drv))
+         (one        (derivation->output-path drv "out"))
+         (two        (derivation->output-path drv "second"))
+         (first      (derivation-path->output-path drv-file "out"))
+         (second     (derivation-path->output-path drv-file "second")))
+    (and (not (string=? one two))
+         (string-suffix? "-second" two)
+         (string=? first one)
+         (string=? second two))))
+
 (test-assert "user of multiple-output derivation"
   ;; Check whether specifying several inputs coming from the same
   ;; multiple-output derivation works.
