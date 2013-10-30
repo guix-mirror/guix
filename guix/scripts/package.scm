@@ -299,6 +299,10 @@ the given MANIFEST."
              (compose string->number (cut match:substring <> 1)))
       0))
 
+(define (generation-file-name profile generation)
+  "Return the file name for PROFILE's GENERATION."
+  (format #f "~a-~a-link" profile generation))
+
 (define (link-to-empty-profile generation)
   "Link GENERATION, a string, to the empty profile."
   (let* ((drv  (profile-derivation (%store) (manifest '())))
@@ -312,8 +316,7 @@ the given MANIFEST."
   "Atomically switch PROFILE to the previous generation."
   (let* ((number              (generation-number profile))
          (previous-number     (previous-generation-number profile number))
-         (previous-generation (format #f "~a-~a-link"
-                                      profile previous-number)))
+         (previous-generation (generation-file-name profile previous-number)))
     (format #t (_ "switching from generation ~a to ~a~%")
             number previous-number)
     (switch-symlinks profile previous-generation)))
@@ -322,8 +325,7 @@ the given MANIFEST."
   "Roll back to the previous generation of PROFILE."
   (let* ((number              (generation-number profile))
          (previous-number     (previous-generation-number profile number))
-         (previous-generation (format #f "~a-~a-link"
-                                      profile previous-number))
+         (previous-generation (generation-file-name profile previous-number))
          (manifest            (string-append previous-generation "/manifest")))
     (cond ((not (file-exists? profile))                 ; invalid profile
            (leave (_ "profile '~a' does not exist~%")
@@ -341,7 +343,7 @@ the given MANIFEST."
 (define (generation-time profile number)
   "Return the creation time of a generation in the UTC format."
   (make-time time-utc 0
-             (stat:ctime (stat (format #f "~a-~a-link" profile number)))))
+             (stat:ctime (stat (generation-file-name profile number)))))
 
 (define* (matching-generations str #:optional (profile %current-profile)
                                #:key (duration-relation <=))
@@ -1029,15 +1031,15 @@ more information.~%"))
       (generation-number profile))
 
     (define (display-and-delete number)
-      (let ((generation (format #f "~a-~a-link" profile number)))
+      (let ((generation (generation-file-name profile number)))
         (unless (zero? number)
           (format #t (_ "deleting ~a~%") generation)
           (delete-file generation))))
 
     (define (delete-generation number)
       (let* ((previous-number (previous-generation-number profile number))
-             (previous-generation (format #f "~a-~a-link"
-                                          profile previous-number)))
+             (previous-generation
+              (generation-file-name profile previous-number)))
         (cond ((zero? number))  ; do not delete generation 0
               ((and (= number current-generation-number)
                     (not (file-exists? previous-generation)))
@@ -1128,14 +1130,14 @@ more information.~%"))
                                        #:dry-run? dry-run?)
 
                    (or dry-run?
-                       (let* ((prof     (derivation->output-path prof-drv))
-                              (number   (generation-number profile))
+                       (let* ((prof   (derivation->output-path prof-drv))
+                              (number (generation-number profile))
 
                               ;; Always use NUMBER + 1 for the new profile,
                               ;; possibly overwriting a "previous future
                               ;; generation".
-                              (name     (format #f "~a-~a-link"
-                                                profile (+ 1 number))))
+                              (name   (generation-file-name profile
+                                                            (+ 1 number))))
                          (and (build-derivations (%store) (list prof-drv))
                               (let ((count (length entries)))
                                 (switch-symlinks name prof)
@@ -1173,7 +1175,7 @@ more information.~%"))
                        (reverse
                         (manifest-entries
                          (profile-manifest
-                          (format #f "~a-~a-link" profile number)))))
+                          (generation-file-name profile number)))))
              (newline)))
 
          (cond ((not (file-exists? profile)) ; XXX: race condition
