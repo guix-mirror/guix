@@ -100,7 +100,8 @@ single leaf."
            ,@(map loop dirs))))
       (leaf leaf))))
 
-(define* (union-build output directories)
+(define* (union-build output directories
+                      #:key (log-port (current-error-port)))
   "Build in the OUTPUT directory a symlink tree that is the union of all
 the DIRECTORIES."
   (define (file-tree dir)
@@ -174,6 +175,8 @@ the DIRECTORIES."
 
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)
+  (when (file-port? log-port)
+    (setvbuf log-port _IOLBF))
 
   (mkdir output)
   (let loop ((tree (delete-duplicate-leaves
@@ -189,8 +192,7 @@ the DIRECTORIES."
        ;; A leaf: create a symlink.
        (let* ((dir    (string-join dir "/"))
               (target (string-append output "/" dir "/" (basename tree))))
-         (format (current-error-port) "`~a' ~~> `~a'~%"
-                 tree target)
+         (format log-port "`~a' ~~> `~a'~%" tree target)
          (symlink tree target)))
       (((? string? subdir) leaves ...)
        ;; A sub-directory: create it in OUTPUT, and iterate over LEAVES.
