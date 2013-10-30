@@ -21,12 +21,14 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages xml))
 
 (define-public gstreamer
   (package
@@ -63,6 +65,29 @@ simple plugin with a clean, generic interface.
 
 This package provides the core library and elements.")
     (license lgpl2.0+)))
+
+(define-public gstreamer-0.10
+  (package (inherit gstreamer)
+    (version "0.10.36")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://gstreamer.freedesktop.org/src/gstreamer/gstreamer-"
+                          version ".tar.xz"))
+      (sha256
+       (base32
+        "1nkid1n2l3rrlmq5qrf5yy06grrkwjh3yxl5g0w58w0pih8allci"))
+      (patches
+        (list (search-patch "gstreamer-0.10-bison3.patch")
+              (search-patch "gstreamer-0.10-silly-test.patch")))))
+    (inputs
+     `(("bison" ,bison)
+       ("flex" ,flex)
+       ("glib" ,glib)
+       ("libxml2" ,libxml2)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)))))
 
 (define-public gst-plugins-base
   (package
