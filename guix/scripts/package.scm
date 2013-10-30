@@ -51,10 +51,10 @@
 
 
 ;;;
-;;; User environment.
+;;; User profile.
 ;;;
 
-(define %user-environment-directory
+(define %user-profile-directory
   (and=> (getenv "HOME")
          (cut string-append <> "/.guix-profile")))
 
@@ -246,8 +246,8 @@ case when generations have been deleted (there are \"holes\")."
         (generation-numbers profile)))
 
 (define (profile-derivation store manifest)
-  "Return a derivation that builds a profile (a user environment) with the
-given MANIFEST."
+  "Return a derivation that builds a profile (aka. 'user environment') with
+the given MANIFEST."
   (define builder
     `(begin
        (use-modules (ice-9 pretty-print)
@@ -258,7 +258,7 @@ given MANIFEST."
 
        (let ((output (assoc-ref %outputs "out"))
              (inputs (map cdr %build-inputs)))
-         (format #t "building user environment `~a' with ~a packages...~%"
+         (format #t "building profile `~a' with ~a packages...~%"
                  output (length inputs))
          (union-build output inputs)
          (call-with-output-file (string-append output "/manifest")
@@ -274,7 +274,7 @@ given MANIFEST."
      (input
       input)))
 
-  (build-expression->derivation store "user-environment"
+  (build-expression->derivation store "profile"
                                 (%current-system)
                                 builder
                                 (append-map (match-lambda
@@ -599,11 +599,11 @@ ENTRIES, a list of manifest entries, in PROFILE.  Use GETENV to determine the
 current settings and report only settings not already effective."
 
   ;; Prefer ~/.guix-profile to the real profile directory name.
-  (let ((profile (if (and %user-environment-directory
+  (let ((profile (if (and %user-profile-directory
                           (false-if-exception
-                           (string=? (readlink %user-environment-directory)
+                           (string=? (readlink %user-profile-directory)
                                      profile)))
-                     %user-environment-directory
+                     %user-profile-directory
                      profile)))
 
     ;; The search path info is not stored in the manifest.  Thus, we infer the
@@ -936,11 +936,11 @@ more information.~%"))
       (exit 1))
 
     ;; Create ~/.guix-profile if it doesn't exist yet.
-    (when (and %user-environment-directory
+    (when (and %user-profile-directory
                %current-profile
                (not (false-if-exception
-                     (lstat %user-environment-directory))))
-      (symlink %current-profile %user-environment-directory))
+                     (lstat %user-profile-directory))))
+      (symlink %current-profile %user-profile-directory))
 
     (let ((s (stat %profile-directory #f)))
       ;; Attempt to create /…/profiles/per-user/$USER if needed.
