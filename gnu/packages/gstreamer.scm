@@ -133,3 +133,20 @@ simple plugin with a clean, generic interface.
 
 This package provides an essential exemplary set of elements.")
     (license lgpl2.0+)))
+
+(define-public gst-plugins-base-0.10
+  (package (inherit gst-plugins-base)
+    (version "0.10.36")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://gstreamer.freedesktop.org/src/gst-plugins-base/gst-plugins-base-"
+                          version ".tar.xz"))
+      (sha256
+       (base32
+        "0jp6hjlra98cnkal4n6bdmr577q8mcyp3c08s3a02c4hjhw5rr0z"))))
+    (inputs
+     `(("glib" ,glib)
+       ("gstreamer" ,gstreamer-0.10)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)))))
