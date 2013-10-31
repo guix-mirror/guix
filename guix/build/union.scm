@@ -22,6 +22,8 @@
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (rnrs bytevectors)
+  #:use-module (rnrs io ports)
   #:export (tree-union
             delete-duplicate-leaves
             union-build))
@@ -100,6 +102,23 @@ single leaf."
            ,@(map loop dirs))))
       (leaf leaf))))
 
+(define (file=? file1 file2)
+  "Return #t if the contents of FILE1 and FILE2 are identical, #f otherwise."
+  (and (= (stat:size (stat file1)) (stat:size (stat file2)))
+       (call-with-input-file file1
+         (lambda (port1)
+           (call-with-input-file file2
+             (lambda (port2)
+               (define len 8192)
+               (define buf1 (make-bytevector len))
+               (define buf2 (make-bytevector len))
+               (let loop ()
+                 (let ((n1 (get-bytevector-n! port1 buf1 0 len))
+                       (n2 (get-bytevector-n! port2 buf2 0 len)))
+                   (and (equal? n1 n2)
+                        (or (eof-object? n1)
+                            (loop)))))))))))
+
 (define* (union-build output directories
                       #:key (log-port (current-error-port)))
   "Build in the OUTPUT directory a symlink tree that is the union of all
@@ -163,14 +182,15 @@ the DIRECTORIES."
        ;; LEAVES all actually point to the same file, so nothing to worry
        ;; about.
        one-and-the-same)
-      ((and lst (head _ ...))
-       ;; A real collision.
-       (format (current-error-port) "warning: collision encountered: ~{~a ~}~%"
-               lst)
+      ((and lst (head rest ...))
+       ;; A real collision, unless those files are all identical.
+       (unless (every (cut file=? head <>) rest)
+         (format (current-error-port) "warning: collision encountered: ~{~a ~}~%"
+                 lst)
 
-       ;; TODO: Implement smarter strategies.
-       (format (current-error-port) "warning: arbitrarily choosing ~a~%"
-               head)
+         ;; TODO: Implement smarter strategies.
+         (format (current-error-port) "warning: arbitrarily choosing ~a~%"
+                 head))
        head)))
 
   (setvbuf (current-output-port) _IOLBF)
