@@ -35,6 +35,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages autotools)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -719,3 +720,38 @@ Linux-based operating systems.")
 
     ;; License is BSD-3 or GPLv2, at the user's choice.
     (license gpl2)))
+
+(define-public bridge-utils
+  (package
+    (name "bridge-utils")
+    (version "1.5")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/bridge/bridge-utils-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "12367cwqmi0yqphi6j8rkx97q8hw52yq2fx4k0xfclkcizxybya2"))))
+    (build-system gnu-build-system)
+
+    ;; The tarball lacks all the generated files.
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)))
+    (arguments
+     '(#:phases (alist-cons-before
+                 'configure 'bootstrap
+                 (lambda _
+                   (zero? (system* "autoreconf" "-vf")))
+                 %standard-phases)
+       #:tests? #f))                              ; no 'check' target
+
+    (home-page
+     "http://www.linuxfoundation.org/collaborate/workgroups/networking/bridge")
+    (synopsis "Manipulate Ethernet bridges")
+    (description
+     "Utilities for Linux's Ethernet bridging facilities.  A bridge is a way
+to connect two Ethernet segments together in a protocol independent way.
+Packets are forwarded based on Ethernet address, rather than IP address (like
+a router).  Since forwarding is done at Layer 2, all protocols can go
+transparently through a bridge.")
+    (license gpl2+)))
