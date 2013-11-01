@@ -45,13 +45,54 @@ files."
        (use-modules (guix build utils)
                     (system base compile)
                     (ice-9 ftw)
-                    (ice-9 match))
+                    (ice-9 match)
+                    (srfi srfi-1)
+                    (srfi srfi-11)
+                    (srfi srfi-26))
+
+       (setvbuf (current-output-port) _IOLBF)
+       (setvbuf (current-error-port) _IOLBF)
 
        (let ((out     (assoc-ref %outputs "out"))
              (tar     (assoc-ref %build-inputs "tar"))
              (gzip    (assoc-ref %build-inputs "gzip"))
              (gcrypt  (assoc-ref %build-inputs "gcrypt"))
              (tarball (assoc-ref %build-inputs "tarball")))
+
+         (define* (compile-file* file #:key output-file (opts '()))
+           ;; Like 'compile-file', but remove any (guix …) and (gnu …) modules
+           ;; created during the process as an ugly workaround for
+           ;; <http://bugs.gnu.org/15602> (FIXME).  This ensures correctness,
+           ;; but is overly conservative and very slow.
+
+           (define (module-directory+file module)
+             ;; Return the directory for MODULE, like the 'dir-hint' in
+             ;; boot-9.scm.
+             (match (module-name module)
+               ((beginning ... last)
+                (values (string-concatenate
+                         (map (lambda (elt)
+                                (string-append (symbol->string elt)
+                                               file-name-separator-string))
+                              beginning))
+                        (symbol->string last)))))
+
+           (define (clear-module-tree! root)
+             ;; Delete all the modules under ROOT.
+             (hash-for-each (lambda (name module)
+                              (module-remove! root name)
+                              (let-values (((dir name)
+                                            (module-directory+file module)))
+                                (set-autoloaded! dir name #f))
+                              (clear-module-tree! module))
+                            (module-submodules root))
+             (hash-clear! (module-submodules root)))
+
+           (compile-file file #:output-file output-file #:opts opts)
+
+           (for-each (compose clear-module-tree! resolve-module)
+                     '((guix) (gnu))))
+
          (setenv "PATH" (string-append tar "/bin:" gzip "/bin"))
 
          (system* "tar" "xvf" tarball)
@@ -66,27 +107,9 @@ files."
          (format #t "copying and compiling Guix to `~a'...~%" out)
 
          ;; Copy everything under guix/ and gnu/ plus guix.scm.
-         (file-system-fold (lambda (dir stat result) ; enter?
-                             (or (string-prefix? "./guix" dir)
-                                 (string-prefix? "./gnu" dir)
-                                 (string=? "." dir)))
-                           (lambda (file stat result) ; leaf
-                             (when (or (not (string=? (dirname file) "."))
-                                       (string=? (basename file) "guix.scm"))
-                               (let ((target (string-drop file 1)))
-                                 (copy-file file
-                                            (string-append out target)))))
-                           (lambda (dir stat result) ; down
-                             (mkdir (string-append out
-                                                   (string-drop dir 1))))
-                           (const #t)             ; up
-                           (const #t)             ; skip
-                           (lambda (file stat errno result)
-                             (error "cannot access file"
-                                    file (strerror errno)))
-                           #f
-                           "."
-                           lstat)
+         (copy-recursively "guix" (string-append out "/guix"))
+         (copy-recursively "gnu" (string-append out "/gnu"))
+         (copy-file "guix.scm" (string-append out "/guix.scm"))
 
          ;; Add a fake (guix config) module to allow the other modules to be
          ;; compiled.  The user's (guix config) is the one that will be used.
@@ -107,15 +130,12 @@ files."
                                                 ".go")))
                          (format (current-error-port)
                                  "compiling '~a'...~%" file)
-                         (compile-file file
-                                       #:output-file go
-                                       #:opts %auto-compilation-options))))
+                         (compile-file* file
+                                        #:output-file go
+                                        #:opts
+                                        %auto-compilation-options))))
 
-                   ;; XXX: Because of the autoload hack in (guix build
-                   ;; download), we must build it first to avoid errors since
-                   ;; (gnutls) is unavailable.
-                   (cons (string-append out "/guix/build/download.scm")
-                         (find-files out "\\.scm")))
+                   (find-files out "\\.scm"))
 
          ;; Remove the "fake" (guix config).
          (delete-file (string-append out "/guix/config.scm"))
@@ -137,13 +157,15 @@ files."
 
 (define %default-options
   ;; Alist of default option values.
-  '())
+  `((tarball-url . ,%snapshot-url)))
 
 (define (show-help)
   (display (_ "Usage: guix pull [OPTION]...
 Download and deploy the latest version of Guix.\n"))
   (display (_ "
       --verbose          produce verbose output"))
+  (display (_ "
+      --url=URL          download the Guix tarball from URL"))
   (display (_ "
       --bootstrap        use the bootstrap Guile to build the new Guix"))
   (newline)
@@ -159,6 +181,10 @@ Download and deploy the latest version of Guix.\n"))
   (list (option '("verbose") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'verbose? #t result)))
+        (option '("url") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'tarball-url arg
+                              (alist-delete 'tarball-url result))))
         (option '("bootstrap") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'bootstrap? #t result)))
@@ -182,10 +208,10 @@ Download and deploy the latest version of Guix.\n"))
                 %default-options))
 
   (with-error-handling
-    (let ((opts  (parse-options))
-          (store (open-connection)))
-      (let ((tarball (download-to-store store %snapshot-url
-                                        "guix-latest.tar.gz")))
+    (let* ((opts  (parse-options))
+           (store (open-connection))
+           (url   (assoc-ref opts 'tarball-url)))
+      (let ((tarball (download-to-store store url "guix-latest.tar.gz")))
         (unless tarball
           (leave (_ "failed to download up-to-date source, exiting\n")))
         (parameterize ((%guile-for-build

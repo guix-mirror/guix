@@ -1,7 +1,7 @@
 #!@GUILE@ -ds
 !#
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,11 +28,16 @@
              (ice-9 rdelim)
              (ice-9 popen)
              (srfi srfi-1)
-             (srfi srfi-26))
+             (srfi srfi-26)
+             (rnrs io ports))
 
 (define %proc-directory
   ;; Mount point of Linuxish /proc file system.
   "/proc")
+
+(define %store-directory
+  (or (getenv "NIX_STORE_DIR")
+      "@storedir@"))
 
 (define (proc-file-roots dir file)
   "Return a one-element list containing the file pointed to by DIR/FILE,
@@ -78,6 +83,30 @@ or the empty list."
               (else
                (loop (read-line maps) roots)))))))
 
+(define (proc-environ-roots dir)
+  "Return the list of store files referenced by DIR/environ, where DIR is a
+/proc/XYZ directory."
+  (define split-on-nul
+    (cute string-tokenize <>
+          (char-set-complement (char-set #\nul))))
+
+  (define (rhs-file-names str)
+    (let ((equal (string-index str #\=)))
+      (if equal
+          (let* ((str (substring str (+ 1 equal)))
+                 (rx  (string-append (regexp-quote %store-directory)
+                                     "/[0-9a-z]{32}-[a-zA-Z0-9\\._+-]+")))
+            (map match:substring (list-matches rx str)))
+          '())))
+
+  (define environ
+    (string-append dir "/environ"))
+
+  (append-map rhs-file-names
+              (split-on-nul
+               (call-with-input-file environ
+                 get-string-all))))
+
 (define (lsof-roots)
   "Return the list of roots as found by calling `lsof'."
   (catch 'system
@@ -111,6 +140,7 @@ or the empty list."
                                    (append (proc-exe-roots proc)
                                            (proc-cwd-roots proc)
                                            (proc-fd-roots proc)
-                                           (proc-maps-roots proc))
+                                           (proc-maps-roots proc)
+                                           (proc-environ-roots proc))
                                    '())))
                (append proc-roots (lsof-roots))))))

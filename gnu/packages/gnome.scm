@@ -17,14 +17,16 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gnome)
-  #:use-module ((guix licenses) #:select (gpl2 gpl2+ lgpl2.1+ lgpl3))
+  #:use-module ((guix licenses) #:select (gpl2 gpl2+ lgpl2.0+ lgpl2.1+ lgpl3))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages gnome)
+  #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages pdf)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages perl)
@@ -97,6 +99,102 @@ features to enable users to create their discs easily and quickly.")
 Gnome project.  It includes xml2po tool which makes it easier to translate
 and keep up to date translations of documentation.")
     (license gpl2+))) ; xslt under lgpl
+
+(define-public libgnome-keyring
+  (package
+    (name "libgnome-keyring")
+    (version "3.6.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://gnome/sources/libgnome-keyring/3.6/libgnome-keyring-"
+                   version
+                   ".tar.xz"))
+             (sha256
+              (base32
+               "0c4qrjpmv1hqga3xv6wsq2z10x2n78qgw7q3k3s01y1pggxkgjkd"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (inputs
+     `(("pkg-config" ,pkg-config)
+       ("libgcrypt" ,libgcrypt)
+       ("dbus" ,dbus)))
+    (propagated-inputs
+     ;; Referred to in .h files and .pc.
+     `(("glib" ,glib)))
+    (home-page "http://www.gnome.org")
+    (synopsis "Accessing passwords from the GNOME keyring")
+    (description
+     "Client library to access passwords from the GNOME keyring.")
+
+    ;; Though a couple of files are LGPLv2.1+.
+    (license lgpl2.0+)))
+
+(define-public evince
+  (package
+    (name "evince")
+    (version "3.6.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/evince/3.6/evince-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1da1pij030dh8mb0pr0jnyszgsbjnh8lc17rj5ii52j3kmbv51qv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("--disable-nautilus")
+
+       ;; FIXME: Tests fail with:
+       ;;   ImportError: No module named gi.repository
+       ;; Where should that module come from?
+       #:tests? #f
+
+       #:phases (alist-cons-after
+                 'install 'set-mime-search-path
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   ;; Wrap 'evince' so that it knows where MIME info is.
+                   (let ((out  (assoc-ref outputs "out"))
+                         (mime (assoc-ref inputs "shared-mime-info")))
+                     (wrap-program (string-append out "/bin/evince")
+                                   `("XDG_DATA_DIRS" ":" prefix
+                                     ,(list (string-append mime "/share")
+                                            (string-append out "/share"))))))
+                 %standard-phases)))
+    (inputs
+     `(("libspectre" ,libspectre)
+       ;; ("djvulibre" ,djvulibre)
+       ("ghostscript" ,ghostscript)
+       ("poppler" ,poppler)
+       ("gsettings-desktop-schemas" ,gsettings-desktop-schemas)
+       ("libgnome-keyring" ,libgnome-keyring)
+       ("gnome-icon-theme" ,gnome-icon-theme)
+       ("itstool" ,itstool)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("atk" ,atk)
+       ("pango" ,pango)
+       ("gtk+" ,gtk+)
+       ("glib" ,glib)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)
+       ("libsm" ,libsm)
+       ("libice" ,libice)
+       ("shared-mime-info" ,shared-mime-info)
+
+       ;; For tests.
+       ("dogtail" ,python2-dogtail)))
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (home-page
+     "http://www.gnome.org/projects/evince/")
+    (synopsis "GNOME's document viewer")
+    (description
+     "Evince is a document viewer for multiple document formats.  It
+currently supports PDF, PostScript, DjVu, TIFF and DVI.  The goal
+of Evince is to replace the multiple document viewers that exist
+on the GNOME Desktop with a single simple application.")
+    (license gpl2+)))
 
 (define-public gsettings-desktop-schemas
   (package
@@ -174,6 +272,37 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
     (description
      "Icons for the GNOME desktop.")
     (license lgpl3))) ; or Creative Commons BY-SA 3.0
+
+(define-public shared-mime-info
+  (package
+    (name "shared-mime-info")
+    (version "1.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://freedesktop.org/~hadess/shared-mime-info-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0y5vi0vr6rbhvfzcfg57cfskn362bpvcpca9cy598nmr87i6lld5"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; The build system appears not to be parallel-safe.
+     '(#:parallel-build? #f))
+    (inputs
+     `(("glib" ,glib)
+       ("libxml2" ,libxml2)
+       ("pkg-config" ,pkg-config)))
+    (native-inputs
+     `(("intltool" ,intltool)))
+    (home-page "http://freedesktop.org/wiki/Software/shared-mime-info")
+    (synopsis "Database of common MIME types")
+    (description
+     "The shared-mime-info package contains the core database of common types
+and the update-mime-database command used to extend it.  It requires glib2 to
+be installed for building the update command.  Additionally, it uses intltool
+for translations, though this is only a dependency for the maintainers.  This
+database is translated at Transifex.")
+    (license gpl2+)))
 
 (define-public hicolor-icon-theme
   (package

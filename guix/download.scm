@@ -24,6 +24,7 @@
   #:use-module ((guix store) #:select (derivation-path? add-to-store))
   #:use-module ((guix build download) #:renamer (symbol-prefix-proc 'build:))
   #:use-module (guix utils)
+  #:use-module (web uri)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (%mirrors
@@ -244,13 +245,18 @@ must be a list of symbol/URL-list pairs."
                             #:key (log (current-error-port)))
   "Download from URL to STORE, either under NAME or URL's basename if
 omitted.  Write progress reports to LOG."
-  (call-with-temporary-output-file
-   (lambda (temp port)
-     (let ((result
-            (parameterize ((current-output-port log))
-              (build:url-fetch url temp #:mirrors %mirrors))))
-       (close port)
-       (and result
-            (add-to-store store name #f "sha256" temp))))))
+  (define uri
+    (string->uri url))
+
+  (if (memq (uri-scheme uri) '(file #f))
+      (add-to-store store name #f "sha256" (uri-path uri))
+      (call-with-temporary-output-file
+       (lambda (temp port)
+         (let ((result
+                (parameterize ((current-output-port log))
+                  (build:url-fetch url temp #:mirrors %mirrors))))
+           (close port)
+           (and result
+                (add-to-store store name #f "sha256" temp)))))))
 
 ;;; download.scm ends here

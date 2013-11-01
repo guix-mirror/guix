@@ -117,7 +117,8 @@ shared NFS home directories.")
              (base32 "0cpzqadqk6z6bmb79p04pykxc8x57rvshh33414cnk41bvgaf4vm"))
             (patches (list (search-patch "glib-tests-homedir.patch")
                            (search-patch "glib-tests-desktop.patch")
-                           (search-patch "glib-tests-prlimit.patch")))))
+                           (search-patch "glib-tests-prlimit.patch")
+                           (search-patch "glib-tests-newnet.patch")))))
    (build-system gnu-build-system)
    (outputs '("out"                        ; everything
               "doc"))                      ; 20 MiB of GTK-Doc reference

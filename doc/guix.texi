@@ -8,7 +8,19 @@
 @c %**end of header
 
 @include version.texi
-@set YEARS 2012, 2013
+
+@copying
+Copyright @copyright{} 2012, 2013 Ludovic Courtès@*
+Copyright @copyright{} 2013 Andreas Enge@*
+Copyright @copyright{} 2013 Nikita Karetnikov
+
+Permission is granted to copy, distribute and/or modify this document
+under the terms of the GNU Free Documentation License, Version 1.3 or
+any later version published by the Free Software Foundation; with no
+Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
+copy of the license is included in the section entitled ``GNU Free
+Documentation License''.
+@end copying
 
 @dircategory Package management
 @direntry
@@ -31,33 +43,8 @@
 Edition @value{EDITION} @*
 @value{UPDATED} @*
 
-Copyright @copyright{} @value{YEARS} Ludovic Court@`es, Andreas Enge, Nikita Karetnikov
-
-@ifinfo
-@quotation
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
-copy of the license is included in the section entitled ``GNU Free
-Documentation License''.
-@end quotation
-@end ifinfo
-
+@insertcopying
 @end titlepage
-
-@copying
-This manual documents GNU Guix version @value{VERSION}.
-
-Copyright @copyright{} @value{YEARS} Ludovic Courtès
-
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
-copy of the license is included in the section entitled ``GNU Free
-Documentation License.''
-@end copying
 
 @contents
 
@@ -67,18 +54,6 @@ Documentation License.''
 
 This document describes GNU Guix version @value{VERSION}, a functional
 package management tool written for the GNU system.
-
-
-@quotation
-Copyright @copyright{} @value{YEARS} Ludovic Courtès, Andreas Enge, Nikita Karetnikov
-
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.3 or
-any later version published by the Free Software Foundation; with no
-Invariant Sections, no Front-Cover Texts, and no Back-Cover Texts.  A
-copy of the license is included in the section entitled ``GNU Free
-Documentation License.''
-@end quotation
 
 @menu
 * Introduction::                What is Guix about?
@@ -879,6 +854,12 @@ but it supports the following options:
 @table @code
 @item --verbose
 Produce verbose output, writing build logs to the standard error output.
+
+@item --url=@var{url}
+Download the source tarball of Guix from @var{url}.
+
+By default, the tarball is taken from its canonical address at
+@code{gnu.org}, for the stable branch of Guix.
 
 @item --bootstrap
 Use the bootstrap Guile to build the latest Guix.  This option is only
@@ -2104,6 +2085,13 @@ one:
 @example
 guix build --target=armv5tel-linux-gnueabi bootstrap-tarballs
 @end example
+
+Once these are built, the @code{(gnu packages bootstrap)} module needs
+to be updated to refer to these binaries on the target platform.  In
+addition, the @code{glibc-dynamic-linker} procedure in that module must
+be augmented to return the right file name for libc's dynamic linker on
+that platform; likewise, @code{system->linux-architecture} in @code{(gnu
+packages linux)} must be taught about the new platform.
 
 In practice, there may be some complications.  First, it may be that the
 extended GNU triplet that specifies an ABI (like the @code{eabi} suffix

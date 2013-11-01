@@ -1,0 +1,14 @@
+See http://lists.freedesktop.org/archives/gstreamer-bugs/2013-January/098461.html
+
+diff -ru gstreamer-0.10.36.orig/tests/check/Makefile.in gstreamer-0.10.36/tests/check/Makefile.in
+--- gstreamer-0.10.36.orig/tests/check/Makefile.in	2012-02-20 23:48:29.000000000 +0100
++++ gstreamer-0.10.36/tests/check/Makefile.in	2013-10-30 21:55:48.000000000 +0100
+@@ -42,7 +42,7 @@
+ 	gst/gstbus$(EXEEXT) gst/gstcaps$(EXEEXT) $(am__EXEEXT_2) \
+ 	gst/gstdatetime$(EXEEXT) gst/gstinfo$(EXEEXT) \
+ 	gst/gstiterator$(EXEEXT) gst/gstmessage$(EXEEXT) \
+-	gst/gstminiobject$(EXEEXT) gst/gstobject$(EXEEXT) \
++	gst/gstminiobject$(EXEEXT) \
+ 	gst/gstpad$(EXEEXT) gst/gstparamspecs$(EXEEXT) \
+ 	gst/gstpoll$(EXEEXT) gst/gstsegment$(EXEEXT) \
+ 	gst/gstsystemclock$(EXEEXT) gst/gstclock$(EXEEXT) \

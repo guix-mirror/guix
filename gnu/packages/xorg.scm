@@ -4180,7 +4180,8 @@ tracking.")
       (origin
         (method url-fetch)
         (uri (string-append
-               "ftp://ftp.freedesktop.org/pub/mesa/" version
+               "ftp://ftp.freedesktop.org/pub/mesa/older-versions/8.x/"
+               version
                "/MesaLib-" version
                ".tar.bz2"))
         (sha256

@@ -95,6 +95,10 @@ srfi/srfi-37.scm: srfi/srfi-37.scm.in
 
 endif INSTALL_SRFI_37
 
+# Handy way to remove the .go files without removing all the rest.
+clean-go:
+	-$(RM) -f $(GOBJECTS)
+
 
 SCM_TESTS =					\
   tests/base32.scm				\
@@ -240,5 +244,5 @@ assert-binaries-available:
 	$(top_builddir)/pre-inst-env "$(GUILE)"				\
 	  "$(top_srcdir)/build-aux/check-available-binaries.scm"
 
-.PHONY: sync-descriptions gen-ChangeLog
+.PHONY: sync-descriptions gen-ChangeLog clean-go
 .PHONY: assert-no-store-file-names assert-binaries-available

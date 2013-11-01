@@ -41,7 +41,6 @@
     (build-system gnu-build-system)
     (arguments
      '(#:test-target "test"
-       #:patch-flags '("-p0")
        #:phases (alist-replace
                  'configure
                  (lambda* (#:key outputs #:allow-other-keys)
@@ -68,7 +67,7 @@
     (inputs
      `(("file" ,file)))
     (home-page "http://www.cmake.org/")
-    (synopsis "A cross-platform, open-source build system")
+    (synopsis "Cross-platform build system")
     (description
      "CMake is a family of tools designed to build, test and package software.
 CMake is used to control the software compilation process using simple platform

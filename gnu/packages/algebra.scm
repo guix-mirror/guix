@@ -125,6 +125,38 @@ PARI is also available as a C library to allow for faster computations.")
    (license gpl2+)
    (home-page "http://pari.math.u-bordeaux.fr/")))
 
+(define-public gp2c
+  (package
+   (name "gp2c")
+   (version "0.0.8")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "http://pari.math.u-bordeaux.fr/pub/pari/GP2C/gp2c-"
+                  version ".tar.gz"))
+            (sha256 (base32
+                     "03fgiwy2si264g3zfgw2yi6i2l8szl5m106zgwk77sddshk20b34"))))
+   (build-system gnu-build-system)
+   (inputs `(("pari-gp" ,pari-gp)))
+   (arguments
+    '(#:configure-flags
+      (list (string-append "--with-paricfg="
+                           (assoc-ref %build-inputs "pari-gp")
+                           "/lib/pari/pari.cfg"))))
+   (synopsis "PARI/GP, a computer algebra system for number theory")
+   (description
+    "PARI/GP is a widely used computer algebra system designed for fast
+computations in number theory (factorisations, algebraic number theory,
+elliptic curves...), but it also contains a large number of other useful
+functions to compute with mathematical entities such as matrices,
+polynomials, power series, algebraic numbers, etc., and a lot of
+transcendental functions.
+PARI is also available as a C library to allow for faster computations.
+
+GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
+   (license gpl2)
+   (home-page "http://pari.math.u-bordeaux.fr/")))
+
 (define-public bc
   (package
     (name "bc")

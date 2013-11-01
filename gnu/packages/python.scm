@@ -19,7 +19,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages python)
-  #:use-module ((guix licenses) #:select (bsd-3 bsd-style psfl x11))
+  #:use-module ((guix licenses)
+                #:select (bsd-3 bsd-style psfl x11 gpl2+ lgpl2.1+))
   #:use-module ((guix licenses) #:select (zlib)
                                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (gnu packages)
@@ -399,7 +400,7 @@ after Andy Lester’s Perl module WWW::Mechanize.")
      "Json library for Python")
     (description
      "JSON (JavaScript Object Notation) is a subset of JavaScript syntax
-(ECMA-262 3rd edition) used as a lightweight data interchange format.
+ (ECMA-262 3rd edition) used as a lightweight data interchange format.
 
 Simplejson exposes an API familiar to users of the standard library marshal
 and pickle modules.  It is the externally maintained version of the json
@@ -438,3 +439,91 @@ Python 3.3+.")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
     (license x11)))
+
+(define-public python2-dogtail
+  ;; Python 2 only, as it leads to "TabError: inconsistent use of tabs and
+  ;; spaces in indentation" with Python 3.
+  (package
+    (name "python2-dogtail")
+    (version "0.8.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "https://fedorahosted.org/released/dogtail/dogtail-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1yc4cg7ip87z15gyd4wy2vzbywrjc52a3m8r8gqy2b50d65llcg1"))))
+    (build-system python-build-system)
+    (arguments `(#:python ,python-2
+                 #:tests? #f))                    ; invalid command "test"
+    (home-page "https://fedorahosted.org/dogtail/")
+    (synopsis "GUI test tool and automation framework written in ​Python")
+    (description
+     "dogtail is a GUI test tool and automation framework written in Python.
+It uses Accessibility (a11y) technologies to communicate with desktop
+applications. dogtail scripts are written in Python and executed like any
+other Python program.")
+    (license gpl2+)))
+
+(define-public python2-empy
+  (package
+    (name "python2-empy")
+    (version "3.3")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.alcyone.com/software/empy/empy-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "01g8mmkfnvjdmlhsihwyx56lrg7r5m5d2fg6mnxsvy6g0dnl69f6"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2
+       #:phases (alist-replace
+                 'check
+                 (lambda _
+                   (zero? (system* "./test.sh")))
+                 %standard-phases)))
+    (home-page "http://www.alcyone.com/software/empy/")
+    (synopsis "Templating system for Python")
+    (description
+     "EmPy is a system for embedding Python expressions and statements in
+template text; it takes an EmPy source file, processes it, and produces
+output.  This is accomplished via expansions, which are special signals to the
+EmPy system and are set off by a special prefix (by default the at sign, @).
+EmPy can expand arbitrary Python expressions and statements in this way, as
+well as a variety of special forms.  Textual data not explicitly delimited in
+this way is sent unaffected to the output, allowing Python to be used in
+effect as a markup language.  Also supported are callbacks via hooks,
+recording and playback via diversions, and dynamic, chainable filters.  The
+system is highly configurable via command line options and embedded
+commands.")
+    (license lgpl2.1+)))
+
+(define-public scons
+  (package
+    (name "scons")
+    (version "2.1.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/scons/scons-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "07cjn4afb2cljjrd3cr7xf062qq58z8q96f58z6yplhdyqafsfa1"))))
+    (build-system python-build-system)
+    (arguments
+     ;; With Python 3.x, fails to build with a syntax error.
+     `(#:python ,python-2
+       #:tests? #f))                       ; no 'python setup.py test' command
+    (home-page "http://scons.org/")
+    (synopsis "Software construction tool written in Python")
+    (description
+     "SCons is a software construction tool.  Think of SCons as an improved,
+cross-platform substitute for the classic Make utility with integrated
+functionality similar to autoconf/automake and compiler caches such as ccache.
+In short, SCons is an easier, more reliable and faster way to build
+software.")
+    (license x11)))
+

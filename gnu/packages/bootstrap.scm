@@ -80,14 +80,13 @@
       (patch-guile %bootstrap-guile)
       (patch-inputs %bootstrap-patch-inputs))))
 
-(define (package-from-tarball name* source* program-to-test description*)
-  "Return a package that correspond to the extraction of SOURCE*.
-PROGRAM-TO-TEST is a program to run after extraction of SOURCE*, to
+(define (package-from-tarball name source program-to-test description)
+  "Return a package that correspond to the extraction of SOURCE.
+PROGRAM-TO-TEST is a program to run after extraction of SOURCE, to
 check whether everything is alright."
   (package
-    (name name*)
+    (name name)
     (version "0")
-    (source #f)
     (build-system trivial-build-system)
     (arguments
      `(#:guile ,%bootstrap-guile
@@ -111,8 +110,9 @@ check whether everything is alright."
     (inputs
      `(("tar" ,(search-bootstrap-binary "tar" (%current-system)))
        ("xz"  ,(search-bootstrap-binary "xz" (%current-system)))
-       ("tarball" ,(bootstrap-origin (source* (%current-system))))))
-    (synopsis description*)
+       ("tarball" ,(bootstrap-origin (source (%current-system))))))
+    (source #f)
+    (synopsis description)
     (description #f)
     (home-page #f)
     (license #f)))

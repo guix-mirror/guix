@@ -8,6 +8,7 @@ contributing to it.  See `nix/AUTHORS' for details.
 The fine people listed below have contributed code to GNU Guix (in
 alphabetical order):
 
+           Eric Bavier <bavier@member.fsf.org>
         Ludovic Courtès <ludo@gnu.org>
         Andreas Enge <andreas@enge.fr>
       Joshua S. Grant <youlysses@riseup.net>
@@ -15,4 +16,5 @@ alphabetical order):
         Aljosha Papsch <misc@rpapsch.de>
           Cyril Roelandt <tipecaml@gmail.com>
            Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
+          David Thompson <dthompson2@worcester.edu>
         Mark H. Weaver <mhw@netris.org>

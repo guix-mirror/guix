@@ -212,28 +212,27 @@ list of Guile module names to be embedded in the initrd."
                     (and (zero? (system* gzip "--best" "initrd"))
                          (rename-file "initrd.gz" "initrd")))))))))
 
-  (let ((name* name))
-    (package
-      (name name*)
-      (version "0")
-      (source #f)
-      (build-system trivial-build-system)
-      (arguments `(#:modules ((guix build utils))
-                   #:builder ,builder))
-      (inputs `(("guile" ,guile)
-                ("cpio" ,cpio)
-                ("gzip" ,gzip)
-                ("modules" ,(module-package modules))
-                ("modules/compiled" ,(compiled-module-package modules))
-                ,@(if linux
-                      `(("linux" ,linux))
-                      '())))
-      (synopsis "An initial RAM disk (initrd) for the Linux kernel")
-      (description
-       "An initial RAM disk (initrd), really a gzipped cpio archive, for use by
+  (package
+    (name name)
+    (version "0")
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments `(#:modules ((guix build utils))
+                           #:builder ,builder))
+    (inputs `(("guile" ,guile)
+              ("cpio" ,cpio)
+              ("gzip" ,gzip)
+              ("modules" ,(module-package modules))
+              ("modules/compiled" ,(compiled-module-package modules))
+              ,@(if linux
+                    `(("linux" ,linux))
+                    '())))
+    (synopsis "An initial RAM disk (initrd) for the Linux kernel")
+    (description
+     "An initial RAM disk (initrd), really a gzipped cpio archive, for use by
 the Linux kernel.")
-      (license gpl3+)
-      (home-page "http://www.gnu.org/software/guix/"))))
+    (license gpl3+)
+    (home-page "http://www.gnu.org/software/guix/")))
 
 (define-public qemu-initrd
   (expression->initrd

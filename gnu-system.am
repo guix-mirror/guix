@@ -22,11 +22,13 @@
 
 GNU_SYSTEM_MODULES =				\
   gnu/packages.scm				\
+  gnu/packages/acct.scm				\
   gnu/packages/acl.scm				\
   gnu/packages/algebra.scm			\
   gnu/packages/apr.scm				\
   gnu/packages/aspell.scm			\
   gnu/packages/attr.scm				\
+  gnu/packages/autogen.scm			\
   gnu/packages/autotools.scm			\
   gnu/packages/avahi.scm			\
   gnu/packages/base.scm				\
@@ -92,6 +94,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/imagemagick.scm			\
   gnu/packages/indent.scm			\
   gnu/packages/irssi.scm			\
+  gnu/packages/kde.scm				\
   gnu/packages/ld-wrapper.scm			\
   gnu/packages/less.scm				\
   gnu/packages/lesstif.scm			\
@@ -139,6 +142,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/patchelf.scm			\
   gnu/packages/pcre.scm				\
   gnu/packages/pdf.scm				\
+  gnu/packages/pem.scm				\
   gnu/packages/perl.scm				\
   gnu/packages/pkg-config.scm			\
   gnu/packages/plotutils.scm			\
@@ -156,6 +160,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/samba.scm			\
   gnu/packages/scheme.scm			\
   gnu/packages/screen.scm			\
+  gnu/packages/sdl.scm				\
   gnu/packages/shishi.scm			\
   gnu/packages/skribilo.scm			\
   gnu/packages/smalltalk.scm			\
@@ -215,12 +220,15 @@ dist_patch_DATA =						\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
+  gnu/packages/patches/glib-tests-newnet.patch			\
   gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-make-4.0.patch			\
   gnu/packages/patches/glibc-no-ld-so-cache.patch		\
   gnu/packages/patches/grub-gets-undeclared.patch		\
+  gnu/packages/patches/gstreamer-0.10-bison3.patch		\
+  gnu/packages/patches/gstreamer-0.10-silly-test.patch		\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
   gnu/packages/patches/guile-default-utf8.patch			\
   gnu/packages/patches/guile-linux-syscalls.patch		\
@@ -235,8 +243,10 @@ dist_patch_DATA =						\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\
+  gnu/packages/patches/pulseaudio-test-timeouts.patch		\
   gnu/packages/patches/python-fix-dbm.patch			\
   gnu/packages/patches/qemu-multiple-smb-shares.patch		\
+  gnu/packages/patches/qt4-tests.patch				\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/ripperx-libm.patch			\
   gnu/packages/patches/scheme48-tests.patch			\

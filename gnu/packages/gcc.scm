@@ -202,14 +202,14 @@ Go.  It also includes standard libraries for these languages.")
 
 (define-public gcc-4.8
   (package (inherit gcc-4.7)
-    (version "4.8.1")
+    (version "4.8.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gcc/gcc-"
                                  version "/gcc-" version ".tar.bz2"))
              (sha256
               (base32
-               "04sqn0ds17ys8l6zn7vyyvjz1a7hsk4zb0381vlw9wnr7az48nsl"))))))
+               "1j6dwgby4g3p3lz7zkss32ghr45zpdidrg8xvazvn91lqxv25p09"))))))
 
 (define-public isl
   (package

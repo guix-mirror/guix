@@ -1,0 +1,22 @@
+Drop tests requiring a running X server, but not starting any.
+
+diff -ru qt-everywhere-opensource-src-4.8.5.orig/src/3rdparty/webkit/Source/WebKit/qt/tests/tests.pro qt-everywhere-opensource-src-4.8.5/src/3rdparty/webkit/Source/WebKit/qt/tests/tests.pro
+--- qt-everywhere-opensource-src-4.8.5.orig/src/3rdparty/webkit/Source/WebKit/qt/tests/tests.pro	2013-10-12 13:15:47.000000000 +0200
++++ qt-everywhere-opensource-src-4.8.5/src/3rdparty/webkit/Source/WebKit/qt/tests/tests.pro	2013-10-12 13:20:15.000000000 +0200
+@@ -1,15 +1,4 @@
+ 
+ TEMPLATE = subdirs
+-SUBDIRS = qwebframe qwebpage qwebelement qgraphicswebview qwebhistoryinterface qwebview qwebhistory qwebinspector hybridPixmap
++SUBDIRS =
+ 
+-linux-* {
+-    # This test bypasses the library and links the tested code's object itself.
+-    # This stresses the build system in some corners so we only run it on linux.
+-    SUBDIRS += MIMESniffing
+-}
+-
+-contains(QT_CONFIG, declarative): SUBDIRS += qdeclarativewebview
+-SUBDIRS += benchmarks/painting benchmarks/loading
+-contains(DEFINES, ENABLE_WEBGL=1) {
+-    SUBDIRS += benchmarks/webgl
+-}

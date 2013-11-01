@@ -441,7 +441,8 @@ that form."
    (lambda* (path #:optional (output "out"))
      "Read the derivation from PATH (`/nix/store/xxx.drv'), and return the store
 path of its output OUTPUT."
-     (derivation->output-path (call-with-input-file path read-derivation)))))
+     (derivation->output-path (call-with-input-file path read-derivation)
+                              output))))
 
 (define (derivation-path->output-paths path)
   "Read the derivation from PATH (`/nix/store/xxx.drv'), and return the

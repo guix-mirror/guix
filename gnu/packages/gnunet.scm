@@ -91,14 +91,14 @@ tool to extract metadata from a file and print the results.")
 (define-public libmicrohttpd
   (package
    (name "libmicrohttpd")
-   (version "0.9.30")
+   (version "0.9.31")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/libmicrohttpd/libmicrohttpd-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0v30w90qx8wpg5ksy97f5r4acpwd4q7q2v508mcss00vzj18rx40"))))
+              "06sxxial1794589k0ahi7nhhyfp14jf4jwirf6bkxqhs138pghfa"))))
    (build-system gnu-build-system)
    (inputs
     `(("curl" ,curl)
@@ -106,13 +106,16 @@ tool to extract metadata from a file and print the results.")
       ("libgcrypt" ,libgcrypt)
       ("openssl" ,openssl)
       ("zlib" ,zlib)))
+   (arguments
+    `(#:parallel-tests? #f))
    (synopsis "C library implementing an HTTP 1.1 server")
    (description
-    "Libmicrohttpd is a small, embeddable HTTP server implemented as a C
-library.  It makes it easy to run an HTTP server as part of another
+    "GNU libmicrohttpd is a small, embeddable HTTP server implemented as a
+C library.  It makes it easy to run an HTTP server as part of another
 application.  The library is fully HTTP 1.1 compliant.  It can listen on
-multiple ports, supports four different threading models, and supports IPv6.
- It also features security features such as basic and digest authentication
+multiple ports, supports four different threading models, and supports
+IPv6.  It
+also features security features such as basic and digest authentication
 and support for SSL3 and TLS.")
    (license license:lgpl2.1+)
    (home-page "http://www.gnu.org/software/libmicrohttpd/")))

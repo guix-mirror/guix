@@ -13,7 +13,7 @@
    (eval . (put 'lambda* 'scheme-indent-function 1))
    (eval . (put 'substitute* 'scheme-indent-function 1))
    (eval . (put 'with-directory-excursion 'scheme-indent-function 1))
-   (eval . (put 'package 'scheme-indent-function 1))
+   (eval . (put 'package 'scheme-indent-function 0))
    (eval . (put 'substitute-keyword-arguments 'scheme-indent-function 1))
    (eval . (put 'with-error-handling 'scheme-indent-function 0))
    (eval . (put 'with-mutex 'scheme-indent-function 1))
