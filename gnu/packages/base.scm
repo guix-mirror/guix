@@ -642,7 +642,7 @@ identifier SYSTEM."
 
 (define gcc-boot0
   (package-with-bootstrap-guile
-   (package (inherit gcc-4.8)
+   (package (inherit gcc-4.7)
      (name "gcc-cross-boot0")
      (arguments
       `(#:guile ,%bootstrap-guile
@@ -652,7 +652,7 @@ identifier SYSTEM."
                    (ice-9 regex)
                    (srfi srfi-1)
                    (srfi srfi-26))
-        ,@(substitute-keyword-arguments (package-arguments gcc-4.8)
+        ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
             ((#:configure-flags flags)
              `(append (list ,(string-append "--target=" (boot-triplet))
 
@@ -716,7 +716,7 @@ identifier SYSTEM."
                     (with-directory-excursion
                         (string-append out "/lib/gcc/"
                                        ,(boot-triplet)
-                                       "/" ,(package-version gcc-4.8))
+                                       "/" ,(package-version gcc-4.7))
                       (symlink "libgcc.a" "libgcc_eh.a"))))
                 ,phases))))))
 
@@ -732,7 +732,7 @@ identifier SYSTEM."
 
      ;; No need for Texinfo at this stage.
      (native-inputs (alist-delete "texinfo"
-                                  (package-native-inputs gcc-4.8))))))
+                                  (package-native-inputs gcc-4.7))))))
 
 (define (linux-libre-headers-boot0)
   "Return Linux-Libre header files for the bootstrap environment."
@@ -798,7 +798,7 @@ identifier SYSTEM."
 (define (cross-gcc-wrapper gcc binutils glibc bash)
   "Return a wrapper for the pseudo-cross toolchain GCC/BINUTILS/GLIBC
 that makes it available under the native tool names."
-  (package (inherit gcc-4.8)
+  (package (inherit gcc-4.7)
     (name (string-append (package-name gcc) "-wrapped"))
     (source #f)
     (build-system trivial-build-system)
@@ -904,7 +904,7 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
        ,@(substitute-keyword-arguments (package-arguments gcc-boot0)
            ((#:configure-flags boot-flags)
-            (let loop ((args (package-arguments gcc-4.8)))
+            (let loop ((args (package-arguments gcc-4.7)))
               (match args
                 ((#:configure-flags normal-flags _ ...)
                  normal-flags)
