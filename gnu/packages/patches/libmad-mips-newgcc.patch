@@ -1,0 +1,16 @@
+Fix MIPS assembly code to work with newer GCC, where the "=h"
+constraint is no longer supported.
+
+--- libmad/fixed.h.orig	2004-02-16 21:02:03.000000000 -0500
++++ libmad/fixed.h	2011-10-29 18:47:21.000000000 -0400
+@@ -304,8 +304,8 @@
+  * significant bit depends on OPT_ACCURACY via mad_f_scale64().
+  */
+ #  define MAD_F_MLX(hi, lo, x, y)  \
+-    asm ("mult	%2,%3"  \
+-	 : "=l" (lo), "=h" (hi)  \
++    asm ("mult	%2,%3\n\tmfhi  %1"  \
++	 : "=l" (lo), "=r" (hi)  \
+ 	 : "%r" (x), "r" (y))
+ 
+ # if defined(HAVE_MADD_ASM)
