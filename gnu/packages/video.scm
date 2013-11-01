@@ -139,8 +139,8 @@
                                             (or (%current-target-system)
                                                 (%current-system)))
                             '()
-                            '("--disable-amd3now"
-                              "--disable-amd3nowext"
+                            '("--disable-amd3dnow"
+                              "--disable-amd3dnowext"
                               "--disable-mmx"
                               "--disable-mmxext"
                               "--disable-sse"
