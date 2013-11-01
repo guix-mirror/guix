@@ -1,0 +1,19 @@
+Increase the timeout of the thread test.  Hydra was intermittedly
+failing this test due to premature timeout, and slower machines
+consistently fail.
+
+Patch by Mark H Weaver <mhw@netris.org>.
+
+--- pulseaudio/src/tests/thread-test.c.orig	2012-09-26 07:27:01.000000000 -0400
++++ pulseaudio/src/tests/thread-test.c	2013-10-31 22:53:23.224000184 -0400
+@@ -152,6 +152,10 @@
+     s = suite_create("Thread");
+     tc = tcase_create("thread");
+     tcase_add_test(tc, thread_test);
++    /* the default timeout is too small,
++     * set it to a reasonable large one.
++     */
++    tcase_set_timeout(tc, 60 * 60);
+     suite_add_tcase(s, tc);
+ 
+     sr = srunner_create(s);

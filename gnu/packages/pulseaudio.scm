@@ -22,6 +22,7 @@
   #:use-module ((guix licenses)
                 #:renamer (symbol-prefix-proc 'l:))
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages oggvorbis)
   #:use-module (gnu packages pkg-config)
@@ -141,7 +142,8 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "1bndz4l8jxyq3zq128gzp3gryxl6yjs66j2y1d7yabw2n5mv7kim"))))
+               "1bndz4l8jxyq3zq128gzp3gryxl6yjs66j2y1d7yabw2n5mv7kim"))
+             (patches (list (search-patch "pulseaudio-test-timeouts.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var" ;"--sysconfdir=/etc"
