@@ -52,6 +52,7 @@
             fill-paragraph
             string->recutils
             package->recutils
+            package-specification->name+version+output
             string->generations
             string->duration
             args-fold*
@@ -358,6 +359,11 @@ converted to a space; sequences of more than one line break are preserved."
     ((_ _ chars)
      (list->string (reverse chars)))))
 
+
+;;;
+;;; Packages.
+;;;
+
 (define (string->recutils str)
   "Return a version of STR where newlines have been replaced by newlines
 followed by \"+ \", which makes for a valid multi-line field value in the
@@ -471,6 +477,31 @@ following patterns: \"1d\", \"1w\", \"1m\"."
          (lambda (match)
            (hours->duration (* 24 30) match)))
         (else #f)))
+
+(define* (package-specification->name+version+output spec
+                                                     #:optional (output "out"))
+  "Parse package specification SPEC and return three value: the specified
+package name, version number (or #f), and output name (or OUTPUT).  SPEC may
+optionally contain a version number and an output name, as in these examples:
+
+  guile
+  guile-2.0.9
+  guile:debug
+  guile-2.0.9:debug
+"
+  (let*-values (((name sub-drv)
+                 (match (string-rindex spec #\:)
+                   (#f    (values spec output))
+                   (colon (values (substring spec 0 colon)
+                                  (substring spec (+ 1 colon))))))
+                ((name version)
+                 (package-name->name+version name)))
+    (values name version sub-drv)))
+
+
+;;;
+;;; Command-line option processing.
+;;;
 
 (define (args-fold* options unrecognized-option-proc operand-proc . seeds)
   "A wrapper on top of `args-fold' that does proper user-facing error
