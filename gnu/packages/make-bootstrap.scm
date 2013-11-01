@@ -94,10 +94,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ("cross-binutils" ,(cross-binutils target))
             ,@%final-inputs))
         `(("libc" ,(glibc-for-bootstrap))
-          ("gcc" ,(package (inherit gcc-4.7)
+          ("gcc" ,(package (inherit gcc-4.8)
                     (inputs
                      `(("libc",(glibc-for-bootstrap))
-                       ,@(package-inputs gcc-4.7)))))
+                       ,@(package-inputs gcc-4.8)))))
           ,@(fold alist-delete %final-inputs '("libc" "gcc")))))
 
   (package-with-explicit-inputs p inputs
@@ -378,7 +378,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %gcc-static
   ;; A statically-linked GCC, with stripped-down functionality.
   (package-with-relocatable-glibc
-   (package (inherit gcc-4.7)
+   (package (inherit gcc-4.8)
      (name "gcc-static")
      (arguments
       `(#:modules ((guix build utils)
@@ -386,7 +386,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                    (srfi srfi-1)
                    (srfi srfi-26)
                    (ice-9 regex))
-        ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
+        ,@(substitute-keyword-arguments (package-arguments gcc-4.8)
             ((#:guile _) #f)
             ((#:implicit-inputs? _) #t)
             ((#:configure-flags flags)
@@ -409,11 +409,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                ("mpfr-source" ,(package-source mpfr))
                ("mpc-source" ,(package-source mpc))
                ("binutils" ,binutils)
-               ,@(package-inputs gcc-4.7))))))
+               ,@(package-inputs gcc-4.8))))))
 
 (define %gcc-stripped
   ;; The subset of GCC files needed for bootstrap.
-  (package (inherit gcc-4.7)
+  (package (inherit gcc-4.8)
     (name "gcc-stripped")
     (build-system trivial-build-system)
     (source #f)
