@@ -180,13 +180,13 @@ packages that will/would be installed and removed."
                         name version path)))
        (if dry-run?
            (format (current-error-port)
-                   (N_ "The following package would be removed:~% ~{~a~%~}~%"
-                       "The following packages would be removed:~% ~{~a~%~}~%"
+                   (N_ "The following package would be removed:~%~{~a~%~}~%"
+                       "The following packages would be removed:~%~{~a~%~}~%"
                        len)
                    remove)
            (format (current-error-port)
-                   (N_ "The following package will be removed:~% ~{~a~%~}~%"
-                       "The following packages will be removed:~% ~{~a~%~}~%"
+                   (N_ "The following package will be removed:~%~{~a~%~}~%"
+                       "The following packages will be removed:~%~{~a~%~}~%"
                        len)
                    remove))))
     (_ #f))
