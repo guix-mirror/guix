@@ -692,6 +692,17 @@ return the new list of manifest entries."
 
   (append to-upgrade to-install))
 
+(define (options->removable options manifest)
+  "Given options, return the list of manifest entries to be removed from
+MANIFEST."
+  (let ((remove (filter-map (match-lambda
+                             (('remove . package)
+                              package)
+                             (_ #f))
+                            options)))
+    (filter (cut manifest-installed? manifest <>)
+            remove)))
+
 
 ;;;
 ;;; Entry point.
@@ -839,16 +850,10 @@ more information.~%"))
             opts))
           (else
            (let* ((manifest (profile-manifest profile))
-                  (install* (options->installable opts manifest))
-                  (remove   (filter-map (match-lambda
-                                         (('remove . package)
-                                          package)
-                                         (_ #f))
-                                        opts))
-                  (remove*  (filter (cut manifest-installed? manifest <>)
-                                    remove))
+                  (install  (options->installable opts manifest))
+                  (remove   (options->removable opts manifest))
                   (entries
-                   (append install*
+                   (append install
                            (fold (lambda (package result)
                                    (match package
                                      (($ <manifest-entry> name _ out _ ...)
@@ -858,7 +863,7 @@ more information.~%"))
                                               result))))
                                  (manifest-entries
                                   (manifest-remove manifest remove))
-                                 install*)))
+                                 install)))
                   (new      (make-manifest entries)))
 
              (when (equal? profile %current-profile)
@@ -867,7 +872,7 @@ more information.~%"))
              (if (manifest=? new manifest)
                  (format (current-error-port) (_ "nothing to be done~%"))
                  (let ((prof-drv (profile-derivation (%store) new)))
-                   (show-what-to-remove/install remove* install* dry-run?)
+                   (show-what-to-remove/install remove install dry-run?)
                    (show-what-to-build (%store) (list prof-drv)
                                        #:use-substitutes?
                                        (assoc-ref opts 'substitutes?)
