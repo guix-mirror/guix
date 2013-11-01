@@ -41,6 +41,7 @@ MODULES =					\
   guix/hash.scm					\
   guix/utils.scm				\
   guix/monads.scm				\
+  guix/profiles.scm				\
   guix/serialization.scm			\
   guix/nar.scm					\
   guix/derivations.scm				\
