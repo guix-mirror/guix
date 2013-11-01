@@ -42,11 +42,15 @@
             manifest-entry-path
             manifest-entry-dependencies
 
+            manifest-pattern
+            manifest-pattern?
+
             read-manifest
             write-manifest
 
             manifest-remove
             manifest-installed?
+            manifest-matching-entries
             manifest=?
 
             profile-manifest
@@ -89,6 +93,15 @@
                 (default '()))
   (inputs       manifest-entry-inputs             ; list of inputs to build
                 (default '())))                   ; this entry
+
+(define-record-type* <manifest-pattern> manifest-pattern
+  make-manifest-pattern
+  manifest-pattern?
+  (name         manifest-pattern-name)            ; string
+  (version      manifest-pattern-version          ; string | #f
+                (default #f))
+  (output       manifest-pattern-output           ; string | #f
+                (default "out")))
 
 (define (profile-manifest profile)
   "Return the PROFILE's manifest."
@@ -148,28 +161,47 @@
   "Write MANIFEST to PORT."
   (write (manifest->sexp manifest) port))
 
-(define (remove-manifest-entry name lst)
-  "Remove the manifest entry named NAME from LST."
-  (remove (match-lambda
-           (($ <manifest-entry> entry-name)
-            (string=? name entry-name)))
-          lst))
+(define (entry-predicate pattern)
+  "Return a procedure that returns #t when passed a manifest entry that
+matches NAME/OUTPUT/VERSION.  OUTPUT and VERSION may be #f, in which case they
+are ignored."
+  (match pattern
+    (($ <manifest-pattern> name version output)
+     (match-lambda
+      (($ <manifest-entry> entry-name entry-version entry-output)
+       (and (string=? entry-name name)
+            (or (not entry-output) (not output)
+                (string=? entry-output output))
+            (or (not version)
+                (string=? entry-version version))))))))
 
-(define (manifest-remove manifest names)
-  "Remove entries for each of NAMES from MANIFEST."
-  (make-manifest (fold remove-manifest-entry
+(define (manifest-remove manifest patterns)
+  "Remove entries for each of PATTERNS from MANIFEST.  Each item in PATTERNS
+must be a manifest-pattern."
+  (define (remove-entry pattern lst)
+    (remove (entry-predicate pattern) lst))
+
+  (make-manifest (fold remove-entry
                        (manifest-entries manifest)
-                       names)))
+                       patterns)))
 
-(define (manifest-installed? manifest name)
-  "Return #t if MANIFEST has an entry for NAME, #f otherwise."
-  (define (->bool x)
-    (not (not x)))
-
-  (->bool (find (match-lambda
-                 (($ <manifest-entry> entry-name)
-                  (string=? entry-name name)))
+(define (manifest-installed? manifest pattern)
+  "Return #t if MANIFEST has an entry matching PATTERN (a manifest-pattern),
+#f otherwise."
+  (->bool (find (entry-predicate pattern)
                 (manifest-entries manifest))))
+
+(define (manifest-matching-entries manifest patterns)
+  "Return all the entries of MANIFEST that match one of the PATTERNS."
+  (define predicates
+    (map entry-predicate patterns))
+
+  (define (matches? entry)
+    (any (lambda (pred)
+           (pred entry))
+         predicates))
+
+  (filter matches? (manifest-entries manifest)))
 
 (define (manifest=? m1 m2)
   "Return #t if manifests M1 and M2 are equal.  This differs from 'equal?' in

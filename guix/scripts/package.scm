@@ -693,15 +693,20 @@ return the new list of manifest entries."
   (append to-upgrade to-install))
 
 (define (options->removable options manifest)
-  "Given options, return the list of manifest entries to be removed from
-MANIFEST."
-  (let ((remove (filter-map (match-lambda
-                             (('remove . package)
-                              package)
-                             (_ #f))
-                            options)))
-    (filter (cut manifest-installed? manifest <>)
-            remove)))
+  "Given options, return the list of manifest patterns of packages to be
+removed from MANIFEST."
+  (filter-map (match-lambda
+               (('remove . spec)
+                (call-with-values
+                    (lambda ()
+                      (package-specification->name+version+output spec))
+                  (lambda (name version output)
+                    (manifest-pattern
+                      (name name)
+                      (version version)
+                      (output output)))))
+               (_ #f))
+              options))
 
 
 ;;;
@@ -871,7 +876,8 @@ more information.~%"))
 
              (if (manifest=? new manifest)
                  (format (current-error-port) (_ "nothing to be done~%"))
-                 (let ((prof-drv (profile-derivation (%store) new)))
+                 (let ((prof-drv (profile-derivation (%store) new))
+                       (remove   (manifest-matching-entries manifest remove)))
                    (show-what-to-remove/install remove install dry-run?)
                    (show-what-to-build (%store) (list prof-drv)
                                        #:use-substitutes?

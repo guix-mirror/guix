@@ -115,7 +115,8 @@ SCM_TESTS =					\
   tests/store.scm				\
   tests/monads.scm				\
   tests/nar.scm					\
-  tests/union.scm
+  tests/union.scm				\
+  tests/profiles.scm
 
 SH_TESTS =					\
   tests/guix-build.sh				\
