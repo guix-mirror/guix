@@ -540,6 +540,11 @@ multiple-output package.
 @itemx -r @var{package}
 Remove @var{package}.
 
+As for @code{--install}, @var{package} may specify a version number
+and/or output name in addition to the package name.  For instance,
+@code{-r glibc:debug} would remove the @code{debug} output of
+@code{glibc}.
+
 @item --upgrade[=@var{regexp}]
 @itemx -u [@var{regexp}]
 Upgrade all the installed packages.  When @var{regexp} is specified, upgrade
