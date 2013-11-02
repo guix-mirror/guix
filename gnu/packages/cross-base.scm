@@ -101,6 +101,7 @@ GCC that does not target a libc; otherwise, target that libc."
                                    "--enable-languages=c"
 
                                    "--disable-threads" ; libgcc, would need libc
+                                   "--disable-libatomic"
                                    "--disable-libmudflap"
                                    "--disable-libgomp"
                                    "--disable-libssp"
