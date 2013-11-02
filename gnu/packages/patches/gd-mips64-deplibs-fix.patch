@@ -1,0 +1,17 @@
+Patch configure script to choose pass_all deplibs check method for
+linux-gnu* systems on mips64.  This is a temporary hack until libgd
+bootstraps their build system with a newer libtool.
+
+Patch by Mark H Weaver <mhw@netris.org>.
+
+--- libgd-gd/src/configure.orig	2006-04-05 11:56:57.000000000 -0400
++++ libgd-gd/src/configure	2013-11-02 17:56:19.123995838 -0400
+@@ -4457,7 +4457,7 @@
+ # This must be Linux ELF.
+ linux-gnu*)
+   case $host_cpu in
+-  alpha* | hppa* | i*86 | mips | mipsel | powerpc* | sparc* | ia64* | s390* | x86_64*)
++  alpha* | hppa* | i*86 | mips | mipsel | mips64 | mips64el | powerpc* | sparc* | ia64* | s390* | x86_64*)
+     lt_cv_deplibs_check_method=pass_all ;;
+   *)
+     # glibc up to 2.1.1 does not perform some relocations on ARM
