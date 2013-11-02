@@ -363,6 +363,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                (string-append incdir "/asm"))
              (copy-recursively (string-append linux "/include/asm-generic")
                                (string-append incdir "/asm-generic"))
+
+             ;; Remove the '.install' and '..install.cmd' files; the latter
+             ;; contains store paths, which prevents bit reproducibility.
+             (for-each delete-file (find-files incdir "\\.install"))
+
              #t))))
       (inputs `(("libc" ,(let ((target (%current-target-system)))
                            (if target
