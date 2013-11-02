@@ -429,6 +429,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
          (let* ((out        (assoc-ref %outputs "out"))
                 (bindir     (string-append out "/bin"))
                 (libdir     (string-append out "/lib"))
+                (includedir (string-append out "/include"))
                 (libexecdir (string-append out "/libexec"))
                 (gcc        (assoc-ref %build-inputs "gcc")))
            (copy-recursively (string-append gcc "/bin") bindir)
@@ -444,6 +445,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                              libexecdir)
            (for-each remove-store-references
                      (find-files libexecdir ".*"))
+
+           ;; Starting from GCC 4.8, helper programs built natively
+           ;; (‘genchecksum’, ‘gcc-nm’, etc.) rely on C++ headers.
+           (copy-recursively (string-append gcc "/include/c++")
+                             (string-append includedir "/c++"))
            #t))))
     (inputs `(("gcc" ,%gcc-static)))))
 
