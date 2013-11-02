@@ -1,0 +1,17 @@
+Patch configure script to choose pass_all deplibs check method for
+linux-gnu* systems on mips64.  This is a temporary hack until liboop
+bootstraps their build system with a newer libtool.
+
+Patch by Mark H Weaver <mhw@netris.org>.
+
+--- liboop/configure.orig	2003-10-26 11:41:19.000000000 -0500
++++ liboop/configure	2013-11-02 18:09:11.079995796 -0400
+@@ -3395,7 +3395,7 @@
+ # This must be Linux ELF.
+ linux*)
+   case $host_cpu in
+-  alpha* | hppa* | i*86 | ia64* | m68* | mips | mipsel | powerpc* | sparc* | s390* | sh*)
++  alpha* | hppa* | i*86 | ia64* | m68* | mips | mipsel | mips64 | mips64el | powerpc* | sparc* | s390* | sh*)
+     lt_cv_deplibs_check_method=pass_all ;;
+   *)
+     # glibc up to 2.1.1 does not perform some relocations on ARM

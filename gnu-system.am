@@ -241,6 +241,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/libffi-mips-n32-fix.patch		\
+  gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtool-skip-tests.patch			\
