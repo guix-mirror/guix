@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages libffi)
+  #:use-module (gnu packages)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -46,7 +47,8 @@
                              name "-" version ".tar.gz"))
              (sha256
               (base32
-               "077ibkf84bvcd6rw1m6jb107br63i2pp301rkmsbgg6300adxp8x"))))
+               "077ibkf84bvcd6rw1m6jb107br63i2pp301rkmsbgg6300adxp8x"))
+             (patches (list (search-patch "libffi-mips-n32-fix.patch")))))
     (build-system gnu-build-system)
     (arguments `(#:modules ((guix build utils) (guix build gnu-build-system)
                             (ice-9 ftw) (srfi srfi-26))
