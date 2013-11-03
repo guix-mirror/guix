@@ -1,0 +1,44 @@
+Fix the Loongson 2F specific fused multiply-add instructions on paired singles to
+use the encoding recognized by the processor, as opposed to the mistaken english
+Loongson 2F documentation.
+
+Patch by Mark H Weaver <mhw@netris.org>.
+
+--- binutils/opcodes/mips-opc.c.orig	2012-09-04 10:21:10.000000000 -0400
++++ binutils/opcodes/mips-opc.c	2013-10-06 02:23:33.679983766 -0400
+@@ -931,7 +931,7 @@
+ {"madd.s",	"D,S,T",	0x72000018,	0xffe0003f,	RD_S|RD_T|WR_D|FP_S,	0,	IL2F	},
+ {"madd.ps", "D,R,S,T",	0x4c000026, 0xfc00003f, RD_R|RD_S|RD_T|WR_D|FP_D,    0,		I5_33	},
+ {"madd.ps",	"D,S,T",	0x45600018,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2E	},
+-{"madd.ps",	"D,S,T",	0x71600018,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2F	},
++{"madd.ps",	"D,S,T",	0x72c00018,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2F	},
+ {"madd",    "s,t",      0x0000001c, 0xfc00ffff, RD_s|RD_t|WR_HILO,           0,		L1	},
+ {"madd",    "s,t",      0x70000000, 0xfc00ffff, RD_s|RD_t|MOD_HILO,          0,		I32|N55	},
+ {"madd",    "s,t",      0x70000000, 0xfc00ffff, RD_s|RD_t|WR_HILO|IS_M,      0,		G1	},
+@@ -1041,7 +1041,7 @@
+ {"msub.s",	"D,S,T",	0x72000019,	0xffe0003f,	RD_S|RD_T|WR_D|FP_S,	0,	IL2F	},
+ {"msub.ps", "D,R,S,T",	0x4c00002e, 0xfc00003f, RD_R|RD_S|RD_T|WR_D|FP_D, 0,		I5_33	},
+ {"msub.ps",	"D,S,T",	0x45600019,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2E	},
+-{"msub.ps",	"D,S,T",	0x71600019,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2F	},
++{"msub.ps",	"D,S,T",	0x72c00019,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2F	},
+ {"msub",    "s,t",      0x0000001e, 0xfc00ffff, RD_s|RD_t|WR_HILO,	0,		L1    	},
+ {"msub",    "s,t",      0x70000004, 0xfc00ffff, RD_s|RD_t|MOD_HILO,     0,		I32|N55 },
+ {"msub",    "7,s,t",	0x70000004, 0xfc00e7ff, MOD_a|RD_s|RD_t,        0,              D32	},
+@@ -1157,7 +1157,7 @@
+ {"nmadd.s",	"D,S,T",	0x7200001a,	0xffe0003f,	RD_S|RD_T|WR_D|FP_S,	0,	IL2F	},
+ {"nmadd.ps","D,R,S,T",	0x4c000036, 0xfc00003f, RD_R|RD_S|RD_T|WR_D|FP_D, 0,		I5_33	},
+ {"nmadd.ps",	"D,S,T",	0x4560001a,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2E	},
+-{"nmadd.ps",	"D,S,T",	0x7160001a,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2F	},
++{"nmadd.ps",	"D,S,T",	0x72c0001a,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2F	},
+ {"nmsub.d", "D,R,S,T",	0x4c000039, 0xfc00003f, RD_R|RD_S|RD_T|WR_D|FP_D, 0,		I4_33	},
+ {"nmsub.d",	"D,S,T",	0x4620001b,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2E	},
+ {"nmsub.d",	"D,S,T",	0x7220001b,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2F	},
+@@ -1166,7 +1166,7 @@
+ {"nmsub.s",	"D,S,T",	0x7200001b,	0xffe0003f,	RD_S|RD_T|WR_D|FP_S,	0,	IL2F	},
+ {"nmsub.ps","D,R,S,T",	0x4c00003e, 0xfc00003f, RD_R|RD_S|RD_T|WR_D|FP_D, 0,		I5_33	},
+ {"nmsub.ps",	"D,S,T",	0x4560001b,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2E	},
+-{"nmsub.ps",	"D,S,T",	0x7160001b,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2F	},
++{"nmsub.ps",	"D,S,T",	0x72c0001b,	0xffe0003f,	RD_S|RD_T|WR_D|FP_D,	0,	IL2F	},
+ /* nop is at the start of the table.  */
+ {"nor",     "d,v,t",	0x00000027, 0xfc0007ff,	WR_d|RD_s|RD_t,		0,		I1	},
+ {"nor",     "t,r,I",	0,    (int) M_NOR_I,	INSN_MACRO,		0,		I1	},

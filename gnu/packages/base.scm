@@ -321,7 +321,9 @@ change.")
             (sha256
              (base32
               "15qhbkz3r266xaa52slh857qn3abw7rb2x2jnhpfrafpzrb4x4gy"))
-            (patches (list (search-patch "binutils-ld-new-dtags.patch")))))
+            (patches (list (search-patch "binutils-ld-new-dtags.patch")
+                           (search-patch "binutils-loongson-workaround.patch")
+                           (search-patch "binutils-loongson-madd-fix.patch")))))
    (build-system gnu-build-system)
 
    ;; Split Binutils in several outputs, mostly to avoid collisions in
