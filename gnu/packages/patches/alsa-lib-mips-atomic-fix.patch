@@ -1,0 +1,42 @@
+Fix the declarations of inlined atomic ops for mips.
+
+This patch was copied from Debian.
+
+--- alsa-lib/include/iatomic.h.orig	2013-05-21 04:48:28.000000000 -0400
++++ alsa-lib/include/iatomic.h	2013-10-29 13:01:37.055995968 -0400
+@@ -720,7 +720,7 @@
+  * Atomically adds @i to @v.  Note that the guaranteed useful range
+  * of an atomic_t is only 24 bits.
+  */
+-extern __inline__ void atomic_add(int i, atomic_t * v)
++static __inline__ void atomic_add(int i, atomic_t * v)
+ {
+ 	unsigned long temp;
+ 
+@@ -744,7 +744,7 @@
+  * Atomically subtracts @i from @v.  Note that the guaranteed
+  * useful range of an atomic_t is only 24 bits.
+  */
+-extern __inline__ void atomic_sub(int i, atomic_t * v)
++static __inline__ void atomic_sub(int i, atomic_t * v)
+ {
+ 	unsigned long temp;
+ 
+@@ -763,7 +763,7 @@
+ /*
+  * Same as above, but return the result value
+  */
+-extern __inline__ int atomic_add_return(int i, atomic_t * v)
++static __inline__ int atomic_add_return(int i, atomic_t * v)
+ {
+ 	unsigned long temp, result;
+ 
+@@ -784,7 +784,7 @@
+ 	return result;
+ }
+ 
+-extern __inline__ int atomic_sub_return(int i, atomic_t * v)
++static __inline__ int atomic_sub_return(int i, atomic_t * v)
+ {
+ 	unsigned long temp, result;
+ 

@@ -473,7 +473,8 @@ trace of all the system calls made by a another process/program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0fx057746dj7rjdi0jnvx2m9b0y1lgdkh1hks87d8w32xyihf3k9"))))
+               "0fx057746dj7rjdi0jnvx2m9b0y1lgdkh1hks87d8w32xyihf3k9"))
+             (patches (list (search-patch "alsa-lib-mips-atomic-fix.patch")))))
     (build-system gnu-build-system)
     (home-page "http://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
