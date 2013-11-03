@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gdb)
+  #:use-module (gnu packages)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages dejagnu)
@@ -39,7 +40,8 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1r32s6vqgskw6pz9pmp41b8injd51c4bbxr6ifdpyid52j5a7pz3"))))
+               "1r32s6vqgskw6pz9pmp41b8injd51c4bbxr6ifdpyid52j5a7pz3"))
+             (patches (list (search-patch "gdb-loongson-madd-fix.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
