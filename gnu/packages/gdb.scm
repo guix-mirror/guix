@@ -47,7 +47,8 @@
      '(#:phases (alist-cons-after
                  'configure 'post-configure
                  (lambda _
-                   (patch-makefile-SHELL "gdb/gdbserver/Makefile.in"))
+                   (for-each patch-makefile-SHELL
+                             (find-files "." "Makefile\\.in")))
                  %standard-phases)))
     (inputs
      `(("expat" ,expat)
