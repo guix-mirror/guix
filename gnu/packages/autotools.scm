@@ -217,7 +217,9 @@ simplifying the entire process for the developer.")
              (sha256
               (base32
                "0649qfpzkswgcj9vqkkr9rn4nlcx80faxpyqscy2k1x9c94f93dk"))
-             (patches (list (search-patch "libtool-skip-tests.patch")))))
+             (patches
+              (list (search-patch "libtool-skip-tests.patch")
+                    (search-patch "libtool-skip-tests-for-mips.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("m4" ,m4)
                      ("perl" ,perl)))

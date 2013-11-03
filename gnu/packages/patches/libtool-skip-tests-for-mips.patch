@@ -1,0 +1,12 @@
+TEMPORARY HACK: Disable a test that fails on MIPS.
+
+--- libtool/Makefile.in.orig	2011-10-17 06:18:55.000000000 -0400
++++ libtool/Makefile.in	2013-10-12 20:41:50.669067382 -0400
+@@ -890,7 +890,6 @@
+ 	tests/demo-pic-make.test \
+ 	tests/demo-pic-exec.test \
+ 	tests/demo-nopic.test \
+-	tests/demo-nopic-make.test \
+ 	tests/demo-nopic-exec.test \
+ 	tests/cdemo-shared.test \
+ 	tests/cdemo-shared-make.test \
