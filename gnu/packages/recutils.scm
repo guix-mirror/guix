@@ -24,27 +24,31 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages algebra))
+  #:use-module (gnu packages algebra)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages gnupg))
 
 (define-public recutils
   (package
    (name "recutils")
-   (version "1.5")
+   (version "1.6")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/recutils/recutils-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "1v2xzwwwhc5j5kmvg4sv6baxjpsfqh8ln7ilv4mgb1408rs7xmky"))
-            (patches
-             (list (search-patch "diffutils-gets-undeclared.patch")))))
+              "0dxmz73n4qaasqymx97nlw6in98r6lnsfp0586hwkn95d3ll306s"))))
    (build-system gnu-build-system)
-   (inputs `(;; TODO: Enable optional deps when they're packaged.
-             ;; ("curl" ,(nixpkgs-derivation "curl"))
-             ("emacs" ,emacs)
-             ("check" ,check)
-             ("bc" ,bc)))
+   (native-inputs `(("emacs" ,emacs)
+                    ("bc" ,bc)))
+
+   ;; TODO: Add more optional inputs.
+   ;; FIXME: Our Bash doesn't have development headers (need for the 'readrec'
+   ;; built-in command), but it's not clear how to get them installed.
+   (inputs `(("curl" ,curl)
+             ("libgcrypt" ,libgcrypt)
+             ("check" ,check)))
    (synopsis "Manipulate plain text files as databases")
    (description
     "Recutils is a set of tools and libraries for creating and
