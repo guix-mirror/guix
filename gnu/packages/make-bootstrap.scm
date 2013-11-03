@@ -64,7 +64,13 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
         ;; and can use statically-linked NSS modules.
         `(cons* "--disable-nscd" "--disable-build-nscd"
                 "--enable-static-nss"
-                ,flags))))))
+                ,flags))))
+
+    ;; Remove the 'debug' output to allow bit-reproducible builds (when the
+    ;; 'debug' output is used, ELF files end up with a .gnu_debuglink, which
+    ;; includes a CRC of the corresponding debugging symbols; those symbols
+    ;; contain store file names, so the CRC changes at every rebuild.)
+    (outputs (delete "debug" (package-outputs base)))))
 
 (define (package-with-relocatable-glibc p)
   "Return a variant of P that uses the libc as defined by
@@ -127,7 +133,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                 (#f '())
                                 (x  (list x))))
 
-                      ;; Remove the `debug' output.
+                      ;; Remove the 'debug' output (see above for the reason.)
                       (outputs '("out"))))
         (bzip2 (package (inherit bzip2)
                  (arguments
@@ -472,6 +478,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                   (name (string-append (package-name guile-2.0) "-static"))
                   (source source)
                   (synopsis "Statically-linked and relocatable Guile")
+
+                  ;; Remove the 'debug' output (see above for the reason.)
+                  (outputs (delete "debug" (package-outputs guile-2.0)))
+
                   (propagated-inputs
                    `(("bdw-gc" ,libgc)
                      ,@(alist-delete "bdw-gc"
