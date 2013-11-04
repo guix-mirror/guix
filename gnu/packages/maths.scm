@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,13 +23,16 @@
                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
   #:use-module ((gnu packages gettext)
                 #:renamer (symbol-prefix-proc 'gnu:))
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xml))
 
@@ -153,3 +157,48 @@ interoperate with Gnumeric, LibreOffice and OpenOffice.  Data can be imported
 from spreadsheets, text files and database sources and it can be output in
 text, Postscript, PDF or HTML.")
     (license license:gpl3+)))
+
+(define-public lapack
+  (package
+    (name "lapack")
+    (version "3.4.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://www.netlib.org/lapack/lapack-"
+                          version ".tgz"))
+      (sha256
+       (base32
+        "1w7sf8888m7fi2kyx1fzgbm22193l8c2d53m8q1ibhvfy6m5v9k0"))))
+    (build-system cmake-build-system)
+    (home-page "http://www.netlib.org/lapack/")
+    (inputs `(("fortran" ,gfortran-4.8)
+              ("python" ,python-2)))
+    (arguments
+     `(#:modules ((guix build cmake-build-system)
+                  (guix build utils)
+                  (srfi srfi-1))
+       #:phases (alist-cons-before
+                 ;; See <http://icl.cs.utk.edu/lapack-forum/archives/lapack/msg01383.html>.
+                 'configure 'remove-non-free-files
+                 (lambda _
+                   (for-each (lambda (file)
+                               (begin
+                                 (format #t "removing '~a'~%" file)
+                                 (delete-file file)))
+                             '("lapacke/example/example_DGESV_rowmajor.c"
+                               "lapacke/example/example_ZGESV_rowmajor.c"
+                               "DOCS/psfig.tex")))
+                 (alist-cons-before
+                  'check 'patch-python
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (let ((python (assoc-ref inputs "python")))
+                      (substitute* "lapack_testing.py"
+                        (("/usr/bin/env python") python))))
+                  %standard-phases))))
+    (synopsis "Library for numerical linear algebra")
+    (description
+     "LAPACK is a Fortran 90 library for solving the most commonly occurring
+problems in numerical linear algebra.")
+    (license (license:bsd-style "file://LICENSE"
+                                "See LICENSE in the distribution."))))
