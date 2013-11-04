@@ -251,6 +251,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/m4-readlink-EINVAL.patch			\
   gnu/packages/patches/make-impure-dirs.patch			\
   gnu/packages/patches/mcron-install.patch			\
+  gnu/packages/patches/mit-krb5-init-fix.patch			\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\

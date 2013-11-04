@@ -37,6 +37,8 @@
             (sha256 (base32
                      "1daiaxgkxcryqs37w28v4x1vajqmay4l144d1zd9c2d7jjxr9gcs"))))
    (build-system gnu-build-system)
+   (native-inputs
+    `(("patch/init-fix" ,(search-patch "mit-krb5-init-fix.patch"))))
    (inputs `(("bison" ,bison)
              ("perl" ,perl)))
    (arguments
@@ -51,7 +53,12 @@
            (and (zero? (system* "tar" "xvf" source))
                 (zero? (system* "tar" "xvf" (string-append inner ".tar.gz")))
                 (chdir inner)
-                (chdir "src"))))
+                (chdir "src")
+                ;; XXX The current patch system does not support unusual
+                ;; source unpack methods, so we have to apply this patch in a
+                ;; non-standard way.
+                (zero? (system* "patch" "-p1" "--batch" "-i"
+                                (assoc-ref %build-inputs "patch/init-fix"))))))
        (alist-replace
         'check
         (lambda* (#:key inputs #:allow-other-keys #:rest args)
