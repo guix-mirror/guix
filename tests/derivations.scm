@@ -419,8 +419,8 @@
   (let* ((store      (let ((s (open-connection)))
                        (set-build-options s #:max-silent-time 1)
                        s))
-         (builder    '(sleep 100))
-         (drv        (build-expression->derivation %store "silent"
+         (builder    '(begin (sleep 100) (mkdir %output) #t))
+         (drv        (build-expression->derivation store "silent"
                                                    (%current-system)
                                                    builder '()))
          (out-path   (derivation->output-path drv)))
@@ -428,7 +428,8 @@
                (and (string-contains (nix-protocol-error-message c)
                                      "failed")
                     (not (valid-path? store out-path)))))
-      (build-derivations %store (list drv)))))
+      (build-derivations store (list drv))
+      #f)))
 
 (test-assert "build-expression->derivation and derivation-prerequisites-to-build"
   (let ((drv (build-expression->derivation %store "fail" (%current-system)
