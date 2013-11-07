@@ -169,7 +169,16 @@ text, Postscript, PDF or HTML.")
                           version ".tgz"))
       (sha256
        (base32
-        "1w7sf8888m7fi2kyx1fzgbm22193l8c2d53m8q1ibhvfy6m5v9k0"))))
+        "1w7sf8888m7fi2kyx1fzgbm22193l8c2d53m8q1ibhvfy6m5v9k0"))
+      (snippet
+       ;; Remove non-free files.
+       ;; See <http://icl.cs.utk.edu/lapack-forum/archives/lapack/msg01383.html>.
+       '(for-each (lambda (file)
+                    (format #t "removing '~a'~%" file)
+                    (delete-file file))
+                  '("lapacke/example/example_DGESV_rowmajor.c"
+                    "lapacke/example/example_ZGESV_rowmajor.c"
+                    "DOCS/psfig.tex")))))
     (build-system cmake-build-system)
     (home-page "http://www.netlib.org/lapack/")
     (inputs `(("fortran" ,gfortran-4.8)
@@ -179,23 +188,12 @@ text, Postscript, PDF or HTML.")
                   (guix build utils)
                   (srfi srfi-1))
        #:phases (alist-cons-before
-                 ;; See <http://icl.cs.utk.edu/lapack-forum/archives/lapack/msg01383.html>.
-                 'configure 'remove-non-free-files
-                 (lambda _
-                   (for-each (lambda (file)
-                               (begin
-                                 (format #t "removing '~a'~%" file)
-                                 (delete-file file)))
-                             '("lapacke/example/example_DGESV_rowmajor.c"
-                               "lapacke/example/example_ZGESV_rowmajor.c"
-                               "DOCS/psfig.tex")))
-                 (alist-cons-before
-                  'check 'patch-python
-                  (lambda* (#:key inputs #:allow-other-keys)
-                    (let ((python (assoc-ref inputs "python")))
-                      (substitute* "lapack_testing.py"
-                        (("/usr/bin/env python") python))))
-                  %standard-phases))))
+                 'check 'patch-python
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((python (assoc-ref inputs "python")))
+                     (substitute* "lapack_testing.py"
+                       (("/usr/bin/env python") python))))
+                 %standard-phases)))
     (synopsis "Library for numerical linear algebra")
     (description
      "LAPACK is a Fortran 90 library for solving the most commonly occurring
