@@ -455,10 +455,18 @@ scripts, etc.  This direct correspondence allows users to make sure a
 given package installation matches the current state of their
 distribution, and helps maximize @dfn{reproducibility}.
 
+@cindex substitute
 This foundation allows Guix to support @dfn{transparent binary/source
 deployment}.  When a pre-built binary for a @file{/nix/store} path is
-available from an external source, Guix just downloads it; otherwise, it
-builds the package from source, locally.
+available from an external source---a @dfn{substitute}, Guix just
+downloads it@footnote{@c XXX: Remove me when outdated.
+As of version @value{VERSION}, substitutes are downloaded from
+@url{http://hydra.gnu.org/} but are @emph{not} authenticated---i.e.,
+Guix cannot tell whether binaries it downloaded have been tampered with,
+nor whether they come from the genuine @code{gnu.org} build farm.  This
+will be fixed in future versions.  In the meantime, concerned users can
+opt for @code{--no-substitutes} (@pxref{Invoking guix-daemon}).};
+otherwise, it builds the package from source, locally.
 
 @node Invoking guix package
 @section Invoking @command{guix package}
