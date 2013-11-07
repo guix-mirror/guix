@@ -288,8 +288,17 @@ Take users from @var{group} to run build processes (@pxref{Setting Up
 the Daemon, build users}).
 
 @item --no-substitutes
+@cindex substitutes
 Do not use substitutes for build products.  That is, always build things
 locally instead of allowing downloads of pre-built binaries.
+
+By default substitutes are used, unless the client---such as the
+@command{guix package} command---is explicitly invoked with
+@code{--no-substitutes}.
+
+When the daemon runs with @code{--no-substitutes}, clients can still
+explicitly enable substitution @i{via} the @code{set-build-options}
+remote procedure call (@pxref{The Store}).
 
 @item --cache-failures
 Cache build failures.  By default, only successful builds are cached.
@@ -598,7 +607,10 @@ When substituting a pre-built binary fails, fall back to building
 packages locally.
 
 @item --no-substitutes
-@itemx --max-silent-time=@var{seconds}
+Do not use substitutes for build products.  That is, always build things
+locally instead of allowing downloads of pre-built binaries.
+
+@item --max-silent-time=@var{seconds}
 Same as for @command{guix build} (@pxref{Invoking guix build}).
 
 @item --verbose
@@ -1495,7 +1507,8 @@ When substituting a pre-built binary fails, fall back to building
 packages locally.
 
 @item --no-substitutes
-Build instead of resorting to pre-built substitutes.
+Do not use substitutes for build products.  That is, always build things
+locally instead of allowing downloads of pre-built binaries.
 
 @item --max-silent-time=@var{seconds}
 When the build or substitution process remains silent for more than
