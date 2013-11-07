@@ -25,6 +25,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/acct.scm				\
   gnu/packages/acl.scm				\
   gnu/packages/algebra.scm			\
+  gnu/packages/apl.scm				\
   gnu/packages/apr.scm				\
   gnu/packages/aspell.scm			\
   gnu/packages/attr.scm				\
