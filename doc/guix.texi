@@ -985,6 +985,11 @@ base32 representation of the hash.  You can obtain this information with
 @code{guix download} (@pxref{Invoking guix download}) and @code{guix
 hash} (@pxref{Invoking guix hash}).
 
+@cindex patches
+When needed, the @code{origin} form can also have a @code{patches} field
+listing patches to be applied, and a @code{snippet} field giving a
+Scheme expression to modify the source code.
+
 @item
 @cindex GNU Build System
 The @code{build-system} field is set to @var{gnu-build-system}.  The
@@ -1479,6 +1484,10 @@ themselves.
 For instance, @code{guix build -S gcc} returns something like
 @file{/nix/store/@dots{}-gcc-4.7.2.tar.bz2}, which is GCC's source tarball.
 
+The returned source tarball is the result of applying any patches and
+code snippets specified in the package's @code{origin} (@pxref{Defining
+Packages}).
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
@@ -1877,6 +1886,14 @@ In addition, the GNU distribution follow the
 software distribution guidelines}.  Among other things, these guidelines
 reject non-free firmware, recommendations of non-free software, and
 discuss ways to deal with trademarks and patents.
+
+Some packages contain a small and optional subset that violates the
+above guidelines, for instance because this subset is itself non-free
+code.  When that happens, the offending items are removed with
+appropriate patches or code snippets in the package definition's
+@code{origin} form (@pxref{Defining Packages}).  That way, @code{guix
+build --source} returns the ``freed'' source rather than the unmodified
+upstream source.
 
 
 @node Package Naming
