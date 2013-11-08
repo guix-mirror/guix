@@ -290,6 +290,12 @@ reading PORT."
   (time>? (subtract-duration now (make-time time-duration 0 ttl))
           (make-time time-monotonic 0 date)))
 
+(define %lookup-threads
+  ;; Number of threads spawned to perform lookup operations.  This means we
+  ;; can have this many simultaneous HTTP GET requests to the server, which
+  ;; limits the impact of connection latency.
+  20)
+
 (define (lookup-narinfo cache path)
   "Check locally if we have valid info about PATH, otherwise go to CACHE and
 check what it has."
@@ -489,8 +495,9 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
                    ;; Return the subset of PATHS available in CACHE.
                    (let ((substitutable
                           (if cache
-                              (par-map (cut lookup-narinfo cache <>)
-                                       paths)
+                              (n-par-map %lookup-threads
+                                         (cut lookup-narinfo cache <>)
+                                         paths)
                               '())))
                      (for-each (lambda (narinfo)
                                  (when narinfo
@@ -501,8 +508,9 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
                    ;; Reply info about PATHS if it's in CACHE.
                    (let ((substitutable
                           (if cache
-                              (par-map (cut lookup-narinfo cache <>)
-                                       paths)
+                              (n-par-map %lookup-threads
+                                         (cut lookup-narinfo cache <>)
+                                         paths)
                               '())))
                      (for-each (lambda (narinfo)
                                  (format #t "~a\n~a\n~a\n"
