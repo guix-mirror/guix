@@ -41,6 +41,9 @@
             origin-patch-flags
             origin-patch-inputs
             origin-patch-guile
+            origin-snippet
+            origin-modules
+            origin-imported-modules
             base32
 
             <search-path-specification>
@@ -107,6 +110,7 @@
   (sha256    origin-sha256)                       ; bytevector
   (file-name origin-file-name (default #f))       ; optional file name
   (patches   origin-patches (default '()))        ; list of file names
+  (snippet   origin-snippet (default #f))         ; sexp or #f
   (patch-flags  origin-patch-flags                ; list of strings
                 (default '("-p1")))
 
@@ -114,6 +118,10 @@
   ;; used to specify these dependencies when needed.
   (patch-inputs origin-patch-inputs               ; input list or #f
                 (default #f))
+  (modules      origin-modules                    ; list of module names
+                (default '()))
+  (imported-modules origin-imported-modules       ; list of module names
+                    (default '()))
   (patch-guile origin-patch-guile                 ; package or #f
                (default #f)))
 
@@ -272,26 +280,38 @@ corresponds to the arguments expected by `set-path-environment-variable'."
   (let ((distro (resolve-interface '(gnu packages base))))
     (module-ref distro 'guile-final)))
 
-(define* (patch-and-repack store source patches inputs
+(define* (patch-and-repack store source patches
                            #:key
+                           (inputs '())
+                           (snippet #f)
                            (flags '("-p1"))
+                           (modules '())
+                           (imported-modules '())
                            (guile-for-build (%guile-for-build))
                            (system (%current-system)))
-  "Unpack SOURCE (a derivation), apply all of PATCHES, and repack the tarball
-using the tools listed in INPUTS."
+  "Unpack SOURCE (a derivation or store path), apply all of PATCHES, and
+repack the tarball using the tools listed in INPUTS.  When SNIPPET is true,
+it must be an s-expression that will run from within the directory where
+SOURCE was unpacked, after all of PATCHES have been applied.  MODULES and
+IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
+  (define source-file-name
+    ;; SOURCE is usually a derivation, but it could be a store file.
+    (if (derivation? source)
+        (derivation->output-path source)
+        source))
+
   (define decompression-type
-    (let ((out (derivation->output-path source)))
-      (cond ((string-suffix? "gz" out)  "gzip")
-            ((string-suffix? "bz2" out) "bzip2")
-            ((string-suffix? "lz" out)  "lzip")
-            (else "xz"))))
+    (cond ((string-suffix? "gz" source-file-name)  "gzip")
+          ((string-suffix? "bz2" source-file-name) "bzip2")
+          ((string-suffix? "lz" source-file-name)  "lzip")
+          (else "xz")))
 
   (define original-file-name
-    (let ((out (derivation->output-path source)))
-      ;; Remove the store prefix plus the slash, hash, and hyphen.
-      (let* ((sans (string-drop out (+ (string-length (%store-prefix)) 1)))
-             (dash (string-index sans #\-)))
-        (string-drop sans (+ 1 dash)))))
+    ;; Remove the store prefix plus the slash, hash, and hyphen.
+    (let* ((sans (string-drop source-file-name
+                              (+ (string-length (%store-prefix)) 1)))
+           (dash (string-index sans #\-)))
+      (string-drop sans (+ 1 dash))))
 
   (define patch-inputs
     (map (lambda (number patch)
@@ -331,7 +351,24 @@ using the tools listed in INPUTS."
                 (format (current-error-port)
                         "source is under '~a'~%" directory)
                 (chdir directory)
+
                 (and (every apply-patch ',(map car patch-inputs))
+
+                     ,@(if snippet
+                           `((let ((module (make-fresh-user-module)))
+                               (module-use-interfaces! module
+                                                       (map resolve-interface
+                                                            ',modules))
+                               (module-define! module '%build-inputs
+                                               %build-inputs)
+                               (module-define! module '%outputs %outputs)
+                               ((@ (system base compile) compile)
+                                ',snippet
+                                #:to 'value
+                                #:opts %auto-compilation-options
+                                #:env module)))
+                           '())
+
                      (begin (chdir "..") #t)
                      (zero? (system* tar "cvfa" out directory))))))))
 
@@ -351,19 +388,21 @@ using the tools listed in INPUTS."
                                  `(("source" ,source)
                                    ,@inputs
                                    ,@patch-inputs)
+                                 #:modules imported-modules
                                  #:guile-for-build guile-for-build)))
 
 (define* (package-source-derivation store source
                                     #:optional (system (%current-system)))
   "Return the derivation path for SOURCE, a package source, for SYSTEM."
   (match source
-    (($ <origin> uri method sha256 name ())
-     ;; No patches.
+    (($ <origin> uri method sha256 name () #f)
+     ;; No patches, no snippet: this is a fixed-output derivation.
      (method store uri 'sha256 sha256 name
              #:system system))
-    (($ <origin> uri method sha256 name (patches ...) (flags ...)
-        inputs guile-for-build)
-     ;; One or more patches.
+    (($ <origin> uri method sha256 name (patches ...) snippet
+        (flags ...) inputs (modules ...) (imported-modules ...)
+        guile-for-build)
+     ;; Patches and/or a snippet.
      (let ((source (method store uri 'sha256 sha256 name
                            #:system system))
            (guile  (match (or guile-for-build (%guile-for-build)
@@ -372,9 +411,13 @@ using the tools listed in INPUTS."
                       (package-derivation store p system))
                      ((? derivation? drv)
                       drv))))
-       (patch-and-repack store source patches inputs
+       (patch-and-repack store source patches
+                         #:inputs inputs
+                         #:snippet snippet
                          #:flags flags
                          #:system system
+                         #:modules modules
+                         #:imported-modules modules
                          #:guile-for-build guile)))
     ((and (? string?) (? store-path?) file)
      file)

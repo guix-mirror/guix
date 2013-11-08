@@ -125,7 +125,7 @@
                               #:env-vars '(("HOME" . "/homeless")
                                            ("zzz"  . "Z!")
                                            ("AAA"  . "A!"))
-                              #:inputs `((,builder))))
+                              #:inputs `((,%bash) (,builder))))
          (succeeded?
           (build-derivations %store (list drv))))
     (and succeeded?
@@ -149,7 +149,8 @@
                                  ;; builder.
                                  #:env-vars `(("in" . ,input*))
 
-                                 #:inputs `((,builder)
+                                 #:inputs `((,%bash)
+                                            (,builder)
                                             (,input))))) ; ← local file name
     (and (build-derivations %store (list drv))
          ;; Note: we can't compare the files because the above trick alters
@@ -211,11 +212,11 @@
          (final1     (derivation %store "final"
                                  %bash `(,builder3)
                                  #:env-vars `(("in" . ,fixed-out))
-                                 #:inputs `((,builder3) (,fixed1))))
+                                 #:inputs `((,%bash) (,builder3) (,fixed1))))
          (final2     (derivation %store "final"
                                  %bash `(,builder3)
                                  #:env-vars `(("in" . ,fixed-out))
-                                 #:inputs `((,builder3) (,fixed2))))
+                                 #:inputs `((,%bash) (,builder3) (,fixed2))))
          (succeeded? (build-derivations %store
                                         (list final1 final2))))
     (and succeeded?
@@ -231,7 +232,7 @@
                                  #:env-vars '(("HOME" . "/homeless")
                                               ("zzz"  . "Z!")
                                               ("AAA"  . "A!"))
-                                 #:inputs `((,builder))
+                                 #:inputs `((,%bash) (,builder))
                                  #:outputs '("out" "second")))
          (succeeded? (build-derivations %store (list drv))))
     (and succeeded?
@@ -251,7 +252,7 @@
                                         '()))
          (drv        (derivation %store "fixed"
                                  %bash `(,builder)
-                                 #:inputs `((,builder))
+                                 #:inputs `((,%bash) (,builder))
                                  #:outputs '("out" "AAA")))
          (succeeded? (build-derivations %store (list drv))))
     (and succeeded?
@@ -285,7 +286,7 @@
                                         '()))
          (mdrv       (derivation %store "multiple-output"
                                  %bash `(,builder1)
-                                 #:inputs `((,builder1))
+                                 #:inputs `((,%bash) (,builder1))
                                  #:outputs '("out" "two")))
          (builder2   (add-text-to-store %store "my-mo-user-builder.sh"
                                         "read x < $one;
@@ -300,7 +301,8 @@
                                               ("two"
                                                . ,(derivation->output-path
                                                    mdrv "two")))
-                                 #:inputs `((,builder2)
+                                 #:inputs `((,%bash)
+                                            (,builder2)
                                             ;; two occurrences of MDRV:
                                             (,mdrv)
                                             (,mdrv "two")))))
@@ -417,8 +419,8 @@
   (let* ((store      (let ((s (open-connection)))
                        (set-build-options s #:max-silent-time 1)
                        s))
-         (builder    '(sleep 100))
-         (drv        (build-expression->derivation %store "silent"
+         (builder    '(begin (sleep 100) (mkdir %output) #t))
+         (drv        (build-expression->derivation store "silent"
                                                    (%current-system)
                                                    builder '()))
          (out-path   (derivation->output-path drv)))
@@ -426,7 +428,8 @@
                (and (string-contains (nix-protocol-error-message c)
                                      "failed")
                     (not (valid-path? store out-path)))))
-      (build-derivations %store (list drv)))))
+      (build-derivations store (list drv))
+      #f)))
 
 (test-assert "build-expression->derivation and derivation-prerequisites-to-build"
   (let ((drv (build-expression->derivation %store "fail" (%current-system)

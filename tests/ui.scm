@@ -65,6 +65,23 @@ interface, and powerful string processing.")
                    10)
    #\newline))
 
+(test-equal "package-specification->name+version+output"
+  '(("guile" #f "out")
+    ("guile" "2.0.9" "out")
+    ("guile" #f "debug")
+    ("guile" "2.0.9" "debug")
+    ("guile-cairo" "1.4.1" "out"))
+  (map (lambda (spec)
+         (call-with-values
+             (lambda ()
+               (package-specification->name+version+output spec))
+           list))
+       '("guile"
+         "guile-2.0.9"
+         "guile:debug"
+         "guile-2.0.9:debug"
+         "guile-cairo-1.4.1")))
+
 (test-equal "integer"
   '(1)
   (string->generations "1"))

@@ -27,6 +27,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
   #:use-module (ice-9 regex))
 
 (define %gcc-infrastructure
@@ -210,6 +211,35 @@ Go.  It also includes standard libraries for these languages.")
              (sha256
               (base32
                "1j6dwgby4g3p3lz7zkss32ghr45zpdidrg8xvazvn91lqxv25p09"))))))
+
+(define (custom-gcc gcc name languages)
+  "Return a custom version of GCC that supports LANGUAGES."
+  (package (inherit gcc)
+    (name name)
+    (arguments
+     (substitute-keyword-arguments `(#:modules ((guix build gnu-build-system)
+                                                (guix build utils)
+                                                (ice-9 regex)
+                                                (srfi srfi-1)
+                                                (srfi srfi-26))
+                                               ,@(package-arguments gcc))
+       ((#:configure-flags flags)
+        `(cons (string-append "--enable-languages="
+                              ,(string-join languages ","))
+               (remove (cut string-match "--enable-languages.*" <>)
+                       ,flags)))))))
+
+(define-public gfortran-4.8
+  (custom-gcc gcc-4.8 "gfortran" '("fortran")))
+
+(define-public gccgo-4.8
+  (custom-gcc gcc-4.8 "gccgo" '("go")))
+
+(define-public gcc-objc-4.8
+  (custom-gcc gcc-4.8 "gcc-objc" '("objc")))
+
+(define-public gcc-objc++-4.8
+  (custom-gcc gcc-4.8 "gcc-objc++" '("obj-c++")))
 
 (define-public isl
   (package

@@ -179,6 +179,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/unrtf.scm			\
   gnu/packages/valgrind.scm			\
   gnu/packages/version-control.scm		\
+  gnu/packages/video.scm			\
   gnu/packages/vim.scm				\
   gnu/packages/vpn.scm				\
   gnu/packages/w3m.scm				\

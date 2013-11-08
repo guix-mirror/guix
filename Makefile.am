@@ -41,6 +41,7 @@ MODULES =					\
   guix/hash.scm					\
   guix/utils.scm				\
   guix/monads.scm				\
+  guix/profiles.scm				\
   guix/serialization.scm			\
   guix/nar.scm					\
   guix/derivations.scm				\
@@ -114,7 +115,8 @@ SCM_TESTS =					\
   tests/store.scm				\
   tests/monads.scm				\
   tests/nar.scm					\
-  tests/union.scm
+  tests/union.scm				\
+  tests/profiles.scm
 
 SH_TESTS =					\
   tests/guix-build.sh				\

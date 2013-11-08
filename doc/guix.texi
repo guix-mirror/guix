@@ -288,8 +288,17 @@ Take users from @var{group} to run build processes (@pxref{Setting Up
 the Daemon, build users}).
 
 @item --no-substitutes
+@cindex substitutes
 Do not use substitutes for build products.  That is, always build things
 locally instead of allowing downloads of pre-built binaries.
+
+By default substitutes are used, unless the client---such as the
+@command{guix package} command---is explicitly invoked with
+@code{--no-substitutes}.
+
+When the daemon runs with @code{--no-substitutes}, clients can still
+explicitly enable substitution @i{via} the @code{set-build-options}
+remote procedure call (@pxref{The Store}).
 
 @item --cache-failures
 Cache build failures.  By default, only successful builds are cached.
@@ -446,10 +455,18 @@ scripts, etc.  This direct correspondence allows users to make sure a
 given package installation matches the current state of their
 distribution, and helps maximize @dfn{reproducibility}.
 
+@cindex substitute
 This foundation allows Guix to support @dfn{transparent binary/source
 deployment}.  When a pre-built binary for a @file{/nix/store} path is
-available from an external source, Guix just downloads it; otherwise, it
-builds the package from source, locally.
+available from an external source---a @dfn{substitute}, Guix just
+downloads it@footnote{@c XXX: Remove me when outdated.
+As of version @value{VERSION}, substitutes are downloaded from
+@url{http://hydra.gnu.org/} but are @emph{not} authenticated---i.e.,
+Guix cannot tell whether binaries it downloaded have been tampered with,
+nor whether they come from the genuine @code{gnu.org} build farm.  This
+will be fixed in future versions.  In the meantime, concerned users can
+opt for @code{--no-substitutes} (@pxref{Invoking guix-daemon}).};
+otherwise, it builds the package from source, locally.
 
 @node Invoking guix package
 @section Invoking @command{guix package}
@@ -540,6 +557,11 @@ multiple-output package.
 @itemx -r @var{package}
 Remove @var{package}.
 
+As for @code{--install}, @var{package} may specify a version number
+and/or output name in addition to the package name.  For instance,
+@code{-r glibc:debug} would remove the @code{debug} output of
+@code{glibc}.
+
 @item --upgrade[=@var{regexp}]
 @itemx -u [@var{regexp}]
 Upgrade all the installed packages.  When @var{regexp} is specified, upgrade
@@ -593,7 +615,10 @@ When substituting a pre-built binary fails, fall back to building
 packages locally.
 
 @item --no-substitutes
-@itemx --max-silent-time=@var{seconds}
+Do not use substitutes for build products.  That is, always build things
+locally instead of allowing downloads of pre-built binaries.
+
+@item --max-silent-time=@var{seconds}
 Same as for @command{guix build} (@pxref{Invoking guix build}).
 
 @item --verbose
@@ -959,6 +984,11 @@ integrity of the file.  The @code{(base32 @dots{})} form introduces the
 base32 representation of the hash.  You can obtain this information with
 @code{guix download} (@pxref{Invoking guix download}) and @code{guix
 hash} (@pxref{Invoking guix hash}).
+
+@cindex patches
+When needed, the @code{origin} form can also have a @code{patches} field
+listing patches to be applied, and a @code{snippet} field giving a
+Scheme expression to modify the source code.
 
 @item
 @cindex GNU Build System
@@ -1454,6 +1484,10 @@ themselves.
 For instance, @code{guix build -S gcc} returns something like
 @file{/nix/store/@dots{}-gcc-4.7.2.tar.bz2}, which is GCC's source tarball.
 
+The returned source tarball is the result of applying any patches and
+code snippets specified in the package's @code{origin} (@pxref{Defining
+Packages}).
+
 @item --system=@var{system}
 @itemx -s @var{system}
 Attempt to build for @var{system}---e.g., @code{i686-linux}---instead of
@@ -1490,7 +1524,8 @@ When substituting a pre-built binary fails, fall back to building
 packages locally.
 
 @item --no-substitutes
-Build instead of resorting to pre-built substitutes.
+Do not use substitutes for build products.  That is, always build things
+locally instead of allowing downloads of pre-built binaries.
 
 @item --max-silent-time=@var{seconds}
 When the build or substitution process remains silent for more than
@@ -1851,6 +1886,14 @@ In addition, the GNU distribution follow the
 software distribution guidelines}.  Among other things, these guidelines
 reject non-free firmware, recommendations of non-free software, and
 discuss ways to deal with trademarks and patents.
+
+Some packages contain a small and optional subset that violates the
+above guidelines, for instance because this subset is itself non-free
+code.  When that happens, the offending items are removed with
+appropriate patches or code snippets in the package definition's
+@code{origin} form (@pxref{Defining Packages}).  That way, @code{guix
+build --source} returns the ``freed'' source rather than the unmodified
+upstream source.
 
 
 @node Package Naming
