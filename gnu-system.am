@@ -42,6 +42,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/check.scm			\
   gnu/packages/cmake.scm			\
   gnu/packages/compression.scm			\
+  gnu/packages/complexity.scm			\
   gnu/packages/cpio.scm				\
   gnu/packages/cppi.scm				\
   gnu/packages/cross-base.scm			\
