@@ -118,22 +118,28 @@ X11 (yet).")
                            (("/bin/pwd") (which "pwd")))
               ;; do not pass "--enable-fast-install", which makes the
               ;; configure process fail
-              (zero? (system* "./configure"
-                              "-verbose"
-                              "-prefix" out
-                              "-opensource"
-                              "-confirm-license"
-                              ;; drop all special machine instructions
-                              "-no-sse2"
-                              "-no-sse3"
-                              "-no-ssse3"
-                              "-no-sse4.1"
-                              "-no-sse4.2"
-                              "-no-avx"
-                              "-no-avx2"
-                              "-no-neon"
-                              "-no-mips_dsp"
-                              "-no-mips_dspr2"))))
+              (zero? (system*
+                      "./configure"
+                      "-verbose"
+                      "-prefix" out
+                      "-opensource"
+                      "-confirm-license"
+                      ;; drop special machine instructions not supported
+                      ;; on all instances of the target
+                      ,@(if (string-prefix? "x86_64"
+                                            (or (%current-target-system)
+                                                (%current-system)))
+                            '()
+                            '("-no-sse2"))
+                      "-no-sse3"
+                      "-no-ssse3"
+                      "-no-sse4.1"
+                      "-no-sse4.2"
+                      "-no-avx"
+                      "-no-avx2"
+                      "-no-neon"
+                      "-no-mips_dsp"
+                      "-no-mips_dspr2"))))
           %standard-phases)))
     (home-page "http://qt-project.org/")
     (synopsis "Cross-platform GUI library")
@@ -165,20 +171,26 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                            (("/bin/pwd") (which "pwd")))
               ;; do not pass "--enable-fast-install", which makes the
               ;; configure process fail
-              (zero? (system* "./configure"
-                              "-verbose"
-                              "-prefix" out
-                              "-opensource"
-                              "-confirm-license"
-                              ;; drop all special machine instructions
-                              "-no-mmx"
+              (zero? (system*
+                      "./configure"
+                      "-verbose"
+                      "-prefix" out
+                      "-opensource"
+                      "-confirm-license"
+                      ;; drop special machine instructions not supported
+                      ;; on all instances of the target
+                      ,@(if (string-prefix? "x86_64"
+                                            (or (%current-target-system)
+                                                (%current-system)))
+                            '()
+                            '("-no-mmx"
                               "-no-3dnow"
                               "-no-sse"
-                              "-no-sse2"
-                              "-no-sse3"
-                              "-no-ssse3"
-                              "-no-sse4.1"
-                              "-no-sse4.2"
-                              "-no-avx"
-                              "-no-neon"))))
+                              "-no-sse2"))
+                      "-no-sse3"
+                      "-no-ssse3"
+                      "-no-sse4.1"
+                      "-no-sse4.2"
+                      "-no-avx"
+                      "-no-neon"))))
           %standard-phases)))))
