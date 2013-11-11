@@ -78,6 +78,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gnunet.scm			\
   gnu/packages/gnupg.scm			\
   gnu/packages/gnutls.scm			\
+  gnu/packages/gnuzilla.scm			\
   gnu/packages/gperf.scm			\
   gnu/packages/gprolog.scm			\
   gnu/packages/graphviz.scm			\
