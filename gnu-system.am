@@ -88,6 +88,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gtk.scm				\
   gnu/packages/guile.scm			\
   gnu/packages/gv.scm				\
+  gnu/packages/gvpe.scm				\
   gnu/packages/help2man.scm			\
   gnu/packages/hugs.scm				\
   gnu/packages/icu4c.scm			\
