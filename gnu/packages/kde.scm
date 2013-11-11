@@ -17,11 +17,15 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages kde)
-  #:use-module ((guix licenses) #:select (bsd-2))
+  #:use-module ((guix licenses) #:select (bsd-2 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
-  #:use-module (gnu packages qt))
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages xorg))
 
 (define-public automoc4
   (package
@@ -44,3 +48,32 @@
     (synopsis "build tool for KDE")
     (description "KDE desktop environment")
     (license bsd-2)))
+
+(define-public phonon
+  (package
+    (name "phonon")
+    (version "4.7.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.kde.org/stable/" name
+                                "/" version "/"
+                                name "-" version ".tar.xz"))
+             (sha256
+              (base32
+               "1sxrnwm16dxy32xmrqf26762wmbqing1zx8i4vlvzgzvd9xy39ac"))))
+    (build-system cmake-build-system)
+    ;; FIXME: Add interpreter ruby once available.
+    ;; Add optional input libqtzeitgeist.
+    (inputs
+     `(("automoc4" ,automoc4)
+       ("glib" ,glib)
+       ("libx11" ,libx11)
+       ("pkg-config" ,pkg-config)
+       ("pulseaudio" ,pulseaudio)
+       ("qt" ,qt-4)))
+    (arguments
+     `(#:tests? #f)) ; no test target
+    (home-page "http://phonon.kde.org/")
+    (synopsis "Qt 4 multimedia API")
+    (description "KDE desktop environment")
+    (license lgpl2.1+)))
