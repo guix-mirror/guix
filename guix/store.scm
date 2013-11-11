@@ -87,7 +87,8 @@
             store-path?
             derivation-path?
             store-path-package-name
-            store-path-hash-part))
+            store-path-hash-part
+            log-file))
 
 (define %protocol-version #x10c)
 
@@ -660,3 +661,23 @@ syntactically valid store path."
                                 "/([0-9a-df-np-sv-z]{32})-[^/]+$"))))
     (and=> (regexp-exec path-rx path)
            (cut match:substring <> 1))))
+
+(define (log-file store file)
+  "Return the build log file for FILE, or #f if none could be found.  FILE
+must be an absolute store file name, or a derivation file name."
+  (define state-dir                               ; XXX: factorize
+    (or (getenv "NIX_STATE_DIR") %state-directory))
+
+  (cond ((derivation-path? file)
+         (let* ((base (basename file))
+                (log  (string-append (dirname state-dir) ; XXX: ditto
+                                     "/log/nix/drvs/"
+                                     (string-take base 2) "/"
+                                     (string-drop base 2) ".bz2")))
+           (and (file-exists? log) log)))
+        (else
+         (match (valid-derivers store file)
+           ((derivers ...)
+            ;; Return the first that works.
+            (any (cut log-file store <>) derivers))
+           (_ #f)))))
