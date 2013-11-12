@@ -65,6 +65,15 @@
    (string-append (%store-prefix)
                   "/foo/bar/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7")))
 
+(test-assert "direct-store-path?"
+  (and (direct-store-path?
+        (string-append (%store-prefix)
+                       "/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7"))
+       (not (direct-store-path?
+             (string-append
+              (%store-prefix)
+              "/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7/bin/guile")))))
+
 (test-skip (if %store 0 10))
 
 (test-assert "dead-paths"

@@ -85,6 +85,7 @@
 
             %store-prefix
             store-path?
+            direct-store-path?
             derivation-path?
             store-path-package-name
             store-path-hash-part
@@ -639,6 +640,14 @@ collected, and the number of bytes freed."
   ;; be fast as it's called often in `derivation', for instance.
   ;; `isStorePath' in Nix does something similar.
   (string-prefix? (%store-prefix) path))
+
+(define (direct-store-path? path)
+  "Return #t if PATH is a store path, and not a sub-directory of a store path.
+This predicate is sometimes needed because files *under* a store path are not
+valid inputs."
+  (and (store-path? path)
+       (let ((len (+ 1 (string-length (%store-prefix)))))
+         (not (string-index (substring path len) #\/)))))
 
 (define (derivation-path? path)
   "Return #t if PATH is a derivation path."

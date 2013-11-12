@@ -541,15 +541,6 @@ advance, such as a file download.
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs.  In that case, the reference graph of each store path is exported in
 the build environment in the corresponding file, in a simple text format."
-  (define direct-store-path?
-    (let ((len (+ 1 (string-length (%store-prefix)))))
-      (lambda (p)
-        ;; Return #t if P is a store path, and not a sub-directory of a
-        ;; store path.  This predicate is needed because files *under* a
-        ;; store path are not valid inputs.
-        (and (store-path? p)
-             (not (string-index (substring p len) #\/))))))
-
   (define (add-output-paths drv)
     ;; Return DRV with an actual store path for each of its output and the
     ;; corresponding environment variable.
