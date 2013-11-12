@@ -122,6 +122,17 @@
                                              (package-source package))))
     (string=? file source)))
 
+(test-assert "package-source-derivation, indirect store path"
+  (let* ((dir     (add-to-store %store "guix-build" #t "sha256"
+                                (dirname (search-path %load-path
+                                                      "guix/build/utils.scm"))))
+         (package (package (inherit (dummy-package "p"))
+                    (source (string-append dir "/utils.scm"))))
+         (source  (package-source-derivation %store
+                                             (package-source package))))
+    (and (direct-store-path? source)
+         (string-suffix? "utils.scm" source))))
+
 (test-equal "package-source-derivation, snippet"
   "OK"
   (let* ((file   (search-bootstrap-binary "guile-2.0.7.tar.xz"

@@ -413,7 +413,7 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                          #:guile-for-build (or guile-for-build
                                                (%guile-for-build)
                                                (default-guile store system)))))
-    ((and (? string?) (? store-path?) file)
+    ((and (? string?) (? direct-store-path?) file)
      file)
     ((? string? file)
      (add-to-store store (basename file) #t "sha256" file))))
