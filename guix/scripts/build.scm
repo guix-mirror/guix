@@ -95,6 +95,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                          as a garbage collector root"))
   (display (_ "
       --verbosity=LEVEL  use the given verbosity LEVEL"))
+  (display (_ "
+      --log-file         return the log file names for the given derivations"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -161,7 +163,10 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                 (lambda (opt name arg result)
                   (let ((level (string->number arg)))
                     (alist-cons 'verbosity level
-                                (alist-delete 'verbosity result)))))))
+                                (alist-delete 'verbosity result)))))
+        (option '("log-file") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'log-file? #t result)))))
 
 
 ;;;
@@ -235,68 +240,89 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
              (leave (_ "~A: unknown package~%") name))))))
 
   (with-error-handling
-    (let ((opts (parse-options)))
-      (define package->derivation
-        (match (assoc-ref opts 'target)
-          (#f package-derivation)
-          (triplet
-           (cut package-cross-derivation <> <> triplet <>))))
+    ;; Ask for absolute file names so that .drv file names passed from the
+    ;; user to 'read-derivation' are absolute when it returns.
+    (with-fluids ((%file-port-name-canonicalization 'absolute))
+      (let ((opts (parse-options)))
+        (define package->derivation
+          (match (assoc-ref opts 'target)
+            (#f package-derivation)
+            (triplet
+             (cut package-cross-derivation <> <> triplet <>))))
 
-      (parameterize ((%store (open-connection)))
-        (let* ((src? (assoc-ref opts 'source?))
-               (sys  (assoc-ref opts 'system))
-               (drv  (filter-map (match-lambda
-                                  (('expression . str)
-                                   (derivations-from-package-expressions
-                                    str package->derivation sys src?))
-                                  (('argument . (? derivation-path? drv))
-                                   (call-with-input-file drv read-derivation))
-                                  (('argument . (? string? x))
-                                   (let ((p (find-package x)))
-                                     (if src?
-                                         (let ((s (package-source p)))
-                                           (package-source-derivation
-                                            (%store) s))
-                                         (package->derivation (%store) p sys))))
-                                  (_ #f))
-                                 opts))
-               (roots (filter-map (match-lambda
-                                   (('gc-root . root) root)
-                                   (_ #f))
-                                  opts)))
+        (parameterize ((%store (open-connection)))
+          (let* ((src? (assoc-ref opts 'source?))
+                 (sys  (assoc-ref opts 'system))
+                 (drv  (filter-map (match-lambda
+                                    (('expression . str)
+                                     (derivations-from-package-expressions
+                                      str package->derivation sys src?))
+                                    (('argument . (? derivation-path? drv))
+                                     (call-with-input-file drv read-derivation))
+                                    (('argument . (? store-path?))
+                                     ;; Nothing to do; maybe for --log-file.
+                                     #f)
+                                    (('argument . (? string? x))
+                                     (let ((p (find-package x)))
+                                       (if src?
+                                           (let ((s (package-source p)))
+                                             (package-source-derivation
+                                              (%store) s))
+                                           (package->derivation (%store) p sys))))
+                                    (_ #f))
+                                   opts))
+                 (roots (filter-map (match-lambda
+                                     (('gc-root . root) root)
+                                     (_ #f))
+                                    opts)))
 
-          (show-what-to-build (%store) drv
-                              #:use-substitutes? (assoc-ref opts 'substitutes?)
-                              #:dry-run? (assoc-ref opts 'dry-run?))
+            (unless (assoc-ref opts 'log-file?)
+              (show-what-to-build (%store) drv
+                                  #:use-substitutes? (assoc-ref opts 'substitutes?)
+                                  #:dry-run? (assoc-ref opts 'dry-run?)))
 
-          ;; TODO: Add more options.
-          (set-build-options (%store)
-                             #:keep-failed? (assoc-ref opts 'keep-failed?)
-                             #:build-cores (or (assoc-ref opts 'cores) 0)
-                             #:fallback? (assoc-ref opts 'fallback?)
-                             #:use-substitutes? (assoc-ref opts 'substitutes?)
-                             #:max-silent-time (assoc-ref opts 'max-silent-time)
-                             #:verbosity (assoc-ref opts 'verbosity))
+            ;; TODO: Add more options.
+            (set-build-options (%store)
+                               #:keep-failed? (assoc-ref opts 'keep-failed?)
+                               #:build-cores (or (assoc-ref opts 'cores) 0)
+                               #:fallback? (assoc-ref opts 'fallback?)
+                               #:use-substitutes? (assoc-ref opts 'substitutes?)
+                               #:max-silent-time (assoc-ref opts 'max-silent-time)
+                               #:verbosity (assoc-ref opts 'verbosity))
 
-          (if (assoc-ref opts 'derivations-only?)
-              (begin
-                (format #t "~{~a~%~}" (map derivation-file-name drv))
-                (for-each (cut register-root <> <>)
-                          (map (compose list derivation-file-name) drv)
-                          roots))
-              (or (assoc-ref opts 'dry-run?)
-                  (and (build-derivations (%store) drv)
-                       (for-each (lambda (d)
-                                   (format #t "~{~a~%~}"
-                                           (map (match-lambda
-                                                 ((out-name . out)
-                                                  (derivation->output-path
-                                                   d out-name)))
-                                                (derivation-outputs d))))
-                                 drv)
-                       (for-each (cut register-root <> <>)
-                                 (map (lambda (drv)
-                                        (map cdr
-                                             (derivation->output-paths drv)))
-                                      drv)
-                                 roots)))))))))
+            (cond ((assoc-ref opts 'log-file?)
+                   (for-each (lambda (file)
+                               (let ((log (log-file (%store) file)))
+                                 (if log
+                                     (format #t "~a~%" log)
+                                     (leave (_ "no build log for '~a'~%")
+                                            file))))
+                             (delete-duplicates
+                              (append (map derivation-file-name drv)
+                                      (filter-map (match-lambda
+                                                   (('argument
+                                                     . (? store-path? file))
+                                                    file)
+                                                   (_ #f))
+                                                  opts)))))
+                  ((assoc-ref opts 'derivations-only?)
+                   (format #t "~{~a~%~}" (map derivation-file-name drv))
+                   (for-each (cut register-root <> <>)
+                             (map (compose list derivation-file-name) drv)
+                             roots))
+                  ((not (assoc-ref opts 'dry-run?))
+                   (and (build-derivations (%store) drv)
+                        (for-each (lambda (d)
+                                    (format #t "~{~a~%~}"
+                                            (map (match-lambda
+                                                  ((out-name . out)
+                                                   (derivation->output-path
+                                                    d out-name)))
+                                                 (derivation-outputs d))))
+                                  drv)
+                        (for-each (cut register-root <> <>)
+                                  (map (lambda (drv)
+                                         (map cdr
+                                              (derivation->output-paths drv)))
+                                       drv)
+                                  roots))))))))))

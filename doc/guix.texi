@@ -1546,6 +1546,22 @@ Use the given verbosity level.  @var{level} must be an integer between 0
 and 5; higher means more verbose output.  Setting a level of 4 or more
 may be helpful when debugging setup issues with the build daemon.
 
+@item --log-file
+Return the build log file names for the given
+@var{package-or-derivation}s, or raise an error if build logs are
+missing.
+
+This works regardless of how packages or derivations are specified.  For
+instance, the following invocations are equivalent:
+
+@example
+guix build --log-file `guix build -d guile`
+guix build --log-file `guix build guile`
+guix build --log-file guile
+guix build --log-file -e '(@@ (gnu packages guile) guile-2.0)'
+@end example
+
+
 @end table
 
 Behind the scenes, @command{guix build} is essentially an interface to
