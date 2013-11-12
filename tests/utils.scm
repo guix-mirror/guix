@@ -82,6 +82,14 @@
         (string-tokenize* "foo!bar!" "!")
         (string-tokenize* "foo+-+bar+-+baz" "+-+")))
 
+(test-equal "string-replace-substring"
+  '("foo BAR! baz"
+    "/gnu/store/chbouib"
+    "")
+  (list (string-replace-substring "foo bar baz" "bar" "BAR!")
+        (string-replace-substring "/nix/store/chbouib" "/nix/" "/gnu/")
+        (string-replace-substring "" "foo" "bar")))
+
 (test-equal "fold2, 1 list"
     (list (reverse (iota 5))
           (map - (reverse (iota 5))))

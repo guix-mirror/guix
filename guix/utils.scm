@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -62,6 +63,7 @@
             guile-version>?
             package-name->name+version
             string-tokenize*
+            string-replace-substring
             file-extension
             file-sans-extension
             call-with-temporary-output-file
@@ -386,6 +388,28 @@ like `string-tokenize', but SEPARATOR is a string."
                          result))))
           (else
            (reverse (cons string result))))))
+
+(define* (string-replace-substring str substr replacement
+                                   #:optional
+                                   (start 0)
+                                   (end (string-length str)))
+  "Replace all occurrences of SUBSTR in the START--END range of STR by
+REPLACEMENT."
+  (match (string-length substr)
+    (0
+     (error "string-replace-substring: empty substring"))
+    (substr-length
+     (let loop ((start  start)
+                (pieces (list (substring str 0 start))))
+       (match (string-contains str substr start end)
+         (#f
+          (string-concatenate-reverse
+           (cons (substring str start) pieces)))
+         (index
+          (loop (+ index substr-length)
+                (cons* replacement
+                       (substring str start index)
+                       pieces))))))))
 
 (define (call-with-temporary-output-file proc)
   "Call PROC with a name of a temporary file and open output port to that
