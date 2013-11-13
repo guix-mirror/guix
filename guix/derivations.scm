@@ -674,17 +674,21 @@ recursively."
 
   (define input->output-paths
     (match-lambda
-     ((drv)
+     (((? derivation? drv))
       (list (derivation->output-path drv)))
-     ((drv sub-drvs ...)
+     (((? derivation? drv) sub-drvs ...)
       (map (cut derivation->output-path drv <>)
-           sub-drvs))))
+           sub-drvs))
+     ((file)
+      (list file))))
 
   (let ((mapping (fold (lambda (pair result)
                          (match pair
-                           ((orig . replacement)
+                           (((? derivation? orig) . replacement)
                             (vhash-cons (derivation-file-name orig)
-                                        replacement result))))
+                                        replacement result))
+                           ((file . replacement)
+                            (vhash-cons file replacement result))))
                        vlist-null
                        mapping)))
     (define rewritten-input
@@ -695,8 +699,10 @@ recursively."
          (match input
            (($ <derivation-input> path (sub-drvs ...))
             (match (vhash-assoc path mapping)
-              ((_ . replacement)
+              ((_ . (? derivation? replacement))
                (cons replacement sub-drvs))
+              ((_ . replacement)
+               (list replacement))
               (#f
                (let* ((drv (loop (call-with-input-file path read-derivation))))
                  (cons drv sub-drvs)))))))))
@@ -711,7 +717,13 @@ recursively."
              ;; Sources typically refer to the output directories of the
              ;; original inputs, INITIAL.  Rewrite them by substituting
              ;; REPLACEMENTS.
-             (sources      (map (cut substitute-file <> initial replacements)
+             (sources      (map (lambda (source)
+                                  (match (vhash-assoc source mapping)
+                                    ((_ . replacement)
+                                     replacement)
+                                    (#f
+                                     (substitute-file source
+                                                      initial replacements))))
                                 (derivation-sources drv)))
 
              ;; Now augment the lists of initials and replacements.

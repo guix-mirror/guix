@@ -720,6 +720,28 @@ Deriver: ~a~%"
     (and (build-derivations %store (list (pk 'remapped drv4)))
          (call-with-input-file out get-string-all))))
 
+(test-equal "map-derivation, sources"
+  "hello"
+  (let* ((script1   (add-text-to-store %store "fail.sh" "exit 1"))
+         (script2   (add-text-to-store %store "hi.sh" "echo -n hello > $out"))
+         (bash-full (package-derivation %store (@ (gnu packages bash) bash)))
+         (drv1      (derivation %store "drv-to-remap"
+
+                                ;; XXX: This wouldn't work in practice, but if
+                                ;; we append "/bin/bash" then we can't replace
+                                ;; it with the bootstrap bash, which is a
+                                ;; single file.
+                                (derivation->output-path bash-full)
+
+                                `("-e" ,script1)
+                                #:inputs `((,bash-full) (,script1))))
+         (drv2      (map-derivation %store drv1
+                                    `((,bash-full . ,%bash)
+                                      (,script1 . ,script2))))
+         (out       (derivation->output-path drv2)))
+    (and (build-derivations %store (list (pk 'remapped* drv2)))
+         (call-with-input-file out get-string-all))))
+
 (test-end)
 
 
