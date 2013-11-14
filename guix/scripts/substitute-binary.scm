@@ -123,7 +123,8 @@ again."
               (lambda ()
                 body ...)
               (lambda args
-                ;; The SIGALRM triggers EINTR, because of the bug at
+                ;; Before Guile v2.0.9-39-gfe51c7b, the SIGALRM triggers EINTR
+                ;; because of the bug at
                 ;; <http://lists.gnu.org/archive/html/guile-devel/2013-06/msg00050.html>.
                 ;; When that happens, try again.  Note: SA_RESTART cannot be
                 ;; used because of <http://bugs.gnu.org/14640>.
@@ -162,10 +163,17 @@ provide."
            (warning (_ "while fetching ~a: server is unresponsive~%")
                     (uri->string uri))
            (warning (_ "try `--no-substitutes' if the problem persists~%"))
-           (when port
-             (close-port port)))
+
+           ;; Before Guile v2.0.9-39-gfe51c7b, EINTR was reported to the user,
+           ;; and thus PORT had to be closed and re-opened.  This is not the
+           ;; case afterward.
+           (unless (or (guile-version>? "2.0.9")
+                       (version>? (version) "2.0.9.39"))
+             (when port
+               (close-port port))))
          (begin
-           (set! port (open-socket-for-uri uri #:buffered? buffered?))
+           (when (or (not port) (port-closed? port))
+             (set! port (open-socket-for-uri uri #:buffered? buffered?)))
            (http-fetch uri #:text? #f #:port port)))))))
 
 (define-record-type <cache>
