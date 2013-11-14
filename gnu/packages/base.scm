@@ -644,7 +644,7 @@ identifier SYSTEM."
 
 (define gcc-boot0
   (package-with-bootstrap-guile
-   (package (inherit gcc-4.7)
+   (package (inherit gcc-4.8)
      (name "gcc-cross-boot0")
      (arguments
       `(#:guile ,%bootstrap-guile
@@ -654,7 +654,7 @@ identifier SYSTEM."
                    (ice-9 regex)
                    (srfi srfi-1)
                    (srfi srfi-26))
-        ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
+        ,@(substitute-keyword-arguments (package-arguments gcc-4.8)
             ((#:configure-flags flags)
              `(append (list ,(string-append "--target=" (boot-triplet))
 
@@ -663,8 +663,18 @@ identifier SYSTEM."
 
                             ;; Disable features not needed at this stage.
                             "--disable-shared"
-                            "--enable-languages=c"
+                            "--enable-languages=c,c++"
+
+                            ;; libstdc++ cannot be built at this stage
+                            ;; ("Link tests are not allowed after
+                            ;; GCC_NO_EXECUTABLES.").
+                            "--disable-libstdc++-v3"
+
+                            "--disable-threads"
                             "--disable-libmudflap"
+                            "--disable-libatomic"
+                            "--disable-libsanitizer"
+                            "--disable-libitm"
                             "--disable-libgomp"
                             "--disable-libssp"
                             "--disable-libquadmath"
@@ -691,24 +701,7 @@ identifier SYSTEM."
                    ,@(map (lambda (lib)
                             `(symlink ,(package-full-name lib)
                                       ,(package-name lib)))
-                          (list gmp mpfr mpc))
-
-                   ;; MPFR headers/lib are found under $(MPFR)/src, but
-                   ;; `configure' wrongfully tells MPC too look under
-                   ;; $(MPFR), so fix that.
-                   (substitute* "configure"
-                     (("extra_mpc_mpfr_configure_flags(.+)--with-mpfr-include=([^/]+)/mpfr(.*)--with-mpfr-lib=([^ ]+)/mpfr"
-                       _ equals include middle lib)
-                      (string-append "extra_mpc_mpfr_configure_flags" equals
-                                     "--with-mpfr-include=" include
-                                     "/mpfr/src" middle
-                                     "--with-mpfr-lib=" lib
-                                     "/mpfr/src"))
-                     (("gmpinc='-I([^ ]+)/mpfr -I([^ ]+)/mpfr" _ a b)
-                      (string-append "gmpinc='-I" a "/mpfr/src "
-                                     "-I" b "/mpfr/src"))
-                     (("gmplibs='-L([^ ]+)/mpfr" _ a)
-                      (string-append "gmplibs='-L" a "/mpfr/src")))))
+                          (list gmp mpfr mpc))))
                (alist-cons-after
                 'install 'symlink-libgcc_eh
                 (lambda* (#:key outputs #:allow-other-keys)
@@ -718,7 +711,7 @@ identifier SYSTEM."
                     (with-directory-excursion
                         (string-append out "/lib/gcc/"
                                        ,(boot-triplet)
-                                       "/" ,(package-version gcc-4.7))
+                                       "/" ,(package-version gcc-4.8))
                       (symlink "libgcc.a" "libgcc_eh.a"))))
                 ,phases))))))
 
@@ -734,7 +727,7 @@ identifier SYSTEM."
 
      ;; No need for Texinfo at this stage.
      (native-inputs (alist-delete "texinfo"
-                                  (package-native-inputs gcc-4.7))))))
+                                  (package-native-inputs gcc-4.8))))))
 
 (define (linux-libre-headers-boot0)
   "Return Linux-Libre header files for the bootstrap environment."
@@ -800,7 +793,7 @@ identifier SYSTEM."
 (define (cross-gcc-wrapper gcc binutils glibc bash)
   "Return a wrapper for the pseudo-cross toolchain GCC/BINUTILS/GLIBC
 that makes it available under the native tool names."
-  (package (inherit gcc-4.7)
+  (package (inherit gcc-4.8)
     (name (string-append (package-name gcc) "-wrapped"))
     (source #f)
     (build-system trivial-build-system)
@@ -817,6 +810,21 @@ that makes it available under the native tool names."
                           (out      (assoc-ref %outputs "out"))
                           (bindir   (string-append out "/bin"))
                           (triplet  ,(boot-triplet)))
+                     (define (wrap-program program)
+                       ;; GCC-BOOT0 is a libc-less cross-compiler, so it
+                       ;; needs to be told where to find the crt files and
+                       ;; the dynamic linker.
+                       (call-with-output-file program
+                         (lambda (p)
+                           (format p "#!~a/bin/bash
+exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
+                                   bash
+                                   gcc triplet program
+                                   libc libc
+                                   ,(glibc-dynamic-linker))))
+
+                       (chmod program #o555))
+
                      (mkdir-p bindir)
                      (with-directory-excursion bindir
                        (for-each (lambda (tool)
@@ -824,20 +832,7 @@ that makes it available under the native tool names."
                                                            triplet "-" tool)
                                             tool))
                                  '("ar" "ranlib"))
-
-                       ;; GCC-BOOT0 is a libc-less cross-compiler, so it
-                       ;; needs to be told where to find the crt files and
-                       ;; the dynamic linker.
-                       (call-with-output-file "gcc"
-                         (lambda (p)
-                           (format p "#!~a/bin/bash
-exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
-                                   bash
-                                   gcc triplet
-                                   libc libc
-                                   ,(glibc-dynamic-linker))))
-
-                       (chmod "gcc" #o555))))))
+                       (for-each wrap-program '("gcc" "g++")))))))
     (native-inputs
      `(("binutils" ,binutils)
        ("gcc" ,gcc)
@@ -893,6 +888,36 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
         ,@(package-arguments binutils)))
      (inputs %boot2-inputs))))
 
+(define libstdc++
+  ;; Intermediate libstdc++ that will allow us to build the final GCC
+  ;; (remember that GCC-BOOT0 cannot build libstdc++.)
+  (package-with-bootstrap-guile
+   (package (inherit gcc-4.8)
+     (name "libstdc++")
+     (arguments
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
+
+        #:out-of-source? #t
+        #:phases (alist-cons-before
+                  'configure 'chdir
+                  (lambda _
+                    (chdir "libstdc++-v3"))
+                  %standard-phases)
+        #:configure-flags `("--disable-shared"
+                            "--disable-libstdcxx-threads"
+                            "--disable-libstdcxx-pch"
+                            ,(string-append "--with-gxx-include-dir="
+                                            (assoc-ref %outputs "out")
+                                            "/include"
+                                            ;; "/include/c++/"
+                                            ;; ,(package-version gcc-4.8)
+                                            ))))
+     (inputs %boot2-inputs)
+     (native-inputs '())
+     (propagated-inputs '())
+     (synopsis "GNU C++ standard library (intermediate)"))))
+
 (define-public gcc-final
   ;; The final GCC.
   (package (inherit gcc-boot0)
@@ -906,12 +931,25 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
        ,@(substitute-keyword-arguments (package-arguments gcc-boot0)
            ((#:configure-flags boot-flags)
-            (let loop ((args (package-arguments gcc-4.7)))
+            (let loop ((args (package-arguments gcc-4.8)))
               (match args
                 ((#:configure-flags normal-flags _ ...)
                  normal-flags)
                 ((_ rest ...)
                  (loop rest)))))
+           ((#:make-flags flags)
+            ;; Since $LIBRARY_PATH and $CPATH are not honored, add the
+            ;; relevant flags.
+            `(cons (string-append "CPPFLAGS=-I"
+                                  (assoc-ref %build-inputs "libstdc++")
+                                  "/include")
+                   (map (lambda (flag)
+                          (if (string-prefix? "LDFLAGS=" flag)
+                              (string-append flag " -L"
+                                             (assoc-ref %build-inputs "libstdc++")
+                                             "/lib")
+                              flag))
+                        ,flags)))
            ((#:phases phases)
             `(alist-delete 'symlink-libgcc_eh ,phases)))))
 
@@ -919,6 +957,7 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
               ("mpfr-source" ,(package-source mpfr))
               ("mpc-source" ,(package-source mpc))
               ("binutils" ,binutils-final)
+              ("libstdc++" ,libstdc++)
               ,@%boot2-inputs))))
 
 (define ld-wrapper-boot3

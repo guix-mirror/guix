@@ -296,9 +296,9 @@ dist_bootstrap_mips64el_linux_DATA =		\
 # Big bootstrap binaries are not included in the tarball.  Instead, they
 # are downloaded.
 nodist_bootstrap_x86_64_linux_DATA =					\
-  gnu/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz
+  gnu/packages/bootstrap/x86_64-linux/guile-2.0.9.tar.xz
 nodist_bootstrap_i686_linux_DATA =					\
-  gnu/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz
+  gnu/packages/bootstrap/i686-linux/guile-2.0.9.tar.xz
 nodist_bootstrap_mips64el_linux_DATA =					\
   gnu/packages/bootstrap/mips64el-linux/guile-2.0.9.tar.xz
 
@@ -318,12 +318,12 @@ DOWNLOAD_FILE =								\
   $(GUILE) --no-auto-compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
            "$(top_srcdir)/build-aux/download.scm"
 
-gnu/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz:
+gnu/packages/bootstrap/x86_64-linux/guile-2.0.9.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
-	$(DOWNLOAD_FILE) "$@" "bc43210dcd146d242bef4d354b0aeac12c4ef3118c07502d17ffa8d49e15aa2c"
-gnu/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz:
+	$(DOWNLOAD_FILE) "$@" "037b103522a2d0d7d69c7ffd8de683dfe5bb4b59c1fafd70b4ffd397fd2f57f0"
+gnu/packages/bootstrap/i686-linux/guile-2.0.9.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
-	$(DOWNLOAD_FILE) "$@" "f9a7c6f4c556eaafa2a69bcf07d4ffbb6682ea831d4c9da9ba095aca3ccd217c"
+	$(DOWNLOAD_FILE) "$@" "b757cd46bf13ecac83fb8e955fb50096ac2d17bb610ca8eb816f29302a00a846"
 gnu/packages/bootstrap/mips64el-linux/guile-2.0.9.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
-	$(DOWNLOAD_FILE) "$@" "1735d8b3f94749a4a349b6135f3aaa089f65dc62951c89c6c43ba0f2fc34211d"
+	$(DOWNLOAD_FILE) "$@" "994680f0001346864aa2c2cc5110f380ee7518dcd701c614291682b8e948f73b"
