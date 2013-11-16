@@ -365,9 +365,17 @@ archives.")
             (sha256
              (base32
               "18spla703zav8dq9fw7rbzkyv9qfisxb26p7amg1x3wjh7iy3d1c"))
+            (snippet
+             ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
+             ;; required on LFS distros to avoid loading the distro's libc.so
+             ;; instead of ours.
+             '(substitute* "sysdeps/unix/sysv/linux/configure"
+                (("use_ldconfig=yes")
+                 "use_ldconfig=no")))
+            (modules '((guix build utils)))
+            (imported-modules modules)
             (patches (map search-patch
-                          '("glibc-no-ld-so-cache.patch"
-                            "glibc-ldd-x86_64.patch"
+                          '("glibc-ldd-x86_64.patch"
                             "glibc-make-4.0.patch")))))
    (build-system gnu-build-system)
 
