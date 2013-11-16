@@ -35,6 +35,10 @@
               (base32
                "1jkbq97ajcf834z68hbn3xfhiz921zhn39gklml1racf0kb3jzh3"))))
     (build-system gnu-build-system)
+
+    ;; Needed to have cflow-mode.el installed.
+    (native-inputs `(("emacs" ,emacs)))
+
     (home-page "http://www.gnu.org/software/cflow/")
     (synopsis "Create a graph of control flow within a program")
     (description
