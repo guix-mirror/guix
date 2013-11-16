@@ -124,7 +124,7 @@
 
 (test-equal "package-source-derivation, snippet"
   "OK"
-  (let* ((file   (search-bootstrap-binary "guile-2.0.7.tar.xz"
+  (let* ((file   (search-bootstrap-binary "guile-2.0.9.tar.xz"
                                           (%current-system)))
          (sha256 (call-with-input-file file port-sha256))
          (fetch  (lambda* (store url hash-algo hash
