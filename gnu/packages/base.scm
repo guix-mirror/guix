@@ -130,14 +130,14 @@ is often used for substituting text patterns in a stream.")
 (define-public tar
   (package
    (name "tar")
-   (version "1.27")
+   (version "1.27.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/tar/tar-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "0yrwmx2f721ahpnki4fnzvnmrd3md3bq417icb4wrjky7k3caf12"))))
+              "1iip0fk0wqhxb0jcwphz43r4fxkx1y7mznnhmlvr618jhp7b63wv"))))
    (build-system gnu-build-system)
    (synopsis "Managing tar archives")
    (description
