@@ -26,9 +26,11 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
   #:use-module ((gnu packages gettext)
                 #:renamer (symbol-prefix-proc 'gnu:))
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -132,12 +134,16 @@ LP/MIP solver is included in the package.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0qhxsdbwxd3cn1shc13wxvx2lg32lp4z6sz24kv3jz7p5xfi8j7x"))))
+        "0qhxsdbwxd3cn1shc13wxvx2lg32lp4z6sz24kv3jz7p5xfi8j7x"))
+      (patches (list (search-patch "pspp-tests.patch")))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,gnu:gettext)
+     `(("cairo" ,cairo)
+       ("fontconfig" ,fontconfig)
+       ("gettext" ,gnu:gettext)
        ("gsl" ,gsl)
        ("libxml2" ,libxml2)
+       ("pango" ,pango)
        ("readline" ,readline)
        ("zlib" ,zlib)))
     (native-inputs
@@ -145,8 +151,7 @@ LP/MIP solver is included in the package.")
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:configure-flags
-       `("--without-cairo" ; FIXME: tests currently fail for lack of font
-         "--without-gui"))) ; FIXME: package missing dependencies
+       `("--without-gui"))) ; FIXME: package missing dependencies
     (home-page "http://www.gnu.org/software/pspp/")
     (synopsis "Statistical analysis")
     (description
