@@ -26,14 +26,14 @@
 (define-public gettext
   (package
     (name "gettext")
-    (version "0.18.3")
+    (version "0.18.3.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gettext/gettext-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0j7rp56c61j4k1bz1xdc041hzv7186yyzhbp95fmc0zq7l2c3wrn"))))
+               "0p940zmmw1lndvdhck2vrazikjhr02affwy47mmpfxqvacrrm3qd"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
