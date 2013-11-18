@@ -81,6 +81,12 @@
                    (list version `(version ,version))))
          (not (package-field-location %bootstrap-guile 'does-not-exist)))))
 
+;; Make sure we don't change the file name to an absolute file name.
+(test-equal "package-field-location, relative file name"
+  (location-file (package-location %bootstrap-guile))
+  (with-fluids ((%file-port-name-canonicalization 'absolute))
+    (location-file (package-field-location %bootstrap-guile 'version))))
+
 (test-assert "package-transitive-inputs"
   (let* ((a (dummy-package "a"))
          (b (dummy-package "b"
