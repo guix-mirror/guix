@@ -161,29 +161,20 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 (substitute* (find-files "gcc/config"
                                          "^gnu-user.*\\.h$")
                   (("#define GNU_USER_TARGET_LIB_SPEC (.*)$" _ suffix)
-                   ;; Note that with this "lib" spec, we may still add a
-                   ;; RUNPATH to GCC even when `libgcc_s' is not NEEDED.
-                   ;; There's not much that can be done to avoid it, though.
+                   ;; Help libgcc_s.so be found (see also below.)  Always use
+                   ;; '-lgcc_s' so that libgcc_s.so is always found by those
+                   ;; programs that use 'pthread_cancel' (glibc dlopens
+                   ;; libgcc_s.so when pthread_cancel support is needed, but
+                   ;; having it in the application's RUNPATH isn't enough; see
+                   ;; <http://sourceware.org/ml/libc-help/2013-11/msg00023.html>.)
                    (format #f "#define GNU_USER_TARGET_LIB_SPEC \
-\"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib}} \" ~a"
+\"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib -lgcc_s}} \" ~a"
                            libc libc out out suffix))
                   (("#define GNU_USER_TARGET_STARTFILE_SPEC.*$" line)
                    (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
 #define STANDARD_STARTFILE_PREFIX_2 \"\"
 ~a"
                            libc line))))
-
-              ;; Use '-lgcc_s' rather than '--as-needed -lgcc_s', so that
-              ;; libgcc_s.so is always found by those programs that use
-              ;; 'pthread_cancel' (glibc dlopens libgcc_s.so when
-              ;; pthread_cancel support is needed, but having it in the
-              ;; application's RUNPATH isn't enough; see
-              ;; <http://sourceware.org/ml/libc-help/2013-11/msg00023.html>.)
-              ;; Also, "gcc_cv_ld_as_needed=no" as a configure flag doesn't
-              ;; work.
-              (substitute* "gcc/gcc.c"
-                (("#ifndef USE_LD_AS_NEEDED.*$" line)
-                 (string-append "#undef USE_LD_AS_NEEDED\n" line)))
 
               ;; Don't retain a dependency on the build-time sed.
               (substitute* "fixincludes/fixincl.x"
