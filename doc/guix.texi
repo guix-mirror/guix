@@ -1483,11 +1483,15 @@ The @var{options} may be zero or more of the following:
 
 @item --expression=@var{expr}
 @itemx -e @var{expr}
-Build the package @var{expr} evaluates to.
+Build the package or derivation @var{expr} evaluates to.
 
 For example, @var{expr} may be @code{(@@ (gnu packages guile)
 guile-1.8)}, which unambiguously designates this specific variant of
 version 1.8 of Guile.
+
+Alternately, @var{expr} may refer to a zero-argument monadic procedure
+(@pxref{The Store Monad}).  The procedure must return a derivation as a
+monadic value, which is then passed through @code{run-with-store}.
 
 @item --source
 @itemx -S

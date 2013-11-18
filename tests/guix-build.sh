@@ -72,3 +72,11 @@ if guix build -n time-3.2;	# FAIL, version not found
 then false; else true; fi
 if guix build -n something-that-will-never-exist; # FAIL
 then false; else true; fi
+
+# Invoking a monadic procedure.
+guix build -e "(begin
+                 (use-modules (guix monads) (guix utils))
+                 (lambda ()
+                   (derivation-expression \"test\" (%current-system)
+                                          '(mkdir %output) '())))" \
+   --dry-run

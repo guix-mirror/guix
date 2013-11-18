@@ -23,6 +23,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix utils)
+  #:use-module (guix monads)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
@@ -38,19 +39,23 @@
 (define %store
   (make-parameter #f))
 
-(define (derivations-from-package-expressions str package-derivation
-                                              system source?)
+(define (derivation-from-expression str package-derivation
+                                    system source?)
   "Read/eval STR and return the corresponding derivation path for SYSTEM.
-When SOURCE? is true, return the derivations of the package sources;
-otherwise, use PACKAGE-DERIVATION to compute the derivation of a package."
-  (let ((p (read/eval-package-expression str)))
-    (if source?
-        (let ((source (package-source p)))
-          (if source
-              (package-source-derivation (%store) source)
-              (leave (_ "package `~a' has no source~%")
-                     (package-name p))))
-        (package-derivation (%store) p system))))
+When SOURCE? is true and STR evaluates to a package, return the derivation of
+the package source; otherwise, use PACKAGE-DERIVATION to compute the
+derivation of a package."
+  (match (read/eval str)
+    ((? package? p)
+     (if source?
+         (let ((source (package-source p)))
+           (if source
+               (package-source-derivation (%store) source)
+               (leave (_ "package `~a' has no source~%")
+                      (package-name p))))
+         (package-derivation (%store) p system)))
+    ((? procedure? proc)
+     (run-with-store (%store) (proc) #:system system))))
 
 
 ;;;
@@ -68,7 +73,7 @@ otherwise, use PACKAGE-DERIVATION to compute the derivation of a package."
   (display (_ "Usage: guix build [OPTION]... PACKAGE-OR-DERIVATION...
 Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
-  -e, --expression=EXPR  build the package EXPR evaluates to"))
+  -e, --expression=EXPR  build the package or derivation EXPR evaluates to"))
   (display (_ "
   -S, --source           build the packages' source derivations"))
   (display (_ "
@@ -255,7 +260,7 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                  (sys  (assoc-ref opts 'system))
                  (drv  (filter-map (match-lambda
                                     (('expression . str)
-                                     (derivations-from-package-expressions
+                                     (derivation-from-expression
                                       str package->derivation sys src?))
                                     (('argument . (? derivation-path? drv))
                                      (call-with-input-file drv read-derivation))
