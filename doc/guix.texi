@@ -95,7 +95,7 @@ always produces the same result when passed a given set of inputs.  It
 cannot alter the system's environment in
 any way; for instance, it cannot create, modify, or delete files outside
 of its build and installation directories.  This is achieved by running
-build processes in isolated environments (or @dfn{chroots}), where only their
+build processes in isolated environments (or @dfn{containers}), where only their
 explicit inputs are visible.
 
 @cindex store
@@ -224,6 +224,7 @@ The @code{guix-daemon} program may then be run as @code{root} with:
 # guix-daemon --build-users-group=guix-builder
 @end example
 
+@cindex chroot
 @noindent
 This way, the daemon starts build processes in a chroot, under one of
 the @code{guix-builder} users.  On GNU/Linux, by default, the chroot
@@ -271,6 +272,10 @@ is normally run as @code{root} like this:
 @noindent
 For details on how to set it up, @ref{Setting Up the Daemon}.
 
+@cindex chroot
+@cindex container, build environment
+@cindex build environment
+@cindex reproducible builds
 By default, @command{guix-daemon} launches build processes under
 different UIDs, taken from the build group specified with
 @code{--build-users-group}.  In addition, each build process is run in a
@@ -278,7 +283,10 @@ chroot environment that only contains the subset of the store that the
 build process depends on, as specified by its derivation
 (@pxref{Programming Interface, derivation}), plus a set of specific
 system directories.  By default, the latter contains @file{/dev} and
-@file{/dev/pts}.
+@file{/dev/pts}.  Furthermore, on GNU/Linux, the build environment is a
+@dfn{container}: in addition to having its own file system tree, it has
+a separate mount name space, its own PID name space, network name space,
+etc.  This helps achieve reproducible builds (@pxref{Features}).
 
 The following command-line options are supported:
 
@@ -447,13 +455,18 @@ profiles, and remove those that are provably no longer referenced
 generations of their profile so that the packages they refer to can be
 collected.
 
+@cindex reproducibility
+@cindex reproducible builds
 Finally, Guix takes a @dfn{purely functional} approach to package
 management, as described in the introduction (@pxref{Introduction}).
 Each @file{/nix/store} package directory name contains a hash of all the
 inputs that were used to build that package---compiler, libraries, build
 scripts, etc.  This direct correspondence allows users to make sure a
 given package installation matches the current state of their
-distribution, and helps maximize @dfn{reproducibility}.
+distribution.  It also helps maximize @dfn{build reproducibility}:
+thanks to the isolated build environments that are used, a given build
+is likely to yield bit-identical files when performed on different
+machines (@pxref{Invoking guix-daemon, container}).
 
 @cindex substitute
 This foundation allows Guix to support @dfn{transparent binary/source
