@@ -1741,8 +1741,9 @@ Guix comes with a distribution of free software@footnote{The term
 users of that software}.}  that form the basis of the GNU system.  This
 includes core GNU packages such as GNU libc, GCC, and Binutils, as well
 as many GNU and non-GNU applications.  The complete list of available
-packages can be seen by running @command{guix package} (@pxref{Invoking
-guix package}):
+packages can be browsed
+@url{http://www.gnu.org/software/guix/package-list.html,on-line} or by
+running @command{guix package} (@pxref{Invoking guix package}):
 
 @example
 guix package --list-available
