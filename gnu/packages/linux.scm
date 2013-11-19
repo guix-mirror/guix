@@ -146,7 +146,7 @@
     (license gpl2+)))
 
 (define-public linux-libre
-  (let* ((version "3.11")
+  (let* ((version "3.12")
          (build-phase
           '(lambda* (#:key system #:allow-other-keys #:rest args)
              (let ((arch (car (string-split system #\-))))
@@ -192,7 +192,7 @@
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1vlk04xkvyy1kc9zz556md173rn1qzlnvhz7c9sljv4bpk3mdspl"))))
+               "0drjxm9h2k9bik2mhrqqqi6cm5rn2db647wf0zvb58xldj0zmhb6"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
