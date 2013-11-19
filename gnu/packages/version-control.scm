@@ -30,6 +30,7 @@
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (gnu packages apr)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages ed)
   #:use-module (gnu packages nano)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
@@ -263,15 +264,16 @@ projects, from individuals to large-scale enterprise operations.")
 (define-public rcs
   (package
     (name "rcs")
-    (version "5.9.0")
+    (version "5.9.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/rcs/rcs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0w26vsx732dcmb5qfhlkkzvrk1sx6d74qibrn914n14j0ci90jcq"))))
+               "1376amzaj7x6ar3xi1dldc0hgfa3n7412c46wqk2h2f2lf67jsk0"))))
     (build-system gnu-build-system)
+    (native-inputs `(("ed" ,ed)))
     (home-page "http://www.gnu.org/software/rcs/")
     (synopsis "Per-file local revision control system")
     (description
