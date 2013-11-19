@@ -23,8 +23,53 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages xorg)
-  #:export (libmikmod))
+  #:export (sdl
+            sdl2
+            libmikmod))
+
+(define sdl
+  (package
+    (name "sdl")
+    (version "1.2.15")
+    (source (origin
+             (method url-fetch)
+             (uri
+              (string-append "http://libsdl.org/release/SDL-"
+                             version ".tar.gz"))
+             (sha256
+              (base32
+               "005d993xcac8236fpvd1iawkz4wqjybkpn8dbwaliqz5jfkidlyn"))))
+    (build-system gnu-build-system)
+    (arguments '(#:tests? #f)) ; no check target
+    (inputs `(("libx11" ,libx11)
+              ("libxrandr" ,libxrandr)
+              ("mesa" ,mesa)
+              ("alsa-lib" ,alsa-lib)
+              ("pkg-config" ,pkg-config)
+              ("pulseaudio" ,pulseaudio)))
+    (synopsis "Cross platform game development library")
+    (description "Simple DirectMedia Layer is a cross-platform development
+library designed to provide low level access to audio, keyboard, mouse,
+joystick, and graphics hardware.")
+    (home-page "http://libsdl.org/")
+    (license lgpl2.1)))
+
+(define sdl2
+  (package (inherit sdl)
+    (name "sdl2")
+    (version "2.0.0")
+    (source (origin
+             (method url-fetch)
+             (uri
+              (string-append "http://libsdl.org/release/SDL2-"
+                             version ".tar.gz"))
+             (sha256
+              (base32
+               "0y3in99brki7vc2mb4c0w39v70mf4h341mblhh8nmq4h7lawhskg"))))
+    (license bsd-3)))
 
 (define libmikmod
   (package
