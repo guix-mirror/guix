@@ -97,6 +97,7 @@ prepended to the name."
                        #:key
                        (python (default-python))
                        (tests? #t)
+                       (test-target "test")
                        (configure-flags ''())
                        (phases '(@ (guix build python-build-system)
                                    %standard-phases))
@@ -125,7 +126,7 @@ provides a 'setup.py' file as its build system."
                                    source)
                      #:configure-flags ,configure-flags
                      #:system ,system
-                     #:test-target "test"
+                     #:test-target ,test-target
                      #:tests? ,tests?
                      #:phases ,phases
                      #:outputs %outputs
