@@ -83,7 +83,7 @@ SYSTEM."
 
 (define %core-packages
   (list gmp mpfr mpc coreutils findutils diffutils patch sed grep
-        gawk gettext hello guile-2.0
+        gawk gnu-gettext hello guile-2.0
         %bootstrap-binaries-tarball
         %binutils-bootstrap-tarball
         %glibc-bootstrap-tarball
