@@ -45,6 +45,7 @@
             show-what-to-build
             call-with-error-handling
             with-error-handling
+            read/eval
             read/eval-package-expression
             location->string
             switch-symlinks
@@ -193,25 +194,29 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
         (leave (_ "~a~%")
                (strerror (system-error-errno args)))))))
 
-(define (read/eval-package-expression str)
-  "Read and evaluate STR and return the package it refers to, or exit an
-error."
+(define (read/eval str)
+  "Read and evaluate STR, raising an error if something goes wrong."
   (let ((exp (catch #t
                (lambda ()
                  (call-with-input-string str read))
                (lambda args
                  (leave (_ "failed to read expression ~s: ~s~%")
                         str args)))))
-    (let ((p (catch #t
-               (lambda ()
-                 (eval exp the-scm-module))
-               (lambda args
-                 (leave (_ "failed to evaluate expression `~a': ~s~%")
-                        exp args)))))
-      (if (package? p)
-          p
-          (leave (_ "expression `~s' does not evaluate to a package~%")
-                 exp)))))
+    (catch #t
+      (lambda ()
+        (eval exp the-scm-module))
+      (lambda args
+        (leave (_ "failed to evaluate expression `~a': ~s~%")
+               exp args)))))
+
+(define (read/eval-package-expression str)
+  "Read and evaluate STR and return the package it refers to, or exit an
+error."
+  (match (read/eval str)
+    ((? package? p) p)
+    (_
+     (leave (_ "expression ~s does not evaluate to a package~%")
+            str))))
 
 (define* (show-what-to-build store drv
                              #:key dry-run? (use-substitutes? #t))

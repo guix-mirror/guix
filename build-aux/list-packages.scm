@@ -71,12 +71,14 @@ of packages still to be processed in REMAINING.  Also Introduces a call to the
 JavaScript prep_pkg_descs function as part of the output of PACKAGE, every
 time the length of DESCRIPTION-IDS, increasing, is 15 or when REMAINING,
 decreasing, is 1."
+  (define (location-url loc)
+    (string-append "http://git.savannah.gnu.org/cgit/guix.git/tree/"
+                   (location-file loc) "#n"
+                   (number->string (location-line loc))))
+
   (define (source-url package)
     (let ((loc (package-location package)))
-      (and loc
-           (string-append "http://git.savannah.gnu.org/cgit/guix.git/tree/"
-                          (location-file loc) "#n"
-                          (number->string (location-line loc))))))
+      (and loc (location-url loc))))
 
   (define (license package)
     (define ->sxml
@@ -103,26 +105,37 @@ decreasing, is 1."
        "http://git.savannah.gnu.org/cgit/guix.git/tree/gnu/packages/patches/"
        (basename patch)))
 
-    (match (and (origin? (package-source package))
-                (origin-patches (package-source package)))
-      ((patches ..1)
-       `(div "patches: "
-             ,(let loop ((patches patches)
-                         (number  1)
-                         (links   '()))
-                (match patches
-                  (()
-                   (list-join (reverse links) ", "))
-                  ((patch rest ...)
-                   (loop rest
-                         (+ 1 number)
-                         (cons `(a (@ (href ,(patch-url patch))
-                                      (title ,(string-append
-                                               "Link to "
-                                               (basename patch))))
-                                   ,(number->string number))
-                               links)))))))
-      (_ #f)))
+    (define (snippet-link snippet)
+      (let ((loc (package-field-location package 'source)))
+        `(a (@ (href ,(location-url loc))
+               (title "Link to patch snippet"))
+            "snippet")))
+
+    (and (origin? (package-source package))
+         (let ((patches (origin-patches (package-source package)))
+               (snippet (origin-snippet (package-source package))))
+           (and (or (pair? patches) snippet)
+                `(div "patches: "
+                      ,(let loop ((patches patches)
+                                  (number  1)
+                                  (links   '()))
+                         (match patches
+                           (()
+                            (let* ((additional (and snippet
+                                                    (snippet-link snippet)))
+                                   (links      (if additional
+                                                   (cons additional links)
+                                                   links)))
+                              (list-join (reverse links) ", ")))
+                           ((patch rest ...)
+                            (loop rest
+                                  (+ 1 number)
+                                  (cons `(a (@ (href ,(patch-url patch))
+                                               (title ,(string-append
+                                                        "Link to "
+                                                        (basename patch))))
+                                            ,(number->string number))
+                                        links))))))))))
 
   (define (status package)
     (define (url system)

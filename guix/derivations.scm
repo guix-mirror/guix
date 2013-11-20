@@ -25,6 +25,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 vlist)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix hash)
@@ -63,6 +64,7 @@
             derivation-path->output-path
             derivation-path->output-paths
             derivation
+            map-derivation
 
             %guile-for-build
             imported-modules
@@ -539,15 +541,6 @@ advance, such as a file download.
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs.  In that case, the reference graph of each store path is exported in
 the build environment in the corresponding file, in a simple text format."
-  (define direct-store-path?
-    (let ((len (+ 1 (string-length (%store-prefix)))))
-      (lambda (p)
-        ;; Return #t if P is a store path, and not a sub-directory of a
-        ;; store path.  This predicate is needed because files *under* a
-        ;; store path are not valid inputs.
-        (and (store-path? p)
-             (not (string-index (substring p len) #\/))))))
-
   (define (add-output-paths drv)
     ;; Return DRV with an actual store path for each of its output and the
     ;; corresponding environment variable.
@@ -654,6 +647,113 @@ the build environment in the corresponding file, in a simple text format."
                                    (map derivation-input-path
                                         inputs))))
       (set-file-name drv file))))
+
+(define* (map-derivation store drv mapping
+                         #:key (system (%current-system)))
+  "Given MAPPING, a list of pairs of derivations, return a derivation based on
+DRV where all the 'car's of MAPPING have been replaced by its 'cdr's,
+recursively."
+  (define (substitute str initial replacements)
+    (fold (lambda (path replacement result)
+            (string-replace-substring result path
+                                      replacement))
+          str
+          initial replacements))
+
+  (define (substitute-file file initial replacements)
+    (define contents
+      (with-fluids ((%default-port-encoding #f))
+        (call-with-input-file file get-string-all)))
+
+    (let ((updated (substitute contents initial replacements)))
+      (if (string=? updated contents)
+          file
+          ;; XXX: permissions aren't preserved.
+          (add-text-to-store store (store-path-package-name file)
+                             updated))))
+
+  (define input->output-paths
+    (match-lambda
+     (((? derivation? drv))
+      (list (derivation->output-path drv)))
+     (((? derivation? drv) sub-drvs ...)
+      (map (cut derivation->output-path drv <>)
+           sub-drvs))
+     ((file)
+      (list file))))
+
+  (let ((mapping (fold (lambda (pair result)
+                         (match pair
+                           (((? derivation? orig) . replacement)
+                            (vhash-cons (derivation-file-name orig)
+                                        replacement result))
+                           ((file . replacement)
+                            (vhash-cons file replacement result))))
+                       vlist-null
+                       mapping)))
+    (define rewritten-input
+      ;; Rewrite the given input according to MAPPING, and return an input
+      ;; in the format used in 'derivation' calls.
+      (memoize
+       (lambda (input loop)
+         (match input
+           (($ <derivation-input> path (sub-drvs ...))
+            (match (vhash-assoc path mapping)
+              ((_ . (? derivation? replacement))
+               (cons replacement sub-drvs))
+              ((_ . replacement)
+               (list replacement))
+              (#f
+               (let* ((drv (loop (call-with-input-file path read-derivation))))
+                 (cons drv sub-drvs)))))))))
+
+    (let loop ((drv drv))
+      (let* ((inputs       (map (cut rewritten-input <> loop)
+                                (derivation-inputs drv)))
+             (initial      (append-map derivation-input-output-paths
+                                       (derivation-inputs drv)))
+             (replacements (append-map input->output-paths inputs))
+
+             ;; Sources typically refer to the output directories of the
+             ;; original inputs, INITIAL.  Rewrite them by substituting
+             ;; REPLACEMENTS.
+             (sources      (map (lambda (source)
+                                  (match (vhash-assoc source mapping)
+                                    ((_ . replacement)
+                                     replacement)
+                                    (#f
+                                     (substitute-file source
+                                                      initial replacements))))
+                                (derivation-sources drv)))
+
+             ;; Now augment the lists of initials and replacements.
+             (initial      (append (derivation-sources drv) initial))
+             (replacements (append sources replacements))
+             (name         (store-path-package-name
+                            (string-drop-right (derivation-file-name drv)
+                                               4))))
+        (derivation store name
+                    (substitute (derivation-builder drv)
+                                initial replacements)
+                    (map (cut substitute <> initial replacements)
+                         (derivation-builder-arguments drv))
+                    #:system system
+                    #:env-vars (map (match-lambda
+                                     ((var . value)
+                                      `(,var
+                                        . ,(substitute value initial
+                                                       replacements))))
+                                    (derivation-builder-environment-vars drv))
+                    #:inputs (append (map list sources) inputs)
+                    #:outputs (map car (derivation-outputs drv))
+                    #:hash (match (derivation-outputs drv)
+                             ((($ <derivation-output> _ algo hash))
+                              hash)
+                             (_ #f))
+                    #:hash-algo (match (derivation-outputs drv)
+                                  ((($ <derivation-output> _ algo hash))
+                                   algo)
+                                  (_ #f)))))))
 
 
 ;;;

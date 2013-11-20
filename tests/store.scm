@@ -65,6 +65,15 @@
    (string-append (%store-prefix)
                   "/foo/bar/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7")))
 
+(test-assert "direct-store-path?"
+  (and (direct-store-path?
+        (string-append (%store-prefix)
+                       "/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7"))
+       (not (direct-store-path?
+             (string-append
+              (%store-prefix)
+              "/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7/bin/guile")))))
+
 (test-skip (if %store 0 10))
 
 (test-assert "dead-paths"
@@ -139,6 +148,33 @@
                  (list o))
          (equal? (valid-derivers %store o)
                  (list (derivation-file-name d))))))
+
+(test-assert "log-file, derivation"
+  (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
+         (s (add-to-store %store "bash" #t "sha256"
+                          (search-bootstrap-binary "bash"
+                                                   (%current-system))))
+         (d (derivation %store "the-thing"
+                        s `("-e" ,b)
+                        #:env-vars `(("foo" . ,(random-text)))
+                        #:inputs `((,b) (,s)))))
+    (and (build-derivations %store (list d))
+         (file-exists? (pk (log-file %store (derivation-file-name d)))))))
+
+(test-assert "log-file, output file name"
+  (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
+         (s (add-to-store %store "bash" #t "sha256"
+                          (search-bootstrap-binary "bash"
+                                                   (%current-system))))
+         (d (derivation %store "the-thing"
+                        s `("-e" ,b)
+                        #:env-vars `(("foo" . ,(random-text)))
+                        #:inputs `((,b) (,s))))
+         (o (derivation->output-path d)))
+    (and (build-derivations %store (list d))
+         (file-exists? (pk (log-file %store o)))
+         (string=? (log-file %store (derivation-file-name d))
+                   (log-file %store o)))))
 
 (test-assert "no substitutes"
   (let* ((s  (open-connection))

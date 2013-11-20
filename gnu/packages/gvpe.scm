@@ -16,34 +16,33 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages freeipmi)
+(define-module (gnu packages gvpe)
   #:use-module (guix packages)
-  #:use-module (guix licenses)
   #:use-module (guix download)
+  #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages gnupg))
+  #:use-module (gnu packages openssl)
+  #:use-module ((gnu packages compression) #:select (zlib)))
 
-(define-public freeipmi
+(define-public gvpe
   (package
-    (name "freeipmi")
-    (version "1.3.3")
+    (name "gvpe")
+    (version "2.25")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/freeipmi/freeipmi-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0pmgr66k4cx0gdwzfby6643m15bb4q2yx2g5r2jr3qidrfyxhi3j"))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gvpe/gvpe-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1gsipcysvsk80gvyn9jnk9g0xg4ng9yd5zp066jnmpgs52d2vhvk"))))
     (build-system gnu-build-system)
-    (inputs
-     `(("readline" ,readline) ("libgcrypt" ,libgcrypt)))
-    (home-page "http://www.gnu.org/software/freeipmi/")
-    (synopsis "Platform management, including sensor and power monitoring")
+    (home-page "http://software.schmorp.de/pkg/gvpe.html")
+    (inputs `(("openssl" ,openssl)
+              ("zlib" ,zlib)))
+    (synopsis "Secure VPN among multiple nodes over an untrusted network")
     (description
-     "FreeIPMI is a collection of in-band and out-of-band IPMI software in
-accordance with the IPMI v1.5/2.0 specification.  These programs provide a
-set of interfaces for platform management.  Common functionality includes
-sensor monitoring, system event monitoring, power control and
-serial-over-LAN.")
+     "The GNU Virtual Private Ethernet creates a virtual network
+with multiple nodes using a variety of transport protocols.  It works
+by creating encrypted host-to-host tunnels between multiple
+endpoints.")
     (license gpl3+)))

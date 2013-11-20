@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,29 +16,35 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages lightning)
+(define-module (gnu packages apl)
+  #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix licenses))
+  #:use-module ((gnu packages gettext)
+                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages readline))
 
-(define-public lightning
+(define-public apl
   (package
-    (name "lightning")
-    (version "2.0.2")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/lightning/lightning-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "100ya7dx12403gimif7p2q7ahd8vxqrxpxqzqr1zqci825nb0b43"))))
+    (name "apl")
+    (version "1.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/apl/apl-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1myinxa0m3y4fanpxflfakfk3m1s8641wdlbwbs0vg5yp10xm0m3"))))
     (build-system gnu-build-system)
-    (synopsis "Library for generating assembly code at runtime")
+    (home-page "http://www.gnu.org/software/apl/")
+    (inputs
+     `(("gettext" ,guix:gettext)
+       ("lapack" ,lapack)
+       ("readline" ,readline)))
+    (synopsis "APL interpreter")
     (description
-     "GNU Lightning is a library that generates assembly language code at
-run-time.  Thus, it is useful in creating Just-In-Time compilers.  It
-abstracts over the target CPU by exposing a standardized RISC instruction set
-to the clients.")
-    (home-page "http://www.gnu.org/software/lightning/")
+     "GNU APL is a free interpreter for the programming language APL.  It is
+an implementation of the ISO standard 13751.")
     (license gpl3+)))

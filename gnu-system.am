@@ -26,6 +26,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/acct.scm				\
   gnu/packages/acl.scm				\
   gnu/packages/algebra.scm			\
+  gnu/packages/apl.scm				\
   gnu/packages/apr.scm				\
   gnu/packages/aspell.scm			\
   gnu/packages/attr.scm				\
@@ -43,6 +44,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/check.scm			\
   gnu/packages/cmake.scm			\
   gnu/packages/compression.scm			\
+  gnu/packages/complexity.scm			\
   gnu/packages/cpio.scm				\
   gnu/packages/cppi.scm				\
   gnu/packages/cross-base.scm			\
@@ -77,6 +79,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gnunet.scm			\
   gnu/packages/gnupg.scm			\
   gnu/packages/gnutls.scm			\
+  gnu/packages/gnuzilla.scm			\
   gnu/packages/gperf.scm			\
   gnu/packages/gprolog.scm			\
   gnu/packages/graphviz.scm			\
@@ -88,6 +91,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gtk.scm				\
   gnu/packages/guile.scm			\
   gnu/packages/gv.scm				\
+  gnu/packages/gvpe.scm				\
   gnu/packages/help2man.scm			\
   gnu/packages/hugs.scm				\
   gnu/packages/icu4c.scm			\
@@ -139,6 +143,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/openldap.scm			\
   gnu/packages/openssl.scm			\
   gnu/packages/package-management.scm		\
+  gnu/packages/parallel.scm			\
   gnu/packages/parted.scm			\
   gnu/packages/patchelf.scm			\
   gnu/packages/pcre.scm				\

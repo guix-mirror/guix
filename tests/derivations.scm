@@ -26,6 +26,7 @@
   #:use-module ((guix packages) #:select (package-derivation))
   #:use-module ((gnu packages) #:select (search-bootstrap-binary))
   #:use-module (gnu packages bootstrap)
+  #:use-module ((gnu packages guile) #:select (guile-1.8))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -689,6 +690,57 @@ Deriver: ~a~%"
                                   (match y
                                     ((p2 . _)
                                      (string<? p1 p2)))))))))))))
+
+
+(test-equal "map-derivation"
+  "hello"
+  (let* ((joke (package-derivation %store guile-1.8))
+         (good (package-derivation %store %bootstrap-guile))
+         (drv1 (build-expression->derivation %store "original-drv1"
+                                             (%current-system)
+                                             #f   ; systematically fail
+                                             '()
+                                             #:guile-for-build joke))
+         (drv2 (build-expression->derivation %store "original-drv2"
+                                             (%current-system)
+                                             '(call-with-output-file %output
+                                                (lambda (p)
+                                                  (display "hello" p)))
+                                             '()))
+         (drv3 (build-expression->derivation %store "drv-to-remap"
+                                             (%current-system)
+                                             '(let ((in (assoc-ref
+                                                         %build-inputs "in")))
+                                                (copy-file in %output))
+                                             `(("in" ,drv1))
+                                             #:guile-for-build joke))
+         (drv4 (map-derivation %store drv3 `((,drv1 . ,drv2)
+                                             (,joke . ,good))))
+         (out  (derivation->output-path drv4)))
+    (and (build-derivations %store (list (pk 'remapped drv4)))
+         (call-with-input-file out get-string-all))))
+
+(test-equal "map-derivation, sources"
+  "hello"
+  (let* ((script1   (add-text-to-store %store "fail.sh" "exit 1"))
+         (script2   (add-text-to-store %store "hi.sh" "echo -n hello > $out"))
+         (bash-full (package-derivation %store (@ (gnu packages bash) bash)))
+         (drv1      (derivation %store "drv-to-remap"
+
+                                ;; XXX: This wouldn't work in practice, but if
+                                ;; we append "/bin/bash" then we can't replace
+                                ;; it with the bootstrap bash, which is a
+                                ;; single file.
+                                (derivation->output-path bash-full)
+
+                                `("-e" ,script1)
+                                #:inputs `((,bash-full) (,script1))))
+         (drv2      (map-derivation %store drv1
+                                    `((,bash-full . ,%bash)
+                                      (,script1 . ,script2))))
+         (out       (derivation->output-path drv2)))
+    (and (build-derivations %store (list (pk 'remapped* drv2)))
+         (call-with-input-file out get-string-all))))
 
 (test-end)
 

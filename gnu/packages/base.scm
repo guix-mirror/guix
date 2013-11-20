@@ -49,19 +49,14 @@
 (define-public hello
   (package
    (name "hello")
-   (version "2.8")
+   (version "2.9")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/hello/hello-" version
                                 ".tar.gz"))
             (sha256
-             (base32 "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))))
+             (base32 "19qy37gkasc4csb1d3bdiz9snn8mir2p3aj0jgzmfv0r2hi7mfzc"))))
    (build-system gnu-build-system)
-   (arguments '(#:configure-flags
-                `("--disable-dependency-tracking"
-                  ,(string-append "--with-gawk="  ; for illustration purposes
-                                 (assoc-ref %build-inputs "gawk")))))
-   (inputs `(("gawk" ,gawk)))
    (synopsis "Hello, GNU world: An example GNU package")
    (description
     "GNU Hello prints the message \"Hello, world!\" and then exits.  It

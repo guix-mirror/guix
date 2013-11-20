@@ -81,6 +81,12 @@
                    (list version `(version ,version))))
          (not (package-field-location %bootstrap-guile 'does-not-exist)))))
 
+;; Make sure we don't change the file name to an absolute file name.
+(test-equal "package-field-location, relative file name"
+  (location-file (package-location %bootstrap-guile))
+  (with-fluids ((%file-port-name-canonicalization 'absolute))
+    (location-file (package-field-location %bootstrap-guile 'version))))
+
 (test-assert "package-transitive-inputs"
   (let* ((a (dummy-package "a"))
          (b (dummy-package "b"
@@ -121,6 +127,17 @@
          (source  (package-source-derivation %store
                                              (package-source package))))
     (string=? file source)))
+
+(test-assert "package-source-derivation, indirect store path"
+  (let* ((dir     (add-to-store %store "guix-build" #t "sha256"
+                                (dirname (search-path %load-path
+                                                      "guix/build/utils.scm"))))
+         (package (package (inherit (dummy-package "p"))
+                    (source (string-append dir "/utils.scm"))))
+         (source  (package-source-derivation %store
+                                             (package-source package))))
+    (and (direct-store-path? source)
+         (string-suffix? "utils.scm" source))))
 
 (test-equal "package-source-derivation, snippet"
   "OK"

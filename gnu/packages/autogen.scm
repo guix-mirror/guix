@@ -28,7 +28,7 @@
 (define-public autogen
   (package
     (name "autogen")
-    (version "5.18.1")
+    (version "5.18.2")
     (source
      (origin
       (method url-fetch)
@@ -37,7 +37,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0k0gkr5inr9wb3ws30q6bbiqg3qm3ryvl9cznym2xis4lm216d53"))))
+        "0s2021bwpq6h199cbbranz96hhm5s7v66lc68h8v198vqbg049yc"))))
     (build-system gnu-build-system)
     (inputs `(("which" ,which)
               ("guile" ,guile-2.0)))

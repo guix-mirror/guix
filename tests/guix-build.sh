@@ -36,6 +36,17 @@ guix build -e '(@@ (gnu packages base) %bootstrap-guile)' |	\
 guix build hello -d |				\
     grep -e '-hello-[0-9\.]\+\.drv$'
 
+# Should all return valid log files.
+drv="`guix build -d -e '(@@ (gnu packages base) %bootstrap-guile)'`"
+out="`guix build -e '(@@ (gnu packages base) %bootstrap-guile)'`"
+log="`guix build --log-file $drv`"
+echo "$log" | grep log/.*guile.*drv
+test -f "$log"
+test "`guix build -e '(@@ (gnu packages base) %bootstrap-guile)' --log-file`" \
+    = "$log"
+test "`guix build --log-file guile-bootstrap`" = "$log"
+test "`guix build --log-file $out`" = "$log"
+
 # Should fail because the name/version combination could not be found.
 if guix build hello-0.0.1 -n; then false; else true; fi
 
@@ -61,3 +72,11 @@ if guix build -n time-3.2;	# FAIL, version not found
 then false; else true; fi
 if guix build -n something-that-will-never-exist; # FAIL
 then false; else true; fi
+
+# Invoking a monadic procedure.
+guix build -e "(begin
+                 (use-modules (guix monads) (guix utils))
+                 (lambda ()
+                   (derivation-expression \"test\" (%current-system)
+                                          '(mkdir %output) '())))" \
+   --dry-run

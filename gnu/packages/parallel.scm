@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,29 +16,32 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages lightning)
+(define-module (gnu packages parallel)
   #:use-module (guix packages)
+  #:use-module (guix licenses)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix licenses))
+  #:use-module (gnu packages)
+  #:use-module (gnu packages perl))
 
-(define-public lightning
+(define-public parallel
   (package
-    (name "lightning")
-    (version "2.0.2")
-    (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/lightning/lightning-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "100ya7dx12403gimif7p2q7ahd8vxqrxpxqzqr1zqci825nb0b43"))))
+    (name "parallel")
+    (version "20131022")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/parallel/parallel-"
+                          version ".tar.bz2"))
+      (sha256
+       (base32
+        "1ydn8aj72wfjdvldzjwah9cvqay8vzr3dbspa5l0g2y10dx0qa4k"))))
     (build-system gnu-build-system)
-    (synopsis "Library for generating assembly code at runtime")
+    (inputs `(("perl" ,perl))) 
+    (home-page "http://www.gnu.org/software/parallel/")
+    (synopsis "Build and execute command lines in parallel")
     (description
-     "GNU Lightning is a library that generates assembly language code at
-run-time.  Thus, it is useful in creating Just-In-Time compilers.  It
-abstracts over the target CPU by exposing a standardized RISC instruction set
-to the clients.")
-    (home-page "http://www.gnu.org/software/lightning/")
+     "GNU Parallel is a tool for executing shell jobs in parallel using one
+or more computers.  Jobs can consist of single commands or of scripts
+and they are executed on lists of files, hosts, users or other items.")
     (license gpl3+)))

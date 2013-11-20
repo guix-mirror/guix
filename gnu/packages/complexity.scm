@@ -16,34 +16,34 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages freeipmi)
+(define-module (gnu packages complexity)
   #:use-module (guix packages)
-  #:use-module (guix licenses)
   #:use-module (guix download)
+  #:use-module (guix licenses)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages readline)
-  #:use-module (gnu packages gnupg))
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages autogen))
 
-(define-public freeipmi
+(define-public complexity
   (package
-    (name "freeipmi")
-    (version "1.3.3")
+    (name "complexity")
+    (version "1.1")
     (source (origin
-             (method url-fetch)
-             (uri (string-append "mirror://gnu/freeipmi/freeipmi-"
-                                 version ".tar.gz"))
-             (sha256
-              (base32
-               "0pmgr66k4cx0gdwzfby6643m15bb4q2yx2g5r2jr3qidrfyxhi3j"))))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/complexity/complexity-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1aad7n35ymxbj5dlpvm64dcd71b6i7hbmps0g7nkf47vj53l6y2j"))))
     (build-system gnu-build-system)
-    (inputs
-     `(("readline" ,readline) ("libgcrypt" ,libgcrypt)))
-    (home-page "http://www.gnu.org/software/freeipmi/")
-    (synopsis "Platform management, including sensor and power monitoring")
+    (native-inputs
+     `(("texinfo" ,texinfo)
+       ("autogen" ,autogen)))
+    (home-page "http://www.gnu.org/software/complexity/")
+    (synopsis "Analyze complexity of C functions")
     (description
-     "FreeIPMI is a collection of in-band and out-of-band IPMI software in
-accordance with the IPMI v1.5/2.0 specification.  These programs provide a
-set of interfaces for platform management.  Common functionality includes
-sensor monitoring, system event monitoring, power control and
-serial-over-LAN.")
+     "GNU complexity provides tools for finding procedures that are
+convoluted, overly long or otherwise difficult to understand.  This
+may help in learning or reviewing unfamiliar code or perhaps
+highlighting your own code that seemed comprehensible when you wrote it.")
     (license gpl3+)))

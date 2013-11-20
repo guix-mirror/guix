@@ -134,7 +134,7 @@ made available under the /xchg CIFS share."
          (setenv "PATH" cu)
 
          ,(if make-disk-image?
-              `(zero? (system* img "create" "image.qcow2"
+              `(zero? (system* img "create" "-f" "qcow2" "image.qcow2"
                                ,(number->string disk-image-size)))
               '(begin))
 
