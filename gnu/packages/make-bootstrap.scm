@@ -406,6 +406,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        "--disable-plugin"
                        "--enable-languages=c"
                        "--disable-libmudflap"
+                       "--disable-libatomic"
+                       "--disable-libsanitizer"
+                       "--disable-libitm"
                        "--disable-libgomp"
                        "--disable-libssp"
                        "--disable-libquadmath"
@@ -415,12 +418,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ((#:make-flags flags)
              (if (%current-target-system)
                  `(cons "LDFLAGS=-static" ,flags)
-                 `(cons "BOOT_LDFLAGS=-static" ,flags))))))
-     (inputs `(("gmp-source" ,(package-source gmp))
-               ("mpfr-source" ,(package-source mpfr))
-               ("mpc-source" ,(package-source mpc))
-               ("binutils" ,binutils)
-               ,@(package-inputs gcc-4.8))))))
+                 `(cons "BOOT_LDFLAGS=-static" ,flags)))))))))
 
 (define %gcc-stripped
   ;; The subset of GCC files needed for bootstrap.
