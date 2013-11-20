@@ -24,7 +24,14 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages xml))
 
-(define-public gettext
+;; Use that name to avoid clashes with Guile's 'gettext' procedure.
+;;
+;; We used to resort to #:renamer on the user side, but that prevented
+;; circular dependencies involving (gnu packages gettext).  This is because
+;; 'resolve-interface' (as of Guile 2.0.9) iterates eagerly over the used
+;; module when there's a #:renamer, and that module may be empty at that point
+;; in case or circular dependencies.
+(define-public gnu-gettext
   (package
     (name "gettext")
     (version "0.18.3.1")

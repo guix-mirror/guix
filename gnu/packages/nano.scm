@@ -18,8 +18,7 @@
 
 (define-module (gnu packages nano)
   #:use-module (guix licenses)
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages ncurses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -39,7 +38,7 @@
         "1s3b21h5p7r8xafw0gahswj16ai6k2vnjhmd15b491hl0x494c7z"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,guix:gettext)
+     `(("gettext" ,gnu-gettext)
        ("ncurses" ,ncurses)))
     (home-page "http://www.nano-editor.org/")
     (synopsis "Small, user-friendly console text editor")

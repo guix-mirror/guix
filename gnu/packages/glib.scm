@@ -29,8 +29,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages perl)
@@ -124,7 +123,7 @@ shared NFS home directories.")
               "doc"))                      ; 20 MiB of GTK-Doc reference
    (inputs
     `(("coreutils" ,coreutils)
-      ("gettext" ,guix:gettext)
+      ("gettext" ,gnu-gettext)
       ("libffi" ,libffi)
       ("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)
@@ -224,7 +223,7 @@ bindings to call into the C library.")
     (propagated-inputs
      `(;; Propagate gettext because users expect it to be there, and so does
        ;; the `intltool-update' script.
-       ("gettext" ,guix:gettext)
+       ("gettext" ,gnu-gettext)
 
        ;; `file' is used by `intltool-update' too.
        ("file" ,file)

@@ -18,8 +18,7 @@
 
 (define-module (gnu packages fdisk)
   #:use-module ((guix licenses) #:select (gpl3+))
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages parted)
@@ -41,7 +40,7 @@
         "04nd7civ561x2lwcmxhsqbprml3178jfc58fy1v7hzqg5k4nbhy3"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,guix:gettext)
+     `(("gettext" ,gnu-gettext)
        ("guile" ,guile-1.8)
        ("util-linux" ,util-linux)
        ("parted" ,parted)))

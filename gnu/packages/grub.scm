@@ -24,7 +24,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages bison)
-  #:use-module ((gnu packages gettext) #:renamer (symbol-prefix-proc 'gnu:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages qemu)
@@ -84,7 +84,7 @@
                  %standard-phases)))
     (inputs
      `(;; ("lvm2" ,lvm2)
-       ("gettext" ,gnu:gettext)
+       ("gettext" ,gnu-gettext)
        ("freetype" ,freetype)
        ;; ("libusb" ,libusb)
        ("ncurses" ,ncurses)))

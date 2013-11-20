@@ -30,8 +30,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages algebra)
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'g:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages xml)
@@ -514,7 +513,7 @@ MIDI functionality to the Linux-based operating system.")
        ("ncurses" ,ncurses)
        ("alsa-lib" ,alsa-lib)
        ("xmlto" ,xmlto)
-       ("gettext" ,g:gettext)))
+       ("gettext" ,gnu-gettext)))
     (home-page "http://www.alsa-project.org/")
     (synopsis "Utilities for the Advanced Linux Sound Architecture (ALSA)")
     (description
@@ -677,7 +676,7 @@ manpages.")
                          (sha256
                           (base32
                            "0p93lsqx23v5fv4hpbrydmfvw1ha2rgqpn2zqbs2jhxkzhjc030p"))))))
-    (native-inputs `(("gettext" ,g:gettext)))
+    (native-inputs `(("gettext" ,gnu-gettext)))
 
     (synopsis "Tools for controlling the network subsystem in Linux")
     (description

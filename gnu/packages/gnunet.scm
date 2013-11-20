@@ -20,8 +20,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'gnu:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnutls)
@@ -68,7 +67,7 @@
    ;; * libsmf
    ;; * libtidy
    (inputs
-    `(("gettext" ,gnu:gettext)
+    `(("gettext" ,gnu-gettext)
       ("flac" ,flac)
       ("glib" ,glib)
       ("libjpeg" ,libjpeg)

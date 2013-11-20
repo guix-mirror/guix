@@ -22,8 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'gnu:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg))
@@ -42,7 +41,7 @@
         "12rc6zaa7kb60b9744lbrlfkxxfniprm6x0mispv63h4kh75navh"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gettext" ,gnu:gettext)
+     `(("gettext" ,gnu-gettext)
        ("gtk+" ,gtk+-2)
        ("libice" ,libice)
        ("libsm" ,libsm)))
