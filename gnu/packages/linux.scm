@@ -18,7 +18,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages linux)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses)
+                #:hide (zlib))
   #:use-module (gnu packages)
   #:use-module ((gnu packages compression)
                 #:renamer (symbol-prefix-proc 'guix:))
@@ -781,4 +782,35 @@ configuration and monitoring interfaces.")
 
     ;; Most files are LGPLv2.1-only, but some are GPLv2-only (like
     ;; 'nl-addr-add.c'), so the result is GPLv2-only.
+    (license gpl2)))
+
+(define-public powertop
+  (package
+    (name "powertop")
+    (version "2.5")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://01.org/powertop/sites/default/files/downloads/powertop-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "02rwqbpasdayl201v0549gbp2f82rd0hqiv3i111r7npanjhhb4b"))))
+    (build-system gnu-build-system)
+    (inputs
+     ;; TODO: Add pciutils.
+     `(("zlib" ,guix:zlib)
+       ("pkg-config" ,pkg-config)
+       ;; ("pciutils" ,pciutils)
+       ("ncurses" ,ncurses)
+       ("libnl" ,libnl)))
+    (home-page "https://01.org/powertop/")
+    (synopsis "Analyze power consumption on Intel-based laptops")
+    (description
+     "PowerTOP is a Linux tool to diagnose issues with power consumption and
+power management.  In addition to being a diagnostic tool, PowerTOP also has
+an interactive mode where the user can experiment various power management
+settings for cases where the operating system has not enabled these
+settings.")
     (license gpl2)))
