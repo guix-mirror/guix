@@ -755,3 +755,30 @@ Packets are forwarded based on Ethernet address, rather than IP address (like
 a router).  Since forwarding is done at Layer 2, all protocols can go
 transparently through a bridge.")
     (license gpl2+)))
+
+(define-public libnl
+  (package
+    (name "libnl")
+    (version "3.2.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.infradead.org/~tgr/libnl/files/libnl-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1ydw42lsd572qwrfgws97n76hyvjdpanwrxm03lysnhfxkna1ssd"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("flex" ,flex) ("bison" ,bison)))
+    (home-page "http://www.infradead.org/~tgr/libnl/")
+    (synopsis "NetLink protocol library suite")
+    (description
+     "The libnl suite is a collection of libraries providing APIs to netlink
+protocol based Linux kernel interfaces.  Netlink is an IPC mechanism primarly
+between the kernel and user space processes.  It was designed to be a more
+flexible successor to ioctl to provide mainly networking related kernel
+configuration and monitoring interfaces.")
+
+    ;; Most files are LGPLv2.1-only, but some are GPLv2-only (like
+    ;; 'nl-addr-add.c'), so the result is GPLv2-only.
+    (license gpl2)))
