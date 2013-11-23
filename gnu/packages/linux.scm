@@ -626,8 +626,8 @@ manpages.")
                "0yvxrzk0mzmspr7sa34hm1anw6sif39gyn85w4c5ywfn8inxvr3s"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'patch
+     '(#:phases (alist-cons-after
+                 'unpack 'patch
                  (lambda* (#:key inputs #:allow-other-keys)
                    (define (apply-patch file)
                      (zero? (system* "patch" "-p1" "--batch"
