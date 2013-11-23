@@ -20,6 +20,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages geeqie)
   #:use-module ((gnu packages gettext)
                 #:renamer (symbol-prefix-proc 'gnu:))
   #:use-module (gnu packages glib)
@@ -56,12 +57,10 @@
    ;; The following dependencies are all optional, but should be
    ;; available for maximum coverage:
    ;; * libarchive
-   ;; * libexiv2
    ;; * libgif (giflib)
    ;; * libgtk+ >= 3.0.0 (may probably drop glib then as a propagated input of
    ;;                     gtk)
    ;; * libgsf
-   ;; * libgstreamer
    ;; * libmagic (file)
    ;; * libmpeg2
    ;; * libmp4v2
@@ -69,9 +68,10 @@
    ;; * libsmf
    ;; * libtidy
    (inputs
-    `(("gettext" ,gnu:gettext)
+    `(("exiv2" ,exiv2)
       ("flac" ,flac)
       ("ffmpeg" ,ffmpeg)
+      ("gettext" ,gnu:gettext)
       ("glib" ,glib)
       ("gstreamer" ,gstreamer)
       ("gst-plugins-base" ,gst-plugins-base)
