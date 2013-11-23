@@ -36,12 +36,13 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages sdl)
   #:use-module (gnu packages perl))
 
-(define-public qemu
-  ;; Since QEMU 1.3, it incorporates KVM support formerly found in QEMU-KVM.
+(define-public qemu-headless
+  ;; This is QEMU without GUI support.
   (package
-    (name "qemu")
+    (name "qemu-headless")
     (version "1.5.1")
     (source (origin
              (method url-fetch)
@@ -91,8 +92,7 @@
                   %standard-phases))))
 
     (inputs                                       ; TODO: Add optional inputs.
-     `(;; ("mesa" ,mesa)
-       ;; ("libaio" ,libaio)
+     `(;; ("libaio" ,libaio)
        ("glib" ,glib)
        ("python" ,python-2) ; incompatible with Python 3 according to error message
        ("ncurses" ,ncurses)
@@ -104,7 +104,6 @@
        ;; ("pciutils" ,pciutils)
        ("pkg-config" ,pkg-config)
        ("alsa-lib" ,alsa-lib)
-       ;; ("SDL" ,SDL)
        ("zlib" ,zlib)
        ("attr" ,attr)
        ("samba" ,samba)))                         ; an optional dependency
@@ -112,7 +111,7 @@
                      ("perl" ,perl)))
 
     (home-page "http://www.qemu-project.org")
-    (synopsis "Machine emulator and virtualizer")
+    (synopsis "Machine emulator and virtualizer (without GUI)")
     (description
      "QEMU is a generic machine emulator and virtualizer.
 
@@ -132,8 +131,17 @@ server and embedded PowerPC, and S390 guests.")
 (define-public qemu/smb-shares
   ;; A patched QEMU where `-net smb' yields two shares instead of one: one for
   ;; the store, and another one for exchanges with the host.
-  (package (inherit qemu)
+  (package (inherit qemu-headless)
     (name "qemu-with-multiple-smb-shares")
-    (source (origin (inherit (package-source qemu))
+    (source (origin (inherit (package-source qemu-headless))
               (patches
                (list (search-patch "qemu-multiple-smb-shares.patch")))))))
+
+(define-public qemu
+  ;; QEMU with GUI support.
+  (package (inherit qemu-headless)
+    (name "qemu")
+    (synopsis "Machine emulator and virtualizer")
+    (inputs `(("sdl" ,sdl)
+              ("mesa" ,mesa)
+              ,@(package-inputs qemu-headless)))))

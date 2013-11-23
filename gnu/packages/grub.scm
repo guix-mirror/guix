@@ -38,7 +38,7 @@
   ;; <https://bugs.launchpad.net/bugs/947597> and fixed at
   ;; <http://bzr.savannah.gnu.org/lh/grub/trunk/grub/revision/4828>.
   ;; Work around it by using an older QEMU.
-  (package (inherit qemu)
+  (package (inherit qemu-headless)
     (version "1.3.1")
     (source (origin
              (method url-fetch)
