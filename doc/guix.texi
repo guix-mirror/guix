@@ -1738,7 +1738,7 @@ for in @code{$PATH}.
 Guix comes with a distribution of free software@footnote{The term
 ``free'' here refers to the
 @url{http://www.gnu.org/philosophy/free-sw.html,freedom provided to
-users of that software}.}  that form the basis of the GNU system.  This
+users of that software}.} that forms the basis of the GNU system.  This
 includes core GNU packages such as GNU libc, GCC, and Binutils, as well
 as many GNU and non-GNU applications.  The complete list of available
 packages can be browsed
@@ -1753,6 +1753,26 @@ Our goal is to build a practical 100% free software distribution of
 Linux-based and other variants of GNU, with a focus on the promotion and
 tight integration of GNU components, and an emphasis on programs and
 tools that help users exert that freedom.
+
+The GNU distribution is currently available on the following platforms:
+
+@table @code
+
+@item x86_64-linux
+Intel/AMD @code{x86_64} architecture, Linux-Libre kernel;
+
+@item i686-linux
+Intel 32-bit architecture (IA32), Linux-Libre kernel;
+
+@item mips64el-linux
+little-endian 64-bit MIPS processors, specifically the Loongson series,
+n32 application binary interface (ABI), and Linux-Libre kernel.
+
+@end table
+
+@noindent
+For information on porting to other architectures or kernels,
+@xref{Porting}.
 
 @menu
 * Installing Debugging Files::  Feeding the debugger.
