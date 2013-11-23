@@ -55,8 +55,10 @@
                "005d993xcac8236fpvd1iawkz4wqjybkpn8dbwaliqz5jfkidlyn"))))
     (build-system gnu-build-system)
     (arguments '(#:tests? #f)) ; no check target
-    (inputs `(("libx11" ,libx11)
-              ("libxrandr" ,libxrandr)
+    (propagated-inputs
+     ;; SDL headers include X11 headers.
+     `(("libx11" ,libx11)))
+    (inputs `(("libxrandr" ,libxrandr)
               ("mesa" ,mesa)
               ("alsa-lib" ,alsa-lib)
               ("pkg-config" ,pkg-config)
@@ -118,7 +120,6 @@ system, such as sound redirection over the network.")
                 "064islldm4r42lgj9fr4kbk66r7jmmakk9745hhyb1kmw71kib9h"))))
     (build-system gnu-build-system)
     (propagated-inputs `(("sdl" ,sdl)))
-    (inputs `(("libx11" ,libx11)))
     (synopsis "SDL graphics primitives library")
     (description "SDL_gfx provides graphics drawing primitives, rotozoom and
 other supporting functions for SDL.")
@@ -218,7 +219,6 @@ SDL.")
     (build-system gnu-build-system)
     (propagated-inputs `(("sdl" ,sdl)))
     (inputs `(("freetype" ,font:freetype)
-              ("libx11" ,libx11)
               ("mesa" ,mesa)
               ("pkg-config" ,pkg-config)))
     (synopsis "SDL TrueType font library")
