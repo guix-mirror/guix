@@ -25,11 +25,13 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages libjpeg)
   #:use-module (gnu packages libtiff)
   #:use-module (gnu packages oggvorbis)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages video)
   #:use-module ((guix licenses)
                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
@@ -54,7 +56,6 @@
    ;; The following dependencies are all optional, but should be
    ;; available for maximum coverage:
    ;; * libarchive
-   ;; * libavutil / libavformat / libavcodec / libswscale (ffmpeg)
    ;; * libexiv2
    ;; * libgif (giflib)
    ;; * libgtk+ >= 3.0.0 (may probably drop glib then as a propagated input of
@@ -70,7 +71,10 @@
    (inputs
     `(("gettext" ,gnu:gettext)
       ("flac" ,flac)
+      ("ffmpeg" ,ffmpeg)
       ("glib" ,glib)
+      ("gstreamer" ,gstreamer)
+      ("gst-plugins-base" ,gst-plugins-base)
       ("libjpeg" ,libjpeg)
       ("libogg" ,libogg)
       ("libtiff" ,libtiff)
