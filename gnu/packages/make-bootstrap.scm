@@ -418,7 +418,21 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ((#:make-flags flags)
              (if (%current-target-system)
                  `(cons "LDFLAGS=-static" ,flags)
-                 `(cons "BOOT_LDFLAGS=-static" ,flags)))))))))
+                 `(cons "BOOT_LDFLAGS=-static" ,flags))))))
+     (native-inputs
+      (if (%current-target-system)
+          `(;; When doing a Canadian cross, we need GMP/MPFR/MPC both
+            ;; as target inputs and as native inputs; the latter is
+            ;; needed when building build-time tools ('genconstants',
+            ;; etc.)  Failing to do that leads to misdetections of
+            ;; declarations by 'gcc/configure', and eventually to
+            ;; duplicate declarations as reported in
+            ;; <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=59217>.
+            ("gmp-native" ,gmp)
+            ("mpfr-native" ,mpfr)
+            ("mpc-native" ,mpc)
+            ,@(package-native-inputs gcc-4.8))
+          (package-native-inputs gcc-4.8))))))
 
 (define %gcc-stripped
   ;; The subset of GCC files needed for bootstrap.
