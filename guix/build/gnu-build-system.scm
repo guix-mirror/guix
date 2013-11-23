@@ -115,14 +115,6 @@ makefiles."
   ;; Patch `SHELL' in generated makefiles.
   (for-each patch-makefile-SHELL (find-files "." "^(GNU)?[mM]akefile$")))
 
-(define* (patch #:key (patches '()) (patch-flags '("--batch" "-p1"))
-                #:allow-other-keys)
-  (every (lambda (p)
-           (format #t "applying patch `~a'~%" p)
-           (zero? (apply system* "patch"
-                         (append patch-flags (list "--input" p)))))
-         patches))
-
 (define* (configure #:key target native-inputs inputs outputs
                     (configure-flags '()) out-of-source?
                     #:allow-other-keys)
@@ -344,7 +336,7 @@ makefiles."
   ;; Standard build phases, as a list of symbol/procedure pairs.
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
-    (phases set-paths unpack patch
+    (phases set-paths unpack
             patch-source-shebangs configure patch-generated-file-shebangs
             build check install
             patch-shebangs strip)))

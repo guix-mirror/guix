@@ -64,7 +64,13 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
         ;; and can use statically-linked NSS modules.
         `(cons* "--disable-nscd" "--disable-build-nscd"
                 "--enable-static-nss"
-                ,flags))))))
+                ,flags))))
+
+    ;; Remove the 'debug' output to allow bit-reproducible builds (when the
+    ;; 'debug' output is used, ELF files end up with a .gnu_debuglink, which
+    ;; includes a CRC of the corresponding debugging symbols; those symbols
+    ;; contain store file names, so the CRC changes at every rebuild.)
+    (outputs (delete "debug" (package-outputs base)))))
 
 (define (package-with-relocatable-glibc p)
   "Return a variant of P that uses the libc as defined by
@@ -94,10 +100,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ("cross-binutils" ,(cross-binutils target))
             ,@%final-inputs))
         `(("libc" ,(glibc-for-bootstrap))
-          ("gcc" ,(package (inherit gcc-4.7)
+          ("gcc" ,(package (inherit gcc-4.8)
                     (inputs
                      `(("libc",(glibc-for-bootstrap))
-                       ,@(package-inputs gcc-4.7)))))
+                       ,@(package-inputs gcc-4.8)))))
           ,@(fold alist-delete %final-inputs '("libc" "gcc")))))
 
   (package-with-explicit-inputs p inputs
@@ -127,7 +133,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                 (#f '())
                                 (x  (list x))))
 
-                      ;; Remove the `debug' output.
+                      ;; Remove the 'debug' output (see above for the reason.)
                       (outputs '("out"))))
         (bzip2 (package (inherit bzip2)
                  (arguments
@@ -363,6 +369,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                                (string-append incdir "/asm"))
              (copy-recursively (string-append linux "/include/asm-generic")
                                (string-append incdir "/asm-generic"))
+
+             ;; Remove the '.install' and '..install.cmd' files; the latter
+             ;; contains store paths, which prevents bit reproducibility.
+             (for-each delete-file (find-files incdir "\\.install"))
+
              #t))))
       (inputs `(("libc" ,(let ((target (%current-target-system)))
                            (if target
@@ -378,7 +389,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
 (define %gcc-static
   ;; A statically-linked GCC, with stripped-down functionality.
   (package-with-relocatable-glibc
-   (package (inherit gcc-4.7)
+   (package (inherit gcc-4.8)
      (name "gcc-static")
      (arguments
       `(#:modules ((guix build utils)
@@ -386,7 +397,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                    (srfi srfi-1)
                    (srfi srfi-26)
                    (ice-9 regex))
-        ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
+        ,@(substitute-keyword-arguments (package-arguments gcc-4.8)
             ((#:guile _) #f)
             ((#:implicit-inputs? _) #t)
             ((#:configure-flags flags)
@@ -395,6 +406,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        "--disable-plugin"
                        "--enable-languages=c"
                        "--disable-libmudflap"
+                       "--disable-libatomic"
+                       "--disable-libsanitizer"
+                       "--disable-libitm"
                        "--disable-libgomp"
                        "--disable-libssp"
                        "--disable-libquadmath"
@@ -405,15 +419,24 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
              (if (%current-target-system)
                  `(cons "LDFLAGS=-static" ,flags)
                  `(cons "BOOT_LDFLAGS=-static" ,flags))))))
-     (inputs `(("gmp-source" ,(package-source gmp))
-               ("mpfr-source" ,(package-source mpfr))
-               ("mpc-source" ,(package-source mpc))
-               ("binutils" ,binutils)
-               ,@(package-inputs gcc-4.7))))))
+     (native-inputs
+      (if (%current-target-system)
+          `(;; When doing a Canadian cross, we need GMP/MPFR/MPC both
+            ;; as target inputs and as native inputs; the latter is
+            ;; needed when building build-time tools ('genconstants',
+            ;; etc.)  Failing to do that leads to misdetections of
+            ;; declarations by 'gcc/configure', and eventually to
+            ;; duplicate declarations as reported in
+            ;; <http://gcc.gnu.org/bugzilla/show_bug.cgi?id=59217>.
+            ("gmp-native" ,gmp)
+            ("mpfr-native" ,mpfr)
+            ("mpc-native" ,mpc)
+            ,@(package-native-inputs gcc-4.8))
+          (package-native-inputs gcc-4.8))))))
 
 (define %gcc-stripped
   ;; The subset of GCC files needed for bootstrap.
-  (package (inherit gcc-4.7)
+  (package (inherit gcc-4.8)
     (name "gcc-stripped")
     (build-system trivial-build-system)
     (source #f)
@@ -429,6 +452,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
          (let* ((out        (assoc-ref %outputs "out"))
                 (bindir     (string-append out "/bin"))
                 (libdir     (string-append out "/lib"))
+                (includedir (string-append out "/include"))
                 (libexecdir (string-append out "/libexec"))
                 (gcc        (assoc-ref %build-inputs "gcc")))
            (copy-recursively (string-append gcc "/bin") bindir)
@@ -444,6 +468,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                              libexecdir)
            (for-each remove-store-references
                      (find-files libexecdir ".*"))
+
+           ;; Starting from GCC 4.8, helper programs built natively
+           ;; (‘genchecksum’, ‘gcc-nm’, etc.) rely on C++ headers.
+           (copy-recursively (string-append gcc "/include/c++")
+                             (string-append includedir "/c++"))
            #t))))
     (inputs `(("gcc" ,%gcc-static)))))
 
@@ -461,6 +490,10 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                   (name (string-append (package-name guile-2.0) "-static"))
                   (source source)
                   (synopsis "Statically-linked and relocatable Guile")
+
+                  ;; Remove the 'debug' output (see above for the reason.)
+                  (outputs (delete "debug" (package-outputs guile-2.0)))
+
                   (propagated-inputs
                    `(("bdw-gc" ,libgc)
                      ,@(alist-delete "bdw-gc"

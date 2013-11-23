@@ -73,6 +73,9 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                      "--enable-languages=c,c++"
                      "--disable-multilib"
 
+                     ;; No pre-compiled libstdc++ headers, to save space.
+                     "--disable-libstdcxx-pch"
+
                      "--with-local-prefix=/no-gcc-local-prefix"
 
                      ,(let ((libc (assoc-ref %build-inputs "libc")))
@@ -115,7 +118,9 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          #:strip-binaries? ,stripped?
          #:configure-flags ,(configure-flags)
          #:make-flags
-         (let ((libc (assoc-ref %build-inputs "libc")))
+         (let* ((libc        (assoc-ref %build-inputs "libc"))
+                (libc-native (or (assoc-ref %build-inputs "libc-native")
+                                 libc)))
            `(,@(if libc
                    (list (string-append "LDFLAGS_FOR_TARGET="
                                         "-B" libc "/lib "
@@ -123,6 +128,12 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                                         "-Wl," libc
                                         ,(glibc-dynamic-linker)))
                    '())
+
+             ;; Native programs like 'genhooks' also need that right.
+             ,(string-append "LDFLAGS="
+                              "-Wl,-rpath=" libc-native "/lib "
+                             "-Wl,-dynamic-linker "
+                             "-Wl," libc-native ,(glibc-dynamic-linker))
              ,(string-append "BOOT_CFLAGS=-O2 "
                              ,(if stripped? "-g0" "-g"))))
 
@@ -148,18 +159,21 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 ;; Tell where to find libstdc++, libc, and `?crt*.o', except
                 ;; `crt{begin,end}.o', which come with GCC.
                 (substitute* (find-files "gcc/config"
-                                         "^(gnu-user(64)?|linux-elf)\\.h$")
-                  (("#define LIB_SPEC (.*)$" _ suffix)
-                   ;; Note that with this "lib" spec, we may still add a
-                   ;; RUNPATH to GCC even when `libgcc_s' is not NEEDED.
-                   ;; There's not much that can be done to avoid it, though.
-                   (format #f "#define LIB_SPEC \"-L~a/lib %{!static:-rpath=~a/lib \
-%{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib}} \" ~a"
+                                         "^gnu-user.*\\.h$")
+                  (("#define GNU_USER_TARGET_LIB_SPEC (.*)$" _ suffix)
+                   ;; Help libgcc_s.so be found (see also below.)  Always use
+                   ;; '-lgcc_s' so that libgcc_s.so is always found by those
+                   ;; programs that use 'pthread_cancel' (glibc dlopens
+                   ;; libgcc_s.so when pthread_cancel support is needed, but
+                   ;; having it in the application's RUNPATH isn't enough; see
+                   ;; <http://sourceware.org/ml/libc-help/2013-11/msg00023.html>.)
+                   (format #f "#define GNU_USER_TARGET_LIB_SPEC \
+\"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib -lgcc_s}} \" ~a"
                            libc libc out out suffix))
-                  (("#define STARTFILE_SPEC.*$" line)
+                  (("#define GNU_USER_TARGET_STARTFILE_SPEC.*$" line)
                    (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
 #define STANDARD_STARTFILE_PREFIX_2 \"\"
-~a~%"
+~a"
                            libc line))))
 
               ;; Don't retain a dependency on the build-time sed.

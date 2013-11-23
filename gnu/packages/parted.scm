@@ -22,8 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages check)
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages readline))
 
@@ -54,7 +53,7 @@
     (inputs
      ;; XXX: add 'lvm2'.
      `(("check" ,check)
-       ("gettext" ,guix:gettext)
+       ("gettext" ,gnu-gettext)
        ("readline" ,readline)
        ("util-linux" ,util-linux)))
     (home-page "http://www.gnu.org/software/parted/")

@@ -58,9 +58,8 @@ prepended to the name."
   (let* ((build-system (package-build-system p))
          (rewrite-if-package
           (lambda (content)
-            ;; CONTENT may be a string (e.g., for patches), in which case it
-            ;; is returned, or a package, which is rewritten with the new
-            ;; PYTHON and NEW-PREFIX.
+            ;; CONTENT may be a file name, in which case it is returned, or a
+            ;; package, which is rewritten with the new PYTHON and NEW-PREFIX.
             (if (package? content)
                 (package-with-explicit-python content python
                                               old-prefix new-prefix)

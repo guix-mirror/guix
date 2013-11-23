@@ -100,7 +100,8 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0q8wark9ribij57dciym5vdikg2464p8q2mgqvfb78ksjh4s8vgk"))))
+               "0q8wark9ribij57dciym5vdikg2464p8q2mgqvfb78ksjh4s8vgk"))
+             (patches (list (search-patch "libtheora-config-guess.patch")))))
     (build-system gnu-build-system)
     (inputs `(("libvorbis" ,libvorbis)))
     ;; The .pc files refer to libogg.

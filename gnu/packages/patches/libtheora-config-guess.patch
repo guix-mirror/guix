@@ -1,0 +1,37 @@
+Minimally patch libtheora's ancient config.guess to support mips64.
+
+--- libtheora/config.guess.orig	2009-02-23 22:50:50.000000000 -0500
++++ libtheora/config.guess	2013-10-31 23:49:48.155999944 -0400
+@@ -798,25 +798,24 @@
+     m68*:Linux:*:*)
+ 	echo ${UNAME_MACHINE}-unknown-linux-gnu
+ 	exit 0 ;;
+-    mips:Linux:*:*)
++    mips:Linux:*:* | mips64:Linux:*:*)
+ 	eval $set_cc_for_build
+ 	sed 's/^	//' << EOF >$dummy.c
+ 	#undef CPU
+-	#undef mips
+-	#undef mipsel
++	#undef ${UNAME_MACHINE}
++	#undef ${UNAME_MACHINE}el
+ 	#if defined(__MIPSEL__) || defined(__MIPSEL) || defined(_MIPSEL) || defined(MIPSEL)
+-	CPU=mipsel
++	CPU=${UNAME_MACHINE}el
+ 	#else
+ 	#if defined(__MIPSEB__) || defined(__MIPSEB) || defined(_MIPSEB) || defined(MIPSEB)
+-	CPU=mips
++	CPU=${UNAME_MACHINE}
+ 	#else
+ 	CPU=
+ 	#endif
+ 	#endif
+ EOF
+-	eval `$CC_FOR_BUILD -E $dummy.c 2>/dev/null | grep ^CPU=`
+-	rm -f $dummy.c && rmdir $tmpdir
+-	test x"${CPU}" != x && echo "${CPU}-pc-linux-gnu" && exit 0
++	eval `$CC_FOR_BUILD -E $dummy.c 2>/dev/null | grep '^CPU'`
++	test x"${CPU}" != x && { echo "${CPU}-unknown-linux-gnu"; exit 0; }
+ 	;;
+     ppc:Linux:*:*)
+ 	echo powerpc-unknown-linux-gnu

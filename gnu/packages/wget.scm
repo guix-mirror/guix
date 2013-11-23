@@ -18,8 +18,7 @@
 
 (define-module (gnu packages wget)
   #:use-module (guix licenses)
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages perl)
   #:use-module (guix packages)
@@ -42,7 +41,7 @@
     (inputs
      `(("gnutls" ,gnutls)
        ("perl" ,perl)
-       ("gettext" ,guix:gettext)))
+       ("gettext" ,gnu-gettext)))
     (home-page "http://www.gnu.org/software/wget/")
     (synopsis "Non-interactive command-line utility for downloading files")
     (description

@@ -70,11 +70,11 @@
   "Return a cross-compiler for TARGET, where TARGET is a GNU triplet.  Use
 XBINUTILS as the associated cross-Binutils.  If LIBC is false, then build a
 GCC that does not target a libc; otherwise, target that libc."
-  (package (inherit gcc-4.7)
+  (package (inherit gcc-4.8)
     (name (string-append "gcc-cross-"
                          (if libc "" "sans-libc-")
                          target))
-    (source (origin (inherit (package-source gcc-4.7))
+    (source (origin (inherit (package-source gcc-4.8))
               (patches
                (list (search-patch "gcc-cross-environment-variables.patch")))))
     (arguments
@@ -85,7 +85,7 @@ GCC that does not target a libc; otherwise, target that libc."
                   (srfi srfi-1)
                   (srfi srfi-26))
 
-       ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
+       ,@(substitute-keyword-arguments (package-arguments gcc-4.8)
            ((#:configure-flags flags)
             `(append (list ,(string-append "--target=" target)
                            ,@(gcc-configure-flags-for-triplet target)
@@ -101,6 +101,7 @@ GCC that does not target a libc; otherwise, target that libc."
                                    "--enable-languages=c"
 
                                    "--disable-threads" ; libgcc, would need libc
+                                   "--disable-libatomic"
                                    "--disable-libmudflap"
                                    "--disable-libgomp"
                                    "--disable-libssp"
@@ -186,7 +187,7 @@ GCC that does not target a libc; otherwise, target that libc."
        ("libc-native" ,@(assoc-ref %final-inputs "libc"))
 
        ;; Remaining inputs.
-       ,@(let ((inputs (append (package-inputs gcc-4.7)
+       ,@(let ((inputs (append (package-inputs gcc-4.8)
                                (alist-delete "libc" %final-inputs))))
            (if libc
                `(("libc" ,libc)

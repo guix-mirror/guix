@@ -64,11 +64,21 @@
              #:guile %bootstrap-guile
              #:system system)))
 
+  (define %bootstrap-patch-inputs
+    ;; Packages used when an <origin> has a non-empty 'patches' field.
+    `(("tar"   ,%bootstrap-coreutils&co)
+      ("xz"    ,%bootstrap-coreutils&co)
+      ("bzip2" ,%bootstrap-coreutils&co)
+      ("gzip"  ,%bootstrap-coreutils&co)
+      ("patch" ,%bootstrap-coreutils&co)))
+
   (let ((orig-method (origin-method source)))
     (origin (inherit source)
       (method (cond ((eq? orig-method url-fetch)
                      (boot url-fetch))
-                    (else orig-method))))))
+                    (else orig-method)))
+      (patch-guile %bootstrap-guile)
+      (patch-inputs %bootstrap-patch-inputs))))
 
 (define (package-from-tarball name source program-to-test description)
   "Return a package that correspond to the extraction of SOURCE.
@@ -170,7 +180,7 @@ check whether everything is alright."
                               (xz    (->store "xz"))
                               (mkdir (->store "mkdir"))
                               (bash  (->store "bash"))
-                              (guile (->store "guile-2.0.7.tar.xz"))
+                              (guile (->store "guile-2.0.9.tar.xz"))
                               (builder
                                (add-text-to-store store
                                                   "build-bootstrap-guile.sh"
@@ -209,16 +219,19 @@ $out/bin/guile --version~%"
                           (origin
                            (method url-fetch)
                            (uri (map (cut string-append <> "/" system
-                                          "/20130105/static-binaries.tar.xz")
+                                          "/20131110/static-binaries.tar.xz")
                                      %bootstrap-base-urls))
                            (sha256
                             (match system
                               ("x86_64-linux"
                                (base32
-                                "0md23alzy6nc5f16pric7mkagczdzr8xbh074sb3rjzrls06j1ls"))
+                                "0c533p9dhczzcsa1117gmfq3pc8w362g4mx84ik36srpr7cx2bg4"))
                               ("i686-linux"
                                (base32
-                                "0nzj1lmm9b94g7k737cr4w1dv282w5nmhb53238ikax9r6pkc0yb"))))))
+                                "0s5b3jb315n13m1k8095l0a5hfrsz8g0fv1b6riyc5hnxqyphlak"))
+                              ("mips64el-linux"
+                               (base32
+                                "072y4wyfsj1bs80r6vbybbafy8ya4vfy7qj25dklwk97m6g71753"))))))
                         "true"                    ; the program to test
                         "Bootstrap binaries of Coreutils, Awk, etc."))
 
@@ -228,16 +241,19 @@ $out/bin/guile --version~%"
                           (origin
                            (method url-fetch)
                            (uri (map (cut string-append <> "/" system
-                                          "/20130105/binutils-2.22.tar.xz")
+                                          "/20131110/binutils-2.23.2.tar.xz")
                                      %bootstrap-base-urls))
                            (sha256
                             (match system
                               ("x86_64-linux"
                                (base32
-                                "1ffmk2yy2pxvkqgzrkzp3s4jpn4qaaksyk3b5nsc5cjwfm7qkgzh"))
+                                "1j5yivz7zkjqfsfmxzrrrffwyayjqyfxgpi89df0w4qziqs2dg20"))
                               ("i686-linux"
                                (base32
-                                "1rafk6aq4sayvv3r3d2khn93nkyzf002xzh0xadlyci4mznr6b0a"))))))
+                                "14jgwf9gscd7l2pnz610b1zia06dvcm2qyzvni31b8zpgmcai2v9"))
+                              ("mips64el-linux"
+                               (base32
+                                "1x8kkhcxmfyzg1ddpz2pxs6fbdl6412r7x0nzbmi5n7mj8zw2gy7"))))))
                         "ld"                      ; the program to test
                         "Bootstrap binaries of the GNU Binutils"))
 
@@ -279,16 +295,19 @@ $out/bin/guile --version~%"
                     (origin
                      (method url-fetch)
                      (uri (map (cut string-append <> "/" (%current-system)
-                                    "/20130105/glibc-2.17.tar.xz")
+                                    "/20131110/glibc-2.18.tar.xz")
                                %bootstrap-base-urls))
                      (sha256
                       (match (%current-system)
                         ("x86_64-linux"
                          (base32
-                          "18kv1z9d8dr1j3hm9w7663kchqw9p6rsx11n1m143jgba2jz6jy3"))
+                          "0jlqrgavvnplj1b083s20jj9iddr4lzfvwybw5xrcis9spbfzk7v"))
                         ("i686-linux"
                          (base32
-                          "08hv8i0axwnihrcgbz19x0a7s6zyv3yx38x8r29liwl8h82x9g88")))))))))
+                          "1hgrccw1zqdc7lvgivwa54d9l3zsim5pqm0dykxg0z522h6gr05w"))
+                        ("mips64el-linux"
+                         (base32
+                          "0k97a3whzx3apsi9n2cbsrr79ad6lh00klxph9hw4fqyp1abkdsg")))))))))
     (synopsis "Bootstrap binaries and headers of the GNU C Library")
     (description #f)
     (home-page #f)
@@ -347,16 +366,19 @@ exec ~a/bin/.gcc-wrapped -B~a/lib \
                     (origin
                      (method url-fetch)
                      (uri (map (cut string-append <> "/" (%current-system)
-                                    "/20130105/gcc-4.7.2.tar.xz")
+                                    "/20131110/gcc-4.8.2.tar.xz")
                                %bootstrap-base-urls))
                      (sha256
                       (match (%current-system)
                         ("x86_64-linux"
                          (base32
-                          "1x1p7han5crnbw906iwdifykr6grzm0w27dy9gz75j0q1b32i4px"))
+                          "17ga4m6195n4fnbzdkmik834znkhs53nkypp6557pl1ps7dgqbls"))
                         ("i686-linux"
                          (base32
-                          "06wqs0xxnpw3hn0xjb4c9cs0899p1xwkcysa2rvzhvpra0c5vsg2")))))))))
+                          "150c1arrf2k8vfy6dpxh59vcgs4p1bgiz2av5m19dynpks7rjnyw"))
+                        ("mips64el-linux"
+                         (base32
+                          "1m5miqkyng45l745n0sfafdpjkqv9225xf44jqkygwsipj2cv9ks")))))))))
     (native-search-paths
      (list (search-path-specification
             (variable "CPATH")

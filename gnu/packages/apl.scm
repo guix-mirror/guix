@@ -21,8 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages maths)
   #:use-module (gnu packages readline))
 
@@ -40,7 +39,7 @@
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/apl/")
     (inputs
-     `(("gettext" ,guix:gettext)
+     `(("gettext" ,gnu-gettext)
        ("lapack" ,lapack)
        ("readline" ,readline)))
     (synopsis "APL interpreter")

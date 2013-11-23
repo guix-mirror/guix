@@ -20,6 +20,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
+  #:use-module (gnu packages)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages libjpeg)
   #:use-module (gnu packages fontutils)
@@ -40,7 +41,9 @@
              (uri "https://bitbucket.org/libgd/gd-libgd/get/GD_2_0_33.tar.gz")
              (sha256
               (base32
-               "0yrbx8mj9pykyzm0zl1q86xlkdvkajcsf5jmg688vhw9yc5wmbbw"))))
+               "0yrbx8mj9pykyzm0zl1q86xlkdvkajcsf5jmg688vhw9yc5wmbbw"))
+             (patches
+              (list (search-patch "gd-mips64-deplibs-fix.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after

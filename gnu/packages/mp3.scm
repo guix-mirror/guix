@@ -44,7 +44,8 @@
                                 version ".tar.gz"))
             (sha256
              (base32
-              "14460zhacxhswnzb36qfpd1f2wbk10qvksvm6wyq5hpvdgnw7ymv"))))
+              "14460zhacxhswnzb36qfpd1f2wbk10qvksvm6wyq5hpvdgnw7ymv"))
+            (patches (list (search-patch "libmad-mips-newgcc.patch")))))
    (build-system gnu-build-system)
    (arguments
     `(#:phases

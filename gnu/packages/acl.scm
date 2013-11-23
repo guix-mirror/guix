@@ -20,8 +20,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages perl)
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages gettext)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -62,7 +61,7 @@
                     '()
                     `(("perl" ,perl)))))
     (native-inputs
-     `(("gettext" ,guix:gettext)))
+     `(("gettext" ,gnu-gettext)))
 
     (home-page
      "http://savannah.nongnu.org/projects/acl")

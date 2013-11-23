@@ -34,11 +34,11 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "15qxzba3a50c9nik5ydgyfp62x7h9vxxn12yd1jgl93hb1wj96km"))))
+               "15qxzba3a50c9nik5ydgyfp62x7h9vxxn12yd1jgl93hb1wj96km"))
+             (patches (list (search-patch "perl-no-sys-dirs.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
-       #:patches (list (assoc-ref %build-inputs "patch/no-sys-dirs"))
        #:phases
        (alist-replace
         'configure
@@ -62,7 +62,6 @@
                       (string-append "-Dlocincpth=" libc "/include")
                       (string-append "-Dloclibpth=" libc "/lib")))))
         %standard-phases)))
-    (inputs `(("patch/no-sys-dirs" ,(search-patch "perl-no-sys-dirs.patch"))))
     (native-search-paths (list (search-path-specification
                                 (variable "PERL5LIB")
                                 (directories '("lib/perl5/site_perl")))))

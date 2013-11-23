@@ -33,7 +33,8 @@
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "0w0da1chh12mczxa5lnwzjk9czi3dq6gnnndbpa6w4rj76b1yklf"))))
+              "0w0da1chh12mczxa5lnwzjk9czi3dq6gnnndbpa6w4rj76b1yklf"))
+            (patches (list (search-patch "m4-readlink-EINVAL.patch")))))
    (build-system gnu-build-system)
    (arguments
     ;; XXX: Disable tests on those platforms with know issues.
@@ -41,8 +42,6 @@
                              '("x86_64-darwin"
                                "i686-cygwin"
                                "i686-sunos")))
-      #:patches (list (assoc-ref %build-inputs
-                                 "patch/readlink-EINVAL"))
       #:phases (alist-cons-before
                 'check 'pre-check
                 (lambda* (#:key inputs #:allow-other-keys)
@@ -55,8 +54,6 @@
                       (("/bin/sh")
                        (format #f "~a/bin/bash" bash)))))
                 %standard-phases)))
-   (inputs `(("patch/readlink-EINVAL"
-              ,(search-patch "m4-readlink-EINVAL.patch"))))
    (synopsis "Macro processor")
    (description
     "GNU M4 is an implementation of the M4 macro language, which features

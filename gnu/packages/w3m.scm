@@ -18,8 +18,7 @@
 
 (define-module (gnu packages w3m)
   #:use-module ((guix licenses) #:select (x11-style))
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ncurses)
@@ -61,7 +60,7 @@
                                (("@PERL@") (which "perl"))))
                            %standard-phases)))
     (inputs
-     `(("gettext" ,guix:gettext)
+     `(("gettext" ,gnu-gettext)
        ("libgc" ,libgc)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)

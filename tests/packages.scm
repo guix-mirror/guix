@@ -141,7 +141,7 @@
 
 (test-equal "package-source-derivation, snippet"
   "OK"
-  (let* ((file   (search-bootstrap-binary "guile-2.0.7.tar.xz"
+  (let* ((file   (search-bootstrap-binary "guile-2.0.9.tar.xz"
                                           (%current-system)))
          (sha256 (call-with-input-file file port-sha256))
          (fetch  (lambda* (store url hash-algo hash
@@ -157,8 +157,7 @@
                      `(("tar" ,%bootstrap-coreutils&co)
                        ("xz" ,%bootstrap-coreutils&co)
                        ("patch" ,%bootstrap-coreutils&co)))
-                    (patch-guile (package-derivation %store
-                                                     %bootstrap-guile))
+                    (patch-guile %bootstrap-guile)
                     (modules '((guix build utils)))
                     (imported-modules modules)
                     (snippet '(begin

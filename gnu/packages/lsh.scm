@@ -43,7 +43,8 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0z6rlalhvfca64jpvksppc9bdhs7jwhiw4y35g5ibvh91xp3rn1l"))))
+        "0z6rlalhvfca64jpvksppc9bdhs7jwhiw4y35g5ibvh91xp3rn1l"))
+      (patches (list (search-patch "liboop-mips64-deplibs-fix.patch")))))
     (build-system gnu-build-system)
     (home-page "http://www.lysator.liu.se/liboop/")
     (synopsis "Event loop library")

@@ -216,7 +216,10 @@ simplifying the entire process for the developer.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0649qfpzkswgcj9vqkkr9rn4nlcx80faxpyqscy2k1x9c94f93dk"))))
+               "0649qfpzkswgcj9vqkkr9rn4nlcx80faxpyqscy2k1x9c94f93dk"))
+             (patches
+              (list (search-patch "libtool-skip-tests.patch")
+                    (search-patch "libtool-skip-tests-for-mips.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("m4" ,m4)
                      ("perl" ,perl)))
@@ -228,33 +231,30 @@ simplifying the entire process for the developer.")
                "out"))                       ; libltdl.so, ltdl.h, etc.
 
     (arguments
-     `(#:patches (list (assoc-ref %build-inputs "patch/skip-tests"))
-       ,@(if (%current-target-system)
-             '()                        ; no `check' phase when cross-building
-             '(#:phases (alist-cons-before
-                         'check 'pre-check
-                         (lambda* (#:key inputs #:allow-other-keys)
-                           ;; Run the test suite in parallel, if possible.
-                           (let ((ncores
-                                  (cond
-                                   ((getenv "NIX_BUILD_CORES")
-                                    =>
-                                    (lambda (n)
-                                      (if (zero? (string->number n))
-                                          (number->string (current-processor-count))
-                                          n)))
-                                   (else "1"))))
-                             (setenv "TESTSUITEFLAGS"
-                                     (string-append "-j" ncores)))
+     (if (%current-target-system)
+         '()                            ; no `check' phase when cross-building
+         '(#:phases (alist-cons-before
+                     'check 'pre-check
+                     (lambda* (#:key inputs #:allow-other-keys)
+                       ;; Run the test suite in parallel, if possible.
+                       (let ((ncores
+                              (cond
+                               ((getenv "NIX_BUILD_CORES")
+                                =>
+                                (lambda (n)
+                                  (if (zero? (string->number n))
+                                      (number->string (current-processor-count))
+                                      n)))
+                               (else "1"))))
+                         (setenv "TESTSUITEFLAGS"
+                                 (string-append "-j" ncores)))
 
-                           ;; Path references to /bin/sh.
-                           (let ((bash (assoc-ref inputs "bash")))
-                             (substitute* "tests/testsuite"
-                               (("/bin/sh")
-                                (string-append bash "/bin/bash")))))
-                         %standard-phases)))))
-    (inputs `(("patch/skip-tests"
-               ,(search-patch "libtool-skip-tests.patch"))))
+                       ;; Path references to /bin/sh.
+                       (let ((bash (assoc-ref inputs "bash")))
+                         (substitute* "tests/testsuite"
+                           (("/bin/sh")
+                            (string-append bash "/bin/bash")))))
+                     %standard-phases))))
     (synopsis "Generic shared library support tools")
     (description
      "Libtool is a script to help in the creation of shared libraries.  By

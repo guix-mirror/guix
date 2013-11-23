@@ -1,0 +1,21 @@
+Fix handling of uint32_t arguments on the MIPS N32 ABI.
+
+Patch by Mark H Weaver <mhw@netris.org>.
+
+--- libffi/src/mips/ffi.c.orig	2013-03-16 07:19:39.000000000 -0400
++++ libffi/src/mips/ffi.c	2013-10-22 01:11:03.111985247 -0400
+@@ -170,7 +170,14 @@
+ 		break;
+ 		  
+ 	      case FFI_TYPE_UINT32:
++#ifdef FFI_MIPS_N32
++		/* The N32 ABI requires that 32-bit integers
++		   be sign-extended to 64-bits, regardless of
++		   whether they are signed or unsigned. */
++		*(ffi_arg *)argp = *(SINT32 *)(* p_argv);
++#else
+ 		*(ffi_arg *)argp = *(UINT32 *)(* p_argv);
++#endif
+ 		break;
+ 
+ 	      /* This can only happen with 64bit slots.  */

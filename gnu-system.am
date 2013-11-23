@@ -1,6 +1,7 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
+# Copyright © 2013 Mark H Weaver <mhw@netris.org>
 #
 # This file is part of GNU Guix.
 #
@@ -208,11 +209,14 @@ GNU_SYSTEM_MODULES =				\
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
 dist_patch_DATA =						\
+  gnu/packages/patches/alsa-lib-mips-atomic-fix.patch		\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
   gnu/packages/patches/avahi-localstatedir.patch		\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
+  gnu/packages/patches/binutils-loongson-madd-fix.patch		\
+  gnu/packages/patches/binutils-loongson-workaround.patch	\
   gnu/packages/patches/cdparanoia-fpic.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
@@ -224,13 +228,15 @@ dist_patch_DATA =						\
   gnu/packages/patches/flex-bison-tests.patch			\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
+  gnu/packages/patches/gd-mips64-deplibs-fix.patch		\
+  gnu/packages/patches/gdb-loongson-madd-fix.patch		\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
   gnu/packages/patches/glib-tests-newnet.patch			\
   gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
-  gnu/packages/patches/glibc-no-ld-so-cache.patch		\
+  gnu/packages/patches/glibc-make-4.0.patch			\
   gnu/packages/patches/grub-gets-undeclared.patch		\
   gnu/packages/patches/gstreamer-0.10-bison3.patch		\
   gnu/packages/patches/gstreamer-0.10-silly-test.patch		\
@@ -240,14 +246,21 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-relocatable.patch			\
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/libevent-dns-tests.patch			\
+  gnu/packages/patches/libffi-mips-n32-fix.patch		\
+  gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\
+  gnu/packages/patches/libmad-mips-newgcc.patch			\
+  gnu/packages/patches/libtheora-config-guess.patch		\
   gnu/packages/patches/libtool-skip-tests.patch			\
+  gnu/packages/patches/libtool-skip-tests-for-mips.patch	\
   gnu/packages/patches/m4-gets-undeclared.patch			\
   gnu/packages/patches/m4-readlink-EINVAL.patch			\
   gnu/packages/patches/make-impure-dirs.patch			\
   gnu/packages/patches/mcron-install.patch			\
+  gnu/packages/patches/mit-krb5-init-fix.patch			\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\
+  gnu/packages/patches/pspp-tests.patch				\
   gnu/packages/patches/pulseaudio-test-timeouts.patch		\
   gnu/packages/patches/python-fix-dbm.patch			\
   gnu/packages/patches/qemu-multiple-smb-shares.patch		\
@@ -255,7 +268,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/ripperx-libm.patch			\
   gnu/packages/patches/scheme48-tests.patch			\
-  gnu/packages/patches/tar-gets-undeclared.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
   gnu/packages/patches/valgrind-glibc.patch			\
@@ -266,6 +278,7 @@ dist_patch_DATA =						\
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
 bootstrap_x86_64_linuxdir = $(bootstrapdir)/x86_64-linux
 bootstrap_i686_linuxdir = $(bootstrapdir)/i686-linux
+bootstrap_mips64el_linuxdir = $(bootstrapdir)/mips64el-linux
 
 dist_bootstrap_x86_64_linux_DATA =		\
   gnu/packages/bootstrap/x86_64-linux/bash	\
@@ -279,12 +292,20 @@ dist_bootstrap_i686_linux_DATA =		\
   gnu/packages/bootstrap/i686-linux/tar		\
   gnu/packages/bootstrap/i686-linux/xz
 
+dist_bootstrap_mips64el_linux_DATA =		\
+  gnu/packages/bootstrap/mips64el-linux/bash	\
+  gnu/packages/bootstrap/mips64el-linux/mkdir	\
+  gnu/packages/bootstrap/mips64el-linux/tar	\
+  gnu/packages/bootstrap/mips64el-linux/xz
+
 # Big bootstrap binaries are not included in the tarball.  Instead, they
 # are downloaded.
 nodist_bootstrap_x86_64_linux_DATA =					\
-  gnu/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz
+  gnu/packages/bootstrap/x86_64-linux/guile-2.0.9.tar.xz
 nodist_bootstrap_i686_linux_DATA =					\
-  gnu/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz
+  gnu/packages/bootstrap/i686-linux/guile-2.0.9.tar.xz
+nodist_bootstrap_mips64el_linux_DATA =					\
+  gnu/packages/bootstrap/mips64el-linux/guile-2.0.9.tar.xz
 
 # Those files must remain executable, so they remain executable once
 # imported into the store.
@@ -293,7 +314,8 @@ install-data-hook:
 
 DISTCLEANFILES =				\
   $(nodist_bootstrap_x86_64_linux_DATA)		\
-  $(nodist_bootstrap_i686_linux_DATA)
+  $(nodist_bootstrap_i686_linux_DATA)		\
+  $(nodist_bootstrap_mips64el_linux_DATA)
 
 # Method to download a file from an external source.
 DOWNLOAD_FILE =								\
@@ -301,9 +323,12 @@ DOWNLOAD_FILE =								\
   $(GUILE) --no-auto-compile -L "$(top_builddir)" -L "$(top_srcdir)"	\
            "$(top_srcdir)/build-aux/download.scm"
 
-gnu/packages/bootstrap/x86_64-linux/guile-2.0.7.tar.xz:
+gnu/packages/bootstrap/x86_64-linux/guile-2.0.9.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
-	$(DOWNLOAD_FILE) "$@" "bc43210dcd146d242bef4d354b0aeac12c4ef3118c07502d17ffa8d49e15aa2c"
-gnu/packages/bootstrap/i686-linux/guile-2.0.7.tar.xz:
+	$(DOWNLOAD_FILE) "$@" "037b103522a2d0d7d69c7ffd8de683dfe5bb4b59c1fafd70b4ffd397fd2f57f0"
+gnu/packages/bootstrap/i686-linux/guile-2.0.9.tar.xz:
 	$(MKDIR_P) `dirname "$@"`
-	$(DOWNLOAD_FILE) "$@" "f9a7c6f4c556eaafa2a69bcf07d4ffbb6682ea831d4c9da9ba095aca3ccd217c"
+	$(DOWNLOAD_FILE) "$@" "b757cd46bf13ecac83fb8e955fb50096ac2d17bb610ca8eb816f29302a00a846"
+gnu/packages/bootstrap/mips64el-linux/guile-2.0.9.tar.xz:
+	$(MKDIR_P) `dirname "$@"`
+	$(DOWNLOAD_FILE) "$@" "994680f0001346864aa2c2cc5110f380ee7518dcd701c614291682b8e948f73b"

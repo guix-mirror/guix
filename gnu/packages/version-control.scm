@@ -26,8 +26,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (guix build utils)
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages ed)
@@ -59,7 +58,7 @@
     (inputs
      ;; Note: 'tools/packaging/lp-upload-release' and 'tools/weavemerge.sh'
      ;; require Zsh.
-     `(("gettext" ,guix:gettext)))
+     `(("gettext" ,gnu-gettext)))
     (arguments
      `(#:tests? #f ; no test target
        #:python ,python-2)) ; Python 3 apparently not yet supported, see
@@ -88,7 +87,7 @@ from a command line or use a GUI application.")
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
-      ("gettext" ,guix:gettext)
+      ("gettext" ,gnu-gettext)
       ("openssl" ,openssl)
       ("perl" ,perl)
       ("python" ,python-2) ; CAVEAT: incompatible with python-3 according to INSTALL

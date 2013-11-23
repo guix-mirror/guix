@@ -1,0 +1,18 @@
+Fix the early context initialization code to avoid assuming that
+arguments will be evaluated from right to left.
+
+Patch by Mark H Weaver <mhw@netris.org>.
+
+--- src/lib/krb5/krb/t_cc_config.c.orig	2012-12-17 21:47:05.000000000 -0500
++++ src/lib/krb5/krb/t_cc_config.c	2013-10-29 18:19:16.547994590 -0400
+@@ -117,8 +117,8 @@
+     int c;
+     unsigned int i;
+ 
+-    bail_on_err(context, "Error initializing Kerberos library",
+-                krb5_init_context(&context));
++    ret = krb5_init_context(&context);
++    bail_on_err(context, "Error initializing Kerberos library", ret);
+     bail_on_err(context, "Error getting location of default ccache",
+                 krb5_cc_default(context, &ccache));
+     server = NULL;

@@ -31,8 +31,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages algebra)
-  #:use-module ((gnu packages gettext)
-                #:renamer (symbol-prefix-proc 'g:))
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages xml)
@@ -474,7 +473,8 @@ trace of all the system calls made by a another process/program.")
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0fx057746dj7rjdi0jnvx2m9b0y1lgdkh1hks87d8w32xyihf3k9"))))
+               "0fx057746dj7rjdi0jnvx2m9b0y1lgdkh1hks87d8w32xyihf3k9"))
+             (patches (list (search-patch "alsa-lib-mips-atomic-fix.patch")))))
     (build-system gnu-build-system)
     (home-page "http://www.alsa-project.org/")
     (synopsis "The Advanced Linux Sound Architecture libraries")
@@ -514,7 +514,7 @@ MIDI functionality to the Linux-based operating system.")
        ("ncurses" ,ncurses)
        ("alsa-lib" ,alsa-lib)
        ("xmlto" ,xmlto)
-       ("gettext" ,g:gettext)))
+       ("gettext" ,gnu-gettext)))
     (home-page "http://www.alsa-project.org/")
     (synopsis "Utilities for the Advanced Linux Sound Architecture (ALSA)")
     (description
@@ -627,8 +627,8 @@ manpages.")
                "0yvxrzk0mzmspr7sa34hm1anw6sif39gyn85w4c5ywfn8inxvr3s"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-replace
-                 'patch
+     '(#:phases (alist-cons-after
+                 'unpack 'patch
                  (lambda* (#:key inputs #:allow-other-keys)
                    (define (apply-patch file)
                      (zero? (system* "patch" "-p1" "--batch"
@@ -677,7 +677,7 @@ manpages.")
                          (sha256
                           (base32
                            "0p93lsqx23v5fv4hpbrydmfvw1ha2rgqpn2zqbs2jhxkzhjc030p"))))))
-    (native-inputs `(("gettext" ,g:gettext)))
+    (native-inputs `(("gettext" ,gnu-gettext)))
 
     (synopsis "Tools for controlling the network subsystem in Linux")
     (description

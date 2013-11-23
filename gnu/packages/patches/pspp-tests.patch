@@ -1,0 +1,13 @@
+diff --git a/tests/output/render-test.c b/tests/output/render-test.c
+index 5f4c1da..e9df96c 100644
+--- a/tests/output/render-test.c
++++ b/tests/output/render-test.c
+@@ -142,7 +142,7 @@ configure_drivers (int width, int length)
+   string_map_insert (&options, "left-margin", "0");
+   string_map_insert (&options, "right-margin", "0");
+   string_map_insert_nocopy (&options, xstrdup ("paper-size"),
+-                            xasprintf ("%dx%dpt", width * 5, length * 8));
++                            xasprintf ("%dx%dpt", width * 5, length * 16));
+   driver = output_driver_create (&options);
+   if (driver == NULL)
+     exit (EXIT_FAILURE);

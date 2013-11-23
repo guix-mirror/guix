@@ -68,14 +68,14 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "2.14")
+   (version "2.15")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "1qbjb1l7f9blckc5pqy8jlf6482hpx4awn2acmhyf5mv9wfq03p7"))))
+              "052kjsafg2x7n2zpy3iw4pzwf8fdfng5pcvi9v3chx3rb1786nmz"))))
    (build-system gnu-build-system)
    (synopsis "Print lines matching a pattern")
    (description
@@ -125,18 +125,15 @@ is often used for substituting text patterns in a stream.")
 (define-public tar
   (package
    (name "tar")
-   (version "1.26")
+   (version "1.27.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/tar/tar-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "0hbdkzmchq9ycr2x1pxqdcgdbaxksh8c6ac0jf75jajhcks6jlss"))))
+              "1iip0fk0wqhxb0jcwphz43r4fxkx1y7mznnhmlvr618jhp7b63wv"))))
    (build-system gnu-build-system)
-   (inputs `(("patch/gets" ,(search-patch "tar-gets-undeclared.patch"))))
-   (arguments
-    `(#:patches (list (assoc-ref %build-inputs "patch/gets"))))
    (synopsis "Managing tar archives")
    (description
     "Tar provides the ability to create tar archives, as well as the
@@ -207,19 +204,15 @@ interactive means to merge two files.")
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0amn0bbwqvsvvsh6drfwz20ydc2czk374lzw5kksbh6bf78k4ks3"))))
+              "0amn0bbwqvsvvsh6drfwz20ydc2czk374lzw5kksbh6bf78k4ks3"))
+            (patches (list (search-patch "findutils-absolute-paths.patch")))))
    (build-system gnu-build-system)
-   (native-inputs
-    `(("patch/absolute-paths"
-       ,(search-patch "findutils-absolute-paths.patch"))))
    (arguments
-    `(#:patches (list (assoc-ref %build-inputs "patch/absolute-paths"))
-
-      ;; Work around cross-compilation failure.
-      ;; See <http://savannah.gnu.org/bugs/?27299#comment1>.
-      ,@(if (%current-target-system)
-            '(#:configure-flags '("gl_cv_func_wcwidth_works=yes"))
-            '())))
+    ;; Work around cross-compilation failure.
+    ;; See <http://savannah.gnu.org/bugs/?27299#comment1>.
+    (if (%current-target-system)
+        '(#:configure-flags '("gl_cv_func_wcwidth_works=yes"))
+        '()))
    (synopsis "Operating on files matching given criteria")
    (description
     "Findutils supplies the basic file directory searching utilities of the
@@ -278,21 +271,20 @@ functionality beyond that which is outlined in the POSIX standard.")
 (define-public gnu-make
   (package
    (name "make")
-   (version "3.82")
+   (version "4.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/make/make-" version
                                 ".tar.bz2"))
             (sha256
              (base32
-              "0ri98385hsd7li6rh4l5afcq92v8l2lgiaz85wgcfh4w2wzsghg2"))))
+              "1nyvn8mknw0mf7727lprva3lisl1y0n03lvar342rrpdmz3qc1p6"))
+            (patches (list (search-patch "make-impure-dirs.patch")))))
    (build-system gnu-build-system)
-   (native-inputs
-    `(("patch/impure-dirs" ,(search-patch "make-impure-dirs.patch"))))
+   (inputs `(("guile" ,guile-2.0)))
    (outputs '("out" "debug"))
    (arguments
-    '(#:patches (list (assoc-ref %build-inputs "patch/impure-dirs"))
-      #:phases (alist-cons-before
+    '(#:phases (alist-cons-before
                 'build 'set-default-shell
                 (lambda* (#:key inputs #:allow-other-keys)
                   ;; Change the default shell from /bin/sh.
@@ -323,7 +315,10 @@ change.")
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "15qhbkz3r266xaa52slh857qn3abw7rb2x2jnhpfrafpzrb4x4gy"))))
+              "15qhbkz3r266xaa52slh857qn3abw7rb2x2jnhpfrafpzrb4x4gy"))
+            (patches (list (search-patch "binutils-ld-new-dtags.patch")
+                           (search-patch "binutils-loongson-workaround.patch")
+                           (search-patch "binutils-loongson-madd-fix.patch")))))
    (build-system gnu-build-system)
 
    ;; Split Binutils in several outputs, mostly to avoid collisions in
@@ -332,11 +327,8 @@ change.")
               "lib"))                      ; libbfd.a, bfd.h, etc.
 
    ;; TODO: Add dependency on zlib + those for Gold.
-   (native-inputs
-    `(("patch/new-dtags" ,(search-patch "binutils-ld-new-dtags.patch"))))
    (arguments
-    `(#:patches (list (assoc-ref %build-inputs "patch/new-dtags"))
-      #:configure-flags '(;; Add `-static-libgcc' to not retain a dependency
+    `(#:configure-flags '(;; Add `-static-libgcc' to not retain a dependency
                           ;; on GCC when bootstrapping.
                           "LDFLAGS=-static-libgcc"
 
@@ -367,7 +359,19 @@ archives.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "18spla703zav8dq9fw7rbzkyv9qfisxb26p7amg1x3wjh7iy3d1c"))))
+              "18spla703zav8dq9fw7rbzkyv9qfisxb26p7amg1x3wjh7iy3d1c"))
+            (snippet
+             ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
+             ;; required on LFS distros to avoid loading the distro's libc.so
+             ;; instead of ours.
+             '(substitute* "sysdeps/unix/sysv/linux/configure"
+                (("use_ldconfig=yes")
+                 "use_ldconfig=no")))
+            (modules '((guix build utils)))
+            (imported-modules modules)
+            (patches (map search-patch
+                          '("glibc-ldd-x86_64.patch"
+                            "glibc-make-4.0.patch")))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -382,8 +386,6 @@ archives.")
 
    (arguments
     `(#:out-of-source? #t
-      #:patches (list (assoc-ref %build-inputs "patch/ld.so.cache")
-                      (assoc-ref %build-inputs "patch/ldd"))
       #:configure-flags
       (list "--enable-add-ons"
             "--sysconfdir=/etc"
@@ -467,11 +469,7 @@ archives.")
                    (zero? (system* "make" "localedata/install-locales")))
                  %standard-phases))))
 
-   (inputs `(("patch/ld.so.cache"
-              ,(search-patch "glibc-no-ld-so-cache.patch"))
-             ("patch/ldd"
-              ,(search-patch "glibc-ldd-x86_64.patch"))
-             ("static-bash" ,(static-package bash-light))))
+   (inputs `(("static-bash" ,(static-package bash-light))))
    (synopsis "The GNU C Library")
    (description
     "Any Unix-like operating system needs a C library: the library which
@@ -569,6 +567,10 @@ and daylight-saving rules.")
             ((#:phases phases)
              `(alist-replace
                'build (lambda _
+                        ;; Don't attempt to build 'guile.c' since we don't
+                        ;; have Guile here.
+                        (substitute* "build.sh"
+                          (("guile\\.\\$\\{OBJEXT\\}") ""))
                         (zero? (system* "./build.sh")))
                (alist-replace
                 'install (lambda* (#:key outputs #:allow-other-keys)
@@ -645,7 +647,7 @@ identifier SYSTEM."
 
 (define gcc-boot0
   (package-with-bootstrap-guile
-   (package (inherit gcc-4.7)
+   (package (inherit gcc-4.8)
      (name "gcc-cross-boot0")
      (arguments
       `(#:guile ,%bootstrap-guile
@@ -655,7 +657,7 @@ identifier SYSTEM."
                    (ice-9 regex)
                    (srfi srfi-1)
                    (srfi srfi-26))
-        ,@(substitute-keyword-arguments (package-arguments gcc-4.7)
+        ,@(substitute-keyword-arguments (package-arguments gcc-4.8)
             ((#:configure-flags flags)
              `(append (list ,(string-append "--target=" (boot-triplet))
 
@@ -664,8 +666,18 @@ identifier SYSTEM."
 
                             ;; Disable features not needed at this stage.
                             "--disable-shared"
-                            "--enable-languages=c"
+                            "--enable-languages=c,c++"
+
+                            ;; libstdc++ cannot be built at this stage
+                            ;; ("Link tests are not allowed after
+                            ;; GCC_NO_EXECUTABLES.").
+                            "--disable-libstdc++-v3"
+
+                            "--disable-threads"
                             "--disable-libmudflap"
+                            "--disable-libatomic"
+                            "--disable-libsanitizer"
+                            "--disable-libitm"
                             "--disable-libgomp"
                             "--disable-libssp"
                             "--disable-libquadmath"
@@ -692,24 +704,7 @@ identifier SYSTEM."
                    ,@(map (lambda (lib)
                             `(symlink ,(package-full-name lib)
                                       ,(package-name lib)))
-                          (list gmp mpfr mpc))
-
-                   ;; MPFR headers/lib are found under $(MPFR)/src, but
-                   ;; `configure' wrongfully tells MPC too look under
-                   ;; $(MPFR), so fix that.
-                   (substitute* "configure"
-                     (("extra_mpc_mpfr_configure_flags(.+)--with-mpfr-include=([^/]+)/mpfr(.*)--with-mpfr-lib=([^ ]+)/mpfr"
-                       _ equals include middle lib)
-                      (string-append "extra_mpc_mpfr_configure_flags" equals
-                                     "--with-mpfr-include=" include
-                                     "/mpfr/src" middle
-                                     "--with-mpfr-lib=" lib
-                                     "/mpfr/src"))
-                     (("gmpinc='-I([^ ]+)/mpfr -I([^ ]+)/mpfr" _ a b)
-                      (string-append "gmpinc='-I" a "/mpfr/src "
-                                     "-I" b "/mpfr/src"))
-                     (("gmplibs='-L([^ ]+)/mpfr" _ a)
-                      (string-append "gmplibs='-L" a "/mpfr/src")))))
+                          (list gmp mpfr mpc))))
                (alist-cons-after
                 'install 'symlink-libgcc_eh
                 (lambda* (#:key outputs #:allow-other-keys)
@@ -719,7 +714,7 @@ identifier SYSTEM."
                     (with-directory-excursion
                         (string-append out "/lib/gcc/"
                                        ,(boot-triplet)
-                                       "/" ,(package-version gcc-4.7))
+                                       "/" ,(package-version gcc-4.8))
                       (symlink "libgcc.a" "libgcc_eh.a"))))
                 ,phases))))))
 
@@ -735,7 +730,7 @@ identifier SYSTEM."
 
      ;; No need for Texinfo at this stage.
      (native-inputs (alist-delete "texinfo"
-                                  (package-native-inputs gcc-4.7))))))
+                                  (package-native-inputs gcc-4.8))))))
 
 (define (linux-libre-headers-boot0)
   "Return Linux-Libre header files for the bootstrap environment."
@@ -801,7 +796,7 @@ identifier SYSTEM."
 (define (cross-gcc-wrapper gcc binutils glibc bash)
   "Return a wrapper for the pseudo-cross toolchain GCC/BINUTILS/GLIBC
 that makes it available under the native tool names."
-  (package (inherit gcc-4.7)
+  (package (inherit gcc-4.8)
     (name (string-append (package-name gcc) "-wrapped"))
     (source #f)
     (build-system trivial-build-system)
@@ -818,6 +813,21 @@ that makes it available under the native tool names."
                           (out      (assoc-ref %outputs "out"))
                           (bindir   (string-append out "/bin"))
                           (triplet  ,(boot-triplet)))
+                     (define (wrap-program program)
+                       ;; GCC-BOOT0 is a libc-less cross-compiler, so it
+                       ;; needs to be told where to find the crt files and
+                       ;; the dynamic linker.
+                       (call-with-output-file program
+                         (lambda (p)
+                           (format p "#!~a/bin/bash
+exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
+                                   bash
+                                   gcc triplet program
+                                   libc libc
+                                   ,(glibc-dynamic-linker))))
+
+                       (chmod program #o555))
+
                      (mkdir-p bindir)
                      (with-directory-excursion bindir
                        (for-each (lambda (tool)
@@ -825,20 +835,7 @@ that makes it available under the native tool names."
                                                            triplet "-" tool)
                                             tool))
                                  '("ar" "ranlib"))
-
-                       ;; GCC-BOOT0 is a libc-less cross-compiler, so it
-                       ;; needs to be told where to find the crt files and
-                       ;; the dynamic linker.
-                       (call-with-output-file "gcc"
-                         (lambda (p)
-                           (format p "#!~a/bin/bash
-exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
-                                   bash
-                                   gcc triplet
-                                   libc libc
-                                   ,(glibc-dynamic-linker))))
-
-                       (chmod "gcc" #o555))))))
+                       (for-each wrap-program '("gcc" "g++")))))))
     (native-inputs
      `(("binutils" ,binutils)
        ("gcc" ,gcc)
@@ -894,6 +891,36 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
         ,@(package-arguments binutils)))
      (inputs %boot2-inputs))))
 
+(define libstdc++
+  ;; Intermediate libstdc++ that will allow us to build the final GCC
+  ;; (remember that GCC-BOOT0 cannot build libstdc++.)
+  (package-with-bootstrap-guile
+   (package (inherit gcc-4.8)
+     (name "libstdc++")
+     (arguments
+      `(#:guile ,%bootstrap-guile
+        #:implicit-inputs? #f
+
+        #:out-of-source? #t
+        #:phases (alist-cons-before
+                  'configure 'chdir
+                  (lambda _
+                    (chdir "libstdc++-v3"))
+                  %standard-phases)
+        #:configure-flags `("--disable-shared"
+                            "--disable-libstdcxx-threads"
+                            "--disable-libstdcxx-pch"
+                            ,(string-append "--with-gxx-include-dir="
+                                            (assoc-ref %outputs "out")
+                                            "/include"
+                                            ;; "/include/c++/"
+                                            ;; ,(package-version gcc-4.8)
+                                            ))))
+     (inputs %boot2-inputs)
+     (native-inputs '())
+     (propagated-inputs '())
+     (synopsis "GNU C++ standard library (intermediate)"))))
+
 (define-public gcc-final
   ;; The final GCC.
   (package (inherit gcc-boot0)
@@ -907,12 +934,25 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
        ,@(substitute-keyword-arguments (package-arguments gcc-boot0)
            ((#:configure-flags boot-flags)
-            (let loop ((args (package-arguments gcc-4.7)))
+            (let loop ((args (package-arguments gcc-4.8)))
               (match args
                 ((#:configure-flags normal-flags _ ...)
                  normal-flags)
                 ((_ rest ...)
                  (loop rest)))))
+           ((#:make-flags flags)
+            ;; Since $LIBRARY_PATH and $CPATH are not honored, add the
+            ;; relevant flags.
+            `(cons (string-append "CPPFLAGS=-I"
+                                  (assoc-ref %build-inputs "libstdc++")
+                                  "/include")
+                   (map (lambda (flag)
+                          (if (string-prefix? "LDFLAGS=" flag)
+                              (string-append flag " -L"
+                                             (assoc-ref %build-inputs "libstdc++")
+                                             "/lib")
+                              flag))
+                        ,flags)))
            ((#:phases phases)
             `(alist-delete 'symlink-libgcc_eh ,phases)))))
 
@@ -920,6 +960,7 @@ exec ~a/bin/~a-gcc -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
               ("mpfr-source" ,(package-source mpfr))
               ("mpc-source" ,(package-source mpc))
               ("binutils" ,binutils-final)
+              ("libstdc++" ,libstdc++)
               ,@%boot2-inputs))))
 
 (define ld-wrapper-boot3
@@ -1000,6 +1041,14 @@ store.")
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
+(define-public gnu-make-final
+  ;; The final GNU Make, which uses the final Guile.
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs gnu-make
+                                 `(("guile" ,guile-final)
+                                   ,@%boot4-inputs)
+                                 (current-source-location))))
+
 (define-public ld-wrapper
   ;; The final `ld' wrapper, which uses the final Guile.
   (package (inherit ld-wrapper-boot3)
@@ -1010,9 +1059,13 @@ store.")
                       '("guile" "bash"))))))
 
 (define-public %final-inputs
-  ;; Final derivations used as implicit inputs by `gnu-build-system'.
-  (let ((finalize (cut package-with-explicit-inputs <> %boot4-inputs
-                       (current-source-location))))
+  ;; Final derivations used as implicit inputs by 'gnu-build-system'.  We
+  ;; still use 'package-with-bootstrap-guile' so that the bootstrap tools are
+  ;; used for origins that have patches, thereby avoiding circular
+  ;; dependencies.
+  (let ((finalize (compose package-with-bootstrap-guile
+                           (cut package-with-explicit-inputs <> %boot4-inputs
+                                (current-source-location)))))
     `(,@(map (match-lambda
               ((name package)
                (list name (finalize package))))
@@ -1026,8 +1079,8 @@ store.")
                ("sed" ,sed)
                ("grep" ,grep)
                ("findutils" ,findutils)
-               ("gawk" ,gawk)
-               ("make" ,gnu-make)))
+               ("gawk" ,gawk)))
+      ("make" ,gnu-make-final)
       ("bash" ,bash-final)
       ("ld-wrapper" ,ld-wrapper)
       ("binutils" ,binutils-final)
