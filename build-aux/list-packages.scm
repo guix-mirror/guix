@@ -106,7 +106,8 @@ decreasing, is 1."
        (basename patch)))
 
     (define (snippet-link snippet)
-      (let ((loc (package-field-location package 'source)))
+      (let ((loc (or (package-field-location package 'source)
+                     (package-location package))))
         `(a (@ (href ,(location-url loc))
                (title "Link to patch snippet"))
             "snippet")))
