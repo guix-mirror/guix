@@ -324,7 +324,7 @@ version; if SPEC does not specify an output, return OUTPUT."
                sub-drv)))
 
   (let-values (((name version sub-drv)
-                (package-specification->name+version+output spec)))
+                (package-specification->name+version+output spec output)))
     (match (find-best-packages-by-name name version)
       ((p)
        (values p (ensure-output p sub-drv)))
