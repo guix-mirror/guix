@@ -882,7 +882,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     ("gcc" ,gcc-boot0-wrapped)
     ,@(fold alist-delete %boot1-inputs '("libc" "gcc"))))
 
-(define-public binutils-final
+(define binutils-final
   (package-with-bootstrap-guile
    (package (inherit binutils)
      (arguments
@@ -1020,7 +1020,7 @@ store.")
     ("ld-wrapper" ,ld-wrapper-boot3)
     ,@(alist-delete "gcc" %boot2-inputs)))
 
-(define-public bash-final
+(define bash-final
   ;; Link with `-static-libgcc' to make sure we don't retain a reference
   ;; to the bootstrap GCC.
   (package-with-bootstrap-guile
@@ -1041,7 +1041,7 @@ store.")
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
-(define-public gnu-make-final
+(define gnu-make-final
   ;; The final GNU Make, which uses the final Guile.
   (package-with-bootstrap-guile
    (package-with-explicit-inputs gnu-make
