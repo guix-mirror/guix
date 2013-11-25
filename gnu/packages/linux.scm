@@ -553,7 +553,7 @@ packet filter.")
 (define-public iproute
   (package
     (name "iproute2")
-    (version "3.8.0")
+    (version "3.12.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -561,7 +561,7 @@ packet filter.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "0kqy30wz2krbg4y7750hjq5218hgy2vj9pm5qzkn1bqskxs4b4ap"))))
+               "04gi11gh087bg2nlxhj0lxrk8l9qxkpr88nsiil23917bm3h1xj4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f                                ; no test suite
