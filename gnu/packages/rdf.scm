@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages kde)
+(define-module (gnu packages rdf)
   #:use-module ((guix licenses) #:select (lgpl2.0+))
   #:use-module (guix packages)
   #:use-module (guix download)
