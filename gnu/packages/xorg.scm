@@ -22,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages flex)
@@ -3332,7 +3333,8 @@ tracking.")
                ".tar.bz2"))
         (sha256
           (base32
-            "1dg47lay4vhrl9mfq3cfc6741a0m2n8wd4ljagd21ix3qklys8pg"))))
+            "1dg47lay4vhrl9mfq3cfc6741a0m2n8wd4ljagd21ix3qklys8pg"))
+        (patches (list (search-patch "xmodmap-asprintf.patch")))))
     (build-system gnu-build-system)
     (inputs
       `(("xproto" ,xproto)

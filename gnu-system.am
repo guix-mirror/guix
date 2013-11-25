@@ -275,6 +275,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/valgrind-glibc.patch			\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
+  gnu/packages/patches/xmodmap-asprintf.patch			\
   gnu/packages/patches/xpdf-constchar.patch
 
 bootstrapdir = $(guilemoduledir)/gnu/packages/bootstrap
