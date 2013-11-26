@@ -487,6 +487,16 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
 ;;; Entry point.
 ;;;
 
+(define n-par-map*
+  ;; We want the ability to run many threads in parallel, regardless of the
+  ;; number of cores.  However, Guile 2.0.5 has a bug whereby 'n-par-map' ends
+  ;; up consuming a lot of memory, possibly leading to death.  Thus, resort to
+  ;; 'par-map' on 2.0.5.
+  (if (guile-version>? "2.0.5")
+      n-par-map
+      (lambda (n proc lst)
+        (par-map proc lst))))
+
 (define (guix-substitute-binary . args)
   "Implement the build daemon's substituter protocol."
   (mkdir-p %narinfo-cache-directory)
@@ -503,9 +513,9 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
                    ;; Return the subset of PATHS available in CACHE.
                    (let ((substitutable
                           (if cache
-                              (n-par-map %lookup-threads
-                                         (cut lookup-narinfo cache <>)
-                                         paths)
+                              (n-par-map* %lookup-threads
+                                          (cut lookup-narinfo cache <>)
+                                          paths)
                               '())))
                      (for-each (lambda (narinfo)
                                  (when narinfo
@@ -516,9 +526,9 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
                    ;; Reply info about PATHS if it's in CACHE.
                    (let ((substitutable
                           (if cache
-                              (n-par-map %lookup-threads
-                                         (cut lookup-narinfo cache <>)
-                                         paths)
+                              (n-par-map* %lookup-threads
+                                          (cut lookup-narinfo cache <>)
+                                          paths)
                               '())))
                      (for-each (lambda (narinfo)
                                  (format #t "~a\n~a\n~a\n"
