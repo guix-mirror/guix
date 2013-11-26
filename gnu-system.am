@@ -265,6 +265,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/pspp-tests.patch				\
   gnu/packages/patches/pulseaudio-test-timeouts.patch		\
   gnu/packages/patches/python-fix-dbm.patch			\
+  gnu/packages/patches/qemu-make-4.0.patch			\
   gnu/packages/patches/qemu-multiple-smb-shares.patch		\
   gnu/packages/patches/qt4-tests.patch				\
   gnu/packages/patches/readline-link-ncurses.patch		\
