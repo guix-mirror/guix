@@ -1,0 +1,15 @@
+See https://bugs.freedesktop.org/show_bug.cgi?id=47792;
+should become obsolete with the next release.
+
+diff -u luit-1.1.1.orig/sys.c luit-1.1.1/sys.c
+--- luit-1.1.1.orig/sys.c	2012-03-23 05:23:07.000000000 +0100
++++ luit-1.1.1/sys.c	2013-11-27 22:45:53.000000000 +0100
+@@ -20,6 +20,8 @@
+ THE SOFTWARE.
+ */
+ 
++#define _XOPEN_SOURCE 600
++
+ #ifdef HAVE_CONFIG_H
+ # include "config.h"
+ #endif

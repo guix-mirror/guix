@@ -1406,7 +1406,10 @@ tracking.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0dn694mk56x6hdk6y9ylx4f128h5jcin278gnw2gb807rf3ygc1h"))))
+            "0dn694mk56x6hdk6y9ylx4f128h5jcin278gnw2gb807rf3ygc1h"))
+        ;; See https://bugs.freedesktop.org/show_bug.cgi?id=47792;
+        ;; should become obsolete with the next release.
+        (patches (list (search-patch "luit-posix.patch")))))
     (build-system gnu-build-system)
     (inputs
       `(("libfontenc" ,libfontenc)
