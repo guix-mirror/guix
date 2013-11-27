@@ -48,7 +48,7 @@
                      (search-paths '())
                      (make-flags ''())
                      (cmake (default-cmake))
-                     (out-of-source? #f)
+                     (out-of-source? #t)
                      (tests? #t)
                      (test-target "test")
                      (parallel-build? #t) (parallel-tests? #f)

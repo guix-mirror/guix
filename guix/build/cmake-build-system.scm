@@ -31,18 +31,28 @@
 ;;
 ;; Code:
 
-(define* (configure #:key outputs (configure-flags '())
+(define* (configure #:key outputs (configure-flags '()) (out-of-source? #t)
                     #:allow-other-keys)
   "Configure the given package."
-  (let ((out (assoc-ref outputs "out")))
-    (if (file-exists? "CMakeLists.txt")
-        (let ((args `(,(string-append "-DCMAKE_INSTALL_PREFIX=" out)
-                      ,@configure-flags)))
-          (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
-          (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))
-          (format #t "running 'cmake' with arguments ~s~%" args)
-          (zero? (apply system* "cmake" args)))
-        (error "no CMakeLists.txt found"))))
+  (let* ((out        (assoc-ref outputs "out"))
+         (abs-srcdir (getcwd))
+         (srcdir     (if out-of-source?
+                         (string-append "../" (basename abs-srcdir))
+                         ".")))
+    (format #t "source directory: ~s (relative from build: ~s)~%"
+            abs-srcdir srcdir)
+    (when out-of-source?
+      (mkdir "../build")
+      (chdir "../build"))
+    (format #t "build directory: ~s~%" (getcwd))
+
+    (let ((args `(,srcdir
+                  ,(string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                  ,@configure-flags)))
+      (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
+      (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))
+      (format #t "running 'cmake' with arguments ~s~%" args)
+      (zero? (apply system* "cmake" args)))))
 
 (define* (check #:key (tests? #t) (parallel-tests? #t) (test-target "test")
                 #:allow-other-keys)
