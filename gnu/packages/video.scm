@@ -34,14 +34,14 @@
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.1")
+    (version "2.1.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1pv83nmjgipxwzy5s53834fq0mrqv786zz2w383ki6sfjzyh6rlj"))))
+               "1qnspbpwa6cflsb6mkm84ay4nfx60ism6d7lgvnasidck9dmxydy"))))
     (build-system gnu-build-system)
     (inputs
      `(("bc" ,bc)
