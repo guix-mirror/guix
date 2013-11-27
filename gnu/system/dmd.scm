@@ -59,6 +59,8 @@
 (define-record-type* <service>
   service make-service
   service?
+  (documentation service-documentation            ; string
+                 (default "[No documentation.]"))
   (provision     service-provision)               ; list of symbols
   (requirement   service-requirement              ; list of symbols
                  (default '()))
@@ -74,6 +76,7 @@
   "Return a service that sets the host name to NAME."
   (with-monad %store-monad
     (return (service
+             (documentation "Initialize the machine's host name.")
              (provision '(host-name))
              (start `(lambda _
                        (sethostname ,name)))
@@ -84,6 +87,7 @@
   (mlet %store-monad ((mingetty-bin (package-file mingetty "sbin/mingetty")))
     (return
      (service
+      (documentation (string-append "Run mingetty on " tty "."))
       (provision (list (symbol-append 'term- (string->symbol tty))))
 
       ;; Since the login prompt shows the host name, wait for the 'host-name'
@@ -97,6 +101,7 @@
   "Return a service that runs libc's name service cache daemon (nscd)."
   (mlet %store-monad ((nscd (package-file glibc "sbin/nscd")))
     (return (service
+             (documentation "Run libc's name service cache daemon (nscd).")
              (provision '(nscd))
              (start `(make-forkexec-constructor ,nscd "-f" "/dev/null"))
 
@@ -140,6 +145,7 @@
        (syslogd     (package-file inetutils "libexec/syslogd")))
     (return
      (service
+      (documentation "Run the syslog daemon (syslogd).")
       (provision '(syslogd))
       (start `(make-forkexec-constructor ,syslogd
                                          "--rcfile" ,syslog.conf))
@@ -171,6 +177,9 @@ true, it must be a string specifying the default network gateway."
                       (route    (package-file net-tools "sbin/route")))
     (return
      (service
+      (documentation
+       (string-append "Set up networking on the '" interface
+                      "' interface using a static IP address."))
       (provision '(networking))
       (start `(lambda _
                 (and (zero? (system* ,ifconfig ,interface ,ip "up"))
@@ -196,8 +205,10 @@ true, it must be a string specifying the default network gateway."
     `(begin
        (register-services
         ,@(map (match-lambda
-                (($ <service> provision requirement respawn? start stop)
+                (($ <service> documentation provision requirement
+                    respawn? start stop)
                  `(make <service>
+                    #:docstring ,documentation
                     #:provides ',provision
                     #:requires ',requirement
                     #:respawn? ,respawn?
