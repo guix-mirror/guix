@@ -25,7 +25,36 @@
   #:use-module (gnu packages openssl)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake))
+
+(define-public libssh
+  (package
+    (name "libssh")
+    (version "0.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.libssh.org/files/0.5/libssh-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1w6s217vjq0w3v5i0c5ql6m0ki1yz05g9snah3azxfkl9k4schpd"))))
+    (build-system cmake-build-system)
+    (arguments '(#:configure-flags '("-DWITH_GCRYPT=ON")
+
+                 ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test
+                 ;; suite.
+                 #:tests? #f))
+    (inputs `(("zlib" ,zlib)
+              ("libgcrypt" ,libgcrypt)))
+    (synopsis "SSH client library")
+    (description
+     "libssh is a C library implementing the SSHv2 and SSHv1 protocol for
+client and server implementations.  With libssh, you can remotely execute
+programs, transfer files, and use a secure and transparent tunnel for your
+remote applications.")
+    (home-page "http://www.libssh.org")
+    (license license:lgpl2.1+)))
 
 (define-public libssh2
   (package
