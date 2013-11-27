@@ -136,7 +136,8 @@ server and embedded PowerPC, and S390 guests.")
     (name "qemu-with-multiple-smb-shares")
     (source (origin (inherit (package-source qemu-headless))
               (patches
-               (list (search-patch "qemu-multiple-smb-shares.patch")))))))
+               (cons (search-patch "qemu-multiple-smb-shares.patch")
+                     (origin-patches (package-source qemu-headless))))))))
 
 (define-public qemu
   ;; QEMU with GUI support.
