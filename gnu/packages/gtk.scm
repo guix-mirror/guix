@@ -27,6 +27,7 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages libjpeg)
   #:use-module (gnu packages libpng)
@@ -161,6 +162,60 @@ applications. It has extensive support for the different writing systems
 used throughout the world.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/pango/")))
+
+
+(define-public gtksourceview
+  (package
+    (name "gtksourceview")
+    (version "2.10.5") ; This is the last version which builds against gtk+2
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/gtksourceview/"
+                                  (string-take version 4) "/gtksourceview-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "07hrabhpl6n8ajz10s0d960jdwndxs87szxyn428mpxi8cvpg1f5"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("gtk" ,gtk+-2)
+       ("libxml2" ,libxml2)
+
+       ;; These two are needed only to allow the tests to run successfully.
+       ("xorg-server" ,xorg-server)
+       ("shared-mime-info" ,shared-mime-info)))
+    (arguments
+     `(#:phases
+       ;; Unfortunately, some of the tests in "make check" are highly dependent
+       ;; on the environment therefore, some black magic is required.
+       (alist-cons-before
+        'check 'start-xserver
+        (lambda* (#:key inputs #:allow-other-keys)
+          (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                (mime (assoc-ref inputs "shared-mime-info")))
+
+            ;; There must be a running X server and make check doesn't start one.
+            ;; Therefore we must do it.
+            (system (format #f "~a/bin/Xvfb :1 &" xorg-server))
+            (setenv "DISPLAY" ":1")
+
+            ;; The .lang files must be found in $XDG_DATA_HOME/gtksourceview-2.0
+            (system "ln -s gtksourceview gtksourceview-2.0")
+            (setenv "XDG_DATA_HOME" (getcwd))
+
+            ;; Finally, the mimetypes must be available.
+            (setenv "XDG_DATA_DIRS" (string-append mime "/share/")) ))
+        %standard-phases)))
+    (synopsis "Widget that extends the standard GTK+ 2.x 'GtkTextView' widget")
+    (description
+     "GtkSourceView is a portable C library that extends the standard GTK+
+framework for multiline text editing with support for configurable syntax
+highlighting, unlimited undo/redo, search and replace, a completion framework,
+printing and other features typical of a source code editor.")
+    (license license:lgpl2.0+)
+    (home-page "https://developer.gnome.org/gtksourceview/")))
 
 (define-public gdk-pixbuf
   (package
