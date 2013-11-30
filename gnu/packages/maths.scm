@@ -144,13 +144,12 @@ LP/MIP solver is included in the package.")
        ("libxml2" ,libxml2)
        ("pango" ,pango)
        ("readline" ,readline)
+       ("gtk" ,gtk+-2)
+       ("gtksourceview" ,gtksourceview)
        ("zlib" ,zlib)))
     (native-inputs
      `(("perl" ,perl)
        ("pkg-config" ,pkg-config)))
-    (arguments
-     `(#:configure-flags
-       `("--without-gui"))) ; FIXME: package missing dependencies
     (home-page "http://www.gnu.org/software/pspp/")
     (synopsis "Statistical analysis")
     (description
