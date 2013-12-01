@@ -131,8 +131,8 @@ compressed video format.")
     (home-page "https://gnu.org/software/speex")
     (synopsis "Library for patent-free audio compression format")
     (description
-     "Speex is a patent-free audio compression codec specially designed for
-speech.  It is well-adapted to internet applications, such as VoIP. It
+     "GNU Speex is a patent-free audio compression codec specially designed
+for speech.  It is well-adapted to internet applications, such as VoIP.  It
 features compression of different bands in the same bitstream, intensity
 stereo encoding, and voice activity detection.")
     ;; 'src/getopt.c' is under LGPLv2+

@@ -85,10 +85,10 @@
                                    %standard-phases)))
      (synopsis "The GNU Bourne-Again SHell")
      (description
-      "Bash is the shell, or commandline interpreter, of the GNU system.  It
+      "Bash is the shell, or command-line interpreter, of the GNU system.  It
 is compatible with the Bourne Shell, but it also integrates useful features
 from the Korn Shell and the C Shell and new improvements of its own.  It
-allows commandline editing, unlimited command history, shell functions and
+allows command-line editing, unlimited command history, shell functions and
 aliases, and job control while still allowing most sh scripts to be run
 without modification.")
      (license gpl3+)

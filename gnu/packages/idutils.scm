@@ -43,9 +43,9 @@
     (home-page "http://www.gnu.org/software/idutils/")
     (synopsis "Identifier database utilities")
     (description
-     "ID Utils provides tools to create an index if textual tokens used in a
-list of file names and to then query that index.  Thus, it allows the user
-to, for example, find all the uses of a particular function in all files of a
-large programming project.  In addition to handling textual tokens, it can
-also handle numeric constants and the contents of character strings.")
+     "The GNU idutils package includes tools to create an index of textual
+tokens used in a list of file names and then to query that index.  Thus, it
+allows the user to, for example, find all the uses of a particular function
+in a large programming project.  In addition to handling textual tokens, it
+can also handle numeric constants and the contents of character strings.")
     (license gpl3+)))

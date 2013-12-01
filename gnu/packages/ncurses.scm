@@ -130,9 +130,10 @@
      (self-native-input? #t)                      ; for `tic'
      (synopsis "Terminal emulation (termcap, terminfo) library")
      (description
-      "Ncurses is a library which provides capabilities to write text to a
-terminal in a terminal-independent manner.  It supports pads and color as
+      "GNU Ncurses is a library which provides capabilities to write text to
+a terminal in a terminal-independent manner.  It supports pads and color as
 well as multiple highlights and forms characters.  It is typically used to
-implement user interfaces for command-line applications.")
+implement user interfaces for command-line applications.  The accompanying
+ncursesw library provides wide character support.")
      (license x11)
      (home-page "http://www.gnu.org/software/ncurses/"))))

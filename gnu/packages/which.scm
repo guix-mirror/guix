@@ -38,6 +38,7 @@
     (home-page "https://gnu.org/software/which/")
     (synopsis "Find full path of shell commands")
     (description
-     "which is a program that prints the full paths of executables on a
-system.")
+     "The which program finds the location of executables in PATH, with a
+variety of options.  It is an alternative to the shell \"type\" built-in
+command.")
     (license gpl3+))) ; some files are under GPLv2+

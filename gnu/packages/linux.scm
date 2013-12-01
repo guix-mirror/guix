@@ -210,8 +210,8 @@
        #:tests? #f))
     (synopsis "100% free redistribution of a cleaned Linux kernel")
     (description
-     "Linux Libre is a free (as in freedom) variant of the Linux kernel. It
-has been modified to remove any non-free binary blobs.")
+     "GNU Linux-Libre is a free (as in freedom) variant of the Linux kernel.
+It has been modified to remove all non-free binary blobs.")
     (license gpl2)
     (home-page "http://www.gnu.org/software/linux-libre/"))))
 

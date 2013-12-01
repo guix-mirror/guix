@@ -42,10 +42,10 @@
     (home-page "http://www.gnu.org/software/screen/")
     (synopsis "Full-screen window manager providing multiple terminals")
     (description
-     "Screen is a terminal window manager that multiplexes a single terminal
-between several processes.  The virtual terminals each provide features such
-as a scroll-back buffer and a copy-and-paste mechanism.  Screen then manages
-the different virtual terminals, allowing you to easily switch between them,
-to detach them from the current session, or even splitting the view to show
-two terminals at once.")
+     "GNU Screen is a terminal window manager that multiplexes a single
+terminal between several processes.  The virtual terminals each provide
+features such as a scroll-back buffer and a copy-and-paste mechanism.  Screen
+then manages the different virtual terminals, allowing you to easily switch
+between them, to detach them from the current session, or even splitting the
+view to show two terminals at once.")
     (license gpl2+)))

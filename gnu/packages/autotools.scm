@@ -200,10 +200,10 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
     (home-page "http://www.gnu.org/software/automake/")
     (synopsis "Making GNU standards-compliant Makefiles")
     (description
-     "Automake the part of the GNU build system for producing standards-
-compliant Makefiles.  Build requirements are entered in an intuitive format
-and then Automake works with Autoconf to produce a robust Makefile,
-simplifying the entire process for the developer.")
+     "Automake the part of the GNU build system for producing
+standards-compliant Makefiles.  Build requirements are entered in an
+intuitive format and then Automake works with Autoconf to produce a robust
+Makefile, simplifying the entire process for the developer.")
     (license gpl2+)))                      ; some files are under GPLv3+
 
 (define-public libtool
@@ -257,8 +257,8 @@ simplifying the entire process for the developer.")
                      %standard-phases))))
     (synopsis "Generic shared library support tools")
     (description
-     "Libtool is a script to help in the creation of shared libraries.  By
-presenting a consistent, portable interface, it hides the complexity of
-building usable shared libraries.")
+     "GNU Libtool helps in the creation and use of shared libraries, by
+presenting a single consistent, portable interface that hides the usual
+complexity of working with shared libraries across platforms.")
     (license gpl3+)
     (home-page "http://www.gnu.org/software/libtool/")))

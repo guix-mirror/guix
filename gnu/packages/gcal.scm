@@ -37,11 +37,11 @@
     (home-page "http://www.gnu.org/software/gcal")
     (synopsis "Calculating and printing a wide variety of calendars")
     (description
-     "Gcal is a program to calculate and print calendars on the command-
-line.  Calendars can be printed in 1-month, 3-month or whole-year views. In
-addition, eternal holiday lists can be generated for many countries, which
-can be complemented by user-made lists of fixed dates to make an agenda. 
-Gcal can also calculate astronomical data, such as the phases of the moon,
-and supports alternative calendar formats: Julian, Gregorian, Islamic,
-Chinese and more.")
+     "Gcal is a program to calculate and print calendars on the
+command-line.  Calendars can be printed in 1-month, 3-month or whole-year
+views. In addition, eternal holiday lists can be generated for many
+countries, which can be complemented by user-made lists of fixed dates to
+make an agenda.  Gcal can also calculate astronomical data, such as the
+phases of the moon, and supports alternative calendar formats: Julian,
+Gregorian, Islamic, Chinese and more.")
     (license gpl3+)))

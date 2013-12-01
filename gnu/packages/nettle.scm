@@ -39,9 +39,10 @@
     (inputs `(("m4" ,m4)))
     (propagated-inputs `(("gmp" ,gmp)))
     (home-page "http://www.lysator.liu.se/~nisse/nettle/")
-    (synopsis "C library for low-level crytographic functionality")
+    (synopsis "C library for low-level cryptographic functionality")
     (description
-     "Nettle is a low-level cryptographic library.  It is designed to fit in
-easily in almost any context.  It can be easily included in cryptographic
-toolkits for object-oriented languages or in applications themselves.")
+     "GNU Nettle is a low-level cryptographic library.  It is designed to
+fit in easily in almost any context.  It can be easily included in
+cryptographic toolkits for object-oriented languages or in applications
+themselves.")
     (license gpl2+)))

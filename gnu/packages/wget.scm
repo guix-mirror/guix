@@ -45,7 +45,7 @@
     (home-page "http://www.gnu.org/software/wget/")
     (synopsis "Non-interactive command-line utility for downloading files")
     (description
-     "Wget is a non-interactive tool for fetching files using the HTTP,
+     "GNU Wget is a non-interactive tool for fetching files using the HTTP,
 HTTPS and FTP protocols.  It can resume interrupted downloads, use filename
 wild cards, supports proxies and cookies, and it can convert absolute links
 in downloaded documents to relative links.")

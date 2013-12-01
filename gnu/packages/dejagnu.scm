@@ -79,6 +79,5 @@
     (description
      "DejaGnu is a framework for testing software.  In effect, it serves as
 a front-end for all tests written for a program.  Thus, each program can have
-multiple test suites, which are then all managed by a single, so-called \"test
-harness.\"")
+multiple test suites, which are then all managed by a single harness.")
     (license gpl2+)))

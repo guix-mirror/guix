@@ -53,10 +53,10 @@
               ("guile" ,guile-2.0)))
     (synopsis "Daemon managing daemons")
     (description
-     "DMD is a \"daemon-managing daemon,\" meaning it manages the execution of
-system services, replacing similar functionality found in typical init
-systems.  It provides dependency-handling through a convenient interface and
-is based on GNU Guile.")
+     "GNU DMD is a daemon-managing daemon, meaning that it manages the
+execution of system services, replacing similar functionality found in
+typical init systems.  It provides dependency-handling through a convenient
+interface and is based on GNU Guile.")
     (license gpl3+)
     (home-page "http://www.gnu.org/software/dmd/")))
 
@@ -120,7 +120,7 @@ application (for console or X terminals) and requires ncurses.")
     (home-page "http://www.gnu.org/software/pies/")
     (synopsis "Program invocation and execution supervisor")
     (description
-     "Pies is a program that supervises the invocation and executiton of
+     "GNU pies is a program that supervises the invocation and execution of
 other programs.  It reads the list of programs to be started from its
 configuration file, executes them, and then monitors their status,
 re-executing them as necessary.")

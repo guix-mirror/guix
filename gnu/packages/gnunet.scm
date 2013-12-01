@@ -83,10 +83,10 @@
       ("zlib" ,zlib)))
    (synopsis "Library to extract meta-data from media files")
    (description
-    "GNU Libextractor is a library for extracting metadata from files.  It
+    "GNU libextractor is a library for extracting metadata from files.  It
 supports a very large number of file formats, including audio files, document
 files, and archive files.  Each file format is implemented as a plugin, so
-new formats can be added easily.  The package also containes a command-line
+new formats can be added easily.  The package also contains a command-line
 tool to extract metadata from a file and print the results.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/libextractor/")))

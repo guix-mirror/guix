@@ -211,7 +211,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
       (description
        "GCC is the GNU Compiler Collection.  It provides compiler front-ends
 for several languages, including C, C++, Objective-C, Fortran, Java, Ada, and
-Go.  It also includes standard libraries for these languages.")
+Go.  It also includes runtime support libraries for these languages.")
       (license gpl3+)
       (home-page "http://gcc.gnu.org/"))))
 

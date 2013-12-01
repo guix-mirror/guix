@@ -57,9 +57,9 @@
    (synopsis "Macro processor")
    (description
     "GNU M4 is an implementation of the M4 macro language, which features
-some extensions over other implementations.  It is used as a macro processor,
-which means it processes text, expanding macros as it encounters them.  It
-also has some built-in functionns, for example to run shell commands or to do
-arithmetic.")
+some extensions over other implementations, some of which are required by GNU
+Autoconf.  It is used as a macro processor, which means it processes text,
+expanding macros as it encounters them.  It also has some built-in functions,
+for example to run shell commands or to do arithmetic.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/m4/")))

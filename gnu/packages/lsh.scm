@@ -120,7 +120,7 @@ basis for almost any application.")
     (home-page "http://www.lysator.liu.se/~nisse/lsh/")
     (synopsis "GNU implementation of the Secure Shell (ssh) protocols")
     (description
-     "lsh is a free implementation of the SSH version 2 protocol.  It is
+     "GNU lsh is a free implementation of the SSH version 2 protocol.  It is
 used to create a secure line of communication between two computers,
 providing shell access to the server system from the client.  It provides
 both the server daemon and the client application, as well as tools for

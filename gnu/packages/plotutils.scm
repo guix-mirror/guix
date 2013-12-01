@@ -46,9 +46,9 @@
      "http://www.gnu.org/software/plotutils/")
     (synopsis "Plotting utilities and library")
     (description
-     "Plotutils is a collection of utilities for plotting and working with
-2D graphics.  It includes a library, libplot, for C and C++ for exporting 2D
-vector graphics in many file formats.  It also has support for 2D vector
-graphics animations.  The package also contains command-line programs for
-plotting scientific data.")
+     "GNU Plotutils is a package for plotting and working with 2D graphics. 
+It includes a library, \"libplot\", for C and C++ for exporting 2D vector
+graphics in many file formats.  It also has support for 2D vector graphics
+animations.  The package also contains command-line programs for plotting
+scientific data.")
     (license gpl2+)))

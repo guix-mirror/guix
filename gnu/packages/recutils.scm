@@ -51,7 +51,7 @@
              ("check" ,check)))
    (synopsis "Manipulate plain text files as databases")
    (description
-    "Recutils is a set of tools and libraries for creating and
+    "GNU Recutils is a set of tools and libraries for creating and
 manipulating text-based, human-editable databases.  Despite being text-based,
 databases created with Recutils carry all of the expected features such as
 unique fields, primary keys, time stamps and more. Many different field types

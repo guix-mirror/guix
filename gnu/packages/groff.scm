@@ -47,8 +47,8 @@
              ("texinfo" ,texinfo)))
    (synopsis "Typesetting from plain text mixed with formatting commands")
    (description
-    "The groff is a typesetting package that reads plain text and produces
+    "Groff is a typesetting package that reads plain text and produces
 formatted output based on formatting commands contained within the text.  It
-is used particularly often in the formatting of \"man\" documentation pages.")
+is usually the formatter of \"man\" documentation pages.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/groff/")))

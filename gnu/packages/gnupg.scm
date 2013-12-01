@@ -167,7 +167,9 @@ specifications are building blocks of S/MIME and TLS.")
      "The GNU Privacy Guard is a complete implementation of the OpenPGP
 standard.  It is used to encrypt and sign data and communication.  It
 features powerful key management and the ability to access public key
-servers.")
+servers.  It includes several libraries: libassuan (IPC between GnuPG
+components), libgpg-error (centralized GnuPG error values), and libskba
+(working with X.509 certificates and CMS data).")
     (license gpl3+)))
 
 (define-public gpgme

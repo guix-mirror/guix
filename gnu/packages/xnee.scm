@@ -49,7 +49,7 @@
     (home-page "http://www.gnu.org/software/xnee/")
     (synopsis "Record, replay and distribute user actions under X11")
     (description
-     "Xnee is a program that can record, replay and distribute user actions
-in X11.  It can be used to automate user interactions for testing or
+     "GNU Xnee is a program that can record, replay and distribute user
+actions in X11.  It can be used to automate user interactions for testing or
 demonstration purposes.")
     (license gpl3+)))

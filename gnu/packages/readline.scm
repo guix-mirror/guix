@@ -61,7 +61,7 @@
                              %standard-phases)))
       (synopsis "Edit command lines while typing, with history support")
       (description
-       "Readline is a libary that allows users to edit command lines as they
+       "The GNU readline library allows users to edit command lines as they
 are typed in.  It can maintain a searchable history of previously entered
 commands, letting you easily recall, edit and re-enter past commands.  It
 features both Emacs-like and vi-like keybindings, making its usage

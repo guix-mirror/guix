@@ -46,8 +46,8 @@
     (home-page "http://www.gnu.org/software/libtasn1/")
     (synopsis "ASN.1 library")
     (description
-     "Libtasn1 is a library implementing the ASN.1 notation.  It is used for
-transmitting machine-neutral encodings of data objects in computer
+     "GNU libtasn1 is a library implementing the ASN.1 notation.  It is used
+for transmitting machine-neutral encodings of data objects in computer
 networking, allowing for formal validation of data according to some
 specifications.")
     (license lgpl2.0+)))
@@ -81,7 +81,7 @@ specifications.")
     (synopsis "Transport layer security library")
     (description
      "GnuTLS is a secure communications library implementing the SSL, TLS
-and DTLS protocols.  It is provided in the form of a C library to the
+and DTLS protocols.  It is provided in the form of a C library to support the
 protocols, as well as to parse and write X.5009, PKCS 12, OpenPGP and other
 required structures.")
     (license lgpl2.1+)))

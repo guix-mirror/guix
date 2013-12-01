@@ -82,7 +82,10 @@ in compression.")
     ;; FIXME: The test suite wants `less', and optionally Perl.
     '(#:tests? #f))
    (description
-    "GNU Gzip is a data compression and decompression program.")
+    "GNU Gzip provides data compression and decompression utilities; the
+typical extension is \".gz\".  Unlike the \"zip\" format, it compresses a single
+file; as a result, it is often used in conjunction with \"tar\", resulting in
+\".tar.gz\" or \".tgz\", etc.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/gzip/")))
 
@@ -278,9 +281,8 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
     (home-page "http://www.gnu.org/software/sharutils/")
     (synopsis "Archives in shell scripts, uuencode/uudecode")
     (description
-     "GNU sharutils is a package for manipulating shell archives. Shell
-archives are collections of files that can be unpacked using only the shell;
-an archive is a self-extracting shell script. The tools in the Sharutils
-package make working with shell archives more robust, offering compression,
-file-splitting and simple checksums.")
+     "GNU sharutils is a package for creating and manipulating shell
+archives that can be readily emailed.  A shell archive is a file that can be
+processed by a Bourne-type shell to unpack the original collection of files. 
+This package is mostly for compatibility and historical interest.")
     (license license:gpl3+)))

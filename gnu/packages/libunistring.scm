@@ -38,7 +38,8 @@
    (build-system gnu-build-system)
    (synopsis "C library for manipulating Unicode strings")
    (description
-    "Libunistring is a library providing functions to manipulate Unicode
-strings and for manipulating C strings according to the Unicode standard.")
+    "GNU libunistring is a library providing functions to manipulate
+Unicode strings and for manipulating C strings according to the Unicode
+standard.")
    (home-page "http://www.gnu.org/software/libunistring/")
    (license lgpl3+)))

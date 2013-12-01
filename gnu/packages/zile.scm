@@ -59,6 +59,6 @@
     (home-page "http://www.gnu.org/software/zile/")
     (synopsis "Zile is lossy Emacs, a lightweight Emacs clone")
     (description
-     "Zile is a lightweight Emacs clone.  It usage is extremely similar to
-that of Emacs but it carries a much lighter feature set.")
+     "GNU Zile is a lightweight Emacs clone.  It usage is similar to the
+default Emacs configuration, but it carries a much lighter feature set.")
     (license gpl3+)))

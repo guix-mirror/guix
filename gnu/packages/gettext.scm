@@ -68,9 +68,9 @@
     (home-page "http://www.gnu.org/software/gettext/")
     (synopsis "Tools and documentation for translation")
     (description
-     "gettext is a set of tools and documentation that provide a framework
-for translating the textual output of programs into multiple languages.  It
-provides translators with the means to create message catalogs, as well as an
-Emacs mode to work with them, and a runtime library to load translated
-messages from the catalogs.")
+     "GNU Gettext is a package providing a framework for translating the
+textual output of programs into multiple languages.  It provides translators
+with the means to create message catalogs, as well as an Emacs mode to work
+with them, and a runtime library to load translated messages from the
+catalogs.  Nearly all GNU packages use Gettext.")
     (license gpl3))) ; some files are under GPLv2+

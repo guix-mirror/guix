@@ -48,7 +48,7 @@
     (home-page "http://www.gnu.org/software/shishi/")
     (synopsis "Implementation of the Kerberos 5 network security system")
     (description
-     "Shishi is a free implementation of the Kerberos 5 network security
+     "GNU Shishi is a free implementation of the Kerberos 5 network security
 system.  It is used to allow non-secure network nodes to communicate in a
 secure manner through client-server mutual authentication via tickets.")
     (license gpl3+)))

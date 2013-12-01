@@ -89,7 +89,9 @@ caching facility provided by the library.")
 for CD-ROM and CD image file access.  It allows the developer to add CD
 access to an application without having to worry about the OS- and
 device-dependent properties of CD-ROM or the specific details of CD image
-formats.")
+formats.  It includes pycdio, a Python interface to libcdio, and
+libcdio-paranoia, a library providing jitter-free and error-free audio
+extraction from CDs.")
     (license gpl3+)))
 
 (define-public xorriso
@@ -113,11 +115,12 @@ formats.")
     (home-page "http://www.gnu.org/software/xorriso/")
     (synopsis "Create, manipulate, burn ISO-9660 filesystems")
     (description
-     "xorriso is a tool for copying files to and from ISO 9660 Rock Ridge,
-a.k.a Compact Disc File System, filesystems and it allows session- wise
-manipulation of them.  It features a formatter and burner for CD DVD and BD. 
-It can operate on existing ISO images or it can create new ones.  xorriso can
-then be used to copy files directly into or out of ISO files.")
+     "GNU Xorriso is a tool for copying files to and from ISO 9660 Rock
+Ridge, a.k.a. Compact Disc File System, filesystems and it allows
+session-wise manipulation of them.  It features a formatter and burner for
+CD, DVD and BD.  It can operate on existing ISO images or it can create new
+ones.  xorriso can then be used to copy files directly into or out of ISO
+files.")
     (license gpl3+)))
 
 (define-public cdparanoia

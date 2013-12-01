@@ -108,7 +108,7 @@
     (home-page "http://www.gnu.org/software/mit-scheme/")
     (synopsis "Scheme implementation with integrated editor and debugger")
     (description
-     "MIT/GNU Scheme is an implementation of the Scheme programming
+     "GNU/MIT Scheme is an implementation of the Scheme programming
 language.  It provides an interpreter, a compiler and a debugger.  It also
 features an integrated Emacs-like editor and a large runtime library.")
     (license gpl2+)))

@@ -65,9 +65,8 @@
    (home-page "http://www.gnu.org/software/gawk/")
    (synopsis "A text scanning and processing language")
    (description
-    "Gawk is an implementation of Awk, a specialised programming language
-for the easy manipulation of formatted text, such as tables of data. The GNU
-implementation of Awk features a number of extensions beyond the traditional
-implementations, making writing powerful text manipulation scripts a simple
-task compared to writing similar programs in C.")
+    "Gawk is the GNU implementation of Awk, a specialized programming
+language for the easy manipulation of formatted text, such as tables of data.
+ Gawk features many extensions beyond the traditional implementation,
+including network access, sorting, and large libraries.")
    (license gpl3+)))

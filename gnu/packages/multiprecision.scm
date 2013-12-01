@@ -69,8 +69,8 @@ cryptography and computational algebra.")
    (propagated-inputs `(("gmp" ,gmp)))            ; <mpfr.h> refers to <gmp.h>
    (synopsis "C library for arbitrary precision floating-point arithmetic")
    (description
-    "MPFR is a C library for performing multiple-precision, floating-point
-computations with correct rounding.")
+    "GNU MPFR is a C library for performing multiple-precision,
+floating-point computations with correct rounding.")
    (license lgpl3+)
    (home-page "http://www.mpfr.org/")))
 

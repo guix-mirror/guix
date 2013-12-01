@@ -86,11 +86,11 @@
     (home-page "http://www.gnu.org/software/mailutils/")
     (synopsis "Utilities and library for reading and serving mail")
     (description
-     "Mailutils is a \"swiss army knife of electronic mail handling.\"  It is
-a suite of programs for managing, viewing and processing e-mail.  It contains
-both utilities and server daemons and all operate in a protocol-agnostic way.
- The underlying libraries are also made available, making adding mail
-capabilities to new software simple.")
+     "GNU Mailutils is a collection of programs for managing, viewing and
+processing electronic mail.  It contains both utilities and server daemons
+and all operate in a protocol-agnostic way.  The underlying libraries are
+also available, simplifying the addition of mail capabilities to new
+software.")
     (license
      ;; Libraries are under LGPLv3+, and programs under GPLv3+.
      (list gpl3+ lgpl3+))))

@@ -44,8 +44,9 @@
     (synopsis "The GNU documentation format")
     (description
      "Texinfo is the official documentation format of the GNU project.  It
-uses a single source file containing TeX-like formatting commands to produce
-a final document in any of several supported output formats, such as HTML or
-PDF.  This package includes both the tools necessary to produce info
-documents from their source as well as the command- line info reader.")
+uses a single source file using explicit commands to produce a final document
+in any of several supported output formats, such as HTML or PDF.  This
+package includes both the tools necessary to produce Info documents from
+their source and the command-line Info reader.  The emphasis of the language
+is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))

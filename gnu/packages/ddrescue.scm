@@ -40,8 +40,8 @@
     (synopsis "Data recovery utility")
     (native-inputs `(("lzip" ,lzip)))
     (description
-     "Ddrescue is a fully automated data recovery tool.  It copies data from
-one file to another, working to rescue data in case of read errors.  The
-program also includes a tool for manipulating its log- files, which are used
+     "GNU ddrescue is a fully automated data recovery tool.  It copies data
+from one file to another, working to rescue data in case of read errors.  The
+program also includes a tool for manipulating its log files, which are used
 to recover data more efficiently by only reading the necessary blocks.")
     (license gpl3+)))

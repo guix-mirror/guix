@@ -41,8 +41,8 @@
     (home-page "http://www.gnu.org/software/freeipmi/")
     (synopsis "Platform management, including sensor and power monitoring")
     (description
-     "FreeIPMI is a collection of in-band and out-of-band IPMI software in
-accordance with the IPMI v1.5/2.0 specification.  These programs provide a
+     "GNU FreeIPMI is a collection of in-band and out-of-band IPMI software
+in accordance with the IPMI v1.5/2.0 specification.  These programs provide a
 set of interfaces for platform management.  Common functionality includes
 sensor monitoring, system event monitoring, power control and
 serial-over-LAN.")

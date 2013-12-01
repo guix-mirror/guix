@@ -38,8 +38,9 @@
    (synopsis "Code reformatter")
    (description
     "Indent is a program that makes source code easier to read by
-reformatting it in a consistetn style.  It can change the style to one of
+reformatting it in a consistent style.  It can change the style to one of
 several different styles such as GNU, BSD or K&R.  It has some flexibility to
-deal with incomplete or malformed syntax.")
+deal with incomplete or malformed syntax.  GNU indent offers several
+extensions over the standard utility.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/indent/")))

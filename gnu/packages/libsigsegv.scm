@@ -52,7 +52,7 @@
                     %standard-phases))
         '()))
    (description
-    "libsigsegv is a library to handle page faults, which occur when a
+    "GNU libsigsegv is a library to handle page faults, which occur when a
 program tries to access an unavailable region of memory, in user mode.  By
 catching and handling page faults, the program can implement pageable virtual
 memory, stack overflow handlers, and so on.")

@@ -50,6 +50,6 @@
     (description
      "GNU Prolog is a standards-compliant Prolog compiler with constraint
 solving over finite domains.  It accepts Prolog+ constraint programs and
-produces a compiled, native binary which can function in a stand- alone
+produces a compiled, native binary which can function in a stand-alone
 manner.  It also features an interactive interpreter.")
     (license (list gpl2+ lgpl3+))))

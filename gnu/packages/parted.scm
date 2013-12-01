@@ -59,6 +59,6 @@
     (home-page "http://www.gnu.org/software/parted/")
     (synopsis "Disk partition editor")
     (description
-     "Parted is a tool for creating and manipulating disk partition tables.
-It consists of a library and a command-line tool for performing these tasks.")
+     "GNU Parted is a package for creating and manipulating disk partition
+tables.  It includes a library and command-line utility.")
     (license gpl3+)))

@@ -265,7 +265,8 @@ many readers as needed).")
     (home-page "http://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
     (description
-     "guile-ncurses provides guile bindings to the ncurses library.")
+     "guile-ncurses provides Guile language bindings for the ncurses
+library.")
     (license lgpl3+)))
 
 (define-public mcron
@@ -286,10 +287,10 @@ many readers as needed).")
     (home-page "http://www.gnu.org/software/mcron/")
     (synopsis "Run jobs at scheduled times")
     (description
-     "Mcron is a complete replacement for Vixie cron.  It is used to run
+     "GNU Mcron is a complete replacement for Vixie cron.  It is used to run
 tasks on a schedule, such as every hour or every Monday.  Mcron is written in
-Guile, so its configuration can be written in Scheme, however the original
-cron format is also supported.")
+Guile, so its configuration can be written in Scheme; the original cron
+format is also supported.")
     (license gpl3+)))
 
 (define-public guile-lib

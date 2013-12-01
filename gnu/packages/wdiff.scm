@@ -54,7 +54,7 @@
     (home-page "https://www.gnu.org/software/wdiff/")
     (synopsis "Word difference finder")
     (description
-     "Wdiff is a front-end to the diff program from Diffutils that allows
-you to compare files on a word-by-word basis, where a word is anything
+     "GNU Wdiff is a front-end to the diff program from Diffutils that
+allows you to compare files on a word-by-word basis, where a word is anything
 between whitespace.")
     (license gpl3+)))

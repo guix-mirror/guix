@@ -46,8 +46,8 @@
     (home-page "http://www.gnu.org/software/bison/")
     (synopsis "Parser generator")
     (description
-     "Bison is a general-purpose parser generator.  It can build a
-deterministic LR or generalized LR parser from an annotated, context- free
-grammar.  It is versatile enough to have a wide variety of applications, from
-parsers for simple tools up to parsers for complex programming languages.")
+     "GNU Bison is a general-purpose parser generator.  It can build a
+deterministic or generalized LR parser from an annotated, context-free
+grammar.  It is versatile enough to have many applications, from parsers for
+simple tools through complex programming languages.")
     (license gpl3+)))

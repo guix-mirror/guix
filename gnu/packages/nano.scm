@@ -43,7 +43,7 @@
     (home-page "http://www.nano-editor.org/")
     (synopsis "Small, user-friendly console text editor")
     (description
-     "nano is a small and simple text editor.  In addition to basic
+     "GNU Nano is a small and simple text editor.  In addition to basic
 editing, it supports interactive search and replace, go to line and column
 number, auto-indentation and more.")
     (license gpl3+))) ; some files are under GPLv2+

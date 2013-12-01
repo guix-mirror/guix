@@ -46,8 +46,8 @@
     (synopsis "Line-oriented text editor")
     (description
      "Ed is a line-oriented text editor: rather than offering an overview of
-a document, ed performs editing one line at a time.  It can be operated both
+a document, ed performs editing one line at a time.  It can be executed both
 interactively and via shell scripts.  Its method of command input allows
-complex tasks to be performed in an automated way, however it has largely
-been superceded by full-screen editors like Emacs or Moe.")
+complex tasks to be performed in an automated way. GNU ed offers several
+extensions over the standard utility.")
     (license gpl3+)))

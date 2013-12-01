@@ -50,10 +50,10 @@
    (build-system gnu-build-system)
    (synopsis "Conversion between thousands of scales")
    (description
-    "Units is a program for converting measured quantities between units of
+    "GNU Units converts between measured quantities between units of
 measure.  It can handle scale changes through adaptive usage of standard
-scale prefixes (i.e. micro-, kilo-, etc.).  It can also handle nonlinear
-conversions such as Fahrenheit to Celcius.  Its interpreter is powerful
+scale prefixes (micro-, kilo-, etc.).  It can also handle nonlinear
+conversions such as Fahrenheit to Celsius.  Its interpreter is powerful
 enough to be used effectively as a scientific calculator.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/units/")))
@@ -113,7 +113,7 @@ numbers.")
     (arguments
      `(#:configure-flags '("--with-gmp")))
     (home-page "http://www.gnu.org/software/glpk/")
-    (synopsis "NU Linear Programming Kit, supporting the MathProg language")
+    (synopsis "GNU Linear Programming Kit, supporting the MathProg language")
     (description
      "GLPK is a C library for solving large-scale linear programming (LP),
 mixed integer programming (MIP), and other related problems.  It supports the
@@ -154,12 +154,12 @@ LP/MIP solver is included in the package.")
     (home-page "http://www.gnu.org/software/pspp/")
     (synopsis "Statistical analysis")
     (description
-     "PSPP is a statistical analysis program.  It can perform descriptive
-statistics, T-tests, linear regression and non-parametric tests.  It features
-both a graphical interface as well as command-line input. PSPP is designed to
-interoperate with Gnumeric, LibreOffice and OpenOffice.  Data can be imported
-from spreadsheets, text files and database sources and it can be output in
-text, Postscript, PDF or HTML.")
+     "GNU PSPP is a statistical analysis program.  It can perform
+descriptive statistics, T-tests, linear regression and non-parametric tests. 
+It features both a graphical interface as well as command-line input. PSPP is
+designed to interoperate with Gnumeric, LibreOffice and OpenOffice.  Data can
+be imported from spreadsheets, text files and database sources and it can be
+output in text, PostScript, PDF or HTML.")
     (license license:gpl3+)))
 
 (define-public lapack

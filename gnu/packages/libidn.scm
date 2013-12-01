@@ -37,8 +37,8 @@
 ;; FIXME: No Java and C# libraries are currently built.
    (synopsis "Internationalized string processing library")
    (description
-    "The GNU IDN Libary is an implementation of the Stringprep, Punycode
-and IDNA specifications.  These are used to encode and decode
-internationalized domain names.  It includes native C, C# and Java libraries.")
+    "libidn is a library implementing of the Stringprep, Punycode and IDNA
+specifications.  These are used to encode and decode internationalized domain
+names.  It includes native C, C# and Java libraries.")
    (license lgpl2.1+)
    (home-page "http://www.gnu.org/software/libidn/")))
