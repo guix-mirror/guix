@@ -132,6 +132,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mit-krb5.scm			\
   gnu/packages/mp3.scm				\
   gnu/packages/multiprecision.scm		\
+  gnu/packages/mtools.scm			\
   gnu/packages/mysql.scm			\
   gnu/packages/nano.scm				\
   gnu/packages/ncurses.scm			\
