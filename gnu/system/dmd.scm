@@ -95,6 +95,7 @@
       (requirement '(host-name))
 
       (start `(make-forkexec-constructor ,mingetty-bin "--noclear" ,tty))
+      (stop  `(make-kill-destructor))
       (inputs `(("mingetty" ,mingetty)))))))
 
 (define* (nscd-service #:key (glibc glibc-final))
@@ -103,14 +104,9 @@
     (return (service
              (documentation "Run libc's name service cache daemon (nscd).")
              (provision '(nscd))
-             (start `(make-forkexec-constructor ,nscd "-f" "/dev/null"))
-
-             ;; XXX: Local copy of 'make-kill-destructor' because the one upstream
-             ;; uses the broken 'opt-lambda' macro.
-             (stop  `(lambda* (#:optional (signal SIGTERM))
-                       (lambda (pid . args)
-                         (kill pid signal)
-                         #f)))
+             (start `(make-forkexec-constructor ,nscd "-f" "/dev/null"
+                                                "--foreground"))
+             (stop  `(make-kill-destructor))
 
              (respawn? #f)
              (inputs `(("glibc" ,glibc)))))))
@@ -147,8 +143,9 @@
      (service
       (documentation "Run the syslog daemon (syslogd).")
       (provision '(syslogd))
-      (start `(make-forkexec-constructor ,syslogd
+      (start `(make-forkexec-constructor ,syslogd "--no-detach"
                                          "--rcfile" ,syslog.conf))
+      (stop  `(make-kill-destructor))
       (inputs `(("inetutils" ,inetutils)
                 ("syslog.conf" ,syslog.conf)))))))
 
@@ -160,6 +157,7 @@
              (start `(make-forkexec-constructor ,daemon
                                                 "--build-users-group"
                                                 ,builder-group))
+             (stop  `(make-kill-destructor))
              (inputs `(("guix" ,guix)))))))
 
 (define* (static-networking-service interface ip
@@ -182,16 +180,16 @@ true, it must be a string specifying the default network gateway."
                       "' interface using a static IP address."))
       (provision '(networking))
       (start `(lambda _
+                ;; Return #t if successfully started.
                 (and (zero? (system* ,ifconfig ,interface ,ip "up"))
                      ,(if gateway
-                          `(begin
-                             (sleep 3)            ; XXX
-                             (zero? (system* ,route "add" "-net" "default"
-                                             "gw" ,gateway)))
+                          `(zero? (system* ,route "add" "-net" "default"
+                                           "gw" ,gateway))
                           #t))))
       (stop  `(lambda _
-                (system* ,ifconfig ,interface "down")
-                (system* ,route "del" "-net" "default")))
+                ;; Return #f is successfully stopped.
+                (not (and (system* ,ifconfig ,interface "down")
+                          (system* ,route "del" "-net" "default")))))
       (respawn? #f)
       (inputs `(("inetutils" ,inetutils)
                 ,@(if gateway
