@@ -38,19 +38,19 @@
 (define-public dmd
   (package
     (name "dmd")
-    (version "-0.4")
+    (version "0.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/dmd/dmd-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "094ja3xvk9ljghhxmy39if67cfjd1hy6m4svnp399n0wpxvaryvy"))))
+               "07mddw0p62fcphwjzgb6rfa0pjz5sy6jzbha0sm2vc3rqf459jxg"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
-    (inputs `(("pkg-config" ,pkg-config)
-              ("guile" ,guile-2.0)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("guile" ,guile-2.0)))
     (synopsis "Daemon managing daemons")
     (description
      "GNU DMD is a daemon-managing daemon, meaning that it manages the
