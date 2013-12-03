@@ -81,7 +81,7 @@ endpoints.")
            (substitute* "Makefile"
              (("ETCDIR=/etc/vpnc") (string-append "ETCDIR=" out "/etc/vpnc")))))
        %standard-phases)))
-   (synopsis "vpnc, a client for cisco vpn concentrators")
+   (synopsis "Client for Cisco VPN concentrators")
    (description
     "vpnc is a VPN client compatible with Cisco's EasyVPN equipment.
 It supports IPSec (ESP) with Mode Configuration and Xauth. It supports only
@@ -124,7 +124,7 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                                                      vpnc
                                                      "/etc/vpnc/vpnc-script")))))))
        %standard-phases)))
-   (synopsis "client for cisco vpn")
+   (synopsis "Client for Cisco VPN")
    (description
     "OpenConnect is a client for Cisco's AnyConnect SSL VPN, which is
 supported by the ASA5500 Series, by IOS 12.4(9)T or later on Cisco SR500,
