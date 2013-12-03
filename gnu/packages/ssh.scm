@@ -23,6 +23,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages patchelf)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -40,13 +41,43 @@
                (base32
                 "1w6s217vjq0w3v5i0c5ql6m0ki1yz05g9snah3azxfkl9k4schpd"))))
     (build-system cmake-build-system)
-    (arguments '(#:configure-flags '("-DWITH_GCRYPT=ON")
+    (arguments
+     '(#:configure-flags '("-DWITH_GCRYPT=ON"
 
-                 ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test
-                 ;; suite.
-                 #:tests? #f))
+                                     ;; Leave a valid RUNPATH upon install.
+                                     "-DCMAKE_SKIP_BUILD_RPATH=ON")
+
+       ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
+       #:tests? #f
+
+       #:modules ((guix build cmake-build-system)
+                  (guix build utils)
+                  (guix build rpath))
+       #:imported-modules ((guix build gnu-build-system)
+                           (guix build cmake-build-system)
+                           (guix build utils)
+                           (guix build rpath))
+
+       #:phases (alist-cons-after
+                 'install 'augment-runpath
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; libssh_threads.so NEEDs libssh.so, so add $libdir to its
+                   ;; RUNPATH.
+                   (define (dereference file)
+                     (let ((target (false-if-exception (readlink file))))
+                       (if target
+                           (dereference target)
+                           file)))
+
+                   (let* ((out (assoc-ref outputs "out"))
+                          (lib (string-append out "/lib")))
+                     (with-directory-excursion lib
+                       (augment-rpath (dereference "libssh_threads.so")
+                                      lib))))
+                 %standard-phases)))
     (inputs `(("zlib" ,zlib)
               ("libgcrypt" ,libgcrypt)))
+    (native-inputs `(("patchelf" ,patchelf)))
     (synopsis "SSH client library")
     (description
      "libssh is a C library implementing the SSHv2 and SSHv1 protocol for
