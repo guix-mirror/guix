@@ -39,8 +39,7 @@
                "00bw29vdsscsili65wcb5ay0gvg1w0ljd00sb5xc6br8bylpyzpw"))))
     (build-system gnu-build-system)
     (home-page "http://nixos.org/patchelf.html")
-    (synopsis
-     "A small utility to modify the dynamic linker and RPATH of ELF executables")
+    (synopsis "Modify the dynamic linker and RPATH of ELF executables")
     (description
      "PatchELF allows the ELF \"interpreter\" and RPATH of an ELF binary to be
 changed.")
