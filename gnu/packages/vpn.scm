@@ -31,6 +31,29 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml))
 
+(define-public gvpe
+  (package
+    (name "gvpe")
+    (version "2.25")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/gvpe/gvpe-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1gsipcysvsk80gvyn9jnk9g0xg4ng9yd5zp066jnmpgs52d2vhvk"))))
+    (build-system gnu-build-system)
+    (home-page "http://software.schmorp.de/pkg/gvpe.html")
+    (inputs `(("openssl" ,openssl)
+              ("zlib" ,zlib)))
+    (synopsis "Secure VPN among multiple nodes over an untrusted network")
+    (description
+     "The GNU Virtual Private Ethernet creates a virtual network
+with multiple nodes using a variety of transport protocols.  It works
+by creating encrypted host-to-host tunnels between multiple
+endpoints.")
+    (license license:gpl3+)))
+
 (define-public vpnc
   (package
    (name "vpnc")
