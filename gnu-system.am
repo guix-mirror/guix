@@ -80,6 +80,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gnupg.scm			\
   gnu/packages/gnutls.scm			\
   gnu/packages/gnuzilla.scm			\
+  gnu/packages/gnu-pw-mgr.scm			\
   gnu/packages/gperf.scm			\
   gnu/packages/gprolog.scm			\
   gnu/packages/graphviz.scm			\
