@@ -127,7 +127,18 @@
         (and=> (find (lambda (alist)
                        (equal? name (assoc-ref alist "package")))
                      db)
-               (cut assoc-ref <> "blurb")))))
+               (lambda (record)
+                 (let ((field (assoc-ref record "blurb")))
+                   ;; The upstream description file uses "redirect PACKAGE" as
+                   ;; a blurb in cases where the description of the two
+                   ;; packages should be considered the same (e.g., GTK+ has
+                   ;; "redirect gnome".)  This is usually not acceptable for
+                   ;; us because we prefer to have distinct descriptions in
+                   ;; such cases.  Thus, ignore the 'blurb' field when that
+                   ;; happens.
+                   (and field
+                        (not (string-prefix? "redirect " field))
+                        field)))))))
 
   (map (lambda (alist)
          (let ((name (assoc-ref alist "package")))
