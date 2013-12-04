@@ -187,7 +187,7 @@ runs `make distcheck' and whose result is one or more source tarballs."
          `(("autoconf" ,(ref '(gnu packages autotools) 'autoconf))
            ("automake" ,(ref '(gnu packages autotools) 'automake))
            ("libtool"  ,(ref '(gnu packages autotools) 'libtool) "bin")
-           ("gettext"  ,(ref '(gnu packages gettext) 'gettext))
+           ("gettext"  ,(ref '(gnu packages gettext) 'gnu-gettext))
            ("texinfo"  ,(ref '(gnu packages texinfo) 'texinfo))))))))
 
 
