@@ -77,6 +77,5 @@ then false; else true; fi
 guix build -e "(begin
                  (use-modules (guix monads) (guix utils))
                  (lambda ()
-                   (derivation-expression \"test\" (%current-system)
-                                          '(mkdir %output) '())))" \
+                   (derivation-expression \"test\" '(mkdir %output))))" \
    --dry-run

@@ -141,8 +141,8 @@ files."
          (delete-file (string-append out "/guix/config.scm"))
          (delete-file (string-append out "/guix/config.go")))))
 
-  (build-expression->derivation store "guix-latest" (%current-system)
-                                builder
+  (build-expression->derivation store "guix-latest" builder
+                                #:inputs
                                 `(("tar" ,(package-derivation store tar))
                                   ("gzip" ,(package-derivation store gzip))
                                   ("gcrypt" ,(package-derivation store

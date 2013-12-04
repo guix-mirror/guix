@@ -323,8 +323,9 @@ which could lead to gratuitous input divergence."
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 
-  (build-expression->derivation store name system
-                                builder
+  (build-expression->derivation store name builder
+                                #:system system
+                                #:inputs
                                 `(,@(if source
                                         `(("source" ,source))
                                         '())
@@ -493,8 +494,9 @@ platform."
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 
-  (build-expression->derivation store name system
-                                builder
+  (build-expression->derivation store name builder
+                                #:system system
+                                #:inputs
                                 `(,@(if source
                                         `(("source" ,source))
                                         '())

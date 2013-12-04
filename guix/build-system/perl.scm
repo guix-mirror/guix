@@ -93,8 +93,9 @@ provides a `Makefile.PL' file as its build system."
          (package-derivation store guile system)))))
 
   (let ((perl (package-derivation store perl system)))
-    (build-expression->derivation store name system
-                                  builder
+    (build-expression->derivation store name builder
+                                  #:system system
+                                  #:inputs
                                   `(,@(if source
                                           `(("source" ,source))
                                           '())

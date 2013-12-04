@@ -116,8 +116,9 @@
                                     (mkdir out)
                                     (symlink ,guile
                                              (string-append out "/guile-rocks"))))
-                         (drv    (derivation-expression "rocks" (%current-system)
-                                                        exp `(("g" ,gdrv))))
+                         (drv    (derivation-expression "rocks" exp
+                                                        #:inputs
+                                                        `(("g" ,gdrv))))
                          (out -> (derivation->output-path drv))
                          (built? (built-derivations (list drv))))
       (return (and built?

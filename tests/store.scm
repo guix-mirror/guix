@@ -236,12 +236,11 @@ Deriver: ~a~%"
   (let* ((s   (open-connection))
          (c   (random-text))                      ; contents of the output
          (d   (build-expression->derivation
-               s "substitute-me" (%current-system)
+               s "substitute-me"
                `(call-with-output-file %output
                   (lambda (p)
                     (exit 1)                      ; would actually fail
                     (display ,c p)))
-               '()
                #:guile-for-build
                (package-derivation s %bootstrap-guile (%current-system))))
          (o   (derivation->output-path d))
@@ -288,11 +287,10 @@ Deriver: ~a~%"
   (let* ((s   (open-connection))
          (t   (random-text))                      ; contents of the output
          (d   (build-expression->derivation
-               s "substitute-me-not" (%current-system)
+               s "substitute-me-not"
                `(call-with-output-file %output
                   (lambda (p)
                     (display ,t p)))
-               '()
                #:guile-for-build
                (package-derivation s %bootstrap-guile (%current-system))))
          (o   (derivation->output-path d))

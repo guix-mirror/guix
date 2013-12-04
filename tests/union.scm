@@ -104,8 +104,8 @@
                                   (map cdr %build-inputs))))
          (drv
           (build-expression->derivation %store "union-test"
-                                        (%current-system)
-                                        builder inputs
+                                        builder
+                                        #:inputs inputs
                                         #:modules '((guix build union)))))
     (and (build-derivations %store (list (pk 'drv drv)))
          (with-directory-excursion (derivation->output-path drv)

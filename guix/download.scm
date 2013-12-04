@@ -228,11 +228,11 @@ must be a list of symbol/URL-list pairs."
                            ;; set it here.
                            `(("GUILE_LOAD_PATH" . ,dir)))
                          '())))
-    (build-expression->derivation store (or name file-name) system
-                                  builder
-                                  (if gnutls-drv
-                                      `(("gnutls" ,gnutls-drv))
-                                      '())
+    (build-expression->derivation store (or name file-name) builder
+                                  #:system system
+                                  #:inputs (if gnutls-drv
+                                               `(("gnutls" ,gnutls-drv))
+                                               '())
                                   #:hash-algo hash-algo
                                   #:hash hash
                                   #:modules '((guix build download)

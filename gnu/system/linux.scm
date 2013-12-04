@@ -108,7 +108,8 @@
                      %build-inputs)
            #t)))
 
-    (derivation-expression "pam.d" (%current-system) builder (zip names files))))
+    (derivation-expression "pam.d" builder
+                           #:inputs (zip names files))))
 
 (define %pam-other-services
   ;; The "other" PAM configuration, which denies everything (see

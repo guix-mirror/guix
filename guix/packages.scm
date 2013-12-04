@@ -386,10 +386,11 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                                                              system)))))
                             (or inputs (%standard-patch-inputs)))))
 
-   (build-expression->derivation store name system builder
-                                 `(("source" ,source)
-                                   ,@inputs
-                                   ,@patch-inputs)
+   (build-expression->derivation store name builder
+                                 #:inputs `(("source" ,source)
+                                            ,@inputs
+                                            ,@patch-inputs)
+                                 #:system system
                                  #:modules imported-modules
                                  #:guile-for-build guile-for-build)))
 

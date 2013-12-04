@@ -104,8 +104,9 @@ provides a 'CMakeLists.txt' file as its build system."
          (package-derivation store guile system)))))
 
   (let ((cmake (package-derivation store cmake system)))
-    (build-expression->derivation store name system
-                                  builder
+    (build-expression->derivation store name builder
+                                  #:system system
+                                  #:inputs
                                   `(,@(if source
                                           `(("source" ,source))
                                           '())

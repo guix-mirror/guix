@@ -196,7 +196,9 @@ made available under the /xchg CIFS share."
                                      ("coreutils" ,coreutils)
                                      ("builder" ,user-builder)
                                      ,@inputs))))
-    (derivation-expression name system builder inputs
+    (derivation-expression name builder
+                           #:system system
+                           #:inputs inputs
                            #:env-vars env-vars
                            #:modules (delete-duplicates
                                       `((guix build utils)
@@ -450,8 +452,9 @@ input tuples."
                                (x
                                 (return x)))
                               inputs))))
-    (derivation-expression name system builder
-                           inputs
+    (derivation-expression name builder
+                           #:system system
+                           #:inputs inputs
                            #:modules '((guix build union))
                            #:guile-for-build guile)))
 

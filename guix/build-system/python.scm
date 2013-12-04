@@ -146,8 +146,8 @@ provides a 'setup.py' file as its build system."
          (package-derivation store guile system)))))
 
   (let ((python (package-derivation store python system)))
-    (build-expression->derivation store name system
-                                  builder
+    (build-expression->derivation store name builder
+                                  #:inputs
                                   `(,@(if source
                                           `(("source" ,source))
                                           '())
@@ -158,6 +158,7 @@ provides a 'setup.py' file as its build system."
                                     ;; 'gnu-build-system'.
                                     ,@(standard-inputs system))
 
+                                  #:system system
                                   #:modules imported-modules
                                   #:outputs outputs
                                   #:guile-for-build guile-for-build)))

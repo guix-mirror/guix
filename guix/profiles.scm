@@ -246,9 +246,8 @@ the given MANIFEST."
            (lambda (p)
              (pretty-print ',(manifest->sexp manifest) p))))))
 
-  (build-expression->derivation store "profile"
-                                (%current-system)
-                                builder
+  (build-expression->derivation store "profile" builder
+                                #:inputs
                                 (append-map (match-lambda
                                              (($ <manifest-entry> name version
                                                  output path deps (inputs ..1))

@@ -1246,7 +1246,12 @@ As can be guessed, this primitive is cumbersome to use directly.  An
 improved variant is @code{build-expression->derivation}, which allows
 the caller to directly pass a Guile expression as the build script:
 
-@deffn {Scheme Procedure} build-expression->derivation @var{store} @var{name} @var{system} @var{exp} @var{inputs} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:env-vars '()] [#:modules '()] [#:references-graphs #f] [#:guile-for-build #f]
+@deffn {Scheme Procedure} build-expression->derivation @var{store} @
+       @var{name} @var{exp} @
+       [#:system (%current-system)] [#:inputs '()] @
+       [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
+       [#:env-vars '()] [#:modules '()] @
+       [#:references-graphs #f] [#:guile-for-build #f]
 Return a derivation that executes Scheme expression @var{exp} as a
 builder for derivation @var{name}.  @var{inputs} must be a list of
 @code{(name drv-path sub-drv)} tuples; when @var{sub-drv} is omitted,
@@ -1281,8 +1286,7 @@ containing one file:
                   (call-with-output-file (string-append out "/test")
                     (lambda (p)
                       (display '(hello guix) p))))))
-  (build-expression->derivation store "goo" (%current-system)
-                                builder '()))
+  (build-expression->derivation store "goo" builder))
 
 @result{} #<derivation /nix/store/@dots{}-goo.drv => @dots{}>
 @end lisp
@@ -1425,8 +1429,9 @@ directory of @var{package}.  When @var{file} is omitted, return the name
 of the @var{output} directory of @var{package}.
 @end deffn
 
-@deffn {Monadic Procedure} derivation-expression @var{name} @var{system} @
-       @var{exp} @var{inputs} [#:outputs '("out")] [#:hash #f] @
+@deffn {Monadic Procedure} derivation-expression @var{name} @var{exp} @
+       [#:system (%current-system)] [#:inputs '()] @
+       [#:outputs '("out")] [#:hash #f] @
        [#:hash-algo #f] [#:env-vars '()] [#:modules '()] @
        [#:references-graphs #f] [#:guile-for-build #f]
 Monadic version of @code{build-expression->derivation}

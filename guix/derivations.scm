@@ -824,8 +824,9 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
                                                       (mkdir ,tail))))))
                                      `((symlink ,store-path ,final-path)))))
                            files))))
-    (build-expression->derivation store name system
-                                  builder files
+    (build-expression->derivation store name builder
+                                  #:system system
+                                  #:inputs files
                                   #:guile-for-build guile)))
 
 (define* (imported-modules store modules
@@ -889,12 +890,16 @@ they can refer to each other."
                                     #:opts %auto-compilation-options)))))
                 files)))
 
-    (build-expression->derivation store name system builder
-                                  `(("modules" ,module-drv))
+    (build-expression->derivation store name builder
+                                  #:inputs `(("modules" ,module-drv))
+                                  #:system system
                                   #:guile-for-build guile)))
 
-(define* (build-expression->derivation store name system exp inputs
-                                       #:key (outputs '("out"))
+(define* (build-expression->derivation store name exp
+                                       #:key
+                                       (system (%current-system))
+                                       (inputs '())
+                                       (outputs '("out"))
                                        hash hash-algo
                                        (env-vars '())
                                        (modules '())

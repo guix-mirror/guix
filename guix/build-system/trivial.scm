@@ -42,10 +42,11 @@
                         search-paths)
   "Run build expression BUILDER, an expression, for SYSTEM.  SOURCE is
 ignored."
-  (build-expression->derivation store name system builder
-                                (if source
-                                    `(("source" ,source) ,@inputs)
-                                    inputs)
+  (build-expression->derivation store name builder
+                                #:inputs (if source
+                                             `(("source" ,source) ,@inputs)
+                                             inputs)
+                                #:system system
                                 #:outputs outputs
                                 #:modules modules
                                 #:guile-for-build
@@ -56,7 +57,9 @@ ignored."
                               outputs guile system builder (modules '())
                               search-paths native-search-paths)
   "Like `trivial-build', but in a cross-compilation context."
-  (build-expression->derivation store name system builder
+  (build-expression->derivation store name builder
+                                #:system system
+                                #:inputs
                                 (let ((inputs (append native-inputs inputs)))
                                   (if source
                                       `(("source" ,source) ,@inputs)
