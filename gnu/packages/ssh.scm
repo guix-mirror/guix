@@ -24,6 +24,10 @@
   #:use-module (gnu packages groff)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages patchelf)
+  #:use-module (gnu packages guile)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages which)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -175,3 +179,65 @@ Additionally, various channel-specific options can be negotiated.")
                                "See LICENSE in the distribution."))
    (home-page "http://www.openssh.org/")))
 
+(define-public guile-ssh
+  (package
+    (name "guile-ssh")
+    (version "0.4.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/artyom-poptsov/libguile-ssh/archive/v"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0vw02r261amkp6238cflww2y9y1v6vfx9ias6hvn8dlx0ghrd5dw"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'configure 'autoreconf
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; The 'configure' script would want libssh 0.5.4, but that
+                   ;; doesn't exist.
+                   (substitute* "configure.ac"
+                     (("0\\.5\\.4")
+                      "0.5.3"))
+
+                   (substitute* "src/Makefile.am"
+                     (("-lssh_threads" match)
+                      (string-append "-L" (assoc-ref inputs "libssh")
+                                     "/lib " match)))
+
+                   (zero? (system* "autoreconf" "-vfi")))
+                 (alist-cons-after
+                  'install 'fix-libguile-ssh-file-name
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out      (assoc-ref outputs "out"))
+                           (libdir   (string-append out "/lib"))
+                           (guiledir (string-append out
+                                                    "/share/guile/site/2.0")))
+                      (substitute* (find-files guiledir ".scm")
+                        (("\"libguile-ssh\"")
+                         (string-append "\"" libdir "/libguile-ssh\"")))
+
+                      ;; Make sure it works.
+                      (setenv "GUILE_LOAD_PATH" guiledir)
+                      (setenv "GUILE_LOAD_COMPILED_PATH" guiledir)
+                      (system* "guile" "-c" "(use-modules (ssh session))")))
+                  %standard-phases))
+       #:configure-flags (list (string-append "--with-guilesitedir="
+                                              (assoc-ref %outputs "out")
+                                              "/share/guile/site/2.0"))))
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("libtool" ,libtool "bin")
+                     ("pkg-config" ,pkg-config)
+                     ("which" ,which)))
+    (inputs `(("guile" ,guile-2.0)
+              ("libssh" ,libssh)))
+    (synopsis "Guile bindings to libssh")
+    (description
+     "Guile-SSH is a library that provides access to the SSH protocol for
+programs written in GNU Guile interpreter.  It is a wrapper to the underlying
+libssh library.")
+    (home-page "https://github.com/artyom-poptsov/libguile-ssh")
+    (license license:gpl3+)))
