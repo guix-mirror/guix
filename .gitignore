@@ -35,6 +35,8 @@ config.cache
 /po/remove-potcdate.sin
 /po/stamp-po
 /po/guix.pot
+/po/*.mo
+/po/*.gmo
 /tests/*.trs
 /INSTALL
 /m4/*
@@ -78,3 +80,7 @@ stamp-h[0-9]
 /doc/images/bootstrap-graph.png
 /doc/images/bootstrap-graph.eps
 /guix-register
+GPATH
+GRTAGS
+GTAGS
+/nix-setuid-helper
