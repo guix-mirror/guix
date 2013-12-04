@@ -57,7 +57,8 @@
        ("yasm" ,yasm)
        ("zlib", zlib)))
     (arguments
-     `(#:phases
+     `(#:tests? #f ; see https://trac.ffmpeg.org/ticket/3177
+       #:phases
          (alist-replace
           'configure
           ;; configure does not work followed by "SHELL=..." and
