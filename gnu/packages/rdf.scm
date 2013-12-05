@@ -79,6 +79,7 @@ HTML and JSON.")
     ;; FIXME: Add optional dependencies: Raptor, Redland, odbci, clucene; doxygen
     (inputs
      `(("pkg-config" ,pkg-config)
+       ("raptor2" ,raptor2)
        ("qt" ,qt-4)))
     (home-page "http://soprano.sourceforge.net/")
     (synopsis "RDF data library for Qt")
