@@ -27,25 +27,16 @@ nodist_noinst_SCRIPTS =				\
 include gnu-system.am
 
 MODULES =					\
-  guix/scripts/build.scm			\
-  guix/scripts/download.scm			\
-  guix/scripts/import.scm			\
-  guix/scripts/package.scm			\
-  guix/scripts/gc.scm				\
-  guix/scripts/hash.scm				\
-  guix/scripts/pull.scm				\
-  guix/scripts/substitute-binary.scm		\
-  guix/scripts/refresh.scm			\
   guix/base32.scm				\
   guix/records.scm				\
   guix/hash.scm					\
   guix/utils.scm				\
+  guix/download.scm				\
   guix/monads.scm				\
   guix/profiles.scm				\
   guix/serialization.scm			\
   guix/nar.scm					\
   guix/derivations.scm				\
-  guix/download.scm				\
   guix/gnu-maintenance.scm			\
   guix/licenses.scm				\
   guix/build-system.scm				\
@@ -71,12 +62,22 @@ MODULES =					\
   guix/build/rpath.scm				\
   guix/packages.scm				\
   guix/snix.scm					\
+  guix/scripts/download.scm			\
+  guix/scripts/build.scm			\
+  guix/scripts/import.scm			\
+  guix/scripts/package.scm			\
+  guix/scripts/gc.scm				\
+  guix/scripts/hash.scm				\
+  guix/scripts/pull.scm				\
+  guix/scripts/substitute-binary.scm		\
+  guix/scripts/refresh.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
 # Because of the autoload hack in (guix build download), we must build it
 # first to avoid errors on systems where (gnutls) is unavailable.
 guix/scripts/download.go: guix/build/download.go
+guix/download.go: guix/build/download.go
 
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
