@@ -17,12 +17,46 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages rdf)
-  #:use-module ((guix licenses) #:select (lgpl2.0+))
+  #:use-module ((guix licenses) #:select (lgpl2.0+ lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages qt))
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages xml))
+
+(define-public raptor2
+  (package
+    (name "raptor2")
+    (version "2.0.11")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.librdf.org/source/" name
+                                 "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1z3i4fs32wcq5y9l7gdn7262h6r0ppdpvx4gw6jgsym8z083w0xf"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("curl" ,curl)
+       ("libxml2" ,libxml2)
+       ("libxslt" ,libxslt)
+       ("zlib" ,zlib)))
+    (home-page "http://librdf.org/raptor/")
+    (synopsis "RDF syntax library")
+    (description "Raptor is a C library providing a set of parsers and
+serialisers that generate Resource Description Framework (RDF) triples
+by parsing syntaxes or serialise the triples into a syntax.  The supported
+parsing syntaxes are RDF/XML, N-Quads, N-Triples 1.0 and 1.1, TRiG,
+Turtle 2008 and 2013, RDFa 1.0 and 1.1, RSS tag soup including all versions
+of RSS, Atom 1.0 and 0.3, GRDDL and microformats for HTML, XHTML and
+XML.  The serialising syntaxes are RDF/XML (regular, abbreviated, XMP),
+Turtle 2013, N-Quads, N-Triples 1.1, Atom 1.0, RSS 1.0, GraphViz DOT,
+HTML and JSON.")
+    (license lgpl2.1+))) ; or any choice of gpl2+ or asl2.0
 
 (define-public soprano
   (package
