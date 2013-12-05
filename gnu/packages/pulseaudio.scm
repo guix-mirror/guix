@@ -146,7 +146,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
              (patches (list (search-patch "pulseaudio-test-timeouts.patch")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--localstatedir=/var" ;"--sysconfdir=/etc"
+     `(#:configure-flags '("--localstatedir=/var" ;"--sysconfdir=/etc"
                            "--disable-oss-output")
        #:phases (alist-cons-before
                  'check 'pre-check
@@ -154,7 +154,13 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                    ;; 'tests/lock-autospawn-test.c' wants to create a file
                    ;; under ~/.config/pulse.
                    (setenv "HOME" (getcwd)))
-                 %standard-phases)))
+                 %standard-phases)
+
+       ,@(if (string=? (%current-system) "i686-linux")
+             ;; Work around test failure:
+             ;; <https://bugs.freedesktop.org/show_bug.cgi?id=72374>.
+             '(#:tests? #f)
+             '())))
     (inputs
      ;; TODO: Add optional inputs (GTK+?).
      `(;; ("sbc" ,sbc)
@@ -204,12 +210,6 @@ mixing several sounds into one are easily achieved using a sound server. ")
               (base32
                "02s775m1531sshwlbvfddk3pz8zjmwkv1sgzggn386ja3gc9vwi2"))))
     (build-system gnu-build-system)
-    (arguments
-     (if (string=? (%current-system) "i686-linux")
-         ;; Work around test failure:
-         ;; <https://bugs.freedesktop.org/show_bug.cgi?id=72374>.
-         '(#:tests? #f)
-         '()))
     (inputs
      `(("intltool" ,intltool)
        ("libcanberra" ,libcanberra)
