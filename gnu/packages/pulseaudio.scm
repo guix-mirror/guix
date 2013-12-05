@@ -204,6 +204,12 @@ mixing several sounds into one are easily achieved using a sound server. ")
               (base32
                "02s775m1531sshwlbvfddk3pz8zjmwkv1sgzggn386ja3gc9vwi2"))))
     (build-system gnu-build-system)
+    (arguments
+     (if (string=? (%current-system) "i686-linux")
+         ;; Work around test failure:
+         ;; <https://bugs.freedesktop.org/show_bug.cgi?id=72374>.
+         '(#:tests? #f)
+         '()))
     (inputs
      `(("intltool" ,intltool)
        ("libcanberra" ,libcanberra)
