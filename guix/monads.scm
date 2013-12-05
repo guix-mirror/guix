@@ -216,7 +216,6 @@ list."
 (define-inlinable (sequence monad lst)
   "Turn the list of monadic values LST into a monadic list of values, by
 evaluating each item of LST in sequence."
-  ;; FIXME: 'mapm' binds from right to left.
   (with-monad monad
     (mapm monad return lst)))
 
