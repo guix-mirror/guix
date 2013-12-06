@@ -59,6 +59,21 @@
 ;;;
 ;;; Code:
 
+(define (lower-inputs inputs)
+  "Turn any package from INPUTS into a derivation; return the corresponding
+input list as a monadic value."
+  (with-monad %store-monad
+    (sequence %store-monad
+              (map (match-lambda
+                    ((name (? package? package) sub-drv ...)
+                     (mlet %store-monad ((drv (package->derivation package)))
+                       (return `(,name ,drv ,@sub-drv))))
+                    ((name (? string? file))
+                     (return `(,name ,file)))
+                    (tuple
+                     (return tuple)))
+                   inputs))))
+
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
                                              (system (%current-system))
@@ -167,21 +182,6 @@ made available under the /xchg CIFS share."
                    '(begin
                       (mkdir out)
                       (copy-recursively "xchg" out)))))))
-
-
-  (define (lower-inputs inputs)
-    ;; Turn any package in INPUTS into a derivation.
-    (with-monad %store-monad
-      (sequence %store-monad
-                (map (match-lambda
-                      ((name (? package? package) sub-drv ...)
-                       (mlet %store-monad ((drv (package->derivation package)))
-                         (return `(,name ,drv ,@sub-drv))))
-                      ((name (? string? file))
-                       (return `(,name ,file)))
-                      (tuple
-                       (return tuple)))
-                     inputs))))
 
   (mlet* %store-monad
       ((input-alist  (sequence %store-monad input-alist))
@@ -458,24 +458,92 @@ input tuples."
                            #:modules '((guix build union))
                            #:guile-for-build guile)))
 
+(define* (file-union files
+                     #:key (inputs '()) (name "file-union"))
+  "Return a derivation that builds a directory containing all of FILES.  Each
+item in FILES must be a list where the first element is the file name to use
+in the new directory, and the second element is the target file.
+
+The subset of FILES corresponding to plain store files is automatically added
+as an inputs; additional inputs, such as derivations, are taken from INPUTS."
+  (mlet %store-monad ((inputs (lower-inputs inputs)))
+    (let ((inputs (append inputs
+                          (filter (match-lambda
+                                   ((_ file)
+                                    (direct-store-path? file)))
+                                  files))))
+      (derivation-expression name
+                             `(let ((out (assoc-ref %outputs "out")))
+                                (mkdir out)
+                                (chdir out)
+                                ,@(map (match-lambda
+                                        ((name target)
+                                         `(symlink ,target ,name)))
+                                       files))
+
+                             #:inputs inputs))))
+
+(define* (etc-directory #:key
+                        (accounts '())
+                        (groups '())
+                        (pam-services '())
+                        (profile "/var/run/current-system/profile"))
+  "Return a derivation that builds the static part of the /etc directory."
+  (mlet* %store-monad
+      ((services   (package-file net-base "etc/services"))
+       (protocols  (package-file net-base "etc/protocols"))
+       (rpc        (package-file net-base "etc/rpc"))
+       (passwd     (passwd-file accounts))
+       (shadow     (passwd-file accounts #:shadow? #t))
+       (group      (group-file groups))
+       (pam.d      (pam-services->directory pam-services))
+       (login.defs (text-file "login.defs" "# Empty for now.\n"))
+       (issue      (text-file "issue" "
+This is an alpha preview of the GNU system.  Welcome.
+
+This image features the GNU Guix package manager, which was used to
+build it (http://www.gnu.org/software/guix/).  The init system is
+GNU dmd (http://www.gnu.org/software/dmd/).
+
+You can log in as 'guest' or 'root' with no password.
+"))
+
+       ;; TODO: Generate bashrc from packages' search-paths.
+       (bashrc    (text-file "bashrc" (string-append "
+export PS1='\\u@\\h\\$ '
+export PATH=$HOME/.guix-profile/bin:" profile "/bin:" profile "/sbin
+export CPATH=$HOME/.guix-profile/include:" profile "/include
+export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
+alias ls='ls -p --color'
+alias ll='ls -l'
+")))
+       (resolv.conf
+        ;; Name resolution for default QEMU settings.
+        ;; FIXME: Move to networking service.
+        (text-file "resolv.conf" "nameserver 10.0.2.3\n"))
+
+       (files -> `(("services" ,services)
+                   ("protocols" ,protocols)
+                   ("rpc" ,rpc)
+                   ("pam.d" ,(derivation->output-path pam.d))
+                   ("login.defs" ,login.defs)
+                   ("issue" ,issue)
+                   ("profile" ,bashrc)
+                   ("passwd" ,passwd)
+                   ("shadow" ,shadow)
+                   ("group" ,group)
+                   ("resolv.conf" ,resolv.conf))))
+    (file-union files
+                #:inputs `(("net" ,net-base)
+                           ("pam.d" ,pam.d))
+                #:name "etc")))
+
 (define (system-qemu-image)
   "Return the derivation of a QEMU image of the GNU system."
   (define build-user-gid 30000)
 
   (mlet* %store-monad
-      ((motd (text-file "motd" "
-Happy birthday, GNU!                                http://www.gnu.org/gnu30
-
-"))
-
-       (%pam-services ->
-                      ;; Services known to PAM.
-                      (list %pam-other-services
-                            (unix-pam-service "login"
-                                              #:allow-empty-passwords? #t
-                                              #:motd motd)))
-
-       (services (listm %store-monad
+      ((services (listm %store-monad
                         (host-name-service "gnu")
                         (mingetty-service "tty1")
                         (mingetty-service "tty2")
@@ -490,16 +558,18 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                         ;; QEMU networking settings.
                         (static-networking-service "eth0" "10.0.2.10"
                                                    #:gateway "10.0.2.2")))
+       (motd     (text-file "motd" "
+Happy birthday, GNU!                                http://www.gnu.org/gnu30
+
+"))
+       (pam-services ->
+                     ;; Services known to PAM.
+                     (list %pam-other-services
+                           (unix-pam-service "login"
+                                             #:allow-empty-passwords? #t
+                                             #:motd motd)))
 
        (build-accounts (guix-build-accounts 10 #:gid build-user-gid))
-
-       (resolv.conf
-        ;; Name resolution for default QEMU settings.
-        (text-file "resolv.conf" "nameserver 10.0.2.3\n"))
-
-       (etc-services  (package-file net-base "etc/services"))
-       (etc-protocols (package-file net-base "etc/protocols"))
-       (etc-rpc       (package-file net-base "etc/rpc"))
 
        (bash-file (package-file bash "bin/bash"))
        (dmd-file  (package-file dmd "bin/dmd"))
@@ -519,23 +589,18 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                             (home-directory "/home/guest")
                             (shell bash-file))
                            build-accounts))
-       (passwd    (passwd-file accounts))
-       (shadow    (passwd-file accounts #:shadow? #t))
-       (group     (group-file (list (user-group
-                                     (name "root")
-                                     (id 0))
-                                    (user-group
-                                     (name "users")
-                                     (id 100)
-                                     (members '("guest")))
-                                    (user-group
-                                     (name "guixbuild")
-                                     (id build-user-gid)
-                                     (members (map user-account-name
-                                                   build-accounts))))))
-       (pam.d-drv (pam-services->directory %pam-services))
-       (pam.d ->  (derivation->output-path pam.d-drv))
-
+       (groups   -> (list (user-group
+                           (name "root")
+                           (id 0))
+                          (user-group
+                           (name "users")
+                           (id 100)
+                           (members '("guest")))
+                          (user-group
+                           (name "guixbuild")
+                           (id build-user-gid)
+                           (members (map user-account-name
+                                         build-accounts)))))
        (packages -> `(("coreutils" ,coreutils)
                       ("bash" ,bash)
                       ("guile" ,guile-2.0)
@@ -552,46 +617,34 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                       ("guix" ,guix)))
 
        ;; TODO: Replace with a real profile with a manifest.
-       ;; TODO: Generate bashrc from packages' search-paths.
        (profile-drv (union packages
                            #:name "default-profile"))
        (profile ->  (derivation->output-path profile-drv))
-       (bashrc   (text-file "bashrc" (string-append "
-export PS1='\\u@\\h\\$ '
-export PATH=$HOME/.guix-profile/bin:" profile "/bin:" profile "/sbin
-export CPATH=$HOME/.guix-profile/include:" profile "/include
-export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
-alias ls='ls -p --color'
-alias ll='ls -l'
-")))
+       (etc-drv     (etc-directory #:accounts accounts #:groups groups
+                                   #:pam-services pam-services
+                                   #:profile profile))
+       (etc     ->  (derivation->output-path etc-drv))
 
-       (issue    (text-file "issue" "
-This is an alpha preview of the GNU system.  Welcome.
-
-This image features the GNU Guix package manager, which was used to
-build it (http://www.gnu.org/software/guix/).  The init system is
-GNU dmd (http://www.gnu.org/software/dmd/).
-
-You can log in as 'guest' or 'root' with no password.
-"))
 
        (populate -> `((directory "/nix/store" 0 ,build-user-gid)
                       (directory "/etc")
                       (directory "/var/log")      ; for dmd
                       (directory "/var/run/nscd")
-                      ("/etc/shadow" -> ,shadow)
-                      ("/etc/passwd" -> ,passwd)
-                      ("/etc/group" -> ,group)
-                      ("/etc/login.defs" -> "/dev/null")
-                      ("/etc/pam.d" -> ,pam.d)
-                      ("/etc/resolv.conf" -> ,resolv.conf)
-                      ("/etc/profile" -> ,bashrc)
-                      ("/etc/issue" -> ,issue)
-                      ("/etc/services" -> ,etc-services)
-                      ("/etc/protocols" -> ,etc-protocols)
-                      ("/etc/rpc" -> ,etc-rpc)
+                      ("/etc/static" -> ,etc)
+                      ("/etc/shadow" -> "/etc/static/shadow")
+                      ("/etc/passwd" -> "/etc/static/passwd")
+                      ("/etc/group" -> "/etc/static/group")
+                      ("/etc/login.defs" -> "/etc/static/login.defs")
+                      ("/etc/pam.d" -> "/etc/static/pam.d")
+                      ("/etc/resolv.conf" -> "/etc/static/resolv.conf")
+                      ("/etc/profile" -> "/etc/static/profile")
+                      ("/etc/issue" -> "/etc/static/issue")
+                      ("/etc/services" -> "/etc/static/services")
+                      ("/etc/protocols" -> "/etc/static/protocols")
+                      ("/etc/rpc" -> "/etc/static/rpc")
                       (directory "/var/nix/gcroots")
                       ("/var/nix/gcroots/default-profile" -> ,profile)
+                      ("/var/nix/gcroots/etc-directory" -> ,etc)
                       (directory "/tmp")
                       (directory "/var/nix/profiles/per-user/root" 0 0)
                       (directory "/var/nix/profiles/per-user/guest"
@@ -617,20 +670,9 @@ You can log in as 'guest' or 'root' with no password.
                  #:inputs-to-copy `(("boot" ,boot)
                                     ("linux" ,linux-libre)
                                     ("initrd" ,gnu-system-initrd)
-                                    ("pam.d" ,pam.d-drv)
-                                    ("profile" ,profile-drv)
-
-                                    ;; Configuration.
                                     ("dmd.conf" ,dmd-conf)
-                                    ("etc-pam.d" ,pam.d-drv)
-                                    ("etc-passwd" ,passwd)
-                                    ("etc-shadow" ,shadow)
-                                    ("etc-group" ,group)
-                                    ("etc-resolv.conf" ,resolv.conf)
-                                    ("etc-bashrc" ,bashrc)
-                                    ("etc-issue" ,issue)
-                                    ("etc-motd" ,motd)
-                                    ("net-base" ,net-base)
+                                    ("profile" ,profile-drv)
+                                    ("etc" ,etc-drv)
                                     ,@(append-map service-inputs
                                                   services)))))
 
