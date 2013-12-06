@@ -140,6 +140,28 @@ as extra arguments to the parse methods, in which case they override options
 given at XML::Parser creation time.")
     (home-page "http://search.cpan.org/~toddr/XML-Parser-2.41/Parser.pm")))
 
+(define-public perl-xml-parser-perlsax
+  (package
+    (name "perl-xml-parser-perlsax")
+    (version "0.08")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/K/KM/KMACLEOD/libxml-perl-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1jy9af0ljyzj7wakqli0437zb2vrbplqj4xhab7bfj2xgfdhawa5"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-xml-parser" ,perl-xml-parser)))
+    (license (package-license perl))
+    (synopsis "Perl SAX parser using XML::Parser")
+    (description
+     "XML::Parser::PerlSAX is a PerlSAX parser using the XML::Parser
+module.")
+    (home-page "http://search.cpan.org/~kmacleod/libxml-perl/lib/XML/Parser/PerlSAX.pm")))
+
 (define-public perl-xml-simple
   (package
     (name "perl-xml-simple")
