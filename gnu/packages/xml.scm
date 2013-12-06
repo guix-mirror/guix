@@ -185,6 +185,29 @@ underlying XML parsing module (either XML::Parser or one of the SAX2
 parser modules).")
     (home-page "http://search.cpan.org/~grantm/XML-Simple-2.20/lib/XML/Simple.pm")))
 
+(define-public perl-xml-regexp
+  (package
+    (name "perl-xml-regexp")
+    (version "0.04")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/T/TJ/TJMATHER/XML-RegExp-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0m7wj00a2kik7wj0azhs1zagwazqh3hlz4255n75q21nc04r06fz"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-xml-parser" ,perl-xml-parser)))
+    (license (package-license perl))
+    (synopsis "Perl regular expressions for XML tokens")
+    (description
+     "XML::RegExp contains regular expressions for the following XML tokens:
+BaseChar, Ideographic, Letter, Digit, Extender, CombiningChar, NameChar,
+EntityRef, CharRef, Reference, Name, NmToken, and AttValue.")
+    (home-page "http://search.cpan.org/~tjmather/XML-RegExp/lib/XML/RegExp.pm")))
+
 (define-public xmlto
   (package
     (name "xmlto")
