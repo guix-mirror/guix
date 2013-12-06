@@ -517,10 +517,6 @@ export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
 alias ls='ls -p --color'
 alias ll='ls -l'
 ")))
-       (resolv.conf
-        ;; Name resolution for default QEMU settings.
-        ;; FIXME: Move to networking service.
-        (text-file "resolv.conf" "nameserver 10.0.2.3\n"))
 
        (files -> `(("services" ,services)
                    ("protocols" ,protocols)
@@ -531,8 +527,7 @@ alias ll='ls -l'
                    ("profile" ,bashrc)
                    ("passwd" ,passwd)
                    ("shadow" ,shadow)
-                   ("group" ,group)
-                   ("resolv.conf" ,resolv.conf))))
+                   ("group" ,group))))
     (file-union files
                 #:inputs `(("net" ,net-base)
                            ("pam.d" ,pam.d))
@@ -557,6 +552,7 @@ alias ll='ls -l'
 
                         ;; QEMU networking settings.
                         (static-networking-service "eth0" "10.0.2.10"
+                                                   #:name-servers '("10.0.2.3")
                                                    #:gateway "10.0.2.2")))
        (motd     (text-file "motd" "
 Happy birthday, GNU!                                http://www.gnu.org/gnu30
@@ -636,7 +632,6 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                       ("/etc/group" -> "/etc/static/group")
                       ("/etc/login.defs" -> "/etc/static/login.defs")
                       ("/etc/pam.d" -> "/etc/static/pam.d")
-                      ("/etc/resolv.conf" -> "/etc/static/resolv.conf")
                       ("/etc/profile" -> "/etc/static/profile")
                       ("/etc/issue" -> "/etc/static/issue")
                       ("/etc/services" -> "/etc/static/services")
