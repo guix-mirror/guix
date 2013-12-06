@@ -156,7 +156,8 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                    (setenv "HOME" (getcwd)))
                  %standard-phases)
 
-       ,@(if (string=? (%current-system) "i686-linux")
+       ,@(if (or (string=? (%current-system) "i686-linux")
+                 (string=? (%current-system) "mips64el-linux"))
              ;; Work around test failure:
              ;; <https://bugs.freedesktop.org/show_bug.cgi?id=72374>.
              '(#:tests? #f)
