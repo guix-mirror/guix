@@ -86,3 +86,26 @@ related documentation.")
 kinds of HTML parsing operations.")
     (home-page "http://search.cpan.org/dist/HTML-Tagset/")))
 
+(define-public perl-html-parser
+  (package
+    (name "perl-html-parser")
+    (version "3.71")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/HTML-Parser-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "00nqzdgl7c3jilx7mil19k5jwcw3as14pvkjgxi97zyk94vqp4dy"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-html-tagset" ,perl-html-tagset)))
+    (license (package-license perl))
+    (synopsis "Perl HTML parser class")
+    (description
+     "Objects of the HTML::Parser class will recognize markup and separate
+it from plain text (alias data content) in HTML documents.  As different
+kinds of markup and text are recognized, the corresponding event handlers
+are invoked.")
+    (home-page "http://search.cpan.org/~gaas/HTML-Parser/")))
