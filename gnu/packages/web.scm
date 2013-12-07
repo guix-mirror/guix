@@ -193,3 +193,27 @@ exists it is used instead.")
 automatically determining its encoding.  It uses the HTML5 encoding sniffing
 algorithm specified in section 8.2.2.1 of the draft standard.")
     (home-page "http://search.cpan.org/~cjm/IO-HTML/")))
+
+(define-public perl-http-message
+  (package
+    (name "perl-http-message")
+    (version "6.06")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Message-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0qxdrcak97azjvqyx1anpb2ky6vp6vc37x0wcfjdqfajkh09fzh8"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-http-date" ,perl-http-date)
+       ("perl-io-html" ,perl-io-html)
+       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
+       ("perl-uri" ,perl-uri)))
+    (license (package-license perl))
+    (synopsis "Perl HTTP style message")
+    (description
+     "An HTTP::Message object contains some headers and a content body.")
+    (home-page "http://search.cpan.org/~gaas/HTTP-Message/")))
