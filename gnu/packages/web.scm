@@ -172,3 +172,24 @@ known as MIME) types and encodings.  The mapping from file extensions to
 media types is defined by the media.types file.  If the ~/.media.types file
 exists it is used instead.")
     (home-page "http://search.cpan.org/~gaas/LWP-MediaTypes/")))
+
+(define-public perl-io-html
+  (package
+    (name "perl-io-html")
+    (version "1.00")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/C/CJ/CJM/IO-HTML-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "06nj3a0xgp5jxwxx6ayglfk2v7npf5a7gwkqsjlkapjkybarzqh4"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl module to open an HTML file with automatic charset detection")
+    (description
+     "IO::HTML provides an easy way to open a file containing HTML while
+automatically determining its encoding.  It uses the HTML5 encoding sniffing
+algorithm specified in section 8.2.2.1 of the draft standard.")
+    (home-page "http://search.cpan.org/~cjm/IO-HTML/")))
