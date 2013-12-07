@@ -535,8 +535,6 @@ alias ll='ls -l'
 
 (define (system-qemu-image)
   "Return the derivation of a QEMU image of the GNU system."
-  (define build-user-gid 30000)
-
   (mlet* %store-monad
       ((services (listm %store-monad
                         (host-name-service "gnu")
@@ -565,8 +563,6 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                                              #:allow-empty-passwords? #t
                                              #:motd motd)))
 
-       (build-accounts (guix-build-accounts 10 #:gid build-user-gid))
-
        (bash-file (package-file bash "bin/bash"))
        (dmd-file  (package-file dmd "bin/dmd"))
        (dmd-conf  (dmd-configuration-file services))
@@ -584,19 +580,23 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                             (comment "Guest of GNU")
                             (home-directory "/home/guest")
                             (shell bash-file))
-                           build-accounts))
-       (groups   -> (list (user-group
-                           (name "root")
-                           (id 0))
-                          (user-group
-                           (name "users")
-                           (id 100)
-                           (members '("guest")))
-                          (user-group
-                           (name "guixbuild")
-                           (id build-user-gid)
-                           (members (map user-account-name
-                                         build-accounts)))))
+                           (append-map service-user-accounts
+                                       services)))
+       (groups   -> (cons* (user-group
+                            (name "root")
+                            (id 0))
+                           (user-group
+                            (name "users")
+                            (id 100)
+                            (members '("guest")))
+                           (append-map service-user-groups services)))
+       (build-user-gid -> (any (lambda (service)
+                                 (and (equal? '(guix-daemon)
+                                              (service-provision service))
+                                      (match (service-user-groups service)
+                                        ((group)
+                                         (user-group-id group)))))
+                               services))
        (packages -> `(("coreutils" ,coreutils)
                       ("bash" ,bash)
                       ("guile" ,guile-2.0)

@@ -24,13 +24,16 @@
   #:use-module ((gnu packages base)
                 #:select (glibc-final))
   #:use-module ((gnu packages system)
-                #:select (mingetty inetutils))
+                #:select (mingetty inetutils shadow))
   #:use-module ((gnu packages package-management)
                 #:select (guix))
   #:use-module ((gnu packages linux)
                 #:select (net-tools))
+  #:use-module (gnu system shadow)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (guix monads)
   #:export (service?
             service
@@ -40,6 +43,8 @@
             service-start
             service-stop
             service-inputs
+            service-user-accounts
+            service-user-groups
 
             host-name-service
             syslog-service
@@ -70,6 +75,10 @@
   (stop          service-stop                     ; expression
                  (default #f))
   (inputs        service-inputs                   ; list of inputs
+                 (default '()))
+  (user-accounts service-user-accounts            ; list of <user-account>
+                 (default '()))
+  (user-groups   service-user-groups              ; list of <user-groups>
                  (default '())))
 
 (define (host-name-service name)
@@ -149,16 +158,47 @@
       (inputs `(("inetutils" ,inetutils)
                 ("syslog.conf" ,syslog.conf)))))))
 
-(define* (guix-service #:key (guix guix) (builder-group "guixbuild"))
-  "Return a service that runs the build daemon from GUIX."
-  (mlet %store-monad ((daemon (package-file guix "bin/guix-daemon")))
+(define* (guix-build-accounts count #:key
+                              (first-uid 30001)
+                              (gid 30000)
+                              (shadow shadow))
+  "Return a list of COUNT user accounts for Guix build users, with UIDs
+starting at FIRST-UID, and under GID."
+  (mlet* %store-monad ((gid* -> gid)
+                       (no-login (package-file shadow "sbin/nologin")))
+    (return (unfold (cut > <> count)
+                    (lambda (n)
+                      (user-account
+                       (name (format #f "guixbuilder~2,'0d" n))
+                       (password "!")
+                       (uid (+ first-uid n -1))
+                       (gid gid*)
+                       (comment (format #f "Guix Build User ~2d" n))
+                       (home-directory "/var/empty")
+                       (shell no-login)))
+                    1+
+                    1))))
+
+(define* (guix-service #:key (guix guix) (builder-group "guixbuild")
+                       (build-user-gid 30000) (build-accounts 10))
+  "Return a service that runs the build daemon from GUIX, and has
+BUILD-ACCOUNTS user accounts available under BUILD-USER-GID."
+  (mlet %store-monad ((daemon   (package-file guix "bin/guix-daemon"))
+                      (accounts (guix-build-accounts build-accounts
+                                                     #:gid build-user-gid)))
     (return (service
              (provision '(guix-daemon))
              (start `(make-forkexec-constructor ,daemon
                                                 "--build-users-group"
                                                 ,builder-group))
              (stop  `(make-kill-destructor))
-             (inputs `(("guix" ,guix)))))))
+             (inputs `(("guix" ,guix)))
+             (user-accounts accounts)
+             (user-groups (list (user-group
+                                 (name builder-group)
+                                 (id build-user-gid)
+                                 (members (map user-account-name
+                                               user-accounts)))))))))
 
 (define* (static-networking-service interface ip
                                     #:key
