@@ -571,10 +571,9 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
 "))
        (pam-services ->
                      ;; Services known to PAM.
-                     (list %pam-other-services
-                           (unix-pam-service "login"
-                                             #:allow-empty-passwords? #t
-                                             #:motd motd)))
+                     (delete-duplicates
+                      (cons %pam-other-services
+                            (append-map service-pam-services services))))
 
        (bash-file (package-file bash "bin/bash"))
        (dmd-file  (package-file dmd "bin/dmd"))

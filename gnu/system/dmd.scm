@@ -29,7 +29,8 @@
                 #:select (guix))
   #:use-module ((gnu packages linux)
                 #:select (net-tools))
-  #:use-module (gnu system shadow)
+  #:use-module (gnu system shadow)                ; for user accounts/groups
+  #:use-module (gnu system linux)                 ; for PAM services
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
@@ -45,6 +46,7 @@
             service-inputs
             service-user-accounts
             service-user-groups
+            service-pam-services
 
             host-name-service
             syslog-service
@@ -79,6 +81,8 @@
   (user-accounts service-user-accounts            ; list of <user-account>
                  (default '()))
   (user-groups   service-user-groups              ; list of <user-groups>
+                 (default '()))
+  (pam-services  service-pam-services             ; list of <pam-service>
                  (default '())))
 
 (define (host-name-service name)
@@ -91,9 +95,13 @@
                        (sethostname ,name)))
              (respawn? #f)))))
 
-(define (mingetty-service tty)
+(define* (mingetty-service tty
+                           #:key
+                           (motd (text-file "motd" "Welcome.\n"))
+                           (allow-empty-passwords? #t))
   "Return a service to run mingetty on TTY."
-  (mlet %store-monad ((mingetty-bin (package-file mingetty "sbin/mingetty")))
+  (mlet %store-monad ((mingetty-bin (package-file mingetty "sbin/mingetty"))
+                      (motd         motd))
     (return
      (service
       (documentation (string-append "Run mingetty on " tty "."))
@@ -103,9 +111,18 @@
       ;; service to be done.
       (requirement '(host-name))
 
-      (start `(make-forkexec-constructor ,mingetty-bin "--noclear" ,tty))
-      (stop  `(make-kill-destructor))
-      (inputs `(("mingetty" ,mingetty)))))))
+      (start  `(make-forkexec-constructor ,mingetty-bin "--noclear" ,tty))
+      (stop   `(make-kill-destructor))
+      (inputs `(("mingetty" ,mingetty)
+                ("motd" ,motd)))
+
+      (pam-services
+       ;; Let 'login' be known to PAM.  All the mingetty services will have
+       ;; that PAM service, but that's fine because they're all identical and
+       ;; duplicates are removed.
+       (list (unix-pam-service "login"
+                               #:allow-empty-passwords? allow-empty-passwords?
+                               #:motd motd)))))))
 
 (define* (nscd-service #:key (glibc glibc-final))
   "Return a service that runs libc's name service cache daemon (nscd)."
