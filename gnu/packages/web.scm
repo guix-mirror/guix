@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -21,10 +22,12 @@
                 #:renamer (symbol-prefix-proc 'l:))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system perl)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages openssl)
-  #:use-module (gnu packages pcre))
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl))
 
 (define-public httpd
   (package
@@ -62,3 +65,24 @@ Internet and the Web to communicate, plan, and develop the server and its
 related documentation.")
     (license l:asl2.0)
     (home-page "https://httpd.apache.org/")))
+
+(define-public perl-html-tagset
+  (package
+    (name "perl-html-tagset")
+    (version "3.20")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/P/PE/PETDANCE/HTML-Tagset-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1qh8249wgr4v9vgghq77zh1d2zs176bir223a8gh3k9nksn7vcdd"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl data tables useful in parsing HTML")
+    (description
+     "The HTML::Tagset module contains several data tables useful in various
+kinds of HTML parsing operations.")
+    (home-page "http://search.cpan.org/dist/HTML-Tagset/")))
+
