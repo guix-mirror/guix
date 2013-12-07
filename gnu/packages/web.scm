@@ -217,3 +217,28 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
     (description
      "An HTTP::Message object contains some headers and a content body.")
     (home-page "http://search.cpan.org/~gaas/HTTP-Message/")))
+
+(define-public perl-http-cookies
+  (package
+    (name "perl-http-cookies")
+    (version "6.01")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Cookies-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "087bqmg22dg3vj7gssh3pcsh9y1scimkbl5h1kc8jqyfhgisvlzm"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-uri" ,perl-uri)))
+    (license (package-license perl))
+    (synopsis "Perl HTTP cookie jars")
+    (description
+     "The HTTP::Cookies class is for objects that represent a cookie jar,
+that is, a database of all the HTTP cookies that a given LWP::UserAgent
+object knows about.")
+    (home-page "http://search.cpan.org/~gaas/HTTP-Cookies/")))
