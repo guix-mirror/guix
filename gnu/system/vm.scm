@@ -467,11 +467,24 @@ in the new directory, and the second element is the target file.
 The subset of FILES corresponding to plain store files is automatically added
 as an inputs; additional inputs, such as derivations, are taken from INPUTS."
   (mlet %store-monad ((inputs (lower-inputs inputs)))
-    (let ((inputs (append inputs
-                          (filter (match-lambda
-                                   ((_ file)
-                                    (direct-store-path? file)))
-                                  files))))
+    (let* ((outputs (append-map (match-lambda
+                                 ((_ (? derivation? drv))
+                                  (list (derivation->output-path drv)))
+                                 ((_ (? derivation? drv) sub-drv ...)
+                                  (map (cut derivation->output-path drv <>)
+                                       sub-drv))
+                                 (_ '()))
+                                inputs))
+           (inputs   (append inputs
+                             (filter (match-lambda
+                                      ((_ file)
+                                       ;; Elements of FILES that are store
+                                       ;; files and that do not correspond to
+                                       ;; the output of INPUTS are considered
+                                       ;; inputs (still here?).
+                                       (and (direct-store-path? file)
+                                            (not (member file outputs)))))
+                                     files))))
       (derivation-expression name
                              `(let ((out (assoc-ref %outputs "out")))
                                 (mkdir out)
