@@ -109,3 +109,23 @@ it from plain text (alias data content) in HTML documents.  As different
 kinds of markup and text are recognized, the corresponding event handlers
 are invoked.")
     (home-page "http://search.cpan.org/~gaas/HTML-Parser/")))
+
+(define-public perl-http-date
+  (package
+    (name "perl-http-date")
+    (version "6.02")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Date-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0cz357kafhhzw7w59iyi0wvhw7rlh5g1lh38230ckw7rl0fr9fg8"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl date conversion routines")
+    (description
+     "The HTTP::Date module provides functions that deal with date formats
+used by the HTTP protocol (and then some more).")
+    (home-page "http://search.cpan.org/~gaas/HTTP-Date/")))
