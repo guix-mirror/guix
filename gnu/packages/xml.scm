@@ -140,9 +140,9 @@ as extra arguments to the parse methods, in which case they override options
 given at XML::Parser creation time.")
     (home-page "http://search.cpan.org/~toddr/XML-Parser-2.41/Parser.pm")))
 
-(define-public perl-xml-parser-perlsax
+(define-public perl-libxml
   (package
-    (name "perl-xml-parser-perlsax")
+    (name "perl-libxml")
     (version "0.08")
     (source (origin
              (method url-fetch)
