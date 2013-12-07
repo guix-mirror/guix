@@ -30,9 +30,9 @@ you didn’t run it, you may get the following error:
   make: *** No rule to make target `nix/libstore/schema.sql', needed by
   `nix/libstore/schema.sql.hh'
 
-Then, as always, run ‘./configure’.  If you get an error like this one:
+If you get an error like this one:
 
-  ./configure: line 6755: `PKG_CHECK_MODULES(GUILE, guile-2.0 >= 2.0.5)'
+  configure.ac:46: error: possibly undefined macro: PKG_CHECK_MODULES
 
 it probably means that Autoconf couldn’t find ‘pkg.m4’, which is provided by
 pkg-config.  Make sure that ‘pkg.m4’ is available.  For instance, if you
@@ -42,6 +42,8 @@ installed Automake in ‘/usr/local’, it wouldn’t look for ‘.m4’ files i
   $ export ACLOCAL_PATH=/usr/share/aclocal
 
 See “info '(automake) Macro Search Path'” for more information.
+
+Then, run ‘./configure’ as usual.
 
 Finally, you have to invoke ‘make check’ to run tests.  If anything fails,
 take a look at “info '(guix) Installation'” or send a message to
