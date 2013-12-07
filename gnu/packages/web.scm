@@ -129,3 +129,24 @@ are invoked.")
      "The HTTP::Date module provides functions that deal with date formats
 used by the HTTP protocol (and then some more).")
     (home-page "http://search.cpan.org/~gaas/HTTP-Date/")))
+
+(define-public perl-uri
+  (package
+    (name "perl-uri")
+    (version "1.60")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/URI-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0xr31mf7lfrwhyvlx4pzp6p7alls5gi4bj8pk5g89f5cckfd74hz"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl Uniform Resource Identifiers (absolute and relative)")
+    (description
+     "The URI module implements the URI class.  Objects of this class
+represent \"Uniform Resource Identifier references\" as specified in RFC 2396
+(and updated by RFC 2732).")
+    (home-page "http://search.cpan.org/~gaas/URI/")))
