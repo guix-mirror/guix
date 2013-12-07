@@ -150,3 +150,25 @@ used by the HTTP protocol (and then some more).")
 represent \"Uniform Resource Identifier references\" as specified in RFC 2396
 (and updated by RFC 2732).")
     (home-page "http://search.cpan.org/~gaas/URI/")))
+
+(define-public perl-lwp-mediatypes
+  (package
+    (name "perl-lwp-mediatypes")
+    (version "6.02")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/LWP-MediaTypes-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0xmnblp962qy02akah30sji8bxrqcyqlff2w95l199ghql60ny8q"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl module to guess the media type for a file or a URL")
+    (description
+     "The LWP::MediaTypes module provides functions for handling media (also
+known as MIME) types and encodings.  The mapping from file extensions to
+media types is defined by the media.types file.  If the ~/.media.types file
+exists it is used instead.")
+    (home-page "http://search.cpan.org/~gaas/LWP-MediaTypes/")))
