@@ -262,14 +262,14 @@ projects, from individuals to large-scale enterprise operations.")
 (define-public rcs
   (package
     (name "rcs")
-    (version "5.9.1")
+    (version "5.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/rcs/rcs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1376amzaj7x6ar3xi1dldc0hgfa3n7412c46wqk2h2f2lf67jsk0"))))
+               "0wdmmplga9k05d9k7wjqv4zb6xvvzsli8hmn206pvangki1g66k5"))))
     (build-system gnu-build-system)
     (native-inputs `(("ed" ,ed)))
     (home-page "http://www.gnu.org/software/rcs/")
