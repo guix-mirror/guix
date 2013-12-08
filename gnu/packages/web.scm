@@ -295,3 +295,28 @@ the selection of a preferred content representation based upon attributes
 of the negotiable variants and the value of the various Accept* header
 fields in the request.")
     (home-page "http://search.cpan.org/~gaas/HTTP-Negotiate/")))
+
+(define-public perl-www-robotrules
+  (package
+    (name "perl-www-robotrules")
+    (version "6.02")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/WWW-RobotRules-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "07m50dp5n5jxv3m93i55qvnd67a6g7cvbvlik115kmc8lbkh5da6"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-uri" ,perl-uri)))
+    (license (package-license perl))
+    (synopsis "Perl database of robots.txt-derived permissions")
+    (description
+     "The WWW::RobotRules module parses /robots.txt files as specified in
+\"A Standard for Robot Exclusion\", at
+<http://www.robotstxt.org/wc/norobots.html>.  Webmasters can use the
+/robots.txt file to forbid conforming robots from accessing parts of
+their web site.")
+    (home-page "http://search.cpan.org/~gaas/WWW-RobotRules/")))
