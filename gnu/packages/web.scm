@@ -320,3 +320,25 @@ fields in the request.")
 /robots.txt file to forbid conforming robots from accessing parts of
 their web site.")
     (home-page "http://search.cpan.org/~gaas/WWW-RobotRules/")))
+
+(define-public perl-net-http
+  (package
+    (name "perl-net-http")
+    (version "6.06")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/Net-HTTP-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1m1rvniffadq99gsy25298ia3lixwymr6kan64jd3ylyi7nkqkhx"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl low-level HTTP connection (client)")
+    (description
+     "The Net::HTTP class is a low-level HTTP client.  An instance of the
+Net::HTTP class represents a connection to an HTTP server.  The HTTP protocol
+is described in RFC 2616.  The Net::HTTP class supports HTTP/1.0 and
+HTTP/1.1.")
+    (home-page "http://search.cpan.org/~gaas/Net-HTTP/")))
