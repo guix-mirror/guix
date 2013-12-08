@@ -242,3 +242,29 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
 that is, a database of all the HTTP cookies that a given LWP::UserAgent
 object knows about.")
     (home-page "http://search.cpan.org/~gaas/HTTP-Cookies/")))
+
+(define-public perl-http-daemon
+  (package
+    (name "perl-http-daemon")
+    (version "6.01")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Daemon-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1hmd2isrkilf0q0nkxms1q64kikjmcw9imbvrjgky6kh89vqdza3"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
+       ("perl-uri" ,perl-uri)))
+    (license (package-license perl))
+    (synopsis "Perl simple http server class")
+    (description
+     "Instances of the HTTP::Daemon class are HTTP/1.1 servers that listen
+on a socket for incoming requests.  The HTTP::Daemon is a subclass of
+IO::Socket::INET, so you can perform socket operations directly on it too.")
+    (home-page "http://search.cpan.org/~gaas/HTTP-Daemon/")))
