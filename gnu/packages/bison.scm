@@ -30,7 +30,7 @@
 (define bison
   (package
     (name "bison")
-    (version "3.0.1")
+    (version "3.0.2")
     (source
      (origin
       (method url-fetch)
@@ -38,7 +38,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1jx2ymvhl6h2jq6sf0lrk7ggfc2v1ri49yib8ppir0vdnh1znkll"))))
+        "0g4gjan477lac18m51kv4xzcsp6wjfsfwvd2dxymcl6vid9fihx2"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))
     (inputs `(("flex" ,flex)))
