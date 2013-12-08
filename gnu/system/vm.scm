@@ -577,7 +577,6 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
 
        (bash-file (package-file bash "bin/bash"))
        (dmd-file  (package-file dmd "bin/dmd"))
-       (dmd-conf  (dmd-configuration-file services))
        (accounts -> (cons* (user-account
                             (name "root")
                             (password "")
@@ -632,26 +631,15 @@ Happy birthday, GNU!                                http://www.gnu.org/gnu30
                                    #:pam-services pam-services
                                    #:profile profile))
        (etc     ->  (derivation->output-path etc-drv))
+       (dmd-conf  (dmd-configuration-file services etc))
 
 
        (populate -> `((directory "/nix/store" 0 ,build-user-gid)
                       (directory "/etc")
                       (directory "/var/log")      ; for dmd
                       (directory "/var/run/nscd")
-                      ("/etc/static" -> ,etc)
-                      ("/etc/shadow" -> "/etc/static/shadow")
-                      ("/etc/passwd" -> "/etc/static/passwd")
-                      ("/etc/group" -> "/etc/static/group")
-                      ("/etc/login.defs" -> "/etc/static/login.defs")
-                      ("/etc/pam.d" -> "/etc/static/pam.d")
-                      ("/etc/profile" -> "/etc/static/profile")
-                      ("/etc/issue" -> "/etc/static/issue")
-                      ("/etc/services" -> "/etc/static/services")
-                      ("/etc/protocols" -> "/etc/static/protocols")
-                      ("/etc/rpc" -> "/etc/static/rpc")
                       (directory "/var/nix/gcroots")
                       ("/var/nix/gcroots/default-profile" -> ,profile)
-                      ("/var/nix/gcroots/etc-directory" -> ,etc)
                       (directory "/tmp")
                       (directory "/var/nix/profiles/per-user/root" 0 0)
                       (directory "/var/nix/profiles/per-user/guest"

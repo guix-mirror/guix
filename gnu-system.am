@@ -227,6 +227,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
+  gnu/packages/patches/dmd-getpw.patch				\
   gnu/packages/patches/emacs-configure-sh.patch			\
   gnu/packages/patches/ffmpeg-check.patch			\
   gnu/packages/patches/findutils-absolute-paths.patch		\

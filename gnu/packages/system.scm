@@ -45,7 +45,8 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "07mddw0p62fcphwjzgb6rfa0pjz5sy6jzbha0sm2vc3rqf459jxg"))))
+               "07mddw0p62fcphwjzgb6rfa0pjz5sy6jzbha0sm2vc3rqf459jxg"))
+             (patches (list (search-patch "dmd-getpw.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
