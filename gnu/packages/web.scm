@@ -268,3 +268,30 @@ object knows about.")
 on a socket for incoming requests.  The HTTP::Daemon is a subclass of
 IO::Socket::INET, so you can perform socket operations directly on it too.")
     (home-page "http://search.cpan.org/~gaas/HTTP-Daemon/")))
+
+(define-public perl-http-negotiate
+  (package
+    (name "perl-http-negotiate")
+    (version "6.01")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/HTTP-Negotiate-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "05p053vjs5g91v5cmjnny7a3xzddz5k7vnjw81wfh01ilqg9qwhw"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-http-message" ,perl-http-message)
+       ("perl-uri" ,perl-uri)))
+    (license (package-license perl))
+    (synopsis "Perl http content negotiation")
+    (description
+     "The HTTP::Negotiate module provides a complete implementation of the
+HTTP content negotiation algorithm specified in
+draft-ietf-http-v11-spec-00.ps chapter 12.  Content negotiation allows for
+the selection of a preferred content representation based upon attributes
+of the negotiable variants and the value of the various Accept* header
+fields in the request.")
+    (home-page "http://search.cpan.org/~gaas/HTTP-Negotiate/")))
