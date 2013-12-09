@@ -307,7 +307,7 @@ fields in the request.")
               (base32
                "07m50dp5n5jxv3m93i55qvnd67a6g7cvbvlik115kmc8lbkh5da6"))))
     (build-system perl-build-system)
-    (inputs
+    (propagated-inputs
      `(("perl-uri" ,perl-uri)))
     (license (package-license perl))
     (synopsis "Perl database of robots.txt-derived permissions")
