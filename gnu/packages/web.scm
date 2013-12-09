@@ -281,9 +281,8 @@ IO::Socket::INET, so you can perform socket operations directly on it too.")
               (base32
                "05p053vjs5g91v5cmjnny7a3xzddz5k7vnjw81wfh01ilqg9qwhw"))))
     (build-system perl-build-system)
-    (inputs
-     `(("perl-http-message" ,perl-http-message)
-       ("perl-uri" ,perl-uri)))
+    (propagated-inputs
+     `(("perl-http-message" ,perl-http-message)))
     (license (package-license perl))
     (synopsis "Perl http content negotiation")
     (description
