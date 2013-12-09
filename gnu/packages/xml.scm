@@ -154,7 +154,7 @@ given at XML::Parser creation time.")
               (base32
                "1jy9af0ljyzj7wakqli0437zb2vrbplqj4xhab7bfj2xgfdhawa5"))))
     (build-system perl-build-system)
-    (inputs
+    (propagated-inputs
      `(("perl-xml-parser" ,perl-xml-parser)))
     (license (package-license perl))
     (synopsis "Perl SAX parser using XML::Parser")
