@@ -23,6 +23,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages web)
   #:use-module ((guix licenses)
                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
@@ -207,6 +208,38 @@ parser modules).")
 BaseChar, Ideographic, Letter, Digit, Extender, CombiningChar, NameChar,
 EntityRef, CharRef, Reference, Name, NmToken, and AttValue.")
     (home-page "http://search.cpan.org/~tjmather/XML-RegExp/lib/XML/RegExp.pm")))
+
+(define-public perl-xml-dom
+  (package
+    (name "perl-xml-dom")
+    (version "1.44")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/T/TJ/TJMATHER/XML-DOM-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1r0ampc88ni3sjpzr583k86076qg399arfm9xirv3cw49k3k5bzn"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-http-date" ,perl-http-date)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-libwww" ,perl-libwww)
+       ("perl-libxml" ,perl-libxml)
+       ("perl-uri" ,perl-uri)
+       ("perl-xml-parser" ,perl-xml-parser)
+       ("perl-xml-regexp" ,perl-xml-regexp)))
+    (license (package-license perl))
+    (synopsis
+     "Perl module for building DOM Level 1 compliant document structures")
+    (description
+     "This module extends the XML::Parser module by Clark Cooper.  The
+XML::Parser module is built on top of XML::Parser::Expat, which is a lower
+level interface to James Clark's expat library.  XML::DOM::Parser is derived
+from XML::Parser.  It parses XML strings or files and builds a data structure
+that conforms to the API of the Document Object Model.")
+    (home-page "http://search.cpan.org/~tjmather/XML-DOM-1.44/lib/XML/DOM.pm")))
 
 (define-public xmlto
   (package
