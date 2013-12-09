@@ -364,3 +364,29 @@ HTTP/1.1.")
      "The File::Listing module exports a single function called parse_dir(),
 which can be used to parse directory listings.")
     (home-page "http://search.cpan.org/~gaas/File-Listing/")))
+
+(define-public perl-encode-locale
+  (package
+    (name "perl-encode-locale")
+    (version "1.03")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/Encode-Locale-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0m9d1vdphlyzybgmdanipwd9ndfvyjgk3hzw250r299jjgh3fqzp"))))
+    (build-system perl-build-system)
+    (license (package-license perl))
+    (synopsis "Perl locale encoding determination")
+    (description
+     "The POSIX locale system is used to specify both the language
+conventions requested by the user and the preferred character set to consume
+and output.  The Encode::Locale module looks up the charset and encoding
+(called a CODESET in the locale jargon) and arranges for the Encode module
+to know this encoding under the name \"locale\".  It means bytes obtained
+from the environment can be converted to Unicode strings by calling
+Encode::encode(locale => $bytes) and converted back again with
+Encode::decode(locale => $string).")
+    (home-page "http://search.cpan.org/~gaas/Encode-Locale/")))
