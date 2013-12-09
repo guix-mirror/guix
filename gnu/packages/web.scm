@@ -354,7 +354,7 @@ HTTP/1.1.")
               (base32
                "1xcwjlnxaiwwpn41a5yi6nz95ywh3szq5chdxiwj36kqsvy5000y"))))
     (build-system perl-build-system)
-    (inputs
+    (propagated-inputs
      `(("perl-http-date" ,perl-http-date)))
     (license (package-license perl))
     (synopsis "Perl directory listing parser")
