@@ -222,13 +222,9 @@ EntityRef, CharRef, Reference, Name, NmToken, and AttValue.")
               (base32
                "1r0ampc88ni3sjpzr583k86076qg399arfm9xirv3cw49k3k5bzn"))))
     (build-system perl-build-system)
-    (inputs
-     `(("perl-http-date" ,perl-http-date)
-       ("perl-http-message" ,perl-http-message)
-       ("perl-libwww" ,perl-libwww)
+    (propagated-inputs
+     `(("perl-libwww" ,perl-libwww)
        ("perl-libxml" ,perl-libxml)
-       ("perl-uri" ,perl-uri)
-       ("perl-xml-parser" ,perl-xml-parser)
        ("perl-xml-regexp" ,perl-xml-regexp)))
     (license (package-license perl))
     (synopsis
