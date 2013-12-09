@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,8 @@
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl))
 
 (define-public perl
   ;; Yeah, Perl...  It is required early in the bootstrap process by Linux.
@@ -71,3 +73,32 @@
 24 years of development.")
     (home-page "http://www.perl.org/")
     (license gpl1+)))                          ; or "Artistic"
+
+(define-public perl-file-list
+  (package
+    (name "perl-file-list")
+    (version "0.3.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/D/DO/DOPACKI/File-List-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "00m5ax4aq59hdvav6yc4g63vhx3a57006rglyypagvrzfxjvm8s8"))))
+    (build-system perl-build-system)
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'unpack 'cd
+        (lambda* _
+         (chdir "List"))
+       %standard-phases)))
+    (license (package-license perl))
+    (synopsis "Perl extension for crawling directory trees and compiling
+lists of files")
+    (description
+     "The File::List module crawls the directory tree starting at the
+provided base directory and can return files (and/or directories if desired)
+matching a regular expression.")
+    (home-page "http://search.cpan.org/~dopacki/File-List/")))
