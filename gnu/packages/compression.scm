@@ -44,12 +44,17 @@
      `(#:phases (alist-replace
                  'configure
                  (lambda* (#:key outputs #:allow-other-keys)
-                   ;; Zlib's home-made `configure' doesn't fails when passed
+                   ;; Zlib's home-made `configure' fails when passed
                    ;; extra flags like `--enable-fast-install', so we need to
                    ;; invoke it with just what it understand.
                    (let ((out (assoc-ref outputs "out")))
-                     (zero? (system* "./configure"
-                                     (string-append "--prefix=" out)))))
+                     ;; 'configure' doesn't understand '--host'.
+                     ,@(if (%current-target-system)
+                           `((setenv "CHOST" ,(%current-target-system)))
+                           '())
+                     (zero?
+                      (system* "./configure"
+                               (string-append "--prefix=" out)))))
                  %standard-phases)))
     (home-page "http://zlib.net/")
     (synopsis "The zlib compression library")
