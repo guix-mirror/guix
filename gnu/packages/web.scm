@@ -207,11 +207,12 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
               (base32
                "0qxdrcak97azjvqyx1anpb2ky6vp6vc37x0wcfjdqfajkh09fzh8"))))
     (build-system perl-build-system)
+    (propagated-inputs
+     `(("perl-uri" ,perl-uri)))
     (inputs
      `(("perl-http-date" ,perl-http-date)
        ("perl-io-html" ,perl-io-html)
-       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
-       ("perl-uri" ,perl-uri)))
+       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)))
     (license (package-license perl))
     (synopsis "Perl HTTP style message")
     (description
