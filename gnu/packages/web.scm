@@ -342,3 +342,25 @@ Net::HTTP class represents a connection to an HTTP server.  The HTTP protocol
 is described in RFC 2616.  The Net::HTTP class supports HTTP/1.0 and
 HTTP/1.1.")
     (home-page "http://search.cpan.org/~gaas/Net-HTTP/")))
+
+(define-public perl-file-listing
+  (package
+    (name "perl-file-listing")
+    (version "6.04")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/File-Listing-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1xcwjlnxaiwwpn41a5yi6nz95ywh3szq5chdxiwj36kqsvy5000y"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-http-date" ,perl-http-date)))
+    (license (package-license perl))
+    (synopsis "Perl directory listing parser")
+    (description
+     "The File::Listing module exports a single function called parse_dir(),
+which can be used to parse directory listings.")
+    (home-page "http://search.cpan.org/~gaas/File-Listing/")))
