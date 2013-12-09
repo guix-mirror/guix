@@ -232,10 +232,9 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
               (base32
                "087bqmg22dg3vj7gssh3pcsh9y1scimkbl5h1kc8jqyfhgisvlzm"))))
     (build-system perl-build-system)
-    (inputs
+    (propagated-inputs
      `(("perl-http-date" ,perl-http-date)
-       ("perl-http-message" ,perl-http-message)
-       ("perl-uri" ,perl-uri)))
+       ("perl-http-message" ,perl-http-message)))
     (license (package-license perl))
     (synopsis "Perl HTTP cookie jars")
     (description
