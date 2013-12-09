@@ -56,7 +56,8 @@
             package-file
             package->derivation
             built-derivations
-            derivation-expression))
+            derivation-expression
+            lower-inputs))
 
 ;;; Commentary:
 ;;;
@@ -318,6 +319,22 @@ OUTPUT directory of PACKAGE."
       (if file
           (string-append out "/" file)
           out))))
+
+(define (lower-inputs inputs)
+  "Turn any package from INPUTS into a derivation; return the corresponding
+input list as a monadic value."
+  ;; XXX: Should probably be in (guix packages).
+  (with-monad %store-monad
+    (sequence %store-monad
+              (map (match-lambda
+                    ((name (? package? package) sub-drv ...)
+                     (mlet %store-monad ((drv (package->derivation package)))
+                       (return `(,name ,drv ,@sub-drv))))
+                    ((name (? string? file))
+                     (return `(,name ,file)))
+                    (tuple
+                     (return tuple)))
+                   inputs))))
 
 (define derivation-expression
   (store-lift build-expression->derivation))

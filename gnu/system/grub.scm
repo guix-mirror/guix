@@ -56,12 +56,11 @@ search.file ~a~%"
             default-entry timeout kernel))
 
   (define (bzImage)
-    (anym %store-monad
-          (match-lambda
-           (($ <menu-entry> _ linux)
-            (package-file linux "bzImage"
-                          #:system system)))
-          entries))
+    (any (match-lambda
+          (($ <menu-entry> _ linux)
+           (package-file linux "bzImage"
+                         #:system system)))
+         entries))
 
   (define entry->text
     (match-lambda
@@ -79,7 +78,8 @@ search.file ~a~%"
                         linux (string-join arguments) initrd))))))
 
   (mlet %store-monad ((kernel (bzImage))
-                      (body   (mapm %store-monad entry->text entries)))
+                      (body   (sequence %store-monad
+                                        (map entry->text entries))))
     (text-file "grub.cfg"
                (string-append (prologue kernel)
                               (string-concatenate body)))))

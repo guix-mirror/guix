@@ -43,6 +43,7 @@
   #:use-module (gnu system linux)
   #:use-module (gnu system grub)
   #:use-module (gnu system dmd)
+  #:use-module (gnu system)
 
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -58,21 +59,6 @@
 ;;; Tools to evaluate build expressions within virtual machines.
 ;;;
 ;;; Code:
-
-(define (lower-inputs inputs)
-  "Turn any package from INPUTS into a derivation; return the corresponding
-input list as a monadic value."
-  (with-monad %store-monad
-    (sequence %store-monad
-              (map (match-lambda
-                    ((name (? package? package) sub-drv ...)
-                     (mlet %store-monad ((drv (package->derivation package)))
-                       (return `(,name ,drv ,@sub-drv))))
-                    ((name (? string? file))
-                     (return `(,name ,file)))
-                    (tuple
-                     (return tuple)))
-                   inputs))))
 
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
@@ -217,7 +203,7 @@ made available under the /xchg CIFS share."
                      (inputs-to-copy '()))
   "Return a bootable, stand-alone QEMU image.  The returned image is a full
 disk image, with a GRUB installation that uses GRUB-CONFIGURATION as its
-configuration file.
+configuration file (GRUB-CONFIGURATION must be the name of a file in the VM.)
 
 INPUTS-TO-COPY is a list of inputs (as for packages) whose closure is copied
 into the image being built.  When INITIALIZE-STORE? is true, initialize the
@@ -262,7 +248,7 @@ such as /etc files."
                                      "/sbin/grub-install"))
              (umount  (string-append (assoc-ref %build-inputs "util-linux")
                                      "/bin/umount")) ; XXX: add to Guile
-             (grub.cfg (assoc-ref %build-inputs "grub.cfg")))
+             (grub.cfg ,grub-configuration))
 
          (define (read-reference-graph port)
            ;; Return a list of store paths from the reference graph at PORT.
@@ -324,7 +310,7 @@ such as /etc files."
                                    (copy-recursively thing
                                                      (string-append "/fs"
                                                                     thing)))
-                                 (cons grub.cfg (things-to-copy)))
+                                 (things-to-copy))
 
                        ;; Populate /dev.
                        (make-essential-device-nodes #:root "/fs")
@@ -394,7 +380,6 @@ such as /etc files."
     #:inputs `(("parted" ,parted)
                ("grub" ,grub)
                ("e2fsprogs" ,e2fsprogs)
-               ("grub.cfg" ,grub-configuration)
 
                ;; For shell scripts.
                ("sed" ,(car (assoc-ref %final-inputs "sed")))
@@ -420,255 +405,63 @@ such as /etc files."
 ;;; Stand-alone VM image.
 ;;;
 
-(define* (union inputs
-                #:key (guile (%guile-for-build)) (system (%current-system))
-                (name "union"))
-  "Return a derivation that builds the union of INPUTS.  INPUTS is a list of
-input tuples."
-  (define builder
-    '(begin
-       (use-modules (guix build union))
+(define %demo-operating-system
+  (operating-system
+   (host-name "gnu")
+   (timezone "Europe/Paris")
+   (locale "C.UTF-8")
+   (users (list (user-account
+                 (name "guest")
+                 (password "")
+                 (uid 1000) (gid 100)
+                 (comment "Guest of GNU")
+                 (home-directory "/home/guest")
+                 ;; (shell bash-file)
+                 )))
+   (packages `(("coreutils" ,coreutils)
+               ("bash" ,bash)
+               ("guile" ,guile-2.0)
+               ("dmd" ,dmd)
+               ("gcc" ,gcc-final)
+               ("libc" ,glibc-final)
+               ("inetutils" ,inetutils)
+               ("findutils" ,findutils)
+               ("grep" ,grep)
+               ("sed" ,sed)
+               ("procps" ,procps)
+               ("psmisc" ,psmisc)
+               ("zile" ,zile)
+               ("guix" ,guix)))))
 
-       (setvbuf (current-output-port) _IOLBF)
-       (setvbuf (current-error-port) _IOLBF)
-
-       (let ((output (assoc-ref %outputs "out"))
-             (inputs (map cdr %build-inputs)))
-         (format #t "building union `~a' with ~a packages...~%"
-                 output (length inputs))
-         (union-build output inputs))))
-
-  (mlet %store-monad
-      ((inputs (sequence %store-monad
-                         (map (match-lambda
-                               ((name (? package? p))
-                                (mlet %store-monad
-                                    ((drv (package->derivation p system)))
-                                  (return `(,name ,drv))))
-                               ((name (? package? p) output)
-                                (mlet %store-monad
-                                    ((drv (package->derivation p system)))
-                                  (return `(,name ,drv ,output))))
-                               (x
-                                (return x)))
-                              inputs))))
-    (derivation-expression name builder
-                           #:system system
-                           #:inputs inputs
-                           #:modules '((guix build union))
-                           #:guile-for-build guile)))
-
-(define* (file-union files
-                     #:key (inputs '()) (name "file-union"))
-  "Return a derivation that builds a directory containing all of FILES.  Each
-item in FILES must be a list where the first element is the file name to use
-in the new directory, and the second element is the target file.
-
-The subset of FILES corresponding to plain store files is automatically added
-as an inputs; additional inputs, such as derivations, are taken from INPUTS."
-  (mlet %store-monad ((inputs (lower-inputs inputs)))
-    (let* ((outputs (append-map (match-lambda
-                                 ((_ (? derivation? drv))
-                                  (list (derivation->output-path drv)))
-                                 ((_ (? derivation? drv) sub-drv ...)
-                                  (map (cut derivation->output-path drv <>)
-                                       sub-drv))
-                                 (_ '()))
-                                inputs))
-           (inputs   (append inputs
-                             (filter (match-lambda
-                                      ((_ file)
-                                       ;; Elements of FILES that are store
-                                       ;; files and that do not correspond to
-                                       ;; the output of INPUTS are considered
-                                       ;; inputs (still here?).
-                                       (and (direct-store-path? file)
-                                            (not (member file outputs)))))
-                                     files))))
-      (derivation-expression name
-                             `(let ((out (assoc-ref %outputs "out")))
-                                (mkdir out)
-                                (chdir out)
-                                ,@(map (match-lambda
-                                        ((name target)
-                                         `(symlink ,target ,name)))
-                                       files))
-
-                             #:inputs inputs))))
-
-(define* (etc-directory #:key
-                        (accounts '())
-                        (groups '())
-                        (pam-services '())
-                        (profile "/var/run/current-system/profile"))
-  "Return a derivation that builds the static part of the /etc directory."
-  (mlet* %store-monad
-      ((services   (package-file net-base "etc/services"))
-       (protocols  (package-file net-base "etc/protocols"))
-       (rpc        (package-file net-base "etc/rpc"))
-       (passwd     (passwd-file accounts))
-       (shadow     (passwd-file accounts #:shadow? #t))
-       (group      (group-file groups))
-       (pam.d      (pam-services->directory pam-services))
-       (login.defs (text-file "login.defs" "# Empty for now.\n"))
-       (issue      (text-file "issue" "
-This is an alpha preview of the GNU system.  Welcome.
-
-This image features the GNU Guix package manager, which was used to
-build it (http://www.gnu.org/software/guix/).  The init system is
-GNU dmd (http://www.gnu.org/software/dmd/).
-
-You can log in as 'guest' or 'root' with no password.
-"))
-
-       ;; TODO: Generate bashrc from packages' search-paths.
-       (bashrc    (text-file "bashrc" (string-append "
-export PS1='\\u@\\h\\$ '
-export PATH=$HOME/.guix-profile/bin:" profile "/bin:" profile "/sbin
-export CPATH=$HOME/.guix-profile/include:" profile "/include
-export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
-alias ls='ls -p --color'
-alias ll='ls -l'
-")))
-
-       (files -> `(("services" ,services)
-                   ("protocols" ,protocols)
-                   ("rpc" ,rpc)
-                   ("pam.d" ,(derivation->output-path pam.d))
-                   ("login.defs" ,login.defs)
-                   ("issue" ,issue)
-                   ("profile" ,bashrc)
-                   ("passwd" ,passwd)
-                   ("shadow" ,shadow)
-                   ("group" ,group))))
-    (file-union files
-                #:inputs `(("net" ,net-base)
-                           ("pam.d" ,pam.d))
-                #:name "etc")))
-
-(define (system-qemu-image)
+(define* (system-qemu-image #:optional (os %demo-operating-system))
   "Return the derivation of a QEMU image of the GNU system."
   (mlet* %store-monad
-      ((services (listm %store-monad
-                        (host-name-service "gnu")
-                        (mingetty-service "tty1")
-                        (mingetty-service "tty2")
-                        (mingetty-service "tty3")
-                        (mingetty-service "tty4")
-                        (mingetty-service "tty5")
-                        (mingetty-service "tty6")
-                        (syslog-service)
-                        (guix-service)
-                        (nscd-service)
-
-                        ;; QEMU networking settings.
-                        (static-networking-service "eth0" "10.0.2.10"
-                                                   #:name-servers '("10.0.2.3")
-                                                   #:gateway "10.0.2.2")))
-       (motd     (text-file "motd" "
-Happy birthday, GNU!                                http://www.gnu.org/gnu30
-
-"))
-       (pam-services ->
-                     ;; Services known to PAM.
-                     (delete-duplicates
-                      (cons %pam-other-services
-                            (append-map service-pam-services services))))
-
-       (bash-file (package-file bash "bin/bash"))
-       (dmd-file  (package-file dmd "bin/dmd"))
-       (accounts -> (cons* (user-account
-                            (name "root")
-                            (password "")
-                            (uid 0) (gid 0)
-                            (comment "System administrator")
-                            (home-directory "/")
-                            (shell bash-file))
-                           (user-account
-                            (name "guest")
-                            (password "")
-                            (uid 1000) (gid 100)
-                            (comment "Guest of GNU")
-                            (home-directory "/home/guest")
-                            (shell bash-file))
-                           (append-map service-user-accounts
-                                       services)))
-       (groups   -> (cons* (user-group
-                            (name "root")
-                            (id 0))
-                           (user-group
-                            (name "users")
-                            (id 100)
-                            (members '("guest")))
-                           (append-map service-user-groups services)))
-       (build-user-gid -> (any (lambda (service)
-                                 (and (equal? '(guix-daemon)
-                                              (service-provision service))
-                                      (match (service-user-groups service)
-                                        ((group)
-                                         (user-group-id group)))))
-                               services))
-       (packages -> `(("coreutils" ,coreutils)
-                      ("bash" ,bash)
-                      ("guile" ,guile-2.0)
-                      ("dmd" ,dmd)
-                      ("gcc" ,gcc-final)
-                      ("libc" ,glibc-final)
-                      ("inetutils" ,inetutils)
-                      ("findutils" ,findutils)
-                      ("grep" ,grep)
-                      ("sed" ,sed)
-                      ("procps" ,procps)
-                      ("psmisc" ,psmisc)
-                      ("zile" ,zile)
-                      ("guix" ,guix)))
-
-       ;; TODO: Replace with a real profile with a manifest.
-       (profile-drv (union packages
-                           #:name "default-profile"))
-       (profile ->  (derivation->output-path profile-drv))
-       (etc-drv     (etc-directory #:accounts accounts #:groups groups
-                                   #:pam-services pam-services
-                                   #:profile profile))
-       (etc     ->  (derivation->output-path etc-drv))
-       (dmd-conf  (dmd-configuration-file services etc))
-
-
+      ((os-drv      (operating-system-derivation os))
+       (os-dir   -> (derivation->output-path os-drv))
+       (grub.cfg -> (string-append os-dir "/grub.cfg"))
+       (build-user-gid (anym %store-monad         ; XXX
+                             (lambda (service)
+                               (and (equal? '(guix-daemon)
+                                            (service-provision service))
+                                    (match (service-user-groups service)
+                                      ((group)
+                                       (user-group-id group)))))
+                             (operating-system-services os)))
        (populate -> `((directory "/nix/store" 0 ,build-user-gid)
                       (directory "/etc")
                       (directory "/var/log")      ; for dmd
                       (directory "/var/run/nscd")
                       (directory "/var/nix/gcroots")
-                      ("/var/nix/gcroots/default-profile" -> ,profile)
+                      ("/var/nix/gcroots/system" -> ,os-dir)
                       (directory "/tmp")
                       (directory "/var/nix/profiles/per-user/root" 0 0)
                       (directory "/var/nix/profiles/per-user/guest"
                                  1000 100)
-                      (directory "/home/guest" 1000 100)))
-       (boot     (text-file "boot" (object->string
-                                    `(execl ,dmd-file "dmd"
-                                            "--config" ,dmd-conf))))
-       (entries -> (list (return (menu-entry
-                                  (label (string-append
-                                          "GNU system with Linux-Libre "
-                                          (package-version linux-libre)
-                                          " (technology preview)"))
-                                  (linux linux-libre)
-                                  (linux-arguments `("--root=/dev/vda1"
-                                                     ,(string-append "--load=" boot)))
-                                  (initrd gnu-system-initrd)))))
-       (grub.cfg (grub-configuration-file entries)))
+                      (directory "/home/guest" 1000 100))))
     (qemu-image  #:grub-configuration grub.cfg
                  #:populate populate
                  #:disk-image-size (* 550 (expt 2 20))
                  #:initialize-store? #t
-                 #:inputs-to-copy `(("boot" ,boot)
-                                    ("linux" ,linux-libre)
-                                    ("initrd" ,gnu-system-initrd)
-                                    ("dmd.conf" ,dmd-conf)
-                                    ("profile" ,profile-drv)
-                                    ("etc" ,etc-drv)
-                                    ,@(append-map service-inputs
-                                                  services)))))
+                 #:inputs-to-copy `(("system" ,os-drv)))))
 
 ;;; vm.scm ends here
