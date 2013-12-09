@@ -25,9 +25,11 @@
   #:use-module ((gnu packages base)
                 #:select (%final-inputs
                           guile-final gcc-final glibc-final
+                          ld-wrapper binutils-final
                           coreutils findutils grep sed))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages less)
   #:use-module (gnu packages qemu)
   #:use-module (gnu packages parted)
   #:use-module (gnu packages zile)
@@ -416,20 +418,23 @@ such as /etc files."
                  (uid 1000) (gid 100)
                  (comment "Guest of GNU")
                  (home-directory "/home/guest"))))
-   (packages `(("coreutils" ,coreutils)
-               ("bash" ,bash)
-               ("guile" ,guile-2.0)
-               ("dmd" ,dmd)
-               ("gcc" ,gcc-final)
-               ("libc" ,glibc-final)
-               ("inetutils" ,inetutils)
-               ("findutils" ,findutils)
-               ("grep" ,grep)
-               ("sed" ,sed)
-               ("procps" ,procps)
-               ("psmisc" ,psmisc)
-               ("zile" ,zile)
-               ("guix" ,guix)))))
+   (packages (list coreutils
+                   bash
+                   guile-2.0
+                   dmd
+                   gcc-final
+                   ld-wrapper                    ; must come before BINUTILS
+                   binutils-final
+                   glibc-final
+                   inetutils
+                   findutils
+                   grep
+                   sed
+                   procps
+                   psmisc
+                   zile
+                   less
+                   guix))))
 
 (define* (system-qemu-image #:optional (os %demo-operating-system))
   "Return the derivation of a QEMU image of the GNU system."

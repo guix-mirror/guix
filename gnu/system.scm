@@ -78,12 +78,14 @@
                           (members '("guest"))))))
 
   (packages operating-system-packages             ; list of (PACKAGE OUTPUT...)
-            (default `(("coreutils" ,coreutils)
-                       ("grep" ,grep)
-                       ("guile" ,guile)
-                       ("bash" ,bash)
-                       ("dmd" ,(@ (gnu packages dmd) dmd))
-                       ("guix" ,guix))))
+            (default (list coreutils              ; or just PACKAGE
+                           grep
+                           sed
+                           findutils
+                           guile
+                           bash
+                           (@ (gnu packages dmd) dmd)
+                           guix)))
 
   (timezone operating-system-timezone)            ; string
   (locale   operating-system-locale)              ; string
@@ -134,11 +136,11 @@ input tuples."
   (mlet %store-monad
       ((inputs (sequence %store-monad
                          (map (match-lambda
-                               ((name (? package? p))
+                               ((or ((? package? p)) (? package? p))
                                 (mlet %store-monad
                                     ((drv (package->derivation p system)))
                                   (return `(,name ,drv))))
-                               ((name (? package? p) output)
+                               (((? package? p) output)
                                 (mlet %store-monad
                                     ((drv (package->derivation p system)))
                                   (return `(,name ,drv ,output))))
