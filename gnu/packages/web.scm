@@ -256,11 +256,10 @@ object knows about.")
               (base32
                "1hmd2isrkilf0q0nkxms1q64kikjmcw9imbvrjgky6kh89vqdza3"))))
     (build-system perl-build-system)
-    (inputs
+    (propagated-inputs
      `(("perl-http-date" ,perl-http-date)
        ("perl-http-message" ,perl-http-message)
-       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
-       ("perl-uri" ,perl-uri)))
+       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)))
     (license (package-license perl))
     (synopsis "Perl simple http server class")
     (description
