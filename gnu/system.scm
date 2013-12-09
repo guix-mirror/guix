@@ -281,8 +281,7 @@ alias ll='ls -l'
                             (password "")
                             (uid 0) (gid 0)
                             (comment "System administrator")
-                            (home-directory "/")
-                            (shell bash-file))
+                            (home-directory "/"))
                           (append (operating-system-users os)
                                   (append-map service-user-accounts
                                               services))))
@@ -320,22 +319,22 @@ alias ll='ls -l'
                            (initrd initrd))))
        (grub.cfg (grub-configuration-file entries))
        (extras   (links (delete-duplicates
-                         (append-map service-inputs services)))))
+                         (append (append-map service-inputs services)
+                                 (append-map user-account-inputs accounts))))))
     (file-union `(("boot" ,boot)
                   ("kernel" ,kernel-dir)
                   ("initrd" ,initrd-file)
                   ("dmd.conf" ,dmd-conf)
-                  ("bash" ,bash-file) ; XXX: should be a <user-account> input?
                   ("profile" ,profile)
                   ("grub.cfg" ,grub.cfg)
                   ("etc" ,etc)
-                  ("service-inputs" ,(derivation->output-path extras)))
+                  ("system-inputs" ,(derivation->output-path extras)))
                 #:inputs `(("kernel" ,kernel)
                            ("initrd" ,initrd)
                            ("bash" ,bash)
                            ("profile" ,profile-drv)
                            ("etc" ,etc-drv)
-                           ("service-inputs" ,extras))
+                           ("system-inputs" ,extras))
                 #:name "system")))
 
 ;;; system.scm ends here

@@ -181,18 +181,18 @@
                               (shadow shadow))
   "Return a list of COUNT user accounts for Guix build users, with UIDs
 starting at FIRST-UID, and under GID."
-  (mlet* %store-monad ((gid* -> gid)
-                       (no-login (package-file shadow "sbin/nologin")))
+  (with-monad %store-monad
     (return (unfold (cut > <> count)
                     (lambda (n)
                       (user-account
                        (name (format #f "guixbuilder~2,'0d" n))
                        (password "!")
                        (uid (+ first-uid n -1))
-                       (gid gid*)
+                       (gid gid)
                        (comment (format #f "Guix Build User ~2d" n))
                        (home-directory "/var/empty")
-                       (shell no-login)))
+                       (shell (package-file shadow "sbin/nologin"))
+                       (inputs `(("shadow" ,shadow)))))
                     1+
                     1))))
 
