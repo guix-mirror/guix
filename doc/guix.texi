@@ -446,7 +446,9 @@ profile remains in its previous state, and remains usable.
 In addition, any package transaction may be @emph{rolled back}.  So, if,
 for example, an upgrade installs a new version of a package that turns
 out to have a serious bug, users may roll back to the previous instance
-of their profile, which was known to work well.
+of their profile, which was known to work well.  Similarly, the global
+system configuration is subject to transactional upgrades and roll-back
+(@pxref{Using the Configuration System}).
 
 All those packages in the package store may be @emph{garbage-collected}.
 Guix can determine which packages are still referenced by the user
@@ -1785,6 +1787,7 @@ For information on porting to other architectures or kernels,
 * Packaging Guidelines::        Growing the distribution.
 * Bootstrapping::               GNU/Linux built from scratch.
 * Porting::                     Targeting another platform or kernel.
+* System Configuration::        Configuring a GNU system.
 @end menu
 
 Building this distribution is a cooperative effort, and you are invited
@@ -2203,6 +2206,183 @@ configure flag (see @code{gcc.scm} for examples of how to handle this).
 Second, some of the required packages could fail to build for that
 platform.  Lastly, the generated binaries could be broken for some
 reason.
+
+
+@node System Configuration
+@section System Configuration
+
+@emph{This section documents work-in-progress.  As such it may be
+incomplete, outdated, or open to discussions.  Please discuss it on
+@email{guix-devel@@gnu.org}.}
+
+@cindex system configuration
+The GNU system supports a consistent whole-system configuration
+mechanism.  By that we mean that all aspects of the global system
+configuration---such as the available system services, timezone and
+locale settings, user accounts---are configured in a single place.  Such
+a @dfn{system configuration} can be @dfn{instantiated}---i.e., effected.
+
+This section describes this mechanism.  First we focus on the system
+administrator's viewpoint---explaining how the system is configured and
+instantiated.  Then we show how this mechanism can be extended, for
+instance to support new system services.
+
+@menu
+* Using the Configuration System::      Customizing your GNU system.
+* Defining Services::                   Adding new service definitions.
+@end menu
+
+@node Using the Configuration System
+@subsection Using the Configuration System
+
+The operating system is configured by filling in an
+@code{operating-system} structure, as defined by the @code{(gnu system)}
+module.  A simple setup, with the default system services, the default
+Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
+
+@findex operating-system
+@lisp
+(use-modules (gnu system)
+             (gnu system shadow)   ; for 'user-account'
+             (gnu system service)  ; for 'lsh-service'
+             (gnu packages base)   ; Coreutils, grep, etc.
+             (gnu packages bash)   ; Bash
+             (gnu packages system) ; dmd, Inetutils
+             (gnu packages zile)   ; Zile
+             (gnu packages less)   ; less
+             (gnu packages guile)  ; Guile
+             (gnu packages linux)) ; procps, psmisc
+
+(define %komputilo
+  (operating-system
+   (host-name "komputilo")
+   (timezone "Europe/Paris")
+   (locale "fr_FR.UTF-8")
+   (users (list (user-account
+                 (name "alice")
+                 (password "")
+                 (uid 1000) (gid 100)
+                 (comment "Bob's sister")
+                 (home-directory "/home/alice"))))
+   (packages (list coreutils bash guile-2.0
+                   guix dmd
+                   inetutils
+                   findutils grep sed
+                   procps psmisc
+                   zile less))
+   (services (cons (lsh-service #:port 2222 #:allow-root-login? #t)
+                   %standard-services))))
+@end lisp
+
+This example should be self-describing.  The @code{packages} field lists
+packages provides by the various @code{(gnu packages ...)} modules above;
+these are the packages that will be globally visible on the system, for
+all user accounts, in addition to the per-user profiles (@pxref{Invoking
+guix package}).
+
+The @code{services} field lists @dfn{system services} to be made
+available when the system starts.  The @var{%standard-services} list,
+from the @code{(gnu system)} module, provides the basic services one
+would expect from a GNU system: a login service (mingetty) on each tty,
+syslogd, libc's name service cache daemon (nscd), etc.
+
+The @code{operating-system} declaration above specifies that, in
+addition to those services, we want the @command{lshd} secure shell
+daemon listening on port 2222, and allowing remote @code{root} logins
+(@pxref{Invoking lshd,,, lsh, GNU lsh Manual}).  Under the hood,
+@code{lsh-service} arranges so that @code{lshd} is started with the
+right command-line options, possibly with supporting configuration files
+generated as needed (@pxref{Defining Services}).
+
+@c TODO: update when that command exists
+Assuming the above snippet is stored in the @file{my-system-config.scm}
+file, the (yet unwritten!) @command{guix system --boot
+my-system-config.scm} command instantiates that configuration, and makes
+it the default GRUB boot entry.  The normal way to change the system's
+configuration is by updating this file and re-running the @command{guix
+system} command.
+
+At the Scheme level, the bulk of an @code{operating-system} declaration
+is instantiated with the following monadic procedure (@pxref{The Store
+Monad}):
+
+@deffn {Monadic Procedure} operating-system-derivation os
+Return a derivation that builds @var{os}, an @code{operating-system}
+object (@pxref{Derivations}).
+
+The output of the derivation is a single directory that refers to all
+the packages, configuration files, and other supporting files needed to
+instantiate @var{os}.
+@end deffn
+
+One of the advantages of putting all the system configuration under the
+control of Guix is that it makes it possible to roll-back to a previous
+system instantiation, should anything go wrong with the new one.
+Another one is that it makes it easy to replicate the very same
+configuration across different machines, or at different points in time,
+without having to resort to additional administration tools layered on
+top of the system's own tools.
+@c Yes, we're talking of Puppet, Chef, & co. here.  ↑
+
+@node Defining Services
+@subsection Defining Services
+
+The @code{(gnu system dmd)} module defines several procedures that allow
+users to declare the operating system's services (@pxref{Using the
+Configuration System}).  These procedures are @emph{monadic
+procedures}---i.e., procedures that return a monadic value in the store
+monad (@pxref{The Store Monad}).  Examples of such procedures include:
+
+@table @code
+@item mingetty-service
+return the definition of a service that runs @command{mingetty} to
+offer a login service on the given console tty;
+
+@item nscd-service
+return a definition for libc's name service cache daemon (nscd);
+
+@item guix-service
+return a definition for a service that runs @command{guix-daemon}
+(@pxref{Invoking guix-daemon}).
+@end table
+
+@cindex service definition
+The monadic value returned by those procedures is a @dfn{service
+definition}---a structure as returned by the @code{service} form.
+Service definitions specifies the inputs the service depends on, and an
+expression to start and stop the service.  Behind the scenes, service
+definitions are ``translated'' into the form suitable for the
+configuration file of dmd, the init system (@pxref{Services,,, dmd, GNU
+dmd Manual}).
+
+As an example, here is what the @code{nscd-service} procedure looks
+like:
+
+@lisp
+(define (nscd-service)
+  (mlet %store-monad ((nscd (package-file glibc "sbin/nscd")))
+    (return (service
+             (documentation "Run libc's name service cache daemon.")
+             (provision '(nscd))
+             (start `(make-forkexec-constructor ,nscd "-f" "/dev/null"
+                                                "--foreground"))
+             (stop  `(make-kill-destructor))
+
+             (respawn? #f)
+             (inputs `(("glibc" ,glibc)))))))
+@end lisp
+
+@noindent
+The @code{inputs} field specifies that this service depends on the
+@var{glibc} package---the package that contains the @command{nscd}
+program.  The @code{start} and @code{stop} fields are expressions that
+make use of dmd's facilities to start and stop processes (@pxref{Service
+De- and Constructors,,, dmd, GNU dmd Manual}).  The @code{provision}
+field specifies the name under which this service is known to dmd, and
+@code{documentation} specifies on-line documentation.  Thus, the
+commands @command{deco start ncsd}, @command{deco stop nscd}, and
+@command{deco doc nscd} will do what you would expect (@pxref{Invoking
+deco,,, dmd, GNU dmd Manual}).
 
 
 @c *********************************************************************
