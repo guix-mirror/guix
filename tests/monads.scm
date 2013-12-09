@@ -163,6 +163,18 @@
          %monads
          %monad-run))
 
+(test-assert "anym"
+  (every (lambda (monad run)
+           (eq? (run (with-monad monad
+                       (let ((lst (list (return 1) (return 2) (return 3))))
+                         (anym monad
+                               (lambda (x)
+                                 (and (odd? x) 'odd!))
+                               lst))))
+                'odd!))
+         %monads
+         %monad-run))
+
 (test-end "monads")
 
 

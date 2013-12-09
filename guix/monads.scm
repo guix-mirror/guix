@@ -228,9 +228,10 @@ lifted in MONAD, for which PROC returns true."
         (()
          (return #f))
         ((head tail ...)
-         (mlet monad ((value head))
-           (or (and=> (proc value) return)
-               head
+         (mlet* monad ((value  head)
+                       (result -> (proc value)))
+           (if result
+               (return result)
                (loop tail))))))))
 
 (define-syntax listm
