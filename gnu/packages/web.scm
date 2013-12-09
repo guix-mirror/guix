@@ -390,3 +390,40 @@ from the environment can be converted to Unicode strings by calling
 Encode::encode(locale => $bytes) and converted back again with
 Encode::decode(locale => $string).")
     (home-page "http://search.cpan.org/~gaas/Encode-Locale/")))
+
+(define-public perl-libwww
+  (package
+    (name "perl-libwww")
+    (version "6.05")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/G/GA/GAAS/libwww-perl-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "08wgwyz7748pv5cyngxia0xl6nragfnhrp4p9s78xhgfyygpj9bv"))))
+    (build-system perl-build-system)
+    (inputs
+     `(("perl-encode-locale" ,perl-encode-locale)
+       ("perl-file-listing" ,perl-file-listing)
+       ("perl-html-parser" ,perl-html-parser)
+       ("perl-http-cookies" ,perl-http-cookies)
+       ("perl-http-date" ,perl-http-date)
+       ("perl-http-daemon" ,perl-http-daemon)
+       ("perl-http-message" ,perl-http-message)
+       ("perl-http-negotiate" ,perl-http-negotiate)
+       ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)
+       ("perl-net-http" ,perl-net-http)
+       ("perl-uri" ,perl-uri)
+       ("perl-www-robotrules" ,perl-www-robotrules)))
+    (license (package-license perl))
+    (synopsis "Perl modules for the WWW")
+    (description
+     "The libwww-perl collection is a set of Perl modules which provides a
+simple and consistent application programming interface to the
+World-Wide Web.  The main focus of the library is to provide classes
+and functions that allow you to write WWW clients. The library also
+contain modules that are of more general use and even classes that
+help you implement simple HTTP servers.")
+    (home-page "http://search.cpan.org/~gaas/libwww-perl/")))
