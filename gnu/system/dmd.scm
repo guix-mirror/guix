@@ -305,6 +305,7 @@ ETC on startup."
                               (not (member file '("." ".."))))))
 
          ;; Prevent ETC from being GC'd.
+         (rm-f "/var/nix/gcroots/etc-directory")
          (symlink ,etc "/var/nix/gcroots/etc-directory"))
 
        (format #t "starting services...~%")
