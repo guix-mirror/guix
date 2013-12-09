@@ -208,10 +208,10 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
                "0qxdrcak97azjvqyx1anpb2ky6vp6vc37x0wcfjdqfajkh09fzh8"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-uri" ,perl-uri)))
-    (inputs
      `(("perl-http-date" ,perl-http-date)
-       ("perl-io-html" ,perl-io-html)
+       ("perl-uri" ,perl-uri)))
+    (inputs
+     `(("perl-io-html" ,perl-io-html)
        ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)))
     (license (package-license perl))
     (synopsis "Perl HTTP style message")
@@ -233,8 +233,7 @@ algorithm specified in section 8.2.2.1 of the draft standard.")
                "087bqmg22dg3vj7gssh3pcsh9y1scimkbl5h1kc8jqyfhgisvlzm"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-http-date" ,perl-http-date)
-       ("perl-http-message" ,perl-http-message)))
+     `(("perl-http-message" ,perl-http-message)))
     (license (package-license perl))
     (synopsis "Perl HTTP cookie jars")
     (description
@@ -257,8 +256,7 @@ object knows about.")
                "1hmd2isrkilf0q0nkxms1q64kikjmcw9imbvrjgky6kh89vqdza3"))))
     (build-system perl-build-system)
     (propagated-inputs
-     `(("perl-http-date" ,perl-http-date)
-       ("perl-http-message" ,perl-http-message)
+     `(("perl-http-message" ,perl-http-message)
        ("perl-lwp-mediatypes" ,perl-lwp-mediatypes)))
     (license (package-license perl))
     (synopsis "Perl simple http server class")
