@@ -75,6 +75,7 @@ provides a `Makefile.PL' file as its build system."
                                          (append perl-search-paths
                                                  search-paths))
                    #:make-maker-flags ,make-maker-flags
+                   #:phases ,phases
                    #:system ,system
                    #:test-target "test"
                    #:tests? ,tests?
