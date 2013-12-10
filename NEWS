@@ -37,8 +37,8 @@ command.
 
 *** New (gnu system) module
 
-This module provides generic way to describe the system’s configuration, and
-to instantiate it, regardless of the final medium (QEMU image, etc.)
+This module provides a generic way to describe the system’s configuration,
+and to instantiate it, regardless of the final medium (QEMU image, etc.)
 See “System Configuration” in the manual.
 
 This is work in progress.  Send feedback to guix-devel@gnu.org!
@@ -51,12 +51,12 @@ See “Derivations” in the manual.
 ** GNU distribution
 *** New port to the Loongson MIPS64 processors, n32 ABI (‘mips64el-linux’)
 
-Bootstrap binaries have been built for that architecture, as several
+Bootstrap binaries have been built for that architecture, and several
 Loongson-specific patches not yet available upstream have been applied to core
 packages.  See “GNU Distribution” and “Porting” in the manual.
 
 Pre-built binaries are not yet available via hydra.gnu.org, so Guix will
-build by itself on this platform.
+build from source on this platform.
 
 *** XXX new packages
 
@@ -71,7 +71,7 @@ build by itself on this platform.
 ** Bugs fixed
 *** ‘guix-daemon’ always sets umask to 022
     (http://lists.gnu.org/archive/html/bug-guix/2013-07/msg00033.html)
-*** ‘guix pull’ compiles Guix in a deterministically and correctly
+*** ‘guix pull’ compiles Guix deterministically and correctly
 
 Previously, the build environment was not cleared in between ‘compile-file’
 calls, leading to build errors due to Guile bug http://bugs.gnu.org/15602 .
