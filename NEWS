@@ -10,6 +10,77 @@ Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
+* Changes in 0.5 (since 0.4)
+** Package management
+*** GNU package descriptions synchronized with the ‘gnumaint’ repository
+
+In addition to synopses, descriptions of GNU packages are now kept in sync
+with the ‘gnumaint’ repository, which is the canonical place for GNU package
+meta-data.
+
+** Programming interfaces
+*** Patches are now listed as part of ‘origin’
+
+The ‘origin’ form supports two new fields: ‘patches’ (list of patches), and
+‘snippet’ (code snippet to modify the source.)  These are applied when running
+‘guix build --source’.  See “Defining Packages” in the manual.
+
+*** New (guix monads) monadic interface to operate on the store
+
+See “The Store Monad” in the manual.  The (gnu system …) modules have been
+rewritten to use this monadic interface.
+
+*** New (guix profiles) module
+
+It provides an API for dealing with profiles, as with the ‘guix package’
+command.
+
+*** New (gnu system) module
+
+This module provides generic way to describe the system’s configuration, and
+to instantiate it, regardless of the final medium (QEMU image, etc.)
+See “System Configuration” in the manual.
+
+This is work in progress.  Send feedback to guix-devel@gnu.org!
+
+*** ‘build-expression->derivation’ uses more parameters
+
+Some positional parameters have been changed to keyword parameters.
+See “Derivations” in the manual.
+
+** GNU distribution
+*** New port to the Loongson MIPS64 processors, n32 ABI (‘mips64el-linux’)
+
+Bootstrap binaries have been built for that architecture, as several
+Loongson-specific patches not yet available upstream have been applied to core
+packages.  See “GNU Distribution” and “Porting” in the manual.
+
+Pre-built binaries are not yet available via hydra.gnu.org, so Guix will
+build by itself on this platform.
+
+*** XXX new packages
+
+*** XXX package updates
+
+*** Packages are now built with GCC 4.8.2 by default (was 4.7.3)
+
+** Native language support
+*** New ‘sr’ (Serbian) translation
+*** New ‘vi’ (Vietnamese) translation
+*** Updated ‘pt_BR’ (Brazilian Portuguese) translation
+** Bugs fixed
+*** ‘guix-daemon’ always sets umask to 022
+    (http://lists.gnu.org/archive/html/bug-guix/2013-07/msg00033.html)
+*** ‘guix pull’ compiles Guix in a deterministically and correctly
+
+Previously, the build environment was not cleared in between ‘compile-file’
+calls, leading to build errors due to Guile bug http://bugs.gnu.org/15602 .
+
+*** ‘guix package’ allows removal of a specific package output
+    (http://bugs.gnu.org/15756)
+*** Files referenced by environment variables are protected from GC
+*** ‘bootstrap-graph.{png,eps,pdf}’ built in srcdir (http://bugs.gnu.org/15640)
+
 * Changes in 0.4 (since 0.3)
 
 ** Package management
