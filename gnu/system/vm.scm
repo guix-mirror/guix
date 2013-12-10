@@ -26,7 +26,7 @@
                 #:select (%final-inputs
                           guile-final gcc-final glibc-final
                           ld-wrapper binutils-final
-                          coreutils findutils grep sed))
+                          coreutils findutils grep sed tzdata))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages less)
@@ -411,7 +411,7 @@ such as /etc files."
   (operating-system
    (host-name "gnu")
    (timezone "Europe/Paris")
-   (locale "C.UTF-8")
+   (locale "en_US.UTF-8")
    (users (list (user-account
                  (name "guest")
                  (password "")
@@ -434,6 +434,7 @@ such as /etc files."
                    psmisc
                    zile
                    less
+                   tzdata
                    guix))))
 
 (define* (system-qemu-image #:optional (os %demo-operating-system))

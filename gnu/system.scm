@@ -85,7 +85,8 @@
                            guile
                            bash
                            (@ (gnu packages dmd) dmd)
-                           guix)))
+                           guix
+                           tzdata)))
 
   (timezone operating-system-timezone)            ; string
   (locale   operating-system-locale)              ; string
@@ -214,6 +215,7 @@ directories or regular files."
                            #:inputs inputs)))
 
 (define* (etc-directory #:key
+                        (locale "C") (timezone "Europe/Paris")
                         (accounts '())
                         (groups '())
                         (pam-services '())
@@ -238,9 +240,18 @@ GNU dmd (http://www.gnu.org/software/dmd/).
 You can log in as 'guest' or 'root' with no password.
 "))
 
+       ;; Assume TZDATA is installed---e.g., as part of the system packages.
+       ;; Users can choose not to have it.
+       (tzdir      (package-file tzdata "share/zoneinfo"))
+
        ;; TODO: Generate bashrc from packages' search-paths.
        (bashrc    (text-file "bashrc" (string-append "
 export PS1='\\u@\\h\\$ '
+
+export LC_ALL=\"" locale "\"
+export TZ=\"" timezone "\"
+export TZDIR=\"" tzdir "\"
+
 export PATH=$HOME/.guix-profile/bin:" profile "/bin:" profile "/sbin
 export CPATH=$HOME/.guix-profile/include:" profile "/include
 export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
@@ -297,6 +308,8 @@ alias ll='ls -l'
        (profile ->  (derivation->output-path profile-drv))
        (etc-drv     (etc-directory #:accounts accounts #:groups groups
                                    #:pam-services pam-services
+                                   #:locale (operating-system-locale os)
+                                   #:timezone (operating-system-timezone os)
                                    #:profile profile))
        (etc     ->  (derivation->output-path etc-drv))
        (dmd-conf  (dmd-configuration-file services etc))
