@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: guix 0.4-pre2\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
-"POT-Creation-Date: 2013-09-25 16:04+0200\n"
+"POT-Creation-Date: 2013-12-10 22:16+0100\n"
 "PO-Revision-Date: 2013-11-08 11:41+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <(nothing)>\n"
@@ -14,262 +14,193 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #: gnu/packages.scm:94
 #, scheme-format
 msgid "cannot access `~a': ~a~%"
 msgstr "не могу да приступим „~a“: ~a~%"
 
-#: gnu/packages/base.scm:65
+#: gnu/packages/base.scm:60
 msgid "Hello, GNU world: An example GNU package"
 msgstr "Поздрав, Гну народе: Пример Гну пакета"
 
-#: gnu/packages/base.scm:66
-msgid "Yeah..."
-msgstr "Да..."
+#: gnu/packages/base.scm:62
+msgid ""
+"GNU Hello prints the message \"Hello, world!\" and then exits.  It\n"
+"serves as an example of standard GNU coding practices.  As such, it "
+"supports\n"
+"command-line arguments, multiple languages, and so on."
+msgstr ""
 
-#: gnu/packages/base.scm:82
+#: gnu/packages/base.scm:80
 msgid "Print lines matching a pattern"
 msgstr "Исписује редове који одговарају шаблону"
 
-#: gnu/packages/base.scm:84
+#: gnu/packages/base.scm:82
 msgid ""
-"The grep command searches one or more input files for lines containing a\n"
-"match to a specified pattern.  By default, grep prints the matching\n"
-"lines."
+"grep is a tool for finding text inside files.  Text is found by\n"
+"matching a pattern provided by the user in one or many files.  The pattern\n"
+"may be provided as a basic or extended regular expression, or as fixed\n"
+"strings.  By default, the matching text is simply printed to the screen,\n"
+"however the output can be greatly customized to include, for example, line\n"
+"numbers.  GNU grep offers many extensions over the standard utility,\n"
+"including, for example, recursive directory searching."
 msgstr ""
-"Наредба греп претражује једну или више улазних датоотека за редовима који\n"
-"садрже поклапање са наведеним шаблоном.  По основи, греп исписује поклопљене\n"
-"редове."
 
-#: gnu/packages/base.scm:102
+#: gnu/packages/base.scm:104
 msgid "Stream editor"
 msgstr "Уређивач протока"
 
-#: gnu/packages/base.scm:117
+#: gnu/packages/base.scm:119
 msgid ""
-"Sed (stream editor) isn't really a true text editor or text processor.\n"
-"Instead, it is used to filter text, i.e., it takes text input and performs\n"
-"some operation (or set of operations) on it and outputs the modified text.\n"
-"Sed is typically used for extracting part of a file using pattern matching or\n"
-"substituting multiple occurrences of a string within a file."
+"Sed is a non-interactive, text stream editor.  It receives a text\n"
+"input from a file or from standard input and it then applies a series of "
+"text\n"
+"editing commands to the stream and prints its output to standard output.  "
+"It\n"
+"is often used for substituting text patterns in a stream.  The GNU\n"
+"implementation offers several extensions over the standard utility."
 msgstr ""
-"Сед (уређивач протока) није стварно прави уређивач или обрађивач текста.\n"
-"Напротив, користи се за издвајање текста, тј. узима улаз текста и обавља\n"
-"неке радње (или скуп радњи) на њему и даје излаз измењеног текста.\n"
-"Сед се углавном користи за издвајање дела датотеке користећи поклапање\n"
-"шаблона или замењује више појава ниске унутар датотеке."
 
-#: gnu/packages/base.scm:140
+#: gnu/packages/base.scm:139
 msgid "Managing tar archives"
 msgstr "Управљање тар архивама"
 
-#: gnu/packages/base.scm:142
+#: gnu/packages/base.scm:141
 msgid ""
-"The Tar program provides the ability to create tar archives, as well as\n"
-"various other kinds of manipulation.  For example, you can use Tar on\n"
-"previously created archives to extract files, to store additional files, or\n"
-"to update or list files which were already stored.\n"
-"\n"
-"Initially, tar archives were used to store files conveniently on magnetic\n"
-"tape.  The name \"Tar\" comes from this use; it stands for tape archiver.\n"
-"Despite the utility's name, Tar can direct its output to available devices,\n"
-"files, or other programs (using pipes), it can even access remote devices or\n"
-"files (as archives)."
+"Tar provides the ability to create tar archives, as well as the\n"
+"ability to extract, update or list files in an existing archive.  It is\n"
+"useful for combining many files into one larger file, while maintaining\n"
+"directory structure and file information such as permissions and\n"
+"creation/modification dates.  GNU tar offers many extensions over the\n"
+"standard utility."
 msgstr ""
-"Програм Тар обезбеђује способност стварања тар архива, као и разне друге\n"
-"врсте управљања. На пример, можете да користите Тар на већ направљеним\n"
-"архивама за извлачење датотека, за ускладиштење додатних датотека, или\n"
-"за освежавање или исписивање датотека које су већ ускладиштене.\n"
-"\n"
-"На почетку, тар архиве су биле коришћене за пригодно чување датотека на\n"
-"магнетским тракама. Назив „Тар“ је настао из такве употребе; и значи\n"
-"архивар трака. Без обзира на назив помагала, Тар може да успери свој излаз\n"
-"ка доступним уређајима, датотекама, или другим програмима (употребом спојки)\n"
-"чак може и да приступи удаљеним уређајима или датотекама (као архивама)."
 
-#: gnu/packages/base.scm:173
+#: gnu/packages/base.scm:168
 msgid "Apply differences to originals, with optional backups"
 msgstr "Примењивање разлика на оригинале, са опционалним резервама"
 
-#: gnu/packages/base.scm:175
+#: gnu/packages/base.scm:170
 msgid ""
-"GNU Patch takes a patch file containing a difference listing produced by\n"
-"the diff program and applies those differences to one or more original files,\n"
-"producing patched versions."
+"Patch is a program that applies changes to files based on differences\n"
+"laid out as by the program \"diff\".  The changes may be applied to one or "
+"more\n"
+"files depending on the contents of the diff file.  It accepts several\n"
+"different diff formats.  It may also be used to revert previously applied\n"
+"differences."
 msgstr ""
-"Гнуова закрпа узима датотеку закрпе која садржи списак разлика произведен\n"
-"програмом за разлике (diff) и примењује те разлике на једној или више\n"
-"изворних датотека, стварајући прикрпљена издања."
 
-#: gnu/packages/base.scm:193
+#: gnu/packages/base.scm:190
 msgid "Comparing and merging files"
 msgstr "Упоређивање и стапање датотека"
 
-#: gnu/packages/base.scm:195
+#: gnu/packages/base.scm:192
 msgid ""
-"GNU Diffutils is a package of several programs related to finding\n"
-"differences between files.\n"
-"\n"
-"Computer users often find occasion to ask how two files differ. Perhaps one\n"
-"file is a newer version of the other file. Or maybe the two files started out\n"
-"as identical copies but were changed by different people.\n"
-"\n"
-"You can use the diff command to show differences between two files, or each\n"
-"corresponding file in two directories. diff outputs differences between files\n"
-"line by line in any of several formats, selectable by command line\n"
-"options. This set of differences is often called a ‘diff’ or ‘patch’. For\n"
-"files that are identical, diff normally produces no output; for\n"
-"binary (non-text) files, diff normally reports only that they are different.\n"
-"\n"
-"You can use the cmp command to show the offsets and line numbers where two\n"
-"files differ. cmp can also show all the characters that differ between the\n"
-"two files, side by side.\n"
-"\n"
-"You can use the diff3 command to show differences among three files. When two\n"
-"people have made independent changes to a common original, diff3 can report\n"
-"the differences between the original and the two changed versions, and can\n"
-"produce a merged file that contains both persons' changes together with\n"
-"warnings about conflicts.\n"
-"\n"
-"You can use the sdiff command to merge two files interactively."
+"GNU Diffutils is a package containing tools for finding the\n"
+"differences between files.  The \"diff\" command is used to show how two "
+"files\n"
+"differ, while \"cmp\" shows the offsets and line numbers where they "
+"differ. \n"
+"\"diff3\" allows you to compare three files.  Finally, \"sdiff\" offers an\n"
+"interactive means to merge two files."
 msgstr ""
-"„GNU Diffutils“ је пакет неколико програма намењених за проналажење\n"
-"разлика између датотека.\n"
-"\n"
-"Корисници рачунара често желе да знају у чему се разликују две датотеке.\n"
-"Можда је једна датотека новије издање оне друге. Или су можда обе датотеке\n"
-"започете као истоветни умношци али су их измениле другачије особе.\n"
-"\n"
-"Можете да користите наредбу „diff“ да покажете разлике између две датотеке\n"
-"или сваку одговарајућу датотеку у два директоријума. дифф исписује разлике\n"
-"између датотека ред по ред у било ком од неколико записа, бирањем опција\n"
-"линије наредби. Овај скуп разлика се често назива „diff“ или „patch“. За\n"
-"датотеке које су исте, дифф обично не даје резултат; за извршне (не-текстуалне)\n"
-"датотеке, дифф обично извештава само о томе да се оне разликују.\n"
-"\n"
-"\n"
-"Можете да користите наредбу „cmp“ да прикажете помераје и бројеве редова\n"
-"где се две датотеке разликују. цмп може такође да покаже све знакове који\n"
-"се разликују између две датотеке, један поред другог.\n"
-"\n"
-"Можете да користите наредбу „diff3“ да прикажете разлике између три датотеке.\n"
-"Када два корисника направе независне измене у заједничком оригиналу, дифф3\n"
-"може да извести о разликама између оригинала и два измењена издања, и може да\n"
-"направи стопљену датотеку која заједно садржи измене обе особе са упозорењима о сукобима.\n"
-"\n"
-"Можете да користите наредбу „sdiff“ да међудејствено стопите две датотеке."
 
-#: gnu/packages/base.scm:246
+#: gnu/packages/base.scm:219
 msgid "Operating on files matching given criteria"
 msgstr "Радње над датотекама према датим условима"
 
-#: gnu/packages/base.scm:248
+#: gnu/packages/base.scm:221
 msgid ""
-"The GNU Find Utilities are the basic directory searching utilities of\n"
-"the GNU operating system.  These programs are typically used in conjunction\n"
-"with other programs to provide modular and powerful directory search and file\n"
-"locating capabilities to other commands.\n"
-"\n"
-"The tools supplied with this package are:\n"
-"\n"
-"  * find - search for files in a directory hierarchy;\n"
-"  * locate - list files in databases that match a pattern;\n"
-"  * updatedb - update a file name database;\n"
-"  * xargs - build and execute command lines from standard input.\n"
+"Findutils supplies the basic file directory searching utilities of the\n"
+"GNU system.  It consists of two primary searching utilities: \"find\"\n"
+"recursively searches for files in a directory according to given criteria "
+"and\n"
+"\"locate\" lists files in a database that match a query.  Two auxiliary "
+"tools\n"
+"are included: \"updatedb\" updates the file name database and \"xargs\" may "
+"be\n"
+"used to apply commands with arbitrarily long arguments."
 msgstr ""
-"„GNU Find Utilities“ су основна помагала за претраживање директоријума\n"
-"Гнуовог оперативног система.  Ови програми се обично користе у спрези\n"
-"са другим програмима да обезбеде модуларне и моћне могућности претраге\n"
-"директоријума и налажења датотека другим наредбама.\n"
-"\n"
-"Алати који иду уз овај пакет су:\n"
-"\n"
-"  * find — тражи датотеке у хијерархији директоријума;\n"
-"  * locate — исписује датотеке у базама података које одговарају шаблону;\n"
-"  * updatedb — освежава базу података назива датотеке;\n"
-"  * xargs — гради редове извршавања наредбе са стандардног улаза.\n"
 
-#: gnu/packages/base.scm:298
+#: gnu/packages/base.scm:265
 msgid "Core GNU utilities (file, text, shell)"
 msgstr "Гнуова кључна помагала (датотека, текст, шкољка)"
 
-#: gnu/packages/base.scm:300
+#: gnu/packages/base.scm:267
 msgid ""
-"The GNU Core Utilities are the basic file, shell and text manipulation\n"
-"utilities of the GNU operating system.  These are the core utilities which\n"
-"are expected to exist on every operating system."
+"GNU Coreutils includes all of the basic command-line tools that are\n"
+"expected in a POSIX system.  These provide the basic file, shell and text\n"
+"manipulation functions of the GNU system.  Most of these tools offer "
+"extended\n"
+"functionality beyond that which is outlined in the POSIX standard."
 msgstr ""
-"Гнуова кључна помагала су основни алати за управљање датотекама, шкољком\n"
-"и текстом за Гнуов оперативни систем.  То су кључна помагала за која се\n"
-"очекује да постоје на сваком оперативном систему."
 
-#: gnu/packages/base.scm:333
+#: gnu/packages/base.scm:300
 msgid "Remake files automatically"
 msgstr "Самостално поновно стварање датотека"
 
-#: gnu/packages/base.scm:335
+#: gnu/packages/base.scm:302
 msgid ""
-"Make is a tool which controls the generation of executables and other\n"
-"non-source files of a program from the program's source files.\n"
-"\n"
-"Make gets its knowledge of how to build your program from a file called the\n"
-"makefile, which lists each of the non-source files and how to compute it from\n"
-"other files. When you write a program, you should write a makefile for it, so\n"
-"that it is possible to use Make to build and install the program."
+"Make is a program that is used to control the production of\n"
+"executables or other files from their source files.  The process is\n"
+"controlled from a Makefile, in which the developer specifies how each file "
+"is\n"
+"generated from its source.  It has powerful dependency resolution and the\n"
+"ability to determine when files have to be regenerated after their sources\n"
+"change.  GNU make offers many powerful extensions over the standard utility."
 msgstr ""
-"Мејк је алат који управља стварањем извршних и других не-изворних датотека\n"
-"програма из изворних датотека програма.\n"
-"\n"
-"Мејк сазнаје како да изгради ваш програм из датотеке зване „makefile“, која\n"
-"исписује сваку не-изворну датотеку и како да је прорчуна из других датотека.\n"
-"Када пишете програм треба да напишете и његову „makefile“ датотеку, тако\n"
-"да буде могуће користити Мејк за изградњу и инсталацију програма."
 
-#: gnu/packages/base.scm:379
+#: gnu/packages/base.scm:345
 msgid "Binary utilities: bfd gas gprof ld"
 msgstr "Бинарна помагала: bfd gas gprof ld"
 
-#: gnu/packages/base.scm:381
+#: gnu/packages/base.scm:347
 msgid ""
-"The GNU Binutils are a collection of binary tools.  The main ones are\n"
-"`ld' (the GNU linker) and `as' (the GNU assembler).  They also include the\n"
-"BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc."
+"GNU Binutils is a collection of tools for working with binary files.\n"
+"Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler. "
+"Other\n"
+"tools include programs to display binary profiling information, list the\n"
+"strings in a binary file, and utilities for working with archives.  The \"bfd"
+"\"\n"
+"library for working with executable and object formats is also included."
 msgstr ""
-"Гнуова бинпомагала јесу скуп бинарних алата.  Главни су „ld“ (Гнуов везник) и „as“ (Гнуов асемблер). У њих такође спадају библиотека „BFD“\n"
-"(Binary File Descriptor), „gprof“, „nm“, „strip“, итд."
 
-#: gnu/packages/base.scm:500
+#: gnu/packages/base.scm:476
 msgid "The GNU C Library"
 msgstr "Гну Ц библиотека"
 
-#: gnu/packages/base.scm:502
+#: gnu/packages/base.scm:478
 msgid ""
 "Any Unix-like operating system needs a C library: the library which\n"
-"defines the \"system calls\" and other basic facilities such as open, malloc,\n"
+"defines the \"system calls\" and other basic facilities such as open, "
+"malloc,\n"
 "printf, exit...\n"
 "\n"
-"The GNU C library is used as the C library in the GNU system and most systems\n"
+"The GNU C library is used as the C library in the GNU system and most "
+"systems\n"
 "with the Linux kernel."
 msgstr ""
-"Сваком Јуниксоликом оперативном систему је потребна Ц библиотека: библиотека\n"
+"Сваком Јуниксоликом оперативном систему је потребна Ц библиотека: "
+"библиотека\n"
 "која одређује „системске позиве“ и остале основне олакшице као што су\n"
 "„open, malloc, printf, exit...“\n"
 "\n"
 "Гнуова Ц библиотека се користи као Ц библиотека у Гнуовом систему и већини\n"
 "система са Линукс језгром."
 
-#: gnu/packages/base.scm:571
+#: gnu/packages/base.scm:547
 msgid "Database of current and historical time zones"
 msgstr "База података о текућим и застарелим временским зонама"
 
-#: gnu/packages/base.scm:572
+#: gnu/packages/base.scm:548
 msgid ""
 "The Time Zone Database (often called tz or zoneinfo)\n"
 "contains code and data that represent the history of local time for many\n"
 "representative locations around the globe. It is updated periodically to\n"
-"reflect changes made by political bodies to time zone boundaries, UTC offsets,\n"
+"reflect changes made by political bodies to time zone boundaries, UTC "
+"offsets,\n"
 "and daylight-saving rules."
 msgstr ""
 "База података временске зоне (често називана „tz“ или „zoneinfo“)\n"
@@ -278,48 +209,38 @@ msgstr ""
 "би осликала промене на границама временских зона које доносе политичка\n"
 "тела, помераје КУВ-а, и правила уштеде дневног светла."
 
-#: gnu/packages/base.scm:990
+#: gnu/packages/base.scm:925
+msgid "GNU C++ standard library (intermediate)"
+msgstr ""
+
+#: gnu/packages/base.scm:1012
 msgid "The linker wrapper"
 msgstr "Омотач повезивача"
 
-#: gnu/packages/base.scm:992
+#: gnu/packages/base.scm:1014
 msgid ""
 "The linker wrapper (or `ld-wrapper') wraps the linker to add any\n"
-"missing `-rpath' flags, and to detect any misuse of libraries outside of the\n"
+"missing `-rpath' flags, and to detect any misuse of libraries outside of "
+"the\n"
 "store."
 msgstr ""
 "Омотач повезивача (или „ld-wrapper“) обмотава повезивача да би додао\n"
 "недостајућу опцију „-rpath“, и да би открио лоше коришћење библиотека\n"
 "изван складишта."
 
-#: gnu/packages/guile.scm:97 gnu/packages/guile.scm:166
+#: gnu/packages/guile.scm:96 gnu/packages/guile.scm:167
 msgid "Scheme implementation intended especially for extensions"
 msgstr "Примена шеме нарочито осмишљена за проширења"
 
-#: gnu/packages/guile.scm:99
+#: gnu/packages/guile.scm:98 gnu/packages/guile.scm:169
 msgid ""
-"GNU Guile 1.8 is an interpreter for the Scheme programming language,\n"
-"packaged as a library that can be embedded into programs to make them\n"
-"extensible.  It supports many SRFIs."
+"Guile is the GNU Ubiquitous Intelligent Language for Extensions, the\n"
+"official extension language of the GNU system.  It is an implementation of\n"
+"the Scheme language which can be easily embedded in other applications to\n"
+"provide a convenient means of extending the functionality of the "
+"application\n"
+"without requiring the source code to be rewritten."
 msgstr ""
-"Гну Гуиле 1.8 је преводилац програмског језика Шеме, запакован као\n"
-"библиотека која може бити уграђена у програме како би их учинила\n"
-"проширивим.  Подржава многе СРФИ-ове."
-
-#: gnu/packages/guile.scm:168
-msgid ""
-"GNU Guile is an implementation of the Scheme programming language, with\n"
-"support for many SRFIs, packaged for use in a wide variety of environments.\n"
-"In addition to implementing the R5RS Scheme standard and a large subset of\n"
-"R6RS, Guile includes a module system, full access to POSIX system calls,\n"
-"networking support, multiple threads, dynamic linking, a foreign function\n"
-"call interface, and powerful string processing."
-msgstr ""
-"Гну Гуиле је примена програмског језика Шеме, са подршком за многе\n"
-"СРФИ-ове запакован за коришћење у разним окружењима.\n"
-"Као додатак примене Р5РС стандарда Шеме и великог подскупа Р6РС, Гуиле\n"
-"обухвата систем модула, потпун приступ системским позивима ПОСИКС-а, пподршку умрежавања, вишеструке нити, динамичко повезивање, сучеље позива\n"
-"страних функција, и моћну обраду ниске."
 
 #: gnu/packages/guile.scm:212
 msgid "Framework for building readers for GNU Guile"
@@ -330,7 +251,8 @@ msgid ""
 "Guile-Reader is a simple framework for building readers for GNU Guile.\n"
 "\n"
 "The idea is to make it easy to build procedures that extend Guile’s read\n"
-"procedure. Readers supporting various syntax variants can easily be written,\n"
+"procedure. Readers supporting various syntax variants can easily be "
+"written,\n"
 "possibly by re-using existing “token readers” of a standard Scheme\n"
 "readers. For example, it is used to implement Skribilo’s R5RS-derived\n"
 "document syntax.\n"
@@ -344,7 +266,8 @@ msgstr ""
 "Замисао је олакшати изградњу поступака који проширују Гуилов поступак\n"
 "читања. Читачи који подржавају разне варијанте синтаксе могу бити лако\n"
 "написани, по могућству поновним коришћењем постојећих „читача “ читача\n"
-"стандардне Шеме. На пример, користи се за примену синтаксе документа која произилази из Р5РС Скрибилоа.\n"
+"стандардне Шеме. На пример, користи се за примену синтаксе документа која "
+"произилази из Р5РС Скрибилоа.\n"
 "\n"
 "Приступ Гуиле-читача је сличан Општем Лисповом „читању табеле“, али је на\n"
 "срећу много моћнији и прилагодљивији (на пример, неко може да покрене\n"
@@ -356,38 +279,28 @@ msgstr "Гуилеово повезивање са ен-курсом"
 
 #: gnu/packages/guile.scm:268
 msgid ""
-"GNU Guile-Ncurses is a library for the Guile Scheme interpreter that\n"
-"provides functions for creating text user interfaces.  The text user interface\n"
-"functionality is built on the ncurses libraries: curses, form, panel, and\n"
-"menu."
+"guile-ncurses provides Guile language bindings for the ncurses\n"
+"library."
 msgstr ""
-"Гну Гуиле Ен-курсис је библиотека за преводиоца Гуле Шеме која обезбеђује\n"
-"функције за стварање текстуалног корисничког сучеља. Функционалност текстуалног\n"
-"корисничког сучеља је изграђена на ен-курсис библиотекама: „curses, form,\n"
-"panel, и menu“."
 
-#: gnu/packages/guile.scm:292
+#: gnu/packages/guile.scm:288
 msgid "Run jobs at scheduled times"
 msgstr "Покретање послова у заказано време"
 
-#: gnu/packages/guile.scm:294
+#: gnu/packages/guile.scm:290
 msgid ""
-"The GNU package mcron (Mellor's cron) is a 100% compatible replacement\n"
-"for Vixie cron.  It is written in pure Guile, and allows configuration files\n"
-"to be written in scheme (as well as Vixie's original format) for infinite\n"
-"flexibility in specifying when jobs should be run.  Mcron was written by Dale\n"
-"Mellor."
+"GNU Mcron is a complete replacement for Vixie cron.  It is used to run\n"
+"tasks on a schedule, such as every hour or every Monday.  Mcron is written "
+"in\n"
+"Guile, so its configuration can be written in Scheme; the original cron\n"
+"format is also supported."
 msgstr ""
-"Гнуов пакет „mcron“ (Мелоров крон) је 100% сагласна замена за Викси крон.\n"
-"Написан је у чистом Гуилу, и допушта да датотеке подешавања буду записане\n"
-"у шеми (као и у Виксијевом изворном запису) са бескрајном сагласношћу у\n"
-"навођењу када послови требају да се покрену.  Написао га је Дејл Мелор."
 
-#: gnu/packages/guile.scm:323
+#: gnu/packages/guile.scm:318
 msgid "Collection of useful Guile Scheme modules"
 msgstr "Збирка корисних модула Гуиле Шеме"
 
-#: gnu/packages/guile.scm:325
+#: gnu/packages/guile.scm:320
 msgid ""
 "guile-lib is intended as an accumulation place for pure-scheme Guile\n"
 "modules, allowing for people to cooperate integrating their generic Guile\n"
@@ -405,15 +318,19 @@ msgstr "Лоут, систем изгледа документа сличан у
 
 #: gnu/packages/lout.scm:111
 msgid ""
-"The Lout document formatting system is now reads a high-level description of\n"
-"a document similar in style to LaTeX and produces a PostScript or plain text\n"
+"The Lout document formatting system is now reads a high-level description "
+"of\n"
+"a document similar in style to LaTeX and produces a PostScript or plain "
+"text\n"
 "output file.\n"
 "\n"
 "Lout offers an unprecedented range of advanced features, including optimal\n"
 "paragraph and page breaking, automatic hyphenation, PostScript EPS file\n"
-"inclusion and generation, equation formatting, tables, diagrams, rotation and\n"
+"inclusion and generation, equation formatting, tables, diagrams, rotation "
+"and\n"
 "scaling, sorted indexes, bibliographic databases, running headers and\n"
-"odd-even pages, automatic cross referencing, multilingual documents including\n"
+"odd-even pages, automatic cross referencing, multilingual documents "
+"including\n"
 "hyphenation (most European languages are supported), formatting of computer\n"
 "programs, and much more, all ready to use.  Furthermore, Lout is easily\n"
 "extended with definitions which are very much easier to write than troff of\n"
@@ -437,26 +354,27 @@ msgstr ""
 "је Лоут језик високог нивоа, потпуно функционалан, резултат пројекта\n"
 "осмогодишњег истраживања који се вратио на почетак."
 
-#: gnu/packages/recutils.scm:49
+#: gnu/packages/recutils.scm:52
 msgid "Manipulate plain text files as databases"
 msgstr "Управљајте датотекама обичног текста као базама подтака"
 
-#: gnu/packages/recutils.scm:51
+#: gnu/packages/recutils.scm:54
 msgid ""
-"GNU recutils is a set of tools and libraries to access human-editable,\n"
-"text-based databases called recfiles.  The data is stored as a sequence of\n"
-"records, each record containing an arbitrary number of named fields."
+"GNU Recutils is a set of tools and libraries for creating and\n"
+"manipulating text-based, human-editable databases.  Despite being text-"
+"based,\n"
+"databases created with Recutils carry all of the expected features such as\n"
+"unique fields, primary keys, time stamps and more. Many different field "
+"types\n"
+"are supported, as is encryption."
 msgstr ""
-"Гну рекутилс је скуп алата и библиотека за приступ базама података заснованим на\n"
-"тексту, званим „recfiles“ које корисници могу да мењају.  Подаци су ускладиштени\n"
-"као низ снимака, сваки снимак садржи одговарајући број именованих поља."
 
-#: guix/scripts/build.scm:51
+#: guix/scripts/build.scm:54
 #, scheme-format
 msgid "package `~a' has no source~%"
 msgstr "пакет „~a“ нема извор~%"
 
-#: guix/scripts/build.scm:68
+#: guix/scripts/build.scm:73
 msgid ""
 "Usage: guix build [OPTION]... PACKAGE-OR-DERIVATION...\n"
 "Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"
@@ -464,15 +382,16 @@ msgstr ""
 "Употреба: guix build [ОПЦИЈА]... ПАКЕТ-ИЛИ-ИЗВЕДНИЦА...\n"
 "Изграђује дати ПАКЕТ-ИЛИ-ИЗВЕДНИЦУ и исписује њихове путање излаза.\n"
 
-#: guix/scripts/build.scm:70
+#: guix/scripts/build.scm:75
+#, fuzzy
 msgid ""
 "\n"
-"  -e, --expression=EXPR  build the package EXPR evaluates to"
+"  -e, --expression=EXPR  build the package or derivation EXPR evaluates to"
 msgstr ""
 "\n"
 "  -e, --expression=ИЗРАЗ  изграђује процене ИЗРАЗА пакета на"
 
-#: guix/scripts/build.scm:72
+#: guix/scripts/build.scm:77
 msgid ""
 "\n"
 "  -S, --source           build the packages' source derivations"
@@ -480,7 +399,7 @@ msgstr ""
 "\n"
 "  -S, --source           изграђује изведенице извора пакета"
 
-#: guix/scripts/build.scm:74
+#: guix/scripts/build.scm:79
 msgid ""
 "\n"
 "  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""
@@ -488,7 +407,7 @@ msgstr ""
 "\n"
 "  -s, --system=СИСТЕМ    покушава да изгради за СИСТЕМ--e.g., „i686-linux“"
 
-#: guix/scripts/build.scm:76
+#: guix/scripts/build.scm:81
 msgid ""
 "\n"
 "      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""
@@ -496,7 +415,7 @@ msgstr ""
 "\n"
 "      --target=ТРОЈКА   унакрсно изграђује за ТРОЈКУ--e.g., „armel-linux-gnu“"
 
-#: guix/scripts/build.scm:78
+#: guix/scripts/build.scm:83
 msgid ""
 "\n"
 "  -d, --derivations      return the derivation paths of the given packages"
@@ -504,7 +423,7 @@ msgstr ""
 "\n"
 "  -d, --derivations      исписује путање изведенице датог пакета"
 
-#: guix/scripts/build.scm:80
+#: guix/scripts/build.scm:85
 msgid ""
 "\n"
 "  -K, --keep-failed      keep build tree of failed builds"
@@ -512,7 +431,7 @@ msgstr ""
 "\n"
 "  -K, --keep-failed      задржава стабло изградње неуспелих изградњи"
 
-#: guix/scripts/build.scm:82
+#: guix/scripts/build.scm:87
 msgid ""
 "\n"
 "  -n, --dry-run          do not build the derivations"
@@ -520,7 +439,7 @@ msgstr ""
 "\n"
 "  -n, --dry-run          не изграђује изведенице"
 
-#: guix/scripts/build.scm:84 guix/scripts/package.scm:519
+#: guix/scripts/build.scm:89 guix/scripts/package.scm:488
 msgid ""
 "\n"
 "      --fallback         fall back to building when the substituter fails"
@@ -528,15 +447,16 @@ msgstr ""
 "\n"
 "      --fallback         враћа се на изградњу када заменик не успе"
 
-#: guix/scripts/build.scm:86 guix/scripts/package.scm:521
+#: guix/scripts/build.scm:91 guix/scripts/package.scm:490
 msgid ""
 "\n"
 "      --no-substitutes   build instead of resorting to pre-built substitutes"
 msgstr ""
 "\n"
-"      --no-substitutes   изграђује уместо да поново ређа заменике предизградње"
+"      --no-substitutes   изграђује уместо да поново ређа заменике "
+"предизградње"
 
-#: guix/scripts/build.scm:88 guix/scripts/package.scm:523
+#: guix/scripts/build.scm:93 guix/scripts/package.scm:492
 msgid ""
 "\n"
 "      --max-silent-time=SECONDS\n"
@@ -546,25 +466,27 @@ msgstr ""
 "      --max-silent-time=СЕКУНДЕ\n"
 "                         означава изградњу неупелом након СЕКУНДЕ мировања"
 
-#: guix/scripts/build.scm:91
+#: guix/scripts/build.scm:96
 msgid ""
 "\n"
 "  -c, --cores=N          allow the use of up to N CPU cores for the build"
 msgstr ""
 "\n"
-"  -c, --cores=N          омогућава коришћење до N језгра процесора за изградњу"
+"  -c, --cores=N          омогућава коришћење до N језгра процесора за "
+"изградњу"
 
-#: guix/scripts/build.scm:93
+#: guix/scripts/build.scm:98
 msgid ""
 "\n"
 "  -r, --root=FILE        make FILE a symlink to the result, and register it\n"
 "                         as a garbage collector root"
 msgstr ""
 "\n"
-"  -r, --root=ДАТОТЕКА       чини ДАТОТЕКУ симболичком везом ка резултату, и бележи је\n"
+"  -r, --root=ДАТОТЕКА       чини ДАТОТЕКУ симболичком везом ка резултату, и "
+"бележи је\n"
 "                         као корен скупљача ђубра"
 
-#: guix/scripts/build.scm:96
+#: guix/scripts/build.scm:101
 msgid ""
 "\n"
 "      --verbosity=LEVEL  use the given verbosity LEVEL"
@@ -572,10 +494,16 @@ msgstr ""
 "\n"
 "      --verbosity=НИВО  користи дати НИВО опширности"
 
-#: guix/scripts/build.scm:99 guix/scripts/download.scm:53
-#: guix/scripts/package.scm:540 guix/scripts/gc.scm:58
-#: guix/scripts/hash.scm:51 guix/scripts/pull.scm:152
-#: guix/scripts/substitute-binary.scm:463
+#: guix/scripts/build.scm:103
+msgid ""
+"\n"
+"      --log-file         return the log file names for the given derivations"
+msgstr ""
+
+#: guix/scripts/build.scm:106 guix/scripts/download.scm:53
+#: guix/scripts/package.scm:509 guix/scripts/gc.scm:58
+#: guix/scripts/hash.scm:51 guix/scripts/pull.scm:172
+#: guix/scripts/substitute-binary.scm:477
 msgid ""
 "\n"
 "  -h, --help             display this help and exit"
@@ -583,10 +511,10 @@ msgstr ""
 "\n"
 "  -h, --help                  приказује ову помоћ и излази"
 
-#: guix/scripts/build.scm:101 guix/scripts/download.scm:55
-#: guix/scripts/package.scm:542 guix/scripts/gc.scm:60
-#: guix/scripts/hash.scm:53 guix/scripts/pull.scm:154
-#: guix/scripts/substitute-binary.scm:465
+#: guix/scripts/build.scm:108 guix/scripts/download.scm:55
+#: guix/scripts/package.scm:511 guix/scripts/gc.scm:60
+#: guix/scripts/hash.scm:53 guix/scripts/pull.scm:174
+#: guix/scripts/substitute-binary.scm:479
 msgid ""
 "\n"
 "  -V, --version          display version information and exit"
@@ -594,42 +522,47 @@ msgstr ""
 "\n"
 "  -V, --version              приказује податке о издању и излази"
 
-#: guix/scripts/build.scm:141
+#: guix/scripts/build.scm:148
 #, scheme-format
 msgid "~a: not a number~%"
 msgstr "~a: није број~%"
 
-#: guix/scripts/build.scm:176 guix/scripts/download.scm:96
-#: guix/scripts/package.scm:628 guix/scripts/gc.scm:152
-#: guix/scripts/pull.scm:181
+#: guix/scripts/build.scm:186 guix/scripts/download.scm:96
+#: guix/scripts/package.scm:721 guix/scripts/gc.scm:152
+#: guix/scripts/pull.scm:205
 #, scheme-format
 msgid "~A: unrecognized option~%"
 msgstr "~A: непозната опција~%"
 
-#: guix/scripts/build.scm:202
+#: guix/scripts/build.scm:212
 #, scheme-format
 msgid "failed to create GC root `~a': ~a~%"
 msgstr "нисам успео да направим ГЦ корен „~a“: ~a~%"
 
-#: guix/scripts/build.scm:226 guix/scripts/package.scm:674
+#: guix/scripts/build.scm:236 guix/scripts/package.scm:332
 #, scheme-format
 msgid "ambiguous package specification `~a'~%"
 msgstr "нејасна одредница пакета „~a“~%"
 
-#: guix/scripts/build.scm:227 guix/scripts/package.scm:676
+#: guix/scripts/build.scm:237 guix/scripts/package.scm:334
 #, scheme-format
 msgid "choosing ~a from ~a~%"
 msgstr "бирам ~a из ~a~%"
 
-#: guix/scripts/build.scm:233
+#: guix/scripts/build.scm:243
 #, scheme-format
 msgid "~A: package not found for version ~a~%"
 msgstr "~A: нисам пронашао пакет за издање ~a~%"
 
-#: guix/scripts/build.scm:235
+#: guix/scripts/build.scm:245
 #, scheme-format
 msgid "~A: unknown package~%"
 msgstr "~A: непознат пакет~%"
+
+#: guix/scripts/build.scm:303
+#, scheme-format
+msgid "no build log for '~a'~%"
+msgstr ""
 
 #: guix/scripts/download.scm:44
 msgid ""
@@ -670,42 +603,73 @@ msgstr "~a: нисам успео да обрадим путању~%"
 msgid "~a: download failed~%"
 msgstr "~a: преузимање није успело~%"
 
-#: guix/scripts/package.scm:227
-#, scheme-format
-msgid "switching from generation ~a to ~a~%"
-msgstr "пребацујем се са генерације ~a на ~a~%"
-
-#: guix/scripts/package.scm:232
-#, scheme-format
-msgid "profile `~a' does not exist~%"
-msgstr "профил „~a“ не постоји~%"
-
-#: guix/scripts/package.scm:236
-#, scheme-format
-msgid "nothing to do: already at the empty profile~%"
-msgstr "ништа за урадити: већ сам у празном профилу~%"
-
-#: guix/scripts/package.scm:242
+#: guix/scripts/package.scm:74
 #, scheme-format
 msgid "failed to build the empty profile~%"
 msgstr "нисам успео да изградим празан профил~%"
 
-#: guix/scripts/package.scm:413
+#: guix/scripts/package.scm:83
+#, scheme-format
+msgid "switching from generation ~a to ~a~%"
+msgstr "пребацујем се са генерације ~a на ~a~%"
+
+#: guix/scripts/package.scm:94 guix/scripts/package.scm:826
+#: guix/scripts/package.scm:937
+#, scheme-format
+msgid "profile '~a' does not exist~%"
+msgstr "профил „~a“ не постоји~%"
+
+#: guix/scripts/package.scm:98
+#, scheme-format
+msgid "nothing to do: already at the empty profile~%"
+msgstr "ништа за урадити: већ сам у празном профилу~%"
+
+#: guix/scripts/package.scm:183
+#, fuzzy, scheme-format
+msgid "The following package would be removed:~%~{~a~%~}~%"
+msgstr "Следећи пакети би требали бити уклоњени:~% ~{~a~%~}~%"
+
+#: guix/scripts/package.scm:188
+#, fuzzy, scheme-format
+msgid "The following package will be removed:~%~{~a~%~}~%"
+msgstr "Следећи пакети ће бити уклоњени:~% ~{~a~%~}~%"
+
+#: guix/scripts/package.scm:200
+#, scheme-format
+msgid "The following package would be installed:~%~{~a~%~}~%"
+msgstr "Следећи пакети би требали бити инсталирани:~%~{~a~%~}~%"
+
+#: guix/scripts/package.scm:205
+#, scheme-format
+msgid "The following package will be installed:~%~{~a~%~}~%"
+msgstr "Следећи пакети ће бити инсталирани:~%~{~a~%~}~%"
+
+#: guix/scripts/package.scm:322
+#, scheme-format
+msgid "package `~a' lacks output `~a'~%"
+msgstr "пакету „~a“ недостаје излаз „~a“~%"
+
+#: guix/scripts/package.scm:339
+#, scheme-format
+msgid "~a: package not found~%"
+msgstr "~a: нисам пронашао пакет~%"
+
+#: guix/scripts/package.scm:374
 #, scheme-format
 msgid "looking for the latest release of GNU ~a..."
 msgstr "тражим последње издање Гнуа ~a..."
 
-#: guix/scripts/package.scm:417
+#: guix/scripts/package.scm:378
 #, scheme-format
 msgid "~a: note: using ~a but ~a is available upstream~%"
 msgstr "~a: напомена: користим ~a али ~a је доступно узводно~%"
 
-#: guix/scripts/package.scm:481
+#: guix/scripts/package.scm:447
 #, scheme-format
 msgid "The following environment variable definitions may be needed:~%"
 msgstr "Следеће одреднице променљиве окружења могу бити потребне:~%"
 
-#: guix/scripts/package.scm:496
+#: guix/scripts/package.scm:462
 msgid ""
 "Usage: guix package [OPTION]... PACKAGES...\n"
 "Install, remove, or upgrade PACKAGES in a single transaction.\n"
@@ -713,7 +677,7 @@ msgstr ""
 "Употреба: guix package [ОПЦИЈА]... ПАКЕТИ...\n"
 "Инсталирајте, уклоните, или доградите ПАКЕТЕ у једном прелазу.\n"
 
-#: guix/scripts/package.scm:498
+#: guix/scripts/package.scm:464
 msgid ""
 "\n"
 "  -i, --install=PACKAGE  install PACKAGE"
@@ -721,7 +685,7 @@ msgstr ""
 "\n"
 "  -i, --install=ПАКЕТ  инсталира ПАКЕТ"
 
-#: guix/scripts/package.scm:500
+#: guix/scripts/package.scm:466
 msgid ""
 "\n"
 "  -e, --install-from-expression=EXP\n"
@@ -731,7 +695,7 @@ msgstr ""
 "  -e, --install-from-expression=ИЗР\n"
 "                         инсталира процене ИЗР пакета у"
 
-#: guix/scripts/package.scm:503
+#: guix/scripts/package.scm:469
 msgid ""
 "\n"
 "  -r, --remove=PACKAGE   remove PACKAGE"
@@ -739,15 +703,16 @@ msgstr ""
 "\n"
 "  -r, --remove=ПАКЕТ   уклања ПАКЕТ"
 
-#: guix/scripts/package.scm:505
+#: guix/scripts/package.scm:471
 msgid ""
 "\n"
 "  -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"
 msgstr ""
 "\n"
-"  -u, --upgrade[=РЕГИЗР] дограђује све инсталиране пакете који одговарају РЕГИЗРАЗУ"
+"  -u, --upgrade[=РЕГИЗР] дограђује све инсталиране пакете који одговарају "
+"РЕГИЗРАЗУ"
 
-#: guix/scripts/package.scm:507
+#: guix/scripts/package.scm:473
 msgid ""
 "\n"
 "      --roll-back        roll back to the previous generation"
@@ -755,7 +720,7 @@ msgstr ""
 "\n"
 "      --roll-back        враћа се на претходну генерацију"
 
-#: guix/scripts/package.scm:509
+#: guix/scripts/package.scm:475
 msgid ""
 "\n"
 "      --search-paths     display needed environment variable definitions"
@@ -763,7 +728,7 @@ msgstr ""
 "\n"
 "      --search-paths     приказује потребне одреднице променљиве окружења"
 
-#: guix/scripts/package.scm:511
+#: guix/scripts/package.scm:477
 msgid ""
 "\n"
 "  -l, --list-generations[=PATTERN]\n"
@@ -773,7 +738,18 @@ msgstr ""
 "  -l, --list-generations[=ШАБЛОН]\n"
 "                         исписује генерације које одговарају ШАБЛОНУ"
 
-#: guix/scripts/package.scm:515
+#: guix/scripts/package.scm:480
+#, fuzzy
+msgid ""
+"\n"
+"  -d, --delete-generations[=PATTERN]\n"
+"                         delete generations matching PATTERN"
+msgstr ""
+"\n"
+"  -l, --list-generations[=ШАБЛОН]\n"
+"                         исписује генерације које одговарају ШАБЛОНУ"
+
+#: guix/scripts/package.scm:484
 msgid ""
 "\n"
 "  -p, --profile=PROFILE  use PROFILE instead of the user's default profile"
@@ -781,15 +757,16 @@ msgstr ""
 "\n"
 "  -p, --profile=ПРОФИЛ   користи ПРОФИЛ уместо корисничког подразумеваног"
 
-#: guix/scripts/package.scm:517
+#: guix/scripts/package.scm:486
 msgid ""
 "\n"
 "  -n, --dry-run          show what would be done without actually doing it"
 msgstr ""
 "\n"
-"  -n, --dry-run          показује шта би требало да се уради а да заправо ништа не ради"
+"  -n, --dry-run          показује шта би требало да се уради а да заправо "
+"ништа не ради"
 
-#: guix/scripts/package.scm:526
+#: guix/scripts/package.scm:495
 msgid ""
 "\n"
 "      --bootstrap        use the bootstrap Guile to build the profile"
@@ -797,7 +774,7 @@ msgstr ""
 "\n"
 "      --bootstrap        користи Гуиле почетног учитавања да изгради профил"
 
-#: guix/scripts/package.scm:528 guix/scripts/pull.scm:147
+#: guix/scripts/package.scm:497 guix/scripts/pull.scm:165
 msgid ""
 "\n"
 "      --verbose          produce verbose output"
@@ -805,7 +782,7 @@ msgstr ""
 "\n"
 "      --verbose          ствара опширан излаз"
 
-#: guix/scripts/package.scm:531
+#: guix/scripts/package.scm:500
 msgid ""
 "\n"
 "  -s, --search=REGEXP    search in synopsis and description using REGEXP"
@@ -813,7 +790,7 @@ msgstr ""
 "\n"
 "  -s, --search=РЕГИЗР    тражи у скици и опису користећи РЕГИЗР"
 
-#: guix/scripts/package.scm:533
+#: guix/scripts/package.scm:502
 msgid ""
 "\n"
 "  -I, --list-installed[=REGEXP]\n"
@@ -821,9 +798,10 @@ msgid ""
 msgstr ""
 "\n"
 "  -I, --list-installed[=РЕГИЗР]\n"
-"                         исписује инсталиране пакете који одговарају РЕГИЗРАЗУ"
+"                         исписује инсталиране пакете који одговарају "
+"РЕГИЗРАЗУ"
 
-#: guix/scripts/package.scm:536
+#: guix/scripts/package.scm:505
 msgid ""
 "\n"
 "  -A, --list-available[=REGEXP]\n"
@@ -833,90 +811,65 @@ msgstr ""
 "  -A, --list-available[=РЕГИЗР]\n"
 "                         исписује доступне пакете који одговарају РЕГИЗРАЗУ"
 
-#: guix/scripts/package.scm:630
+#: guix/scripts/package.scm:723
 #, scheme-format
 msgid "~A: extraneous argument~%"
 msgstr "~A: страни аргумент~%"
 
-#: guix/scripts/package.scm:658
-#, scheme-format
-msgid "package `~a' lacks output `~a'~%"
-msgstr "пакету „~a“ недостаје излаз „~a“~%"
-
-#: guix/scripts/package.scm:682
-#, scheme-format
-msgid "~a: package not found~%"
-msgstr "~a: нисам пронашао пакет~%"
-
-#: guix/scripts/package.scm:705
+#: guix/scripts/package.scm:737
 #, scheme-format
 msgid "Try \"info '(guix) Invoking guix package'\" for more information.~%"
 msgstr "Покушајте „info '(guix) Invoking guix package'“ за више података.~%"
 
-#: guix/scripts/package.scm:727
+#: guix/scripts/package.scm:759
 #, scheme-format
 msgid "error: while creating directory `~a': ~a~%"
 msgstr "грешка: приликом стварања директоријума „~a“: ~a~%"
 
-#: guix/scripts/package.scm:731
+#: guix/scripts/package.scm:763
 #, scheme-format
 msgid "Please create the `~a' directory, with you as the owner.~%"
 msgstr "Направите директоријум „~a“, у вашем власништву.~%"
 
-#: guix/scripts/package.scm:738
+#: guix/scripts/package.scm:770
 #, scheme-format
 msgid "error: directory `~a' is not owned by you~%"
 msgstr "грешка: директоријум „~a“ није у вашем власништву~%"
 
-#: guix/scripts/package.scm:741
+#: guix/scripts/package.scm:773
 #, scheme-format
 msgid "Please change the owner of `~a' to user ~s.~%"
 msgstr "Поставите као власника ~s над „~a“.~%"
 
-#: guix/scripts/package.scm:799
-#, scheme-format
-msgid "The following package would be removed:~% ~{~a~%~}~%"
-msgstr "Следећи пакети би требали бити уклоњени:~% ~{~a~%~}~%"
+#: guix/scripts/package.scm:796
+#, fuzzy, scheme-format
+msgid "deleting ~a~%"
+msgstr "Генерација ~a\t~a~%"
 
-#: guix/scripts/package.scm:804
+#: guix/scripts/package.scm:849 guix/scripts/package.scm:951
 #, scheme-format
-msgid "The following package will be removed:~% ~{~a~%~}~%"
-msgstr "Следећи пакети ће бити уклоњени:~% ~{~a~%~}~%"
+msgid "invalid syntax: ~a~%"
+msgstr "неисправна синтакса: ~a~%"
 
-#: guix/scripts/package.scm:816
-#, scheme-format
-msgid "The following package would be installed:~%~{~a~%~}~%"
-msgstr "Следећи пакети би требали бити инсталирани:~%~{~a~%~}~%"
-
-#: guix/scripts/package.scm:821
-#, scheme-format
-msgid "The following package will be installed:~%~{~a~%~}~%"
-msgstr "Следећи пакети ће бити инсталирани:~%~{~a~%~}~%"
-
-#: guix/scripts/package.scm:933
+#: guix/scripts/package.scm:878
 #, scheme-format
 msgid "nothing to be done~%"
 msgstr "ништа неће бити урађено~%"
 
-#: guix/scripts/package.scm:944
+#: guix/scripts/package.scm:900
 #, scheme-format
 msgid "~a package in profile~%"
 msgstr "~a пакет у профилу~%"
 
-#: guix/scripts/package.scm:959
-#, scheme-format
-msgid "Generation ~a\t~a~%"
+#: guix/scripts/package.scm:915
+#, fuzzy, scheme-format
+msgid "Generation ~a\t~a"
 msgstr "Генерација ~a\t~a~%"
 
-#: guix/scripts/package.scm:977
+#: guix/scripts/package.scm:922
 #, scheme-format
-msgid "profile '~a' does not exist~%"
-msgstr "профил „~a“ не постоји~%"
-
-#: guix/scripts/package.scm:986
-#, scheme-format
-msgid "invalid syntax: ~a~%"
-msgstr "неисправна синтакса: ~a~%"
+msgid "~a\t(current)~%"
+msgstr ""
 
 #: guix/scripts/gc.scm:39
 msgid ""
@@ -1018,7 +971,7 @@ msgstr ""
 msgid "unrecognized option: ~a~%"
 msgstr "непозната опција: ~a~%"
 
-#: guix/scripts/hash.scm:123 guix/ui.scm:187
+#: guix/scripts/hash.scm:123 guix/ui.scm:194
 #, scheme-format
 msgid "~a~%"
 msgstr "~a~%"
@@ -1028,7 +981,7 @@ msgstr "~a~%"
 msgid "wrong number of arguments~%"
 msgstr "погрешан број аргумената~%"
 
-#: guix/scripts/pull.scm:145
+#: guix/scripts/pull.scm:163
 msgid ""
 "Usage: guix pull [OPTION]...\n"
 "Download and deploy the latest version of Guix.\n"
@@ -1036,63 +989,71 @@ msgstr ""
 "Употреба: guix pull [ОПЦИЈА]...\n"
 "Преузима и развија најновије издање Гуикса.\n"
 
-#: guix/scripts/pull.scm:149
+#: guix/scripts/pull.scm:167
+msgid ""
+"\n"
+"      --url=URL          download the Guix tarball from URL"
+msgstr ""
+
+#: guix/scripts/pull.scm:169
 msgid ""
 "\n"
 "      --bootstrap        use the bootstrap Guile to build the new Guix"
 msgstr ""
 "\n"
-"      --bootstrap        користи Гуиле почетног учитавања да изгради нови Гуикс"
+"      --bootstrap        користи Гуиле почетног учитавања да изгради нови "
+"Гуикс"
 
-#: guix/scripts/pull.scm:183
+#: guix/scripts/pull.scm:207
 #, scheme-format
 msgid "~A: unexpected argument~%"
 msgstr "~A: неочекивани аргумент~%"
 
-#: guix/scripts/pull.scm:192
+#: guix/scripts/pull.scm:216
 msgid "failed to download up-to-date source, exiting\n"
 msgstr "нисам успео да преузмем најсвежији извор, излазим\n"
 
-#: guix/scripts/pull.scm:211
+#: guix/scripts/pull.scm:235
 #, scheme-format
 msgid "updated ~a successfully deployed under `~a'~%"
 msgstr "ажурирани ~a је успешно развијен под „~a“~%"
 
-#: guix/scripts/pull.scm:214
+#: guix/scripts/pull.scm:238
 #, scheme-format
 msgid "failed to update Guix, check the build log~%"
 msgstr "нисам успео да ажурирам Гуикс, проверите дневник изградње~%"
 
-#: guix/scripts/pull.scm:216
+#: guix/scripts/pull.scm:240
 msgid "Guix already up to date\n"
 msgstr "Гуикс је већ ажуриран\n"
 
-#: guix/scripts/substitute-binary.scm:162
+#: guix/scripts/substitute-binary.scm:163
 #, scheme-format
 msgid "while fetching ~a: server is unresponsive~%"
 msgstr "приликом довлачења ~a: сервер не одговара~%"
 
-#: guix/scripts/substitute-binary.scm:164
+#: guix/scripts/substitute-binary.scm:165
 #, scheme-format
 msgid "try `--no-substitutes' if the problem persists~%"
 msgstr "покушајте „--no-substitutes“ ако се неприлике наставе~%"
 
-#: guix/scripts/substitute-binary.scm:425
+#: guix/scripts/substitute-binary.scm:439
 #, scheme-format
 msgid "Downloading, please wait...~%"
 msgstr "Преузима, молим сачекајте...~%"
 
-#: guix/scripts/substitute-binary.scm:427
+#: guix/scripts/substitute-binary.scm:441
 #, scheme-format
 msgid "(Please consider upgrading Guile to get proper progress report.)~%"
-msgstr "(Размотрите надоградњу Гуила да добијете извештај о његовом напредовању.)~%"
+msgstr ""
+"(Размотрите надоградњу Гуила да добијете извештај о његовом напредовању.)~%"
 
-#: guix/scripts/substitute-binary.scm:444
+#: guix/scripts/substitute-binary.scm:458
 #, scheme-format
 msgid "host name lookup error: ~a~%"
 msgstr "грешка тражења назива домаћина: ~a~%"
 
-#: guix/scripts/substitute-binary.scm:453
+#: guix/scripts/substitute-binary.scm:467
 msgid ""
 "Usage: guix substitute-binary [OPTION]...\n"
 "Internal tool to substitute a pre-built binary to a local build.\n"
@@ -1100,17 +1061,18 @@ msgstr ""
 "Употреба: guix substitute-binary [ОПЦИЈА]...\n"
 "Унутрашњи алат за замену пре-изграђеног извршног у месну изградњу.\n"
 
-#: guix/scripts/substitute-binary.scm:455
+#: guix/scripts/substitute-binary.scm:469
 msgid ""
 "\n"
 "      --query            report on the availability of substitutes for the\n"
 "                         store file names passed on the standard input"
 msgstr ""
 "\n"
-"      --query            извештава о доступности заменика за називе датотека\n"
+"      --query            извештава о доступности заменика за називе "
+"датотека\n"
 "                         складишта прослеђених на стандардном улазу"
 
-#: guix/scripts/substitute-binary.scm:458
+#: guix/scripts/substitute-binary.scm:472
 msgid ""
 "\n"
 "      --substitute STORE-FILE DESTINATION\n"
@@ -1119,40 +1081,50 @@ msgid ""
 msgstr ""
 "\n"
 "      --substitute ОДРЕДИШТЕ СКЛАДИШНЕ-ДАТОТЕКЕ\n"
-"                         преузима СКЛАДИШНУ-ДАТОТЕКУ и смешта је као Нар удатотеци\n"
+"                         преузима СКЛАДИШНУ-ДАТОТЕКУ и смешта је као Нар "
+"удатотеци\n"
 "                         ОДРЕДИШТЕ"
 
-#: guix/scripts/substitute-binary.scm:567
+#: guix/scripts/substitute-binary.scm:596
 #, scheme-format
 msgid "~a: unrecognized options~%"
 msgstr "~a: непозната опција~%"
 
-#: guix/gnu-maintenance.scm:344
+#: guix/gnu-maintenance.scm:357
 #, scheme-format
 msgid "signature verification failed for `~a'~%"
 msgstr "није успела провера потписа за „~a“~%"
 
-#: guix/gnu-maintenance.scm:346
+#: guix/gnu-maintenance.scm:359
 #, scheme-format
 msgid "(could be because the public key is not in your keyring)~%"
 msgstr "(може бити зато што јавни кључ није у вашем привеску)~%"
 
-#: guix/gnu-maintenance.scm:421
+#: guix/gnu-maintenance.scm:434
 #, scheme-format
 msgid "~a: could not locate source file"
 msgstr "~a: не могу да пронађем изворну датотеку"
 
-#: guix/gnu-maintenance.scm:426
+#: guix/gnu-maintenance.scm:439
 #, scheme-format
 msgid "~a: ~a: no `version' field in source; skipping~%"
 msgstr "~a: ~a: нема поља „version“ у извору; прескачем~%"
 
-#: guix/ui.scm:120
+#: guix/ui.scm:122
 #, scheme-format
 msgid "failed to install locale: ~a~%"
 msgstr "нисам успео да инсталирам локалитет: ~a~%"
 
-#: guix/ui.scm:142
+#: guix/ui.scm:141
+msgid ""
+"Copyright (C) 2013 the Guix authors\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
+"html>\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+msgstr ""
+
+#: guix/ui.scm:149
 #, scheme-format
 msgid ""
 "\n"
@@ -1161,7 +1133,7 @@ msgstr ""
 "\n"
 "Грешке пријавите на: ~a."
 
-#: guix/ui.scm:144
+#: guix/ui.scm:151
 #, scheme-format
 msgid ""
 "\n"
@@ -1170,7 +1142,7 @@ msgstr ""
 "\n"
 "~a матична страница: <~a>"
 
-#: guix/ui.scm:146
+#: guix/ui.scm:153
 msgid ""
 "\n"
 "General help using GNU software: <http://www.gnu.org/gethelp/>"
@@ -1178,90 +1150,90 @@ msgstr ""
 "\n"
 "Општа помоћ користећи ГНУ софтвер: <http://www.gnu.org/gethelp/>"
 
-#: guix/ui.scm:153
+#: guix/ui.scm:160
 #, scheme-format
 msgid "~a: invalid number~%"
 msgstr "~a: неисправан број~%"
 
-#: guix/ui.scm:164
+#: guix/ui.scm:171
 #, scheme-format
 msgid "~a:~a:~a: package `~a' has an invalid input: ~s~%"
 msgstr "~a:~a:~a: пакет „~a“ садржи неисправан улаз: ~s~%"
 
-#: guix/ui.scm:171
+#: guix/ui.scm:178
 #, scheme-format
 msgid "~a: ~a: build system `~a' does not support cross builds~%"
 msgstr "~a: ~a: систем изградње „~a“ не садржи унакрсне изградње~%"
 
-#: guix/ui.scm:176
+#: guix/ui.scm:183
 #, scheme-format
 msgid "failed to connect to `~a': ~a~%"
 msgstr "нисам успео да се повежем на „~a“: ~a~%"
 
-#: guix/ui.scm:181
+#: guix/ui.scm:188
 #, scheme-format
 msgid "build failed: ~a~%"
 msgstr "изградња није успела: ~a~%"
 
-#: guix/ui.scm:197
+#: guix/ui.scm:203
 #, scheme-format
 msgid "failed to read expression ~s: ~s~%"
 msgstr "нисам успео да прочитам израз ~s: ~s~%"
 
-#: guix/ui.scm:203
+#: guix/ui.scm:209
 #, scheme-format
 msgid "failed to evaluate expression `~a': ~s~%"
 msgstr "нисам успео да проценим израз „~a“: ~s~%"
 
-#: guix/ui.scm:207
-#, scheme-format
-msgid "expression `~s' does not evaluate to a package~%"
+#: guix/ui.scm:218
+#, fuzzy, scheme-format
+msgid "expression ~s does not evaluate to a package~%"
 msgstr "израз „~s“ се не процењује на пакет~%"
 
-#: guix/ui.scm:253
+#: guix/ui.scm:264
 #, scheme-format
 msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
 msgstr "~:[Следећа изводница би требала бити изграђена:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:258
+#: guix/ui.scm:269
 #, scheme-format
 msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
 msgstr "~:[Следећа датотека би требала бити преузета:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:264
+#: guix/ui.scm:275
 #, scheme-format
 msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
 msgstr "~:[Следећа изводница ће бити изграђена:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:269
+#: guix/ui.scm:280
 #, scheme-format
 msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
 msgstr "~:[Следећа датотека ће бити преузета:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:286
+#: guix/ui.scm:297
 msgid "<unknown location>"
 msgstr "<непознато место>"
 
-#: guix/ui.scm:314
+#: guix/ui.scm:325
 #, scheme-format
 msgid "failed to create configuration directory `~a': ~a~%"
 msgstr "нисам успео да направим директоријум подешавања „~a“: ~a~%"
 
-#: guix/ui.scm:390 guix/ui.scm:400
+#: guix/ui.scm:406 guix/ui.scm:416
 msgid "unknown"
 msgstr "непознато"
 
-#: guix/ui.scm:484
+#: guix/ui.scm:525
 #, scheme-format
 msgid "invalid argument: ~a~%"
 msgstr "неисправан аргумент: ~a~%"
 
-#: guix/ui.scm:489
+#: guix/ui.scm:530
 #, scheme-format
 msgid "Try `guix --help' for more information.~%"
 msgstr "Пробајте „guix --help“ за више података.~%"
 
-#: guix/ui.scm:516
+#: guix/ui.scm:557
 msgid ""
 "Usage: guix COMMAND ARGS...\n"
 "Run COMMAND with ARGS.\n"
@@ -1269,21 +1241,21 @@ msgstr ""
 "Употреба: guix НАРЕДБА АРГУМЕНТИ...\n"
 "Покрените НАРЕДБУ са АРГУМЕНТИМА.\n"
 
-#: guix/ui.scm:519
+#: guix/ui.scm:560
 msgid "COMMAND must be one of the sub-commands listed below:\n"
 msgstr "НАРЕДБА мора бити једна од подкоманди наведених испод:\n"
 
-#: guix/ui.scm:538
+#: guix/ui.scm:579
 #, scheme-format
 msgid "guix: ~a: command not found~%"
 msgstr "guix: ~a: нисам пронашао наредбу~%"
 
-#: guix/ui.scm:556
+#: guix/ui.scm:597
 #, scheme-format
 msgid "guix: missing command name~%"
 msgstr "guix: недостаје назив наредбе~%"
 
-#: guix/ui.scm:564
+#: guix/ui.scm:605
 #, scheme-format
 msgid "guix: unrecognized option '~a'~%"
 msgstr "guix: непозната опција „~a“~%"
@@ -1302,3 +1274,294 @@ msgstr "преузимање није успело; користите нови�
 #, scheme-format
 msgid "following redirection to `~a'...~%"
 msgstr "пратим преусмеравање на „~a“...~%"
+
+#~ msgid "Yeah..."
+#~ msgstr "Да..."
+
+#~ msgid ""
+#~ "The grep command searches one or more input files for lines containing a\n"
+#~ "match to a specified pattern.  By default, grep prints the matching\n"
+#~ "lines."
+#~ msgstr ""
+#~ "Наредба греп претражује једну или више улазних датоотека за редовима "
+#~ "који\n"
+#~ "садрже поклапање са наведеним шаблоном.  По основи, греп исписује "
+#~ "поклопљене\n"
+#~ "редове."
+
+#~ msgid ""
+#~ "Sed (stream editor) isn't really a true text editor or text processor.\n"
+#~ "Instead, it is used to filter text, i.e., it takes text input and "
+#~ "performs\n"
+#~ "some operation (or set of operations) on it and outputs the modified "
+#~ "text.\n"
+#~ "Sed is typically used for extracting part of a file using pattern "
+#~ "matching or\n"
+#~ "substituting multiple occurrences of a string within a file."
+#~ msgstr ""
+#~ "Сед (уређивач протока) није стварно прави уређивач или обрађивач текста.\n"
+#~ "Напротив, користи се за издвајање текста, тј. узима улаз текста и обавља\n"
+#~ "неке радње (или скуп радњи) на њему и даје излаз измењеног текста.\n"
+#~ "Сед се углавном користи за издвајање дела датотеке користећи поклапање\n"
+#~ "шаблона или замењује више појава ниске унутар датотеке."
+
+#~ msgid ""
+#~ "The Tar program provides the ability to create tar archives, as well as\n"
+#~ "various other kinds of manipulation.  For example, you can use Tar on\n"
+#~ "previously created archives to extract files, to store additional files, "
+#~ "or\n"
+#~ "to update or list files which were already stored.\n"
+#~ "\n"
+#~ "Initially, tar archives were used to store files conveniently on "
+#~ "magnetic\n"
+#~ "tape.  The name \"Tar\" comes from this use; it stands for tape "
+#~ "archiver.\n"
+#~ "Despite the utility's name, Tar can direct its output to available "
+#~ "devices,\n"
+#~ "files, or other programs (using pipes), it can even access remote devices "
+#~ "or\n"
+#~ "files (as archives)."
+#~ msgstr ""
+#~ "Програм Тар обезбеђује способност стварања тар архива, као и разне друге\n"
+#~ "врсте управљања. На пример, можете да користите Тар на већ направљеним\n"
+#~ "архивама за извлачење датотека, за ускладиштење додатних датотека, или\n"
+#~ "за освежавање или исписивање датотека које су већ ускладиштене.\n"
+#~ "\n"
+#~ "На почетку, тар архиве су биле коришћене за пригодно чување датотека на\n"
+#~ "магнетским тракама. Назив „Тар“ је настао из такве употребе; и значи\n"
+#~ "архивар трака. Без обзира на назив помагала, Тар може да успери свој "
+#~ "излаз\n"
+#~ "ка доступним уређајима, датотекама, или другим програмима (употребом "
+#~ "спојки)\n"
+#~ "чак може и да приступи удаљеним уређајима или датотекама (као архивама)."
+
+#~ msgid ""
+#~ "GNU Patch takes a patch file containing a difference listing produced by\n"
+#~ "the diff program and applies those differences to one or more original "
+#~ "files,\n"
+#~ "producing patched versions."
+#~ msgstr ""
+#~ "Гнуова закрпа узима датотеку закрпе која садржи списак разлика "
+#~ "произведен\n"
+#~ "програмом за разлике (diff) и примењује те разлике на једној или више\n"
+#~ "изворних датотека, стварајући прикрпљена издања."
+
+#~ msgid ""
+#~ "GNU Diffutils is a package of several programs related to finding\n"
+#~ "differences between files.\n"
+#~ "\n"
+#~ "Computer users often find occasion to ask how two files differ. Perhaps "
+#~ "one\n"
+#~ "file is a newer version of the other file. Or maybe the two files started "
+#~ "out\n"
+#~ "as identical copies but were changed by different people.\n"
+#~ "\n"
+#~ "You can use the diff command to show differences between two files, or "
+#~ "each\n"
+#~ "corresponding file in two directories. diff outputs differences between "
+#~ "files\n"
+#~ "line by line in any of several formats, selectable by command line\n"
+#~ "options. This set of differences is often called a ‘diff’ or ‘patch’. "
+#~ "For\n"
+#~ "files that are identical, diff normally produces no output; for\n"
+#~ "binary (non-text) files, diff normally reports only that they are "
+#~ "different.\n"
+#~ "\n"
+#~ "You can use the cmp command to show the offsets and line numbers where "
+#~ "two\n"
+#~ "files differ. cmp can also show all the characters that differ between "
+#~ "the\n"
+#~ "two files, side by side.\n"
+#~ "\n"
+#~ "You can use the diff3 command to show differences among three files. When "
+#~ "two\n"
+#~ "people have made independent changes to a common original, diff3 can "
+#~ "report\n"
+#~ "the differences between the original and the two changed versions, and "
+#~ "can\n"
+#~ "produce a merged file that contains both persons' changes together with\n"
+#~ "warnings about conflicts.\n"
+#~ "\n"
+#~ "You can use the sdiff command to merge two files interactively."
+#~ msgstr ""
+#~ "„GNU Diffutils“ је пакет неколико програма намењених за проналажење\n"
+#~ "разлика између датотека.\n"
+#~ "\n"
+#~ "Корисници рачунара често желе да знају у чему се разликују две датотеке.\n"
+#~ "Можда је једна датотека новије издање оне друге. Или су можда обе "
+#~ "датотеке\n"
+#~ "започете као истоветни умношци али су их измениле другачије особе.\n"
+#~ "\n"
+#~ "Можете да користите наредбу „diff“ да покажете разлике између две "
+#~ "датотеке\n"
+#~ "или сваку одговарајућу датотеку у два директоријума. дифф исписује "
+#~ "разлике\n"
+#~ "између датотека ред по ред у било ком од неколико записа, бирањем опција\n"
+#~ "линије наредби. Овај скуп разлика се често назива „diff“ или „patch“. За\n"
+#~ "датотеке које су исте, дифф обично не даје резултат; за извршне (не-"
+#~ "текстуалне)\n"
+#~ "датотеке, дифф обично извештава само о томе да се оне разликују.\n"
+#~ "\n"
+#~ "\n"
+#~ "Можете да користите наредбу „cmp“ да прикажете помераје и бројеве редова\n"
+#~ "где се две датотеке разликују. цмп може такође да покаже све знакове "
+#~ "који\n"
+#~ "се разликују између две датотеке, један поред другог.\n"
+#~ "\n"
+#~ "Можете да користите наредбу „diff3“ да прикажете разлике између три "
+#~ "датотеке.\n"
+#~ "Када два корисника направе независне измене у заједничком оригиналу, "
+#~ "дифф3\n"
+#~ "може да извести о разликама између оригинала и два измењена издања, и "
+#~ "може да\n"
+#~ "направи стопљену датотеку која заједно садржи измене обе особе са "
+#~ "упозорењима о сукобима.\n"
+#~ "\n"
+#~ "Можете да користите наредбу „sdiff“ да међудејствено стопите две датотеке."
+
+#~ msgid ""
+#~ "The GNU Find Utilities are the basic directory searching utilities of\n"
+#~ "the GNU operating system.  These programs are typically used in "
+#~ "conjunction\n"
+#~ "with other programs to provide modular and powerful directory search and "
+#~ "file\n"
+#~ "locating capabilities to other commands.\n"
+#~ "\n"
+#~ "The tools supplied with this package are:\n"
+#~ "\n"
+#~ "  * find - search for files in a directory hierarchy;\n"
+#~ "  * locate - list files in databases that match a pattern;\n"
+#~ "  * updatedb - update a file name database;\n"
+#~ "  * xargs - build and execute command lines from standard input.\n"
+#~ msgstr ""
+#~ "„GNU Find Utilities“ су основна помагала за претраживање директоријума\n"
+#~ "Гнуовог оперативног система.  Ови програми се обично користе у спрези\n"
+#~ "са другим програмима да обезбеде модуларне и моћне могућности претраге\n"
+#~ "директоријума и налажења датотека другим наредбама.\n"
+#~ "\n"
+#~ "Алати који иду уз овај пакет су:\n"
+#~ "\n"
+#~ "  * find — тражи датотеке у хијерархији директоријума;\n"
+#~ "  * locate — исписује датотеке у базама података које одговарају "
+#~ "шаблону;\n"
+#~ "  * updatedb — освежава базу података назива датотеке;\n"
+#~ "  * xargs — гради редове извршавања наредбе са стандардног улаза.\n"
+
+#~ msgid ""
+#~ "The GNU Core Utilities are the basic file, shell and text manipulation\n"
+#~ "utilities of the GNU operating system.  These are the core utilities "
+#~ "which\n"
+#~ "are expected to exist on every operating system."
+#~ msgstr ""
+#~ "Гнуова кључна помагала су основни алати за управљање датотекама, шкољком\n"
+#~ "и текстом за Гнуов оперативни систем.  То су кључна помагала за која се\n"
+#~ "очекује да постоје на сваком оперативном систему."
+
+#~ msgid ""
+#~ "Make is a tool which controls the generation of executables and other\n"
+#~ "non-source files of a program from the program's source files.\n"
+#~ "\n"
+#~ "Make gets its knowledge of how to build your program from a file called "
+#~ "the\n"
+#~ "makefile, which lists each of the non-source files and how to compute it "
+#~ "from\n"
+#~ "other files. When you write a program, you should write a makefile for "
+#~ "it, so\n"
+#~ "that it is possible to use Make to build and install the program."
+#~ msgstr ""
+#~ "Мејк је алат који управља стварањем извршних и других не-изворних "
+#~ "датотека\n"
+#~ "програма из изворних датотека програма.\n"
+#~ "\n"
+#~ "Мејк сазнаје како да изгради ваш програм из датотеке зване „makefile“, "
+#~ "која\n"
+#~ "исписује сваку не-изворну датотеку и како да је прорчуна из других "
+#~ "датотека.\n"
+#~ "Када пишете програм треба да напишете и његову „makefile“ датотеку, тако\n"
+#~ "да буде могуће користити Мејк за изградњу и инсталацију програма."
+
+#~ msgid ""
+#~ "The GNU Binutils are a collection of binary tools.  The main ones are\n"
+#~ "`ld' (the GNU linker) and `as' (the GNU assembler).  They also include "
+#~ "the\n"
+#~ "BFD (Binary File Descriptor) library, `gprof', `nm', `strip', etc."
+#~ msgstr ""
+#~ "Гнуова бинпомагала јесу скуп бинарних алата.  Главни су „ld“ (Гнуов "
+#~ "везник) и „as“ (Гнуов асемблер). У њих такође спадају библиотека „BFD“\n"
+#~ "(Binary File Descriptor), „gprof“, „nm“, „strip“, итд."
+
+#~ msgid ""
+#~ "GNU Guile 1.8 is an interpreter for the Scheme programming language,\n"
+#~ "packaged as a library that can be embedded into programs to make them\n"
+#~ "extensible.  It supports many SRFIs."
+#~ msgstr ""
+#~ "Гну Гуиле 1.8 је преводилац програмског језика Шеме, запакован као\n"
+#~ "библиотека која може бити уграђена у програме како би их учинила\n"
+#~ "проширивим.  Подржава многе СРФИ-ове."
+
+#~ msgid ""
+#~ "GNU Guile is an implementation of the Scheme programming language, with\n"
+#~ "support for many SRFIs, packaged for use in a wide variety of "
+#~ "environments.\n"
+#~ "In addition to implementing the R5RS Scheme standard and a large subset "
+#~ "of\n"
+#~ "R6RS, Guile includes a module system, full access to POSIX system calls,\n"
+#~ "networking support, multiple threads, dynamic linking, a foreign "
+#~ "function\n"
+#~ "call interface, and powerful string processing."
+#~ msgstr ""
+#~ "Гну Гуиле је примена програмског језика Шеме, са подршком за многе\n"
+#~ "СРФИ-ове запакован за коришћење у разним окружењима.\n"
+#~ "Као додатак примене Р5РС стандарда Шеме и великог подскупа Р6РС, Гуиле\n"
+#~ "обухвата систем модула, потпун приступ системским позивима ПОСИКС-а, "
+#~ "пподршку умрежавања, вишеструке нити, динамичко повезивање, сучеље "
+#~ "позива\n"
+#~ "страних функција, и моћну обраду ниске."
+
+#~ msgid ""
+#~ "GNU Guile-Ncurses is a library for the Guile Scheme interpreter that\n"
+#~ "provides functions for creating text user interfaces.  The text user "
+#~ "interface\n"
+#~ "functionality is built on the ncurses libraries: curses, form, panel, "
+#~ "and\n"
+#~ "menu."
+#~ msgstr ""
+#~ "Гну Гуиле Ен-курсис је библиотека за преводиоца Гуле Шеме која "
+#~ "обезбеђује\n"
+#~ "функције за стварање текстуалног корисничког сучеља. Функционалност "
+#~ "текстуалног\n"
+#~ "корисничког сучеља је изграђена на ен-курсис библиотекама: „curses, "
+#~ "form,\n"
+#~ "panel, и menu“."
+
+#~ msgid ""
+#~ "The GNU package mcron (Mellor's cron) is a 100% compatible replacement\n"
+#~ "for Vixie cron.  It is written in pure Guile, and allows configuration "
+#~ "files\n"
+#~ "to be written in scheme (as well as Vixie's original format) for "
+#~ "infinite\n"
+#~ "flexibility in specifying when jobs should be run.  Mcron was written by "
+#~ "Dale\n"
+#~ "Mellor."
+#~ msgstr ""
+#~ "Гнуов пакет „mcron“ (Мелоров крон) је 100% сагласна замена за Викси "
+#~ "крон.\n"
+#~ "Написан је у чистом Гуилу, и допушта да датотеке подешавања буду "
+#~ "записане\n"
+#~ "у шеми (као и у Виксијевом изворном запису) са бескрајном сагласношћу у\n"
+#~ "навођењу када послови требају да се покрену.  Написао га је Дејл Мелор."
+
+#~ msgid ""
+#~ "GNU recutils is a set of tools and libraries to access human-editable,\n"
+#~ "text-based databases called recfiles.  The data is stored as a sequence "
+#~ "of\n"
+#~ "records, each record containing an arbitrary number of named fields."
+#~ msgstr ""
+#~ "Гну рекутилс је скуп алата и библиотека за приступ базама података "
+#~ "заснованим на\n"
+#~ "тексту, званим „recfiles“ које корисници могу да мењају.  Подаци су "
+#~ "ускладиштени\n"
+#~ "као низ снимака, сваки снимак садржи одговарајући број именованих поља."
+
+#~ msgid "profile `~a' does not exist~%"
+#~ msgstr "профил „~a“ не постоји~%"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: guix 0.5-pre2\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
-"POT-Creation-Date: 2013-12-03 21:18+0100\n"
+"POT-Creation-Date: 2013-12-10 22:16+0100\n"
 "PO-Revision-Date: 2013-12-04 07:48+0700\n"
 "Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
 "Language-Team: Vietnamese <translation-team-vi@lists.sourceforge.net>\n"
@@ -31,7 +31,8 @@ msgstr "Xin chào, gia đình GNU: Một gói GNU ví dụ"
 #: gnu/packages/base.scm:62
 msgid ""
 "GNU Hello prints the message \"Hello, world!\" and then exits.  It\n"
-"serves as an example of standard GNU coding practices.  As such, it supports\n"
+"serves as an example of standard GNU coding practices.  As such, it "
+"supports\n"
 "command-line arguments, multiple languages, and so on."
 msgstr ""
 
@@ -57,8 +58,10 @@ msgstr "Trình soạn thảo luồng dữ liệu"
 #: gnu/packages/base.scm:119
 msgid ""
 "Sed is a non-interactive, text stream editor.  It receives a text\n"
-"input from a file or from standard input and it then applies a series of text\n"
-"editing commands to the stream and prints its output to standard output.  It\n"
+"input from a file or from standard input and it then applies a series of "
+"text\n"
+"editing commands to the stream and prints its output to standard output.  "
+"It\n"
 "is often used for substituting text patterns in a stream.  The GNU\n"
 "implementation offers several extensions over the standard utility."
 msgstr ""
@@ -84,7 +87,8 @@ msgstr "Áp dụng những khác biệt này vào bản gốc, với các sao l�
 #: gnu/packages/base.scm:170
 msgid ""
 "Patch is a program that applies changes to files based on differences\n"
-"laid out as by the program \"diff\".  The changes may be applied to one or more\n"
+"laid out as by the program \"diff\".  The changes may be applied to one or "
+"more\n"
 "files depending on the contents of the diff file.  It accepts several\n"
 "different diff formats.  It may also be used to revert previously applied\n"
 "differences."
@@ -97,8 +101,10 @@ msgstr "So sánh và hòa trộn các tập tin"
 #: gnu/packages/base.scm:192
 msgid ""
 "GNU Diffutils is a package containing tools for finding the\n"
-"differences between files.  The \"diff\" command is used to show how two files\n"
-"differ, while \"cmp\" shows the offsets and line numbers where they differ. \n"
+"differences between files.  The \"diff\" command is used to show how two "
+"files\n"
+"differ, while \"cmp\" shows the offsets and line numbers where they "
+"differ. \n"
 "\"diff3\" allows you to compare three files.  Finally, \"sdiff\" offers an\n"
 "interactive means to merge two files."
 msgstr ""
@@ -111,9 +117,12 @@ msgstr "Thực hiện trên những tập tin khớp với điều kiện đã c
 msgid ""
 "Findutils supplies the basic file directory searching utilities of the\n"
 "GNU system.  It consists of two primary searching utilities: \"find\"\n"
-"recursively searches for files in a directory according to given criteria and\n"
-"\"locate\" lists files in a database that match a query.  Two auxiliary tools\n"
-"are included: \"updatedb\" updates the file name database and \"xargs\" may be\n"
+"recursively searches for files in a directory according to given criteria "
+"and\n"
+"\"locate\" lists files in a database that match a query.  Two auxiliary "
+"tools\n"
+"are included: \"updatedb\" updates the file name database and \"xargs\" may "
+"be\n"
 "used to apply commands with arbitrarily long arguments."
 msgstr ""
 
@@ -125,7 +134,8 @@ msgstr "Tiện ích lõi GNU (file, text, shell)"
 msgid ""
 "GNU Coreutils includes all of the basic command-line tools that are\n"
 "expected in a POSIX system.  These provide the basic file, shell and text\n"
-"manipulation functions of the GNU system.  Most of these tools offer extended\n"
+"manipulation functions of the GNU system.  Most of these tools offer "
+"extended\n"
 "functionality beyond that which is outlined in the POSIX standard."
 msgstr ""
 
@@ -137,7 +147,8 @@ msgstr "Tạo lại các tập tin một cách tự động"
 msgid ""
 "Make is a program that is used to control the production of\n"
 "executables or other files from their source files.  The process is\n"
-"controlled from a Makefile, in which the developer specifies how each file is\n"
+"controlled from a Makefile, in which the developer specifies how each file "
+"is\n"
 "generated from its source.  It has powerful dependency resolution and the\n"
 "ability to determine when files have to be regenerated after their sources\n"
 "change.  GNU make offers many powerful extensions over the standard utility."
@@ -150,9 +161,11 @@ msgstr "Tiện ích nhị phân: bfd gas gprof ld"
 #: gnu/packages/base.scm:347
 msgid ""
 "GNU Binutils is a collection of tools for working with binary files.\n"
-"Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler. Other\n"
+"Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler. "
+"Other\n"
 "tools include programs to display binary profiling information, list the\n"
-"strings in a binary file, and utilities for working with archives.  The \"bfd\"\n"
+"strings in a binary file, and utilities for working with archives.  The \"bfd"
+"\"\n"
 "library for working with executable and object formats is also included."
 msgstr ""
 
@@ -163,10 +176,12 @@ msgstr "Thư viện C từ GNU"
 #: gnu/packages/base.scm:478
 msgid ""
 "Any Unix-like operating system needs a C library: the library which\n"
-"defines the \"system calls\" and other basic facilities such as open, malloc,\n"
+"defines the \"system calls\" and other basic facilities such as open, "
+"malloc,\n"
 "printf, exit...\n"
 "\n"
-"The GNU C library is used as the C library in the GNU system and most systems\n"
+"The GNU C library is used as the C library in the GNU system and most "
+"systems\n"
 "with the Linux kernel."
 msgstr ""
 
@@ -179,7 +194,8 @@ msgid ""
 "The Time Zone Database (often called tz or zoneinfo)\n"
 "contains code and data that represent the history of local time for many\n"
 "representative locations around the globe. It is updated periodically to\n"
-"reflect changes made by political bodies to time zone boundaries, UTC offsets,\n"
+"reflect changes made by political bodies to time zone boundaries, UTC "
+"offsets,\n"
 "and daylight-saving rules."
 msgstr ""
 
@@ -194,33 +210,36 @@ msgstr "Bộ bao liên kết"
 #: gnu/packages/base.scm:1014
 msgid ""
 "The linker wrapper (or `ld-wrapper') wraps the linker to add any\n"
-"missing `-rpath' flags, and to detect any misuse of libraries outside of the\n"
+"missing `-rpath' flags, and to detect any misuse of libraries outside of "
+"the\n"
 "store."
 msgstr ""
 
-#: gnu/packages/guile.scm:97 gnu/packages/guile.scm:168
+#: gnu/packages/guile.scm:96 gnu/packages/guile.scm:167
 msgid "Scheme implementation intended especially for extensions"
 msgstr "Lược đồ thực thi có dụng ý đặc biệt cho phần mở rộng"
 
-#: gnu/packages/guile.scm:99 gnu/packages/guile.scm:170
+#: gnu/packages/guile.scm:98 gnu/packages/guile.scm:169
 msgid ""
 "Guile is the GNU Ubiquitous Intelligent Language for Extensions, the\n"
 "official extension language of the GNU system.  It is an implementation of\n"
 "the Scheme language which can be easily embedded in other applications to\n"
-"provide a convenient means of extending the functionality of the application\n"
+"provide a convenient means of extending the functionality of the "
+"application\n"
 "without requiring the source code to be rewritten."
 msgstr ""
 
-#: gnu/packages/guile.scm:213
+#: gnu/packages/guile.scm:212
 msgid "Framework for building readers for GNU Guile"
 msgstr "Một framework để xây dựng bộ đọc dành cho GNU Guile"
 
-#: gnu/packages/guile.scm:215
+#: gnu/packages/guile.scm:214
 msgid ""
 "Guile-Reader is a simple framework for building readers for GNU Guile.\n"
 "\n"
 "The idea is to make it easy to build procedures that extend Guile’s read\n"
-"procedure. Readers supporting various syntax variants can easily be written,\n"
+"procedure. Readers supporting various syntax variants can easily be "
+"written,\n"
 "possibly by re-using existing “token readers” of a standard Scheme\n"
 "readers. For example, it is used to implement Skribilo’s R5RS-derived\n"
 "document syntax.\n"
@@ -230,49 +249,39 @@ msgid ""
 "many readers as needed)."
 msgstr ""
 
-#: gnu/packages/guile.scm:267
+#: gnu/packages/guile.scm:266
 msgid "Guile bindings to ncurses"
 msgstr "Guile ràng buộc vào ncurses"
 
-#: gnu/packages/guile.scm:269
+#: gnu/packages/guile.scm:268
 msgid ""
 "guile-ncurses provides Guile language bindings for the ncurses\n"
 "library."
 msgstr ""
 
-#: gnu/packages/guile.scm:289
+#: gnu/packages/guile.scm:288
 msgid "Run jobs at scheduled times"
 msgstr "Chạy các công việc theo lịch biểu"
 
-#: gnu/packages/guile.scm:291
+#: gnu/packages/guile.scm:290
 msgid ""
 "GNU Mcron is a complete replacement for Vixie cron.  It is used to run\n"
-"tasks on a schedule, such as every hour or every Monday.  Mcron is written in\n"
+"tasks on a schedule, such as every hour or every Monday.  Mcron is written "
+"in\n"
 "Guile, so its configuration can be written in Scheme; the original cron\n"
 "format is also supported."
 msgstr ""
 
-#: gnu/packages/guile.scm:319
+#: gnu/packages/guile.scm:318
 msgid "Collection of useful Guile Scheme modules"
 msgstr "Bộ sưu tập của các mô-đun Lược đồ Guile"
 
-#: gnu/packages/guile.scm:321
+#: gnu/packages/guile.scm:320
 msgid ""
 "guile-lib is intended as an accumulation place for pure-scheme Guile\n"
 "modules, allowing for people to cooperate integrating their generic Guile\n"
 "modules into a coherent library.  Think \"a down-scaled, limited-scope CPAN\n"
 "for Guile\"."
-msgstr ""
-
-#: gnu/packages/guile.scm:380
-msgid "Guile bindings to libssh"
-msgstr "Guile ràng buộc vào libssh"
-
-#: gnu/packages/guile.scm:382
-msgid ""
-"Guile-SSH is a library that provides access to the SSH protocol for\n"
-"programs written in GNU Guile interpreter.  It is a wrapper to the underlying\n"
-"libssh library."
 msgstr ""
 
 #: gnu/packages/lout.scm:109
@@ -281,15 +290,19 @@ msgstr ""
 
 #: gnu/packages/lout.scm:111
 msgid ""
-"The Lout document formatting system is now reads a high-level description of\n"
-"a document similar in style to LaTeX and produces a PostScript or plain text\n"
+"The Lout document formatting system is now reads a high-level description "
+"of\n"
+"a document similar in style to LaTeX and produces a PostScript or plain "
+"text\n"
 "output file.\n"
 "\n"
 "Lout offers an unprecedented range of advanced features, including optimal\n"
 "paragraph and page breaking, automatic hyphenation, PostScript EPS file\n"
-"inclusion and generation, equation formatting, tables, diagrams, rotation and\n"
+"inclusion and generation, equation formatting, tables, diagrams, rotation "
+"and\n"
 "scaling, sorted indexes, bibliographic databases, running headers and\n"
-"odd-even pages, automatic cross referencing, multilingual documents including\n"
+"odd-even pages, automatic cross referencing, multilingual documents "
+"including\n"
 "hyphenation (most European languages are supported), formatting of computer\n"
 "programs, and much more, all ready to use.  Furthermore, Lout is easily\n"
 "extended with definitions which are very much easier to write than troff of\n"
@@ -305,9 +318,11 @@ msgstr "Thao tác các tập tin văn bản thường như là cơ sở dữ li�
 #: gnu/packages/recutils.scm:54
 msgid ""
 "GNU Recutils is a set of tools and libraries for creating and\n"
-"manipulating text-based, human-editable databases.  Despite being text-based,\n"
+"manipulating text-based, human-editable databases.  Despite being text-"
+"based,\n"
 "databases created with Recutils carry all of the expected features such as\n"
-"unique fields, primary keys, time stamps and more. Many different field types\n"
+"unique fields, primary keys, time stamps and more. Many different field "
+"types\n"
 "are supported, as is encryption."
 msgstr ""
 
@@ -322,7 +337,8 @@ msgid ""
 "Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"
 msgstr ""
 "Cách dùng: guix build [TÙY-CHỌN]... PACKAGE-OR-DERIVATION...\n"
-"Xây dựng PACKAGE-OR-DERIVATION đã cho và trả về đường dẫn kết xuất của chúng.\n"
+"Xây dựng PACKAGE-OR-DERIVATION đã cho và trả về đường dẫn kết xuất của "
+"chúng.\n"
 
 #: guix/scripts/build.scm:75
 msgid ""
@@ -394,7 +410,8 @@ msgid ""
 "      --no-substitutes   build instead of resorting to pre-built substitutes"
 msgstr ""
 "\n"
-"      --no-substitutes   xây dựng thay vì nhờ vào phần thay thế được dựng trước"
+"      --no-substitutes   xây dựng thay vì nhờ vào phần thay thế được dựng "
+"trước"
 
 #: guix/scripts/build.scm:93 guix/scripts/package.scm:492
 msgid ""
@@ -404,7 +421,8 @@ msgid ""
 msgstr ""
 "\n"
 "      --max-silent-time=GIÂY\n"
-"                         đánh dấu là việc dịch sẽ là lỗi nếu lâu hơn số GIÂY này"
+"                         đánh dấu là việc dịch sẽ là lỗi nếu lâu hơn số GIÂY "
+"này"
 
 #: guix/scripts/build.scm:96
 msgid ""
@@ -421,7 +439,8 @@ msgid ""
 "                         as a garbage collector root"
 msgstr ""
 "\n"
-"  -r, --root=TẬP-TIN     tạo TẬP-TIN một liên kết mềm đến kết quả, và đăng ký nó\n"
+"  -r, --root=TẬP-TIN     tạo TẬP-TIN một liên kết mềm đến kết quả, và đăng "
+"ký nó\n"
 "                         như là bộ gom rác gốc"
 
 #: guix/scripts/build.scm:101
@@ -701,7 +720,8 @@ msgid ""
 "  -n, --dry-run          show what would be done without actually doing it"
 msgstr ""
 "\n"
-"  -n, --dry-run          hiển thị những gì được làm nhưng không thực hiện thật"
+"  -n, --dry-run          hiển thị những gì được làm nhưng không thực hiện "
+"thật"
 
 #: guix/scripts/package.scm:495
 msgid ""
@@ -756,7 +776,8 @@ msgstr "~A: đối số ngoại lai~%"
 #: guix/scripts/package.scm:737
 #, scheme-format
 msgid "Try \"info '(guix) Invoking guix package'\" for more information.~%"
-msgstr "Thử chạy lệnh \"info '(guix) Invoking guix package'\" để có thêm thông tin.~%"
+msgstr ""
+"Thử chạy lệnh \"info '(guix) Invoking guix package'\" để có thêm thông tin.~%"
 
 #: guix/scripts/package.scm:759
 #, scheme-format
@@ -983,7 +1004,8 @@ msgstr "Đang tải, vui lòng chờ...~%"
 #: guix/scripts/substitute-binary.scm:441
 #, scheme-format
 msgid "(Please consider upgrading Guile to get proper progress report.)~%"
-msgstr "(Hãy cân nhắc nâng cấp Guile để nhận được báo cáo tiến trình đúng đắn.)~%"
+msgstr ""
+"(Hãy cân nhắc nâng cấp Guile để nhận được báo cáo tiến trình đúng đắn.)~%"
 
 #: guix/scripts/substitute-binary.scm:458
 #, scheme-format
@@ -1006,7 +1028,8 @@ msgid ""
 msgstr ""
 "\n"
 "      --query            báo cáo trên tính sẵn sàng của thay thế cho\n"
-"                         các tên tập-tin lưu trữ được chuyển trên đầu ra tiêu chuẩn"
+"                         các tên tập-tin lưu trữ được chuyển trên đầu ra "
+"tiêu chuẩn"
 
 #: guix/scripts/substitute-binary.scm:472
 msgid ""
@@ -1020,27 +1043,28 @@ msgstr ""
 "                         tải về TẬP-TIN-LƯU và lưu nó trong tập tin ĐÍCH\n"
 "                         Nar"
 
-#: guix/scripts/substitute-binary.scm:593
+#: guix/scripts/substitute-binary.scm:596
 #, scheme-format
 msgid "~a: unrecognized options~%"
 msgstr "~a: không chấp nhận các tùy chọn~%"
 
-#: guix/gnu-maintenance.scm:346
+#: guix/gnu-maintenance.scm:357
 #, scheme-format
 msgid "signature verification failed for `~a'~%"
 msgstr "việc xác minh chữ ký cho `~a'~% gặp lỗi"
 
-#: guix/gnu-maintenance.scm:348
+#: guix/gnu-maintenance.scm:359
 #, scheme-format
 msgid "(could be because the public key is not in your keyring)~%"
-msgstr "(có thể nguyên nhân là do khóa công không có trong chùm chìa khóa của bạn)~%"
+msgstr ""
+"(có thể nguyên nhân là do khóa công không có trong chùm chìa khóa của bạn)~%"
 
-#: guix/gnu-maintenance.scm:423
+#: guix/gnu-maintenance.scm:434
 #, scheme-format
 msgid "~a: could not locate source file"
 msgstr "~a: không thể xác định tập tin nguồn"
 
-#: guix/gnu-maintenance.scm:428
+#: guix/gnu-maintenance.scm:439
 #, scheme-format
 msgid "~a: ~a: no `version' field in source; skipping~%"
 msgstr "~a: ~a: không có trường `version' trong nguồn; bỏ qua~%"
@@ -1053,13 +1077,16 @@ msgstr "gặp lỗi khi cài đặt `locale': ~a~%"
 #: guix/ui.scm:141
 msgid ""
 "Copyright (C) 2013 the Guix authors\n"
-"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
+"html>\n"
 "This is free software: you are free to change and redistribute it.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
 "Bản quyền (C) 2013 thuộc về các tác giả Guix.\n"
-"Giấy phép GPL pb3+: Giấy phép Công cộng GNU phiên bản 3 hay sau <http://gnu.org/licenses/gpl.html>\n"
-"Đây là phần mềm tự do: bạn có quyền sửa đổi và phát hành lại nó.KHÔNG CÓ BẢO HÀNH GÌ CẢ, với điều kiện được pháp luật cho phép.\n"
+"Giấy phép GPL pb3+: Giấy phép Công cộng GNU phiên bản 3 hay sau <http://gnu."
+"org/licenses/gpl.html>\n"
+"Đây là phần mềm tự do: bạn có quyền sửa đổi và phát hành lại nó.KHÔNG CÓ BẢO "
+"HÀNH GÌ CẢ, với điều kiện được pháp luật cho phép.\n"
 
 #: guix/ui.scm:149
 #, scheme-format
@@ -1212,6 +1239,9 @@ msgstr "tải về gặp lỗi; dùng Guile mới hơn~%"
 msgid "following redirection to `~a'...~%"
 msgstr "đang cho chuyển hướng sang `~a'...~%"
 
+#~ msgid "Guile bindings to libssh"
+#~ msgstr "Guile ràng buộc vào libssh"
+
 #~ msgid "Yeah..."
 #~ msgstr "Đúng..."
 
@@ -1220,17 +1250,22 @@ msgstr "đang cho chuyển hướng sang `~a'...~%"
 #~ "match to a specified pattern.  By default, grep prints the matching\n"
 #~ "lines."
 #~ msgstr ""
-#~ "Lệnh grep tìm kiếm trong một hay nhiều tập tin đầu vào những dòng có chứa\n"
+#~ "Lệnh grep tìm kiếm trong một hay nhiều tập tin đầu vào những dòng có "
+#~ "chứa\n"
 #~ "từ khớp mẫu đã cho. Theo mặc định, lệnh grep sẽ in ra các dòng khớp mẫu."
 
 #~ msgid ""
 #~ "GNU recutils is a set of tools and libraries to access human-editable,\n"
-#~ "text-based databases called recfiles.  The data is stored as a sequence of\n"
+#~ "text-based databases called recfiles.  The data is stored as a sequence "
+#~ "of\n"
 #~ "records, each record containing an arbitrary number of named fields."
 #~ msgstr ""
-#~ "GNU recutils là một tập hợp công cụ và thư viện cho phép truy cập các tập tin\n"
-#~ "rec là kiểu cơ sở dữ liệu dựa trên dạng văn bản thường, con người có thể đọc được.\n"
-#~ "Dữ liệu được lưu thành các bản ghi kế tiếp nhau, mỗi bản ghi chứa các thuộc tính\n"
+#~ "GNU recutils là một tập hợp công cụ và thư viện cho phép truy cập các tập "
+#~ "tin\n"
+#~ "rec là kiểu cơ sở dữ liệu dựa trên dạng văn bản thường, con người có thể "
+#~ "đọc được.\n"
+#~ "Dữ liệu được lưu thành các bản ghi kế tiếp nhau, mỗi bản ghi chứa các "
+#~ "thuộc tính\n"
 #~ "của các trường đã được đặt tên"
 
 #~ msgid "profile `~a' does not exist~%"
