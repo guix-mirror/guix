@@ -653,21 +653,25 @@ valid inputs."
   "Return #t if PATH is a derivation path."
   (and (store-path? path) (string-suffix? ".drv" path)))
 
+(define store-regexp*
+  ;; The substituter makes repeated calls to 'store-path-hash-part', hence
+  ;; this optimization.
+  (memoize
+   (lambda (store)
+     "Return a regexp matching a file in STORE."
+     (make-regexp (string-append "^" (regexp-quote store)
+                                 "/([0-9a-df-np-sv-z]{32})-([^/]+)$")))))
+
 (define (store-path-package-name path)
   "Return the package name part of PATH, a file name in the store."
-  (define store-path-rx
-    (make-regexp (string-append "^.*" (regexp-quote (%store-prefix))
-                                "/[^-]+-(.+)$")))
-
-  (and=> (regexp-exec store-path-rx path)
-         (cut match:substring <> 1)))
+  (let ((path-rx (store-regexp* (%store-prefix))))
+    (and=> (regexp-exec path-rx path)
+           (cut match:substring <> 2))))
 
 (define (store-path-hash-part path)
   "Return the hash part of PATH as a base32 string, or #f if PATH is not a
 syntactically valid store path."
-  (let ((path-rx (make-regexp
-                  (string-append"^" (regexp-quote (%store-prefix))
-                                "/([0-9a-df-np-sv-z]{32})-[^/]+$"))))
+  (let ((path-rx (store-regexp* (%store-prefix))))
     (and=> (regexp-exec path-rx path)
            (cut match:substring <> 1))))
 
