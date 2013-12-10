@@ -65,6 +65,17 @@
    (string-append (%store-prefix)
                   "/foo/bar/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7")))
 
+(test-equal "store-path-package-name"
+  "guile-2.0.7"
+  (store-path-package-name
+   (string-append (%store-prefix)
+                  "/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7")))
+
+(test-equal "store-path-package-name #f"
+  #f
+  (store-path-package-name
+   "/foo/bar/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7"))
+
 (test-assert "direct-store-path?"
   (and (direct-store-path?
         (string-append (%store-prefix)
