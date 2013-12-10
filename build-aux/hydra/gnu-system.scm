@@ -45,6 +45,7 @@
              (gnu packages gawk)
              (gnu packages guile)
              (gnu packages gettext)
+             (gnu packages compression)
              (gnu packages multiprecision)
              (gnu packages make-bootstrap)
              (srfi srfi-1)
@@ -83,7 +84,7 @@ SYSTEM."
 
 (define %core-packages
   (list gmp mpfr mpc coreutils findutils diffutils patch sed grep
-        gawk gnu-gettext hello guile-2.0
+        gawk gnu-gettext hello guile-2.0 zlib gzip xz
         %bootstrap-binaries-tarball
         %binutils-bootstrap-tarball
         %glibc-bootstrap-tarball
