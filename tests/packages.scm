@@ -139,6 +139,8 @@
     (and (direct-store-path? source)
          (string-suffix? "utils.scm" source))))
 
+(unless (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV))
+  (test-skip 1))
 (test-equal "package-source-derivation, snippet"
   "OK"
   (let* ((file   (search-bootstrap-binary "guile-2.0.9.tar.xz"
