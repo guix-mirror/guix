@@ -21,6 +21,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:select (gpl3+))
+  #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages compression) #:select (bzip2 gzip))
   #:use-module (gnu packages gnupg)
@@ -30,14 +31,15 @@
 (define-public guix
   (package
     (name "guix")
-    (version "0.4")
+    (version "0.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1mmh28ds5p8mpzm2yfvgm6z92wgknqc3dlw6r6z16s13sk386igk"))))
+               "15azhc3lb1m64545q8cs8dzcgjbd2wjxhl6nw0rq6lnvrxz2wjmv"))
+             (patches (list (search-patch "guix-test-networking.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
@@ -54,11 +56,12 @@
                                                              arch)))
                            (target (string-append "gnu/packages/bootstrap/"
                                                   arch "-linux/"
-                                                  "/guile-2.0.7.tar.xz")))
+                                                  "/guile-2.0.9.tar.xz")))
                        (copy-file guile target)))
 
                    (copy "i686")
                    (copy "x86_64")
+                   (copy "mips64el")
                    #t)
                  %standard-phases)))
     (inputs
@@ -68,7 +71,7 @@
                           (uri (string-append
                                 "http://alpha.gnu.org/gnu/guix/bootstrap/"
                                 arch "-linux"
-                                "/20130105/guile-2.0.7.tar.xz"))
+                                "/20131110/guile-2.0.9.tar.xz"))
                           (sha256 hash)))))
        `(("bzip2" ,bzip2)
          ("gzip" ,gzip)
@@ -81,11 +84,15 @@
          ("boot-guile/i686"
           ,(boot-guile "i686"
                        (base32
-                        "0z11rlyclnh9palrsk0xhgm84rmvzza0gkwvlsiazsjnqpscd9zr")))
+                        "0im800m30abgh7msh331pcbjvb4n02smz5cfzf1srv0kpx3csmxp")))
          ("boot-guile/x86_64"
           ,(boot-guile "x86_64"
                        (base32
-                        "0b5a2ngd9a7z2wnm01wc27rlwb61x854ndadxwmj8v8lrl6j2hxw"))))))
+                        "1w2p5zyrglzzniqgvyn1b55vprfzhgk8vzbzkkbdgl5248si0yq3")))
+         ("boot-guile/mips64el"
+          ,(boot-guile "mips64el"
+                       (base32
+                        "0fzp93lvi0hn54acc0fpvhc7bvl0yc853k62l958cihk03q80ilr"))))))
     (home-page "http://www.gnu.org/software/guix")
     (synopsis "Functional package manager for installed software packages and versions")
     (description

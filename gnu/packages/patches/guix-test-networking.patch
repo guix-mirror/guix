@@ -1,0 +1,15 @@
+Skip that test when the network is unreachable.
+
+diff --git a/tests/packages.scm b/tests/packages.scm
+index 04e3b0b..6ac215b 100644
+--- a/tests/packages.scm
++++ b/tests/packages.scm
+@@ -139,6 +139,8 @@
+     (and (direct-store-path? source)
+          (string-suffix? "utils.scm" source))))
+ 
++(unless (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV))
++  (test-skip 1))
+ (test-equal "package-source-derivation, snippet"
+   "OK"
+   (let* ((file   (search-bootstrap-binary "guile-2.0.9.tar.xz"
