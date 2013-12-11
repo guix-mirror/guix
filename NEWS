@@ -58,9 +58,39 @@ packages.  See “GNU Distribution” and “Porting” in the manual.
 Pre-built binaries are not yet available via hydra.gnu.org, so Guix will
 build from source on this platform.
 
-*** XXX new packages
+*** 110 new packages
 
-*** XXX package updates
+acct, alive, alsa-utils, apl, at-spi2-atk, at-spi2-core, atkmm, autogen,
+automoc4, brasero, bridge-utils, cairomm, catkin, complexity, evince, ffmpeg,
+fftw, ftgl, gcc-objc, gcc-objc++, gccgo, gcl, gfortran, glibmm, glpk,
+gnome-icon-theme, gnu-pw-mgr, gp2c, gpgme, gsettings-desktop-schemas, gtkmm,
+gtksourceview, guile-ssh, guile-wm, gvpe, hicolor-icon-theme, httpd, icecat,
+icon-naming-utils, json-c, lapack, libcanberra, libcap, libgnome-keyring,
+libmikmod, libnl, libnotify, libsamplerate, libsigc++, libsndfile, libssh,
+libtheora, libxkbcommon, mercurial, mtools, netcat, pangomm, parallel,
+pavucontrol, pciutils, pem, perl-encode-locale, perl-file-list,
+perl-file-listing, perl-html-parser, perl-html-tagset, perl-http-cookies,
+perl-http-daemon, perl-http-date, perl-http-message, perl-http-negotiate,
+perl-io-html, perl-libwww, perl-libxml, perl-lwp-mediatypes, perl-net-http,
+perl-uri, perl-www-robotrules, perl-xml-dom, perl-xml-regexp, perl-xml-simple,
+phonon, powertop, pulseaudio, python2-dogtail, python2-empy, qemu-headless,
+qt, qt, raptor2, scons, sdl, sdl-gfx, sdl-image, sdl-mixer, sdl-net, sdl-ttf,
+sdl2, serveez, shared-mime-info, sharutils, skribilo, slim, soprano, swig,
+xcb-util, xcb-util-image, xcb-util-keysyms, xcb-util-renderutil, xcb-util-wm
+
+*** 47 package updates
+
+atk 2.10.0, bison 3.0.2, cmake 2.8.12, dmd 0.1, freeipmi 1.3.3, gcc 4.8.2,
+gcc 4.8.2, gcc-cross-mips64el-linux-gnuabi64 4.8.2, gcc-stripped-tarball 4.8.2,
+gdb 7.6.2, gettext 0.18.3.1, glib 2.38.0, global 6.2.9, gmp 5.1.3,
+gnupg 2.0.22, gobject-introspection 1.38.0, grep 2.15, gsl 1.16,
+gtk+ 2.24.21, gtk+ 3.10.1, guile 2.0.9, guile 2.0.9, guile-xcb 1.2,
+harfbuzz 0.9.22, hello 2.9, iproute2 3.12.0, libdrm 2.4.46,
+libextractor 1.2, libjpeg 9, libmicrohttpd 0.9.32, lightning 2.0.2,
+linux-libre 3.12, lzip 1.15, make 4.0, mit-krb5 1.11.3, pari-gp 2.5.5,
+pixman 0.32.4, python 3.3.2, qemu 1.6.1,
+qemu-with-multiple-smb-shares 1.6.1, rcs 5.9.2, recutils 1.6, rsync 3.1.0,
+tar 1.27.1, texinfo 5.2, units 2.02, xorriso 1.3.2
 
 *** Packages are now built with GCC 4.8.2 by default (was 4.7.3)
 
@@ -69,8 +99,6 @@ build from source on this platform.
 *** New ‘vi’ (Vietnamese) translation
 *** Updated ‘pt_BR’ (Brazilian Portuguese) translation
 ** Bugs fixed
-*** ‘guix-daemon’ always sets umask to 022
-    (http://lists.gnu.org/archive/html/bug-guix/2013-07/msg00033.html)
 *** ‘guix pull’ compiles Guix deterministically and correctly
 
 Previously, the build environment was not cleared in between ‘compile-file’
@@ -78,7 +106,10 @@ calls, leading to build errors due to Guile bug http://bugs.gnu.org/15602 .
 
 *** ‘guix package’ allows removal of a specific package output
     (http://bugs.gnu.org/15756)
+*** ‘guix-daemon’ always sets umask to 022
+    (http://lists.gnu.org/archive/html/bug-guix/2013-07/msg00033.html)
 *** Files referenced by environment variables are protected from GC
+*** Yet unbuilt packages get correctly installed (http://bugs.gnu.org/15283)
 *** ‘bootstrap-graph.{png,eps,pdf}’ built in srcdir (http://bugs.gnu.org/15640)
 
 * Changes in 0.4 (since 0.3)
