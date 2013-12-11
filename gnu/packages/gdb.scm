@@ -33,14 +33,14 @@
 (define-public gdb
   (package
     (name "gdb")
-    (version "7.6.1")
+    (version "7.6.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1r32s6vqgskw6pz9pmp41b8injd51c4bbxr6ifdpyid52j5a7pz3"))
+               "1s6hjqmq7xz10hqx45dgrpfh5mla578shn3zxgnrsv66w4n0wsig"))
              (patches (list (search-patch "gdb-loongson-madd-fix.patch")))))
     (build-system gnu-build-system)
     (arguments
