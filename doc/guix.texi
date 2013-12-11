@@ -2219,8 +2219,18 @@ incomplete, outdated, or open to discussions.  Please discuss it on
 The GNU system supports a consistent whole-system configuration
 mechanism.  By that we mean that all aspects of the global system
 configuration---such as the available system services, timezone and
-locale settings, user accounts---are configured in a single place.  Such
+locale settings, user accounts---are declared in a single place.  Such
 a @dfn{system configuration} can be @dfn{instantiated}---i.e., effected.
+
+One of the advantages of putting all the system configuration under the
+control of Guix is that it supports transactional system upgrades, and
+makes it possible to roll-back to a previous system instantiation,
+should something go wrong with the new one (@pxref{Features}).  Another
+one is that it makes it easy to replicate the exact same configuration
+across different machines, or at different points in time, without
+having to resort to additional administration tools layered on top of
+the system's own tools.
+@c Yes, we're talking of Puppet, Chef, & co. here.  ↑
 
 This section describes this mechanism.  First we focus on the system
 administrator's viewpoint---explaining how the system is configured and
@@ -2253,7 +2263,7 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
              (gnu packages guile)  ; Guile
              (gnu packages linux)) ; procps, psmisc
 
-(define %komputilo
+(define komputilo
   (operating-system
    (host-name "komputilo")
    (timezone "Europe/Paris")
@@ -2275,10 +2285,11 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
 @end lisp
 
 This example should be self-describing.  The @code{packages} field lists
-packages provides by the various @code{(gnu packages ...)} modules above;
-these are the packages that will be globally visible on the system, for
-all user accounts, in addition to the per-user profiles (@pxref{Invoking
-guix package}).
+packages provided by the various @code{(gnu packages ...)} modules above
+(@pxref{Package Modules}).  These are the packages that will be globally
+visible on the system, for all user accounts---i.e., in every user's
+@code{PATH} environment variable---in addition to the per-user profiles
+(@pxref{Invoking guix package}).
 
 The @code{services} field lists @dfn{system services} to be made
 available when the system starts.  The @var{%standard-services} list,
@@ -2315,14 +2326,6 @@ the packages, configuration files, and other supporting files needed to
 instantiate @var{os}.
 @end deffn
 
-One of the advantages of putting all the system configuration under the
-control of Guix is that it makes it possible to roll-back to a previous
-system instantiation, should anything go wrong with the new one.
-Another one is that it makes it easy to replicate the very same
-configuration across different machines, or at different points in time,
-without having to resort to additional administration tools layered on
-top of the system's own tools.
-@c Yes, we're talking of Puppet, Chef, & co. here.  ↑
 
 @node Defining Services
 @subsection Defining Services
