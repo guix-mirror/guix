@@ -437,8 +437,10 @@ such as /etc files."
                    tzdata
                    guix))))
 
-(define* (system-qemu-image #:optional (os %demo-operating-system))
-  "Return the derivation of a QEMU image of the GNU system."
+(define* (system-qemu-image #:optional (os %demo-operating-system)
+                            #:key (disk-image-size (* 900 (expt 2 20))))
+  "Return the derivation of a QEMU image of DISK-IMAGE-SIZE bytes of the GNU
+system as described by OS."
   (mlet* %store-monad
       ((os-drv      (operating-system-derivation os))
        (os-dir   -> (derivation->output-path os-drv))
@@ -464,7 +466,7 @@ such as /etc files."
                       (directory "/home/guest" 1000 100))))
     (qemu-image  #:grub-configuration grub.cfg
                  #:populate populate
-                 #:disk-image-size (* 550 (expt 2 20))
+                 #:disk-image-size disk-image-size
                  #:initialize-store? #t
                  #:inputs-to-copy `(("system" ,os-drv)))))
 
