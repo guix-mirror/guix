@@ -28,12 +28,13 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages which)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages pkg-config))
 
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "3.3")
+    (version "3.4")
     (source
      (origin
       (method url-fetch)
@@ -41,8 +42,13 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1h1sz5py8zlg4yczybr6wa925pyadvjcxrdmhilwaqqgs4n2lrcj"))))
+        "1j5cwsjk9wai700ljsr5qyzywijrr5ba05hhg4mkgqlg8mx50lzk"))))
     (build-system gnu-build-system)
+    (native-inputs `(("perl" ,perl)
+
+                     ;; XXX: For some reason, libtasn1.info wants to be
+                     ;; rebuilt, so we must provide 'makeinfo'.
+                     ("texinfo" ,texinfo)))
     (home-page "http://www.gnu.org/software/libtasn1/")
     (synopsis "ASN.1 library")
     (description
