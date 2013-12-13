@@ -42,7 +42,21 @@
     (arguments
      `(#:configure-flags
        (list (string-append "--with-ncurses="
-                            (assoc-ref %build-inputs "ncurses")))))
+                            (assoc-ref %build-inputs "ncurses")))
+
+       #:phases (alist-cons-after
+                 'install 'post-install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Install the Emacs Lisp file in the right place.
+                   (let* ((out  (assoc-ref outputs "out"))
+                          (data (string-append out "/share/gtags"))
+                          (lisp (string-append out "/share/emacs/site-lisp")))
+                     (mkdir-p lisp)
+                     (copy-file (string-append data "/gtags.el")
+                                (string-append lisp "/gtags.el"))
+                     (delete-file (string-append data "/gtags.el"))
+                     #t))
+                 %standard-phases)))
     (home-page "http://www.gnu.org/software/global/")
     (synopsis "Cross-environment source code tag system")
     (description
