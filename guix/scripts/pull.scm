@@ -60,38 +60,28 @@ files."
              (tarball (assoc-ref %build-inputs "tarball")))
 
          (define* (compile-file* file #:key output-file (opts '()))
-           ;; Like 'compile-file', but remove any (guix …) and (gnu …) modules
-           ;; created during the process as an ugly workaround for
+           ;; Like 'compile-file', but in a separate process, to work around
            ;; <http://bugs.gnu.org/15602> (FIXME).  This ensures correctness,
-           ;; but is overly conservative and very slow.
-
-           (define (module-directory+file module)
-             ;; Return the directory for MODULE, like the 'dir-hint' in
-             ;; boot-9.scm.
-             (match (module-name module)
-               ((beginning ... last)
-                (values (string-concatenate
-                         (map (lambda (elt)
-                                (string-append (symbol->string elt)
-                                               file-name-separator-string))
-                              beginning))
-                        (symbol->string last)))))
-
-           (define (clear-module-tree! root)
-             ;; Delete all the modules under ROOT.
-             (hash-for-each (lambda (name module)
-                              (module-remove! root name)
-                              (let-values (((dir name)
-                                            (module-directory+file module)))
-                                (set-autoloaded! dir name #f))
-                              (clear-module-tree! module))
-                            (module-submodules root))
-             (hash-clear! (module-submodules root)))
-
-           (compile-file file #:output-file output-file #:opts opts)
-
-           (for-each (compose clear-module-tree! resolve-module)
-                     '((guix) (gnu))))
+           ;; but is overly conservative and very slow.  The solution
+           ;; initially implemented (and described in the bug above) was
+           ;; slightly faster but consumed memory proportional to the number
+           ;; of modules, which quickly became unacceptable.
+           (match (primitive-fork)
+             (0
+              (catch #t
+                (lambda ()
+                  (compile-file file
+                                #:output-file output-file
+                                #:opts opts)
+                  (primitive-exit 0))
+                (lambda (key . args)
+                  (print-exception (current-error-port) #f key args)
+                  (primitive-exit 1))))
+             (pid
+              (match (waitpid pid)
+                ((_ . status)
+                 (unless (zero? (status:exit-val status))
+                   (error "failed to compile file" file status)))))))
 
          (setenv "PATH" (string-append tar "/bin:" gzip "/bin"))
 
