@@ -155,6 +155,9 @@ then
     guix package -p "$profile" --delete-generations=0
 fi
 
+# Make sure multiple arguments to -i works.
+guix package --bootstrap -i guile gcc -p "$profile" -n
+
 # Make sure the `:' syntax works.
 guix package --bootstrap -i "binutils:lib" -p "$profile" -n
 

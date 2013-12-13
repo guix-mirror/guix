@@ -523,70 +523,99 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                 (lambda args
                   (show-version-and-exit "guix package")))
 
-        (option '(#\i "install") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'install arg result)))
+        (option '(#\i "install") #f #t
+                (lambda (opt name arg result arg-handler)
+                  (let arg-handler ((arg arg) (result result))
+                    (values (if arg
+                                (alist-cons 'install arg result)
+                                result)
+                            arg-handler))))
         (option '(#\e "install-from-expression") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'install (read/eval-package-expression arg)
-                              result)))
-        (option '(#\r "remove") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'remove arg result)))
+                (lambda (opt name arg result arg-handler)
+                  (values (alist-cons 'install (read/eval-package-expression arg)
+                                      result)
+                          #f)))
+        (option '(#\r "remove") #f #t
+                (lambda (opt name arg result arg-handler)
+                  (let arg-handler ((arg arg) (result result))
+                    (values (if arg
+                                (alist-cons 'remove arg result)
+                                result)
+                            arg-handler))))
         (option '(#\u "upgrade") #f #t
-                (lambda (opt name arg result)
-                  (alist-cons 'upgrade arg result)))
+                (lambda (opt name arg result arg-handler)
+                  (let arg-handler ((arg arg) (result result))
+                    (values (alist-cons 'upgrade arg
+                                        ;; Delete any prior "upgrade all"
+                                        ;; command, or else "--upgrade gcc"
+                                        ;; would upgrade everything.
+                                        (delete '(upgrade . #f) result))
+                            arg-handler))))
         (option '("roll-back") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'roll-back? #t result)))
+                (lambda (opt name arg result arg-handler)
+                  (values (alist-cons 'roll-back? #t result)
+                          #f)))
         (option '(#\l "list-generations") #f #t
-                (lambda (opt name arg result)
-                  (cons `(query list-generations ,(or arg ""))
-                        result)))
+                (lambda (opt name arg result arg-handler)
+                  (values (cons `(query list-generations ,(or arg ""))
+                                result)
+                          #f)))
         (option '(#\d "delete-generations") #f #t
-                (lambda (opt name arg result)
-                  (alist-cons 'delete-generations (or arg "")
-                              result)))
+                (lambda (opt name arg result arg-handler)
+                  (values (alist-cons 'delete-generations (or arg "")
+                                      result)
+                          #f)))
         (option '("search-paths") #f #f
-                (lambda (opt name arg result)
-                  (cons `(query search-paths) result)))
+                (lambda (opt name arg result arg-handler)
+                  (values (cons `(query search-paths) result)
+                          #f)))
         (option '(#\p "profile") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'profile arg
-                              (alist-delete 'profile result))))
+                (lambda (opt name arg result arg-handler)
+                  (values (alist-cons 'profile arg
+                                      (alist-delete 'profile result))
+                          #f)))
         (option '(#\n "dry-run") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'dry-run? #t result)))
+                (lambda (opt name arg result arg-handler)
+                  (values (alist-cons 'dry-run? #t result)
+                          #f)))
         (option '("fallback") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'fallback? #t
-                              (alist-delete 'fallback? result))))
+                (lambda (opt name arg result arg-handler)
+                  (values (alist-cons 'fallback? #t
+                                      (alist-delete 'fallback? result))
+                          #f)))
         (option '("no-substitutes") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'substitutes? #f
-                              (alist-delete 'substitutes? result))))
+                (lambda (opt name arg result arg-handler)
+                  (values (alist-cons 'substitutes? #f
+                                      (alist-delete 'substitutes? result))
+                          #f)))
         (option '("max-silent-time") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'max-silent-time (string->number* arg)
-                              result)))
+                (lambda (opt name arg result arg-handler)
+                  (values (alist-cons 'max-silent-time (string->number* arg)
+                                      result)
+                          #f)))
         (option '("bootstrap") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'bootstrap? #t result)))
+                (lambda (opt name arg result arg-handler)
+                  (values (alist-cons 'bootstrap? #t result)
+                          #f)))
         (option '("verbose") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'verbose? #t result)))
+                (lambda (opt name arg result arg-handler)
+                  (values (alist-cons 'verbose? #t result)
+                          #f)))
         (option '(#\s "search") #t #f
-                (lambda (opt name arg result)
-                  (cons `(query search ,(or arg ""))
-                        result)))
+                (lambda (opt name arg result arg-handler)
+                  (values (cons `(query search ,(or arg ""))
+                                result)
+                          #f)))
         (option '(#\I "list-installed") #f #t
-                (lambda (opt name arg result)
-                  (cons `(query list-installed ,(or arg ""))
-                        result)))
+                (lambda (opt name arg result arg-handler)
+                  (values (cons `(query list-installed ,(or arg ""))
+                                result)
+                          #f)))
         (option '(#\A "list-available") #f #t
-                (lambda (opt name arg result)
-                  (cons `(query list-available ,(or arg ""))
-                        result)))))
+                (lambda (opt name arg result arg-handler)
+                  (values (cons `(query list-available ,(or arg ""))
+                                result)
+                          #f)))))
 
 (define (options->installable opts manifest)
   "Given MANIFEST, the current manifest, and OPTS, the result of 'args-fold',
@@ -717,11 +746,14 @@ removed from MANIFEST."
   (define (parse-options)
     ;; Return the alist of option values.
     (args-fold* args %options
-                (lambda (opt name arg result)
+                (lambda (opt name arg result arg-handler)
                   (leave (_ "~A: unrecognized option~%") name))
-                (lambda (arg result)
-                  (leave (_ "~A: extraneous argument~%") arg))
-                %default-options))
+                (lambda (arg result arg-handler)
+                  (if arg-handler
+                      (arg-handler arg result)
+                      (leave (_ "~A: extraneous argument~%") arg)))
+                %default-options
+                #f))
 
   (define (guile-missing?)
     ;; Return #t if %GUILE-FOR-BUILD is not available yet.

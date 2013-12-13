@@ -501,6 +501,13 @@ the transaction.  Upon completion, a new profile is created, but
 previous generations of the profile remain available, should the user
 want to roll back.
 
+For example, to remove @code{lua} and install @code{guile} and
+@code{guile-cairo} in a single transaction:
+
+@example
+guix package -r lua -i guile guile-cairo
+@end example
+
 For each user, a symlink to the user's default profile is automatically
 created in @file{$HOME/.guix-profile}.  This symlink always points to the
 current generation of the user's default profile.  Thus, users can add
@@ -522,11 +529,11 @@ The @var{options} can be among the following:
 
 @table @code
 
-@item --install=@var{package}
-@itemx -i @var{package}
-Install @var{package}.
+@item --install=@var{package} @dots{}
+@itemx -i @var{package} @dots{}
+Install the specified @var{package}s.
 
-@var{package} may specify either a simple package name, such as
+Each @var{package} may specify either a simple package name, such as
 @code{guile}, or a package name followed by a hyphen and version number,
 such as @code{guile-1.8.8}.  If no version number is specified, the
 newest available version will be selected.  In addition, @var{package}
@@ -568,19 +575,20 @@ Note that this option installs the first output of the specified
 package, which may be insufficient when needing a specific output of a
 multiple-output package.
 
-@item --remove=@var{package}
-@itemx -r @var{package}
-Remove @var{package}.
+@item --remove=@var{package} @dots{}
+@itemx -r @var{package} @dots{}
+Remove the specified @var{package}s.
 
-As for @code{--install}, @var{package} may specify a version number
+As for @code{--install}, each @var{package} may specify a version number
 and/or output name in addition to the package name.  For instance,
 @code{-r glibc:debug} would remove the @code{debug} output of
 @code{glibc}.
 
-@item --upgrade[=@var{regexp}]
-@itemx -u [@var{regexp}]
-Upgrade all the installed packages.  When @var{regexp} is specified, upgrade
-only installed packages whose name matches @var{regexp}.
+@item --upgrade[=@var{regexp} @dots{}]
+@itemx -u [@var{regexp} @dots{}]
+Upgrade all the installed packages.  If one or more @var{regexp}s are
+specified, upgrade only installed packages whose name matches a
+@var{regexp}.
 
 Note that this upgrades package to the latest version of packages found
 in the distribution currently installed.  To update your distribution,
