@@ -21,6 +21,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages))
 
 (define-public idutils
@@ -37,9 +38,7 @@
              (patches (list
                        (search-patch "diffutils-gets-undeclared.patch")))))
     (build-system gnu-build-system)
-    (inputs `(;; TODO: Add Emacs as an input for byte-compilation.
-              ;; ("emacs" ,emacs)
-              ))
+    (native-inputs `(("emacs" ,emacs)))
     (home-page "http://www.gnu.org/software/idutils/")
     (synopsis "Identifier database utilities")
     (description
