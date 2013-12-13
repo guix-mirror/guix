@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,11 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages libevent)
+  #:use-module (gnu packages libjpeg)
+  #:use-module (gnu packages libpng)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages yasm)
@@ -48,25 +54,55 @@
        (base32
         "1vxzjwmhad6yxx4sk9zvapjgv5salcv10id061q0991ii3dycy9a"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
+       ("bzip2" ,bzip2)
        ("dbus" ,dbus)
        ("dbus-glib" ,dbus-glib)
        ("glib" ,glib)
        ("gstreamer" ,gstreamer-0.10)
        ("gst-plugins-base" ,gst-plugins-base-0.10)
        ("gtk+" ,gtk+-2)
+       ("libevent" ,libevent)
+       ;; ("libpng" ,libpng)
+       ;; ("libjpeg" ,libjpeg)
        ("libxt" ,libxt)
+       ("libffi" ,libffi)
        ("mesa" ,mesa)
        ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
        ("python" ,python-2) ; Python 3 not supported
        ("python2-pysqlite" ,python2-pysqlite)
        ("unzip" ,unzip)
        ("yasm" ,yasm)
-       ("zip" ,zip)))
+       ("zip" ,zip)
+       ("zlib" ,zlib)))
     (arguments
      `(#:tests? #f ; no check target
+
+       #:configure-flags '(;; Building with debugging symbols takes ~5GiB, so
+                           ;; disable it.
+                           "--disable-debug"
+                           "--disable-debug-symbols"
+
+                           "--disable-webrtc"     ; webrtc fails to build
+
+                           "--with-system-zlib"
+                           "--with-system-bz2"    ; FIXME: not used
+                           "--with-system-libevent"
+
+                           ;; TODO: Currently fails with "--with-system-png
+                           ;; won't work because the system's libpng doesn't
+                           ;; have APNG support".
+                           ;; "--with-system-png"
+
+                           ;; TODO: Currently fails with "Insufficient JPEG
+                           ;; library version for --with-system-jpeg".
+                           ;; "--with-system-jpeg"
+
+                           "--enable-system-ffi")
+
        #:phases
          (alist-cons-before
           'patch-source-shebangs 'sanitise
@@ -84,9 +120,9 @@
             (let ((out (assoc-ref outputs "out")))
               (setenv "SHELL" (which "bash"))
               (setenv "CONFIG_SHELL" (which "bash"))
-              (zero? (system* "./configure"
-                              (string-append "--prefix=" out)
-                              "--disable-webrtc")))) ; webrtc creates an error
+              (zero? (apply system* "./configure"
+                            (string-append "--prefix=" out)
+                            configure-flags))))
           %standard-phases))))
     (home-page "http://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
