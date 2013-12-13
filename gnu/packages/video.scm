@@ -21,7 +21,6 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
@@ -42,9 +41,7 @@
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1qnspbpwa6cflsb6mkm84ay4nfx60ism6d7lgvnasidck9dmxydy"))
-             ;; from upstream, drop with next release
-             (patches (list (search-patch "ffmpeg-check.patch")))))
+               "1qnspbpwa6cflsb6mkm84ay4nfx60ism6d7lgvnasidck9dmxydy"))))
     (build-system gnu-build-system)
     (inputs
      `(("bc" ,bc)
@@ -60,7 +57,8 @@
        ("yasm" ,yasm)
        ("zlib", zlib)))
     (arguments
-     `(#:phases
+     `(#:test-target "fate"
+       #:phases
          (alist-replace
           'configure
           ;; configure does not work followed by "SHELL=..." and
