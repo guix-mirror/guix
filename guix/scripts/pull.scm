@@ -59,29 +59,49 @@ files."
              (gcrypt  (assoc-ref %build-inputs "gcrypt"))
              (tarball (assoc-ref %build-inputs "tarball")))
 
-         (define* (compile-file* file #:key output-file (opts '()))
-           ;; Like 'compile-file', but in a separate process, to work around
-           ;; <http://bugs.gnu.org/15602> (FIXME).  This ensures correctness,
-           ;; but is overly conservative and very slow.  The solution
-           ;; initially implemented (and described in the bug above) was
-           ;; slightly faster but consumed memory proportional to the number
-           ;; of modules, which quickly became unacceptable.
+         (define (call-with-process thunk)
+           ;; Run THUNK in a separate process that will return 0 if THUNK
+           ;; terminates normally, and 1 if an exception is raised.
            (match (primitive-fork)
              (0
               (catch #t
                 (lambda ()
-                  (compile-file file
-                                #:output-file output-file
-                                #:opts opts)
+                  (thunk)
                   (primitive-exit 0))
                 (lambda (key . args)
                   (print-exception (current-error-port) #f key args)
                   (primitive-exit 1))))
              (pid
-              (match (waitpid pid)
-                ((_ . status)
-                 (unless (zero? (status:exit-val status))
-                   (error "failed to compile file" file status)))))))
+              #t)))
+
+         (define (p-for-each proc lst)
+           ;; Invoke PROC for each element of LST in a separate process.
+           ;; Raise an error if one of the processes exit with non-zero.
+           (define (wait-for-one-process)
+             (match (waitpid WAIT_ANY)
+               ((_ . status)
+                (unless (zero? (status:exit-val status))
+                  (error "process failed" proc status)))))
+
+           (define max-processes
+             (current-processor-count))
+
+           (let loop ((lst   lst)
+                      (running 0))
+             (match lst
+               (()
+                (or (zero? running)
+                    (begin
+                      (wait-for-one-process)
+                      (loop lst (- running 1)))))
+               ((head . tail)
+                (if (< running max-processes)
+                    (begin
+                      (call-with-process (cut proc head))
+                      (loop tail (+ running 1)))
+                    (begin
+                      (wait-for-one-process)
+                      (loop lst (- running 1))))))))
 
          (setenv "PATH" (string-append tar "/bin:" gzip "/bin"))
 
@@ -113,19 +133,24 @@ files."
          (set! %load-path (cons out %load-path))
          (set! %load-compiled-path (cons out %load-compiled-path))
 
-         ;; Compile the .scm files.
-         (for-each (lambda (file)
-                     (when (string-suffix? ".scm" file)
+         ;; Compile the .scm files.  Do that in independent processes, à la
+         ;; 'make -j', to work around <http://bugs.gnu.org/15602> (FIXME).
+         ;; This ensures correctness, but is overly conservative and slow.
+         ;; The solution initially implemented (and described in the bug
+         ;; above) was slightly faster but consumed memory proportional to the
+         ;; number of modules, which quickly became unacceptable.
+         (p-for-each (lambda (file)
                        (let ((go (string-append (string-drop-right file 4)
                                                 ".go")))
                          (format (current-error-port)
                                  "compiling '~a'...~%" file)
-                         (compile-file* file
-                                        #:output-file go
-                                        #:opts
-                                        %auto-compilation-options))))
+                         (compile-file file
+                                       #:output-file go
+                                       #:opts
+                                       %auto-compilation-options)))
 
-                   (find-files out "\\.scm"))
+                     (filter (cut string-suffix? ".scm" <>)
+                             (find-files out "\\.scm")))
 
          ;; Remove the "fake" (guix config).
          (delete-file (string-append out "/guix/config.scm"))
