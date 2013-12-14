@@ -20,6 +20,7 @@
   #:use-module ((guix licenses) #:select (lgpl2.1 x11-style))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
@@ -66,17 +67,17 @@ X11 (yet).")
 (define-public qt
   (package
     (name "qt")
-    (version "5.1.1")
+    (version "5.2.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.qt-project.org/official_releases/qt/"
                                  (string-copy version 0 (string-rindex version #\.))
                                  "/" version
                                  "/single/qt-everywhere-opensource-src-"
-                                 version ".tar.gz"))
+                                 version ".tar.xz"))
              (sha256
               (base32
-               "1xl6n4ai0yfknaiawgyr0cyixk0d2j4262k13mmyj993nlnp81ac"))))
+               "0cch2mjk33x1511sqvvbfcxixpj64cfhq7kgszd422qzl3x2m8q0"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)))
@@ -88,9 +89,7 @@ X11 (yet).")
        ("freetype" ,freetype)
        ("glib" ,glib)
        ("icu4c" ,icu4c)
-       ;; FIXME: Switch to current libjpeg with qt 5.1.2, see
-       ;; https://qt.gitorious.org/qt/qt/commit/2a9ea11f4dea51f9e75036aab8e7a23f0eb4bd1f/diffs
-       ("libjpeg" ,libjpeg-8)
+       ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
        ("libx11" ,libx11)
        ("libxi" ,libxi)
@@ -161,6 +160,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
               (base32
                "0f51dbgn1dcck8pqimls2qyf1pfmsmyknh767cvw87c3d218ywpb"))
              (patches (list (search-patch "qt4-tests.patch")))))
+    (inputs `(,@(alist-delete "libjpeg" (package-inputs qt))
+              ("libjepg" ,libjpeg-8)))
     (arguments
      `(#:phases
          (alist-replace
