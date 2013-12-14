@@ -75,12 +75,16 @@ things the parser might find in the XML document (like start tags).")
          'install
          (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
           (let ((install (assoc-ref %standard-phases 'install))
-                (glibc (assoc-ref inputs "libc"))
+                (glibc (assoc-ref inputs ,(if (%current-target-system)
+                                              "cross-libc" "libc")))
                 (out (assoc-ref outputs "out")))
             (apply install args)
             (chdir "python")
-            (substitute* "setup.py" (("/opt/include") (string-append glibc "/include")))
-            (system* "python" "setup.py" "install" (string-append "--prefix=" out))))
+            (substitute* "setup.py"
+              (("/opt/include")
+               (string-append glibc "/include")))
+            (system* "python" "setup.py" "install"
+                     (string-append "--prefix=" out))))
         %standard-phases)))
     (description
      "Libxml2 is the XML C parser and toolkit developed for the Gnome project
