@@ -150,7 +150,16 @@ files."
                                        %auto-compilation-options)))
 
                      (filter (cut string-suffix? ".scm" <>)
-                             (find-files out "\\.scm")))
+
+                             ;; Build guix/*.scm before gnu/*.scm to speed
+                             ;; things up.
+                             (sort (find-files out "\\.scm")
+                                   (let ((guix (string-append out "/guix"))
+                                         (gnu  (string-append out "/gnu")))
+                                     (lambda (a b)
+                                       (or (and (string-prefix? guix a)
+                                                (string-prefix? gnu b))
+                                           (string<? a b)))))))
 
          ;; Remove the "fake" (guix config).
          (delete-file (string-append out "/guix/config.scm"))
