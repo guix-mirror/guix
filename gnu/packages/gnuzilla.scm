@@ -66,8 +66,6 @@
        ("gst-plugins-base" ,gst-plugins-base-0.10)
        ("gtk+" ,gtk+-2)
        ("libevent" ,libevent)
-       ;; ("libpng" ,libpng)
-       ;; ("libjpeg" ,libjpeg)
        ("libxt" ,libxt)
        ("libffi" ,libffi)
        ("mesa" ,mesa)
@@ -92,13 +90,24 @@
                            "--with-system-bz2"    ; FIXME: not used
                            "--with-system-libevent"
 
-                           ;; TODO: Currently fails with "--with-system-png
-                           ;; won't work because the system's libpng doesn't
-                           ;; have APNG support".
+                           ;; Fails with "--with-system-png won't work because
+                           ;; the system's libpng doesn't have APNG support".
+                           ;; According to
+                           ;; http://sourceforge.net/projects/libpng-apng/ ,
+                           ;; "the Animated Portable Network Graphics (APNG)
+                           ;; is an unofficial extension of the Portable
+                           ;; Network Graphics (PNG) format";
+                           ;; we probably do not wish to support it.
                            ;; "--with-system-png"
 
-                           ;; TODO: Currently fails with "Insufficient JPEG
-                           ;; library version for --with-system-jpeg".
+                           ;; Fails with "libjpeg-turbo JCS_EXTENSIONS
+                           ;; required".
+                           ;; According to
+                           ;; http://sourceforge.net/projects/libjpeg-turbo/ ,
+                           ;; "libjpeg-turbo is a derivative of libjpeg that
+                           ;; uses MMX, SSE, SSE2, and NEON SIMD instructions
+                           ;; to accelerate baseline JPEG compression/
+                           ;; decompression", so we had better not use it
                            ;; "--with-system-jpeg"
 
                            "--enable-system-ffi")
