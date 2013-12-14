@@ -520,8 +520,8 @@ with the Linux kernel.")
        #:phases
        (alist-replace
         'unpack
-        (lambda* (#:key inputs #:allow-other-keys)
-          (and (zero? (system* "tar" "xvf" (assoc-ref inputs "source")))
+        (lambda* (#:key source inputs #:allow-other-keys)
+          (and (zero? (system* "tar" "xvf" source))
                (zero? (system* "tar" "xvf" (assoc-ref inputs "tzcode")))))
         (alist-cons-after
          'install 'post-install
