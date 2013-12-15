@@ -148,7 +148,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/package-management.scm		\
   gnu/packages/parallel.scm			\
   gnu/packages/parted.scm			\
-  gnu/packages/patchelf.scm			\
   gnu/packages/pcre.scm				\
   gnu/packages/pdf.scm				\
   gnu/packages/pem.scm				\

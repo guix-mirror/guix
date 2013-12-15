@@ -29,7 +29,7 @@
   #:use-module (gnu packages icu4c)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages openssl)
-  #:use-module (gnu packages patchelf)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages sqlite)
   #:use-module (guix packages)
   #:use-module (guix download)

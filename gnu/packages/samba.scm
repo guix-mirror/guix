@@ -27,7 +27,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages libunwind)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages patchelf)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python))
 

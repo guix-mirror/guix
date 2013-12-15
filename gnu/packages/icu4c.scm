@@ -18,7 +18,7 @@
 
 (define-module (gnu packages icu4c)
   #:use-module (gnu packages)
-  #:use-module (gnu packages patchelf)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages perl)
   #:use-module (guix licenses)
   #:use-module (guix packages)

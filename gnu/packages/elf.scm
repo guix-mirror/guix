@@ -20,7 +20,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module ((guix licenses) #:select (lgpl3+))
+  #:use-module ((guix licenses) #:select (gpl3+ lgpl3+ lgpl2.0+))
   #:use-module (gnu packages m4)
   #:use-module (gnu packages compression))
 
@@ -51,3 +51,52 @@
 
     ;; Libraries are dual-licensed LGPLv3.0+ | GPLv2, and programs are GPLv3+.
     (license lgpl3+)))
+
+(define-public libelf
+  (package
+    (name "libelf")
+    (version "0.8.13")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.mr511.de/software/libelf-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0vf7s9dwk2xkmhb79aigqm0x0yfbw1j0b9ksm51207qwr179n6jr"))))
+    (build-system gnu-build-system)
+    (arguments '(#:phases (alist-replace
+                           'configure
+                           (lambda* (#:key outputs #:allow-other-keys)
+                             ;; This old `configure' script doesn't support
+                             ;; variables passed as arguments.
+                             (let ((out (assoc-ref outputs "out")))
+                               (setenv "CONFIG_SHELL" (which "bash"))
+                               (zero?
+                                (system* "./configure"
+                                         (string-append "--prefix=" out)))))
+                           %standard-phases)))
+    (home-page "http://www.mr511.de/software/english.html")
+    (synopsis "An ELF object file access library")
+    (description "libelf is a C library to access ELF object files.")
+    (license lgpl2.0+)))
+
+(define-public patchelf
+  (package
+    (name "patchelf")
+    (version "0.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://nixos.org/releases/patchelf/patchelf-"
+                   version
+                   "/patchelf-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "00bw29vdsscsili65wcb5ay0gvg1w0ljd00sb5xc6br8bylpyzpw"))))
+    (build-system gnu-build-system)
+    (home-page "http://nixos.org/patchelf.html")
+    (synopsis "Modify the dynamic linker and RPATH of ELF executables")
+    (description
+     "PatchELF allows the ELF \"interpreter\" and RPATH of an ELF binary to be
+changed.")
+    (license gpl3+)))

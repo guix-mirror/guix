@@ -26,7 +26,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages patchelf)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages which)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages avahi)

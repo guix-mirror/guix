@@ -23,7 +23,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages openssl)
-  #:use-module (gnu packages patchelf)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
