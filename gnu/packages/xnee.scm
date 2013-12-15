@@ -38,7 +38,6 @@
     (build-system gnu-build-system)
     (inputs
      `(("recordproto" ,recordproto)
-       ("pkg-config" ,pkg-config)
        ("inputproto" ,inputproto)
        ("libxi" ,libxi)
        ("libxtst" ,libxtst)
@@ -46,6 +45,8 @@
        ("libxext" ,libxext)
        ("xproto" ,xproto)
        ("libx11" ,libx11)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.gnu.org/software/xnee/")
     (synopsis "Record, replay and distribute user actions under X11")
     (description

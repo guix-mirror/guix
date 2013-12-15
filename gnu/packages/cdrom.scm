@@ -78,10 +78,11 @@ caching facility provided by the library.")
                "0kpp6gr5sjr30pb9klncc37fhkw0wi6r41d2fmvmw17cbj176zmg"))))
     (build-system gnu-build-system)
     (inputs
+       `(("ncurses" ,ncurses)
+         ("libcddb" ,libcddb)))
+    (native-inputs
      `(("help2man" ,help2man)
-       ("ncurses" ,ncurses)
-       ("pkg-config" ,pkg-config)
-       ("libcddb" ,libcddb)))
+       ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnu.org/software/libcdio/")
     (synopsis "CD Input and Control library")
     (description
@@ -182,8 +183,9 @@ reconstruction capability.")
                "0pm039a78h7m9vvjmmjfkl05ii6qdmfhvbypxjbc7j5w82y66is4"))))
     (build-system gnu-build-system)
     (inputs
+     `(("gtk+" ,gtk+-2)))
+    (native-inputs
      `(("gettext" ,gnu-gettext)
-       ("gtk+" ,gtk+-2)
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (arguments

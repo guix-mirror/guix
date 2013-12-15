@@ -79,8 +79,9 @@
       ("libtiff" ,libtiff)
       ("libtool" ,libtool)
       ("libvorbis" ,libvorbis)
-      ("pkg-config" ,pkg-config)
       ("zlib" ,zlib)))
+   (native-inputs
+      `(("pkg-config" ,pkg-config)))
    (synopsis "Library to extract meta-data from media files")
    (description
     "GNU libextractor is a library for extracting metadata from files.  It

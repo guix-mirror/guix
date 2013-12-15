@@ -104,12 +104,13 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
                      "1rd8pap455wzkx19i0sy3cqap524b6fwcjvqynxp6lhm01di4bd6"))))
    (build-system gnu-build-system)
    (inputs
-    `(("gettext" ,gnu-gettext)
-      ("libxml2" ,libxml2)
+    `(("libxml2" ,libxml2)
       ("openssl" ,openssl)
-      ("pkg-config" ,pkg-config)
       ("vpnc" ,vpnc)
       ("zlib" ,zlib)))
+   (native-inputs
+    `(("gettext" ,gnu-gettext)
+      ("pkg-config" ,pkg-config)))
    (arguments
     `(#:phases
       (alist-replace

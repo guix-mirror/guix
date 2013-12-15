@@ -60,13 +60,14 @@
                                (("@PERL@") (which "perl"))))
                            %standard-phases)))
     (inputs
-     `(("gettext" ,gnu-gettext)
-       ("libgc" ,libgc)
+     `(("libgc" ,libgc)
        ("ncurses" ,ncurses)
        ("openssl" ,openssl)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)))
     (home-page "http://w3m.sourceforge.net/")
     (synopsis "w3m, a text-mode web browser")
     (description

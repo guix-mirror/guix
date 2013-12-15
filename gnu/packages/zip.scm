@@ -118,12 +118,13 @@ UnZip recreates the stored directory structure by default.")
        (base32
         "0nsjqxw017hiyp524p9316283jlf5piixc1091gkimhz38zh7f51"))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)     ; for the documentation
-              ("pkg-config" ,pkg-config)
-              ("python" ,python-2) ; for the documentation; Python 3 not supported,
-                ; http://forums.gentoo.org/viewtopic-t-863161-start-0.html
-              ("zip" ,zip) ; to create test files
-              ("zlib" ,zlib)))
+    (inputs
+     `(("zlib" ,zlib)))
+    (native-inputs `(("perl" ,perl)     ; for the documentation
+                     ("pkg-config" ,pkg-config)
+                     ("python" ,python-2) ; for the documentation; Python 3 not supported,
+                                        ; http://forums.gentoo.org/viewtopic-t-863161-start-0.html
+                     ("zip" ,zip))) ; to create test files
     (arguments
      `(#:parallel-tests? #f)) ; since test files are created on the fly
     (home-page "http://zziplib.sourceforge.net/")

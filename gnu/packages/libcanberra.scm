@@ -47,8 +47,9 @@
        ("gstreamer" ,gstreamer)
        ("gtk+" ,gtk+)
        ("libtool" ,libtool)
-       ("libvorbis" ,libvorbis)
-       ("pkg-config" ,pkg-config)))
+       ("libvorbis" ,libvorbis)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://0pointer.de/lennart/projects/libcanberra/")
     (synopsis
      "Implementation of the XDG Sound Theme and Name Specifications")

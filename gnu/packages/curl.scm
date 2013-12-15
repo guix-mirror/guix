@@ -45,15 +45,16 @@
               "13bhfs41yf60ys2hrikqxjwfzaj0gm91kqzsgc5fr4grzmpm38nx"))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
-             ;; to enable the --manual option and make test 1026 pass
-             ("groff" ,groff)
              ("gss" ,gss)
              ("libidn" ,libidn)
              ("libssh2" ,libssh2)
              ("openldap" ,openldap)
-             ("perl" ,perl)
-             ("pkg-config" ,pkg-config)
              ("zlib" ,zlib)))
+   (native-inputs
+     `(("perl" ,perl)
+       ;; to enable the --manual option and make test 1026 pass
+       ("groff" ,groff)
+       ("pkg-config" ,pkg-config)))
    (arguments
     `(#:configure-flags '("--with-gnutls" "--with-gssapi")))
    (synopsis "curl, command line tool for transferring data with URL syntax")

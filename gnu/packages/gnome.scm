@@ -55,13 +55,14 @@
        ("gstreamer" ,gstreamer)
        ("gst-plugins-base" ,gst-plugins-base)
        ("gtk+" ,gtk+)
-       ("intltool" ,intltool)
        ("itstool" ,itstool)
        ("libcanberra" ,libcanberra)
        ("libice" ,libice)
        ("libnotify" ,libnotify)
        ("libsm" ,libsm)
-       ("libxml2" ,libxml2)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/brasero/")
     (synopsis "CD/DVD burning tool for Gnome")
@@ -83,7 +84,7 @@ features to enable users to create their discs easily and quickly.")
        (base32
         "19n4x25ndzngaciiyd8dd6s2mf9gv6nv3wv27ggns2smm7zkj1nb"))))
     (build-system gnu-build-system)
-    (inputs
+    (native-inputs
      `(("intltool" ,intltool)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
@@ -114,12 +115,12 @@ and keep up to date translations of documentation.")
               (base32
                "0c4qrjpmv1hqga3xv6wsq2z10x2n78qgw7q3k3s01y1pggxkgjkd"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("intltool" ,intltool)))
     (inputs
-     `(("pkg-config" ,pkg-config)
-       ("libgcrypt" ,libgcrypt)
+     `(("libgcrypt" ,libgcrypt)
        ("dbus" ,dbus)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
     (propagated-inputs
      ;; Referred to in .h files and .pc.
      `(("glib" ,glib)))
@@ -177,7 +178,6 @@ and keep up to date translations of documentation.")
        ("gtk+" ,gtk+)
        ("glib" ,glib)
        ("libxml2" ,libxml2)
-       ("pkg-config" ,pkg-config)
        ("libsm" ,libsm)
        ("libice" ,libice)
        ("shared-mime-info" ,shared-mime-info)
@@ -185,7 +185,8 @@ and keep up to date translations of documentation.")
        ;; For tests.
        ("dogtail" ,python2-dogtail)))
     (native-inputs
-     `(("intltool" ,intltool)))
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (home-page
      "http://www.gnome.org/projects/evince/")
     (synopsis "GNOME's document viewer")
@@ -211,8 +212,9 @@ on the GNOME Desktop with a single simple application.")
         "1km8qxwrzvravmg8j680qv64bwnwbdgrmy8bqmhs0dgxn2b1as6a"))))
     (build-system gnu-build-system)
     (inputs
-     `(("glib" ,glib)
-       ("intltool" ,intltool)
+     `(("glib" ,glib)))
+    (native-inputs
+     `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "https://launchpad.net/gsettings-desktop-schemas")
     (synopsis
@@ -263,9 +265,10 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+)
-       ("icon-naming-utils" ,icon-naming-utils)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
+       ("icon-naming-utils" ,icon-naming-utils)))
+    (native-inputs
+       `(("intltool" ,intltool)
+         ("pkg-config" ,pkg-config)))
     (home-page "http://art.gnome.org/")
     (synopsis
      "GNOME icon theme")
@@ -290,10 +293,10 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
      '(#:parallel-build? #f))
     (inputs
      `(("glib" ,glib)
-       ("libxml2" ,libxml2)
-       ("pkg-config" ,pkg-config)))
+       ("libxml2" ,libxml2)))
     (native-inputs
-     `(("intltool" ,intltool)))
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (home-page "http://freedesktop.org/wiki/Software/shared-mime-info")
     (synopsis "Database of common MIME types")
     (description
@@ -344,8 +347,9 @@ database is translated at Transifex.")
      `(("gdk-pixbuf" ,gdk-pixbuf)
        ("glib" ,glib)
        ("gtk+" ,gtk+)
-       ("libpng" ,libpng)
-       ("pkg-config" ,pkg-config)))
+       ("libpng" ,libpng)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)))
     (home-page "https://developer-next.gnome.org/libnotify/")
     (synopsis
      "GNOME desktop notification library")

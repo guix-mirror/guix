@@ -123,16 +123,16 @@ shared NFS home directories.")
               "doc"))                      ; 20 MiB of GTK-Doc reference
    (inputs
     `(("coreutils" ,coreutils)
-      ("gettext" ,gnu-gettext)
       ("libffi" ,libffi)
+      ("zlib" ,zlib)
+      ("tzdata" ,tzdata)))     ; for tests/gdatetime.c
+   (native-inputs
+     `(("gettext" ,gnu-gettext)
+      ("dbus" ,dbus)                              ; for GDBus tests
       ("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)
-      ("zlib" ,zlib)
       ("perl" ,perl)                              ; needed by GIO tests
-      ("dbus" ,dbus)                              ; for GDBus tests
-      ("bash" ,bash)
-      ("tzdata" ,tzdata)                          ; for tests/gdatetime.c
-      ))
+      ("bash" ,bash)))
    (arguments
     '(#:phases (alist-cons-before
                 'build 'pre-build

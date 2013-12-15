@@ -68,9 +68,10 @@
      `(("automoc4" ,automoc4)
        ("glib" ,glib)
        ("libx11" ,libx11)
-       ("pkg-config" ,pkg-config)
        ("pulseaudio" ,pulseaudio)
        ("qt" ,qt-4)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (arguments
      `(#:tests? #f)) ; no test target
     (home-page "http://phonon.kde.org/")

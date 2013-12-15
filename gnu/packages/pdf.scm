@@ -59,7 +59,6 @@
              ("libjpeg-8" ,libjpeg-8)
              ("libpng" ,libpng)
              ("libtiff" ,libtiff)
-             ("pkg-config" ,pkg-config)
              ("zlib" ,zlib)
 
              ;; To build poppler-glib (as needed by Evince), we need Cairo and
@@ -68,6 +67,8 @@
                          (inputs (alist-delete "poppler"
                                                (package-inputs cairo)))))
              ("glib" ,glib)))
+   (native-inputs
+      `(("pkg-config" ,pkg-config)))
    (arguments
     `(#:tests? #f ; no test data provided with the tarball
       #:configure-flags

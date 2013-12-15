@@ -49,16 +49,17 @@
             (sha256 (base32
                      "10nwvxc85kr6vhlhhahagy7s9848bbixl54b0p4ppim4g0dl10jz"))))
    (build-system gnu-build-system)
-   (inputs `(("flex" ,flex)
-             ("ghostscript" ,ghostscript)
+   (inputs `(("ghostscript" ,ghostscript)
              ("libjpeg" ,libjpeg)
              ("libpng" ,libpng)
              ("libtiff" ,libtiff)
              ("libxml2" ,libxml2)
-             ("perl" ,perl)
-             ("pkg-config" ,pkg-config)
-             ("python" ,python-wrapper)
              ("zlib" ,zlib)))
+   (native-inputs
+     `(("flex" ,flex)
+       ("perl" ,perl)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-wrapper)))
    (arguments
     `(#:phases
       (alist-replace

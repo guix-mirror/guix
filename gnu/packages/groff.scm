@@ -39,9 +39,9 @@
             (sha256 (base32
                      "0xi07nhj5vdgax37rj25mwxzdmsz1ifx50hjgc6hqbkpqkd6821q"))))
    (build-system gnu-build-system)
-   (inputs `(("bison" ,bison)
-             ("ghostscript" ,ghostscript)
-             ("netpbm" ,netpbm)
+   (inputs `(("ghostscript" ,ghostscript)
+             ("netpbm" ,netpbm)))
+   (native-inputs `(("bison" ,bison)
              ("perl" ,perl)
              ("psutils" ,psutils)
              ("texinfo" ,texinfo)))

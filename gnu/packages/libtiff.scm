@@ -37,10 +37,10 @@
             (sha256 (base32
                      "0wj8d1iwk9vnpax2h29xqc2hwknxg3s0ay2d5pxkg59ihbifn6pa"))))
    (build-system gnu-build-system)
-   (inputs `(("file" ,file)
-             ("zlib" ,zlib)
+   (inputs `(("zlib" ,zlib)
              ("libjpeg-8" ,libjpeg-8)))
              ;; currently does not compile with libjpeg version 9
+   (native-inputs `(("file" ,file)))
    (arguments
     `(#:configure-flags
       (list (string-append "--with-jpeg-include-dir="

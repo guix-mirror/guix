@@ -51,7 +51,7 @@
               (base32
                "13mk335r4dhi9qglzbp46ina1wz4qgcp8r7s06iq7j50pf0kb5ww"))))
     (build-system gnu-build-system)
-    (inputs
+    (native-inputs
      `(("bison" ,bison)))
     (home-page "http://xkbcommon.org/")
     (synopsis "library to handle keyboard descriptions")
@@ -97,8 +97,6 @@ X11 (yet).")
        ("libxrender" ,libxrender)
        ("mysql" ,mysql)
        ("openssl" ,openssl)
-       ("perl" ,perl)
-       ("pkg-config" ,pkg-config)
        ("pulseaudio" ,pulseaudio)
        ("python-wrapper" ,python-wrapper)
        ("xcb-util" ,xcb-util)
@@ -107,6 +105,9 @@ X11 (yet).")
        ("xcb-util-renderutil" ,xcb-util-renderutil)
        ("xcb-util-wm" ,xcb-util-wm)
        ("zlib" ,zlib)))
+    (native-inputs
+      `(("perl" ,perl)
+        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:phases
          (alist-replace

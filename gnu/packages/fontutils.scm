@@ -76,8 +76,9 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
    (build-system gnu-build-system)
    (inputs `(("expat" ,expat)
              ("freetype" ,freetype)
-             ("gs-fonts" ,gs-fonts)
-             ("pkg-config" ,pkg-config)))
+             ("gs-fonts" ,gs-fonts)))
+   (native-inputs
+      `(("pkg-config" ,pkg-config)))
    (arguments
      `(#:configure-flags
                ;; point to user profile instead of /usr/share/fonts in /etc/fonts.conf

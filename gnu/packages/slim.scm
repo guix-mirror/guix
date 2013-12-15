@@ -50,11 +50,12 @@
 	      ("libxrender" ,libxrender)
 	      ("freetype" ,freetype)
 	      ("fontconfig" ,fontconfig)
-	      ("pkg-config" ,pkg-config)
-	      ("libx11" ,libx11)
+              ("libx11" ,libx11)
 	      ("libxft" ,libxft)
 	      ("libxmu" ,libxmu)
 	      ("xauth" ,xauth)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (arguments
      '(#:phases (alist-cons-before
 		 'configure 'set-new-etc-location

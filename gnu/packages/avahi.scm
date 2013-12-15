@@ -56,10 +56,11 @@
      `(("expat" ,expat)
        ("glib" ,glib)
        ("dbus" ,dbus)
-       ("libdaemon" ,libdaemon)
-       ("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("gdbm" ,gdbm)))
+       ("gdbm" ,gdbm)
+       ("libdaemon" ,libdaemon)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (synopsis "Avahi, an mDNS/DNS-SD implementation")
     (description
      "Avahi is a system which facilitates service discovery on a local

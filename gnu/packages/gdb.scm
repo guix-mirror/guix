@@ -57,8 +57,9 @@
        ("readline" ,readline)
        ("ncurses" ,ncurses)
        ("python" ,python-wrapper)
-       ("texinfo" ,texinfo)
        ("dejagnu" ,dejagnu)))
+    (native-inputs
+      `(("texinfo" ,texinfo)))
     (home-page "http://www.gnu.org/software/gdb/")
     (synopsis "The GNU debugger")
     (description

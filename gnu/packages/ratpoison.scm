@@ -40,9 +40,7 @@
                "0v4mh8d3vsh5xbbycfdl3g8zfygi1rkslh1x7k5hi1d05bfq3cdr"))))
     (build-system gnu-build-system)
     (inputs
-     `(("perl" ,perl)
-       ("pkg-config" ,pkg-config)
-       ("libXi" ,libxi)
+     `(("libXi" ,libxi)
        ("readline" ,readline)
        ("xextproto" ,xextproto)
        ("libXtst" ,libxtst)
@@ -53,6 +51,9 @@
        ("libXt" ,libxt)
        ("inputproto" ,inputproto)
        ("libX11" ,libx11)))
+    (native-inputs
+      `(("perl" ,perl)
+        ("pkg-config" ,pkg-config)))
     (home-page "http://www.nongnu.org/ratpoison/")
     (synopsis "A simple mouse-free tiling window manager")
     (description

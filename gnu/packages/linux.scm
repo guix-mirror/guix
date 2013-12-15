@@ -235,7 +235,7 @@ It has been modified to remove all non-free binary blobs.")
        (base32
         "1hlz2kqvbjisvwyicdincq7nz897b9rrafyzccwzqiqg53b8gf5s"))))
     (build-system gnu-build-system)
-    (inputs
+    (native-inputs
      `(("flex" ,flex)
 
        ;; TODO: optional dependencies
@@ -314,8 +314,9 @@ providing the system administrator with some help in common tasks.")
                        (("@PERL@") "/bin/perl"))))
                  %standard-phases)))
     (inputs `(("zlib" ,guix:zlib)
-              ("ncurses" ,ncurses)
-              ("perl" ,perl)))
+              ("ncurses" ,ncurses)))
+    (native-inputs
+     `(("perl" ,perl)))
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
     (description
@@ -395,7 +396,9 @@ slabtop, and skill.")
         "03pd57vv8c6x0hgjqcbrxnzi14h8hcghmapg89p8k5zpwpkvbdfr"))))
     (build-system gnu-build-system)
     (inputs
-     `(("libusb" ,libusb) ("pkg-config" ,pkg-config)))
+     `(("libusb" ,libusb)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://www.linux-usb.org/")
     (synopsis
      "Tools for working with USB devices, such as lsusb")
@@ -415,8 +418,8 @@ slabtop, and skill.")
               (base32
                "0ibkkvp6kan0hn0d1anq4n2md70j5gcm7mwna515w82xwyr02rfw"))))
     (build-system gnu-build-system)
-    (inputs `(("util-linux" ,util-linux)
-              ("pkg-config" ,pkg-config)))
+    (inputs `(("util-linux" ,util-linux)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (arguments
      '(#:phases (alist-cons-before
                  'configure 'patch-shells
@@ -454,7 +457,7 @@ slabtop, and skill.")
               (base32
                "158iwk0pl2mfw93m1843xb7a2zb8p6lh0qim07rca6f1ff4dk764"))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl)))
+    (native-inputs `(("perl" ,perl)))
     (home-page "http://strace.sourceforge.net/")
     (synopsis "System call tracer for Linux")
     (description
@@ -582,8 +585,9 @@ packet filter.")
                  %standard-phases)))
     (inputs
      `(("iptables" ,iptables)
-       ("db4" ,bdb)
-       ("pkg-config" ,pkg-config)
+       ("db4" ,bdb)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
        ("flex" ,flex)
        ("bison" ,bison)))
     (home-page
@@ -801,10 +805,11 @@ configuration and monitoring interfaces.")
     (inputs
      ;; TODO: Add pciutils.
      `(("zlib" ,guix:zlib)
-       ("pkg-config" ,pkg-config)
        ;; ("pciutils" ,pciutils)
        ("ncurses" ,ncurses)
        ("libnl" ,libnl)))
+    (native-inputs
+       `(("pkg-config" ,pkg-config)))
     (home-page "https://01.org/powertop/")
     (synopsis "Analyze power consumption on Intel-based laptops")
     (description

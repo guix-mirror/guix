@@ -69,13 +69,16 @@
        ("libxt" ,libxt)
        ("libffi" ,libffi)
        ("mesa" ,mesa)
-       ("perl" ,perl)
-       ("python" ,python-2) ; Python 3 not supported
-       ("python2-pysqlite" ,python2-pysqlite)
        ("unzip" ,unzip)
        ("yasm" ,yasm)
        ("zip" ,zip)
        ("zlib" ,zlib)))
+    (native-inputs
+     `(("perl" ,perl)
+       ("python" ,python-2) ; Python 3 not supported
+       ("python2-pysqlite" ,python2-pysqlite)
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2))) ; Python 3 not supported
     (arguments
      `(#:tests? #f ; no check target
 

@@ -53,8 +53,8 @@
              (base32
               "1c2hbg66wfvibsz2ia0ri48yr62751fn950i97c53j3b0fjifsb3"))))
    (build-system gnu-build-system)
-   (inputs `(("glib" ,glib)
-             ("pkg-config" ,pkg-config)))
+   (inputs `(("glib" ,glib)))
+   (native-inputs `(("pkg-config" ,pkg-config)))
    (synopsis "GNOME accessibility toolkit")
    (description
     "ATK provides the set of accessibility interfaces that are implemented
@@ -87,11 +87,12 @@ tools have full access to view and control running applications.")
    (inputs
     `(("ghostscript" ,ghostscript)
       ("libspectre" ,libspectre)
-      ("pkg-config" ,pkg-config)
       ("poppler" ,poppler)
-      ("python" ,python-wrapper)
       ("xextproto" ,xextproto)
       ("zlib" ,zlib)))
+   (native-inputs
+     `(("pkg-config" ,pkg-config)
+      ("python" ,python-wrapper)))
     (arguments
       `(#:tests? #f)) ; see http://lists.gnu.org/archive/html/bug-guix/2013-06/msg00085.html
    (synopsis "2D graphics library")
@@ -127,8 +128,9 @@ affine transformation (scale, rotation, shear, etc.)")
    (build-system gnu-build-system)
    (inputs
     `(("cairo" ,cairo)
-      ("icu4c" ,icu4c)
-      ("pkg-config" ,pkg-config)
+      ("icu4c" ,icu4c)))
+   (native-inputs
+     `(("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)))
    (synopsis "opentype text shaping engine")
    (description
@@ -153,8 +155,9 @@ affine transformation (scale, rotation, shear, etc.)")
     `(("cairo" ,cairo)
       ("harfbuzz" ,harfbuzz)))
    (inputs
-    `(("pkg-config" ,pkg-config)
-      ("zlib" ,zlib)))
+    `(("zlib" ,zlib)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
    (synopsis "GNOME text and font handling library")
    (description
     "Pango is the core text and font handling library used in GNOME
@@ -178,14 +181,14 @@ used throughout the world.")
                 "07hrabhpl6n8ajz10s0d960jdwndxs87szxyn428mpxi8cvpg1f5"))))
     (build-system gnu-build-system)
     (inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)
-       ("gtk" ,gtk+-2)
+     `(("gtk" ,gtk+-2)
        ("libxml2" ,libxml2)
-
        ;; These two are needed only to allow the tests to run successfully.
        ("xorg-server" ,xorg-server)
        ("shared-mime-info" ,shared-mime-info)))
+    (native-inputs
+      `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
     (arguments
      `(#:phases
        ;; Unfortunately, some of the tests in "make check" are highly dependent
@@ -233,8 +236,9 @@ printing and other features typical of a source code editor.")
     `(("glib" ,glib)
       ("libjpeg" ,libjpeg)
       ("libpng" ,libpng)
-      ("libtiff" ,libtiff)
-      ("pkg-config" ,pkg-config)))
+      ("libtiff" ,libtiff)))
+   (native-inputs
+     `(("pkg-config" ,pkg-config)))
    (synopsis "GNOME image loading and manipulation library")
    (description
     "GdkPixbuf is a library for image loading and manipulation developed
@@ -257,10 +261,11 @@ in the GNOME project.")
    (build-system gnu-build-system)
    (inputs `(("dbus" ,dbus)
              ("glib" ,glib)
-             ("intltool" ,intltool)
              ("libxi" ,libxi)
-             ("libxtst" ,libxtst)
-             ("pkg-config" ,pkg-config)))
+             ("libxtst" ,libxtst)))
+   (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
    (arguments
     `(#:tests? #f)) ; FIXME: dbind/dbtest fails; one should disable tests in
                     ; a more fine-grained way.
@@ -287,8 +292,9 @@ is part of the GNOME accessibility project.")
    (inputs `(("atk" ,atk)
              ("at-spi2-core" ,at-spi2-core)
              ("dbus" ,dbus)
-             ("glib" ,glib)
-             ("pkg-config" ,pkg-config)))
+             ("glib" ,glib)))
+   (native-inputs
+     `(("pkg-config" ,pkg-config)))
    (arguments
     `(#:tests? #f)) ; FIXME: droute/droute-test fails; one should disable
                     ; tests in a more fine-grained way.
@@ -316,7 +322,7 @@ is part of the GNOME accessibility project.")
     `(("atk" ,atk)
       ("gdk-pixbuf" ,gdk-pixbuf)
       ("pango" ,pango)))
-   (inputs
+   (native-inputs
     `(("perl" ,perl)
       ("pkg-config" ,pkg-config)
       ("python-wrapper" ,python-wrapper)))
@@ -359,8 +365,9 @@ application suites.")
       ("libxinerama" ,libxinerama)
       ("pango" ,pango)))
    (inputs
-    `(("libxml2" ,libxml2)
-      ("perl" ,perl)
+    `(("libxml2" ,libxml2)))
+   (native-inputs
+     `(("perl" ,perl)
       ("pkg-config" ,pkg-config)
       ("python-wrapper" ,python-wrapper)
       ("xorg-server" ,xorg-server)))
@@ -425,8 +432,9 @@ application suites.")
      `(("guile-lib" ,guile-lib)
        ("expat" ,expat)
        ("cairo" ,cairo)
-       ("pkg-config" ,pkg-config)
        ("guile" ,guile-2.0)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)))
     (home-page "http://www.nongnu.org/guile-cairo/")
     (synopsis "Cairo bindings for GNU Guile")
     (description
@@ -458,7 +466,7 @@ exceptions, macros, and a dynamic programming environment.")
     (arguments
      ;; The examples lack -lcairo.
      '(#:make-flags '("LDFLAGS=-lcairo")))
-    (inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("libsigc++" ,libsigc++)
        ("freetype" ,freetype)
@@ -483,7 +491,7 @@ library.")
               (base32
                "0hcyvv7c5zmivprdam6cp111i6hn2y5jsxzk00m6j9pncbzvp0hf"))))
     (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("cairo" ,cairo)
        ("cairomm" ,cairomm)
@@ -508,7 +516,7 @@ library.")
               (base32
                "06zrf2ymml2dzp53sss0d4ch4dk9v09jm8rglnrmwk4v81mq9gxz"))))
     (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("glibmm" ,glibmm) ("atk" ,atk)))
     (home-page "http://www.gtkmm.org")
@@ -530,7 +538,7 @@ toolkit.")
               (base32
                "0yf8wwv4w02p70nrxsbs0nhm0w4gkn2wggdjygd8vif062anf1rs"))))
     (build-system gnu-build-system)
-    (inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("pangomm" ,pangomm)
        ("cairomm" ,cairomm)

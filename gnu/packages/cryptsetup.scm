@@ -44,9 +44,10 @@
    (inputs
     `(("libgcrypt" ,libgcrypt)
       ("lvm2" ,lvm2)
-      ("popt" ,popt)
-      ("python" ,python-wrapper)
-      ("util-linux" ,util-linux)))
+      ("util-linux" ,util-linux)
+      ("popt" ,popt)))
+   (native-inputs
+      `(("python" ,python-wrapper)))
    (synopsis "hard disk encryption tool")
    (description
     "LUKS (Linux Unified Key Setup)/Cryptsetup provides a standard on-disk

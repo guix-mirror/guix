@@ -78,9 +78,9 @@ HTML and JSON.")
     (build-system cmake-build-system)
     ;; FIXME: Add optional dependencies: Raptor, Redland, odbci, clucene; doxygen
     (inputs
-     `(("pkg-config" ,pkg-config)
-       ("raptor2" ,raptor2)
-       ("qt" ,qt-4)))
+     `(("qt" ,qt-4)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (home-page "http://soprano.sourceforge.net/")
     (synopsis "RDF data library for Qt")
     (description "Soprano (formerly known as QRDF) is a library which

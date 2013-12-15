@@ -168,8 +168,8 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
               (base32
                "0cqf5jkwx6awgd2xc2a0mkpxilzcfmhncdcfg7c9439wgkqxkxjf"))))
     (build-system gnu-build-system)
-    (inputs `(("readline" ,readline)
-              ("flex" ,flex)))
+    (inputs `(("readline" ,readline)))
+    (native-inputs `(("flex" ,flex)))
     (arguments
      '(#:phases
        (alist-replace 'configure

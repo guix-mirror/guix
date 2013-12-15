@@ -95,7 +95,6 @@
     (inputs                                       ; TODO: Add optional inputs.
      `(;; ("libaio" ,libaio)
        ("glib" ,glib)
-       ("python" ,python-2) ; incompatible with Python 3 according to error message
        ("ncurses" ,ncurses)
        ("libpng" ,libpng)
        ("libjpeg" ,libjpeg-8)
@@ -103,14 +102,14 @@
        ;; ("vde2" ,vde2)
        ("util-linux" ,util-linux)
        ;; ("pciutils" ,pciutils)
-       ("pkg-config" ,pkg-config)
        ("alsa-lib" ,alsa-lib)
        ("zlib" ,zlib)
        ("attr" ,attr)
        ("samba" ,samba)))                         ; an optional dependency
-    (native-inputs `(("texinfo" ,texinfo)
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("python" ,python-2) ; incompatible with Python 3 according to error message
+                     ("texinfo" ,texinfo)
                      ("perl" ,perl)))
-
     (home-page "http://www.qemu-project.org")
     (synopsis "Machine emulator and virtualizer (without GUI)")
     (description

@@ -37,7 +37,7 @@
        (base32
         "1l19grs8nimkninig4h0hfmnykm41j0amcvav6ic4wfd33v0lppg"))))
     (build-system gnu-build-system)
-    (inputs `(("perl" ,perl))) 
+    (inputs `(("perl" ,perl)))
     (home-page "http://www.gnu.org/software/parallel/")
     (synopsis "Build and execute command lines in parallel")
     (description

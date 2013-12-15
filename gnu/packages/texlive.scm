@@ -75,18 +75,19 @@
              ("libpng" ,libpng)
              ("libxaw" ,libxaw)
              ("libxt" ,libxt)
-             ("perl" ,perl)
              ("pixman" ,pixman)
              ("poppler" ,poppler)
-             ("pkg-config" ,pkg-config)
              ;; FIXME: Add interpreters fontforge and ruby,
              ;; once they are available.
-             ("python" ,python-2) ; incompatible with Python 3 (print syntax)
-             ("tcsh" ,tcsh)
              ("teckit" ,teckit)
              ("t1lib" ,t1lib)
              ("zlib" ,zlib)
              ("zziplib" ,zziplib)))
+   (native-inputs
+    `(("perl" ,perl)
+      ("pkg-config" ,pkg-config)
+      ("python" ,python-2) ; incompatible with Python 3 (print syntax)
+      ("tcsh" ,tcsh)))
    (outputs '("out" "data"))
    (arguments
     `(#:out-of-source? #t

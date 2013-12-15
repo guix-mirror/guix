@@ -71,11 +71,12 @@
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("libltdl" ,libtool)
-       ("bison" ,bison)
        ("libXaw" ,libxaw)
        ("expat" ,expat)
        ("libjpeg" ,libjpeg)
-       ("libpng" ,libpng)
+       ("libpng" ,libpng)))
+    (native-inputs
+     `(("bison" ,bison)
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.graphviz.org/")
     (synopsis "Graph visualization software")
@@ -109,7 +110,7 @@ interfaces for other technical domains.")
        ;; Some data files used by the test suite are missing.
        ;; See <http://sourceforge.net/p/gts/bugs/41/>.
        #:tests? #f))
-    (inputs
+    (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      ;; The gts.pc file has glib-2.0 as required.

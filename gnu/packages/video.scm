@@ -44,18 +44,20 @@
                "1qnspbpwa6cflsb6mkm84ay4nfx60ism6d7lgvnasidck9dmxydy"))))
     (build-system gnu-build-system)
     (inputs
-     `(("bc" ,bc)
-       ("bzip2" ,bzip2)
-       ("fontconfig" ,fontconfig)
+     `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
+       ("speex" ,speex)
+       ("zlib", zlib)))
+    (native-inputs
+     `(("bc" ,bc)
+       ("bzip2" ,bzip2)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python" ,python-2) ; scripts use interpreter python2
        ("speex" ,speex)
-       ("yasm" ,yasm)
-       ("zlib", zlib)))
+       ("yasm" ,yasm)))
     (arguments
      `(#:test-target "fate"
        #:phases

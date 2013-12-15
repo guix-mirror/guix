@@ -53,9 +53,10 @@
     (inputs
      ;; XXX: add 'lvm2'.
      `(("check" ,check)
-       ("gettext" ,gnu-gettext)
        ("readline" ,readline)
        ("util-linux" ,util-linux)))
+    (native-inputs
+     `(("gettext" ,gnu-gettext)))
     (home-page "http://www.gnu.org/software/parted/")
     (synopsis "Disk partition editor")
     (description

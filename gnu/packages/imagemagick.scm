@@ -78,8 +78,8 @@
               ("pango" ,pango)
               ("freetype" ,freetype)
               ("bzip2" ,bzip2)
-              ("xz" ,xz)
-              ("pkg-config" ,pkg-config)))
+              ("xz" ,xz)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (outputs '("out"
                "doc"))                          ; 26 MiB of HTML documentation
     (home-page "http://www.imagemagick.org/")

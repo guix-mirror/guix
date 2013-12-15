@@ -54,8 +54,9 @@
         %standard-phases)))
     (inputs
      `(("glib" ,glib)
-       ("pkg-config" ,pkg-config)
-       ("ncurses" ,ncurses)
+       ("ncurses" ,ncurses)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
        ("perl" ,perl)))
     (home-page "http://www.irssi.org/")
     (synopsis "Irssi, a terminal-based IRC client")

@@ -51,8 +51,9 @@
              ("libxaw3d" ,libxaw3d)
              ("libxinerama" ,libxinerama)
              ("libxpm" ,libxpm)
-             ("pkg-config" ,pkg-config)
              ("zlib" ,zlib)))
+   (native-inputs
+     `(("pkg-config" ,pkg-config)))
    (synopsis "PostScript and PDF viewer using Ghostscript as a back-end")
    (description
     "GNU GV is a graphical user interface to the Ghostscript interpreter.

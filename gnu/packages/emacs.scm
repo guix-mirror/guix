@@ -65,9 +65,7 @@
                       "pwd")))
                  %standard-phases)))
     (inputs
-     `(("pkg-config" ,pkg-config)
-       ("gnutls" ,gnutls)
-       ("texinfo" ,texinfo)
+     `(("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
 
        ;; TODO: Add the optional dependencies.
@@ -86,6 +84,9 @@
        ("libXpm" ,libxpm)
        ("libxml2" ,libxml2)
        ("dbus" ,dbus)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
     (home-page "http://www.gnu.org/software/emacs/")
     (synopsis "The extensible, customizable, self-documenting text editor")
     (description

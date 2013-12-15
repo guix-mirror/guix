@@ -147,8 +147,9 @@ a highly stable and efficient implementation.")
              ("libogg" ,libogg)
              ("libtool" ,libtool)
              ("libvorbid" ,libvorbis)
-             ("pkg-config" ,pkg-config)
              ("pcre" ,pcre)))
+   (native-inputs
+     `(("pkg-config" ,pkg-config)))
    (synopsis "libmp3splt, a library for splitting mp3 and ogg vorbis files")
    (description
     "Mp3splt is a utility to split mp3 and ogg vorbis files selecting a begin
@@ -254,8 +255,9 @@ use with CD-recording software).")
    (inputs
     `(("glib" ,glib)
       ("gtk+" ,gtk+-2)
-      ("id3lib" ,id3lib)
-      ("pkg-config" ,pkg-config)))
+      ("id3lib" ,id3lib)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)))
    (synopsis "GTK program to rip and encode CD audio tracks")
    (description
     "RipperX is a GTK program to rip CD audio tracks and encode them to the

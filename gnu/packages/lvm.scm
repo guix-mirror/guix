@@ -38,7 +38,7 @@
              (base32
               "0r6q6z8ip6q5qgkzng0saljassp4912k6i21ra10vq7pzrc0l0vi"))))
    (build-system gnu-build-system)
-   (inputs
+   (native-inputs
      `(("pkg-config" ,pkg-config)
        ("procps" ,procps)))
    (arguments

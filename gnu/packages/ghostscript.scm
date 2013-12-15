@@ -134,11 +134,12 @@ printing, and psresize, for adjusting page sizes.")
              ("libpng" ,libpng)
              ("libpaper" ,libpaper)
              ("libtiff" ,libtiff)
-             ("perl" ,perl)
-             ("pkg-config" ,pkg-config) ; needed to find libtiff
-             ("python" ,python-wrapper)
-             ("tcl" ,tcl)
              ("zlib" ,zlib)))
+   (native-inputs
+      `(("perl" ,perl)
+        ("pkg-config" ,pkg-config) ; needed to find libtiff
+        ("python" ,python-wrapper)
+        ("tcl" ,tcl)))
    (arguments
     `(#:phases
       (alist-replace
@@ -225,8 +226,8 @@ Ghostscript. It currently includes the 35 standard PostScript fonts.")
             (sha256 (base32
                      "1v63lqc6bhhxwkpa43qmz8phqs8ci4dhzizyy16d3vkb20m846z8"))))
    (build-system gnu-build-system)
-   (inputs `(("ghostscript" ,ghostscript)
-             ("pkg-config" ,pkg-config)))
+   (inputs `(("ghostscript" ,ghostscript)))
+   (native-inputs `(("pkg-config" ,pkg-config)))
    (synopsis "postscript rendering library")
    (description
     "libspectre is a small library for rendering Postscript documents.
