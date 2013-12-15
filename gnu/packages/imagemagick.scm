@@ -21,18 +21,18 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix download)
   #:use-module ((guix licenses) #:select (fsf-free))
-  #:use-module (gnu packages libjpeg)
+  #:use-module (gnu packages algebra)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages graphviz)
-  #:use-module (gnu packages xorg)
-  #:use-module (gnu packages xml)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages libtiff)
   #:use-module (gnu packages libjpeg)
-  #:use-module (gnu packages ghostscript)
-  #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg))
 
 (define-public imagemagick
   (package
@@ -64,9 +64,11 @@
                                        doc "/share/doc/"
                                        ,name "-" ,version "\n")))))
                  %standard-phases)))
-    ;; TODO: Add Jasper, LCMS, etc.
-    (inputs `(("graphviz" ,graphviz)
+    ;; TODO: Add Jasper etc.
+    (inputs `(("fftw" ,fftw)
+              ("graphviz" ,graphviz)
               ("ghostscript" ,ghostscript)
+              ("lcms" ,lcms)
               ("libx11" ,libx11)
               ("zlib" ,zlib)
               ("libxml2" ,libxml2)
