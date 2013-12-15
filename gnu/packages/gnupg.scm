@@ -44,6 +44,10 @@
        (base32
         "0pz58vr12qihq2f0bypjxsb6cf6ajq5258fmfm8s6lvwm3b9xz6a"))))
     (build-system gnu-build-system)
+    (arguments
+     (if (%current-target-system)
+         '(#:configure-flags '("CC_FOR_BUILD=gcc"))
+         '()))
     (home-page "http://gnupg.org")
     (synopsis
      "Libgpg-error, a small library that defines common error values for all GnuPG components")
@@ -68,6 +72,16 @@ Daemon and possibly more in the future.")
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))
+    (native-inputs
+     ;; Needed here for the 'gpg-error' program.
+     `(("libgpg-error" ,libgpg-error)))
+    (arguments
+     ;; The '--with-gpg-error-prefix' argument is needed because otherwise
+     ;; 'configure' uses 'gpg-error-config' to determine the '-L' flag, and
+     ;; the 'gpg-error-config' it runs is the native one---i.e., the wrong one.
+     `(#:configure-flags
+       (list (string-append "--with-gpg-error-prefix="
+                            (assoc-ref %build-inputs "libgpg-error")))))
     (home-page "http://gnupg.org/")
     (synopsis "Cryptographic function library")
     (description
@@ -118,6 +132,15 @@ provided.")
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))
+    (native-inputs
+     `(("libgpg-error" ,libgpg-error)))
+    (arguments
+     `(#:configure-flags
+       (list ,@(if (%current-target-system)
+                   '("CC_FOR_BUILD=gcc")
+                   '())
+             (string-append "--with-gpg-error-prefix="
+                            (assoc-ref %build-inputs "libgpg-error")))))
     (home-page "http://www.gnupg.org")
     (synopsis
      "Libksba is a CMS and X.509 access library under development")
