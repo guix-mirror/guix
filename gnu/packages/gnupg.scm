@@ -61,14 +61,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.5.3")
+    (version "1.6.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1lar8y3lh61zl5flljpz540d78g99h4d5idfwrfw8lm3gm737xdw"))))
+               "024plbybsmnxbp39hs92lp6dzvkz2cb70nv69qrwr55d02350bb6"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))
