@@ -41,129 +41,14 @@
   "Return a derivation that unpacks TARBALL into STORE and compiles Scheme
 files."
   (define builder
-    `(begin
-       (use-modules (guix build utils)
-                    (system base compile)
-                    (ice-9 ftw)
-                    (ice-9 match)
-                    (srfi srfi-1)
-                    (srfi srfi-11)
-                    (srfi srfi-26))
+    '(begin
+       (use-modules (guix build pull))
 
-       (setvbuf (current-output-port) _IOLBF)
-       (setvbuf (current-error-port) _IOLBF)
-
-       (let ((out     (assoc-ref %outputs "out"))
-             (tar     (assoc-ref %build-inputs "tar"))
-             (gzip    (assoc-ref %build-inputs "gzip"))
-             (gcrypt  (assoc-ref %build-inputs "gcrypt"))
-             (tarball (assoc-ref %build-inputs "tarball")))
-
-         (define (call-with-process thunk)
-           ;; Run THUNK in a separate process that will return 0 if THUNK
-           ;; terminates normally, and 1 if an exception is raised.
-           (match (primitive-fork)
-             (0
-              (catch #t
-                (lambda ()
-                  (thunk)
-                  (primitive-exit 0))
-                (lambda (key . args)
-                  (print-exception (current-error-port) #f key args)
-                  (primitive-exit 1))))
-             (pid
-              #t)))
-
-         (define (p-for-each proc lst)
-           ;; Invoke PROC for each element of LST in a separate process.
-           ;; Raise an error if one of the processes exit with non-zero.
-           (define (wait-for-one-process)
-             (match (waitpid WAIT_ANY)
-               ((_ . status)
-                (unless (zero? (status:exit-val status))
-                  (error "process failed" proc status)))))
-
-           (define max-processes
-             (current-processor-count))
-
-           (let loop ((lst   lst)
-                      (running 0))
-             (match lst
-               (()
-                (or (zero? running)
-                    (begin
-                      (wait-for-one-process)
-                      (loop lst (- running 1)))))
-               ((head . tail)
-                (if (< running max-processes)
-                    (begin
-                      (call-with-process (cut proc head))
-                      (loop tail (+ running 1)))
-                    (begin
-                      (wait-for-one-process)
-                      (loop lst (- running 1))))))))
-
-         (setenv "PATH" (string-append tar "/bin:" gzip "/bin"))
-
-         (system* "tar" "xvf" tarball)
-         (match (scandir "." (lambda (name)
-                               (and (not (member name '("." "..")))
-                                    (file-is-directory? name))))
-           ((dir)
-            (chdir dir))
-           (x
-            (error "tarball did not produce a single source directory" x)))
-
-         (format #t "copying and compiling Guix to `~a'...~%" out)
-
-         ;; Copy everything under guix/ and gnu/ plus guix.scm.
-         (copy-recursively "guix" (string-append out "/guix"))
-         (copy-recursively "gnu" (string-append out "/gnu"))
-         (copy-file "guix.scm" (string-append out "/guix.scm"))
-
-         ;; Add a fake (guix config) module to allow the other modules to be
-         ;; compiled.  The user's (guix config) is the one that will be used.
-         (copy-file "guix/config.scm.in"
-                    (string-append out "/guix/config.scm"))
-         (substitute* (string-append out "/guix/config.scm")
-           (("@LIBGCRYPT@")
-            (string-append gcrypt "/lib/libgcrypt")))
-
-         ;; Augment the search path so Scheme code can be compiled.
-         (set! %load-path (cons out %load-path))
-         (set! %load-compiled-path (cons out %load-compiled-path))
-
-         ;; Compile the .scm files.  Do that in independent processes, à la
-         ;; 'make -j', to work around <http://bugs.gnu.org/15602> (FIXME).
-         ;; This ensures correctness, but is overly conservative and slow.
-         ;; The solution initially implemented (and described in the bug
-         ;; above) was slightly faster but consumed memory proportional to the
-         ;; number of modules, which quickly became unacceptable.
-         (p-for-each (lambda (file)
-                       (let ((go (string-append (string-drop-right file 4)
-                                                ".go")))
-                         (format (current-error-port)
-                                 "compiling '~a'...~%" file)
-                         (compile-file file
-                                       #:output-file go
-                                       #:opts
-                                       %auto-compilation-options)))
-
-                     (filter (cut string-suffix? ".scm" <>)
-
-                             ;; Build guix/*.scm before gnu/*.scm to speed
-                             ;; things up.
-                             (sort (find-files out "\\.scm")
-                                   (let ((guix (string-append out "/guix"))
-                                         (gnu  (string-append out "/gnu")))
-                                     (lambda (a b)
-                                       (or (and (string-prefix? guix a)
-                                                (string-prefix? gnu b))
-                                           (string<? a b)))))))
-
-         ;; Remove the "fake" (guix config).
-         (delete-file (string-append out "/guix/config.scm"))
-         (delete-file (string-append out "/guix/config.go")))))
+       (build-guix (assoc-ref %outputs "out")
+                   (assoc-ref %build-inputs "tarball")
+                   #:tar (assoc-ref %build-inputs "tar")
+                   #:gzip (assoc-ref %build-inputs "gzip")
+                   #:gcrypt (assoc-ref %build-inputs "gcrypt"))))
 
   (build-expression->derivation store "guix-latest" builder
                                 #:inputs
@@ -172,7 +57,8 @@ files."
                                   ("gcrypt" ,(package-derivation store
                                                                  libgcrypt))
                                   ("tarball" ,tarball))
-                                #:modules '((guix build utils))))
+                                #:modules '((guix build pull)
+                                            (guix build utils))))
 
 
 ;;;
