@@ -150,11 +150,7 @@ without requiring the source code to be rewritten.")
                     (substitute* "module/ice-9/popen.scm"
                       (("/bin/sh")
                        (string-append bash "/bin/bash")))))
-                %standard-phases)
-
-      ,@(if (%current-target-system)
-            '(#:configure-flags '("CC_FOR_BUILD=gcc"))
-            '())))
+                %standard-phases)))
 
    (native-search-paths
     (list (search-path-specification

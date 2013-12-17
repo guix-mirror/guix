@@ -136,7 +136,10 @@ makefiles."
          (bash       (or (and=> (assoc-ref (or native-inputs inputs) "bash")
                                 (cut string-append <> "/bin/bash"))
                          "/bin/sh"))
-         (flags      `(,(string-append "CONFIG_SHELL=" bash)
+         (flags      `(,@(if target             ; cross building
+                             '("CC_FOR_BUILD=gcc")
+                             '())
+                       ,(string-append "CONFIG_SHELL=" bash)
                        ,(string-append "SHELL=" bash)
                        ,(string-append "--prefix=" prefix)
                        "--enable-fast-install"    ; when using Libtool
