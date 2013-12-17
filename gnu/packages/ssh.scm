@@ -80,7 +80,21 @@
                                       lib))))
                  %standard-phases)))
     (inputs `(("zlib" ,zlib)
-              ("libgcrypt" ,libgcrypt)))
+              ("libgcrypt"
+               ;; Link against an older gcrypt, because libssh tries to access
+               ;; fields of 'gcry_thread_cbs' that are now private:
+               ;; src/threads.c:72:26: error: 'struct gcry_thread_cbs' has no member named 'mutex_init'
+               ,(package (inherit libgcrypt)
+                         (version "1.5.3")
+                         (source
+                          (origin
+                            (method url-fetch)
+                            (uri (string-append
+                                  "mirror://gnupg/libgcrypt/libgcrypt-"
+                                  version ".tar.bz2"))
+                            (sha256
+                             (base32
+                              "1lar8y3lh61zl5flljpz540d78g99h4d5idfwrfw8lm3gm737xdw"))))))))
     (native-inputs `(("patchelf" ,patchelf)))
     (synopsis "SSH client library")
     (description
