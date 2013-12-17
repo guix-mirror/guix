@@ -23,6 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages oggvorbis)
   #:use-module (gnu packages openssl)
@@ -48,6 +49,7 @@
        ("freetype" ,freetype)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
+       ("patchelf" ,patchelf)
        ("speex" ,speex)
        ("zlib", zlib)))
     (native-inputs
@@ -60,6 +62,13 @@
        ("yasm" ,yasm)))
     (arguments
      `(#:test-target "fate"
+       #:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build rpath)
+                  (srfi srfi-26))
+       #:imported-modules ((guix build gnu-build-system)
+                           (guix build utils)
+                           (guix build rpath))
        #:phases
          (alist-replace
           'configure
@@ -166,7 +175,16 @@
                       "--disable-mipsdspr1"
                       "--disable-mipsdspr2"
                       "--disable-mipsfpu"))))
-          %standard-phases)))
+       (alist-cons-after
+        'strip 'add-lib-to-runpath
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let* ((out (assoc-ref outputs "out"))
+                 (lib (string-append out "/lib")))
+            ;; Add LIB to the RUNPATH of all the executables.
+            (with-directory-excursion out
+              (for-each (cut augment-rpath <> lib)
+                        (find-files "bin" ".*")))))
+          %standard-phases))))
     (home-page "http://www.ffmpeg.org/")
     (synopsis "Audio and video framework")
     (description "FFmpeg is a complete, cross-platform solution to record,
