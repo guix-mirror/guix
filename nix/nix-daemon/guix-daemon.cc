@@ -195,6 +195,10 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
     }
 
+  /* Tell Libgcrypt that initialization has completed, as per the Libgcrypt
+     1.6.0 manual (although this does not appear to be strictly needed.)  */
+  gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
+
   /* Set the umask so that the daemon does not end up creating group-writable
      files, which would lead to "suspicious ownership or permission" errors.
      See <http://lists.gnu.org/archive/html/bug-guix/2013-07/msg00033.html>.  */
