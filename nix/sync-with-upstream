@@ -76,5 +76,5 @@ sed -i "$top_srcdir/nix/libstore/gc.cc"					\
 # context is expected to truly copy the underlying hash context.  The copy
 # constructor cannot be used in 'Ctx' if that's a union, so turn it into a
 # structure (we can afford to two wasted words.)
-sed -i "$top_srcdir/nix/libutil/hash".{cc,hh}	\
+sed -i "$top_srcdir/nix/libutil/hash.cc" "$top_srcdir/nix/libutil/hash.hh" \
     -e 's|union Ctx|struct Ctx|g'
