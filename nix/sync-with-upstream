@@ -70,3 +70,11 @@ cp -v "$top_srcdir/nix-upstream/AUTHORS" "$top_srcdir/nix"
 # Substitutions.
 sed -i "$top_srcdir/nix/libstore/gc.cc"					\
     -e 's|/nix/find-runtime-roots\.pl|/guix/list-runtime-roots|g'
+
+# Our 'guix_hash_context' structure has a copy constructor, specifically to
+# handle the use case in 'HashSink::currentHash()' where the copy of the
+# context is expected to truly copy the underlying hash context.  The copy
+# constructor cannot be used in 'Ctx' if that's a union, so turn it into a
+# structure (we can afford to two wasted words.)
+sed -i "$top_srcdir/nix/libutil/hash".{cc,hh}	\
+    -e 's|union Ctx|struct Ctx|g'
