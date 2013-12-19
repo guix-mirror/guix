@@ -48,17 +48,6 @@ package.el is quite monolithic, but we may be able to reuse/extend
 
 ** add guile-ncurses interface
 
-* extend <origin>
-** add OpenPGP signatures:
-
-   (origin
-     (method http-fetch)
-     (uri "http://.../foo.tgz")
-     (signature-uri (string-append uri ".sig"))
-     (signer-openpgp-fingerprint "..."))
-
-** allow <origin> to be a derivation/package or a file
-
 * extend <package>
 
 ** add ‘recommends’ field
@@ -84,27 +73,44 @@ create a new ‘dir’.
       ("i3" ,p3)))
 #+END_SRC
 
+* MAYBE use HOP-like escapes to refer to inputs in build-side code
 
-* synchronize package descriptions with GSRC and/or the [[http://directory.fsf.org][FSD]]
+Instead of doing things like:
+
+#+BEGIN_SRC scheme
+  (inputs `(("foo" ,foo)))
+  (arguments '(#:configure-flags
+               (list (string-append "--with-foo="
+                                    (assoc-ref %build-inputs "foo")))))
+#+END_SRC
+
+Allow things like:
+
+#+BEGIN_SRC scheme
+  (inputs (list foo))
+  (arguments ~(#:configure-flags
+               (list (string-append "--with-foo=" $foo))))
+  
+#+END_SRC
+
+... where '~' is 'build-quote' and '$' is 'build-unquote'.  Better yet,
+automatically compute the list of references of an expression passed to
+'derivation-expression'.
+
+Use a [[http://dorophone.blogspot.fr/2011/09/scheme-syntax-is-monad.html][monad]] for the syntax.
+
+* synchronize non-GNU package descriptions with the [[http://directory.fsf.org][FSD]]
 
 Meta-data for GNU packages, including descriptions and synopses, can be
 dumped from the FSD:
 http://directory.fsf.org/wiki?title=GNU/Export&action=purge .
 We could periodically synchronize with that.
 
-See http://lists.gnu.org/archive/html/bug-guix/2013-04/msg00120.html for info
-on how to synchronize with GSRC's descriptions.
-
 * add a guildhall build system
 
 The Guildhall is Guile’s packaging system.  It should be easy to add a
 ‘guildhall-build-system’ that does the right thing based on guildhall
 recipes.
-
-* build-expression->derivation: define `%system' in the builder
-
-Would allow build expressions to have system-dependent code, like
-`glibc-dynamic-linker'.
 
 * add ‘allowed-references’ in <package>
 
@@ -126,9 +132,6 @@ run when that is defined.
 Would download a substitute, and compare its contents against a (hopefully
 locally-built) copy.
 
-* guix package
-
-** add ‘--list-generations’, and ‘--delete-generations’
 
 * guix build utils
 ** MAYBE Change ‘ld-wrapper’ to add RPATH for libs passed by file name
