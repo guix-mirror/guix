@@ -18,7 +18,9 @@
 
 (define-module (guix pk-crypto)
   #:use-module (guix config)
-  #:use-module ((guix utils) #:select (bytevector->base16-string))
+  #:use-module ((guix utils)
+                #:select (bytevector->base16-string
+                          base16-string->bytevector))
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
@@ -26,7 +28,12 @@
             string->gcry-sexp
             gcry-sexp->string
             number->gcry-sexp
+            gcry-sexp-car
+            gcry-sexp-cdr
+            gcry-sexp-nth
+            gcry-sexp-nth-data
             bytevector->hash-data
+            hash-data->bytevector
             sign
             verify
             generate-key
@@ -105,6 +112,61 @@
               (loop (* len 2))
               (pointer->string buf size "ISO-8859-1")))))))
 
+(define gcry-sexp-car
+  (let* ((ptr  (libgcrypt-func "gcry_sexp_car"))
+         (proc (pointer->procedure '* ptr '(*))))
+    (lambda (lst)
+      "Return the first element of LST, an sexp, if that element is a list;
+return #f if LST or its first element is not a list (this is different from
+the usual Lisp 'car'.)"
+      (let ((result (proc (gcry-sexp->pointer lst))))
+        (if (null-pointer? result)
+            #f
+            (pointer->gcry-sexp result))))))
+
+(define gcry-sexp-cdr
+  (let* ((ptr  (libgcrypt-func "gcry_sexp_cdr"))
+         (proc (pointer->procedure '* ptr '(*))))
+    (lambda (lst)
+      "Return the tail of LST, an sexp, or #f if LST is not a list."
+      (let ((result (proc (gcry-sexp->pointer lst))))
+        (if (null-pointer? result)
+            #f
+            (pointer->gcry-sexp result))))))
+
+(define gcry-sexp-nth
+  (let* ((ptr  (libgcrypt-func "gcry_sexp_nth"))
+         (proc (pointer->procedure '* ptr `(* ,int))))
+    (lambda (lst index)
+      "Return the INDEXth nested element of LST, an s-expression.  Return #f
+if that element does not exist, or if it's an atom.  (Note: this is obviously
+different from Scheme's 'list-ref'.)"
+      (let ((result (proc (gcry-sexp->pointer lst) index)))
+        (if (null-pointer? result)
+            #f
+            (pointer->gcry-sexp result))))))
+
+(define (dereference-size_t p)
+  "Return the size_t value pointed to by P."
+  (bytevector-uint-ref (pointer->bytevector p (sizeof size_t))
+                       0 (native-endianness)
+                       (sizeof size_t)))
+
+(define gcry-sexp-nth-data
+  (let* ((ptr  (libgcrypt-func "gcry_sexp_nth_data"))
+         (proc (pointer->procedure '* ptr `(* ,int *))))
+    (lambda (lst index)
+      "Return as a string the INDEXth data element (atom) of LST, an
+s-expression.  Return #f if that element does not exist, or if it's a list.
+Note that the result is a Scheme string, but depending on LST, it may need to
+be interpreted in the sense of a C string---i.e., as a series of octets."
+      (let* ((size*  (bytevector->pointer (make-bytevector (sizeof '*))))
+             (result (proc (gcry-sexp->pointer lst) index size*)))
+        (if (null-pointer? result)
+            #f
+            (pointer->string result (dereference-size_t size*)
+                             "ISO-8859-1"))))))
+
 (define (number->gcry-sexp number)
   "Return an s-expression representing NUMBER."
   (string->gcry-sexp (string-append "#" (number->string number 16) "#")))
@@ -116,6 +178,25 @@ for use as the data for 'sign'."
    (format #f "(data (flags pkcs1) (hash \"~a\" #~a#))"
            hash-algo
            (bytevector->base16-string bv))))
+
+(define (latin1-string->bytevector str)
+  "Return a bytevector representing STR."
+  ;; XXX: In Guile 2.0.9 and later, we would use 'string->bytevector' for
+  ;; that.
+  (let ((bytes (map char->integer (string->list str))))
+    (u8-list->bytevector bytes)))
+
+(define (hash-data->bytevector data)
+  "Return two values: the hash algorithm (a string) and the hash value (a
+bytevector) extract from DATA, an sexp as returned by 'bytevector->hash-data'.
+Return #f if DATA does not conform."
+  (let ((hash (find-sexp-token data 'hash)))
+    (if hash
+        (let ((algo  (gcry-sexp-nth-data hash 1))
+              (value (gcry-sexp-nth-data hash 2)))
+          (values (latin1-string->bytevector value)
+                  algo))
+        (values #f #f))))
 
 (define sign
   (let* ((ptr  (libgcrypt-func "gcry_pk_sign"))

@@ -21,6 +21,8 @@
   #:use-module (guix utils)
   #:use-module (guix hash)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
@@ -75,6 +77,38 @@
 
 (gc)
 
+(test-equal "gcry-sexp-car + cdr"
+  '("(b \n (c xyz)\n )")
+  (let ((lst (string->gcry-sexp "(a (b (c xyz)))")))
+    (map (lambda (sexp)
+           (and sexp (string-trim-both (gcry-sexp->string sexp))))
+         ;; Note: 'car' returns #f when the first element is an atom.
+         (list (gcry-sexp-car (gcry-sexp-cdr lst))))))
+
+(gc)
+
+(test-equal "gcry-sexp-nth"
+  '(#f "(b pqr)" "(c \"456\")" "(d xyz)" #f #f)
+  (let ((lst (string->gcry-sexp "(a (b 3:pqr) (c 3:456) (d 3:xyz))")))
+    (map (lambda (sexp)
+           (and sexp (string-trim-both (gcry-sexp->string sexp))))
+         (unfold (cut > <> 5)
+                 (cut gcry-sexp-nth lst <>)
+                 1+
+                 0))))
+
+(gc)
+
+(test-equal "gcry-sexp-nth-data"
+  '("Name" "Otto" "Meier" #f #f #f)
+  (let ((lst (string->gcry-sexp "(Name Otto Meier (address Burgplatz))")))
+    (unfold (cut > <> 5)
+            (cut gcry-sexp-nth-data lst <>)
+            1+
+            0)))
+
+(gc)
+
 ;; XXX: The test below is typically too long as it needs to gather enough entropy.
 
 ;; (test-assert "generate-key"
@@ -84,6 +118,14 @@
 ;;          (find-sexp-token key 'key-data)
 ;;          (find-sexp-token key 'public-key)
 ;;          (find-sexp-token key 'private-key))))
+
+(test-assert "bytevector->hash-data->bytevector"
+  (let* ((bv   (sha256 (string->utf8 "Hello, world.")))
+         (data (bytevector->hash-data bv "sha256")))
+    (and (gcry-sexp? data)
+         (let-values (((value algo) (hash-data->bytevector data)))
+           (and (string=? algo "sha256")
+                (bytevector=? value bv))))))
 
 (test-assert "sign + verify"
   (let* ((pair   (string->gcry-sexp %key-pair))
