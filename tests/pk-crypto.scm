@@ -50,7 +50,12 @@
 
 (test-begin "pk-crypto")
 
-(let ((sexps '("(foo bar)" "#C0FFEE#"
+(let ((sexps '("(foo bar)"
+
+               ;; In Libgcrypt 1.5.3 the following integer is rendered as
+               ;; binary, whereas in 1.6.0 it's rendered as is (hexadecimal.)
+               ;;"#C0FFEE#"
+
                "(genkey \n (rsa \n  (nbits \"1024\")\n  )\n )")))
   (test-equal "string->gcry-sexp->string"
     sexps
@@ -88,14 +93,17 @@
 (gc)
 
 (test-equal "gcry-sexp-nth"
-  '(#f "(b pqr)" "(c \"456\")" "(d xyz)" #f #f)
+  '("(b pqr)" "(c \"456\")" "(d xyz)" #f #f)
+
   (let ((lst (string->gcry-sexp "(a (b 3:pqr) (c 3:456) (d 3:xyz))")))
+    ;; XXX: In Libgcrypt 1.5.3, (gcry-sexp-nth lst 0) returns LST, whereas in
+    ;; 1.6.0 it returns #f.
     (map (lambda (sexp)
            (and sexp (string-trim-both (gcry-sexp->string sexp))))
          (unfold (cut > <> 5)
                  (cut gcry-sexp-nth lst <>)
                  1+
-                 0))))
+                 1))))
 
 (gc)
 
