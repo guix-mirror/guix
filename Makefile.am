@@ -73,6 +73,7 @@ MODULES =					\
   guix/scripts/hash.scm				\
   guix/scripts/pull.scm				\
   guix/scripts/substitute-binary.scm		\
+  guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
@@ -172,6 +173,8 @@ EXTRA_DIST =					\
   srfi/srfi-64.scm				\
   srfi/srfi-64.upstream.scm			\
   tests/test.drv				\
+  tests/signing-key.pub				\
+  tests/signing-key.sec				\
   build-aux/config.rpath			\
   bootstrap					\
   release.nix					\

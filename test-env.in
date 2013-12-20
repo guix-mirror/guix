@@ -40,6 +40,22 @@ then
     # Currently, in Nix builds, we're at ~106 chars...
     NIX_STATE_DIR="@GUIX_TEST_ROOT@/var/$$"
 
+    # The configuration directory, for import/export signing keys.
+    NIX_CONF_DIR="@GUIX_TEST_ROOT@/etc"
+    if [ ! -d "$NIX_CONF_DIR" ]
+    then
+	# Copy the keys so that the secret key has the right permissions (the
+	# daemon errors out when this is not the case.)
+	mkdir -p "$NIX_CONF_DIR"
+	cp "@abs_top_srcdir@/tests/signing-key.sec"	\
+	    "@abs_top_srcdir@/tests/signing-key.pub"	\
+	    "$NIX_CONF_DIR"
+	chmod 400 "$NIX_CONF_DIR/signing-key.sec"
+    fi
+
+    # For 'guix-authenticate'.
+    NIX_LIBEXEC_DIR="@abs_top_builddir@/nix/scripts"
+
     # A place to store data of the substituter.
     GUIX_BINARY_SUBSTITUTE_URL="file://$NIX_STATE_DIR/substituter-data"
     rm -rf "$NIX_STATE_DIR/substituter-data"
@@ -51,7 +67,7 @@ then
     export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR			\
 	NIX_LOCALSTATE_DIR NIX_LOG_DIR NIX_STATE_DIR NIX_DB_DIR		\
 	NIX_ROOT_FINDER NIX_SETUID_HELPER GUIX_BINARY_SUBSTITUTE_URL	\
-        XDG_CACHE_HOME
+        NIX_CONF_DIR NIX_LIBEXEC_DIR XDG_CACHE_HOME
 
     # Do that because store.scm calls `canonicalize-path' on it.
     mkdir -p "$NIX_STORE_DIR"

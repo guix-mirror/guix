@@ -1,0 +1,11 @@
+#!@SHELL@
+# A shorthand for "guix authenticate", for use by the daemon.
+
+if test "x$GUIX_UNINSTALLED" = "x"
+then
+    prefix="@prefix@"
+    exec_prefix="@exec_prefix@"
+    exec "@bindir@/guix" authenticate "$@"
+else
+    exec guix authenticate "$@"
+fi
