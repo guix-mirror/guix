@@ -129,7 +129,8 @@ SH_TESTS =					\
   tests/guix-download.sh			\
   tests/guix-gc.sh				\
   tests/guix-hash.sh				\
-  tests/guix-package.sh
+  tests/guix-package.sh				\
+  tests/guix-authenticate.sh
 
 if BUILD_DAEMON
 
