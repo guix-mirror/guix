@@ -292,19 +292,6 @@ return its return value."
        (format (current-error-port) "  interrupted by signal ~a~%" SIGINT)
        #f))))
 
-(define newest-available-packages
-  (memoize find-newest-available-packages))
-
-(define (find-best-packages-by-name name version)
-  "If version is #f, return the list of packages named NAME with the highest
-version numbers; otherwise, return the list of packages named NAME and at
-VERSION."
-  (if version
-      (find-packages-by-name name version)
-      (match (vhash-assoc name (newest-available-packages))
-        ((_ version pkgs ...) pkgs)
-        (#f '()))))
-
 (define* (specification->package+output spec #:optional (output "out"))
   "Find the package and output specified by SPEC, or #f and #f; SPEC may
 optionally contain a version number and an output name, as in these examples:
@@ -342,7 +329,7 @@ version; if SPEC does not specify an output, return OUTPUT."
   "Return #t if there's a version of package NAME newer than CURRENT-VERSION,
 or if the newest available version is equal to CURRENT-VERSION but would have
 an output path different than CURRENT-PATH."
-  (match (vhash-assoc name (newest-available-packages))
+  (match (vhash-assoc name (find-newest-available-packages))
     ((_ candidate-version pkg . rest)
      (case (version-compare candidate-version current-version)
        ((>) #t)
