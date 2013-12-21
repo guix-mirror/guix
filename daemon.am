@@ -180,6 +180,10 @@ nodist_pkglibexec_SCRIPTS =			\
   nix/scripts/list-runtime-roots		\
   nix/scripts/substitute-binary
 
+# XXX: It'd be better to hide it in $(pkglibexecdir).
+nodist_libexec_SCRIPTS =			\
+  nix/scripts/guix-authenticate
+
 EXTRA_DIST +=					\
   nix/sync-with-upstream			\
   nix/libstore/schema.sql			\
