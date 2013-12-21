@@ -35,10 +35,7 @@
   #:autoload   (gnu packages) (find-best-packages-by-name)
   #:export (guix-build))
 
-(define %store
-  (make-parameter #f))
-
-(define (derivation-from-expression str package-derivation
+(define (derivation-from-expression store str package-derivation
                                     system source?)
   "Read/eval STR and return the corresponding derivation path for SYSTEM.
 When SOURCE? is true and STR evaluates to a package, return the derivation of
@@ -49,12 +46,12 @@ derivation of a package."
      (if source?
          (let ((source (package-source p)))
            (if source
-               (package-source-derivation (%store) source)
+               (package-source-derivation store source)
                (leave (_ "package `~a' has no source~%")
                       (package-name p))))
-         (package-derivation (%store) p system)))
+         (package-derivation store p system)))
     ((? procedure? proc)
-     (run-with-store (%store) (proc) #:system system))))
+     (run-with-store store (proc) #:system system))))
 
 (define (specification->package spec)
   "Return a package matching SPEC.  SPEC may be a package name, or a package
@@ -76,6 +73,30 @@ present, return the preferred newest version."
            (leave (_ "~A: package not found for version ~a~%")
                   name version)
            (leave (_ "~A: unknown package~%") name))))))
+
+(define (register-root store paths root)
+  "Register ROOT as an indirect GC root for all of PATHS."
+  (let* ((root (string-append (canonicalize-path (dirname root))
+                              "/" root)))
+    (catch 'system-error
+      (lambda ()
+        (match paths
+          ((path)
+           (symlink path root)
+           (add-indirect-root store root))
+          ((paths ...)
+           (fold (lambda (path count)
+                   (let ((root (string-append root
+                                              "-"
+                                              (number->string count))))
+                     (symlink path root)
+                     (add-indirect-root store root))
+                   (+ 1 count))
+                 0
+                 paths))))
+      (lambda args
+        (leave (_ "failed to create GC root `~a': ~a~%")
+               root (strerror (system-error-errno args)))))))
 
 
 ;;;
@@ -193,6 +214,36 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                 (lambda (opt name arg result)
                   (alist-cons 'log-file? #t result)))))
 
+(define (options->derivations store opts)
+  "Given OPTS, the result of 'args-fold', return a list of derivations to
+build."
+  (define package->derivation
+    (match (assoc-ref opts 'target)
+      (#f package-derivation)
+      (triplet
+       (cut package-cross-derivation <> <> triplet <>))))
+
+  (define src? (assoc-ref opts 'source?))
+  (define sys  (assoc-ref opts 'system))
+
+  (filter-map (match-lambda
+               (('expression . str)
+                (derivation-from-expression store str package->derivation
+                                            sys src?))
+               (('argument . (? derivation-path? drv))
+                (call-with-input-file drv read-derivation))
+               (('argument . (? store-path?))
+                ;; Nothing to do; maybe for --log-file.
+                #f)
+               (('argument . (? string? x))
+                (let ((p (specification->package x)))
+                  (if src?
+                      (let ((s (package-source p)))
+                        (package-source-derivation store s))
+                      (package->derivation store p sys))))
+               (_ #f))
+              opts))
+
 
 ;;;
 ;;; Entry point.
@@ -208,114 +259,65 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                   (alist-cons 'argument arg result))
                 %default-options))
 
-  (define (register-root paths root)
-    ;; Register ROOT as an indirect GC root for all of PATHS.
-    (let* ((root (string-append (canonicalize-path (dirname root))
-                                "/" root)))
-     (catch 'system-error
-       (lambda ()
-         (match paths
-           ((path)
-            (symlink path root)
-            (add-indirect-root (%store) root))
-           ((paths ...)
-            (fold (lambda (path count)
-                    (let ((root (string-append root
-                                               "-"
-                                               (number->string count))))
-                      (symlink path root)
-                      (add-indirect-root (%store) root))
-                    (+ 1 count))
-                  0
-                  paths))))
-       (lambda args
-         (leave (_ "failed to create GC root `~a': ~a~%")
-                root (strerror (system-error-errno args)))))))
-
   (with-error-handling
     ;; Ask for absolute file names so that .drv file names passed from the
     ;; user to 'read-derivation' are absolute when it returns.
     (with-fluids ((%file-port-name-canonicalization 'absolute))
-      (let ((opts (parse-options)))
-        (define package->derivation
-          (match (assoc-ref opts 'target)
-            (#f package-derivation)
-            (triplet
-             (cut package-cross-derivation <> <> triplet <>))))
+      (let* ((opts  (parse-options))
+             (store (open-connection))
+             (drv   (options->derivations store opts))
+             (roots (filter-map (match-lambda
+                                 (('gc-root . root) root)
+                                 (_ #f))
+                                opts)))
 
-        (parameterize ((%store (open-connection)))
-          (let* ((src? (assoc-ref opts 'source?))
-                 (sys  (assoc-ref opts 'system))
-                 (drv  (filter-map (match-lambda
-                                    (('expression . str)
-                                     (derivation-from-expression
-                                      str package->derivation sys src?))
-                                    (('argument . (? derivation-path? drv))
-                                     (call-with-input-file drv read-derivation))
-                                    (('argument . (? store-path?))
-                                     ;; Nothing to do; maybe for --log-file.
-                                     #f)
-                                    (('argument . (? string? x))
-                                     (let ((p (specification->package x)))
-                                       (if src?
-                                           (let ((s (package-source p)))
-                                             (package-source-derivation
-                                              (%store) s))
-                                           (package->derivation (%store) p sys))))
-                                    (_ #f))
-                                   opts))
-                 (roots (filter-map (match-lambda
-                                     (('gc-root . root) root)
-                                     (_ #f))
-                                    opts)))
+        (unless (assoc-ref opts 'log-file?)
+          (show-what-to-build store drv
+                              #:use-substitutes? (assoc-ref opts 'substitutes?)
+                              #:dry-run? (assoc-ref opts 'dry-run?)))
 
-            (unless (assoc-ref opts 'log-file?)
-              (show-what-to-build (%store) drv
-                                  #:use-substitutes? (assoc-ref opts 'substitutes?)
-                                  #:dry-run? (assoc-ref opts 'dry-run?)))
+        ;; TODO: Add more options.
+        (set-build-options store
+                           #:keep-failed? (assoc-ref opts 'keep-failed?)
+                           #:build-cores (or (assoc-ref opts 'cores) 0)
+                           #:fallback? (assoc-ref opts 'fallback?)
+                           #:use-substitutes? (assoc-ref opts 'substitutes?)
+                           #:max-silent-time (assoc-ref opts 'max-silent-time)
+                           #:verbosity (assoc-ref opts 'verbosity))
 
-            ;; TODO: Add more options.
-            (set-build-options (%store)
-                               #:keep-failed? (assoc-ref opts 'keep-failed?)
-                               #:build-cores (or (assoc-ref opts 'cores) 0)
-                               #:fallback? (assoc-ref opts 'fallback?)
-                               #:use-substitutes? (assoc-ref opts 'substitutes?)
-                               #:max-silent-time (assoc-ref opts 'max-silent-time)
-                               #:verbosity (assoc-ref opts 'verbosity))
-
-            (cond ((assoc-ref opts 'log-file?)
-                   (for-each (lambda (file)
-                               (let ((log (log-file (%store) file)))
-                                 (if log
-                                     (format #t "~a~%" log)
-                                     (leave (_ "no build log for '~a'~%")
-                                            file))))
-                             (delete-duplicates
-                              (append (map derivation-file-name drv)
-                                      (filter-map (match-lambda
-                                                   (('argument
-                                                     . (? store-path? file))
-                                                    file)
-                                                   (_ #f))
-                                                  opts)))))
-                  ((assoc-ref opts 'derivations-only?)
-                   (format #t "~{~a~%~}" (map derivation-file-name drv))
-                   (for-each (cut register-root <> <>)
-                             (map (compose list derivation-file-name) drv)
-                             roots))
-                  ((not (assoc-ref opts 'dry-run?))
-                   (and (build-derivations (%store) drv)
-                        (for-each (lambda (d)
-                                    (format #t "~{~a~%~}"
-                                            (map (match-lambda
-                                                  ((out-name . out)
-                                                   (derivation->output-path
-                                                    d out-name)))
-                                                 (derivation-outputs d))))
-                                  drv)
-                        (for-each (cut register-root <> <>)
-                                  (map (lambda (drv)
-                                         (map cdr
-                                              (derivation->output-paths drv)))
-                                       drv)
-                                  roots))))))))))
+        (cond ((assoc-ref opts 'log-file?)
+               (for-each (lambda (file)
+                           (let ((log (log-file store file)))
+                             (if log
+                                 (format #t "~a~%" log)
+                                 (leave (_ "no build log for '~a'~%")
+                                        file))))
+                         (delete-duplicates
+                          (append (map derivation-file-name drv)
+                                  (filter-map (match-lambda
+                                               (('argument
+                                                 . (? store-path? file))
+                                                file)
+                                               (_ #f))
+                                              opts)))))
+              ((assoc-ref opts 'derivations-only?)
+               (format #t "~{~a~%~}" (map derivation-file-name drv))
+               (for-each (cut register-root store <> <>)
+                         (map (compose list derivation-file-name) drv)
+                         roots))
+              ((not (assoc-ref opts 'dry-run?))
+               (and (build-derivations store drv)
+                    (for-each (lambda (d)
+                                (format #t "~{~a~%~}"
+                                        (map (match-lambda
+                                              ((out-name . out)
+                                               (derivation->output-path
+                                                d out-name)))
+                                             (derivation-outputs d))))
+                              drv)
+                    (for-each (cut register-root store <> <>)
+                              (map (lambda (drv)
+                                     (map cdr
+                                          (derivation->output-paths drv)))
+                                   drv)
+                              roots))))))))
