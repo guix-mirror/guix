@@ -11,23 +11,6 @@ Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 
 * integrate needed Nix code
 
-** Remove dependency on OpenSSL
-
-The ‘openssl’ command-line tool is used in libstore to sign store paths
-to be exported, and to check such signatures.  The signing keys are
-usually in /etc/nix/signing-key.{pub,sec}.  They are a PKCS#8-encoded
-X.509 SubjectPublicKeyInfo.  These can be decoded with the [[http://lists.gnu.org/archive/html/help-gnutls/2012-12/msg00012.html][C API of
-GnuTLS]], but not yet with its Guile bindings.  There’s also
-‘gnutls_privkey_sign_data’ to sign, and related functions.
-
-
-** Add `guix publish' to publish the store using Guile's web server
-
-Generate narinfos and nars on the fly, upon HTTP GET requests.
-Ideally, extend .nix-cache-info to include the server's public key, and also
-reply to requests for .narinfo.sig.
-Optionally, use Guile-Avahi to publish the service.
-
 ** MAYBE Add a substituter that uses the GNUnet DHT or [[http://libswift.org][libswift]]
 
 Would be neat if binaries could be pushed to and pulled from the GNUnet DHT or
@@ -39,6 +22,13 @@ Use UPnP and similar to traverse NAT, like ‘filegive’ does.
 ** Add a remote build hook
 
 Like scripts/build-remote.pl in Nix.
+
+* Add `guix publish' to publish the store using Guile's web server
+
+Generate narinfos and nars on the fly, upon HTTP GET requests.
+Ideally, extend .nix-cache-info to include the server's public key, and also
+reply to requests for .narinfo.sig.
+Optionally, use Guile-Avahi to publish the service.
 
 * user interface
 ** Add a package.el (Emacs) back-end
