@@ -407,9 +407,10 @@ management tools it provides.
 @menu
 * Features::                    How Guix will make your life brighter.
 * Invoking guix package::       Package installation, removal, etc.
-* Packages with Multiple Outputs:: Single source package, multiple outputs.
+* Packages with Multiple Outputs::  Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
+* Invoking guix archive::       Exporting and importing store files.
 @end menu
 
 @node Features
@@ -913,6 +914,62 @@ By default, the tarball is taken from its canonical address at
 Use the bootstrap Guile to build the latest Guix.  This option is only
 useful to Guix developers.
 @end table
+
+
+@node Invoking guix archive
+@section Invoking @command{guix archive}
+
+The @command{guix archive} command allows users to @dfn{export} files
+from the store into a single archive, and to later @dfn{import} them.
+In particular, it allows store files to be transferred from one machine
+to another machine's store.  For example, to transfer the @code{emacs}
+package to a machine connected over SSH, one would run:
+
+@example
+guix archive --export emacs | ssh the-machine guix archive --import
+@end example
+
+Archives are stored in the ``Nix archive'' or ``Nar'' format, which is
+comparable in spirit to `tar'.  When exporting, the daemon digitally
+signs the contents of the archive, and that digital signature is
+appended.  When importing, the daemon verifies the signature and rejects
+the import in case of an invalid signature.
+@c FIXME: Add xref to daemon doc about signatures.
+
+The main options are:
+
+@table @code
+@item --export
+Export the specified store files or packages (see below.)  Write the
+resulting archive to the standard output.
+
+@item --import
+Read an archive from the standard input, and import the files listed
+therein into the store.  Abort if the archive has an invalid digital
+signature.
+@end table
+
+To export store files as an archive to the standard output, run:
+
+@example
+guix archive --export @var{options} @var{specifications}...
+@end example
+
+@var{specifications} may be either store file names or package
+specifications, as for @command{guix package} (@pxref{Invoking guix
+package}).  For instance, the following command creates an archive
+containing the @code{gui} output of the @code{git} package and the main
+output of @code{emacs}:
+
+@example
+guix archive --export git:gui /nix/store/...-emacs-24.3 > great.nar
+@end example
+
+If the specified packages are not built yet, @command{guix archive}
+automatically builds them.  The build process may be controlled with the
+same options that can be passed to the @command{guix build} command
+(@pxref{Invoking guix build}).
+
 
 @c *********************************************************************
 @node Programming Interface

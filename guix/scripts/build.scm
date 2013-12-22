@@ -33,7 +33,8 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
   #:autoload   (gnu packages) (find-best-packages-by-name)
-  #:export (guix-build))
+  #:export (derivation-from-expression
+            guix-build))
 
 (define (derivation-from-expression store str package-derivation
                                     system source?)

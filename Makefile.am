@@ -67,6 +67,7 @@ MODULES =					\
   guix/snix.scm					\
   guix/scripts/download.scm			\
   guix/scripts/build.scm			\
+  guix/scripts/archive.scm			\
   guix/scripts/import.scm			\
   guix/scripts/package.scm			\
   guix/scripts/gc.scm				\
@@ -130,6 +131,7 @@ SH_TESTS =					\
   tests/guix-gc.sh				\
   tests/guix-hash.sh				\
   tests/guix-package.sh				\
+  tests/guix-archive.sh				\
   tests/guix-authenticate.sh
 
 if BUILD_DAEMON

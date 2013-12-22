@@ -41,7 +41,8 @@
   #:use-module ((gnu packages base) #:select (guile-final))
   #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
   #:use-module (guix gnu-maintenance)
-  #:export (guix-package))
+  #:export (specification->package+output
+            guix-package))
 
 (define %store
   (make-parameter #f))
@@ -293,7 +294,7 @@ return its return value."
        #f))))
 
 (define* (specification->package+output spec #:optional (output "out"))
-  "Find the package and output specified by SPEC, or #f and #f; SPEC may
+  "Return the package and output specified by SPEC, or #f and #f; SPEC may
 optionally contain a version number and an output name, as in these examples:
 
   guile
