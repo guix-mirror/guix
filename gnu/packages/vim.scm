@@ -31,14 +31,14 @@
 (define-public vim
   (package
     (name "vim")
-    (version "7.3")
+    (version "7.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.vim.org/pub/vim/unix/vim-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "079201qk8g9yisrrb0dn52ch96z3lzw6z473dydw9fzi0xp5spaw"))))
+               "1pjaffap91l2rb9pjnlbrpvb3ay5yhhr3g91zabjvw1rqk9adxfh"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
