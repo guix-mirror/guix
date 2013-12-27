@@ -32,7 +32,7 @@
 
 (define %key-pair
   ;; Key pair that was generated with:
-  ;;   (generate-key (string->gcry-sexp "(genkey (rsa (nbits 4:1024)))"))
+  ;;   (generate-key (string->canonical-sexp "(genkey (rsa (nbits 4:1024)))"))
   ;; which takes a bit of time.
   "(key-data
     (public-key
@@ -57,11 +57,11 @@
                ;;"#C0FFEE#"
 
                "(genkey \n (rsa \n  (nbits \"1024\")\n  )\n )")))
-  (test-equal "string->gcry-sexp->string"
+  (test-equal "string->canonical-sexp->string"
     sexps
-    (let ((sexps (map string->gcry-sexp sexps)))
-      (and (every gcry-sexp? sexps)
-           (map (compose string-trim-both gcry-sexp->string) sexps)))))
+    (let ((sexps (map string->canonical-sexp sexps)))
+      (and (every canonical-sexp? sexps)
+           (map (compose string-trim-both canonical-sexp->string) sexps)))))
 
 (gc)                                              ; stress test!
 
@@ -75,43 +75,43 @@
          sexps)
     (map (match-lambda
           ((input token '-> _)
-           (let ((sexp (find-sexp-token (string->gcry-sexp input) token)))
+           (let ((sexp (find-sexp-token (string->canonical-sexp input) token)))
              (and sexp
-                  (string-trim-both (gcry-sexp->string sexp))))))
+                  (string-trim-both (canonical-sexp->string sexp))))))
          sexps)))
 
 (gc)
 
-(test-equal "gcry-sexp-car + cdr"
+(test-equal "canonical-sexp-car + cdr"
   '("(b \n (c xyz)\n )")
-  (let ((lst (string->gcry-sexp "(a (b (c xyz)))")))
+  (let ((lst (string->canonical-sexp "(a (b (c xyz)))")))
     (map (lambda (sexp)
-           (and sexp (string-trim-both (gcry-sexp->string sexp))))
+           (and sexp (string-trim-both (canonical-sexp->string sexp))))
          ;; Note: 'car' returns #f when the first element is an atom.
-         (list (gcry-sexp-car (gcry-sexp-cdr lst))))))
+         (list (canonical-sexp-car (canonical-sexp-cdr lst))))))
 
 (gc)
 
-(test-equal "gcry-sexp-nth"
+(test-equal "canonical-sexp-nth"
   '("(b pqr)" "(c \"456\")" "(d xyz)" #f #f)
 
-  (let ((lst (string->gcry-sexp "(a (b 3:pqr) (c 3:456) (d 3:xyz))")))
-    ;; XXX: In Libgcrypt 1.5.3, (gcry-sexp-nth lst 0) returns LST, whereas in
+  (let ((lst (string->canonical-sexp "(a (b 3:pqr) (c 3:456) (d 3:xyz))")))
+    ;; XXX: In Libgcrypt 1.5.3, (canonical-sexp-nth lst 0) returns LST, whereas in
     ;; 1.6.0 it returns #f.
     (map (lambda (sexp)
-           (and sexp (string-trim-both (gcry-sexp->string sexp))))
+           (and sexp (string-trim-both (canonical-sexp->string sexp))))
          (unfold (cut > <> 5)
-                 (cut gcry-sexp-nth lst <>)
+                 (cut canonical-sexp-nth lst <>)
                  1+
                  1))))
 
 (gc)
 
-(test-equal "gcry-sexp-nth-data"
+(test-equal "canonical-sexp-nth-data"
   '("Name" "Otto" "Meier" #f #f #f)
-  (let ((lst (string->gcry-sexp "(Name Otto Meier (address Burgplatz))")))
+  (let ((lst (string->canonical-sexp "(Name Otto Meier (address Burgplatz))")))
     (unfold (cut > <> 5)
-            (cut gcry-sexp-nth-data lst <>)
+            (cut canonical-sexp-nth-data lst <>)
             1+
             0)))
 
@@ -120,9 +120,9 @@
 ;; XXX: The test below is typically too long as it needs to gather enough entropy.
 
 ;; (test-assert "generate-key"
-;;   (let ((key (generate-key (string->gcry-sexp
+;;   (let ((key (generate-key (string->canonical-sexp
 ;;                             "(genkey (rsa (nbits 3:128)))"))))
-;;     (and (gcry-sexp? key)
+;;     (and (canonical-sexp? key)
 ;;          (find-sexp-token key 'key-data)
 ;;          (find-sexp-token key 'public-key)
 ;;          (find-sexp-token key 'private-key))))
@@ -130,13 +130,13 @@
 (test-assert "bytevector->hash-data->bytevector"
   (let* ((bv   (sha256 (string->utf8 "Hello, world.")))
          (data (bytevector->hash-data bv "sha256")))
-    (and (gcry-sexp? data)
+    (and (canonical-sexp? data)
          (let-values (((value algo) (hash-data->bytevector data)))
            (and (string=? algo "sha256")
                 (bytevector=? value bv))))))
 
 (test-assert "sign + verify"
-  (let* ((pair   (string->gcry-sexp %key-pair))
+  (let* ((pair   (string->canonical-sexp %key-pair))
          (secret (find-sexp-token pair 'private-key))
          (public (find-sexp-token pair 'public-key))
          (data   (bytevector->hash-data

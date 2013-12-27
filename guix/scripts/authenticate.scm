@@ -33,10 +33,10 @@
 ;;;
 ;;; Code:
 
-(define (read-gcry-sexp file)
+(define (read-canonical-sexp file)
   "Read a gcrypt sexp from FILE and return it."
   (call-with-input-file file
-    (compose string->gcry-sexp get-string-all)))
+    (compose string->canonical-sexp get-string-all)))
 
 (define (read-hash-data file)
   "Read sha256 hash data from FILE and return it as a gcrypt sexp."
@@ -56,18 +56,18 @@
     (("rsautl" "-sign" "-inkey" key "-in" hash-file)
      ;; Sign the hash in HASH-FILE with KEY, and return an sexp that includes
      ;; both the hash and the actual signature.
-     (let* ((secret-key (read-gcry-sexp key))
+     (let* ((secret-key (read-canonical-sexp key))
             (data       (read-hash-data hash-file)))
        (format #t
                "(guix-signature ~a (payload ~a))"
-               (gcry-sexp->string (sign data secret-key))
-               (gcry-sexp->string data))
+               (canonical-sexp->string (sign data secret-key))
+               (canonical-sexp->string data))
        #t))
     (("rsautl" "-verify" "-inkey" key "-pubin" "-in" signature-file)
      ;; Read the signature as produced above, check it against KEY, and print
      ;; the signed data to stdout upon success.
-     (let* ((public-key (read-gcry-sexp key))
-            (sig+data   (read-gcry-sexp signature-file))
+     (let* ((public-key (read-canonical-sexp key))
+            (sig+data   (read-canonical-sexp signature-file))
             (data       (find-sexp-token sig+data 'payload))
             (signature  (find-sexp-token sig+data 'sig-val)))
        (if (and data signature)
@@ -79,12 +79,12 @@
                (begin
                  (format (current-error-port)
                          "error: invalid signature: ~a~%"
-                         (gcry-sexp->string signature))
+                         (canonical-sexp->string signature))
                  (exit 1)))
            (begin
              (format (current-error-port)
                      "error: corrupt signature data: ~a~%"
-                     (gcry-sexp->string sig+data))
+                     (canonical-sexp->string sig+data))
              (exit 1)))))
     (("--help")
      (display (_ "Usage: guix authenticate OPTION...

@@ -24,14 +24,14 @@
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
-  #:export (gcry-sexp?
-            string->gcry-sexp
-            gcry-sexp->string
-            number->gcry-sexp
-            gcry-sexp-car
-            gcry-sexp-cdr
-            gcry-sexp-nth
-            gcry-sexp-nth-data
+  #:export (canonical-sexp?
+            string->canonical-sexp
+            canonical-sexp->string
+            number->canonical-sexp
+            canonical-sexp-car
+            canonical-sexp-cdr
+            canonical-sexp-nth
+            canonical-sexp-nth-data
             bytevector->hash-data
             hash-data->bytevector
             sign
@@ -44,24 +44,28 @@
 ;;;
 ;;; Public key cryptographic routines from GNU Libgcrypt.
 ;;;;
-;;; Libgcrypt uses s-expressions to represent key material, parameters, and
-;;; data.  We keep it as an opaque object rather than attempting to map them
-;;; to Scheme s-expressions because (1) Libgcrypt sexps are stored in secure
-;;; memory, and (2) the read syntax is different.
+;;; Libgcrypt uses "canonical s-expressions" to represent key material,
+;;; parameters, and data.  We keep it as an opaque object rather than
+;;; attempting to map them to Scheme s-expressions because (1) Libgcrypt sexps
+;;; are stored in secure memory, and (2) the read syntax is different.
+;;;
+;;; Canonical sexps were defined by Rivest et al. in the IETF draft at
+;;; <http://people.csail.mit.edu/rivest/Sexp.txt> for the purposes of SPKI
+;;; (see <http://www.ietf.org/rfc/rfc2693.txt>.)
 ;;;
 ;;; Code:
 
 ;; Libgcrypt "s-expressions".
-(define-wrapped-pointer-type <gcry-sexp>
-  gcry-sexp?
-  naked-pointer->gcry-sexp
-  gcry-sexp->pointer
+(define-wrapped-pointer-type <canonical-sexp>
+  canonical-sexp?
+  naked-pointer->canonical-sexp
+  canonical-sexp->pointer
   (lambda (obj port)
     ;; Don't print OBJ's external representation: we don't want key material
     ;; to leak in backtraces and such.
-    (format port "#<gcry-sexp ~a | ~a>"
+    (format port "#<canonical-sexp ~a | ~a>"
             (number->string (object-address obj) 16)
-            (number->string (pointer-address (gcry-sexp->pointer obj))
+            (number->string (pointer-address (canonical-sexp->pointer obj))
                             16))))
 
 (define libgcrypt-func
@@ -70,22 +74,22 @@
       "Return a pointer to symbol FUNC in libgcrypt."
       (dynamic-func func lib))))
 
-(define finalize-gcry-sexp!
+(define finalize-canonical-sexp!
   (libgcrypt-func "gcry_sexp_release"))
 
-(define-inlinable (pointer->gcry-sexp ptr)
-  "Return a <gcry-sexp> that wraps PTR."
-  (let* ((sexp (naked-pointer->gcry-sexp ptr))
-         (ptr* (gcry-sexp->pointer sexp)))
-    ;; Did we already have a <gcry-sexp> object for PTR?
+(define-inlinable (pointer->canonical-sexp ptr)
+  "Return a <canonical-sexp> that wraps PTR."
+  (let* ((sexp (naked-pointer->canonical-sexp ptr))
+         (ptr* (canonical-sexp->pointer sexp)))
+    ;; Did we already have a <canonical-sexp> object for PTR?
     (when (equal? ptr ptr*)
       ;; No, so we can safely add a finalizer (in Guile 2.0.9
       ;; 'set-pointer-finalizer!' *adds* a finalizer rather than replacing the
       ;; existing one.)
-      (set-pointer-finalizer! ptr finalize-gcry-sexp!))
+      (set-pointer-finalizer! ptr finalize-canonical-sexp!))
     sexp))
 
-(define string->gcry-sexp
+(define string->canonical-sexp
   (let* ((ptr  (libgcrypt-func "gcry_sexp_new"))
          (proc (pointer->procedure int ptr `(* * ,size_t ,int))))
     (lambda (str)
@@ -93,58 +97,58 @@
       (let* ((sexp (bytevector->pointer (make-bytevector (sizeof '*))))
              (err  (proc sexp (string->pointer str) 0 1)))
         (if (= 0 err)
-            (pointer->gcry-sexp (dereference-pointer sexp))
+            (pointer->canonical-sexp (dereference-pointer sexp))
             (throw 'gcry-error err))))))
 
 (define-syntax GCRYSEXP_FMT_ADVANCED
   (identifier-syntax 3))
 
-(define gcry-sexp->string
+(define canonical-sexp->string
   (let* ((ptr  (libgcrypt-func "gcry_sexp_sprint"))
          (proc (pointer->procedure size_t ptr `(* ,int * ,size_t))))
     (lambda (sexp)
       "Return a textual representation of SEXP."
       (let loop ((len 1024))
         (let* ((buf  (bytevector->pointer (make-bytevector len)))
-               (size (proc (gcry-sexp->pointer sexp)
+               (size (proc (canonical-sexp->pointer sexp)
                            GCRYSEXP_FMT_ADVANCED buf len)))
           (if (zero? size)
               (loop (* len 2))
               (pointer->string buf size "ISO-8859-1")))))))
 
-(define gcry-sexp-car
+(define canonical-sexp-car
   (let* ((ptr  (libgcrypt-func "gcry_sexp_car"))
          (proc (pointer->procedure '* ptr '(*))))
     (lambda (lst)
       "Return the first element of LST, an sexp, if that element is a list;
 return #f if LST or its first element is not a list (this is different from
 the usual Lisp 'car'.)"
-      (let ((result (proc (gcry-sexp->pointer lst))))
+      (let ((result (proc (canonical-sexp->pointer lst))))
         (if (null-pointer? result)
             #f
-            (pointer->gcry-sexp result))))))
+            (pointer->canonical-sexp result))))))
 
-(define gcry-sexp-cdr
+(define canonical-sexp-cdr
   (let* ((ptr  (libgcrypt-func "gcry_sexp_cdr"))
          (proc (pointer->procedure '* ptr '(*))))
     (lambda (lst)
       "Return the tail of LST, an sexp, or #f if LST is not a list."
-      (let ((result (proc (gcry-sexp->pointer lst))))
+      (let ((result (proc (canonical-sexp->pointer lst))))
         (if (null-pointer? result)
             #f
-            (pointer->gcry-sexp result))))))
+            (pointer->canonical-sexp result))))))
 
-(define gcry-sexp-nth
+(define canonical-sexp-nth
   (let* ((ptr  (libgcrypt-func "gcry_sexp_nth"))
          (proc (pointer->procedure '* ptr `(* ,int))))
     (lambda (lst index)
       "Return the INDEXth nested element of LST, an s-expression.  Return #f
 if that element does not exist, or if it's an atom.  (Note: this is obviously
 different from Scheme's 'list-ref'.)"
-      (let ((result (proc (gcry-sexp->pointer lst) index)))
+      (let ((result (proc (canonical-sexp->pointer lst) index)))
         (if (null-pointer? result)
             #f
-            (pointer->gcry-sexp result))))))
+            (pointer->canonical-sexp result))))))
 
 (define (dereference-size_t p)
   "Return the size_t value pointed to by P."
@@ -152,7 +156,7 @@ different from Scheme's 'list-ref'.)"
                        0 (native-endianness)
                        (sizeof size_t)))
 
-(define gcry-sexp-nth-data
+(define canonical-sexp-nth-data
   (let* ((ptr  (libgcrypt-func "gcry_sexp_nth_data"))
          (proc (pointer->procedure '* ptr `(* ,int *))))
     (lambda (lst index)
@@ -161,20 +165,20 @@ s-expression.  Return #f if that element does not exist, or if it's a list.
 Note that the result is a Scheme string, but depending on LST, it may need to
 be interpreted in the sense of a C string---i.e., as a series of octets."
       (let* ((size*  (bytevector->pointer (make-bytevector (sizeof '*))))
-             (result (proc (gcry-sexp->pointer lst) index size*)))
+             (result (proc (canonical-sexp->pointer lst) index size*)))
         (if (null-pointer? result)
             #f
             (pointer->string result (dereference-size_t size*)
                              "ISO-8859-1"))))))
 
-(define (number->gcry-sexp number)
+(define (number->canonical-sexp number)
   "Return an s-expression representing NUMBER."
-  (string->gcry-sexp (string-append "#" (number->string number 16) "#")))
+  (string->canonical-sexp (string-append "#" (number->string number 16) "#")))
 
 (define* (bytevector->hash-data bv #:optional (hash-algo "sha256"))
   "Given BV, a bytevector containing a hash, return an s-expression suitable
 for use as the data for 'sign'."
-  (string->gcry-sexp
+  (string->canonical-sexp
    (format #f "(data (flags pkcs1) (hash \"~a\" #~a#))"
            hash-algo
            (bytevector->base16-string bv))))
@@ -192,8 +196,8 @@ bytevector) extract from DATA, an sexp as returned by 'bytevector->hash-data'.
 Return #f if DATA does not conform."
   (let ((hash (find-sexp-token data 'hash)))
     (if hash
-        (let ((algo  (gcry-sexp-nth-data hash 1))
-              (value (gcry-sexp-nth-data hash 2)))
+        (let ((algo  (canonical-sexp-nth-data hash 1))
+              (value (canonical-sexp-nth-data hash 2)))
           (values (latin1-string->bytevector value)
                   algo))
         (values #f #f))))
@@ -205,10 +209,10 @@ Return #f if DATA does not conform."
       "Sign DATA (an s-expression) with SECRET-KEY (an s-expression whose car
 is 'private-key'.)"
       (let* ((sig (bytevector->pointer (make-bytevector (sizeof '*))))
-             (err (proc sig (gcry-sexp->pointer data)
-                        (gcry-sexp->pointer secret-key))))
+             (err (proc sig (canonical-sexp->pointer data)
+                        (canonical-sexp->pointer secret-key))))
         (if (= 0 err)
-            (pointer->gcry-sexp (dereference-pointer sig))
+            (pointer->canonical-sexp (dereference-pointer sig))
             (throw 'gry-error err))))))
 
 (define verify
@@ -217,9 +221,9 @@ is 'private-key'.)"
     (lambda (signature data public-key)
       "Verify that SIGNATURE is a signature of DATA with PUBLIC-KEY, all of
 which are gcrypt s-expressions."
-      (zero? (proc (gcry-sexp->pointer signature)
-                   (gcry-sexp->pointer data)
-                   (gcry-sexp->pointer public-key))))))
+      (zero? (proc (canonical-sexp->pointer signature)
+                   (canonical-sexp->pointer data)
+                   (canonical-sexp->pointer public-key))))))
 
 (define generate-key
   (let* ((ptr  (libgcrypt-func "gcry_pk_genkey"))
@@ -228,9 +232,9 @@ which are gcrypt s-expressions."
       "Return as an s-expression a new key pair for PARAMS.  PARAMS must be an
 s-expression like: (genkey (rsa (nbits 4:2048)))."
       (let* ((key (bytevector->pointer (make-bytevector (sizeof '*))))
-             (err (proc key (gcry-sexp->pointer params))))
+             (err (proc key (canonical-sexp->pointer params))))
         (if (zero? err)
-            (pointer->gcry-sexp (dereference-pointer key))
+            (pointer->canonical-sexp (dereference-pointer key))
             (throw 'gcry-error err))))))
 
 (define find-sexp-token
@@ -240,9 +244,9 @@ s-expression like: (genkey (rsa (nbits 4:2048)))."
       "Find in SEXP the first element whose 'car' is TOKEN and return it;
 return #f if not found."
       (let* ((token (string->pointer (symbol->string token)))
-             (res   (proc (gcry-sexp->pointer sexp) token 0)))
+             (res   (proc (canonical-sexp->pointer sexp) token 0)))
         (if (null-pointer? res)
             #f
-            (pointer->gcry-sexp res))))))
+            (pointer->canonical-sexp res))))))
 
 ;;; pk-crypto.scm ends here
