@@ -373,8 +373,8 @@ Deriver: ~a~%"
                 (cut export-paths %store (list file) <>))))
     (delete-paths %store (list file))
 
-    ;; Flip a bit in the middle of the stream.
-    (let* ((index (quotient (bytevector-length dump) 3))
+    ;; Flip a bit in the stream's payload.
+    (let* ((index (quotient (bytevector-length dump) 4))
            (byte  (bytevector-u8-ref dump index)))
       (bytevector-u8-set! dump index (logxor #xff byte)))
 

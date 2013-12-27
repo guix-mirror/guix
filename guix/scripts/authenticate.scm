@@ -44,6 +44,17 @@
          (bv  (base16-string->bytevector (string-trim-both hex))))
     (bytevector->hash-data bv)))
 
+(define (signature-sexp data secret-key public-key)
+  "Return a SPKI-style sexp for the signature of DATA with SECRET-KEY that
+includes DATA, the actual signature value (with a 'sig-val' tag), and
+PUBLIC-KEY (see <http://theworld.com/~cme/spki.txt> for examples.)"
+  (string->canonical-sexp
+   (format #f
+           "(signature ~a ~a ~a)"
+           (canonical-sexp->string data)
+           (canonical-sexp->string (sign data secret-key))
+           (canonical-sexp->string public-key))))
+
 
 ;;;
 ;;; Entry point with 'openssl'-compatible interface.  We support this
@@ -57,18 +68,21 @@
      ;; Sign the hash in HASH-FILE with KEY, and return an sexp that includes
      ;; both the hash and the actual signature.
      (let* ((secret-key (read-canonical-sexp key))
-            (data       (read-hash-data hash-file)))
-       (format #t
-               "(guix-signature ~a (payload ~a))"
-               (canonical-sexp->string (sign data secret-key))
-               (canonical-sexp->string data))
+            (public-key (if (string-suffix? ".sec" key)
+                            (read-canonical-sexp
+                             (string-append (string-drop-right key 4) ".pub"))
+                            (leave (_ "cannot find public key for secret key '~a'")
+                                   key)))
+            (data       (read-hash-data hash-file))
+            (signature  (signature-sexp data secret-key public-key)))
+       (display (canonical-sexp->string signature))
        #t))
     (("rsautl" "-verify" "-inkey" key "-pubin" "-in" signature-file)
      ;; Read the signature as produced above, check it against KEY, and print
      ;; the signed data to stdout upon success.
      (let* ((public-key (read-canonical-sexp key))
             (sig+data   (read-canonical-sexp signature-file))
-            (data       (find-sexp-token sig+data 'payload))
+            (data       (find-sexp-token sig+data 'data))
             (signature  (find-sexp-token sig+data 'sig-val)))
        (if (and data signature)
            (if (verify signature data public-key)
