@@ -23,7 +23,12 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix packages)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages fontutils))
 
 (define-public glu
@@ -109,4 +114,58 @@ the X-Consortium license.")
      "FTGL is a font rendering library for OpenGL applications. Supported
 rendering modes are: Bitmaps, Anti-aliased pixmaps, Texture maps, Outlines,
 Polygon meshes, and Extruded polygon meshes")
+    (license l:x11)))
+
+(define-public mesa
+  (package
+    (name "mesa")
+    ;; In newer versions (9.0.5, 9.1 and 9.2 tested), "make" results in an
+    ;; infinite configure loop, see
+    ;; https://bugs.freedesktop.org/show_bug.cgi?id=58812
+    (version "8.0.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "ftp://ftp.freedesktop.org/pub/mesa/older-versions/8.x/"
+               version
+               "/MesaLib-" version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0pjs8x51c0i6mawgd4w03lxpyx5fnx7rc8plr8jfsscf9yiqs6si"))))
+    (build-system gnu-build-system)
+    (propagated-inputs
+      `(("glproto" ,glproto)
+        ("libdrm" ,libdrm-2.4.33)
+        ("libxdamage" ,libxdamage)
+        ("libxxf86vm" ,libxxf86vm)))
+    (inputs
+      `(("dri2proto" ,dri2proto)
+        ("expat" ,expat)
+        ("libx11" ,libx11)
+        ("libxfixes" ,libxfixes)
+        ("libxml2" ,libxml2)
+        ("makedepend" ,makedepend)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)
+        ("flex" ,flex)
+        ("bison" ,bison)
+        ("python" ,python-2))) ; incompatible with Python 3 (print syntax)
+    (arguments
+      `(#:configure-flags
+         `("--with-gallium-drivers=r600,svga,swrast") ; drop r300 from the default list as it requires llvm
+        #:phases
+         (alist-cons-after
+          'unpack 'remove-symlink
+          (lambda* (#:key #:allow-other-keys)
+            ;; remove dangling symlink to /usr/include/wine/windows
+            (delete-file "src/gallium/state_trackers/d3d1x/w32api"))
+         %standard-phases)))
+    (home-page "http://mesa3d.org/")
+    (synopsis "Mesa, an OpenGL implementation")
+    (description "Mesa is a free implementation of the OpenGL specification -
+a system for rendering interactive 3D graphics. A variety of device drivers
+allows Mesa to be used in many different environments ranging from software
+emulation to complete hardware acceleration for modern GPUs.")
     (license l:x11)))

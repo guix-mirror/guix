@@ -37,6 +37,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages xorg))
 
 (define-public libxkbcommon

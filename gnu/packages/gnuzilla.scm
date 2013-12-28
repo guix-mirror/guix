@@ -37,6 +37,7 @@
   #:use-module (gnu packages libffi)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages yasm)
   #:use-module (gnu packages zip))
 
