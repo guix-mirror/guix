@@ -108,8 +108,9 @@
 (gc)
 
 (test-equal "canonical-sexp-nth-data"
-  '("Name" "Otto" "Meier" #f #f #f)
-  (let ((lst (string->canonical-sexp "(Name Otto Meier (address Burgplatz))")))
+  `(Name Otto Meier #f ,(base16-string->bytevector "123456") #f)
+  (let ((lst (string->canonical-sexp
+              "(Name Otto Meier (address Burgplatz) #123456#)")))
     (unfold (cut > <> 5)
             (cut canonical-sexp-nth-data lst <>)
             1+

@@ -156,20 +156,42 @@ different from Scheme's 'list-ref'.)"
                        0 (native-endianness)
                        (sizeof size_t)))
 
+(define token-string?
+  (let ((token-cs (char-set-union char-set:digit
+                                  char-set:letter
+                                  (char-set #\- #\. #\/ #\_
+                                            #\: #\* #\+ #\=))))
+    (lambda (str)
+      "Return #t if STR is a token as per Section 4.3 of
+<http://people.csail.mit.edu/rivest/Sexp.txt>."
+      (and (not (string-null? str))
+           (string-every token-cs str)
+           (not (char-set-contains? char-set:digit (string-ref str 0)))))))
+
 (define canonical-sexp-nth-data
   (let* ((ptr  (libgcrypt-func "gcry_sexp_nth_data"))
          (proc (pointer->procedure '* ptr `(* ,int *))))
     (lambda (lst index)
-      "Return as a string the INDEXth data element (atom) of LST, an
-s-expression.  Return #f if that element does not exist, or if it's a list.
-Note that the result is a Scheme string, but depending on LST, it may need to
-be interpreted in the sense of a C string---i.e., as a series of octets."
+      "Return as a symbol (for \"sexp tokens\") or a bytevector (for any other
+\"octet string\") the INDEXth data element (atom) of LST, an s-expression.
+Return #f if that element does not exist, or if it's a list."
       (let* ((size*  (bytevector->pointer (make-bytevector (sizeof '*))))
              (result (proc (canonical-sexp->pointer lst) index size*)))
         (if (null-pointer? result)
             #f
-            (pointer->string result (dereference-size_t size*)
-                             "ISO-8859-1"))))))
+            (let* ((len (dereference-size_t size*))
+                   (str (pointer->string result len "ISO-8859-1")))
+              ;; The sexp spec speaks of "tokens" and "octet strings".
+              ;; Sometimes these octet strings are actual strings (text),
+              ;; sometimes they're bytevectors, and sometimes they're
+              ;; multi-precision integers (MPIs).  Only the application knows.
+              ;; However, for convenience, we return a symbol when a token is
+              ;; encountered since tokens are frequent (at least in the 'car'
+              ;; of each sexp.)
+              (if (token-string? str)
+                  (string->symbol str)   ; an sexp "token"
+                  (bytevector-copy       ; application data, textual or binary
+                   (pointer->bytevector result len)))))))))
 
 (define (number->canonical-sexp number)
   "Return an s-expression representing NUMBER."
@@ -183,23 +205,15 @@ for use as the data for 'sign'."
            hash-algo
            (bytevector->base16-string bv))))
 
-(define (latin1-string->bytevector str)
-  "Return a bytevector representing STR."
-  ;; XXX: In Guile 2.0.9 and later, we would use 'string->bytevector' for
-  ;; that.
-  (let ((bytes (map char->integer (string->list str))))
-    (u8-list->bytevector bytes)))
-
 (define (hash-data->bytevector data)
-  "Return two values: the hash algorithm (a string) and the hash value (a
-bytevector) extract from DATA, an sexp as returned by 'bytevector->hash-data'.
+  "Return two values: the hash value (a bytevector), and the hash algorithm (a
+string) extracted from DATA, an sexp as returned by 'bytevector->hash-data'.
 Return #f if DATA does not conform."
   (let ((hash (find-sexp-token data 'hash)))
     (if hash
         (let ((algo  (canonical-sexp-nth-data hash 1))
               (value (canonical-sexp-nth-data hash 2)))
-          (values (latin1-string->bytevector value)
-                  algo))
+          (values value (symbol->string algo)))
         (values #f #f))))
 
 (define sign
