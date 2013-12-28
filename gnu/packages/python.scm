@@ -160,7 +160,7 @@ data types.")
 
 (define-public python
   (package (inherit python-2)
-    (version "3.3.2")
+    (version "3.3.3")
     (source
      (origin
       (method url-fetch)
@@ -168,7 +168,7 @@ data types.")
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "0hsbwqjnhr85a2w252c8d3yj8d9i5sy8s6a6cfk6zqqhp3234nvl"))))
+        "11f6hg9wdhm6hyzj49gxlvvp1s0l5hqgcsq1i4ayygqs1arpb4ik"))))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
