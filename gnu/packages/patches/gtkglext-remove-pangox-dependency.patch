@@ -1,0 +1,132 @@
+This patch removes the dependency on pangox which has been deprecated.  It
+achieves the same result as the upstream patch at 
+https://git.gnome.org/browse/gtkglext/commit/?id=df7a7b35b80b395d7ba411c7f727970a46fb0588
+Like the upstream patch, it removes the functions gdk_gl_font_use_pango_font,
+and gdk_gl_font_use_pango_font_for_display from the API.
+
+diff -r -U 3 a/configure b/configure
+--- a/configure	2006-02-05 04:17:47.000000000 +0100
++++ b/configure	2013-12-26 12:55:21.000000000 +0100
+@@ -19880,14 +19880,12 @@
+ gtk+-2.0 >= 2.0.0 \\
+ gdk-2.0 >= 2.0.0 \\
+ pango >= 1.0.0 \\
+-pangox >= 1.0.0 \\
+ gmodule-2.0 >= 2.0.0 \\
+ \"") >&5
+   ($PKG_CONFIG --exists --print-errors "\
+ gtk+-2.0 >= 2.0.0 \
+ gdk-2.0 >= 2.0.0 \
+ pango >= 1.0.0 \
+-pangox >= 1.0.0 \
+ gmodule-2.0 >= 2.0.0 \
+ ") 2>&5
+   ac_status=$?
+@@ -19897,7 +19895,6 @@
+ gtk+-2.0 >= 2.0.0 \
+ gdk-2.0 >= 2.0.0 \
+ pango >= 1.0.0 \
+-pangox >= 1.0.0 \
+ gmodule-2.0 >= 2.0.0 \
+ " 2>/dev/null`
+ else
+@@ -19916,14 +19913,12 @@
+ gtk+-2.0 >= 2.0.0 \\
+ gdk-2.0 >= 2.0.0 \\
+ pango >= 1.0.0 \\
+-pangox >= 1.0.0 \\
+ gmodule-2.0 >= 2.0.0 \\
+ \"") >&5
+   ($PKG_CONFIG --exists --print-errors "\
+ gtk+-2.0 >= 2.0.0 \
+ gdk-2.0 >= 2.0.0 \
+ pango >= 1.0.0 \
+-pangox >= 1.0.0 \
+ gmodule-2.0 >= 2.0.0 \
+ ") 2>&5
+   ac_status=$?
+@@ -19933,7 +19928,6 @@
+ gtk+-2.0 >= 2.0.0 \
+ gdk-2.0 >= 2.0.0 \
+ pango >= 1.0.0 \
+-pangox >= 1.0.0 \
+ gmodule-2.0 >= 2.0.0 \
+ " 2>/dev/null`
+ else
+@@ -19958,7 +19952,6 @@
+ gtk+-2.0 >= 2.0.0 \
+ gdk-2.0 >= 2.0.0 \
+ pango >= 1.0.0 \
+-pangox >= 1.0.0 \
+ gmodule-2.0 >= 2.0.0 \
+ "`
+         else
+@@ -19966,7 +19959,6 @@
+ gtk+-2.0 >= 2.0.0 \
+ gdk-2.0 >= 2.0.0 \
+ pango >= 1.0.0 \
+-pangox >= 1.0.0 \
+ gmodule-2.0 >= 2.0.0 \
+ "`
+         fi
+@@ -19977,7 +19969,6 @@
+ gtk+-2.0 >= 2.0.0 \
+ gdk-2.0 >= 2.0.0 \
+ pango >= 1.0.0 \
+-pangox >= 1.0.0 \
+ gmodule-2.0 >= 2.0.0 \
+ ) were not met:
+ 
+@@ -19994,7 +19985,6 @@
+ gtk+-2.0 >= 2.0.0 \
+ gdk-2.0 >= 2.0.0 \
+ pango >= 1.0.0 \
+-pangox >= 1.0.0 \
+ gmodule-2.0 >= 2.0.0 \
+ ) were not met:
+ 
+@@ -25420,7 +25410,7 @@
+ # CFLAGS and LIBS
+ ##################################################
+ 
+-GDKGLEXT_PACKAGES="gdk-2.0 pango pangox gmodule-2.0"
++GDKGLEXT_PACKAGES="gdk-2.0 pango gmodule-2.0"
+ GDKGLEXT_EXTRA_CFLAGS="$GL_CFLAGS $GDKGLEXT_WIN_CFLAGS"
+ GDKGLEXT_EXTRA_LIBS="$GL_LIBS $GDKGLEXT_WIN_LIBS"
+ GDKGLEXT_DEP_CFLAGS="$GDKGLEXT_EXTRA_CFLAGS `$PKG_CONFIG --cflags $GDKGLEXT_PACKAGES`"
+diff -r -U 3 a/gdk/x11/Makefile.in b/gdk/x11/Makefile.in
+--- a/gdk/x11/Makefile.in	2006-02-05 04:17:42.000000000 +0100
++++ b/gdk/x11/Makefile.in	2013-12-26 13:12:04.000000000 +0100
+@@ -257,7 +257,6 @@
+ 	gdkgldrawable-x11.c	\
+ 	gdkglpixmap-x11.c	\
+ 	gdkglwindow-x11.c	\
+-	gdkglfont-x11.c		\
+ 	gdkglglxext.c
+ 
+ 
+@@ -288,7 +287,7 @@
+ am__objects_1 =
+ am__objects_2 = gdkglquery-x11.lo gdkglconfig-x11.lo gdkgloverlay-x11.lo \
+ 	gdkglcontext-x11.lo gdkgldrawable-x11.lo gdkglpixmap-x11.lo \
+-	gdkglwindow-x11.lo gdkglfont-x11.lo gdkglglxext.lo
++	gdkglwindow-x11.lo gdkglglxext.lo
+ am__objects_3 = $(am__objects_1) $(am__objects_2)
+ am_libgdkglext_x11_la_OBJECTS = $(am__objects_3)
+ libgdkglext_x11_la_OBJECTS = $(am_libgdkglext_x11_la_OBJECTS)
+@@ -299,7 +298,6 @@
+ @AMDEP_TRUE@DEP_FILES = ./$(DEPDIR)/gdkglconfig-x11.Plo \
+ @AMDEP_TRUE@	./$(DEPDIR)/gdkglcontext-x11.Plo \
+ @AMDEP_TRUE@	./$(DEPDIR)/gdkgldrawable-x11.Plo \
+-@AMDEP_TRUE@	./$(DEPDIR)/gdkglfont-x11.Plo \
+ @AMDEP_TRUE@	./$(DEPDIR)/gdkglglxext.Plo \
+ @AMDEP_TRUE@	./$(DEPDIR)/gdkgloverlay-x11.Plo \
+ @AMDEP_TRUE@	./$(DEPDIR)/gdkglpixmap-x11.Plo \
+@@ -349,7 +347,6 @@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdkglconfig-x11.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdkglcontext-x11.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdkgldrawable-x11.Plo@am__quote@
+-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdkglfont-x11.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdkglglxext.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdkgloverlay-x11.Plo@am__quote@
+ @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/gdkglpixmap-x11.Plo@am__quote@

@@ -1,0 +1,36 @@
+Having DISABLE_DEPRECATED flags set in the distribution breaks
+building with libraries later than those which the maintainer
+happened to have installed.  This patch removes them.
+
+diff -r -U 3 a/gtk/Makefile.am b/gtk/Makefile.am
+--- a/gtk/Makefile.am	2003-05-09 15:55:05.000000000 +0200
++++ b/gtk/Makefile.am	2013-12-26 15:06:38.000000000 +0100
+@@ -36,11 +36,7 @@
+ 	-I$(top_srcdir)			\
+ 	-I$(top_builddir)/gdk		\
+ 	$(GTKGLEXT_DEBUG_FLAGS)		\
+-	$(GTKGLEXT_DEP_CFLAGS)		\
+-	-DG_DISABLE_DEPRECATED		\
+-	-DGDK_DISABLE_DEPRECATED	\
+-	-DGDK_PIXBUF_DISABLE_DEPRECATED	\
+-	-DGTK_DISABLE_DEPRECATED
++	$(GTKGLEXT_DEP_CFLAGS)
+ 
+ common_ldflags = \
+ 	-version-info $(LT_CURRENT):$(LT_REVISION):$(LT_AGE) 	\
+diff -r -U 3 a/gtk/Makefile.in b/gtk/Makefile.in
+--- a/gtk/Makefile.in	2006-02-05 04:17:42.000000000 +0100
++++ b/gtk/Makefile.in	2013-12-26 15:07:00.000000000 +0100
+@@ -234,11 +234,7 @@
+ 	-I$(top_srcdir)			\
+ 	-I$(top_builddir)/gdk		\
+ 	$(GTKGLEXT_DEBUG_FLAGS)		\
+-	$(GTKGLEXT_DEP_CFLAGS)		\
+-	-DG_DISABLE_DEPRECATED		\
+-	-DGDK_DISABLE_DEPRECATED	\
+-	-DGDK_PIXBUF_DISABLE_DEPRECATED	\
+-	-DGTK_DISABLE_DEPRECATED
++	$(GTKGLEXT_DEP_CFLAGS)
+ 
+ 
+ common_ldflags = \

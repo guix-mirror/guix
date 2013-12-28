@@ -254,6 +254,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-linux-syscalls.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
   gnu/packages/patches/guix-test-networking.patch		\
+  gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
+  gnu/packages/patches/gtkglext-remove-pangox-dependency.patch  \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/libffi-mips-n32-fix.patch		\
