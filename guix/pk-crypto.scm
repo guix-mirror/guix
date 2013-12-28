@@ -32,6 +32,9 @@
             canonical-sexp-cdr
             canonical-sexp-nth
             canonical-sexp-nth-data
+            canonical-sexp-length
+            canonical-sexp-null?
+            canonical-sexp-list?
             bytevector->hash-data
             hash-data->bytevector
             sign
@@ -156,6 +159,14 @@ different from Scheme's 'list-ref'.)"
                        0 (native-endianness)
                        (sizeof size_t)))
 
+(define canonical-sexp-length
+  (let* ((ptr  (libgcrypt-func "gcry_sexp_length"))
+         (proc (pointer->procedure int ptr '(*))))
+    (lambda (sexp)
+      "Return the length of SEXP if it's a list (including the empty list);
+return zero if SEXP is an atom."
+      (proc (canonical-sexp->pointer sexp)))))
+
 (define token-string?
   (let ((token-cs (char-set-union char-set:digit
                                   char-set:letter
@@ -262,5 +273,14 @@ return #f if not found."
         (if (null-pointer? res)
             #f
             (pointer->canonical-sexp res))))))
+
+(define-inlinable (canonical-sexp-null? sexp)
+  "Return #t if SEXP is the empty-list sexp."
+  (null-pointer? (canonical-sexp->pointer sexp)))
+
+(define (canonical-sexp-list? sexp)
+  "Return #t if SEXP is a list."
+  (or (canonical-sexp-null? sexp)
+      (> (canonical-sexp-length sexp) 0)))
 
 ;;; pk-crypto.scm ends here

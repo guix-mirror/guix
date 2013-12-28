@@ -82,6 +82,18 @@
 
 (gc)
 
+(test-equal "canonical-sexp-length"
+  '(0 1 2 4 0 0)
+  (map (compose canonical-sexp-length string->canonical-sexp)
+       '("()" "(a)" "(a b)" "(a #616263# b #C001#)" "a" "#123456#")))
+
+(test-equal "canonical-sexp-list?"
+  '(#t #f #t #f)
+  (map (compose canonical-sexp-list? string->canonical-sexp)
+       '("()" "\"abc\"" "(a b c)" "#123456#")))
+
+(gc)
+
 (test-equal "canonical-sexp-car + cdr"
   '("(b \n (c xyz)\n )")
   (let ((lst (string->canonical-sexp "(a (b (c xyz)))")))
