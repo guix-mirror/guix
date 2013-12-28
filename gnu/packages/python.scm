@@ -41,7 +41,7 @@
 (define-public python-2
   (package
     (name "python")
-    (version "2.7.5")
+    (version "2.7.6")
     (source
      (origin
       (method url-fetch)
@@ -49,7 +49,7 @@
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
-        "1c8xan2dlsqfq8q82r3mhl72v3knq3qyn71fjq89xikx2smlqg7k"))))
+        "18gnpyh071dxa0rv3silrz92jw9qpblswzwv4gzqcwxzz20qxmhz"))))
     (build-system gnu-build-system)
     (arguments
      `(#:tests? #f
