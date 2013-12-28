@@ -40,7 +40,9 @@
             sign
             verify
             generate-key
-            find-sexp-token))
+            find-sexp-token
+            canonical-sexp->sexp
+            sexp->canonical-sexp))
 
 
 ;;; Commentary:
@@ -48,9 +50,13 @@
 ;;; Public key cryptographic routines from GNU Libgcrypt.
 ;;;;
 ;;; Libgcrypt uses "canonical s-expressions" to represent key material,
-;;; parameters, and data.  We keep it as an opaque object rather than
-;;; attempting to map them to Scheme s-expressions because (1) Libgcrypt sexps
-;;; are stored in secure memory, and (2) the read syntax is different.
+;;; parameters, and data.  We keep it as an opaque object to map them to
+;;; Scheme s-expressions because (1) Libgcrypt sexps may be stored in secure
+;;; memory, and (2) the read syntax is different.
+;;;
+;;; A 'canonical-sexp->sexp' procedure is provided nevertheless, for use in
+;;; cases where it is safe to move data out of Libgcrypt---e.g., when
+;;; processing ACL entries, public keys, etc.
 ;;;
 ;;; Canonical sexps were defined by Rivest et al. in the IETF draft at
 ;;; <http://people.csail.mit.edu/rivest/Sexp.txt> for the purposes of SPKI
@@ -282,5 +288,57 @@ return #f if not found."
   "Return #t if SEXP is a list."
   (or (canonical-sexp-null? sexp)
       (> (canonical-sexp-length sexp) 0)))
+
+(define (canonical-sexp-fold proc seed sexp)
+  "Fold PROC (as per SRFI-1) over SEXP, a canonical sexp."
+  (if (canonical-sexp-list? sexp)
+      (let ((len (canonical-sexp-length sexp)))
+        (let loop ((index  0)
+                   (result seed))
+          (if (= index len)
+              result
+              (loop (+ 1 index)
+                    (proc (or (canonical-sexp-nth sexp index)
+                              (canonical-sexp-nth-data sexp index))
+                          result)))))
+      (error "sexp is not a list" sexp)))
+
+(define (canonical-sexp->sexp sexp)
+  "Return a Scheme sexp corresponding to SEXP.  This is particularly useful to
+compare sexps (since Libgcrypt does not provide an 'equal?' procedure), or to
+use pattern matching."
+  (if (canonical-sexp-list? sexp)
+      (reverse
+       (canonical-sexp-fold (lambda (item result)
+                              (cons (if (canonical-sexp? item)
+                                        (canonical-sexp->sexp item)
+                                        item)
+                                    result))
+                            '()
+                            sexp))
+      (canonical-sexp->string sexp)))             ; XXX: not very useful
+
+(define (sexp->canonical-sexp sexp)
+  "Return a canonical sexp equivalent to SEXP, a Scheme sexp as returned by
+'canonical-sexp->sexp'."
+  ;; XXX: This is inefficient, but the Libgcrypt API doesn't allow us to do
+  ;; much better.
+  (string->canonical-sexp
+    (call-with-output-string
+     (lambda (port)
+       (define (write item)
+         (cond ((list? item)
+                (display "(" port)
+                (for-each write item)
+                (display ")" port))
+               ((symbol? item)
+                (format port " ~a" item))
+               ((bytevector? item)
+                (format port " #~a#"
+                        (bytevector->base16-string item)))
+               (else
+                (error "unsupported sexp item type" item))))
+
+       (write sexp)))))
 
 ;;; pk-crypto.scm ends here
