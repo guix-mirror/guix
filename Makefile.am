@@ -31,6 +31,7 @@ MODULES =					\
   guix/records.scm				\
   guix/hash.scm					\
   guix/pk-crypto.scm				\
+  guix/pki.scm					\
   guix/utils.scm				\
   guix/download.scm				\
   guix/monads.scm				\
@@ -111,6 +112,7 @@ SCM_TESTS =					\
   tests/base32.scm				\
   tests/hash.scm				\
   tests/pk-crypto.scm				\
+  tests/pki.scm					\
   tests/builders.scm				\
   tests/derivations.scm				\
   tests/ui.scm					\
