@@ -25,7 +25,7 @@
 (define-public gdbm
   (package
     (name "gdbm")
-    (version "1.10")
+    (version "1.11")
     (source
      (origin
       (method url-fetch)
@@ -33,7 +33,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0h9lfzdjc2yl849y0byg51h6xfjg0y7vg9jnsw3gpfwlbd617y13"))))
+        "1hz3jgh3pd4qzp6jy0l8pd8x01g9abw7csnrlnj1a2sxy122z4cd"))))
     (arguments `(#:configure-flags '("--enable-libgdbm-compat")))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/gdbm/")
