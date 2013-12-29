@@ -62,7 +62,8 @@ GUIX_CHECK_SRFI_37
 AM_CONDITIONAL([INSTALL_SRFI_37], [test "x$ac_cv_guix_srfi_37_broken" = xyes])
 
 AC_ARG_WITH([nix-prefix],
-  [AS_HELP_STRING([--with-nix-prefix=DIR], [search for Nix in DIR])],
+  [AS_HELP_STRING([--with-nix-prefix=DIR],
+    [search for Nix in DIR (for testing purposes and '--disable-daemon' builds)])],
   [case "$withval" in
     yes|no) ;;
     *)
@@ -86,7 +87,8 @@ if test "x$NIX_INSTANTIATE" = "x"; then
 fi
 
 AC_ARG_WITH([nixpkgs],
-  [AS_HELP_STRING([--with-nixpkgs=DIR], [search for Nixpkgs in DIR])],
+  [AS_HELP_STRING([--with-nixpkgs=DIR],
+    [search for Nixpkgs in DIR (for testing purposes only)])],
   [case "$withval" in
     yes|no) AC_MSG_ERROR([Please use `--with-nixpkgs=DIR'.]);;
     *)      NIXPKGS="$withval";;
