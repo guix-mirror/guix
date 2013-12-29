@@ -20,6 +20,7 @@
   #:use-module (guix config)
   #:use-module (guix utils)
   #:use-module (guix pk-crypto)
+  #:use-module (guix pki)
   #:use-module (guix ui)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
@@ -44,17 +45,6 @@
          (bv  (base16-string->bytevector (string-trim-both hex))))
     (bytevector->hash-data bv)))
 
-(define (signature-sexp data secret-key public-key)
-  "Return a SPKI-style sexp for the signature of DATA with SECRET-KEY that
-includes DATA, the actual signature value (with a 'sig-val' tag), and
-PUBLIC-KEY (see <http://theworld.com/~cme/spki.txt> for examples.)"
-  (string->canonical-sexp
-   (format #f
-           "(signature ~a ~a ~a)"
-           (canonical-sexp->string data)
-           (canonical-sexp->string (sign data secret-key))
-           (canonical-sexp->string public-key))))
-
 
 ;;;
 ;;; Entry point with 'openssl'-compatible interface.  We support this
@@ -77,23 +67,30 @@ PUBLIC-KEY (see <http://theworld.com/~cme/spki.txt> for examples.)"
             (signature  (signature-sexp data secret-key public-key)))
        (display (canonical-sexp->string signature))
        #t))
-    (("rsautl" "-verify" "-inkey" key "-pubin" "-in" signature-file)
-     ;; Read the signature as produced above, check it against KEY, and print
-     ;; the signed data to stdout upon success.
-     (let* ((public-key (read-canonical-sexp key))
-            (sig+data   (read-canonical-sexp signature-file))
+    (("rsautl" "-verify" "-inkey" _ "-pubin" "-in" signature-file)
+     ;; Read the signature as produced above, check whether its public key is
+     ;; authorized, and verify the signature, and print the signed data to
+     ;; stdout upon success.
+     (let* ((sig+data   (read-canonical-sexp signature-file))
+            (public-key (find-sexp-token sig+data 'public-key))
             (data       (find-sexp-token sig+data 'data))
             (signature  (find-sexp-token sig+data 'sig-val)))
        (if (and data signature)
-           (if (verify signature data public-key)
-               (begin
-                 (display (bytevector->base16-string
-                           (hash-data->bytevector data)))
-                 #t)                              ; success
+           (if (authorized-key? public-key)
+               (if (verify signature data public-key)
+                   (begin
+                     (display (bytevector->base16-string
+                               (hash-data->bytevector data)))
+                     #t)                          ; success
+                   (begin
+                     (format (current-error-port)
+                             "error: invalid signature: ~a~%"
+                             (canonical-sexp->string signature))
+                     (exit 1)))
                (begin
                  (format (current-error-port)
-                         "error: invalid signature: ~a~%"
-                         (canonical-sexp->string signature))
+                         "error: unauthorized public key: ~a~%"
+                         (canonical-sexp->string public-key))
                  (exit 1)))
            (begin
              (format (current-error-port)
