@@ -72,21 +72,6 @@
   ;; How often we want to remove files corresponding to expired cache entries.
   (* 7 24 3600))
 
-(define (with-atomic-file-output file proc)
-  "Call PROC with an output port for the file that is going to replace FILE.
-Upon success, FILE is atomically replaced by what has been written to the
-output port, and PROC's result is returned."
-  (let* ((template (string-append file ".XXXXXX"))
-         (out      (mkstemp! template)))
-    (with-throw-handler #t
-      (lambda ()
-        (let ((result (proc out)))
-          (close out)
-          (rename-file template file)
-          result))
-      (lambda (key . args)
-        (false-if-exception (delete-file template))))))
-
 ;; In Guile 2.0.9, `regexp-exec' is thread-unsafe, so work around it.
 ;; See <http://bugs.gnu.org/14404>.
 (set! regexp-exec
@@ -594,7 +579,6 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
 
 
 ;;; Local Variables:
-;;; eval: (put 'with-atomic-file-output 'scheme-indent-function 1)
 ;;; eval: (put 'with-timeout 'scheme-indent-function 1)
 ;;; End:
 
