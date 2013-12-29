@@ -23,6 +23,7 @@
             %guix-home-page-url
             %store-directory
             %state-directory
+            %config-directory
             %system
             %libgcrypt
             %nixpkgs
@@ -55,6 +56,10 @@
 (define %state-directory
   ;; This must match `NIX_STATE_DIR' as defined in `daemon.am'.
   "@guix_localstatedir@/nix")
+
+(define %config-directory
+  ;; This must match `NIX_CONF_DIR' as defined in `daemon.am'.
+  (or (getenv "NIX_CONF_DIR") "@guix_sysconfdir@/guix"))
 
 (define %system
   "@guix_system@")
