@@ -61,8 +61,9 @@
             (public-key (if (string-suffix? ".sec" key)
                             (read-canonical-sexp
                              (string-append (string-drop-right key 4) ".pub"))
-                            (leave (_ "cannot find public key for secret key '~a'")
-                                   key)))
+                            (leave
+                             (_ "cannot find public key for secret key '~a'~%")
+                             key)))
             (data       (read-hash-data hash-file))
             (signature  (signature-sexp data secret-key public-key)))
        (display (canonical-sexp->string signature))
@@ -82,21 +83,12 @@
                      (display (bytevector->base16-string
                                (hash-data->bytevector data)))
                      #t)                          ; success
-                   (begin
-                     (format (current-error-port)
-                             "error: invalid signature: ~a~%"
-                             (canonical-sexp->string signature))
-                     (exit 1)))
-               (begin
-                 (format (current-error-port)
-                         "error: unauthorized public key: ~a~%"
-                         (canonical-sexp->string public-key))
-                 (exit 1)))
-           (begin
-             (format (current-error-port)
-                     "error: corrupt signature data: ~a~%"
-                     (canonical-sexp->string sig+data))
-             (exit 1)))))
+                   (leave (_ "error: invalid signature: ~a~%")
+                          (canonical-sexp->string signature)))
+               (leave (_ "error: unauthorized public key: ~a~%")
+                      (canonical-sexp->string public-key)))
+           (leave (_ "error: corrupt signature data: ~a~%")
+                  (canonical-sexp->string sig+data)))))
     (("--help")
      (display (_ "Usage: guix authenticate OPTION...
 Sign or verify the signature on the given file.  This tool is meant to
