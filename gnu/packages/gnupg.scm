@@ -82,6 +82,7 @@ Daemon and possibly more in the future.")
      `(#:configure-flags
        (list (string-append "--with-gpg-error-prefix="
                             (assoc-ref %build-inputs "libgpg-error")))))
+    (outputs '("out" "debug"))
     (home-page "http://gnupg.org/")
     (synopsis "Cryptographic function library")
     (description
