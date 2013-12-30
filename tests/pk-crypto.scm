@@ -209,6 +209,18 @@
     (map (compose canonical-sexp->sexp sexp->canonical-sexp)
          lst)))
 
+(let ((sexp `(signature
+              (public-key
+               (rsa
+                (n ,(make-bytevector 1024 1))
+                (e ,(base16-string->bytevector "010001")))))))
+  (test-equal "https://bugs.g10code.com/gnupg/issue1594"
+    ;; The gcrypt bug above was primarily affecting our uses in
+    ;; 'canonical-sexp->sexp', typically when applied to a signature sexp (in
+    ;; 'guix authenticate -verify') with a "big" RSA key, such as 4096 bits.
+    sexp
+    (canonical-sexp->sexp (sexp->canonical-sexp sexp))))
+
 (test-end)
 
 

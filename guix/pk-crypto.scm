@@ -298,8 +298,11 @@ return #f if not found."
           (if (= index len)
               result
               (loop (+ 1 index)
-                    (proc (or (canonical-sexp-nth sexp index)
-                              (canonical-sexp-nth-data sexp index))
+                    ;; XXX: Call 'nth-data' *before* 'nth' to work around
+                    ;; <https://bugs.g10code.com/gnupg/issue1594>, which
+                    ;; affects 1.6.0 and earlier versions.
+                    (proc (or (canonical-sexp-nth-data sexp index)
+                              (canonical-sexp-nth sexp index))
                           result)))))
       (error "sexp is not a list" sexp)))
 
