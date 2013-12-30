@@ -24,6 +24,7 @@
   #:use-module (rnrs io ports)
   #:export (%public-key-file
             %private-key-file
+            %acl-file
             current-acl
             public-keys->acl
             acl->public-keys

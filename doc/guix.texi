@@ -942,7 +942,8 @@ Archives are stored in the ``Nix archive'' or ``Nar'' format, which is
 comparable in spirit to `tar'.  When exporting, the daemon digitally
 signs the contents of the archive, and that digital signature is
 appended.  When importing, the daemon verifies the signature and rejects
-the import in case of an invalid signature.
+the import in case of an invalid signature or if the signing key is not
+authorized.
 @c FIXME: Add xref to daemon doc about signatures.
 
 The main options are:
@@ -955,9 +956,11 @@ resulting archive to the standard output.
 @item --import
 Read an archive from the standard input, and import the files listed
 therein into the store.  Abort if the archive has an invalid digital
-signature.
+signature, or if it is signed by a public key not among the authorized
+keys (see @code{--authorize} below.)
 
 @item --generate-key[=@var{parameters}]
+@cindex signing, archives
 Generate a new key pair for the daemons.  This is a prerequisite before
 archives can be exported with @code{--export}.  Note that this operation
 usually takes time, because it needs to gather enough entropy to
@@ -970,6 +973,19 @@ is a 4096-bit RSA key.  Alternately, @var{parameters} can specify
 @code{genkey} parameters suitable for Libgcrypt (@pxref{General
 public-key related Functions, @code{gcry_pk_genkey},, gcrypt, The
 Libgcrypt Reference Manual}).
+
+@item --authorize
+@cindex authorizing, archives
+Authorize imports signed by the public key passed on standard input.
+The public key must be in ``s-expression advanced format''---i.e., the
+same format as the @file{signing-key.pub} file.
+
+The list of authorized keys is kept in the human-editable file
+@file{/etc/guix/acl}.  The file contains
+@url{http://people.csail.mit.edu/rivest/Sexp.txt, ``advanced-format
+s-expressions''} and is structured as an access-control list in the
+@url{http://theworld.com/~cme/spki.txt, Simple Public-Key Infrastructure
+(SPKI)}.
 @end table
 
 To export store files as an archive to the standard output, run:

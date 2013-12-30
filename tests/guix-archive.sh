@@ -43,3 +43,6 @@ guix archive --import < "$archive" 2>&1 | grep "import.*guile-bootstrap"
 
 if guix archive something-that-does-not-exist
 then false; else true; fi
+
+if echo foo | guix archive --authorize
+then false; else true; fi

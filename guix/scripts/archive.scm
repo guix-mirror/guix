@@ -32,6 +32,7 @@
   #:use-module (srfi srfi-37)
   #:use-module (guix scripts build)
   #:use-module (guix scripts package)
+  #:use-module (rnrs io ports)
   #:export (guix-archive))
 
 
@@ -111,6 +112,9 @@ Export/import one or more packages from/to the store.\n"))
                     (lambda args
                       (leave (_ "invalid key generation parameters: ~s~%")
                              arg)))))
+        (option '("authorize") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'authorize #t result)))
 
         (option '(#\S "source") #f #f
                 (lambda (opt name arg result)
@@ -256,6 +260,28 @@ this may take time...~%"))
     ;; Make the public key readable by everyone.
     (chmod %public-key-file #o444)))
 
+(define (authorize-key)
+  "Authorize imports signed by the public key passed as an advanced sexp on
+the input port."
+  (define (read-key)
+    (catch 'gcry-error
+      (lambda ()
+        (string->canonical-sexp (get-string-all (current-input-port))))
+      (lambda (key err)
+        (leave (_ "failed to read public key: ~a: ~a~%")
+               (error-source err) (error-string err)))))
+
+  (let ((key (read-key))
+        (acl (current-acl)))
+    (unless (eq? 'public-key (canonical-sexp-nth-data key 0))
+      (leave (_ "s-expression does not denote a public key~%")))
+
+    ;; Add KEY to the ACL and write that.
+    (let ((acl (public-keys->acl (cons key (acl->public-keys acl)))))
+      (with-atomic-file-output %acl-file
+        (lambda (port)
+          (display (canonical-sexp->string acl) port))))))
+
 (define (guix-archive . args)
   (define (parse-options)
     ;; Return the alist of option values.
@@ -274,6 +300,8 @@ this may take time...~%"))
         (cond ((assoc-ref opts 'generate-key)
                =>
                generate-key-pair)
+              ((assoc-ref opts 'authorize)
+               (authorize-key))
               (else
                (let ((store (open-connection)))
                  (cond ((assoc-ref opts 'export)
