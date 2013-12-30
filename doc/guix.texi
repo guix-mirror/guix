@@ -213,7 +213,8 @@ Bash syntax and the @code{shadow} commands):
   do
     useradd -g guix-builder -G guix-builder           \
             -d /var/empty -s `which nologin`          \
-            -c "Guix build user $i" guix-builder$i;
+            -c "Guix build user $i" --system          \
+            guix-builder$i;
   done
 @end example
 
