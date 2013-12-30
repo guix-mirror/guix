@@ -319,7 +319,14 @@ use pattern matching."
                                     result))
                             '()
                             sexp))
-      (canonical-sexp->string sexp)))             ; XXX: not very useful
+
+      ;; As of Libgcrypt 1.6.0, there's no function to extract the buffer of a
+      ;; non-list sexp (!), so we first enlist SEXP, then get at its buffer.
+      (let ((sexp (string->canonical-sexp
+                   (string-append "(" (canonical-sexp->string sexp)
+                                  ")"))))
+        (or (canonical-sexp-nth-data sexp 0)
+            (canonical-sexp-nth sexp 0)))))
 
 (define (sexp->canonical-sexp sexp)
   "Return a canonical sexp equivalent to SEXP, a Scheme sexp as returned by

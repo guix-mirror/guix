@@ -203,7 +203,10 @@
                 (string-downcase
                  "00C1F764069F54FFE93A126B02328903E984E4AE3AF6DF402B5B6B3907911B88C385F1BA76A002EC9DEA109A5228EF0E62EE31A06D1A5861CAB474F6C857AC66EB65A1905F25BBA1869579E73A3B7FED13AF5A1667326F88CDFC2FF24B03C14FD1384AA7E73CA89572880B606E3A974E15347963FC7B6378574936A47580DBCB45")))
            (e ,(base16-string->bytevector
-                "010001")))))))
+                "010001"))))
+
+         ,(base16-string->bytevector
+           "2749f0ea9f26c6c7be746a9cff8fa4c2f2a02b000070dba78429e9a11f87c6eb"))))
   (test-equal "sexp->canonical-sexp->sexp"
     lst
     (map (compose canonical-sexp->sexp sexp->canonical-sexp)
