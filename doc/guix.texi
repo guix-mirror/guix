@@ -237,6 +237,14 @@ case, shared memory support is unavailable in the chroot environment.
 The workaround is to make sure that @file{/dev/shm} is directly a
 @code{tmpfs} mount point.}.
 
+Finally, you may want to generate a key pair to allow the daemon to
+export signed archives of files from the store (@pxref{Invoking guix
+archive}):
+
+@example
+# guix archive --generate-key
+@end example
+
 Guix may also be used in a single-user setup, with @command{guix-daemon}
 running as an unprivileged user.  However, to maximize non-interference
 of build processes, the daemon still needs to perform certain operations
@@ -948,6 +956,20 @@ resulting archive to the standard output.
 Read an archive from the standard input, and import the files listed
 therein into the store.  Abort if the archive has an invalid digital
 signature.
+
+@item --generate-key[=@var{parameters}]
+Generate a new key pair for the daemons.  This is a prerequisite before
+archives can be exported with @code{--export}.  Note that this operation
+usually takes time, because it needs to gather enough entropy to
+generate the key pair.
+
+The generated key pair is typically stored under @file{/etc/guix}, in
+@file{signing-key.pub} (public key) and @file{signing-key.sec} (private
+key, which must be kept secret.)  When @var{parameters} is omitted, it
+is a 4096-bit RSA key.  Alternately, @var{parameters} can specify
+@code{genkey} parameters suitable for Libgcrypt (@pxref{General
+public-key related Functions, @code{gcry_pk_genkey},, gcrypt, The
+Libgcrypt Reference Manual}).
 @end table
 
 To export store files as an archive to the standard output, run:

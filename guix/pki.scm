@@ -23,6 +23,7 @@
   #:use-module (ice-9 match)
   #:use-module (rnrs io ports)
   #:export (%public-key-file
+            %private-key-file
             current-acl
             public-keys->acl
             acl->public-keys
@@ -68,6 +69,9 @@ element in KEYS must be a canonical sexp with type 'public-key'."
 
 (define %public-key-file
   (string-append %config-directory "/signing-key.pub"))
+
+(define %private-key-file
+  (string-append %config-directory "/signing-key.sec"))
 
 (define (ensure-acl)
   "Make sure the ACL file exists, and create an initialized one if needed."

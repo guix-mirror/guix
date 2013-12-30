@@ -23,6 +23,8 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix ui)
+  #:use-module (guix pki)
+  #:use-module (guix pk-crypto)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -52,6 +54,9 @@ Export/import one or more packages from/to the store.\n"))
   (display (_ "
       --import           import from the archive passed on stdin"))
   (newline)
+  (display (_ "
+      --generate-key[=PARAMETERS]
+                         generate a key pair with the given parameters"))
   (display (_ "
   -e, --expression=EXPR  build the package or derivation EXPR evaluates to"))
   (display (_ "
@@ -95,6 +100,17 @@ Export/import one or more packages from/to the store.\n"))
         (option '("import") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'import #t result)))
+        (option '("generate-key") #f #t
+                (lambda (opt name arg result)
+                  (catch 'gcry-error
+                    (lambda ()
+                      (let ((params
+                             (string->canonical-sexp
+                              (or arg "(genkey (rsa (nbits 4:4096)))"))))
+                        (alist-cons 'generate-key params result)))
+                    (lambda args
+                      (leave (_ "invalid key generation parameters: ~s~%")
+                             arg)))))
 
         (option '(#\S "source") #f #f
                 (lambda (opt name arg result)
@@ -204,7 +220,41 @@ resulting archive to the standard output port."
     (if (or (assoc-ref opts 'dry-run?)
             (build-derivations store drv))
         (export-paths store files (current-output-port))
-        (leave (_ "unable to export the given packages")))))
+        (leave (_ "unable to export the given packages~%")))))
+
+(define (generate-key-pair parameters)
+  "Generate a key pair with PARAMETERS, a canonical sexp, and store it in the
+right place."
+  (when (or (file-exists? %public-key-file)
+            (file-exists? %private-key-file))
+    (leave (_ "key pair exists under '~a'; remove it first~%")
+           (dirname %public-key-file)))
+
+  (format (current-error-port)
+          (_ "Please wait while gathering entropy to generate the key pair;
+this may take time...~%"))
+
+  (let* ((pair   (catch 'gcry-error
+                   (lambda ()
+                     (generate-key parameters))
+                   (lambda (key err)
+                     (leave (_ "key generation failed: ~a: ~a~%")
+                            (error-source err)
+                            (error-string err)))))
+         (public (find-sexp-token pair 'public-key))
+         (secret (find-sexp-token pair 'private-key)))
+    ;; Create the following files as #o400.
+    (umask #o266)
+
+    (with-atomic-file-output %public-key-file
+      (lambda (port)
+        (display (canonical-sexp->string public) port)))
+    (with-atomic-file-output %private-key-file
+      (lambda (port)
+        (display (canonical-sexp->string secret) port)))
+
+    ;; Make the public key readable by everyone.
+    (chmod %public-key-file #o444)))
 
 (define (guix-archive . args)
   (define (parse-options)
@@ -220,13 +270,17 @@ resulting archive to the standard output port."
     ;; Ask for absolute file names so that .drv file names passed from the
     ;; user to 'read-derivation' are absolute when it returns.
     (with-fluids ((%file-port-name-canonicalization 'absolute))
-      (let* ((opts  (parse-options))
-             (store (open-connection)))
-
-        (cond ((assoc-ref opts 'export)
-               (export-from-store store opts))
-              ((assoc-ref opts 'import)
-               (import-paths store (current-input-port)))
+      (let ((opts (parse-options)))
+        (cond ((assoc-ref opts 'generate-key)
+               =>
+               generate-key-pair)
               (else
-               (leave
-                (_ "either '--export' or '--import' must be specified"))))))))
+               (let ((store (open-connection)))
+                 (cond ((assoc-ref opts 'export)
+                        (export-from-store store opts))
+                       ((assoc-ref opts 'import)
+                        (import-paths store (current-input-port)))
+                       (else
+                        (leave
+                         (_ "either '--export' or '--import' \
+must be specified~%")))))))))))

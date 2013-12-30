@@ -25,6 +25,8 @@
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
   #:export (canonical-sexp?
+            error-source
+            error-string
             string->canonical-sexp
             canonical-sexp->string
             number->canonical-sexp
@@ -97,6 +99,22 @@
       ;; existing one.)
       (set-pointer-finalizer! ptr finalize-canonical-sexp!))
     sexp))
+
+(define error-source
+  (let* ((ptr  (libgcrypt-func "gcry_strsource"))
+         (proc (pointer->procedure '* ptr (list int))))
+    (lambda (err)
+      "Return the error source (a string) for ERR, an error code as thrown
+along with 'gcry-error'."
+      (pointer->string (proc err)))))
+
+(define error-string
+  (let* ((ptr  (libgcrypt-func "gcry_strerror"))
+         (proc (pointer->procedure '* ptr (list int))))
+    (lambda (err)
+      "Return the error description (a string) for ERR, an error code as
+thrown along with 'gcry-error'."
+      (pointer->string (proc err)))))
 
 (define string->canonical-sexp
   (let* ((ptr  (libgcrypt-func "gcry_sexp_new"))
