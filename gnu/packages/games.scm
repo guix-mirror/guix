@@ -22,12 +22,48 @@
   #:use-module (guix download)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages sqlite)
   #:use-module (guix build-system gnu))
+
+(define-public gnubg
+  (package
+    (name "gnubg")
+    (version "1.02")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://files.gnubg.org/media/sources/gnubg-release-"
+                           version ".000-sources." "tar.gz"))
+       (sha256
+        (base32
+         "015mvjk2iw1cg1kxwxfnvp2rxb9cylf6yc39i30fdy414k07zkky"))))
+    (build-system gnu-build-system)
+    (inputs `(("glib" ,glib)
+              ("readline" ,readline)
+              ("gtk+" ,gtk+-2)
+              ("mesa" ,mesa)
+              ("gtkglext" ,gtkglext)
+              ("sqlite" ,sqlite)
+              ("libcanberra" ,libcanberra)))
+    (native-inputs `(("python-2" ,python-2)
+                     ("pkg-config" ,pkg-config)))
+    (home-page "https://gnubg.org")
+    (synopsis "Backgammon game")
+    (description "The GNU backgammon application can be used for playing, analyzing and
+teaching the game.  It has an advanced evaluation engine based on artificial
+neural networks suitable for both beginners and advanced players.  In
+addition to a command-line interface, it also features an attractive, 3D
+representation of the playing board.")
+    (license gpl3+)))
 
 (define-public gnubik
   (package
