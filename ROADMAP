@@ -2,7 +2,7 @@
 
 #+TITLE: Tentative GNU Guix Road Map
 
-Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -15,10 +15,18 @@ The goals of the GNU Guix project are two-fold:
 
   - to use it to build a practical 100% free software distribution of
     GNU/Linux and possibly other GNU variants, with a focus on the
-    promotion and tight integration of GNU components.
+    promotion and tight integration of GNU components–the GNU system.
 
-This documents lists tentative milestones toward these goals.
+This document lists milestones toward these goals.
 
+The timeline below was written at the end of Dec. 2012.  An updated and more
+detailed list of the remaining milestones was posted at
+https://lists.gnu.org/archive/html/guix-devel/2013-12/msg00120.html .
+
+The actual timeline was of course slightly different than initially
+envisioned, and so was the feature set–things like cross-compilation support
+and the MIPS64 port were not planned back then.  See the news section at
+http://www.gnu.org/software/guix/ and ‘NEWS’ for the release history.
 
 * GNU Guix 0.1: Jan. 2013 (was: Dec. 2012)
 
