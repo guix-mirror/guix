@@ -95,8 +95,17 @@ basis for almost any application.")
 
        #:phases
        (alist-cons-before
-        'configure 'fix-test-suite
-        (lambda _
+        'configure 'pre-configure
+        (lambda* (#:key inputs #:allow-other-keys)
+          ;; Make sure 'lsh' and 'lshd' pick 'sexp-conv' in the right place by
+          ;; default.
+          (substitute* "src/environ.h.in"
+            (("^#define PATH_SEXP_CONV.*")
+             (let* ((nettle    (assoc-ref inputs "nettle"))
+                    (sexp-conv (string-append nettle "/bin/sexp-conv")))
+               (string-append "#define PATH_SEXP_CONV \""
+                              sexp-conv "\"\n"))))
+
           ;; Tests rely on $USER being set.
           (setenv "USER" "guix")
 
