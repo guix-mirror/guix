@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages gperf)
-  #:use-module (gnu packages base))
+  #:use-module (gnu packages guile))
 
 (define-public liboop
   (package
@@ -70,18 +70,18 @@ basis for almost any application.")
        (base32
         "1qqjy9zfzgny0rkb27c8c7dfsylvb6n0ld8h3an2r83pmaqr9gwb"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("m4" ,m4)
+       ("guile" ,guile-2.0)
+       ("gperf" ,gperf)
+       ("psmisc" ,psmisc)))                       ; for `killall'
     (inputs
      `(("nettle" ,nettle)
        ("linux-pam" ,linux-pam)
-       ("m4" ,m4)
        ("readline" ,readline)
        ("liboop" ,liboop)
        ("zlib" ,guix:zlib)
-       ("gmp" ,gmp)
-       ("guile" ,guile-final)
-       ("gperf" ,gperf)
-       ("psmisc" ,psmisc)                         ; for `killall'
-       ))
+       ("gmp" ,gmp)))
     (arguments
      '(;; Skip the `configure' test that checks whether /dev/ptmx &
        ;; co. work as expected, because it relies on impurities (for
