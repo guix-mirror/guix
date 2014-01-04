@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 #
 # This file is part of GNU Guix.
@@ -218,3 +218,10 @@ done
 # Extraneous argument.
 if guix package install foo-bar;
 then false; else true; fi
+
+# Make sure the "broken pipe" doesn't yield an error.
+# Note: 'pipefail' is a Bash-specific option.
+set -o pipefail || true
+guix package -A g | head -1 2> "$HOME/err1"
+guix package -I | head -1 2> "$HOME/err2"
+test "`cat "$HOME/err1" "$HOME/err2"`" = ""

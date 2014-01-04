@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -292,6 +292,22 @@ return its return value."
      (lambda (signum)
        (format (current-error-port) "  interrupted by signal ~a~%" SIGINT)
        #f))))
+
+(define-syntax-rule (leave-on-EPIPE exp ...)
+  "Run EXP... in a context when EPIPE errors are caught and lead to 'exit'
+with successful exit code.  This is useful when writing to the standard output
+may lead to EPIPE, because the standard output is piped through 'head' or
+similar."
+  (catch 'system-error
+    (lambda ()
+      exp ...)
+    (lambda args
+      ;; We really have to exit this brutally, otherwise Guile eventually
+      ;; attempts to flush all the ports, leading to an uncaught EPIPE down
+      ;; the path.
+      (if (= EPIPE (system-error-errno args))
+          (primitive-_exit 0)
+          (apply throw args)))))
 
 (define* (specification->package+output spec #:optional (output "out"))
   "Return the package and output specified by SPEC, or #f and #f; SPEC may
@@ -958,15 +974,17 @@ more information.~%"))
                        profile))
                ((string-null? pattern)
                 (let ((numbers (generation-numbers profile)))
-                  (if (equal? numbers '(0))
-                      (exit 0)
-                      (for-each list-generation numbers))))
+                  (leave-on-EPIPE
+                   (if (equal? numbers '(0))
+                       (exit 0)
+                       (for-each list-generation numbers)))))
                ((matching-generations pattern profile)
                 =>
                 (lambda (numbers)
                   (if (null-list? numbers)
                       (exit 1)
-                      (for-each list-generation numbers))))
+                      (leave-on-EPIPE
+                       (for-each list-generation numbers)))))
                (else
                 (leave (_ "invalid syntax: ~a~%")
                        pattern)))
@@ -976,15 +994,16 @@ more information.~%"))
          (let* ((regexp    (and regexp (make-regexp regexp)))
                 (manifest  (profile-manifest profile))
                 (installed (manifest-entries manifest)))
-           (for-each (match-lambda
-                      (($ <manifest-entry> name version output path _)
-                       (when (or (not regexp)
-                                 (regexp-exec regexp name))
-                         (format #t "~a\t~a\t~a\t~a~%"
-                                 name (or version "?") output path))))
+           (leave-on-EPIPE
+            (for-each (match-lambda
+                       (($ <manifest-entry> name version output path _)
+                        (when (or (not regexp)
+                                  (regexp-exec regexp name))
+                          (format #t "~a\t~a\t~a\t~a~%"
+                                  name (or version "?") output path))))
 
-                     ;; Show most recently installed packages last.
-                     (reverse installed))
+                      ;; Show most recently installed packages last.
+                      (reverse installed)))
            #t))
 
         (('list-available regexp)
@@ -998,16 +1017,17 @@ more information.~%"))
                                         r)
                                     (cons p r))))
                             '())))
-           (for-each (lambda (p)
-                       (format #t "~a\t~a\t~a\t~a~%"
-                               (package-name p)
-                               (package-version p)
-                               (string-join (package-outputs p) ",")
-                               (location->string (package-location p))))
-                     (sort available
-                           (lambda (p1 p2)
-                             (string<? (package-name p1)
-                                       (package-name p2)))))
+           (leave-on-EPIPE
+            (for-each (lambda (p)
+                        (format #t "~a\t~a\t~a\t~a~%"
+                                (package-name p)
+                                (package-version p)
+                                (string-join (package-outputs p) ",")
+                                (location->string (package-location p))))
+                      (sort available
+                            (lambda (p1 p2)
+                              (string<? (package-name p1)
+                                        (package-name p2))))))
            #t))
 
         (('search regexp)
