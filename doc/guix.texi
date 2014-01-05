@@ -10,7 +10,7 @@
 @include version.texi
 
 @copying
-Copyright @copyright{} 2012, 2013 Ludovic Courtès@*
+Copyright @copyright{} 2012, 2013, 2014 Ludovic Courtès@*
 Copyright @copyright{} 2013 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov
 
@@ -1654,6 +1654,12 @@ packages locally.
 @item --no-substitutes
 Do not use substitutes for build products.  That is, always build things
 locally instead of allowing downloads of pre-built binaries.
+
+@item --no-build-hook
+Do not attempt to offload builds @i{via} the daemon's ``build hook''.
+That is, always build things locally instead of offloading builds to
+remote machines.
+@c TODO: Add xref to build hook doc.
 
 @item --max-silent-time=@var{seconds}
 When the build or substitution process remains silent for more than

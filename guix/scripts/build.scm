@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -108,6 +108,7 @@ present, return the preferred newest version."
   ;; Alist of default option values.
   `((system . ,(%current-system))
     (substitutes? . #t)
+    (build-hook? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)))
 
@@ -132,6 +133,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
       --fallback         fall back to building when the substituter fails"))
   (display (_ "
       --no-substitutes   build instead of resorting to pre-built substitutes"))
+  (display (_ "
+      --no-build-hook    do not attempt to offload builds via the build hook"))
   (display (_ "
       --max-silent-time=SECONDS
                          mark the build as failed after SECONDS of silence"))
@@ -199,6 +202,10 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
                 (lambda (opt name arg result)
                   (alist-cons 'substitutes? #f
                               (alist-delete 'substitutes? result))))
+        (option '("no-build-hook") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'build-hook? #f
+                              (alist-delete 'build-hook? result))))
         (option '("max-silent-time") #t #f
                 (lambda (opt name arg result)
                   (alist-cons 'max-silent-time (string->number* arg)
@@ -283,6 +290,7 @@ build."
                            #:build-cores (or (assoc-ref opts 'cores) 0)
                            #:fallback? (assoc-ref opts 'fallback?)
                            #:use-substitutes? (assoc-ref opts 'substitutes?)
+                           #:use-build-hook? (assoc-ref opts 'build-hook?)
                            #:max-silent-time (assoc-ref opts 'max-silent-time)
                            #:verbosity (assoc-ref opts 'verbosity))
 
