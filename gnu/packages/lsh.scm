@@ -61,14 +61,32 @@ basis for almost any application.")
   (package
     (name "lsh")
     (version "2.1")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/lsh/lsh-"
-                          version ".tar.gz"))
-      (sha256
-       (base32
-        "1qqjy9zfzgny0rkb27c8c7dfsylvb6n0ld8h3an2r83pmaqr9gwb"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/lsh/lsh-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1qqjy9zfzgny0rkb27c8c7dfsylvb6n0ld8h3an2r83pmaqr9gwb"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (use-modules (guix build utils))
+
+                  (substitute* "src/testsuite/functions.sh"
+                    (("localhost")
+                     ;; Avoid host name lookups since they don't work in
+                     ;; chroot builds.
+                     "127.0.0.1")
+                    (("set -e")
+                     ;; Make tests more verbose.
+                     "set -e\nset -x"))
+
+                  (substitute* (find-files "src/testsuite" "-test$")
+                    (("localhost") "127.0.0.1"))
+
+                  (substitute* "src/testsuite/login-auth-test"
+                    (("/bin/cat") "cat"))))))
     (build-system gnu-build-system)
     (native-inputs
      `(("m4" ,m4)
@@ -107,24 +125,7 @@ basis for almost any application.")
                               sexp-conv "\"\n"))))
 
           ;; Tests rely on $USER being set.
-          (setenv "USER" "guix")
-
-          (substitute* "src/testsuite/functions.sh"
-            (("localhost")
-             ;; Avoid host name lookups since they don't work in chroot
-             ;; builds.
-             "127.0.0.1")
-            (("set -e")
-             ;; Make tests more verbose.
-             "set -e\nset -x"))
-
-          (substitute* (find-files "src/testsuite" "-test$")
-            (("localhost") "127.0.0.1"))
-
-          (substitute* "src/testsuite/login-auth-test"
-            (("/bin/cat")
-             ;; Use the right path to `cat'.
-             (which "cat"))))
+          (setenv "USER" "guix"))
         %standard-phases)))
     (home-page "http://www.lysator.liu.se/~nisse/lsh/")
     (synopsis "GNU implementation of the Secure Shell (ssh) protocols")
