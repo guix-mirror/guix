@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,6 +19,7 @@
 (define-module (guix scripts archive)
   #:use-module (guix config)
   #:use-module (guix utils)
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module (guix store)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -250,6 +251,7 @@ this may take time...~%"))
     ;; Create the following files as #o400.
     (umask #o266)
 
+    (mkdir-p (dirname %public-key-file))
     (with-atomic-file-output %public-key-file
       (lambda (port)
         (display (canonical-sexp->string public) port)))
