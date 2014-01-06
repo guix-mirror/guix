@@ -27,6 +27,8 @@
   #:use-module (guix pki)
   #:use-module (guix pk-crypto)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
+  #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -55,6 +57,8 @@ Export/import one or more packages from/to the store.\n"))
       --export           export the specified files/packages to stdout"))
   (display (_ "
       --import           import from the archive passed on stdin"))
+  (display (_ "
+      --missing          print the files from stdin that are missing"))
   (newline)
   (display (_ "
       --generate-key[=PARAMETERS]
@@ -102,6 +106,9 @@ Export/import one or more packages from/to the store.\n"))
         (option '("import") #f #f
                 (lambda (opt name arg result)
                   (alist-cons 'import #t result)))
+        (option '("missing") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'missing #t result)))
         (option '("generate-key") #f #t
                 (lambda (opt name arg result)
                   (catch 'gcry-error
@@ -294,6 +301,15 @@ the input port."
                   (alist-cons 'argument arg result))
                 %default-options))
 
+  (define (lines port)
+    ;; Return lines read from PORT.
+    (let loop ((line   (read-line port))
+               (result '()))
+      (if (eof-object? line)
+          (reverse result)
+          (loop (read-line port)
+                (cons line result)))))
+
   (with-error-handling
     ;; Ask for absolute file names so that .drv file names passed from the
     ;; user to 'read-derivation' are absolute when it returns.
@@ -310,6 +326,11 @@ the input port."
                         (export-from-store store opts))
                        ((assoc-ref opts 'import)
                         (import-paths store (current-input-port)))
+                       ((assoc-ref opts 'missing)
+                        (let* ((files   (lines (current-input-port)))
+                               (missing (remove (cut valid-path? store <>)
+                                                files)))
+                          (format #t "~{~a~%~}" missing)))
                        (else
                         (leave
                          (_ "either '--export' or '--import' \

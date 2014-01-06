@@ -938,6 +938,12 @@ package to a machine connected over SSH, one would run:
 guix archive --export emacs | ssh the-machine guix archive --import
 @end example
 
+@noindent
+However, note that, in this example, all of @code{emacs} and its
+dependencies are transferred, regardless of what is already available in
+the target machine's store.  The @code{--missing} option can help figure
+out which items are missing from the target's store.
+
 Archives are stored in the ``Nix archive'' or ``Nar'' format, which is
 comparable in spirit to `tar'.  When exporting, the daemon digitally
 signs the contents of the archive, and that digital signature is
@@ -958,6 +964,11 @@ Read an archive from the standard input, and import the files listed
 therein into the store.  Abort if the archive has an invalid digital
 signature, or if it is signed by a public key not among the authorized
 keys (see @code{--authorize} below.)
+
+@item --missing
+Read a list of store file names from the standard input, one per line,
+and write on the standard output the subset of these files missing from
+the store.
 
 @item --generate-key[=@var{parameters}]
 @cindex signing, archives

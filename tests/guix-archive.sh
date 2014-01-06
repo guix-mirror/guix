@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -42,6 +42,24 @@ cmp "$archive" "$archive_alt"
 guix archive --import < "$archive" 2>&1 | grep "import.*guile-bootstrap"
 
 if guix archive something-that-does-not-exist
+then false; else true; fi
+
+# This one must not be listed as missing.
+guix build guile-bootstrap > "$archive"
+guix archive --missing < "$archive"
+test "`guix archive --missing < "$archive"`" = ""
+
+# Two out of three should be listed as missing.
+echo "$NIX_STORE_DIR/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo" >> "$archive"
+echo "$NIX_STORE_DIR/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bar" >> "$archive"
+guix archive --missing < "$archive" > "$archive_alt"
+echo "$NIX_STORE_DIR/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo" > "$archive"
+echo "$NIX_STORE_DIR/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-bar" >> "$archive"
+cmp "$archive" "$archive_alt"
+
+# This is not a valid store file name, so an error.
+echo something invalid > "$archive"
+if guix archive --missing < "$archive"
 then false; else true; fi
 
 if echo foo | guix archive --authorize
