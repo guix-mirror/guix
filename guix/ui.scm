@@ -558,13 +558,17 @@ reporting."
        (command-files)))
 
 (define (show-guix-help)
+  (define (internal? command)
+    (member command '("substitute-binary" "authenticate")))
+
   (format #t (_ "Usage: guix COMMAND ARGS...
 Run COMMAND with ARGS.\n"))
   (newline)
   (format #t (_ "COMMAND must be one of the sub-commands listed below:\n"))
   (newline)
   ;; TODO: Display a synopsis of each command.
-  (format #t "~{   ~a~%~}" (sort (commands) string<?))
+  (format #t "~{   ~a~%~}" (sort (remove internal? (commands))
+                                 string<?))
   (show-bug-report-information))
 
 (define program-name
