@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -31,6 +31,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages texinfo)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -473,6 +474,11 @@ library for working with executable and object formats is also included.")
                  %standard-phases))))
 
    (inputs `(("static-bash" ,(static-package bash-light))))
+
+   ;; To build the manual, we need Texinfo and Perl.
+   (native-inputs `(("texinfo" ,texinfo)
+                    ("perl" ,perl)))
+
    (synopsis "The GNU C Library")
    (description
     "Any Unix-like operating system needs a C library: the library which
@@ -735,6 +741,13 @@ identifier SYSTEM."
      (native-inputs (alist-delete "texinfo"
                                   (package-native-inputs gcc-4.8))))))
 
+(define perl-boot0
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs perl
+                                 %boot0-inputs
+                                 (current-source-location)
+                                 #:guile %bootstrap-guile)))
+
 (define (linux-libre-headers-boot0)
   "Return Linux-Libre header files for the bootstrap environment."
   ;; Note: this is wrapped in a thunk to nicely handle circular dependencies
@@ -745,12 +758,20 @@ identifier SYSTEM."
                   #:implicit-inputs? #f
                   ,@(package-arguments linux-libre-headers)))
      (native-inputs
-      (let ((perl (package-with-explicit-inputs perl
-                                                %boot0-inputs
-                                                (current-source-location)
-                                                #:guile %bootstrap-guile)))
-        `(("perl" ,perl)
-          ,@%boot0-inputs))))))
+      `(("perl" ,perl-boot0)
+        ,@%boot0-inputs)))))
+
+(define texinfo-boot0
+  ;; Texinfo used to build libc's manual.
+  ;; We build without ncurses because it fails to build at this stage, and
+  ;; because we don't need the stand-alone Info reader.
+  ;; Also, use %BOOT0-INPUTS to avoid building Perl once more.
+  (let ((texinfo (package (inherit texinfo)
+                   (inputs (alist-delete "ncurses" (package-inputs texinfo))))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs texinfo %boot0-inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
 
 (define %boot1-inputs
   ;; 2nd stage inputs.
@@ -784,6 +805,9 @@ identifier SYSTEM."
                             "--enable-obsolete-rpc")
                       ,flags)))))
      (propagated-inputs `(("linux-headers" ,(linux-libre-headers-boot0))))
+     (native-inputs
+      `(("texinfo" ,texinfo-boot0)
+        ("perl" ,perl-boot0)))
      (inputs
       `( ;; A native GCC is needed to build `cross-rpcgen'.
         ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))
