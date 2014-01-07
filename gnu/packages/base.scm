@@ -32,6 +32,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages pkg-config)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -285,6 +286,7 @@ functionality beyond that which is outlined in the POSIX standard.")
               "1nyvn8mknw0mf7727lprva3lisl1y0n03lvar342rrpdmz3qc1p6"))
             (patches (list (search-patch "make-impure-dirs.patch")))))
    (build-system gnu-build-system)
+   (native-inputs `(("pkg-config", pkg-config)))  ; to detect Guile
    (inputs `(("guile" ,guile-2.0)))
    (outputs '("out" "debug"))
    (arguments
@@ -589,6 +591,7 @@ and daylight-saving rules.")
                              (copy-file "make"
                                         (string-append bin "/make"))))
                 ,phases))))))
+     (native-inputs '())                          ; no need for 'pkg-config'
      (inputs %bootstrap-inputs))))
 
 (define diffutils-boot0
