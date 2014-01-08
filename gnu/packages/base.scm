@@ -314,23 +314,17 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.23.2")
+   (version "2.24")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "15qhbkz3r266xaa52slh857qn3abw7rb2x2jnhpfrafpzrb4x4gy"))
+              "0ds1y7qa0xqihw4ihnsgg6bxanmb228r228ddvwzgrv4jszcbs75"))
             (patches (list (search-patch "binutils-ld-new-dtags.patch")
-                           (search-patch "binutils-loongson-workaround.patch")
-                           (search-patch "binutils-loongson-madd-fix.patch")))))
+                           (search-patch "binutils-loongson-workaround.patch")))))
    (build-system gnu-build-system)
-
-   ;; Split Binutils in several outputs, mostly to avoid collisions in
-   ;; user profiles with GCC---e.g., libiberty.a.
-   (outputs '("out"                        ; ar, ld, binutils.info, etc.
-              "lib"))                      ; libbfd.a, bfd.h, etc.
 
    ;; TODO: Add dependency on zlib + those for Gold.
    (arguments
@@ -343,7 +337,11 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 
                           ;; Glibc 2.17 has a "comparison of unsigned
                           ;; expression >= 0 is always true" in wchar.h.
-                          "--disable-werror")))
+                          "--disable-werror"
+
+                          ;; Install BFD.  It ends up in a hidden directory,
+                          ;; but it's here.
+                          "--enable-install-libbfd")))
 
    (synopsis "Binary utilities: bfd gas gprof ld")
    (description
