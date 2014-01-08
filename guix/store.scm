@@ -701,8 +701,7 @@ is true."
 
 (define %store-prefix
   ;; Absolute path to the Nix store.
-  (make-parameter (or (and=> (getenv "NIX_STORE_DIR") canonicalize-path)
-                      %store-directory)))
+  (make-parameter %store-directory))
 
 (define (store-path? path)
   "Return #t if PATH is a store path."

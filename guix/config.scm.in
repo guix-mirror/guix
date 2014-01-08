@@ -51,7 +51,8 @@
   "@PACKAGE_URL@")
 
 (define %store-directory
-  "@storedir@")
+  (or (and=> (getenv "NIX_STORE_DIR") canonicalize-path)
+      "@storedir@"))
 
 (define %state-directory
   ;; This must match `NIX_STATE_DIR' as defined in `daemon.am'.
