@@ -70,14 +70,14 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "2.15")
+   (version "2.16")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "052kjsafg2x7n2zpy3iw4pzwf8fdfng5pcvi9v3chx3rb1786nmz"))))
+              "0qhiamxyzinmy2409lr8r0aa1in1y8v0kv6c80gz5jfq2d8fppqn"))))
    (build-system gnu-build-system)
    (synopsis "Print lines matching a pattern")
    (description
@@ -232,14 +232,14 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.21")
+   (version "8.22")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "064f512185iysqqcvhnhaf3bfmzrvcgs7n405qsyp99zmfyl9amd"))))
+              "04hjzzv434fb8ak3hh3dyhdvg3hqjjwvjmjxqzk1gh2jh6cr8gjv"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)
