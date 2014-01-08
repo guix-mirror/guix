@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -753,12 +753,15 @@ must be an absolute store file name, or a derivation file name."
     (or (getenv "NIX_STATE_DIR") %state-directory))
 
   (cond ((derivation-path? file)
-         (let* ((base (basename file))
-                (log  (string-append (dirname state-dir) ; XXX: ditto
-                                     "/log/nix/drvs/"
-                                     (string-take base 2) "/"
-                                     (string-drop base 2) ".bz2")))
-           (and (file-exists? log) log)))
+         (let* ((base    (basename file))
+                (log     (string-append (dirname state-dir) ; XXX: ditto
+                                        "/log/nix/drvs/"
+                                        (string-take base 2) "/"
+                                        (string-drop base 2)))
+                (log.bz2 (string-append log ".bz2")))
+           (cond ((file-exists? log.bz2) log.bz2)
+                 ((file-exists? log) log)
+                 (else #f))))
         (else
          (match (valid-derivers store file)
            ((derivers ...)
