@@ -57,7 +57,7 @@
          (cut string-append <> "/.guix-profile")))
 
 (define %profile-directory
-  (string-append (or (getenv "NIX_STATE_DIR") %state-directory) "/profiles/"
+  (string-append %state-directory "/profiles/"
                  (or (and=> (getenv "USER")
                             (cut string-append "per-user/" <>))
                      "default")))

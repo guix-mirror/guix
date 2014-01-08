@@ -158,8 +158,7 @@
   (delete-specific 3))
 
 (define %default-socket-path
-  (string-append (or (getenv "NIX_STATE_DIR") %state-directory)
-                 "/daemon-socket/socket"))
+  (string-append %state-directory "/daemon-socket/socket"))
 
 (define %daemon-socket-file
   ;; File name of the socket the daemon listens too.
@@ -749,12 +748,9 @@ syntactically valid store path."
 (define (log-file store file)
   "Return the build log file for FILE, or #f if none could be found.  FILE
 must be an absolute store file name, or a derivation file name."
-  (define state-dir                               ; XXX: factorize
-    (or (getenv "NIX_STATE_DIR") %state-directory))
-
   (cond ((derivation-path? file)
          (let* ((base    (basename file))
-                (log     (string-append (dirname state-dir) ; XXX: ditto
+                (log     (string-append (dirname %state-directory) ; XXX
                                         "/log/nix/drvs/"
                                         (string-take base 2) "/"
                                         (string-drop base 2)))
