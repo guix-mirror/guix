@@ -23,17 +23,28 @@
 #include <gcrypt.h>
 #include <unistd.h>
 
-extern "C" {
-
 struct guix_hash_context
 {
+  /* This copy constructor is needed in 'HashSink::currentHash()' where we
+     expect the copy of a 'Ctx' object to yield a truly different context.  */
+  guix_hash_context (guix_hash_context &ref)
+  {
+    if (ref.md_handle == NULL)
+      md_handle = NULL;
+    else
+      gcry_md_copy (&md_handle, ref.md_handle);
+  }
+
+  /* Make sure 'md_handle' is always initialized.  */
+  guix_hash_context (): md_handle (NULL) { };
+
   gcry_md_hd_t md_handle;
 };
 
+extern "C" {
 extern void guix_hash_init (struct guix_hash_context *ctx, int algo);
 extern void guix_hash_update (struct guix_hash_context *ctx, const void *buffer,
 			      size_t len);
 extern void guix_hash_final (void *resbuf, struct guix_hash_context *ctx,
 			     int algo);
-
 }

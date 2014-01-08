@@ -28,10 +28,12 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
+  #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (web uri)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64))
 
@@ -343,6 +345,49 @@ Deriver: ~a~%"
            ;; Should fail.
            (build-derivations s (list d))
            #f))))
+
+(test-assert "export/import several paths"
+  (let* ((texts (unfold (cut >= <> 10)
+                        (lambda _ (random-text))
+                        1+
+                        0))
+         (files (map (cut add-text-to-store %store "text" <>) texts))
+         (dump  (call-with-bytevector-output-port
+                 (cut export-paths %store files <>))))
+    (delete-paths %store files)
+    (and (every (negate file-exists?) files)
+         (let* ((source   (open-bytevector-input-port dump))
+                (imported (import-paths %store source)))
+           (and (equal? imported files)
+                (every file-exists? files)
+                (equal? texts
+                        (map (lambda (file)
+                               (call-with-input-file file
+                                 get-string-all))
+                             files)))))))
+
+(test-assert "import corrupt path"
+  (let* ((text (random-text))
+         (file (add-text-to-store %store "text" text))
+         (dump (call-with-bytevector-output-port
+                (cut export-paths %store (list file) <>))))
+    (delete-paths %store (list file))
+
+    ;; Flip a bit in the stream's payload.
+    (let* ((index (quotient (bytevector-length dump) 4))
+           (byte  (bytevector-u8-ref dump index)))
+      (bytevector-u8-set! dump index (logxor #xff byte)))
+
+    (and (not (file-exists? file))
+         (guard (c ((nix-protocol-error? c)
+                    (pk 'c c)
+                    (and (not (zero? (nix-protocol-error-status c)))
+                         (string-contains (nix-protocol-error-message c)
+                                          "corrupt"))))
+           (let* ((source   (open-bytevector-input-port dump))
+                  (imported (import-paths %store source)))
+             (pk 'corrupt-imported imported)
+             #f)))))
 
 (test-end "store")
 

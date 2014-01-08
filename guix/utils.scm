@@ -67,6 +67,7 @@
             file-extension
             file-sans-extension
             call-with-temporary-output-file
+            with-atomic-file-output
             fold2
             filtered-port))
 
@@ -424,6 +425,21 @@ call."
         (proc template out))
       (lambda ()
         (false-if-exception (close out))
+        (false-if-exception (delete-file template))))))
+
+(define (with-atomic-file-output file proc)
+  "Call PROC with an output port for the file that is going to replace FILE.
+Upon success, FILE is atomically replaced by what has been written to the
+output port, and PROC's result is returned."
+  (let* ((template (string-append file ".XXXXXX"))
+         (out      (mkstemp! template)))
+    (with-throw-handler #t
+      (lambda ()
+        (let ((result (proc out)))
+          (close out)
+          (rename-file template file)
+          result))
+      (lambda (key . args)
         (false-if-exception (delete-file template))))))
 
 (define fold2

@@ -132,14 +132,14 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
 (define-public automake
   (package
     (name "automake")
-    (version "1.14")
+    (version "1.14.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/automake/automake-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0nc0zqq8j336kamizzd86wb19vhbwywv5avcjh3cyx230xfqy671"))
+               "0s86rzdayj1licgj35q0mnynv5xa8f4p32m36blc5jk9id5z1d59"))
              (patches
               (list (search-patch "automake-skip-amhello-tests.patch")))))
     (build-system gnu-build-system)

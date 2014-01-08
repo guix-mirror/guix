@@ -195,6 +195,10 @@ main (int argc, char *argv[])
       exit (EXIT_FAILURE);
     }
 
+  /* Tell Libgcrypt that initialization has completed, as per the Libgcrypt
+     1.6.0 manual (although this does not appear to be strictly needed.)  */
+  gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
+
   /* Set the umask so that the daemon does not end up creating group-writable
      files, which would lead to "suspicious ownership or permission" errors.
      See <http://lists.gnu.org/archive/html/bug-guix/2013-07/msg00033.html>.  */
@@ -211,6 +215,12 @@ main (int argc, char *argv[])
   try
     {
       settings.processEnvironment ();
+
+      /* Hackily help 'local-store.cc' find our 'guix-authenticate' program, which
+	 is known as 'OPENSSL_PATH' here.  */
+      std::string search_path (getenv ("PATH"));
+      search_path = settings.nixLibexecDir + ":" + search_path;
+      setenv ("PATH", search_path.c_str (), 1);
 
       /* Use our substituter by default.  */
       settings.substituters.clear ();

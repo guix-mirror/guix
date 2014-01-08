@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -143,7 +143,9 @@ parse JSON formatted strings back into the C representation of JSON objects.")
              (sha256
               (base32
                "1bndz4l8jxyq3zq128gzp3gryxl6yjs66j2y1d7yabw2n5mv7kim"))
-             (patches (list (search-patch "pulseaudio-test-timeouts.patch")))))
+             (patches (map search-patch
+                           '("pulseaudio-test-timeouts.patch"
+                             "pulseaudio-volume-test.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/var" ;"--sysconfdir=/etc"
@@ -154,14 +156,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                    ;; 'tests/lock-autospawn-test.c' wants to create a file
                    ;; under ~/.config/pulse.
                    (setenv "HOME" (getcwd)))
-                 %standard-phases)
-
-       ,@(if (or (string=? (%current-system) "i686-linux")
-                 (string=? (%current-system) "mips64el-linux"))
-             ;; Work around test failure:
-             ;; <https://bugs.freedesktop.org/show_bug.cgi?id=72374>.
-             '(#:tests? #f)
-             '())))
+                 %standard-phases)))
     (inputs
      ;; TODO: Add optional inputs (GTK+?).
      `(;; ("sbc" ,sbc)

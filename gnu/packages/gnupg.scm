@@ -78,6 +78,7 @@ Daemon and possibly more in the future.")
      `(#:configure-flags
        (list (string-append "--with-gpg-error-prefix="
                             (assoc-ref %build-inputs "libgpg-error")))))
+    (outputs '("out" "debug"))
     (home-page "http://gnupg.org/")
     (synopsis "Cryptographic function library")
     (description
@@ -86,6 +87,18 @@ standard cryptographic building blocks such as symmetric ciphers, hash
 algorithms, public key algorithms, large integer functions and random number
 generation.")
     (license lgpl2.0+)))
+
+(define-public libgcrypt-1.5
+  (package (inherit libgcrypt)
+    (version "1.5.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
+                          version ".tar.bz2"))
+      (sha256
+       (base32
+        "1lar8y3lh61zl5flljpz540d78g99h4d5idfwrfw8lm3gm737xdw"))))))
 
 (define-public libassuan
   (package

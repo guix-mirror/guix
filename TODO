@@ -11,23 +11,6 @@ Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 
 * integrate needed Nix code
 
-** Remove dependency on OpenSSL
-
-The ‘openssl’ command-line tool is used in libstore to sign store paths
-to be exported, and to check such signatures.  The signing keys are
-usually in /etc/nix/signing-key.{pub,sec}.  They are a PKCS#8-encoded
-X.509 SubjectPublicKeyInfo.  These can be decoded with the [[http://lists.gnu.org/archive/html/help-gnutls/2012-12/msg00012.html][C API of
-GnuTLS]], but not yet with its Guile bindings.  There’s also
-‘gnutls_privkey_sign_data’ to sign, and related functions.
-
-
-** Add `guix publish' to publish the store using Guile's web server
-
-Generate narinfos and nars on the fly, upon HTTP GET requests.
-Ideally, extend .nix-cache-info to include the server's public key, and also
-reply to requests for .narinfo.sig.
-Optionally, use Guile-Avahi to publish the service.
-
 ** MAYBE Add a substituter that uses the GNUnet DHT or [[http://libswift.org][libswift]]
 
 Would be neat if binaries could be pushed to and pulled from the GNUnet DHT or
@@ -40,6 +23,13 @@ Use UPnP and similar to traverse NAT, like ‘filegive’ does.
 
 Like scripts/build-remote.pl in Nix.
 
+* Add `guix publish' to publish the store using Guile's web server
+
+Generate narinfos and nars on the fly, upon HTTP GET requests.
+Ideally, extend .nix-cache-info to include the server's public key, and also
+reply to requests for .narinfo.sig.
+Optionally, use Guile-Avahi to publish the service.
+
 * user interface
 ** Add a package.el (Emacs) back-end
 
@@ -47,17 +37,6 @@ package.el is quite monolithic, but we may be able to reuse/extend
 ‘package-menu-mode’ or at least ‘tabulated-list-mode’.
 
 ** add guile-ncurses interface
-
-* extend <origin>
-** add OpenPGP signatures:
-
-   (origin
-     (method http-fetch)
-     (uri "http://.../foo.tgz")
-     (signature-uri (string-append uri ".sig"))
-     (signer-openpgp-fingerprint "..."))
-
-** allow <origin> to be a derivation/package or a file
 
 * extend <package>
 
@@ -84,27 +63,44 @@ create a new ‘dir’.
       ("i3" ,p3)))
 #+END_SRC
 
+* MAYBE use HOP-like escapes to refer to inputs in build-side code
 
-* synchronize package descriptions with GSRC and/or the [[http://directory.fsf.org][FSD]]
+Instead of doing things like:
+
+#+BEGIN_SRC scheme
+  (inputs `(("foo" ,foo)))
+  (arguments '(#:configure-flags
+               (list (string-append "--with-foo="
+                                    (assoc-ref %build-inputs "foo")))))
+#+END_SRC
+
+Allow things like:
+
+#+BEGIN_SRC scheme
+  (inputs (list foo))
+  (arguments ~(#:configure-flags
+               (list (string-append "--with-foo=" $foo))))
+  
+#+END_SRC
+
+... where '~' is 'build-quote' and '$' is 'build-unquote'.  Better yet,
+automatically compute the list of references of an expression passed to
+'derivation-expression'.
+
+Use a [[http://dorophone.blogspot.fr/2011/09/scheme-syntax-is-monad.html][monad]] for the syntax.
+
+* synchronize non-GNU package descriptions with the [[http://directory.fsf.org][FSD]]
 
 Meta-data for GNU packages, including descriptions and synopses, can be
 dumped from the FSD:
 http://directory.fsf.org/wiki?title=GNU/Export&action=purge .
 We could periodically synchronize with that.
 
-See http://lists.gnu.org/archive/html/bug-guix/2013-04/msg00120.html for info
-on how to synchronize with GSRC's descriptions.
-
 * add a guildhall build system
 
 The Guildhall is Guile’s packaging system.  It should be easy to add a
 ‘guildhall-build-system’ that does the right thing based on guildhall
 recipes.
-
-* build-expression->derivation: define `%system' in the builder
-
-Would allow build expressions to have system-dependent code, like
-`glibc-dynamic-linker'.
 
 * add ‘allowed-references’ in <package>
 
@@ -126,9 +122,6 @@ run when that is defined.
 Would download a substitute, and compare its contents against a (hopefully
 locally-built) copy.
 
-* guix package
-
-** add ‘--list-generations’, and ‘--delete-generations’
 
 * guix build utils
 ** MAYBE Change ‘ld-wrapper’ to add RPATH for libs passed by file name

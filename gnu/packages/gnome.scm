@@ -21,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gstreamer)
@@ -34,6 +35,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages xorg))
 
 (define-public brasero
@@ -468,3 +470,29 @@ demand (lazy) programming language support for C, Python and JS; simplicity of
 the API")
 
     (license lgpl2.0+)))
+
+(define-public gtkglext
+  (package
+    (name "gtkglext")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/project/gtkglext/gtkglext/"
+                                  version "/gtkglext-" version ".tar.gz"))
+              (sha256
+               (base32 "1ya4d2j2aacr9ii5zj4ac95fjpdvlm2rg79mgnk7yvl1dcy3y1z5"))
+              (patches (list
+                        (search-patch "gtkglext-remove-pangox-dependency.patch")
+                        (search-patch "gtkglext-disable-disable-deprecated.patch")))))
+    (build-system gnu-build-system)
+    (inputs `(("gtk+" ,gtk+-2)
+              ("mesa" ,mesa)
+              ("libx11" ,libx11)
+              ("libxt" ,libxt)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "https://projects.gnome.org/gtkglext")
+    (synopsis "OpenGL extension to GTK+.")
+    (description "GtkGLExt is an OpenGL extension to GTK+. It provides
+additional GDK objects which support OpenGL rendering in GTK+ and GtkWidget
+API add-ons to make GTK+ widgets OpenGL-capable.")
+    (license lgpl2.1+)))

@@ -36,6 +36,7 @@
   #:use-module (gnu packages linux)
   #:use-module (gnu packages samba)
   #:use-module (gnu packages xorg)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages perl))
 

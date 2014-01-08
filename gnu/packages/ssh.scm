@@ -36,20 +36,20 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.5.3")
+    (version "0.5.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://www.libssh.org/files/0.5/libssh-"
+              (uri (string-append "https://red.libssh.org/attachments/download/51/libssh-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1w6s217vjq0w3v5i0c5ql6m0ki1yz05g9snah3azxfkl9k4schpd"))))
+                "17cfdff4hc0ijzrr15biq29fiabafz0bw621zlkbwbc1zh2hzpy0"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_GCRYPT=ON"
 
-                                     ;; Leave a valid RUNPATH upon install.
-                                     "-DCMAKE_SKIP_BUILD_RPATH=ON")
+                           ;; Leave a valid RUNPATH upon install.
+                           "-DCMAKE_SKIP_BUILD_RPATH=ON")
 
        ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
        #:tests? #f
@@ -80,7 +80,10 @@
                                       lib))))
                  %standard-phases)))
     (inputs `(("zlib" ,zlib)
-              ("libgcrypt" ,libgcrypt)))
+               ;; Link against an older gcrypt, because libssh tries to access
+               ;; fields of 'gcry_thread_cbs' that are now private:
+               ;; src/threads.c:72:26: error: 'struct gcry_thread_cbs' has no member named 'mutex_init'
+              ("libgcrypt", libgcrypt-1.5)))
     (native-inputs `(("patchelf" ,patchelf)))
     (synopsis "SSH client library")
     (description

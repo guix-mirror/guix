@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,7 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages gperf)
-  #:use-module (gnu packages base))
+  #:use-module (gnu packages guile))
 
 (define-public liboop
   (package
@@ -61,27 +61,45 @@ basis for almost any application.")
   (package
     (name "lsh")
     (version "2.1")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnu/lsh/lsh-"
-                          version ".tar.gz"))
-      (sha256
-       (base32
-        "1qqjy9zfzgny0rkb27c8c7dfsylvb6n0ld8h3an2r83pmaqr9gwb"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/lsh/lsh-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1qqjy9zfzgny0rkb27c8c7dfsylvb6n0ld8h3an2r83pmaqr9gwb"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (use-modules (guix build utils))
+
+                  (substitute* "src/testsuite/functions.sh"
+                    (("localhost")
+                     ;; Avoid host name lookups since they don't work in
+                     ;; chroot builds.
+                     "127.0.0.1")
+                    (("set -e")
+                     ;; Make tests more verbose.
+                     "set -e\nset -x"))
+
+                  (substitute* (find-files "src/testsuite" "-test$")
+                    (("localhost") "127.0.0.1"))
+
+                  (substitute* "src/testsuite/login-auth-test"
+                    (("/bin/cat") "cat"))))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(("m4" ,m4)
+       ("guile" ,guile-2.0)
+       ("gperf" ,gperf)
+       ("psmisc" ,psmisc)))                       ; for `killall'
     (inputs
      `(("nettle" ,nettle)
        ("linux-pam" ,linux-pam)
-       ("m4" ,m4)
        ("readline" ,readline)
        ("liboop" ,liboop)
        ("zlib" ,guix:zlib)
-       ("gmp" ,gmp)
-       ("guile" ,guile-final)
-       ("gperf" ,gperf)
-       ("psmisc" ,psmisc)                         ; for `killall'
-       ))
+       ("gmp" ,gmp)))
     (arguments
      '(;; Skip the `configure' test that checks whether /dev/ptmx &
        ;; co. work as expected, because it relies on impurities (for
@@ -95,27 +113,19 @@ basis for almost any application.")
 
        #:phases
        (alist-cons-before
-        'configure 'fix-test-suite
-        (lambda _
+        'configure 'pre-configure
+        (lambda* (#:key inputs #:allow-other-keys)
+          ;; Make sure 'lsh' and 'lshd' pick 'sexp-conv' in the right place by
+          ;; default.
+          (substitute* "src/environ.h.in"
+            (("^#define PATH_SEXP_CONV.*")
+             (let* ((nettle    (assoc-ref inputs "nettle"))
+                    (sexp-conv (string-append nettle "/bin/sexp-conv")))
+               (string-append "#define PATH_SEXP_CONV \""
+                              sexp-conv "\"\n"))))
+
           ;; Tests rely on $USER being set.
-          (setenv "USER" "guix")
-
-          (substitute* "src/testsuite/functions.sh"
-            (("localhost")
-             ;; Avoid host name lookups since they don't work in chroot
-             ;; builds.
-             "127.0.0.1")
-            (("set -e")
-             ;; Make tests more verbose.
-             "set -e\nset -x"))
-
-          (substitute* (find-files "src/testsuite" "-test$")
-            (("localhost") "127.0.0.1"))
-
-          (substitute* "src/testsuite/login-auth-test"
-            (("/bin/cat")
-             ;; Use the right path to `cat'.
-             (which "cat"))))
+          (setenv "USER" "guix"))
         %standard-phases)))
     (home-page "http://www.lysator.liu.se/~nisse/lsh/")
     (synopsis "GNU implementation of the Secure Shell (ssh) protocols")

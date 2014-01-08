@@ -33,6 +33,7 @@
             %bootstrap-binaries-path
             fold-packages
             find-packages-by-name
+            find-best-packages-by-name
             find-newest-available-packages))
 
 ;;; Commentary:
@@ -148,24 +149,36 @@ then only return packages whose version is equal to VERSION."
                        result))
                  '()))
 
-(define (find-newest-available-packages)
-  "Return a vhash keyed by package names, and with
+(define find-newest-available-packages
+  (memoize
+   (lambda ()
+     "Return a vhash keyed by package names, and with
 associated values of the form
 
   (newest-version newest-package ...)
 
 where the preferred package is listed first."
 
-  ;; FIXME: Currently, the preferred package is whichever one
-  ;; was found last by 'fold-packages'.  Find a better solution.
-  (fold-packages (lambda (p r)
-                   (let ((name    (package-name p))
-                         (version (package-version p)))
-                     (match (vhash-assoc name r)
-                       ((_ newest-so-far . pkgs)
-                        (case (version-compare version newest-so-far)
-                          ((>) (vhash-cons name `(,version ,p) r))
-                          ((=) (vhash-cons name `(,version ,p ,@pkgs) r))
-                          ((<) r)))
-                       (#f (vhash-cons name `(,version ,p) r)))))
-                 vlist-null))
+     ;; FIXME: Currently, the preferred package is whichever one
+     ;; was found last by 'fold-packages'.  Find a better solution.
+     (fold-packages (lambda (p r)
+                      (let ((name    (package-name p))
+                            (version (package-version p)))
+                        (match (vhash-assoc name r)
+                          ((_ newest-so-far . pkgs)
+                           (case (version-compare version newest-so-far)
+                             ((>) (vhash-cons name `(,version ,p) r))
+                             ((=) (vhash-cons name `(,version ,p ,@pkgs) r))
+                             ((<) r)))
+                          (#f (vhash-cons name `(,version ,p) r)))))
+                    vlist-null))))
+
+(define (find-best-packages-by-name name version)
+  "If version is #f, return the list of packages named NAME with the highest
+version numbers; otherwise, return the list of packages named NAME and at
+VERSION."
+  (if version
+      (find-packages-by-name name version)
+      (match (vhash-assoc name (find-newest-available-packages))
+        ((_ version pkgs ...) pkgs)
+        (#f '()))))

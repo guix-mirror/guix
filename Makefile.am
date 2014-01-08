@@ -30,6 +30,8 @@ MODULES =					\
   guix/base32.scm				\
   guix/records.scm				\
   guix/hash.scm					\
+  guix/pk-crypto.scm				\
+  guix/pki.scm					\
   guix/utils.scm				\
   guix/download.scm				\
   guix/monads.scm				\
@@ -66,12 +68,14 @@ MODULES =					\
   guix/snix.scm					\
   guix/scripts/download.scm			\
   guix/scripts/build.scm			\
+  guix/scripts/archive.scm			\
   guix/scripts/import.scm			\
   guix/scripts/package.scm			\
   guix/scripts/gc.scm				\
   guix/scripts/hash.scm				\
   guix/scripts/pull.scm				\
   guix/scripts/substitute-binary.scm		\
+  guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
@@ -107,6 +111,8 @@ clean-go:
 SCM_TESTS =					\
   tests/base32.scm				\
   tests/hash.scm				\
+  tests/pk-crypto.scm				\
+  tests/pki.scm					\
   tests/builders.scm				\
   tests/derivations.scm				\
   tests/ui.scm					\
@@ -126,7 +132,9 @@ SH_TESTS =					\
   tests/guix-download.sh			\
   tests/guix-gc.sh				\
   tests/guix-hash.sh				\
-  tests/guix-package.sh
+  tests/guix-package.sh				\
+  tests/guix-archive.sh				\
+  tests/guix-authenticate.sh
 
 if BUILD_DAEMON
 
@@ -170,6 +178,8 @@ EXTRA_DIST =					\
   srfi/srfi-64.scm				\
   srfi/srfi-64.upstream.scm			\
   tests/test.drv				\
+  tests/signing-key.pub				\
+  tests/signing-key.sec				\
   build-aux/config.rpath			\
   bootstrap					\
   release.nix					\

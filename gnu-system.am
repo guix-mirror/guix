@@ -63,6 +63,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/fonts.scm			\
   gnu/packages/fontutils.scm			\
   gnu/packages/freeipmi.scm			\
+  gnu/packages/games.scm                        \
   gnu/packages/gawk.scm				\
   gnu/packages/gcal.scm				\
   gnu/packages/gcc.scm				\
@@ -254,6 +255,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-linux-syscalls.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
   gnu/packages/patches/guix-test-networking.patch		\
+  gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
+  gnu/packages/patches/gtkglext-remove-pangox-dependency.patch  \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/libffi-mips-n32-fix.patch		\
@@ -273,6 +276,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/procps-make-3.82.patch			\
   gnu/packages/patches/pspp-tests.patch				\
   gnu/packages/patches/pulseaudio-test-timeouts.patch		\
+  gnu/packages/patches/pulseaudio-volume-test.patch		\
   gnu/packages/patches/python-fix-dbm.patch			\
   gnu/packages/patches/qemu-make-4.0.patch			\
   gnu/packages/patches/qemu-multiple-smb-shares.patch		\

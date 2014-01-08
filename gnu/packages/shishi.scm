@@ -43,7 +43,15 @@
     (inputs
      `(("gnutls" ,gnutls)
        ("zlib" ,zlib)
-       ("libgcrypt" ,libgcrypt)
+       ;; libgcrypt 1.6 fails because of the following test:
+       ;;  #include <gcrypt.h>
+       ;; /* GCRY_MODULE_ID_USER was added in 1.4.4 and gc-libgcrypt.c
+       ;;    will fail on startup if we don't have 1.4.4 or later, so
+       ;;    test for it early. */
+       ;; #if !defined GCRY_MODULE_ID_USER
+       ;; error too old libgcrypt
+       ;; #endif
+       ("libgcrypt" ,libgcrypt-1.5)
        ("libtasn1" ,libtasn1)))
     (home-page "http://www.gnu.org/software/shishi/")
     (synopsis "Implementation of the Kerberos 5 network security system")

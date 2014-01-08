@@ -45,6 +45,7 @@ guix_hash_final (void *resbuf, struct guix_hash_context *ctx,
   memcpy (resbuf, gcry_md_read (ctx->md_handle, algo),
 	  gcry_md_get_algo_dlen (algo));
   gcry_md_close (ctx->md_handle);
+  ctx->md_handle = NULL;
 }
 
 }

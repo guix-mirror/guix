@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,7 +36,13 @@
               (base32
                "0h2vap31yvi1a438d36lg1r1nllfx3y19r4rfxv7slrm6kafnwdw"))))
     (build-system gnu-build-system)
-    (inputs `(("m4" ,m4)))
+    (arguments
+     ;; 'sexp-conv' and other programs need to have their RUNPATH point to
+     ;; $libdir, which is not the case by default.  Work around it.
+     '(#:configure-flags (list (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))))
+    (native-inputs `(("m4" ,m4)))
     (propagated-inputs `(("gmp" ,gmp)))
     (home-page "http://www.lysator.liu.se/~nisse/nettle/")
     (synopsis "C library for low-level cryptographic functionality")

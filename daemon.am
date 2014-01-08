@@ -112,10 +112,10 @@ libstore_a_CPPFLAGS =				\
   -DNIX_DATA_DIR=\"$(datadir)\"			\
   -DNIX_STATE_DIR=\"$(localstatedir)/nix\"	\
   -DNIX_LOG_DIR=\"$(localstatedir)/log/nix\"	\
-  -DNIX_CONF_DIR=\"$(sysconfdir)/nix\"		\
+  -DNIX_CONF_DIR=\"$(sysconfdir)/guix\"		\
   -DNIX_LIBEXEC_DIR=\"$(libexecdir)\"		\
   -DNIX_BIN_DIR=\"$(bindir)\"			\
-  -DOPENSSL_PATH="\"openssl\""
+  -DOPENSSL_PATH="\"guix-authenticate\""
 
 libstore_a_CXXFLAGS =				\
   $(SQLITE3_CFLAGS) $(LIBGCRYPT_CFLAGS)
@@ -179,6 +179,10 @@ nix/libstore/schema.sql.hh: nix/libstore/schema.sql
 nodist_pkglibexec_SCRIPTS =			\
   nix/scripts/list-runtime-roots		\
   nix/scripts/substitute-binary
+
+# XXX: It'd be better to hide it in $(pkglibexecdir).
+nodist_libexec_SCRIPTS =			\
+  nix/scripts/guix-authenticate
 
 EXTRA_DIST +=					\
   nix/sync-with-upstream			\

@@ -68,14 +68,14 @@ caching facility provided by the library.")
 (define-public libcdio
   (package
     (name "libcdio")
-    (version "0.90")
+    (version "0.92")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/libcdio/libcdio-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0kpp6gr5sjr30pb9klncc37fhkw0wi6r41d2fmvmw17cbj176zmg"))))
+               "1b9zngn8nnxb1yyngi1kwi73nahp4lsx59j17q1bahzz58svydik"))))
     (build-system gnu-build-system)
     (inputs
        `(("ncurses" ,ncurses)
@@ -98,14 +98,14 @@ extraction from CDs.")
 (define-public xorriso
   (package
     (name "xorriso")
-    (version "1.3.2")
+    (version "1.3.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xorriso/xorriso-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1z04580nkkziy2flbxjjx0q6vp9p7vcp7yp0agx2aqz3l1vjcwhf"))))
+               "0wvxbvkpdydcbmqi9xz7nv8cna6vp9726ahmmxxyx56cz4xifr4x"))))
     (build-system gnu-build-system)
     (inputs
      `(("acl" ,acl)

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -80,6 +80,8 @@
             dead-paths
             collect-garbage
             delete-paths
+            import-paths
+            export-paths
 
             current-build-output-port
 
@@ -156,8 +158,7 @@
   (delete-specific 3))
 
 (define %default-socket-path
-  (string-append (or (getenv "NIX_STATE_DIR") %state-directory)
-                 "/daemon-socket/socket"))
+  (string-append %state-directory "/daemon-socket/socket"))
 
 (define %daemon-socket-file
   ;; File name of the socket the daemon listens too.
@@ -323,7 +324,30 @@ operate, should the disk become full.  Return a server object."
   ;; The port where build output is sent.
   (make-parameter (current-error-port)))
 
-(define (process-stderr server)
+(define* (dump-port in out
+                    #:optional len
+                    #:key (buffer-size 16384))
+  "Read LEN bytes from IN (or as much as possible if LEN is #f) and write it
+to OUT, using chunks of BUFFER-SIZE bytes."
+  (define buffer
+    (make-bytevector buffer-size))
+
+  (let loop ((total 0)
+             (bytes (get-bytevector-n! in buffer 0
+                                       (if len
+                                           (min len buffer-size)
+                                           buffer-size))))
+    (or (eof-object? bytes)
+        (and len (= total len))
+        (let ((total (+ total bytes)))
+          (put-bytevector out buffer 0 bytes)
+          (loop total
+                (get-bytevector-n! in buffer 0
+                                   (if len
+                                       (min (- len total) buffer-size)
+                                       buffer-size)))))))
+
+(define* (process-stderr server #:optional user-port)
   "Read standard output and standard error from SERVER, writing it to
 CURRENT-BUILD-OUTPUT-PORT.  Return #t when SERVER is done sending data, and
 #f otherwise; in the latter case, the caller should call `process-stderr'
@@ -344,17 +368,30 @@ encoding conversion errors."
 
   (let ((k (read-int p)))
     (cond ((= k %stderr-write)
-           (read-latin1-string p)
+           ;; Write a byte stream to USER-PORT.
+           (let* ((len (read-int p))
+                  (m   (modulo len 8)))
+             (dump-port p user-port len)
+             (unless (zero? m)
+               ;; Consume padding, as for strings.
+               (get-bytevector-n p (- 8 m))))
            #f)
           ((= k %stderr-read)
-           (let ((len (read-int p)))
-             (read-latin1-string p)               ; FIXME: what to do?
+           ;; Read a byte stream from USER-PORT.
+           (let* ((max-len (read-int p))
+                  (data    (get-bytevector-n user-port max-len))
+                  (len     (bytevector-length data)))
+             (write-int len p)
+             (put-bytevector p data)
+             (write-padding len p)
              #f))
           ((= k %stderr-next)
+           ;; Log a string.
            (let ((s (read-latin1-string p)))
              (display s (current-build-output-port))
              #f))
           ((= k %stderr-error)
+           ;; Report an error.
            (let ((error  (read-latin1-string p))
                  ;; Currently the daemon fails to send a status code for early
                  ;; errors like DB schema version mismatches, so check for EOF.
@@ -624,6 +661,39 @@ MIN-FREED bytes have been collected.  Return the paths that were
 collected, and the number of bytes freed."
   (run-gc server (gc-action delete-specific) paths min-freed))
 
+(define (import-paths server port)
+  "Import the set of store paths read from PORT into SERVER's store.  An error
+is raised if the set of paths read from PORT is not signed (as per
+'export-path #:sign? #t'.)  Return the list of store paths imported."
+  (let ((s (nix-server-socket server)))
+    (write-int (operation-id import-paths) s)
+    (let loop ((done? (process-stderr server port)))
+      (or done? (loop (process-stderr server port))))
+    (read-store-path-list s)))
+
+(define* (export-path server path port #:key (sign? #t))
+  "Export PATH to PORT.  When SIGN? is true, sign it."
+  (let ((s (nix-server-socket server)))
+    (write-int (operation-id export-path) s)
+    (write-store-path path s)
+    (write-arg boolean sign? s)
+    (let loop ((done? (process-stderr server port)))
+      (or done? (loop (process-stderr server port))))
+    (= 1 (read-int s))))
+
+(define* (export-paths server paths port #:key (sign? #t))
+  "Export the store paths listed in PATHS to PORT, signing them if SIGN?
+is true."
+  (let ((s (nix-server-socket server)))
+    (let loop ((paths paths))
+      (match paths
+        (()
+         (write-int 0 port))
+        ((head tail ...)
+         (write-int 1 port)
+         (and (export-path server head port #:sign? sign?)
+              (loop tail)))))))
+
 
 ;;;
 ;;; Store paths.
@@ -631,8 +701,7 @@ collected, and the number of bytes freed."
 
 (define %store-prefix
   ;; Absolute path to the Nix store.
-  (make-parameter (or (and=> (getenv "NIX_STORE_DIR") canonicalize-path)
-                      %store-directory)))
+  (make-parameter %store-directory))
 
 (define (store-path? path)
   "Return #t if PATH is a store path."
@@ -678,16 +747,16 @@ syntactically valid store path."
 (define (log-file store file)
   "Return the build log file for FILE, or #f if none could be found.  FILE
 must be an absolute store file name, or a derivation file name."
-  (define state-dir                               ; XXX: factorize
-    (or (getenv "NIX_STATE_DIR") %state-directory))
-
   (cond ((derivation-path? file)
-         (let* ((base (basename file))
-                (log  (string-append (dirname state-dir) ; XXX: ditto
-                                     "/log/nix/drvs/"
-                                     (string-take base 2) "/"
-                                     (string-drop base 2) ".bz2")))
-           (and (file-exists? log) log)))
+         (let* ((base    (basename file))
+                (log     (string-append (dirname %state-directory) ; XXX
+                                        "/log/nix/drvs/"
+                                        (string-take base 2) "/"
+                                        (string-drop base 2)))
+                (log.bz2 (string-append log ".bz2")))
+           (cond ((file-exists? log.bz2) log.bz2)
+                 ((file-exists? log) log)
+                 (else #f))))
         (else
          (match (valid-derivers store file)
            ((derivers ...)

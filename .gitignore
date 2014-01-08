@@ -84,3 +84,4 @@ GPATH
 GRTAGS
 GTAGS
 /nix-setuid-helper
+/nix/scripts/guix-authenticate
