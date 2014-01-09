@@ -360,11 +360,11 @@ encoding conversion errors."
     (nix-server-socket server))
 
   ;; magic cookies from worker-protocol.hh
-  (define %stderr-next  #x6f6c6d67)
-  (define %stderr-read  #x64617461)               ; data needed from source
-  (define %stderr-write #x64617416)               ; data for sink
-  (define %stderr-last  #x616c7473)
-  (define %stderr-error #x63787470)
+  (define %stderr-next  #x6f6c6d67)          ; "olmg", build log
+  (define %stderr-read  #x64617461)          ; "data", data needed from source
+  (define %stderr-write #x64617416)          ; "dat\x16", data for sink
+  (define %stderr-last  #x616c7473)          ; "alts", we're done
+  (define %stderr-error #x63787470)          ; "cxtp", error reporting
 
   (let ((k (read-int p)))
     (cond ((= k %stderr-write)
