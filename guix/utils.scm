@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -34,7 +34,7 @@
   #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
-  #:autoload   (system foreign) (pointer->procedure)
+  #:use-module (system foreign)
   #:export (bytevector->base16-string
             base16-string->bytevector
 
@@ -43,6 +43,7 @@
             nixpkgs-derivation*
 
             compile-time-value
+            fcntl-flock
             memoize
             default-keyword-arguments
             substitute-keyword-arguments
@@ -221,6 +222,67 @@ buffered data is lost."
 (define-syntax-rule (nixpkgs-derivation* attribute)
   "Evaluate the given Nixpkgs derivation at compile-time."
   (compile-time-value (nixpkgs-derivation attribute)))
+
+
+;;;
+;;; Advisory file locking.
+;;;
+
+(define %struct-flock
+  ;; 'struct flock' from <fcntl.h>.
+  (list short                                     ; l_type
+        short                                     ; l_whence
+        size_t                                    ; l_start
+        size_t                                    ; l_len
+        int))                                     ; l_pid
+
+(define F_SETLKW
+  ;; On Linux-based systems, this is usually 7, but not always
+  ;; (exceptions include SPARC.)  On GNU/Hurd, it's 9.
+  (compile-time-value
+   (cond ((string-contains %host-type "sparc") 9) ; sparc-*-linux-gnu
+         ((string-contains %host-type "linux") 7) ; *-linux-gnu
+         (else 9))))                              ; *-gnu*
+
+(define F_xxLCK
+  ;; The F_RDLCK, F_WRLCK, and F_UNLCK constants.
+  (compile-time-value
+   (cond ((string-contains %host-type "sparc") #(1 2 3))    ; sparc-*-linux-gnu
+         ((string-contains %host-type "hppa")  #(1 2 3))    ; hppa-*-linux-gnu
+         ((string-contains %host-type "linux") #(0 1 2))    ; *-linux-gnu
+         (else                                 #(1 2 3))))) ; *-gnu*
+
+(define fcntl-flock
+  (let* ((ptr  (dynamic-func "fcntl" (dynamic-link)))
+         (proc (pointer->procedure int ptr `(,int ,int *))))
+    (lambda (fd-or-port operation)
+      "Perform locking OPERATION on the file beneath FD-OR-PORT.  OPERATION
+must be a symbol, one of 'read-lock, 'write-lock, or 'unlock."
+      (define (operation->int op)
+        (case op
+          ((read-lock)  (vector-ref F_xxLCK 0))
+          ((write-lock) (vector-ref F_xxLCK 1))
+          ((unlock)     (vector-ref F_xxLCK 2))
+          (else         (error "invalid fcntl-flock operation" op))))
+
+      (define fd
+        (if (port? fd-or-port)
+            (fileno fd-or-port)
+            fd-or-port))
+
+      ;; XXX: 'fcntl' is a vararg function, but here we happily use the
+      ;; standard ABI; crossing fingers.
+      (let ((err (proc fd
+                       F_SETLKW                   ; lock & wait
+                       (make-c-struct %struct-flock
+                                      (list (operation->int operation)
+                                            SEEK_SET
+                                            0 0   ; whole file
+                                            0)))))
+        (or (zero? err)
+
+            ;; Presumably we got EAGAIN or so.
+            (throw 'flock-error fd))))))
 
 
 ;;;
