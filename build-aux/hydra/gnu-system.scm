@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,7 +83,8 @@ SYSTEM."
            (cut package-cross-derivation <> <> target <>))))
 
 (define %core-packages
-  (list gmp mpfr mpc coreutils findutils diffutils patch sed grep
+  (list gcc-final glibc-final binutils
+        gmp mpfr mpc coreutils findutils diffutils patch sed grep
         gawk gnu-gettext hello guile-2.0 zlib gzip xz
         %bootstrap-binaries-tarball
         %binutils-bootstrap-tarball
