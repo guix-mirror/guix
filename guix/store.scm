@@ -33,6 +33,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
+  #:use-module (ice-9 popen)
   #:export (%daemon-socket-file
 
             nix-server?
@@ -84,6 +85,8 @@
             export-paths
 
             current-build-output-port
+
+            register-path
 
             %store-prefix
             store-path?
@@ -693,6 +696,28 @@ is true."
          (write-int 1 port)
          (and (export-path server head port #:sign? sign?)
               (loop tail)))))))
+
+(define* (register-path path
+                        #:key (references '()) deriver)
+  "Register PATH as a valid store file, with REFERENCES as its list of
+references, and DERIVER as its deriver (.drv that led to it.)  Return #t on
+success.
+
+Use with care as it directly modifies the store!  This is primarily meant to
+be used internally by the daemon's build hook."
+  ;; Currently this is implemented by calling out to the fine C++ blob.
+  (catch 'system-error
+    (lambda ()
+      (let ((pipe (open-pipe* OPEN_WRITE %guix-register-program)))
+        (and pipe
+             (begin
+               (format pipe "~a~%~a~%~a~%"
+                       path (or deriver "") (length references))
+               (for-each (cut format pipe "~a~%" <>) references)
+               (zero? (close-pipe pipe))))))
+    (lambda args
+      ;; Failed to run %GUIX-REGISTER-PROGRAM.
+      #f)))
 
 
 ;;;

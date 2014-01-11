@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -388,6 +388,26 @@ Deriver: ~a~%"
                   (imported (import-paths %store source)))
              (pk 'corrupt-imported imported)
              #f)))))
+
+(test-assert "register-path"
+  (let ((file (string-append (%store-prefix) "/" (make-string 32 #\f)
+                             "-fake")))
+    (when (valid-path? %store file)
+      (delete-paths %store (list file)))
+    (false-if-exception (delete-file file))
+
+    (let ((ref (add-text-to-store %store "ref-of-fake" (random-text)))
+          (drv (string-append file ".drv")))
+      (call-with-output-file file
+        (cut display "This is a fake store item.\n" <>))
+      (register-path file
+                     #:references (list ref)
+                     #:deriver drv)
+
+      (and (valid-path? %store file)
+           (equal? (references %store file) (list ref))
+           (null? (valid-derivers %store file))
+           (null? (referrers %store file))))))
 
 (test-end "store")
 

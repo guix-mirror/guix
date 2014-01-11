@@ -38,10 +38,13 @@ AC_ARG_ENABLE([daemon],
 
 # Prepare a version of $localstatedir & co. that does not contain references
 # to shell variables.
-guix_localstatedir="`eval echo $localstatedir | sed -e "s|NONE|/usr/local|g"`"
-guix_sysconfdir="`eval echo $sysconfdir | sed -e "s|NONE|/usr/local|g"`"
+guix_prefix="`eval echo $prefix | sed -e"s|NONE|/usr/local|g"`"
+guix_localstatedir="`eval echo $localstatedir | sed -e "s|NONE|$guix_prefix|g"`"
+guix_sysconfdir="`eval echo $sysconfdir | sed -e "s|NONE|$guix_prefix|g"`"
+guix_sbindir="`eval echo $sbindir | sed -e "s|NONE|$guix_prefix|g"`"
 AC_SUBST([guix_localstatedir])
 AC_SUBST([guix_sysconfdir])
+AC_SUBST([guix_sbindir])
 
 dnl We require the pkg.m4 set of macros from pkg-config.
 dnl Make sure it's available.

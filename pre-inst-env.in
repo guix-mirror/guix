@@ -46,6 +46,10 @@ NIX_SUBSTITUTERS="$abs_top_builddir/nix/scripts/substitute-binary"
 NIX_SETUID_HELPER="$abs_top_builddir/nix-setuid-helper"
 export NIX_ROOT_FINDER NIX_SETUID_HELPER NIX_SUBSTITUTERS
 
+# The 'guix-register' program.
+GUIX_REGISTER="$abs_top_builddir/guix-register"
+export GUIX_REGISTER
+
 # The following variables need only be defined when compiling Guix
 # modules, but we define them to be on the safe side in case of
 # auto-compilation.
