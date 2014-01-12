@@ -199,12 +199,6 @@ Additionally, various channel-specific options can be negotiated.")
      '(#:phases (alist-cons-before
                  'configure 'autoreconf
                  (lambda* (#:key inputs #:allow-other-keys)
-                   ;; The 'configure' script would want libssh 0.5.4, but that
-                   ;; doesn't exist.
-                   (substitute* "configure.ac"
-                     (("0\\.5\\.4")
-                      "0.5.3"))
-
                    (substitute* "src/Makefile.am"
                      (("-lssh_threads" match)
                       (string-append "-L" (assoc-ref inputs "libssh")
