@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
@@ -404,7 +404,11 @@ WIDTH columns."
   (format port "location: ~a~%"
           (or (and=> (package-location p) location->string)
               (_ "unknown")))
-  (format port "home-page: ~a~%" (package-home-page p))
+
+  ;; Note: Starting from version 1.6 or recutils, hyphens are not allowed in
+  ;; field identifiers.
+  (format port "homepage: ~a~%" (package-home-page p))
+
   (format port "license: ~a~%"
           (match (package-license p)
             (((? license? licenses) ...)
