@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -25,10 +25,12 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages perl)
   #:use-module ((gnu packages base)
                 #:select (tar))
   #:use-module ((gnu packages compression)
@@ -343,3 +345,86 @@ would need and has several interesting built-in capabilities.")
      "GNU Alive sends periodic pings to a server, generally to keep a
 connection alive.")
     (license gpl3+)))
+
+(define-public isc-dhcp
+  (package
+    (name "isc-dhcp")
+    (version "4.3.0a1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://ftp.isc.org/isc/dhcp/"
+                                  version "/dhcp-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0001n26m4488nl95h53wg60sywbli4d246vz2h8lpv70jlrq9q1p"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-after
+                 'configure 'post-configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Point to the right client script, which will be
+                   ;; installed in a later phase.
+                   (substitute* "includes/dhcpd.h"
+                     (("#define[[:blank:]]+_PATH_DHCLIENT_SCRIPT.*")
+                      (let ((out (assoc-ref outputs "out")))
+                        (string-append "#define _PATH_DHCLIENT_SCRIPT \""
+                                       out "/libexec/dhclient-script"
+                                       "\"\n"))))
+
+                   ;; During the 'build' phase, 'bind.tar.gz' is extracted, so
+                   ;; we must patch shebangs in there and make sure the right
+                   ;; shell is used.
+                   (with-directory-excursion "bind"
+                     (substitute* "Makefile"
+                       (("\\./configure")
+                        (let ((sh (which "sh")))
+                          (string-append "./configure CONFIG_SHELL="
+                                         sh " SHELL=" sh))))
+
+                     (system* "tar" "xf" "bind.tar.gz")
+                     (for-each patch-shebang
+                               (find-files "bind-9.9.5b1" ".*"))
+                     (zero? (system* "tar" "cf" "bind.tar.gz"
+                                     "bind-9.9.5b1"))))
+                 (alist-cons-after
+                  'install 'post-install
+                  (lambda* (#:key inputs outputs #:allow-other-keys)
+                    ;; Install the dhclient script for GNU/Linux and make sure
+                    ;; if finds all the programs it needs.
+                    (let* ((out       (assoc-ref outputs "out"))
+                           (libexec   (string-append out "/libexec"))
+                           (coreutils (assoc-ref inputs "coreutils"))
+                           (net-tools (assoc-ref inputs "net-tools"))
+                           (sed       (assoc-ref inputs "sed")))
+                      (substitute* "client/scripts/linux"
+                        (("/sbin/ip")
+                         (string-append (assoc-ref inputs "iproute")
+                                        "/sbin/ip")))
+
+                      (mkdir-p libexec)
+                      (copy-file "client/scripts/linux"
+                                 (string-append libexec "/dhclient-script"))
+
+                      (wrap-program (string-append libexec "/dhclient-script")
+                                    `("PATH" ":" prefix
+                                      ,(map (lambda (dir)
+                                              (string-append dir "/bin:"
+                                                             dir "/sbin"))
+                                            (list net-tools coreutils sed))))))
+                  %standard-phases))))
+
+    (native-inputs `(("perl" ,perl)))
+
+    ;; Even Coreutils and sed are needed here in case we're cross-compiling.
+    (inputs `(("coreutils" ,coreutils)
+              ("sed" ,sed)
+              ("net-tools" ,net-tools)
+              ("iproute" ,iproute)))
+
+    (home-page "http://www.isc.org/products/DHCP/")
+    (synopsis "Dynamic Host Configuration Protocol (DHCP) tools")
+    (description
+     "ISC's Dynamic Host Configuration Protocol (DHCP) distribution provides a
+reference implementation of all aspects of DHCP, through a suite of DHCP
+tools: server, client, and relay agent.")
+    (license (bsd-style "http://www.isc.org/sw/dhcp/dhcp-copyright.php"))))
