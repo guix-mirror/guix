@@ -25,6 +25,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages.scm				\
   gnu/packages/acct.scm				\
   gnu/packages/acl.scm				\
+  gnu/packages/admin.scm			\
   gnu/packages/algebra.scm			\
   gnu/packages/apl.scm				\
   gnu/packages/apr.scm				\
@@ -181,7 +182,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/sqlite.scm			\
   gnu/packages/ssh.scm				\
   gnu/packages/swig.scm				\
-  gnu/packages/system.scm			\
   gnu/packages/tcl.scm				\
   gnu/packages/tcsh.scm				\
   gnu/packages/texinfo.scm			\
