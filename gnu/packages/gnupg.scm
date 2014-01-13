@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -27,6 +27,10 @@
   #:use-module (gnu packages readline)
   #:use-module ((gnu packages compression)
                 #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages ncurses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -393,3 +397,28 @@ including tools for signing keys, keyring analysis, and party preparation.
    ;; http://packages.debian.org/changelogs/pool/main/s/signing-party/current/copyright
    (license gpl2)
    (home-page "http://pgp-tools.alioth.debian.org/")))
+
+(define-public pinentry
+  (package
+    (name "pinentry")
+    (version "0.8.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/pinentry/pinentry-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1bd047crf7xb8g61mval8v6qww98rddlsw2dz6j8h8qbnl4hp2sn"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("ncurses" ,ncurses)
+       ("gtk+" ,gtk+-2)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://gnupg.org/aegypten2/")
+    (synopsis "GnuPG's interface to passphrase input")
+    (description
+     "Pinentry provides a console and a GTK+ GUI that allows users to
+enter a passphrase when `gpg' or `gpg2' is run and needs it.")
+    (license gpl2+)))
