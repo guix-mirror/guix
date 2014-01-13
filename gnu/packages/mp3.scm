@@ -29,6 +29,7 @@
   #:use-module (gnu packages oggvorbis)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages gettext)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -266,3 +267,64 @@ a few mouse clicks to convert an entire album. It supports CDDB lookups
 for album and track information.")
    (license license:gpl2)
    (home-page "http://sourceforge.net/projects/ripperx/")))
+
+(define-public libmpcdec
+  (package
+    (name "libmpcdec")
+    (version "1.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://files.musepack.net/source/libmpcdec-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1a0jdyga1zfi4wgkg3905y6inghy3s4xfs5m4x7pal08m0llkmab"))))
+    (build-system gnu-build-system)
+    (synopsis "Decoding library for the Musepack audio format")
+    (description
+     "This library supports decoding of the Musepack (MPC) audio compression
+format.")
+    (license license:bsd-3)
+    (home-page "http://musepack.net")))
+
+(define-public mpc123
+  (package
+    (name "mpc123")
+    (version "0.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/mpc123/version%20"
+                                  version "/mpc123-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0sf4pns0245009z6mbxpx7kqy4kwl69bc95wz9v23wgappsvxgy1"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda _
+                   (substitute* "Makefile"
+                     (("CC[[:blank:]]*:=.*")
+                      "CC := gcc\n")))
+                 (alist-replace
+                  'install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bin (string-append out "/bin")))
+                      (mkdir-p bin)
+                      (copy-file "mpc123" (string-append bin "/mpc123"))))
+                  %standard-phases))
+       #:tests? #f))
+
+    (native-inputs
+     `(("gettext" ,gnu-gettext)))
+    (inputs
+     `(("libao" ,ao)
+       ("libmpcdec" ,libmpcdec)))
+    (home-page "http://mpc123.sourceforge.net/")
+    (synopsis "Audio player for Musepack-formatted files")
+    (description
+     "mpc123 is a command-line player for files in the Musepack audio
+compression format (.mpc files.)")
+    (license license:gpl2+)))
