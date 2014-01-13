@@ -35,7 +35,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sqlite)
-  #:use-module (gnu packages system)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages compression)

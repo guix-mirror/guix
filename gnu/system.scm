@@ -25,7 +25,7 @@
   #:use-module (gnu packages linux-initrd)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
-  #:use-module (gnu packages system)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages package-management)
   #:use-module (gnu system dmd)
   #:use-module (gnu system grub)
@@ -288,7 +288,7 @@ alias ll='ls -l'
                             (append-map service-pam-services services))))
 
        (bash-file (package-file bash "bin/bash"))
-       (dmd-file  (package-file (@ (gnu packages system) dmd) "bin/dmd"))
+       (dmd-file  (package-file (@ (gnu packages admin) dmd) "bin/dmd"))
        (accounts -> (cons (user-account
                             (name "root")
                             (password "")

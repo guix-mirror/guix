@@ -23,7 +23,7 @@
   #:use-module (guix records)
   #:use-module ((gnu packages base)
                 #:select (glibc-final))
-  #:use-module ((gnu packages system)
+  #:use-module ((gnu packages admin)
                 #:select (mingetty inetutils shadow))
   #:use-module ((gnu packages package-management)
                 #:select (guix))
