@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -819,3 +819,24 @@ an interactive mode where the user can experiment various power management
 settings for cases where the operating system has not enabled these
 settings.")
     (license gpl2)))
+
+(define-public aumix
+  (package
+    (name "aumix")
+    (version "2.9.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.jpj.net/~trevor/aumix/releases/aumix-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0a8fwyxnc5qdxff8sl2sfsbnvgh6pkij4yafiln0fxgg6bal7knj"))))
+    (build-system gnu-build-system)
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "http://www.jpj.net/~trevor/aumix.html")
+    (synopsis "Audio mixer for X and the console")
+    (description
+     "Aumix adjusts an audio mixer from X, the console, a terminal,
+the command line or a script.")
+    (license gpl2+)))
