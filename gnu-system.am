@@ -189,6 +189,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/time.scm				\
   gnu/packages/tmux.scm				\
   gnu/packages/tor.scm				\
+  gnu/packages/uucp.scm				\
   gnu/packages/unrtf.scm			\
   gnu/packages/valgrind.scm			\
   gnu/packages/version-control.scm		\
