@@ -27,6 +27,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages readline)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gettext)
@@ -132,21 +133,20 @@ re-executing them as necessary.")
 (define-public inetutils
   (package
     (name "inetutils")
-    (version "1.9.1")
+    (version "1.9.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/inetutils/inetutils-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0azzg6njgq79byl6960kb0wihfhhzf49snslhxgvi30ribgfpa82"))
-             (patches
-              (list (search-patch "diffutils-gets-undeclared.patch")))))
+               "04wrm0v7l4890mmbaawd6wjwdv08bkglgqhpz0q4dkb0l50fl8q4"))))
     (build-system gnu-build-system)
     (arguments `(;; FIXME: `tftp.sh' relies on `netstat' from utils-linux,
                  ;; which is currently missing.
                  #:tests? #f))
-    (inputs `(("ncurses" ,ncurses)))
+    (inputs `(("ncurses" ,ncurses)
+              ("readline" ,readline)))            ; for 'ftp'
     (home-page "http://www.gnu.org/software/inetutils/")
     (synopsis "Basic networking utilities")
     (description
