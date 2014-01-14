@@ -2378,7 +2378,7 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
              (gnu system service)  ; for 'lsh-service'
              (gnu packages base)   ; Coreutils, grep, etc.
              (gnu packages bash)   ; Bash
-             (gnu packages system) ; dmd, Inetutils
+             (gnu packages admin)  ; dmd, Inetutils
              (gnu packages zile)   ; Zile
              (gnu packages less)   ; less
              (gnu packages guile)  ; Guile
