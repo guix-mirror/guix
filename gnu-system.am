@@ -276,7 +276,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\
-  gnu/packages/patches/pspp-tests.patch				\
   gnu/packages/patches/pulseaudio-test-timeouts.patch		\
   gnu/packages/patches/pulseaudio-volume-test.patch		\
   gnu/packages/patches/python-fix-dbm.patch			\
