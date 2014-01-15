@@ -77,13 +77,13 @@ floating-point computations with correct rounding.")
 (define-public mpc
   (package
    (name "mpc")
-   (version "1.0.1")
+   (version "1.0.2")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "mirror://gnu/mpc/mpc-" version ".tar.gz"))
             (sha256 (base32
-                     "1zq0fidp1jii2j5k5n9hmx55a6wwid33gjzhimvxq9d5zrf82npd"))))
+                     "1264h3ivldw5idph63x35dqqdzqqbxrm5vlir0xyx727i96zaqdm"))))
    (build-system gnu-build-system)
    (outputs '("out" "debug"))
    (propagated-inputs `(("gmp" ,gmp)              ; <mpc.h> refers to both
