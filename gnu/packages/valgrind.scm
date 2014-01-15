@@ -28,14 +28,14 @@
 (define-public valgrind
   (package
     (name "valgrind")
-    (version "3.8.1")
+    (version "3.9.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://valgrind.org/downloads/valgrind-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1nsqk70ry3221sd62s4f0njcrncppszs4xxjcak13lxyfq2y0fs7"))
+               "1w6n5qvxy2ssbczcl1c2yd2ggjn3ipay2hvpn10laly2dfh73bz6"))
              (patches (list (search-patch "valgrind-glibc.patch")))))
     (build-system gnu-build-system)
     (arguments
