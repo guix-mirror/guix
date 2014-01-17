@@ -138,7 +138,7 @@ messages."
   "Display version information for COMMAND and `(exit 0)'."
   (simple-format #t "~a (~a) ~a~%"
                  command %guix-package-name %guix-version)
-  (display (_ "Copyright (C) 2013 the Guix authors
+  (display (_ "Copyright (C) 2014 the Guix authors
 License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
