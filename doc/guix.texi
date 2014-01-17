@@ -1978,7 +1978,12 @@ the load.  To check whether a package has a @code{debug} output, use
 
 From a programming viewpoint, the package definitions of the
 distribution are provided by Guile modules in the @code{(gnu packages
-...)} name space (@pxref{Modules, Guile modules,, guile, GNU Guile
+@dots{})} name space@footnote{Note that packages under the @code{(gnu
+packages @dots{})} module name space are not necessarily ``GNU
+packages''.  This module naming scheme follows the usual Guile module
+naming convention: @code{gnu} means that these modules are distributed
+as part of the GNU system, and @code{packages} identifies modules that
+define packages.}  (@pxref{Modules, Guile modules,, guile, GNU Guile
 Reference Manual}).  For instance, the @code{(gnu packages emacs)}
 module exports a variable named @code{emacs}, which is bound to a
 @code{<package>} object (@pxref{Defining Packages}).  The @code{(gnu
