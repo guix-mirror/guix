@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -56,6 +56,7 @@ libformat_a_CPPFLAGS =				\
 
 libutil_a_SOURCES =				\
   nix/libutil/archive.cc			\
+  nix/libutil/affinity.cc			\
   nix/libutil/serialise.cc			\
   nix/libutil/util.cc				\
   nix/libutil/xml-writer.cc			\
@@ -63,6 +64,7 @@ libutil_a_SOURCES =				\
   nix/libutil/gcrypt-hash.cc
 
 libutil_headers =				\
+  nix/libutil/affinity.hh			\
   nix/libutil/hash.hh				\
   nix/libutil/serialise.hh			\
   nix/libutil/xml-writer.hh			\
@@ -152,16 +154,6 @@ guix_register_LDADD =				\
   libstore.a libutil.a libformat.a -lbz2	\
   $(SQLITE3_LIBS) $(LIBGCRYPT_LIBS)
 
-
-libexec_PROGRAMS = nix-setuid-helper
-nix_setuid_helper_SOURCES =			\
-  nix/nix-setuid-helper/nix-setuid-helper.cc
-
-nix_setuid_helper_CPPFLAGS =			\
-  $(libutil_a_CPPFLAGS)
-
-nix_setuid_helper_LDADD =			\
-  libutil.a libformat.a
 
 noinst_HEADERS =						\
   $(libformat_headers) $(libutil_headers) $(libstore_headers)	\

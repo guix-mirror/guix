@@ -245,21 +245,7 @@ archive}):
 # guix archive --generate-key
 @end example
 
-Guix may also be used in a single-user setup, with @command{guix-daemon}
-running as an unprivileged user.  However, to maximize non-interference
-of build processes, the daemon still needs to perform certain operations
-that are restricted to @code{root} on GNU/Linux: it should be able to
-run build processes in a chroot, and to run them under different UIDs.
-To that end, the @command{nix-setuid-helper} program is provided; it is
-a small C program (less than 300 lines) that, if it is made setuid
-@code{root}, can be executed by the daemon to perform these operations
-on its behalf.  The @code{root}-owned @file{/etc/nix-setuid.conf} file
-is read by @command{nix-setuid-helper}; it should contain exactly two
-words: the user name under which the authorized @command{guix-daemon}
-runs, and the name of the build users group.
-
-If you are installing Guix as an unprivileged user and do not have the
-ability to make @file{nix-setuid-helper} setuid-@code{root}, it is still
+If you are installing Guix as an unprivileged user, it is still
 possible to run @command{guix-daemon}.  However, build processes will
 not be isolated from one another, and not from the rest of the system.
 Thus, build processes may interfere with each other, and may access

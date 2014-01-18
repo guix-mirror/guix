@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -486,6 +486,29 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
   "Implement the build daemon's substituter protocol."
   (mkdir-p %narinfo-cache-directory)
   (maybe-remove-expired-cached-narinfo)
+
+  ;; Starting from commit 22144afa in Nix, we are allowed to bail out directly
+  ;; when we know we cannot substitute, but we must emit a newline on stdout
+  ;; when everything is alright.
+  (let ((uri (string->uri %cache-url)))
+    (case (uri-scheme uri)
+      ((http)
+       ;; Exit gracefully if there's no network access.
+       (let ((host (uri-host uri)))
+         (catch 'getaddrinfo-error
+           (lambda ()
+             (getaddrinfo host))
+           (lambda (key error)
+             (warning (_ "failed to look up host '~a' (~a), \
+substituter disabled~%")
+                      host (gai-strerror error))
+             (exit 0)))))
+      (else #t)))
+
+  ;; Say hello (see above.)
+  (newline)
+  (force-output (current-output-port))
+
   (with-networking
    (match args
      (("--query")
