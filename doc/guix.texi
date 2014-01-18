@@ -229,13 +229,32 @@ The @code{guix-daemon} program may then be run as @code{root} with:
 @noindent
 This way, the daemon starts build processes in a chroot, under one of
 the @code{guix-builder} users.  On GNU/Linux, by default, the chroot
-environment contains nothing but the @code{/dev} and @code{/proc}
-directories@footnote{On some systems @code{/dev/shm}, which supports
-shared memory, is a symlink to another directory such as
-@code{/run/shm}, that is @emph{not} is the chroot.  When that is the
-case, shared memory support is unavailable in the chroot environment.
-The workaround is to make sure that @file{/dev/shm} is directly a
-@code{tmpfs} mount point.}.
+environment contains nothing but:
+
+@c Keep this list in sync with libstore/build.cc! -----------------------
+@itemize
+@item
+the @code{/dev} and @code{/proc} directories@footnote{On some systems
+@code{/dev/shm}, which supports shared memory, is a symlink to another
+directory such as @code{/run/shm}, that is @emph{not} is the chroot.
+When that is the case, shared memory support is unavailable in the
+chroot environment.  The workaround is to make sure that @file{/dev/shm}
+is directly a @code{tmpfs} mount point.};
+
+@item
+@file{/etc/passwd} with an entry for the current user and an entry for
+user @file{nobody};
+
+@item
+@file{/etc/group} with an entry for the user's group;
+
+@item
+@file{/etc/hosts} with an entry that maps @code{localhost} to
+@code{127.0.0.1};
+
+@item
+a writable @file{/tmp} directory.
+@end itemize
 
 Finally, you may want to generate a key pair to allow the daemon to
 export signed archives of files from the store (@pxref{Invoking guix
