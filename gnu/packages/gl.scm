@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Guy Grant <gzg@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
