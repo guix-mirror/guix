@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +25,8 @@
   #:use-module (srfi srfi-11)
   #:export (sha256
             open-sha256-port
-            port-sha256))
+            port-sha256
+            open-sha256-input-port))
 
 ;;; Commentary:
 ;;;
@@ -127,5 +128,42 @@ output port."
     (dump-port port out)
     (close-port out)
     (get)))
+
+(define (open-sha256-input-port port)
+  "Return an input port that wraps PORT and a thunk to get the hash of all the
+data read from PORT.  The thunk always returns the same value."
+  (define md
+    (open-sha256-md))
+
+  (define (read! bv start count)
+    (let ((n (get-bytevector-n! port bv start count)))
+      (if (eof-object? n)
+          0
+          (begin
+            (unless digest
+              (let ((ptr (bytevector->pointer bv start)))
+                (md-write md ptr n)))
+            n))))
+
+  (define digest #f)
+
+  (define (finalize!)
+    (let ((ptr (md-read md 0)))
+      (set! digest (bytevector-copy (pointer->bytevector ptr 32)))
+      (md-close md)))
+
+  (define (get-hash)
+    (unless digest
+      (finalize!))
+    digest)
+
+  (define (unbuffered port)
+    ;; Guile <= 2.0.9 does not support 'setvbuf' on custom binary input ports.
+    ;; If you get a wrong-type-arg error here, the fix is to upgrade Guile.  :-)
+    (setvbuf port _IONBF)
+    port)
+
+  (values (unbuffered (make-custom-binary-input-port "sha256" read! #f #f #f))
+          get-hash))
 
 ;;; hash.scm ends here

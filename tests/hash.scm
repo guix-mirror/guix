@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,6 +37,14 @@
   (base16-string->bytevector
    "b94d27b9934d3e08a52e52d7da7dabfac484efe37a5380ee9088f7ace2efcde9"))
 
+(define (supports-unbuffered-cbip?)
+  "Return #t if unbuffered custom binary input ports (CBIPs) are supported.
+In Guile <= 2.0.9, CBIPs were always fully buffered, so the
+'open-sha256-input-port' does not work there."
+  (false-if-exception
+   (setvbuf (make-custom-binary-input-port "foo" pk #f #f #f) _IONBF)))
+
+
 (test-begin "hash")
 
 (test-equal "sha256, empty"
@@ -67,6 +75,55 @@
          (contents (call-with-input-file file get-bytevector-all)))
     (equal? (sha256 contents)
             (call-with-input-file file port-sha256))))
+
+(test-skip (if (supports-unbuffered-cbip?) 0 4))
+
+(test-equal "open-sha256-input-port, empty"
+  `("" ,%empty-sha256)
+  (let-values (((port get)
+                (open-sha256-input-port (open-string-input-port ""))))
+    (let ((str (get-string-all port)))
+      (list str (get)))))
+
+(test-equal "open-sha256-input-port, hello"
+  `("hello world" ,%hello-sha256)
+  (let-values (((port get)
+                (open-sha256-input-port
+                 (open-bytevector-input-port
+                  (string->utf8 "hello world")))))
+    (let ((str (get-string-all port)))
+      (list str (get)))))
+
+(test-equal "open-sha256-input-port, hello, one two"
+  (list (string->utf8 "hel") (string->utf8 "lo")
+        (base16-string->bytevector                ; echo -n hello | sha256sum
+         "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824")
+        " world")
+  (let-values (((port get)
+                (open-sha256-input-port
+                 (open-bytevector-input-port (string->utf8 "hello world")))))
+    (let* ((one   (get-bytevector-n port 3))
+           (two   (get-bytevector-n port 2))
+           (hash  (get))
+           (three (get-string-all port)))
+      (list one two hash three))))
+
+(test-equal "open-sha256-input-port, hello, read from wrapped port"
+  (list (string->utf8 "hello")
+        (base16-string->bytevector                ; echo -n hello | sha256sum
+         "2cf24dba5fb0a30e26e83b2ac5b9e29e1b161e5c1fa7425e73043362938b9824")
+        " world")
+  (let*-values (((wrapped)
+                 (open-bytevector-input-port (string->utf8 "hello world")))
+                ((port get)
+                 (open-sha256-input-port wrapped)))
+    (let* ((hello (get-bytevector-n port 5))
+           (hash  (get))
+
+           ;; Now read from WRAPPED to make sure its current position is
+           ;; correct.
+           (world (get-string-all wrapped)))
+      (list hello hash world))))
 
 (test-end)
 
