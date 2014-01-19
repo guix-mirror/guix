@@ -53,6 +53,7 @@
 
             open-connection
             close-connection
+            with-store
             set-build-options
             valid-path?
             query-path-hash
@@ -322,6 +323,17 @@ operate, should the disk become full.  Return a server object."
 (define (close-connection server)
   "Close the connection to SERVER."
   (close (nix-server-socket server)))
+
+(define-syntax-rule (with-store store exp ...)
+  "Bind STORE to an open connection to the store and evaluate EXPs;
+automatically close the store when the dynamic extent of EXP is left."
+  (let ((store (open-connection)))
+    (dynamic-wind
+      (const #f)
+      (lambda ()
+        exp ...)
+      (lambda ()
+        (false-if-exception (close-connection store))))))
 
 (define current-build-output-port
   ;; The port where build output is sent.
