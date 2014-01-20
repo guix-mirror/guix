@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
@@ -106,14 +106,14 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.38.0")
+   (version "2.39.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
                                 name "/" (string-take version 4) "/"
                                 name "-" version ".tar.xz"))
             (sha256
-             (base32 "0cpzqadqk6z6bmb79p04pykxc8x57rvshh33414cnk41bvgaf4vm"))
+             (base32 "0lqi6z47068vgh91fm59jn0kq969wf3g2q8k4m33jsb0amprg36h"))
             (patches (list (search-patch "glib-tests-homedir.patch")
                            (search-patch "glib-tests-desktop.patch")
                            (search-patch "glib-tests-prlimit.patch")
@@ -155,7 +155,11 @@ shared NFS home directories.")
       ;; Note: `--docdir' and `--htmldir' are not honored, so work around it.
       #:configure-flags (list (string-append "--with-html-dir="
                                              (assoc-ref %outputs "doc")
-                                             "/share/gtk-doc"))))
+                                             "/share/gtk-doc"))
+
+      ;; In 'gio/tests', 'gdbus-test-codegen-generated.h' is #included in a
+      ;; file that gets compiled possibly before it has been fully generated.
+      #:parallel-tests? #f))
    (synopsis "Thread-safe general utility library; basis of GTK+ and GNOME")
    (description
     "GLib provides data structure handling for C, portability wrappers,
