@@ -427,4 +427,4 @@ connection alive.")
      "ISC's Dynamic Host Configuration Protocol (DHCP) distribution provides a
 reference implementation of all aspects of DHCP, through a suite of DHCP
 tools: server, client, and relay agent.")
-    (license (bsd-style "http://www.isc.org/sw/dhcp/dhcp-copyright.php"))))
+    (license isc)))
