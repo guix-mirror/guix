@@ -54,6 +54,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/dejagnu.scm			\
   gnu/packages/ddrescue.scm			\
+  gnu/packages/dictionaries.scm			\
   gnu/packages/docbook.scm			\
   gnu/packages/dwm.scm				\
   gnu/packages/ed.scm				\
