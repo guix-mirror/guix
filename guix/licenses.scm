@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
@@ -31,6 +31,7 @@
             expat
             freetype
             gpl1 gpl1+ gpl2 gpl2+ gpl3 gpl3+
+            fdl1.3+
             isc
             ijg
             ibmpl1.0
@@ -160,6 +161,11 @@ which may be a file:// URI pointing the package's tree."
   (license "GPL 3+"
            "https://www.gnu.org/licenses/gpl.html"
            "https://www.gnu.org/licenses/license-list#GNUGPLv3"))
+
+(define fdl1.3+
+  (license "FDL 1.3+"
+           "https://www.gnu.org/licenses/fdl.html"
+           "https://www.gnu.org/licenses/license-list#FDL"))
 
 (define isc
   (license "ISC"
