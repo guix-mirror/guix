@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +35,9 @@
   #:use-module (gnu packages which)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix utils)
+  #:use-module (ice-9 match))
 
 ;;; Commentary:
 ;;;
@@ -134,7 +136,7 @@ without requiring the source code to be rewritten.")
 
       ;; The headers and/or `guile-2.0.pc' refer to these packages, so they
       ;; must be propagated.
-      ("bdw-gc" ,libgc)
+      ("bdw-gc" ,libgc-7.4)
       ("gmp" ,gmp)))
 
    (self-native-input? #t)
@@ -177,7 +179,15 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.0/fixed
   ;; A package of Guile 2.0 that's rarely changed.  It is the one used
   ;; in the `base' module, and thus changing it entails a full rebuild.
-  guile-2.0)
+  (package (inherit guile-2.0)
+    (location (source-properties->location (current-source-location)))
+
+    ;; Keep using the stable libgc.
+    (propagated-inputs (map (match-lambda
+                             (("bdw-gc" _)
+                              `("bdw-gc" ,libgc))
+                             (x x))
+                            (package-propagated-inputs guile-2.0)))))
 
 
 ;;;
