@@ -59,6 +59,5 @@ Alternatively, the garbage collector may be used as a leak detector for
 C or C++ programs, though that is not its primary goal.")
    (home-page "http://www.hpl.hp.com/personal/Hans_Boehm/gc/")
 
-   ;; permissive X11-style license:
-   ;; http://www.hpl.hp.com/personal/Hans_Boehm/gc/license.txt
-   (license x11)))
+   (license
+    (x11-style "http://www.hpl.hp.com/personal/Hans_Boehm/gc/license.txt"))))
