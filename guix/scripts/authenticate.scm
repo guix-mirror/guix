@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -72,23 +72,21 @@
      ;; Read the signature as produced above, check whether its public key is
      ;; authorized, and verify the signature, and print the signed data to
      ;; stdout upon success.
-     (let* ((sig+data   (read-canonical-sexp signature-file))
-            (public-key (find-sexp-token sig+data 'public-key))
-            (data       (find-sexp-token sig+data 'data))
-            (signature  (find-sexp-token sig+data 'sig-val)))
-       (if (and data signature)
-           (if (authorized-key? public-key)
-               (if (verify signature data public-key)
-                   (begin
-                     (display (bytevector->base16-string
-                               (hash-data->bytevector data)))
+     (let* ((signature (read-canonical-sexp signature-file))
+            (subject   (signature-subject signature))
+            (data      (signature-signed-data signature)))
+       (if (and data subject)
+           (if (authorized-key? subject)
+               (if (valid-signature? signature)
+                   (let ((hash (hash-data->bytevector data)))
+                     (display (bytevector->base16-string hash))
                      #t)                          ; success
                    (leave (_ "error: invalid signature: ~a~%")
                           (canonical-sexp->string signature)))
                (leave (_ "error: unauthorized public key: ~a~%")
-                      (canonical-sexp->string public-key)))
+                      (canonical-sexp->string subject)))
            (leave (_ "error: corrupt signature data: ~a~%")
-                  (canonical-sexp->string sig+data)))))
+                  (canonical-sexp->string signature)))))
     (("--help")
      (display (_ "Usage: guix authenticate OPTION...
 Sign or verify the signature on the given file.  This tool is meant to
