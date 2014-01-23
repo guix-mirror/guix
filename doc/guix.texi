@@ -175,12 +175,23 @@ your goal is to share the store with Nix.
 
 @cindex daemon
 Operations such as building a package or running the garbage collector
-are all performed by a specialized process, the @dfn{Guix daemon}, on
+are all performed by a specialized process, the @dfn{build daemon}, on
 behalf of clients.  Only the daemon may access the store and its
 associated database.  Thus, any operation that manipulates the store
 goes through the daemon.  For instance, command-line tools such as
 @command{guix package} and @command{guix build} communicate with the
 daemon (@i{via} remote procedure calls) to instruct it what to do.
+
+The following sections explain how to prepare the build daemon's
+environment.
+
+@menu
+* Build Environment Setup::     Preparing the isolated build environment.
+* Daemon Offload Setup::        Offloading builds to remote machines.
+@end menu
+
+@node Build Environment Setup
+@subsection Build Environment Setup
 
 In a standard multi-user setup, Guix and its daemon---the
 @command{guix-daemon} program---are installed by the system
@@ -256,20 +267,113 @@ user @file{nobody};
 a writable @file{/tmp} directory.
 @end itemize
 
-Finally, you may want to generate a key pair to allow the daemon to
-export signed archives of files from the store (@pxref{Invoking guix
-archive}):
-
-@example
-# guix archive --generate-key
-@end example
-
 If you are installing Guix as an unprivileged user, it is still
 possible to run @command{guix-daemon}.  However, build processes will
 not be isolated from one another, and not from the rest of the system.
 Thus, build processes may interfere with each other, and may access
 programs, libraries, and other files available on the system---making it
 much harder to view them as @emph{pure} functions.
+
+
+@node Daemon Offload Setup
+@subsection Using the Offload Facility
+
+@cindex offloading
+The build daemon can @dfn{offload} derivation builds to other machines
+running Guix, using the @code{offload} @dfn{build hook}.  When that
+feature is enabled, a list of user-specified build machines is read from
+@file{/etc/guix/machines.scm}; anytime a build is requested, for
+instance via @code{guix build}, the daemon attempts to offload it to one
+of the machines that satisfies the derivation's constraints, in
+particular its system type---e.g., @file{x86_64-linux}.  Missing
+prerequisites for the build are copied over SSH to the target machine,
+which then proceeds with the build; upon success the output(s) of the
+build are copied back to the initial machine.
+
+The @file{/etc/guix/machines.scm} is---not surprisingly!---a Scheme file
+whose return value must be a list of @code{build-machine} objects.  In
+practice, it typically looks like this:
+
+@example
+(list (build-machine
+        (name "eightysix.example.org")
+        (system "x86_64-linux")
+        (user "bob")
+        (speed 2.))    ; incredibly fast!
+
+      (build-machine
+        (name "meeps.example.org")
+        (system "mips64el-linux")
+        (user "alice")
+        (private-key
+         (string-append (getenv "HOME")
+                        "/.ssh/id-rsa-for-guix"))))
+@end example
+
+@noindent
+In the example above we specify a list of two build machines, one for
+the @code{x86_64} architecture and one for the @code{mips64el}
+architecture.  The compulsory fields for a @code{build-machine}
+declaration are:
+
+@table @code
+
+@item name
+The remote machine's host name.
+
+@item system
+The remote machine's system type.
+
+@item user
+The user account to use when connecting to the remote machine over SSH.
+Note that the SSH key pair must @emph{not} be passphrase-protected, to
+allow non-interactive logins.
+
+@end table
+
+@noindent
+A number of optional fields may be optionally specified:
+
+@table @code
+
+@item private-key
+The SSH private key file to use when connecting to the machine.
+
+@item parallel-builds
+The number of builds that may run in parallel on the machine (1 by
+default.)
+
+@item speed
+A ``relative speed factor''.  The offload scheduler will tend to prefer
+machines with a higher speed factor.
+
+@item features
+A list of strings denoting specific features supported by the machine.
+An example is @code{"kvm"} for machines that have the KVM Linux modules
+and corresponding hardware support.  Derivations can request features by
+name, and they will be scheduled on matching build machines.
+
+@end table
+
+The @code{guix} command must be in the search path on the build
+machines, since offloading works by invoking the @code{guix archive} and
+@code{guix build} commands.
+
+There's one last thing to do once @file{machines.scm} is in place.  As
+explained above, when offloading, files are transferred back and forth
+between the machine stores.  For this to work, you need to generate a
+key pair to allow the daemon to export signed archives of files from the
+store (@pxref{Invoking guix archive}):
+
+@example
+# guix archive --generate-key
+@end example
+
+@noindent
+Thus, when receiving files, a machine's build daemon can make sure they
+are genuine, have not been tampered with, and that they are signed by an
+authorized key.
+
 
 @node Invoking guix-daemon
 @section Invoking @command{guix-daemon}

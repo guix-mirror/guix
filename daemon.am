@@ -172,6 +172,14 @@ nodist_pkglibexec_SCRIPTS =			\
   nix/scripts/list-runtime-roots		\
   nix/scripts/substitute-binary
 
+if BUILD_DAEMON_OFFLOAD
+
+nodist_pkglibexec_SCRIPTS +=			\
+  nix/scripts/offload
+
+endif BUILD_DAEMON_OFFLOAD
+
+
 # XXX: It'd be better to hide it in $(pkglibexecdir).
 nodist_libexec_SCRIPTS =			\
   nix/scripts/guix-authenticate

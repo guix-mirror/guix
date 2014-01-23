@@ -559,7 +559,7 @@ reporting."
 
 (define (show-guix-help)
   (define (internal? command)
-    (member command '("substitute-binary" "authenticate")))
+    (member command '("substitute-binary" "authenticate" "offload")))
 
   (format #t (_ "Usage: guix COMMAND ARGS...
 Run COMMAND with ARGS.\n"))

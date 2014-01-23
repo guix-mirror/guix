@@ -95,6 +95,17 @@ if test "x$guix_build_daemon" = "xyes"; then
   dnl Check for <linux/fs.h> (for immutable file support).
   AC_CHECK_HEADERS([linux/fs.h])
 
+  dnl Check whether the 'offload' build hook can be built (uses
+  dnl 'restore-file-set', which requires unbuffered custom binary input
+  dnl ports from Guile >= 2.0.10.)
+  GUIX_CHECK_UNBUFFERED_CBIP
+  guix_build_daemon_offload="$ac_cv_guix_cbips_support_setvbuf"
+
+  if test "x$guix_build_daemon_offload" = "xyes"; then
+    AC_DEFINE([HAVE_DAEMON_OFFLOAD_HOOK], [1],
+      [Define if the daemon's 'offload' build hook is being built.])
+  fi
+
   dnl Temporary directory used to store the daemon's data.
   AC_MSG_CHECKING([for unit test root])
   GUIX_TEST_ROOT="`pwd`/test-tmp"
@@ -107,6 +118,11 @@ if test "x$guix_build_daemon" = "xyes"; then
     [chmod +x nix/scripts/substitute-binary])
   AC_CONFIG_FILES([nix/scripts/guix-authenticate],
     [chmod +x nix/scripts/guix-authenticate])
+  AC_CONFIG_FILES([nix/scripts/offload],
+    [chmod +x nix/scripts/offload])
 fi
 
 AM_CONDITIONAL([BUILD_DAEMON], [test "x$guix_build_daemon" = "xyes"])
+AM_CONDITIONAL([BUILD_DAEMON_OFFLOAD],			\
+  [test "x$guix_build_daemon" = "xyes"			\
+   && test "x$guix_build_daemon_offload" = "xyes"])

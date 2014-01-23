@@ -1,5 +1,5 @@
 dnl GNU Guix --- Functional package management for GNU
-dnl Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+dnl Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 dnl
 dnl This file is part of GNU Guix.
 dnl
@@ -132,5 +132,22 @@ AC_DEFUN([GUIX_CHECK_SRFI_37], [
        ac_cv_guix_srfi_37_broken=no
      else
        ac_cv_guix_srfi_37_broken=yes
+     fi])
+])
+
+dnl GUIX_CHECK_UNBUFFERED_CBIP
+dnl
+dnl Check whether 'setbvuf' works on custom binary input ports (CBIPs), as is
+dnl the case starting with Guile 2.0.10.
+AC_DEFUN([GUIX_CHECK_UNBUFFERED_CBIP], [
+  AC_CACHE_CHECK([whether Guile's custom binary input ports support 'setvbuf'],
+    [ac_cv_guix_cbips_support_setvbuf],
+    [if "$GUILE" -c "(use-modules (rnrs io ports))			\
+       (let ((p (make-custom-binary-input-port \"cbip\" pk #f #f #f)))	\
+         (setvbuf p _IONBF))" >&5 2>&1
+     then
+       ac_cv_guix_cbips_support_setvbuf=yes
+     else
+       ac_cv_guix_cbips_support_setvbuf=no
      fi])
 ])
