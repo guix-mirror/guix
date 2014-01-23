@@ -76,6 +76,7 @@
             references
             requisites
             referrers
+            topologically-sorted
             valid-derivers
             query-derivation-outputs
             live-paths
@@ -588,6 +589,40 @@ SEED."
   "Return the requisites of PATH, including PATH---i.e., its closure (all its
 references, recursively)."
   (fold-path store cons '() path))
+
+(define (topologically-sorted store paths)
+  "Return a list containing PATHS and all their references sorted in
+topological order."
+  (define (traverse)
+    ;; Do a simple depth-first traversal of all of PATHS.
+    (let loop ((paths   paths)
+               (visited vlist-null)
+               (result  '()))
+      (define (visit n)
+        (vhash-cons n #t visited))
+
+      (define (visited? n)
+        (vhash-assoc n visited))
+
+      (match paths
+        ((head tail ...)
+         (if (visited? head)
+             (loop tail visited result)
+             (call-with-values
+                 (lambda ()
+                   (loop (references store head)
+                         (visit head)
+                         result))
+               (lambda (visited result)
+                 (loop tail
+                       visited
+                       (cons head result))))))
+        (()
+         (values visited result)))))
+
+  (call-with-values traverse
+    (lambda (_ result)
+      (reverse result))))
 
 (define referrers
   (operation (query-referrers (store-path path))

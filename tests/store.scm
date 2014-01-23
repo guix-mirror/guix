@@ -162,6 +162,38 @@
          (equal? (valid-derivers %store o)
                  (list (derivation-file-name d))))))
 
+(test-assert "topologically-sorted, one item"
+  (let* ((a (add-text-to-store %store "a" "a"))
+         (b (add-text-to-store %store "b" "b" (list a)))
+         (c (add-text-to-store %store "c" "c" (list b)))
+         (d (add-text-to-store %store "d" "d" (list c)))
+         (s (topologically-sorted %store (list d))))
+    (equal? s (list a b c d))))
+
+(test-assert "topologically-sorted, several items"
+  (let* ((a  (add-text-to-store %store "a" "a"))
+         (b  (add-text-to-store %store "b" "b" (list a)))
+         (c  (add-text-to-store %store "c" "c" (list b)))
+         (d  (add-text-to-store %store "d" "d" (list c)))
+         (s1 (topologically-sorted %store (list d a c b)))
+         (s2 (topologically-sorted %store (list b d c a b d))))
+    (equal? s1 s2 (list a b c d))))
+
+(test-assert "topologically-sorted, more difficult"
+  (let* ((a  (add-text-to-store %store "a" "a"))
+         (b  (add-text-to-store %store "b" "b" (list a)))
+         (c  (add-text-to-store %store "c" "c" (list b)))
+         (d  (add-text-to-store %store "d" "d" (list c)))
+         (w  (add-text-to-store %store "w" "w"))
+         (x  (add-text-to-store %store "x" "x" (list w)))
+         (y  (add-text-to-store %store "y" "y" (list x d)))
+         (s1 (topologically-sorted %store (list y)))
+         (s2 (topologically-sorted %store (list c y)))
+         (s3 (topologically-sorted %store (cons y (references %store y)))))
+    (and (equal? s1 (list w x a b c d y))
+         (equal? s2 (list a b c w x d y))
+         (lset= string=? s1 s3))))
+
 (test-assert "log-file, derivation"
   (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
          (s (add-to-store %store "bash" #t "sha256"
