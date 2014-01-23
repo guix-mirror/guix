@@ -28,10 +28,10 @@
   #:use-module (gnu packages libtiff)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
-  #:use-module (gnu packages oggvorbis)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages xorg)
   #:export (sdl
             sdl2

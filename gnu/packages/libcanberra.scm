@@ -25,8 +25,8 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages oggvorbis)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xiph))
 
 (define-public libcanberra
   (package

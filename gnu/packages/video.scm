@@ -25,11 +25,11 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages oggvorbis)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages yasm))
 
 (define-public ffmpeg

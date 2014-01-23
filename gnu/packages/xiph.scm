@@ -18,7 +18,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages oggvorbis)
+(define-module (gnu packages xiph)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
@@ -155,7 +155,7 @@ stereo encoding, and voice activity detection.")
     ;; FIXME: Add further backends, see the summary printed after configure.
     ;; XXX: Should back-ends be pushed to different outputs?  For instance,
     ;; "out" would include only the ALSA back-end, while "pulse" would
-    ;; contains 'lib/ao/plugins-4/libpulse.*'.
+    ;; contain 'lib/ao/plugins-4/libpulse.*'.
     (inputs `(("pkg-config" ,pkg-config)
               ("alsa-lib" ,alsa-lib)
               ("pulseaudio" ,pulseaudio)))

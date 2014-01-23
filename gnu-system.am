@@ -147,7 +147,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/noweb.scm			\
   gnu/packages/ocaml.scm			\
   gnu/packages/ocrad.scm			\
-  gnu/packages/oggvorbis.scm			\
   gnu/packages/onc-rpc.scm			\
   gnu/packages/openldap.scm			\
   gnu/packages/openssl.scm			\
@@ -205,6 +204,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
   gnu/packages/wordnet.scm			\
+  gnu/packages/xiph.scm				\
   gnu/packages/xlockmore.scm			\
   gnu/packages/xml.scm				\
   gnu/packages/xnee.scm				\
