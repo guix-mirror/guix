@@ -1,0 +1,12 @@
+Fixes a fatal constness error with g++ 4.8.2.
+--- aegis-4.24/common/ac/string/memmem.cc	2008-03-14 07:19:27.000000000 +0100
++++ aegis-4.24/common/ac/string/memmem.cc	2014-01-26 11:17:58.000000000 +0100
+@@ -182,7 +182,7 @@
+ 
+     // Use optimizations in memchr when possible.
+     if (needle_len == 1)
+-        return memchr(haystack, *needle, haystack_len);
++        return (void *) memchr(haystack, *needle, haystack_len);
+ 
+     // Minimizing the worst-case complexity:
+     // Let n = haystack_len, m = needle_len.

@@ -29,9 +29,15 @@
   #:use-module (guix build-system python)
   #:use-module (guix build utils)
   #:use-module (gnu packages apr)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages cook)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages ed)
+  #:use-module (gnu packages file)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages groff)
+  #:use-module (gnu packages linux)
 ;;   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages nano)
   #:use-module (gnu packages openssl)
@@ -477,4 +483,90 @@ large, complex patch files.")
     (description  "GNU CSSC provides a replacement for the legacy Unix source
 code control system SCCS.  This allows old code still under that system to be
 accessed and migrated on modern systems.")
+    (license gpl3+)))
+
+;; This package can unfortunately work only in -TEST mode, since Aegis 
+;; requires that it is installed setuid root.
+(define-public aegis
+  (package
+    (name "aegis")
+    (version "4.24")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/aegis/aegis-" 
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "18s86ssarfmc4l17gbpzybca29m5wa37cbaimdji8czlcry3mcjl"))
+            (patches (list (search-patch "aegis-perl-tempdir1.patch")
+                           (search-patch "aegis-perl-tempdir2.patch")
+                           (search-patch "aegis-test-fixup-1.patch")
+                           (search-patch "aegis-test-fixup-2.patch")
+                           (search-patch "aegis-constness-error.patch")))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("e2fsprogs" ,e2fsprogs)
+       ("curl" ,curl)
+       ("file" ,file)
+       ("libxml2" ,libxml2)
+       ("zlib" ,zlib)
+       ("gettext" ,gnu-gettext)))
+    (native-inputs
+     `(("bison" ,bison)
+       ("groff" ,groff)
+       ("perl" ,perl)
+       ;; Various tests require the following:
+       ("cvs" ,cvs) 
+       ("flex" ,flex)
+       ("cook" ,cook)
+       ("subversion" ,subversion)
+       ("rcs" ,rcs)
+       ("ed" ,ed)))
+    (arguments
+     `(#:configure-flags (list "--with-no-aegis-configured" 
+                               "--sharedstatedir=/var/com/aegis")
+       #:parallel-build? #f ; There are some nasty racy rules in the Makefile.
+       #:phases 
+        (alist-cons-before
+         'configure 'pre-conf
+         (lambda _
+             (substitute* (append '("configure"
+                                    "etc/check-tar-gz.sh"
+                                    "etc/patches.sh"
+                                    "etc/test.sh"
+                                    "script/aexver.in"
+                                    "script/aebisect.in"
+                                    "script/aeintegratq.in"
+                                    "script/tkaegis.in"
+                                    "script/test_funcs.in"
+                                    "web/eg_oss_templ.sh"
+                                    "web/webiface.html"
+                                    "libaegis/getpw_cache.cc")
+                                  (find-files "test" "\\.sh"))
+               (("/bin/sh") (which "sh")))
+             (setenv "SH" (which "sh")))
+         (alist-replace
+          'check
+          (lambda _
+            (let ((home (string-append (getcwd) "/my-new-home")))
+              ;; Some tests need to write to $HOME.
+              (mkdir home)
+              (setenv "HOME" home)
+
+              ;; This test assumes that  flex has been symlinked to "lex".
+              (substitute* "test/00/t0011a.sh"
+                (("type lex")  "type flex"))
+
+              ;; The author decided to call the check rule "sure".
+              (zero? (system* "make" "sure"))))
+         %standard-phases))))
+    (home-page "http://aegis.sourceforge.net")
+    (synopsis "Project change supervisor")
+    (description "Aegis is a project change supervisor, and performs some of
+the Software Configuration Management needed in a CASE environment. Aegis
+provides a framework within which a team of developers may work on many
+changes to a program independently, and Aegis coordinates integrating these
+changes back into the master source of the program, with as little disruption
+as possible. Resolution of contention for source files, a major headache for
+any project with more than one developer, is one of Aegis's major functions.")
     (license gpl3+)))

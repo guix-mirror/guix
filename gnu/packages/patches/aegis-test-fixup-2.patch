@@ -1,0 +1,24 @@
+This test was failing with subversion 1.7.8 because the svn repository structure
+was not as the test expected.  Presumably the test relies on different version.
+--- aegis-4.24/test/02/t0222a-pmil.sh	2008-03-14 07:19:27.000000000 +0100
++++ aegis-4.24/test/02/t0222a-pmil.sh	2014-01-27 19:48:30.000000000 +0100
+@@ -268,7 +268,8 @@
+     -c 10 > log 2>&1
+ if test $? -ne 0 ; then cat log; fail; fi
+ 
+-test -f $work/svnroot/db/revs/2 || fail
++activity="check svn db 271"
++test -f $work/svnroot/db/revs/0/2 || test -f $work/svnroot/db/revs/2 || fail
+ 
+ # --------------------------------------------------------------------------
+ 
+@@ -364,7 +365,8 @@
+     -c 3 > log 2>&1
+ if test $? -ne 0 ; then cat log; fail; fi
+ 
+-test -f $work/svnroot/db/revs/3 || fail
++activity="check svn db 368"
++test -f $work/svnroot/db/revs/0/3 || test -f $work/svnroot/db/revs/3 || fail
+ 
+ #
+ # Only definite negatives are possible.

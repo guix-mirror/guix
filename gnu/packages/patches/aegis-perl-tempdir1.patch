@@ -1,0 +1,14 @@
+This patch removes the hard coded temporary directory (which might not exist on the system)
+and replaces it using the Perl preferred method.
+--- aegis-4.24/script/aebisect.in	2008-03-14 07:19:27.000000000 +0100
++++ aegis-4.24/script/aebisect.in	2014-01-26 11:03:31.000000000 +0100
+@@ -34,7 +34,8 @@
+ # @configure_input@
+ #
+ # Configure additions?
+-my $TmpDir   = "/var/tmp";
++use File::Temp qw/ tempdir /;
++my $TmpDir   = tempdir();
+ my $ProgramName = "aebisect";
+ 
+ require 5.004;

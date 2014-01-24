@@ -1,0 +1,15 @@
+This test fails because it expects a MIME type "Content-Type: image/gif"
+whereas that provided by libmagic is "Content-Type: image/gif; charset=binary"
+Presumably the test was written against a different version.
+--- aegis-4.24/test/02/t0228a-matt.sh	2008-03-14 07:19:27.000000000 +0100
++++ aegis-4.24/test/02/t0228a-matt.sh	2014-01-27 09:43:44.000000000 +0100
+@@ -147,7 +147,8 @@
+ SCRIPT_NAME=/cgi-bin/aeget \
+ PATH_INFO=icon/rss.gif \
+ QUERY_STRING= \
+-$bin/aeget > rss.served.gif 2>&1
++$bin/aeget \
++| sed -e 's%^Content-Type: image/gif; charset=binary%Content-Type: image/gif%' > rss.served.gif 2>&1
+ if test $? -ne 0 ; then fail; fi
+ 
+ # Compare the expected and the actual received file.

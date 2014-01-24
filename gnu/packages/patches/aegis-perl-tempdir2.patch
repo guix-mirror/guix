@@ -1,0 +1,18 @@
+--- aegis-4.24/script/aeintegratq.in	2008-03-14 07:19:27.000000000 +0100
++++ aegis-4.24/script/aeintegratq.in	2014-01-26 16:08:22.000000000 +0100
+@@ -49,13 +49,14 @@
+ #
+ # @configure_input@
+ #
++use File::Temp qw/ tempdir /; 
+ # Grab useful locations from configure
+ $BinDir  = "@bindir@";
+  # configure does not expand @comdir@ directly so use sharedstatedir
+ $ComDir  = "@sharedstatedir@";
+ 
+ # Configure additions?
+-$TmpDir   = "/var/tmp";
++$TmpDir   = tempdir();
+   # base mail program that takes all info (to: subj: etc) on stdin
+ $SendMail = "/usr/lib/sendmail";
+   # Define the preferred integration host
