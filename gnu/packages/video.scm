@@ -47,6 +47,7 @@
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("opus" ,opus)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("patchelf" ,patchelf)
@@ -107,7 +108,6 @@
 ;;   --enable-libopencore-amrwb enable AMR-WB decoding via libopencore-amrwb [no]
 ;;   --enable-libopencv       enable video filtering via libopencv [no]
 ;;   --enable-libopenjpeg     enable JPEG 2000 de/encoding via OpenJPEG [no]
-;;   --enable-libopus         enable Opus decoding via libopus [no]
 ;;   --enable-libpulse        enable Pulseaudio input via libpulse [no]
 ;;   --enable-libquvi         enable quvi input via libquvi [no]
 ;;   --enable-librtmp         enable RTMP[E] support via librtmp [no]
@@ -142,6 +142,7 @@
                       "--enable-fontconfig"
                       ;; "--enable-gnutls" ; causes test failures
                       "--enable-libfreetype"
+                      "--enable-libopus"
                       "--enable-libspeex"
                       "--enable-libtheora"
                       "--enable-libvorbis"
