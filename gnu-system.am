@@ -52,6 +52,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cryptsetup.scm			\
   gnu/packages/curl.scm				\
   gnu/packages/cyrus-sasl.scm			\
+  gnu/packages/dc.scm				\
   gnu/packages/dejagnu.scm			\
   gnu/packages/ddrescue.scm			\
   gnu/packages/dictionaries.scm			\
