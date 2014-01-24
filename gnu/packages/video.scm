@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,14 +35,14 @@
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.1.1")
+    (version "2.1.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1qnspbpwa6cflsb6mkm84ay4nfx60ism6d7lgvnasidck9dmxydy"))))
+               "18qkdpka94rp44x17q7d2bvmw26spxf41c69nvzy31szsdzjwcqx"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
