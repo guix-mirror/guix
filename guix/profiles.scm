@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -238,8 +238,6 @@ the given MANIFEST."
 
        (let ((output (assoc-ref %outputs "out"))
              (inputs (map cdr %build-inputs)))
-         (format #t "building profile '~a' with ~a packages...~%"
-                 output (length inputs))
          (union-build output inputs
                       #:log-port (%make-void-port "w"))
          (call-with-output-file (string-append output "/manifest")
