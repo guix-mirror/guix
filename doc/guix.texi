@@ -279,7 +279,9 @@ much harder to view them as @emph{pure} functions.
 @subsection Using the Offload Facility
 
 @cindex offloading
-The build daemon can @dfn{offload} derivation builds to other machines
+@cindex build hook
+When desired, the build daemon can @dfn{offload}
+derivation builds to other machines
 running Guix, using the @code{offload} @dfn{build hook}.  When that
 feature is enabled, a list of user-specified build machines is read from
 @file{/etc/guix/machines.scm}; anytime a build is requested, for
@@ -290,9 +292,7 @@ prerequisites for the build are copied over SSH to the target machine,
 which then proceeds with the build; upon success the output(s) of the
 build are copied back to the initial machine.
 
-The @file{/etc/guix/machines.scm} is---not surprisingly!---a Scheme file
-whose return value must be a list of @code{build-machine} objects.  In
-practice, it typically looks like this:
+The @file{/etc/guix/machines.scm} file typically looks like this:
 
 @example
 (list (build-machine
@@ -313,8 +313,17 @@ practice, it typically looks like this:
 @noindent
 In the example above we specify a list of two build machines, one for
 the @code{x86_64} architecture and one for the @code{mips64el}
-architecture.  The compulsory fields for a @code{build-machine}
-declaration are:
+architecture.
+
+In fact, this file is---not surprisingly!---a Scheme file that is
+evaluated when the @code{offload} hook is started.  Its return value
+must be a list of @code{build-machine} objects.  While this example
+shows a fixed list of build machines, one could imagine, say, using
+DNS-SD to return a list of potential build machines discovered in the
+local network (@pxref{Introduction, Guile-Avahi,, guile-avahi, Using
+Avahi in Guile Scheme Programs}).
+
+The compulsory fields for a @code{build-machine} declaration are:
 
 @table @code
 
@@ -332,7 +341,7 @@ allow non-interactive logins.
 @end table
 
 @noindent
-A number of optional fields may be optionally specified:
+A number of optional fields may be specified:
 
 @table @code
 
@@ -425,6 +434,14 @@ By default substitutes are used, unless the client---such as the
 When the daemon runs with @code{--no-substitutes}, clients can still
 explicitly enable substitution @i{via} the @code{set-build-options}
 remote procedure call (@pxref{The Store}).
+
+@cindex build hook
+@item --no-build-hook
+Do not use the @dfn{build hook}.
+
+The build hook is a helper program that the daemon can start and to
+which it submits build requests.  This mechanism is used to offload
+builds to other machines (@pxref{Daemon Offload Setup}).
 
 @item --cache-failures
 Cache build failures.  By default, only successful builds are cached.
@@ -1776,10 +1793,9 @@ Do not use substitutes for build products.  That is, always build things
 locally instead of allowing downloads of pre-built binaries.
 
 @item --no-build-hook
-Do not attempt to offload builds @i{via} the daemon's ``build hook''.
-That is, always build things locally instead of offloading builds to
-remote machines.
-@c TODO: Add xref to build hook doc.
+Do not attempt to offload builds @i{via} the daemon's ``build hook''
+(@pxref{Daemon Offload Setup}).  That is, always build things locally
+instead of offloading builds to remote machines.
 
 @item --max-silent-time=@var{seconds}
 When the build or substitution process remains silent for more than
