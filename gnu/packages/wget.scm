@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +19,6 @@
 
 (define-module (gnu packages wget)
   #:use-module (guix licenses)
-  #:use-module (gnu packages gettext)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages perl)
   #:use-module (guix packages)
@@ -28,7 +28,7 @@
 (define-public wget
   (package
     (name "wget")
-    (version "1.14")
+    (version "1.15")
     (source
      (origin
       (method url-fetch)
@@ -36,12 +36,12 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "0yqllj3nv9p3vqbdm6j4nvpjcwf1y19rq8sd966nrbd2qvvxfq8p"))))
+        "1yw0sk4mrs7bvga3c79rkbhxivmw8cs3b5wq3cglp1f9ai1mz2ni"))))
     (build-system gnu-build-system)
     (inputs
-     `(("gnutls" ,gnutls)
-       ("perl" ,perl)
-       ("gettext" ,gnu-gettext)))
+     `(("gnutls" ,gnutls)))
+    (native-inputs
+     `(("perl" ,perl)))
     (home-page "http://www.gnu.org/software/wget/")
     (synopsis "Non-interactive command-line utility for downloading files")
     (description
