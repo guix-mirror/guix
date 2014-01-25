@@ -142,6 +142,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mtools.scm			\
   gnu/packages/mysql.scm			\
   gnu/packages/nano.scm				\
+  gnu/packages/ncdu.scm				\
   gnu/packages/ncurses.scm			\
   gnu/packages/netpbm.scm			\
   gnu/packages/nettle.scm			\
