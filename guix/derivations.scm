@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -532,7 +532,8 @@ the derivation called NAME with hash HASH."
                      (system (%current-system)) (env-vars '())
                      (inputs '()) (outputs '("out"))
                      hash hash-algo hash-mode
-                     references-graphs)
+                     references-graphs
+                     local-build?)
   "Build a derivation with the given arguments, and return the resulting
 <derivation> object.  When HASH, HASH-ALGO, and HASH-MODE are given, a
 fixed-output derivation is created---i.e., one whose result is known in
@@ -540,7 +541,11 @@ advance, such as a file download.
 
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs.  In that case, the reference graph of each store path is exported in
-the build environment in the corresponding file, in a simple text format."
+the build environment in the corresponding file, in a simple text format.
+
+When LOCAL-BUILD? is true, declare that the derivation is not a good candidate
+for offloading and should rather be built locally.  This is the case for small
+derivations where the costs of data transfers would outweigh the benefits."
   (define (add-output-paths drv)
     ;; Return DRV with an actual store path for each of its output and the
     ;; corresponding environment variable.
@@ -571,16 +576,20 @@ the build environment in the corresponding file, in a simple text format."
     ;; Some options are passed to the build daemon via the env. vars of
     ;; derivations (urgh!).  We hide that from our API, but here is the place
     ;; where we kludgify those options.
-    (match references-graphs
-      (((file . path) ...)
-       (let ((value (map (cut string-append <> " " <>)
-                         file path)))
-         ;; XXX: This all breaks down if an element of FILE or PATH contains
-         ;; white space.
-         `(("exportReferencesGraph" . ,(string-join value " "))
-           ,@env-vars)))
-      (#f
-       env-vars)))
+    (let ((env-vars (if local-build?
+                        `(("preferLocalBuild" . "1")
+                          ,@env-vars)
+                        env-vars)))
+      (match references-graphs
+        (((file . path) ...)
+         (let ((value (map (cut string-append <> " " <>)
+                           file path)))
+           ;; XXX: This all breaks down if an element of FILE or PATH contains
+           ;; white space.
+           `(("exportReferencesGraph" . ,(string-join value " "))
+             ,@env-vars)))
+        (#f
+         env-vars))))
 
   (define (env-vars-with-empty-outputs env-vars)
     ;; Return a variant of ENV-VARS where each OUTPUTS is associated with an
@@ -904,7 +913,8 @@ they can refer to each other."
                                        (env-vars '())
                                        (modules '())
                                        guile-for-build
-                                       references-graphs)
+                                       references-graphs
+                                       local-build?)
   "Return a derivation that executes Scheme expression EXP as a builder
 for derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV)
 tuples; when SUB-DRV is omitted, \"out\" is assumed.  MODULES is a list
@@ -923,7 +933,8 @@ EXP returns #f, the build is considered to have failed.
 EXP is built using GUILE-FOR-BUILD (a derivation).  When GUILE-FOR-BUILD is
 omitted or is #f, the value of the `%guile-for-build' fluid is used instead.
 
-See the `derivation' procedure for the meaning of REFERENCES-GRAPHS."
+See the `derivation' procedure for the meaning of REFERENCES-GRAPHS and
+LOCAL-BUILD?."
   (define guile-drv
     (or guile-for-build (%guile-for-build)))
 
@@ -1046,4 +1057,5 @@ See the `derivation' procedure for the meaning of REFERENCES-GRAPHS."
 
                 #:hash hash #:hash-algo hash-algo
                 #:outputs outputs
-                #:references-graphs references-graphs)))
+                #:references-graphs references-graphs
+                #:local-build? local-build?)))

@@ -15,3 +15,4 @@ guix/scripts/authenticate.scm
 guix/gnu-maintenance.scm
 guix/ui.scm
 guix/http-client.scm
+guix/nar.scm

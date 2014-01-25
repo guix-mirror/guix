@@ -125,7 +125,7 @@ LP/MIP solver is included in the package.")
 (define-public pspp
   (package
     (name "pspp")
-    (version "0.8.1")
+    (version "0.8.2")
     (source
      (origin
       (method url-fetch)
@@ -133,8 +133,7 @@ LP/MIP solver is included in the package.")
                           version ".tar.gz"))
       (sha256
        (base32
-        "0qhxsdbwxd3cn1shc13wxvx2lg32lp4z6sz24kv3jz7p5xfi8j7x"))
-      (patches (list (search-patch "pspp-tests.patch")))))
+        "1w7h3dglgx0jlq1wb605b8pgfsk2vr1q2q2rj7bsajh9ihbcsixr"))))
     (build-system gnu-build-system)
     (inputs
      `(("cairo" ,cairo)

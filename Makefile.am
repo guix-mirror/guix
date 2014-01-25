@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 #
 # This file is part of GNU Guix.
@@ -79,6 +79,13 @@ MODULES =					\
   guix/scripts/refresh.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
+
+if BUILD_DAEMON_OFFLOAD
+
+MODULES +=					\
+  guix/scripts/offload.scm
+
+endif BUILD_DAEMON_OFFLOAD
 
 # Because of the autoload hack in (guix build download), we must build it
 # first to avoid errors on systems where (gnutls) is unavailable.
@@ -184,6 +191,14 @@ EXTRA_DIST =					\
   bootstrap					\
   release.nix					\
   $(TESTS)
+
+if !BUILD_DAEMON_OFFLOAD
+
+EXTRA_DIST +=					\
+  guix/scripts/offload.scm
+
+endif !BUILD_DAEMON_OFFLOAD
+
 
 CLEANFILES =					\
   $(GOBJECTS)					\

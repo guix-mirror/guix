@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -161,6 +161,38 @@
                  (list o))
          (equal? (valid-derivers %store o)
                  (list (derivation-file-name d))))))
+
+(test-assert "topologically-sorted, one item"
+  (let* ((a (add-text-to-store %store "a" "a"))
+         (b (add-text-to-store %store "b" "b" (list a)))
+         (c (add-text-to-store %store "c" "c" (list b)))
+         (d (add-text-to-store %store "d" "d" (list c)))
+         (s (topologically-sorted %store (list d))))
+    (equal? s (list a b c d))))
+
+(test-assert "topologically-sorted, several items"
+  (let* ((a  (add-text-to-store %store "a" "a"))
+         (b  (add-text-to-store %store "b" "b" (list a)))
+         (c  (add-text-to-store %store "c" "c" (list b)))
+         (d  (add-text-to-store %store "d" "d" (list c)))
+         (s1 (topologically-sorted %store (list d a c b)))
+         (s2 (topologically-sorted %store (list b d c a b d))))
+    (equal? s1 s2 (list a b c d))))
+
+(test-assert "topologically-sorted, more difficult"
+  (let* ((a  (add-text-to-store %store "a" "a"))
+         (b  (add-text-to-store %store "b" "b" (list a)))
+         (c  (add-text-to-store %store "c" "c" (list b)))
+         (d  (add-text-to-store %store "d" "d" (list c)))
+         (w  (add-text-to-store %store "w" "w"))
+         (x  (add-text-to-store %store "x" "x" (list w)))
+         (y  (add-text-to-store %store "y" "y" (list x d)))
+         (s1 (topologically-sorted %store (list y)))
+         (s2 (topologically-sorted %store (list c y)))
+         (s3 (topologically-sorted %store (cons y (references %store y)))))
+    (and (equal? s1 (list w x a b c d y))
+         (equal? s2 (list a b c w x d y))
+         (lset= string=? s1 s3))))
 
 (test-assert "log-file, derivation"
   (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
@@ -388,6 +420,26 @@ Deriver: ~a~%"
                   (imported (import-paths %store source)))
              (pk 'corrupt-imported imported)
              #f)))))
+
+(test-assert "register-path"
+  (let ((file (string-append (%store-prefix) "/" (make-string 32 #\f)
+                             "-fake")))
+    (when (valid-path? %store file)
+      (delete-paths %store (list file)))
+    (false-if-exception (delete-file file))
+
+    (let ((ref (add-text-to-store %store "ref-of-fake" (random-text)))
+          (drv (string-append file ".drv")))
+      (call-with-output-file file
+        (cut display "This is a fake store item.\n" <>))
+      (register-path file
+                     #:references (list ref)
+                     #:deriver drv)
+
+      (and (valid-path? %store file)
+           (equal? (references %store file) (list ref))
+           (null? (valid-derivers %store file))
+           (null? (referrers %store file))))))
 
 (test-end "store")
 

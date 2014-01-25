@@ -175,12 +175,23 @@ your goal is to share the store with Nix.
 
 @cindex daemon
 Operations such as building a package or running the garbage collector
-are all performed by a specialized process, the @dfn{Guix daemon}, on
+are all performed by a specialized process, the @dfn{build daemon}, on
 behalf of clients.  Only the daemon may access the store and its
 associated database.  Thus, any operation that manipulates the store
 goes through the daemon.  For instance, command-line tools such as
 @command{guix package} and @command{guix build} communicate with the
 daemon (@i{via} remote procedure calls) to instruct it what to do.
+
+The following sections explain how to prepare the build daemon's
+environment.
+
+@menu
+* Build Environment Setup::     Preparing the isolated build environment.
+* Daemon Offload Setup::        Offloading builds to remote machines.
+@end menu
+
+@node Build Environment Setup
+@subsection Build Environment Setup
 
 In a standard multi-user setup, Guix and its daemon---the
 @command{guix-daemon} program---are installed by the system
@@ -229,42 +240,149 @@ The @code{guix-daemon} program may then be run as @code{root} with:
 @noindent
 This way, the daemon starts build processes in a chroot, under one of
 the @code{guix-builder} users.  On GNU/Linux, by default, the chroot
-environment contains nothing but the @code{/dev} and @code{/proc}
-directories@footnote{On some systems @code{/dev/shm}, which supports
-shared memory, is a symlink to another directory such as
-@code{/run/shm}, that is @emph{not} is the chroot.  When that is the
-case, shared memory support is unavailable in the chroot environment.
-The workaround is to make sure that @file{/dev/shm} is directly a
-@code{tmpfs} mount point.}.
+environment contains nothing but:
 
-Finally, you may want to generate a key pair to allow the daemon to
-export signed archives of files from the store (@pxref{Invoking guix
-archive}):
+@c Keep this list in sync with libstore/build.cc! -----------------------
+@itemize
+@item
+the @code{/dev} and @code{/proc} directories@footnote{On some systems
+@code{/dev/shm}, which supports shared memory, is a symlink to another
+directory such as @code{/run/shm}, that is @emph{not} is the chroot.
+When that is the case, shared memory support is unavailable in the
+chroot environment.  The workaround is to make sure that @file{/dev/shm}
+is directly a @code{tmpfs} mount point.};
 
-@example
-# guix archive --generate-key
-@end example
+@item
+@file{/etc/passwd} with an entry for the current user and an entry for
+user @file{nobody};
 
-Guix may also be used in a single-user setup, with @command{guix-daemon}
-running as an unprivileged user.  However, to maximize non-interference
-of build processes, the daemon still needs to perform certain operations
-that are restricted to @code{root} on GNU/Linux: it should be able to
-run build processes in a chroot, and to run them under different UIDs.
-To that end, the @command{nix-setuid-helper} program is provided; it is
-a small C program (less than 300 lines) that, if it is made setuid
-@code{root}, can be executed by the daemon to perform these operations
-on its behalf.  The @code{root}-owned @file{/etc/nix-setuid.conf} file
-is read by @command{nix-setuid-helper}; it should contain exactly two
-words: the user name under which the authorized @command{guix-daemon}
-runs, and the name of the build users group.
+@item
+@file{/etc/group} with an entry for the user's group;
 
-If you are installing Guix as an unprivileged user and do not have the
-ability to make @file{nix-setuid-helper} setuid-@code{root}, it is still
+@item
+@file{/etc/hosts} with an entry that maps @code{localhost} to
+@code{127.0.0.1};
+
+@item
+a writable @file{/tmp} directory.
+@end itemize
+
+If you are installing Guix as an unprivileged user, it is still
 possible to run @command{guix-daemon}.  However, build processes will
 not be isolated from one another, and not from the rest of the system.
 Thus, build processes may interfere with each other, and may access
 programs, libraries, and other files available on the system---making it
 much harder to view them as @emph{pure} functions.
+
+
+@node Daemon Offload Setup
+@subsection Using the Offload Facility
+
+@cindex offloading
+@cindex build hook
+When desired, the build daemon can @dfn{offload}
+derivation builds to other machines
+running Guix, using the @code{offload} @dfn{build hook}.  When that
+feature is enabled, a list of user-specified build machines is read from
+@file{/etc/guix/machines.scm}; anytime a build is requested, for
+instance via @code{guix build}, the daemon attempts to offload it to one
+of the machines that satisfies the derivation's constraints, in
+particular its system type---e.g., @file{x86_64-linux}.  Missing
+prerequisites for the build are copied over SSH to the target machine,
+which then proceeds with the build; upon success the output(s) of the
+build are copied back to the initial machine.
+
+The @file{/etc/guix/machines.scm} file typically looks like this:
+
+@example
+(list (build-machine
+        (name "eightysix.example.org")
+        (system "x86_64-linux")
+        (user "bob")
+        (speed 2.))    ; incredibly fast!
+
+      (build-machine
+        (name "meeps.example.org")
+        (system "mips64el-linux")
+        (user "alice")
+        (private-key
+         (string-append (getenv "HOME")
+                        "/.ssh/id-rsa-for-guix"))))
+@end example
+
+@noindent
+In the example above we specify a list of two build machines, one for
+the @code{x86_64} architecture and one for the @code{mips64el}
+architecture.
+
+In fact, this file is---not surprisingly!---a Scheme file that is
+evaluated when the @code{offload} hook is started.  Its return value
+must be a list of @code{build-machine} objects.  While this example
+shows a fixed list of build machines, one could imagine, say, using
+DNS-SD to return a list of potential build machines discovered in the
+local network (@pxref{Introduction, Guile-Avahi,, guile-avahi, Using
+Avahi in Guile Scheme Programs}).
+
+The compulsory fields for a @code{build-machine} declaration are:
+
+@table @code
+
+@item name
+The remote machine's host name.
+
+@item system
+The remote machine's system type.
+
+@item user
+The user account to use when connecting to the remote machine over SSH.
+Note that the SSH key pair must @emph{not} be passphrase-protected, to
+allow non-interactive logins.
+
+@end table
+
+@noindent
+A number of optional fields may be specified:
+
+@table @code
+
+@item private-key
+The SSH private key file to use when connecting to the machine.
+
+@item parallel-builds
+The number of builds that may run in parallel on the machine (1 by
+default.)
+
+@item speed
+A ``relative speed factor''.  The offload scheduler will tend to prefer
+machines with a higher speed factor.
+
+@item features
+A list of strings denoting specific features supported by the machine.
+An example is @code{"kvm"} for machines that have the KVM Linux modules
+and corresponding hardware support.  Derivations can request features by
+name, and they will be scheduled on matching build machines.
+
+@end table
+
+The @code{guix} command must be in the search path on the build
+machines, since offloading works by invoking the @code{guix archive} and
+@code{guix build} commands.
+
+There's one last thing to do once @file{machines.scm} is in place.  As
+explained above, when offloading, files are transferred back and forth
+between the machine stores.  For this to work, you need to generate a
+key pair to allow the daemon to export signed archives of files from the
+store (@pxref{Invoking guix archive}):
+
+@example
+# guix archive --generate-key
+@end example
+
+@noindent
+Thus, when receiving files, a machine's build daemon can make sure they
+are genuine, have not been tampered with, and that they are signed by an
+authorized key.
+
 
 @node Invoking guix-daemon
 @section Invoking @command{guix-daemon}
@@ -316,6 +434,14 @@ By default substitutes are used, unless the client---such as the
 When the daemon runs with @code{--no-substitutes}, clients can still
 explicitly enable substitution @i{via} the @code{set-build-options}
 remote procedure call (@pxref{The Store}).
+
+@cindex build hook
+@item --no-build-hook
+Do not use the @dfn{build hook}.
+
+The build hook is a helper program that the daemon can start and to
+which it submits build requests.  This mechanism is used to offload
+builds to other machines (@pxref{Daemon Offload Setup}).
 
 @item --cache-failures
 Cache build failures.  By default, only successful builds are cached.
@@ -1326,7 +1452,11 @@ derivations as Scheme objects, along with procedures to create and
 otherwise manipulate derivations.  The lowest-level primitive to create
 a derivation is the @code{derivation} procedure:
 
-@deffn {Scheme Procedure} derivation @var{store} @var{name} @var{builder} @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] [#:hash-mode #f] [#:inputs '()] [#:env-vars '()] [#:system (%current-system)] [#:references-graphs #f]
+@deffn {Scheme Procedure} derivation @var{store} @var{name} @var{builder} @
+  @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
+  [#:hash-mode #f] [#:inputs '()] [#:env-vars '()] @
+  [#:system (%current-system)] [#:references-graphs #f] @
+  [#:local-build? #f]
 Build a derivation with the given arguments, and return the resulting
 @code{<derivation>} object.
 
@@ -1338,6 +1468,11 @@ When @var{references-graphs} is true, it must be a list of file
 name/store path pairs.  In that case, the reference graph of each store
 path is exported in the build environment in the corresponding file, in
 a simple text format.
+
+When @var{local-build?} is true, declare that the derivation is not a
+good candidate for offloading and should rather be built locally
+(@pxref{Daemon Offload Setup}).  This is the case for small derivations
+where the costs of data transfers would outweigh the benefits.
 @end deffn
 
 @noindent
@@ -1368,7 +1503,7 @@ the caller to directly pass a Guile expression as the build script:
        [#:system (%current-system)] [#:inputs '()] @
        [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
        [#:env-vars '()] [#:modules '()] @
-       [#:references-graphs #f] [#:guile-for-build #f]
+       [#:references-graphs #f] [#:local-build? #f] [#:guile-for-build #f]
 Return a derivation that executes Scheme expression @var{exp} as a
 builder for derivation @var{name}.  @var{inputs} must be a list of
 @code{(name drv-path sub-drv)} tuples; when @var{sub-drv} is omitted,
@@ -1390,7 +1525,8 @@ terminates by passing the result of @var{exp} to @code{exit}; thus, when
 @var{guile-for-build} is omitted or is @code{#f}, the value of the
 @code{%guile-for-build} fluid is used instead.
 
-See the @code{derivation} procedure for the meaning of @var{references-graphs}.
+See the @code{derivation} procedure for the meaning of @var{references-graphs}
+and @var{local-build?}.
 @end deffn
 
 @noindent
@@ -1667,10 +1803,9 @@ Do not use substitutes for build products.  That is, always build things
 locally instead of allowing downloads of pre-built binaries.
 
 @item --no-build-hook
-Do not attempt to offload builds @i{via} the daemon's ``build hook''.
-That is, always build things locally instead of offloading builds to
-remote machines.
-@c TODO: Add xref to build hook doc.
+Do not attempt to offload builds @i{via} the daemon's ``build hook''
+(@pxref{Daemon Offload Setup}).  That is, always build things locally
+instead of offloading builds to remote machines.
 
 @item --max-silent-time=@var{seconds}
 When the build or substitution process remains silent for more than
@@ -1978,7 +2113,12 @@ the load.  To check whether a package has a @code{debug} output, use
 
 From a programming viewpoint, the package definitions of the
 distribution are provided by Guile modules in the @code{(gnu packages
-...)} name space (@pxref{Modules, Guile modules,, guile, GNU Guile
+@dots{})} name space@footnote{Note that packages under the @code{(gnu
+packages @dots{})} module name space are not necessarily ``GNU
+packages''.  This module naming scheme follows the usual Guile module
+naming convention: @code{gnu} means that these modules are distributed
+as part of the GNU system, and @code{packages} identifies modules that
+define packages.}  (@pxref{Modules, Guile modules,, guile, GNU Guile
 Reference Manual}).  For instance, the @code{(gnu packages emacs)}
 module exports a variable named @code{emacs}, which is bound to a
 @code{<package>} object (@pxref{Defining Packages}).  The @code{(gnu
@@ -2378,7 +2518,7 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
              (gnu system service)  ; for 'lsh-service'
              (gnu packages base)   ; Coreutils, grep, etc.
              (gnu packages bash)   ; Bash
-             (gnu packages system) ; dmd, Inetutils
+             (gnu packages admin)  ; dmd, Inetutils
              (gnu packages zile)   ; Zile
              (gnu packages less)   ; less
              (gnu packages guile)  ; Guile

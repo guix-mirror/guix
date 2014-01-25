@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
@@ -138,7 +138,7 @@ messages."
   "Display version information for COMMAND and `(exit 0)'."
   (simple-format #t "~a (~a) ~a~%"
                  command %guix-package-name %guix-version)
-  (display (_ "Copyright (C) 2013 the Guix authors
+  (display (_ "Copyright (C) 2014 the Guix authors
 License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
 This is free software: you are free to change and redistribute it.
 There is NO WARRANTY, to the extent permitted by law.
@@ -404,7 +404,11 @@ WIDTH columns."
   (format port "location: ~a~%"
           (or (and=> (package-location p) location->string)
               (_ "unknown")))
-  (format port "home-page: ~a~%" (package-home-page p))
+
+  ;; Note: Starting from version 1.6 or recutils, hyphens are not allowed in
+  ;; field identifiers.
+  (format port "homepage: ~a~%" (package-home-page p))
+
   (format port "license: ~a~%"
           (match (package-license p)
             (((? license? licenses) ...)
@@ -554,13 +558,17 @@ reporting."
        (command-files)))
 
 (define (show-guix-help)
+  (define (internal? command)
+    (member command '("substitute-binary" "authenticate" "offload")))
+
   (format #t (_ "Usage: guix COMMAND ARGS...
 Run COMMAND with ARGS.\n"))
   (newline)
   (format #t (_ "COMMAND must be one of the sub-commands listed below:\n"))
   (newline)
   ;; TODO: Display a synopsis of each command.
-  (format #t "~{   ~a~%~}" (sort (commands) string<?))
+  (format #t "~{   ~a~%~}" (sort (remove internal? (commands))
+                                 string<?))
   (show-bug-report-information))
 
 (define program-name

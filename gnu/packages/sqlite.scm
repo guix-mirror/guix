@@ -26,7 +26,7 @@
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.7.15.2")
+   (version "3.8.2")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -34,10 +34,10 @@
             ;; has been fixed.
             (uri (string-append
                   "mirror://sourceforge/sqlite.mirror/SQLite%20"
-                  version "/sqlite-autoconf-3071502.tar.gz"))
+                  version "/sqlite-autoconf-3080200.tar.gz"))
             (sha256
              (base32
-              "135s6r5z12q56brywpxnraqbqm7bdkxs76v7dygqgjpnjyvicbbq"))))
+              "14pg9zlwbwsj5w7f3qr25d3nniyv82gmczwlvpj0i0ic1431v1d0"))))
    (build-system gnu-build-system)
    (home-page "http://www.sqlite.org/")
    (synopsis "The SQLite database management system")

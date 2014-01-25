@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2013 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2013, 2014 Ludovic Courtès <ludo@gnu.org>
    Copyright (C) 2007, 2008, 2009, 2010, 2011, 2012,
      2013 Eelco Dolstra <eelco.dolstra@logicblox.com>
 
@@ -133,10 +133,13 @@ register_validity (LocalStore *store, std::istream &input,
       if (info.path == "")
 	break;
 
-      /* Rewrite the input to refer final name, as if we were in a chroot
-	 under PREFIX.  */
-      std::string final_prefix (NIX_STORE_DIR "/");
-      info.path = final_prefix + baseNameOf (info.path);
+      if (!prefix.empty ())
+	{
+	  /* Rewrite the input to refer to the final name, as if we were in a
+	     chroot under PREFIX.  */
+	  std::string final_prefix (NIX_STORE_DIR "/");
+	  info.path = final_prefix + baseNameOf (info.path);
+	}
 
       /* Keep its real path to canonicalize it and compute its hash.  */
       std::string real_path;
@@ -165,6 +168,9 @@ register_validity (LocalStore *store, std::istream &input,
 int
 main (int argc, char *argv[])
 {
+  /* Honor the environment variables, and initialize the settings.  */
+  settings.processEnvironment ();
+
   try
     {
       argp_parse (&argp, argc, argv, 0, 0, 0);
@@ -173,10 +179,11 @@ main (int argc, char *argv[])
 	 'settings.nixStore', 'settings.nixDBPath', etc.  */
       LocalStore store;
 
-      /* Under the --prefix tree, the final name of the store will be
-	 NIX_STORE_DIR.  Set it here so that the database uses file names
-	 prefixed by NIX_STORE_DIR and not PREFIX + NIX_STORE_DIR.  */
-      settings.nixStore = NIX_STORE_DIR;
+      if (!prefix.empty ())
+	/* Under the --prefix tree, the final name of the store will be
+	   NIX_STORE_DIR.  Set it here so that the database uses file names
+	   prefixed by NIX_STORE_DIR and not PREFIX + NIX_STORE_DIR.  */
+	settings.nixStore = NIX_STORE_DIR;
 
       register_validity (&store, *input);
     }

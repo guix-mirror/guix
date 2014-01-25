@@ -29,8 +29,12 @@
             current-acl
             public-keys->acl
             acl->public-keys
+            authorized-key?
+
             signature-sexp
-            authorized-key?))
+            signature-subject
+            signature-signed-data
+            valid-signature?))
 
 ;;; Commentary:
 ;;;
@@ -135,5 +139,22 @@ PUBLIC-KEY (see <http://theworld.com/~cme/spki.txt> for examples.)"
            (canonical-sexp->string data)
            (canonical-sexp->string (sign data secret-key))
            (canonical-sexp->string public-key))))
+
+(define (signature-subject sig)
+  "Return the signer's public key for SIG."
+  (find-sexp-token sig 'public-key))
+
+(define (signature-signed-data sig)
+  "Return the signed data from SIG, typically an sexp such as
+  (hash \"sha256\" #...#)."
+  (find-sexp-token sig 'data))
+
+(define (valid-signature? sig)
+  "Return #t if SIG is valid."
+  (let* ((data       (signature-signed-data sig))
+         (signature  (find-sexp-token sig 'sig-val))
+         (public-key (signature-subject sig)))
+    (and data signature
+         (verify signature data public-key))))
 
 ;;; pki.scm ends here

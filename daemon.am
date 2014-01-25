@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -56,6 +56,7 @@ libformat_a_CPPFLAGS =				\
 
 libutil_a_SOURCES =				\
   nix/libutil/archive.cc			\
+  nix/libutil/affinity.cc			\
   nix/libutil/serialise.cc			\
   nix/libutil/util.cc				\
   nix/libutil/xml-writer.cc			\
@@ -63,6 +64,7 @@ libutil_a_SOURCES =				\
   nix/libutil/gcrypt-hash.cc
 
 libutil_headers =				\
+  nix/libutil/affinity.hh			\
   nix/libutil/hash.hh				\
   nix/libutil/serialise.hh			\
   nix/libutil/xml-writer.hh			\
@@ -153,16 +155,6 @@ guix_register_LDADD =				\
   $(SQLITE3_LIBS) $(LIBGCRYPT_LIBS)
 
 
-libexec_PROGRAMS = nix-setuid-helper
-nix_setuid_helper_SOURCES =			\
-  nix/nix-setuid-helper/nix-setuid-helper.cc
-
-nix_setuid_helper_CPPFLAGS =			\
-  $(libutil_a_CPPFLAGS)
-
-nix_setuid_helper_LDADD =			\
-  libutil.a libformat.a
-
 noinst_HEADERS =						\
   $(libformat_headers) $(libutil_headers) $(libstore_headers)	\
   $(guix_daemon_headers)
@@ -179,6 +171,14 @@ nix/libstore/schema.sql.hh: nix/libstore/schema.sql
 nodist_pkglibexec_SCRIPTS =			\
   nix/scripts/list-runtime-roots		\
   nix/scripts/substitute-binary
+
+if BUILD_DAEMON_OFFLOAD
+
+nodist_pkglibexec_SCRIPTS +=			\
+  nix/scripts/offload
+
+endif BUILD_DAEMON_OFFLOAD
+
 
 # XXX: It'd be better to hide it in $(pkglibexecdir).
 nodist_libexec_SCRIPTS =			\

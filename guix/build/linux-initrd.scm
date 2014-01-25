@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -95,7 +95,9 @@
 
   ;; Other useful nodes.
   (mknod (scope "dev/null") 'char-special #o666 (device-number 1 3))
-  (mknod (scope "dev/zero") 'char-special #o666 (device-number 1 5)))
+  (mknod (scope "dev/zero") 'char-special #o666 (device-number 1 5))
+  (chmod (scope "dev/null") #o666)
+  (chmod (scope "dev/zero") #o666))
 
 (define %host-qemu-ipv4-address
   (inet-pton AF_INET "10.0.2.10"))

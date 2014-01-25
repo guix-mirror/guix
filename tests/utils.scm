@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -138,6 +138,36 @@
       (and (pk (every (compose zero? cdr waitpid)
                    (append pids1 pids2)))
            (equal? (get-bytevector-all decompressed) data)))))
+
+(test-equal "fcntl-flock"
+  0                                               ; the child's exit status
+  (let ((file (open-input-file (search-path %load-path "guix.scm"))))
+    (fcntl-flock file 'read-lock)
+    (match (primitive-fork)
+      (0
+       (dynamic-wind
+         (const #t)
+         (lambda ()
+           ;; Taking a read lock should be OK.
+           (fcntl-flock file 'read-lock)
+           (fcntl-flock file 'unlock)
+
+           (catch 'flock-error
+             (lambda ()
+               ;; Taking an exclusive lock should raise an exception.
+               (fcntl-flock file 'write-lock))
+             (lambda args
+               (primitive-exit 0)))
+           (primitive-exit 1))
+         (lambda ()
+           (primitive-exit 2))))
+      (pid
+       (match (waitpid pid)
+         ((_  . status)
+          (let ((result (status:exit-val status)))
+            (fcntl-flock file 'unlock)
+            (close-port file)
+            result)))))))
 
 ;; This is actually in (guix store).
 (test-equal "store-path-package-name"

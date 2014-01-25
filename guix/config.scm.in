@@ -24,6 +24,7 @@
             %store-directory
             %state-directory
             %config-directory
+            %guix-register-program
             %system
             %libgcrypt
             %nixpkgs
@@ -61,6 +62,10 @@
 (define %config-directory
   ;; This must match `NIX_CONF_DIR' as defined in `daemon.am'.
   (or (getenv "NIX_CONF_DIR") "@guix_sysconfdir@/guix"))
+
+(define %guix-register-program
+  ;; The 'guix-register' program.
+  (or (getenv "GUIX_REGISTER") "@guix_sbindir@/guix-register"))
 
 (define %system
   "@guix_system@")

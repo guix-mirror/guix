@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,11 +18,17 @@
 
 (define-module (test-nar)
   #:use-module (guix nar)
+  #:use-module (guix store)
+  #:use-module ((guix hash) #:select (open-sha256-input-port))
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 ftw)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 match))
 
 ;; Test the (guix nar) module.
@@ -156,6 +162,24 @@
   (string-append (dirname (search-path %load-path "pre-inst-env"))
                  "/test-nar-" (number->string (getpid))))
 
+;; XXX: Factorize.
+(define %seed
+  (seed->random-state (logxor (getpid) (car (gettimeofday)))))
+
+(define (random-text)
+  (number->string (random (expt 2 256) %seed) 16))
+
+(define-syntax-rule (let/ec k exp...)
+  ;; This one appeared in Guile 2.0.9, so provide a copy here.
+  (let ((tag (make-prompt-tag)))
+    (call-with-prompt tag
+      (lambda ()
+        (let ((k (lambda args
+                   (apply abort-to-prompt tag args))))
+          exp...))
+      (lambda (_ . args)
+        (apply values args)))))
+
 
 (test-begin "nar")
 
@@ -200,6 +224,83 @@
                 (false-if-exception (rm-rf output)))))))
       (lambda ()
         (rmdir input)))))
+
+;; 'restore-file-set' depends on 'open-sha256-input-port', which in turn
+;; relies on a Guile 2.0.10+ feature.
+(test-skip (if (false-if-exception
+                (open-sha256-input-port (%make-void-port "r")))
+               0
+               3))
+
+(test-assert "restore-file-set (signed, valid)"
+  (with-store store
+    (let* ((texts (unfold (cut >= <> 10)
+                          (lambda _ (random-text))
+                          1+
+                          0))
+           (files (map (cut add-text-to-store store "text" <>) texts))
+           (dump  (call-with-bytevector-output-port
+                   (cut export-paths store files <>))))
+      (delete-paths store files)
+      (and (every (negate file-exists?) files)
+           (let* ((source   (open-bytevector-input-port dump))
+                  (imported (restore-file-set source)))
+             (and (equal? imported files)
+                  (every (lambda (file)
+                           (and (file-exists? file)
+                                (valid-path? store file)))
+                         files)
+                  (equal? texts
+                          (map (lambda (file)
+                                 (call-with-input-file file
+                                   get-string-all))
+                               files))))))))
+
+(test-assert "restore-file-set (missing signature)"
+  (let/ec return
+    (with-store store
+      (let* ((file  (add-text-to-store store "foo" "Hello, world!"))
+             (dump  (call-with-bytevector-output-port
+                     (cute export-paths store (list file) <>
+                           #:sign? #f))))
+        (delete-paths store (list file))
+        (and (not (file-exists? file))
+             (let ((source (open-bytevector-input-port dump)))
+               (guard (c ((nar-signature-error? c)
+                          (let ((message (condition-message c))
+                                (port    (nar-error-port c)))
+                            (return
+                             (and (string-match "lacks.*signature" message)
+                                  (string=? file (nar-error-file c))
+                                  (eq? source port))))))
+                 (restore-file-set source))
+               #f))))))
+
+(test-assert "restore-file-set (corrupt)"
+  (let/ec return
+    (with-store store
+      (let* ((file  (add-text-to-store store "foo"
+                                       (random-text)))
+             (dump  (call-with-bytevector-output-port
+                     (cute export-paths store (list file) <>))))
+        (delete-paths store (list file))
+
+        ;; Flip a byte in the file contents.
+        (let* ((index 120)
+               (byte  (bytevector-u8-ref dump index)))
+          (bytevector-u8-set! dump index (logxor #xff byte)))
+
+        (and (not (file-exists? file))
+             (let ((source (open-bytevector-input-port dump)))
+               (guard (c ((nar-invalid-hash-error? c)
+                          (let ((message (condition-message c))
+                                (port    (nar-error-port c)))
+                            (return
+                             (and (string-contains message "hash")
+                                  (string=? file (nar-error-file c))
+                                  (eq? source port))))))
+                 (restore-file-set source))
+               #f))))))
 
 (test-end "nar")
 

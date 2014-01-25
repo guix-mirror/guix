@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,7 +19,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages oggvorbis)
+(define-module (gnu packages xiph)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
@@ -40,7 +41,8 @@
             ao
             flac
             libkate
-            vorbis-tools))
+            vorbis-tools
+            opus))
 
 (define libogg
   (package
@@ -155,7 +157,7 @@ stereo encoding, and voice activity detection.")
     ;; FIXME: Add further backends, see the summary printed after configure.
     ;; XXX: Should back-ends be pushed to different outputs?  For instance,
     ;; "out" would include only the ALSA back-end, while "pulse" would
-    ;; contains 'lib/ao/plugins-4/libpulse.*'.
+    ;; contain 'lib/ao/plugins-4/libpulse.*'.
     (inputs `(("pkg-config" ,pkg-config)
               ("alsa-lib" ,alsa-lib)
               ("pulseaudio" ,pulseaudio)))
@@ -278,3 +280,26 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
          an ogg vorbis file.")
    (license license:gpl2)
    (home-page "http://xiph.org/vorbis/")))
+
+(define opus
+  (package
+    (name "opus")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://downloads.xiph.org/releases/opus/opus-" version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "158xprn2086arvdib3vbbygz7z6jqkw2nci7nlywzzwallap0wmr"))))
+    (build-system gnu-build-system)
+    (synopsis "highly versatile audio codec")
+    (description
+     "Opus is a totally open, royalty-free, highly versatile audio codec. Opus
+is unmatched for interactive speech and music transmission over the Internet,
+but is also intended for storage and streaming applications. It is
+standardized by the Internet Engineering Task Force (IETF) as RFC 6716 which
+incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
+    (license license:bsd-3)
+    (home-page "http://www.opus-codec.org/")))

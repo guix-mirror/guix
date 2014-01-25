@@ -18,6 +18,7 @@
    (eval . (put 'manifest-entry 'scheme-indent-function 0))
    (eval . (put 'manifest-pattern 'scheme-indent-function 0))
    (eval . (put 'substitute-keyword-arguments 'scheme-indent-function 1))
+   (eval . (put 'with-store 'scheme-indent-function 1))
    (eval . (put 'with-error-handling 'scheme-indent-function 0))
    (eval . (put 'with-mutex 'scheme-indent-function 1))
    (eval . (put 'with-atomic-file-output 'scheme-indent-function 1))

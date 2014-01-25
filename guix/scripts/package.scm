@@ -1032,8 +1032,9 @@ more information.~%"))
 
         (('search regexp)
          (let ((regexp (make-regexp regexp regexp/icase)))
-           (for-each (cute package->recutils <> (current-output-port))
-                     (find-packages-by-description regexp))
+           (leave-on-EPIPE
+            (for-each (cute package->recutils <> (current-output-port))
+                      (find-packages-by-description regexp)))
            #t))
 
         (('search-paths)

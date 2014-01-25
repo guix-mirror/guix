@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,28 +25,29 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages oggvorbis)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages xiph)
   #:use-module (gnu packages yasm))
 
 (define-public ffmpeg
   (package
     (name "ffmpeg")
-    (version "2.1.1")
+    (version "2.1.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1qnspbpwa6cflsb6mkm84ay4nfx60ism6d7lgvnasidck9dmxydy"))))
+               "18qkdpka94rp44x17q7d2bvmw26spxf41c69nvzy31szsdzjwcqx"))))
     (build-system gnu-build-system)
     (inputs
      `(("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("opus" ,opus)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
        ("patchelf" ,patchelf)
@@ -107,7 +108,6 @@
 ;;   --enable-libopencore-amrwb enable AMR-WB decoding via libopencore-amrwb [no]
 ;;   --enable-libopencv       enable video filtering via libopencv [no]
 ;;   --enable-libopenjpeg     enable JPEG 2000 de/encoding via OpenJPEG [no]
-;;   --enable-libopus         enable Opus decoding via libopus [no]
 ;;   --enable-libpulse        enable Pulseaudio input via libpulse [no]
 ;;   --enable-libquvi         enable quvi input via libquvi [no]
 ;;   --enable-librtmp         enable RTMP[E] support via librtmp [no]
@@ -142,6 +142,7 @@
                       "--enable-fontconfig"
                       ;; "--enable-gnutls" ; causes test failures
                       "--enable-libfreetype"
+                      "--enable-libopus"
                       "--enable-libspeex"
                       "--enable-libtheora"
                       "--enable-libvorbis"

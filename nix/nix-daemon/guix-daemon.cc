@@ -1,5 +1,5 @@
 /* GNU Guix --- Functional package management for GNU
-   Copyright (C) 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+   Copyright (C) 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 
    This file is part of GNU Guix.
 
@@ -67,6 +67,7 @@ builds derivations on behalf of its clients.";
 #define GUIX_OPT_CHROOT_DIR 10
 #define GUIX_OPT_LISTEN 11
 #define GUIX_OPT_NO_SUBSTITUTES 12
+#define GUIX_OPT_NO_BUILD_HOOK 13
 
 static const struct argp_option options[] =
   {
@@ -94,6 +95,8 @@ static const struct argp_option options[] =
       "Perform builds as a user of GROUP" },
     { "no-substitutes", GUIX_OPT_NO_SUBSTITUTES, 0, 0,
       "Do not use substitutes" },
+    { "no-build-hook", GUIX_OPT_NO_BUILD_HOOK, 0, 0,
+      "Do not use the 'build hook'" },
     { "cache-failures", GUIX_OPT_CACHE_FAILURES, 0, 0,
       "Cache build failures" },
     { "lose-logs", GUIX_OPT_LOSE_LOGS, 0, 0,
@@ -158,6 +161,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
       break;
     case GUIX_OPT_NO_SUBSTITUTES:
       settings.useSubstitutes = false;
+      break;
+    case GUIX_OPT_NO_BUILD_HOOK:
+      settings.useBuildHook = false;
       break;
     case GUIX_OPT_DEBUG:
       verbosity = lvlDebug;
@@ -225,6 +231,21 @@ main (int argc, char *argv[])
       /* Use our substituter by default.  */
       settings.substituters.clear ();
       settings.useSubstitutes = true;
+
+#ifdef HAVE_DAEMON_OFFLOAD_HOOK
+      /* Use our build hook for distributed builds by default.  */
+      settings.useBuildHook = true;
+      if (getenv ("NIX_BUILD_HOOK") == NULL)
+	{
+	  std::string build_hook;
+
+	  build_hook = settings.nixLibexecDir + "/guix/offload";
+	  setenv ("NIX_BUILD_HOOK", build_hook.c_str (), 1);
+	}
+#else
+      /* We are not installing any build hook, so disable it.  */
+      settings.useBuildHook = false;
+#endif
 
       argp_parse (&argp, argc, argv, 0, 0, 0);
 

@@ -21,7 +21,7 @@
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix monads)
-  #:use-module ((gnu packages system)
+  #:use-module ((gnu packages admin)
                 #:select (shadow))
   #:use-module (gnu packages bash)
   #:use-module (srfi srfi-1)

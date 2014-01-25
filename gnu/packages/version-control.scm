@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -35,7 +35,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages python)
   #:use-module (gnu packages sqlite)
-  #:use-module (gnu packages system)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages compression)
@@ -83,10 +83,12 @@ as well as the classic centralized workflow.")
              (base32
               "156bwqqgaw65rsvbb4wih5jfg94bxyf6p16mdwf0ky3f4ln55s2i"))))
    (build-system gnu-build-system)
+   (native-inputs
+    `(("native-perl" ,perl)
+      ("gettext" ,gnu-gettext)))
    (inputs
     `(("curl" ,curl)
       ("expat" ,expat)
-      ("gettext" ,gnu-gettext)
       ("openssl" ,openssl)
       ("perl" ,perl)
       ("python" ,python-2) ; CAVEAT: incompatible with python-3 according to INSTALL
@@ -136,7 +138,9 @@ as well as the classic centralized workflow.")
                   (git-cit  (string-append out "/libexec/git-core/git-citool"))
                   (git-cit* (string-append gui "/libexec/git-core/git-citool"))
                   (git-svn  (string-append out "/libexec/git-core/git-svn"))
-                  (git-svn* (string-append svn "/libexec/git-core/git-svn")))
+                  (git-svn* (string-append svn "/libexec/git-core/git-svn"))
+                  (git-sm   (string-append out
+                                           "/libexec/git-core/git-submodule")))
              (mkdir-p (string-append gui "/bin"))
              (mkdir-p (string-append gui "/libexec/git-core"))
              (mkdir-p (string-append svn "/libexec/git-core"))
@@ -162,6 +166,12 @@ as well as the classic centralized workflow.")
                            `("LD_LIBRARY_PATH" ":" prefix
                              (,(string-append (assoc-ref inputs "subversion")
                                               "/lib"))))
+
+             ;; Tell 'git-submodule' where Perl is.
+             (wrap-program git-sm
+                           `("PATH" ":" prefix
+                             (,(string-append (assoc-ref inputs "perl")
+                                              "/bin"))))
 
              ;; Tell 'git' to look for core programs in the user's profile.
              ;; This allows user to install other outputs of this package and

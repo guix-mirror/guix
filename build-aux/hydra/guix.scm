@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,6 +28,9 @@
   ;; checkout in the store has mtime set to the epoch, and thus .go files look
   ;; newer, even though they may not correspond.
   (set! %fresh-auto-compile #t)
+
+  ;; Display which files are loaded.
+  (set! %load-verbosely #t)
 
   (and=> (assoc-ref (current-source-location) 'filename)
          (lambda (file)

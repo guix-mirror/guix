@@ -25,6 +25,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages.scm				\
   gnu/packages/acct.scm				\
   gnu/packages/acl.scm				\
+  gnu/packages/admin.scm			\
   gnu/packages/algebra.scm			\
   gnu/packages/apl.scm				\
   gnu/packages/apr.scm				\
@@ -51,8 +52,11 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cryptsetup.scm			\
   gnu/packages/curl.scm				\
   gnu/packages/cyrus-sasl.scm			\
+  gnu/packages/dc.scm				\
   gnu/packages/dejagnu.scm			\
   gnu/packages/ddrescue.scm			\
+  gnu/packages/dictionaries.scm			\
+  gnu/packages/docbook.scm			\
   gnu/packages/dwm.scm				\
   gnu/packages/ed.scm				\
   gnu/packages/elf.scm				\
@@ -60,6 +64,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/fdisk.scm			\
   gnu/packages/file.scm				\
   gnu/packages/flex.scm				\
+  gnu/packages/fltk.scm				\
   gnu/packages/fonts.scm			\
   gnu/packages/fontutils.scm			\
   gnu/packages/freeipmi.scm			\
@@ -138,13 +143,14 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mtools.scm			\
   gnu/packages/mysql.scm			\
   gnu/packages/nano.scm				\
+  gnu/packages/ncdu.scm				\
   gnu/packages/ncurses.scm			\
   gnu/packages/netpbm.scm			\
   gnu/packages/nettle.scm			\
   gnu/packages/noweb.scm			\
   gnu/packages/ocaml.scm			\
   gnu/packages/ocrad.scm			\
-  gnu/packages/oggvorbis.scm			\
+  gnu/packages/onc-rpc.scm			\
   gnu/packages/openldap.scm			\
   gnu/packages/openssl.scm			\
   gnu/packages/package-management.scm		\
@@ -154,6 +160,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/pdf.scm				\
   gnu/packages/pem.scm				\
   gnu/packages/perl.scm				\
+  gnu/packages/photo.scm			\
   gnu/packages/pkg-config.scm			\
   gnu/packages/plotutils.scm			\
   gnu/packages/popt.scm				\
@@ -180,7 +187,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/sqlite.scm			\
   gnu/packages/ssh.scm				\
   gnu/packages/swig.scm				\
-  gnu/packages/system.scm			\
   gnu/packages/tcl.scm				\
   gnu/packages/tcsh.scm				\
   gnu/packages/texinfo.scm			\
@@ -188,6 +194,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/time.scm				\
   gnu/packages/tmux.scm				\
   gnu/packages/tor.scm				\
+  gnu/packages/uucp.scm				\
   gnu/packages/unrtf.scm			\
   gnu/packages/valgrind.scm			\
   gnu/packages/version-control.scm		\
@@ -200,6 +207,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
   gnu/packages/wordnet.scm			\
+  gnu/packages/xiph.scm				\
   gnu/packages/xlockmore.scm			\
   gnu/packages/xml.scm				\
   gnu/packages/xnee.scm				\
@@ -273,7 +281,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\
-  gnu/packages/patches/pspp-tests.patch				\
   gnu/packages/patches/pulseaudio-test-timeouts.patch		\
   gnu/packages/patches/pulseaudio-volume-test.patch		\
   gnu/packages/patches/python-fix-dbm.patch			\

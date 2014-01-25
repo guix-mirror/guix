@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Guy Grant <gzg@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -138,12 +139,12 @@ Polygon meshes, and Extruded polygon meshes")
     (propagated-inputs
       `(("glproto" ,glproto)
         ("libdrm" ,libdrm-2.4.33)
+        ("libx11" ,libx11)
         ("libxdamage" ,libxdamage)
         ("libxxf86vm" ,libxxf86vm)))
     (inputs
       `(("dri2proto" ,dri2proto)
         ("expat" ,expat)
-        ("libx11" ,libx11)
         ("libxfixes" ,libxfixes)
         ("libxml2" ,libxml2)
         ("makedepend" ,makedepend)))

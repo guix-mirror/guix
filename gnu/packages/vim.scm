@@ -25,7 +25,7 @@
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages system) ; For GNU hostname
+  #:use-module (gnu packages admin) ; For GNU hostname
   #:use-module (gnu packages tcsh))
 
 (define-public vim

@@ -33,6 +33,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)
+  #:use-module (ice-9 popen)
   #:export (%daemon-socket-file
 
             nix-server?
@@ -52,6 +53,7 @@
 
             open-connection
             close-connection
+            with-store
             set-build-options
             valid-path?
             query-path-hash
@@ -74,6 +76,7 @@
             references
             requisites
             referrers
+            topologically-sorted
             valid-derivers
             query-derivation-outputs
             live-paths
@@ -84,6 +87,8 @@
             export-paths
 
             current-build-output-port
+
+            register-path
 
             %store-prefix
             store-path?
@@ -320,6 +325,17 @@ operate, should the disk become full.  Return a server object."
   "Close the connection to SERVER."
   (close (nix-server-socket server)))
 
+(define-syntax-rule (with-store store exp ...)
+  "Bind STORE to an open connection to the store and evaluate EXPs;
+automatically close the store when the dynamic extent of EXP is left."
+  (let ((store (open-connection)))
+    (dynamic-wind
+      (const #f)
+      (lambda ()
+        exp ...)
+      (lambda ()
+        (false-if-exception (close-connection store))))))
+
 (define current-build-output-port
   ;; The port where build output is sent.
   (make-parameter (current-error-port)))
@@ -360,11 +376,11 @@ encoding conversion errors."
     (nix-server-socket server))
 
   ;; magic cookies from worker-protocol.hh
-  (define %stderr-next  #x6f6c6d67)
-  (define %stderr-read  #x64617461)               ; data needed from source
-  (define %stderr-write #x64617416)               ; data for sink
-  (define %stderr-last  #x616c7473)
-  (define %stderr-error #x63787470)
+  (define %stderr-next  #x6f6c6d67)          ; "olmg", build log
+  (define %stderr-read  #x64617461)          ; "data", data needed from source
+  (define %stderr-write #x64617416)          ; "dat\x16", data for sink
+  (define %stderr-last  #x616c7473)          ; "alts", we're done
+  (define %stderr-error #x63787470)          ; "cxtp", error reporting
 
   (let ((k (read-int p)))
     (cond ((= k %stderr-write)
@@ -574,6 +590,40 @@ SEED."
 references, recursively)."
   (fold-path store cons '() path))
 
+(define (topologically-sorted store paths)
+  "Return a list containing PATHS and all their references sorted in
+topological order."
+  (define (traverse)
+    ;; Do a simple depth-first traversal of all of PATHS.
+    (let loop ((paths   paths)
+               (visited vlist-null)
+               (result  '()))
+      (define (visit n)
+        (vhash-cons n #t visited))
+
+      (define (visited? n)
+        (vhash-assoc n visited))
+
+      (match paths
+        ((head tail ...)
+         (if (visited? head)
+             (loop tail visited result)
+             (call-with-values
+                 (lambda ()
+                   (loop (references store head)
+                         (visit head)
+                         result))
+               (lambda (visited result)
+                 (loop tail
+                       visited
+                       (cons head result))))))
+        (()
+         (values visited result)))))
+
+  (call-with-values traverse
+    (lambda (_ result)
+      (reverse result))))
+
 (define referrers
   (operation (query-referrers (store-path path))
              "Return the list of path that refer to PATH."
@@ -693,6 +743,28 @@ is true."
          (write-int 1 port)
          (and (export-path server head port #:sign? sign?)
               (loop tail)))))))
+
+(define* (register-path path
+                        #:key (references '()) deriver)
+  "Register PATH as a valid store file, with REFERENCES as its list of
+references, and DERIVER as its deriver (.drv that led to it.)  Return #t on
+success.
+
+Use with care as it directly modifies the store!  This is primarily meant to
+be used internally by the daemon's build hook."
+  ;; Currently this is implemented by calling out to the fine C++ blob.
+  (catch 'system-error
+    (lambda ()
+      (let ((pipe (open-pipe* OPEN_WRITE %guix-register-program)))
+        (and pipe
+             (begin
+               (format pipe "~a~%~a~%~a~%"
+                       path (or deriver "") (length references))
+               (for-each (cut format pipe "~a~%" <>) references)
+               (zero? (close-pipe pipe))))))
+    (lambda args
+      ;; Failed to run %GUIX-REGISTER-PROGRAM.
+      #f)))
 
 
 ;;;

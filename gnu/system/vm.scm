@@ -39,7 +39,7 @@
   #:use-module (gnu packages package-management)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
-  #:use-module (gnu packages system)
+  #:use-module (gnu packages admin)
 
   #:use-module (gnu system shadow)
   #:use-module (gnu system linux)
