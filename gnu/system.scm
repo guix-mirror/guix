@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -152,7 +152,8 @@ input tuples."
                            #:system system
                            #:inputs inputs
                            #:modules '((guix build union))
-                           #:guile-for-build guile)))
+                           #:guile-for-build guile
+                           #:local-build? #t)))
 
 (define* (file-union files
                      #:key (inputs '()) (name "file-union"))
@@ -190,7 +191,8 @@ as an inputs; additional inputs, such as derivations, are taken from INPUTS."
                                          `(symlink ,target ,name)))
                                        files))
 
-                             #:inputs inputs))))
+                             #:inputs inputs
+                             #:local-build? #t))))
 
 (define (links inputs)
   "Return a directory with symbolic links to all of INPUTS.  This is
@@ -212,7 +214,8 @@ directories or regular files."
 
   (mlet %store-monad ((inputs (lower-inputs inputs)))
     (derivation-expression "links" builder
-                           #:inputs inputs)))
+                           #:inputs inputs
+                           #:local-build? #t)))
 
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")

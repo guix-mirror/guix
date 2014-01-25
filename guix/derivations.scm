@@ -836,7 +836,8 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
     (build-expression->derivation store name builder
                                   #:system system
                                   #:inputs files
-                                  #:guile-for-build guile)))
+                                  #:guile-for-build guile
+                                  #:local-build? #t)))
 
 (define* (imported-modules store modules
                            #:key (name "module-import")
@@ -902,7 +903,8 @@ they can refer to each other."
     (build-expression->derivation store name builder
                                   #:inputs `(("modules" ,module-drv))
                                   #:system system
-                                  #:guile-for-build guile)))
+                                  #:guile-for-build guile
+                                  #:local-build? #t)))
 
 (define* (build-expression->derivation store name exp
                                        #:key

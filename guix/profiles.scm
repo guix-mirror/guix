@@ -257,7 +257,8 @@ the given MANIFEST."
                                               ;; already valid.
                                               `((,name ,path) ,@deps)))
                                             (manifest-entries manifest))
-                                #:modules '((guix build union))))
+                                #:modules '((guix build union))
+                                #:local-build? #t))
 
 (define (profile-regexp profile)
   "Return a regular expression that matches PROFILE's name and number."
