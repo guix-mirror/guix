@@ -64,6 +64,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/fdisk.scm			\
   gnu/packages/file.scm				\
   gnu/packages/flex.scm				\
+  gnu/packages/fltk.scm				\
   gnu/packages/fonts.scm			\
   gnu/packages/fontutils.scm			\
   gnu/packages/freeipmi.scm			\
