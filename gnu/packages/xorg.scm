@@ -1257,10 +1257,12 @@ tracking.")
           (base32
             "1gdv6559cdz1lfw73x7wsvax1fkvphmayrymprljhyyb5nwk5kkz"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+     ;; xft.pc refers to 'xrender'.
+      `(("libxrender" ,libxrender)))
     (inputs
       `(("libx11" ,libx11)
         ("xproto" ,xproto)
-        ("libxrender" ,libxrender)
         ("freetype" ,freetype)
         ("fontconfig" ,fontconfig)))
     (native-inputs
