@@ -238,3 +238,46 @@ programs written in GNU Guile interpreter.  It is a wrapper to the underlying
 libssh library.")
     (home-page "https://github.com/artyom-poptsov/libguile-ssh")
     (license license:gpl3+)))
+
+(define-public corkscrew
+  (package
+    (name "corkscrew")
+    (version "2.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.agroman.net/corkscrew/corkscrew-"
+                           version ".tar.gz"))
+       (sha256 (base32
+                "1gmhas4va6gd70i2x2mpxpwpgww6413mji29mg282jms3jscn3qd"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; Replace configure phase as the ./configure script does not link
+     ;; CONFIG_SHELL and SHELL passed as parameters
+     '(#:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key outputs inputs system target
+                        #:allow-other-keys #:rest args)
+          (let* ((configure (assoc-ref %standard-phases 'configure))
+                 (prefix (assoc-ref outputs "out"))
+                 (bash   (which "bash"))
+                 ;; Set --build and --host flags as the provided config.guess
+                 ;; is not able to detect them
+                 (flags `(,(string-append "--prefix=" prefix)
+                          ,(string-append "--build=" system)
+                          ,(string-append "--host="
+                                          (or target system)))))
+            (setenv "CONFIG_SHELL" bash)
+            (zero? (apply system* bash
+                          (string-append "." "/configure")
+                          flags))))
+        %standard-phases)))
+    (home-page "http://www.agroman.net/corkscrew")
+    (synopsis "A tool for tunneling SSH through HTTP proxies")
+    (description
+     "Corkscrew allows creating TCP tunnels through HTTP proxies.  WARNING:
+At the moment only plain text authentication is supported, should you require
+to use it with your HTTP proxy.  Digest based authentication may be supported
+in future and NTLM based authentication is most likey never be supported.")
+    (license license:gpl2+)))
