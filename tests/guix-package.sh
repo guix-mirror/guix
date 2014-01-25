@@ -159,7 +159,7 @@ fi
 guix package --bootstrap -i guile gcc -p "$profile" -n
 
 # Make sure the `:' syntax works.
-guix package --bootstrap -i "binutils:lib" -p "$profile" -n
+guix package --bootstrap -i "glibc:debug" -p "$profile" -n
 
 # Make sure nonexistent outputs are reported.
 guix package --bootstrap -i "guile-bootstrap:out" -p "$profile" -n
