@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -132,6 +132,9 @@ server and embedded PowerPC, and S390 guests.")
 (define-public qemu/smb-shares
   ;; A patched QEMU where `-net smb' yields two shares instead of one: one for
   ;; the store, and another one for exchanges with the host.
+
+  ;; TODO: Use 9p/-virtfs instead of this SMB hack:
+  ;; <http://wiki.qemu.org/Documentation/9psetup>.
   (package (inherit qemu-headless)
     (name "qemu-with-multiple-smb-shares")
     (source (origin (inherit (package-source qemu-headless))
