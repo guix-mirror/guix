@@ -29,12 +29,14 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages gd)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages texlive)
   #:use-module (gnu packages xml))
 
 (define-public units
@@ -193,3 +195,34 @@ output in text, PostScript, PDF or HTML.")
 problems in numerical linear algebra.")
     (license (license:bsd-style "file://LICENSE"
                                 "See LICENSE in the distribution."))))
+
+(define-public gnuplot
+  (package
+    (name "gnuplot")
+    (version "4.6.3")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/gnuplot/gnuplot/"
+                                version "/gnuplot-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1xd7gqdhlk7k1p9yyqf9vkk811nadc7m4si0q3nb6cpv4pxglpyz"))))
+    (build-system gnu-build-system)
+    (inputs `(("readline" ,readline)
+              ("cairo" ,cairo)
+              ("pango" ,pango)
+              ("gd" ,gd)))
+    (native-inputs `(("texlive" ,texlive)
+                     ("pkg-config" ,pkg-config)))
+    (home-page "http://www.gnuplot.info")
+    (synopsis "Command-line driven graphing utility")
+    (description "Gnuplot is a portable command-line driven graphing
+utility. It was originally created to allow scientists and students to
+visualize mathematical functions and data interactively, but has grown to
+support many non-interactive uses such as web scripting. It is also used as a
+plotting engine by third-party applications like Octave.")
+    ;;  X11 Style with the additional restriction that derived works may only be
+    ;;  distributed as patches to the original.
+    (license (license:fsf-free
+              "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright"))))
