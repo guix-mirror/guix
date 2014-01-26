@@ -163,7 +163,7 @@ output in text, PostScript, PDF or HTML.")
 (define-public lapack
   (package
     (name "lapack")
-    (version "3.4.2")
+    (version "3.5.0")
     (source
      (origin
       (method url-fetch)
@@ -171,16 +171,7 @@ output in text, PostScript, PDF or HTML.")
                           version ".tgz"))
       (sha256
        (base32
-        "1w7sf8888m7fi2kyx1fzgbm22193l8c2d53m8q1ibhvfy6m5v9k0"))
-      (snippet
-       ;; Remove non-free files.
-       ;; See <http://icl.cs.utk.edu/lapack-forum/archives/lapack/msg01383.html>.
-       '(for-each (lambda (file)
-                    (format #t "removing '~a'~%" file)
-                    (delete-file file))
-                  '("lapacke/example/example_DGESV_rowmajor.c"
-                    "lapacke/example/example_ZGESV_rowmajor.c"
-                    "DOCS/psfig.tex")))))
+        "0lk3f97i9imqascnlf6wr5mjpyxqcdj73pgj97dj2mgvyg9z1n4s"))))
     (build-system cmake-build-system)
     (home-page "http://www.netlib.org/lapack/")
     (inputs `(("fortran" ,gfortran-4.8)
