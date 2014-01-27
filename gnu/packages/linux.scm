@@ -30,6 +30,7 @@
   #:use-module (gnu packages bdb)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages pulseaudio)
@@ -38,7 +39,8 @@
   #:use-module (gnu packages autotools)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public (system->linux-architecture arch)
   "Return the Linux architecture name for ARCH, a Guix system name such as
@@ -840,3 +842,28 @@ settings.")
      "Aumix adjusts an audio mixer from X, the console, a terminal,
 the command line or a script.")
     (license gpl2+)))
+
+(define-public iotop
+  (package
+    (name "iotop")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://guichaz.free.fr/iotop/files/iotop-"
+                           version ".tar.gz"))
+       (sha256 (base32
+                "1kp8mqg2pbxq4xzpianypadfxcsyfgwcaqgqia6h9fsq6zyh4z0s"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The setup.py script expects python-2
+     `(#:python ,python-2
+     ;; There are currently no checks in the package
+       #:tests? #f))
+    (native-inputs `(("python" ,python-2)))
+    (home-page "http://guichaz.free.fr/iotop/")
+    (synopsis
+     "Displays the IO activity of running processes")
+    (description
+     "Iotop is a Python program with a top like user interface to show the
+processes currently causing I/O.")
