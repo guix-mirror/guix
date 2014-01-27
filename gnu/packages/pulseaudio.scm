@@ -148,7 +148,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                              "pulseaudio-volume-test.patch")))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--localstatedir=/var" ;"--sysconfdir=/etc"
+     `(#:configure-flags '(;;"--sysconfdir=/etc"
                            "--disable-oss-output")
        #:phases (alist-cons-before
                  'check 'pre-check

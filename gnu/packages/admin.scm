@@ -51,8 +51,6 @@
                "07mddw0p62fcphwjzgb6rfa0pjz5sy6jzbha0sm2vc3rqf459jxg"))
              (patches (list (search-patch "dmd-getpw.patch")))))
     (build-system gnu-build-system)
-    (arguments
-     '(#:configure-flags '("--localstatedir=/var")))
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.0)))
     (synopsis "Daemon managing daemons")

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -142,6 +142,12 @@ makefiles."
                        ,(string-append "CONFIG_SHELL=" bash)
                        ,(string-append "SHELL=" bash)
                        ,(string-append "--prefix=" prefix)
+
+                       ;; Keep modifiable state directories outside of the
+                       ;; store (Autoconf 2.70 will add '--runstatedir'.)
+                       "--localstatedir=/var"
+                       "--sharedstatedir=/com"
+
                        "--enable-fast-install"    ; when using Libtool
 
                        ;; Produce multiple outputs when specific output names
