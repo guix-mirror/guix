@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,18 +25,12 @@
 
 (define-public libffi
   (let ((post-install-phase
-         ;; Install headers in the right place.
+         ;; Keep headers where libffi.pc expects them, but also make them
+         ;; available in $includedir where some users expect them.
          '(lambda* (#:key outputs #:allow-other-keys)
             (define out (assoc-ref outputs "out"))
-            (mkdir (string-append out "/include"))
-            (with-directory-excursion
-                (string-append out "/lib/libffi-3.0.13/include")
-              (for-each (lambda (h)
-                          (format #t "moving `~a' to includedir~%" h)
-                          (rename-file h (string-append out "/include/" h)))
-                        (scandir "."
-                                 (lambda (x)
-                                   (not (member x '("." ".."))))))))))
+            (symlink (string-append out "/lib/libffi-3.0.13/include")
+                     (string-append out "/include")))))
    (package
     (name "libffi")
     (version "3.0.13")
@@ -50,9 +44,7 @@
                "077ibkf84bvcd6rw1m6jb107br63i2pp301rkmsbgg6300adxp8x"))
              (patches (list (search-patch "libffi-mips-n32-fix.patch")))))
     (build-system gnu-build-system)
-    (arguments `(#:modules ((guix build utils) (guix build gnu-build-system)
-                            (ice-9 ftw) (srfi srfi-26))
-                 #:phases (alist-cons-after 'install 'post-install
+    (arguments `(#:phases (alist-cons-after 'install 'post-install
                                             ,post-install-phase
                                             %standard-phases)))
     (outputs '("out" "debug"))
