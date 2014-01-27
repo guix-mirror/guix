@@ -856,9 +856,9 @@ the command line or a script.")
                 "1kp8mqg2pbxq4xzpianypadfxcsyfgwcaqgqia6h9fsq6zyh4z0s"))))
     (build-system python-build-system)
     (arguments
-     ;; The setup.py script expects python-2
+     ;; The setup.py script expects python-2.
      `(#:python ,python-2
-     ;; There are currently no checks in the package
+       ;; There are currently no checks in the package.
        #:tests? #f))
     (native-inputs `(("python" ,python-2)))
     (home-page "http://guichaz.free.fr/iotop/")
@@ -867,3 +867,4 @@ the command line or a script.")
     (description
      "Iotop is a Python program with a top like user interface to show the
 processes currently causing I/O.")
+    (license gpl2+)))
