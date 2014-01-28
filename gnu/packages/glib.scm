@@ -67,7 +67,10 @@
              (patches (list (search-patch "dbus-localstatedir.patch")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags (list ;; XXX: Fix the following to allow system-wide
+     '(#:configure-flags (list ;; Install the system bus socket under /var.
+                               "--localstatedir=/var"
+
+                               ;; XXX: Fix the following to allow system-wide
                                ;; config.
                                ;; "--sysconfdir=/etc"
 

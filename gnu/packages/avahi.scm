@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -44,6 +44,7 @@
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-distro=none"
+                           "--localstatedir=/var" ; for the DBus socket
                            "--disable-python"
                            "--disable-mono"
                            "--disable-doxygen-doc"
