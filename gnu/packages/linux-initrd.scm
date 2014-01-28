@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -280,7 +280,7 @@ the Linux kernel.")
             (mount "none" "/root" "tmpfs"))
         (mount-essential-file-systems #:root "/root")
 
-        (mkdir "/root/xchg")
+        (mkdir-p "/root/xchg")
         (mkdir-p "/root/nix/store")
 
         (unless (file-exists? "/root/dev")
@@ -294,8 +294,8 @@ the Linux kernel.")
         ;; Copy the directories that contain .scm and .go files so that the
         ;; child process in the chroot can load modules (we would bind-mount
         ;; them but for some reason that fails with EINVAL -- XXX).
-        (mkdir "/root/share")
-        (mkdir "/root/lib")
+        (mkdir-p "/root/share")
+        (mkdir-p "/root/lib")
         (mount "none" "/root/share" "tmpfs")
         (mount "none" "/root/lib" "tmpfs")
         (copy-recursively "/share" "/root/share"
@@ -305,9 +305,17 @@ the Linux kernel.")
 
 
         (if to-load
-            (begin
+            (letrec ((resolve
+                      (lambda (file)
+                        ;; If FILE is a symlink to an absolute file name,
+                        ;; resolve it as if we were under /root.
+                        (let ((st (lstat file)))
+                          (if (eq? 'symlink (stat:type st))
+                              (let ((target (readlink file)))
+                                (resolve (string-append "/root" target)))
+                              file)))))
               (format #t "loading boot file '~a'...\n" to-load)
-              (compile-file (string-append "/root/" to-load)
+              (compile-file (resolve (string-append "/root/" to-load))
                             #:output-file "/root/loader.go"
                             #:opts %auto-compilation-options)
               (match (primitive-fork)
@@ -392,7 +400,7 @@ the Linux kernel.")
               (sleep 2)
               (reboot))
             (begin
-              (display "no init file passed via '--exec'\n")
+              (display "no init file passed via '--load'\n")
               (display "entering a warm and cozy REPL\n")
               ((@ (system repl repl) start-repl))))))
    #:name "qemu-system-initrd"
