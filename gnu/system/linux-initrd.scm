@@ -19,6 +19,8 @@
 (define-module (gnu system linux-initrd)
   #:use-module (guix monads)
   #:use-module (guix utils)
+  #:use-module ((guix store)
+                #:select (%store-prefix))
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages linux)
@@ -181,180 +183,46 @@ list of Guile module names to be embedded in the initrd."
                           #:modules '((guix build utils))
                           #:inputs inputs)))
 
-(define (qemu-initrd)
+(define* (qemu-initrd #:key
+                      guile-modules-in-chroot?
+                      (mounts `((cifs "/store" ,(%store-prefix))
+                                (cifs "/xchg" "/xchg"))))
   "Return a monadic derivation that builds an initrd for use in a QEMU guest
-where the store is shared with the host."
+where the store is shared with the host.  MOUNTS is a list of file systems to
+be mounted atop the root file system, where each item has the form:
+
+    (FILE-SYSTEM-TYPE SOURCE TARGET)
+
+When GUILE-MODULES-IN-CHROOT? is true, make core Guile modules available in
+the new root.  This is necessary is the file specified as '--load' needs
+access to these modules (which is the case if it wants to even just print an
+exception and backtrace!)."
+  (define cifs-modules
+    ;; Modules needed to mount CIFS file systems.
+    '("md4.ko" "ecb.ko" "cifs.ko"))
+
+  (define linux-modules
+    ;; Modules added to the initrd and loaded from the initrd.
+    (if (assoc-ref mounts 'cifs)
+        cifs-modules
+        '()))
+
   (expression->initrd
-   '(begin
-      (use-modules (srfi srfi-1)
-                   (srfi srfi-26)
-                   (ice-9 match)
-                   ((system base compile) #:select (compile-file))
-                   (guix build utils)
-                   (guix build linux-initrd))
+   `(begin
+      (use-modules (guix build linux-initrd))
 
-      (display "Welcome, this is GNU's early boot Guile.\n")
-      (display "Use '--repl' for an initrd REPL.\n\n")
-
-      (mount-essential-file-systems)
-      (let* ((args    (linux-command-line))
-             (option  (lambda (opt)
-                        (let ((opt (string-append opt "=")))
-                          (and=> (find (cut string-prefix? opt <>)
-                                       args)
-                                 (lambda (arg)
-                                   (substring arg (+ 1 (string-index arg #\=))))))))
-             (to-load (option "--load"))
-             (root    (option "--root")))
-
-        (when (member "--repl" args)
-          ((@ (system repl repl) start-repl)))
-
-        (display "loading CIFS and companion modules...\n")
-        (for-each (compose load-linux-module*
-                           (cut string-append "/modules/" <>))
-                  (list "md4.ko" "ecb.ko" "cifs.ko"))
-
-        (unless (configure-qemu-networking)
-          (display "network interface is DOWN\n"))
-
-        ;; Make /dev nodes.
-        (make-essential-device-nodes)
-
-        ;; Prepare the real root file system under /root.
-        (unless (file-exists? "/root")
-          (mkdir "/root"))
-        (if root
-            (mount root "/root" "ext3")
-            (mount "none" "/root" "tmpfs"))
-        (mount-essential-file-systems #:root "/root")
-
-        (mkdir-p "/root/xchg")
-        (mkdir-p "/root/nix/store")
-
-        (unless (file-exists? "/root/dev")
-          (mkdir "/root/dev")
-          (make-essential-device-nodes #:root "/root"))
-
-        ;; Mount the host's store and exchange directory.
-        (mount-qemu-smb-share "/store" "/root/nix/store")
-        (mount-qemu-smb-share "/xchg" "/root/xchg")
-
-        ;; Copy the directories that contain .scm and .go files so that the
-        ;; child process in the chroot can load modules (we would bind-mount
-        ;; them but for some reason that fails with EINVAL -- XXX).
-        (mkdir-p "/root/share")
-        (mkdir-p "/root/lib")
-        (mount "none" "/root/share" "tmpfs")
-        (mount "none" "/root/lib" "tmpfs")
-        (copy-recursively "/share" "/root/share"
-                          #:log (%make-void-port "w"))
-        (copy-recursively "/lib" "/root/lib"
-                          #:log (%make-void-port "w"))
-
-
-        (if to-load
-            (letrec ((resolve
-                      (lambda (file)
-                        ;; If FILE is a symlink to an absolute file name,
-                        ;; resolve it as if we were under /root.
-                        (let ((st (lstat file)))
-                          (if (eq? 'symlink (stat:type st))
-                              (let ((target (readlink file)))
-                                (resolve (string-append "/root" target)))
-                              file)))))
-              (format #t "loading boot file '~a'...\n" to-load)
-              (compile-file (resolve (string-append "/root/" to-load))
-                            #:output-file "/root/loader.go"
-                            #:opts %auto-compilation-options)
-              (match (primitive-fork)
-                (0
-                 (chroot "/root")
-                 (load-compiled "/loader.go")
-
-                 ;; TODO: Remove /lib, /share, and /loader.go.
-                 )
-                (pid
-                 (format #t "boot file loaded under PID ~a~%" pid)
-                 (let ((status (waitpid pid)))
-                   (reboot)))))
-            (begin
-              (display "no boot file passed via '--load'\n")
-              (display "entering a warm and cozy REPL\n")
-              ((@ (system repl repl) start-repl))))))
+      (boot-system #:mounts ',mounts
+                   #:linux-modules ',linux-modules
+                   #:qemu-guest-networking? #t
+                   #:guile-modules-in-chroot? ',guile-modules-in-chroot?))
    #:name "qemu-initrd"
    #:modules '((guix build utils)
                (guix build linux-initrd))
    #:linux linux-libre
-   #:linux-modules '("cifs.ko" "md4.ko" "ecb.ko")))
+   #:linux-modules linux-modules))
 
 (define (gnu-system-initrd)
   "Initrd for the GNU system itself, with nothing QEMU-specific."
-  (expression->initrd
-   '(begin
-      (use-modules (srfi srfi-1)
-                   (srfi srfi-26)
-                   (ice-9 match)
-                   (guix build utils)
-                   (guix build linux-initrd))
-
-      (display "Welcome, this is GNU's early boot Guile.\n")
-      (display "Use '--repl' for an initrd REPL.\n\n")
-
-      (mount-essential-file-systems)
-      (let* ((args    (linux-command-line))
-             (option  (lambda (opt)
-                        (let ((opt (string-append opt "=")))
-                          (and=> (find (cut string-prefix? opt <>)
-                                       args)
-                                 (lambda (arg)
-                                   (substring arg (+ 1 (string-index arg #\=))))))))
-             (to-load (option "--load"))
-             (root    (option "--root")))
-
-        (when (member "--repl" args)
-          ((@ (system repl repl) start-repl)))
-
-        ;; Make /dev nodes.
-        (make-essential-device-nodes)
-
-        ;; Prepare the real root file system under /root.
-        (mkdir-p "/root")
-        (if root
-            ;; Assume ROOT has a usable /dev tree.
-            (mount root "/root" "ext3")
-            (begin
-              (mount "none" "/root" "tmpfs")
-              (make-essential-device-nodes #:root "/root")))
-
-        (mount-essential-file-systems #:root "/root")
-
-        (mkdir-p "/root/tmp")
-        (mount "none" "/root/tmp" "tmpfs")
-
-        ;; XXX: We don't copy our fellow Guile modules to /root (see
-        ;; 'qemu-initrd'), so if TO-LOAD tries to load a module (which can
-        ;; happen if it throws, to display the exception!), then we're
-        ;; screwed.  Hopefully TO-LOAD is a simple expression that just does
-        ;; '(execlp ...)'.
-
-        (if to-load
-            (begin
-              (format #t "loading '~a'...\n" to-load)
-              (chroot "/root")
-              (primitive-load to-load)
-              (format (current-error-port)
-                      "boot program '~a' terminated, rebooting~%"
-                      to-load)
-              (sleep 2)
-              (reboot))
-            (begin
-              (display "no init file passed via '--load'\n")
-              (display "entering a warm and cozy REPL\n")
-              ((@ (system repl repl) start-repl))))))
-   #:name "qemu-system-initrd"
-   #:modules '((guix build linux-initrd)
-               (guix build utils))
-   #:linux linux-libre))
+  (qemu-initrd #:guile-modules-in-chroot? #f))
 
 ;;; linux-initrd.scm ends here

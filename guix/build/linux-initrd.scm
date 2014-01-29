@@ -19,6 +19,12 @@
 (define-module (guix build linux-initrd)
   #:use-module (rnrs io ports)
   #:use-module (system foreign)
+  #:autoload   (system repl repl) (start-repl)
+  #:autoload   (system base compile) (compile-file)
+  #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match)
+  #:use-module (guix build utils)
   #:export (mount-essential-file-systems
             linux-command-line
             make-essential-device-nodes
@@ -26,7 +32,8 @@
             mount-qemu-smb-share
             bind-mount
             load-linux-module*
-            device-number))
+            device-number
+            boot-system))
 
 ;;; Commentary:
 ;;;
@@ -150,5 +157,117 @@ Vanilla QEMU's `-smb' option just exports a /qemu share, whereas our
   "Return the device number for the device with MAJOR and MINOR, for use as
 the last argument of `mknod'."
   (+ (* major 256) minor))
+
+(define* (boot-system #:key
+                      (linux-modules '())
+                      qemu-guest-networking?
+                      guile-modules-in-chroot?
+                      (mounts '()))
+  "This procedure is meant to be called from an initrd.  Boot a system by
+first loading LINUX-MODULES, then setting up QEMU guest networking if
+QEMU-GUEST-NETWORKING? is true, mounting the file systems specified in MOUNTS,
+and finally booting into the new root if any.  The initrd supports kernel
+command-line options '--load', '--root', and '--repl'.
+
+MOUNTS must be a list of elements of the form:
+
+  (FILE-SYSTEM-TYPE SOURCE TARGET)
+
+When GUILE-MODULES-IN-CHROOT? is true, make core Guile modules available in
+the new root."
+  (define (resolve file)
+    ;; If FILE is a symlink to an absolute file name, resolve it as if we were
+    ;; under /root.
+    (let ((st (lstat file)))
+      (if (eq? 'symlink (stat:type st))
+          (let ((target (readlink file)))
+            (resolve (string-append "/root" target)))
+          file)))
+
+  (display "Welcome, this is GNU's early boot Guile.\n")
+  (display "Use '--repl' for an initrd REPL.\n\n")
+
+  (mount-essential-file-systems)
+  (let* ((args    (linux-command-line))
+         (option  (lambda (opt)
+                    (let ((opt (string-append opt "=")))
+                      (and=> (find (cut string-prefix? opt <>)
+                                   args)
+                             (lambda (arg)
+                               (substring arg (+ 1 (string-index arg #\=))))))))
+         (to-load (option "--load"))
+         (root    (option "--root")))
+
+    (when (member "--repl" args)
+      (start-repl))
+
+    (display "loading kernel modules...\n")
+    (for-each (compose load-linux-module*
+                       (cut string-append "/modules/" <>))
+              linux-modules)
+
+    (when qemu-guest-networking?
+      (unless (configure-qemu-networking)
+        (display "network interface is DOWN\n")))
+
+    ;; Make /dev nodes.
+    (make-essential-device-nodes)
+
+    ;; Prepare the real root file system under /root.
+    (unless (file-exists? "/root")
+      (mkdir "/root"))
+    (if root
+        (mount root "/root" "ext3")
+        (mount "none" "/root" "tmpfs"))
+    (mount-essential-file-systems #:root "/root")
+
+    (unless (file-exists? "/root/dev")
+      (mkdir "/root/dev")
+      (make-essential-device-nodes #:root "/root"))
+
+    ;; Mount the specified file systems.
+    (for-each (match-lambda
+               (('cifs source target)
+                (let ((target (string-append "/root/" target)))
+                  (mkdir-p target)
+                  (mount-qemu-smb-share source target)))
+               ;; TODO: Add 9p.
+               )
+              mounts)
+
+    (when guile-modules-in-chroot?
+      ;; Copy the directories that contain .scm and .go files so that the
+      ;; child process in the chroot can load modules (we would bind-mount
+      ;; them but for some reason that fails with EINVAL -- XXX).
+      (mkdir-p "/root/share")
+      (mkdir-p "/root/lib")
+      (mount "none" "/root/share" "tmpfs")
+      (mount "none" "/root/lib" "tmpfs")
+      (copy-recursively "/share" "/root/share"
+                        #:log (%make-void-port "w"))
+      (copy-recursively "/lib" "/root/lib"
+                        #:log (%make-void-port "w")))
+
+    (if to-load
+        (begin
+          (format #t "loading '~a'...\n" to-load)
+          (chroot "/root")
+          ;; TODO: Remove /lib, /share, and /loader.go.
+          (catch #t
+            (lambda ()
+              (primitive-load to-load))
+            (lambda args
+              (format (current-error-port) "'~a' raised an exception: ~s~%"
+                      to-load args)
+              (start-repl)))
+          (format (current-error-port)
+                  "boot program '~a' terminated, rebooting~%"
+                  to-load)
+          (sleep 2)
+          (reboot))
+        (begin
+          (display "no boot file passed via '--load'\n")
+          (display "entering a warm and cozy REPL\n")
+          (start-repl)))))
 
 ;;; linux-initrd.scm ends here

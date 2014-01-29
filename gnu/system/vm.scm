@@ -178,9 +178,9 @@ made available under the /xchg CIFS share."
        (user-builder (text-file "builder-in-linux-vm"
                                 (object->string exp*)))
        (coreutils -> (car (assoc-ref %final-inputs "coreutils")))
-       (initrd       (if initrd
+       (initrd       (if initrd                   ; use the default initrd?
                          (return initrd)
-                         (qemu-initrd)))          ; default initrd
+                         (qemu-initrd #:guile-modules-in-chroot? #t)))
        (inputs       (lower-inputs `(("qemu" ,qemu)
                                      ("linux" ,linux)
                                      ("initrd" ,initrd)
