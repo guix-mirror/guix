@@ -163,7 +163,11 @@
                       (format #t "enabling additional modules...~%")
                       (substitute* ".config"
                         (("^# CONFIG_CIFS.*$")
-                         "CONFIG_CIFS=m\n"))
+                         "CONFIG_CIFS=m\n")
+                        (("^# CONFIG_([[:graph:]]*)VIRTIO([[:graph:]]*) .*$"
+                          _ before after)
+                         (string-append "CONFIG_" before "VIRTIO"
+                                        after "=m\n")))
                       (zero? (system* "make" "oldconfig")))
 
                     ;; Call the default `build' phase so `-j' is correctly
