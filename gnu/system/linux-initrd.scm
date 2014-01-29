@@ -16,22 +16,18 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages linux-initrd)
+(define-module (gnu system linux-initrd)
+  #:use-module (guix monads)
   #:use-module (guix utils)
-  #:use-module (guix licenses)
-  #:use-module (guix build-system)
-  #:use-module ((guix derivations)
-                #:select (imported-modules compiled-modules %guile-for-build))
-  #:use-module (gnu packages)
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
-  #:use-module (guix packages)
-  #:use-module (guix download)
-  #:use-module (guix build-system trivial))
+  #:export (expression->initrd
+            qemu-initrd
+            gnu-system-initrd))
 
 
 ;;; Commentary:
@@ -41,49 +37,6 @@
 ;;;
 ;;; Code:
 
-
-(define-syntax-rule (raw-build-system (store system name inputs) body ...)
-  "Lift BODY to a package build system."
-  ;; TODO: Generalize.
-  (build-system
-   (name "raw")
-   (description "Raw build system")
-   (build (lambda* (store name source inputs #:key system #:allow-other-keys)
-            (parameterize ((%guile-for-build (package-derivation store
-                                                                 guile-2.0)))
-              body ...)))))
-
-(define (module-package modules)
-  "Return a package that contains all of MODULES, a list of Guile module
-names."
-  (package
-    (name "guile-modules")
-    (version "0")
-    (source #f)
-    (build-system (raw-build-system (store system name inputs)
-                    (imported-modules store modules
-                                      #:name name
-                                      #:system system)))
-    (synopsis "Set of Guile modules")
-    (description synopsis)
-    (license gpl3+)
-    (home-page "http://www.gnu.org/software/guix/")))
-
-(define (compiled-module-package modules)
-  "Return a package that contains the .go files corresponding to MODULES, a
-list of Guile module names."
-  (package
-    (name "guile-compiled-modules")
-    (version "0")
-    (source #f)
-    (build-system (raw-build-system (store system name inputs)
-                    (compiled-modules store modules
-                                      #:name name
-                                      #:system system)))
-    (synopsis "Set of compiled Guile modules")
-    (description synopsis)
-    (license gpl3+)
-    (home-page "http://www.gnu.org/software/guix/")))
 
 (define* (expression->initrd exp
                              #:key
@@ -212,29 +165,25 @@ list of Guile module names to be embedded in the initrd."
                     (and (zero? (system* gzip "--best" "initrd"))
                          (rename-file "initrd.gz" "initrd")))))))))
 
-  (package
-    (name name)
-    (version "0")
-    (source #f)
-    (build-system trivial-build-system)
-    (arguments `(#:modules ((guix build utils))
-                           #:builder ,builder))
-    (inputs `(("guile" ,guile)
-              ("cpio" ,cpio)
-              ("gzip" ,gzip)
-              ("modules" ,(module-package modules))
-              ("modules/compiled" ,(compiled-module-package modules))
-              ,@(if linux
-                    `(("linux" ,linux))
-                    '())))
-    (synopsis "An initial RAM disk (initrd) for the Linux kernel")
-    (description
-     "An initial RAM disk (initrd), really a gzipped cpio archive, for use by
-the Linux kernel.")
-    (license gpl3+)
-    (home-page "http://www.gnu.org/software/guix/")))
+  (mlet* %store-monad
+      ((source   (imported-modules modules))
+       (compiled (compiled-modules modules))
+       (inputs   (lower-inputs
+                  `(("guile" ,guile)
+                    ("cpio" ,cpio)
+                    ("gzip" ,gzip)
+                    ("modules" ,source)
+                    ("modules/compiled" ,compiled)
+                    ,@(if linux
+                          `(("linux" ,linux))
+                          '())))))
+   (derivation-expression name builder
+                          #:modules '((guix build utils))
+                          #:inputs inputs)))
 
-(define-public qemu-initrd
+(define (qemu-initrd)
+  "Return a monadic derivation that builds an initrd for use in a QEMU guest
+where the store is shared with the host."
   (expression->initrd
    '(begin
       (use-modules (srfi srfi-1)
@@ -339,8 +288,8 @@ the Linux kernel.")
    #:linux linux-libre
    #:linux-modules '("cifs.ko" "md4.ko" "ecb.ko")))
 
-(define-public gnu-system-initrd
-  ;; Initrd for the GNU system itself, with nothing QEMU-specific.
+(define (gnu-system-initrd)
+  "Initrd for the GNU system itself, with nothing QEMU-specific."
   (expression->initrd
    '(begin
       (use-modules (srfi srfi-1)

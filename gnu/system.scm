@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +22,6 @@
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix derivations)
-  #:use-module (gnu packages linux-initrd)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages admin)
@@ -31,6 +30,7 @@
   #:use-module (gnu system grub)
   #:use-module (gnu system shadow)
   #:use-module (gnu system linux)
+  #:use-module (gnu system linux-initrd)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -58,8 +58,8 @@
               (default grub))
   (bootloader-entries operating-system-bootloader-entries ; list
                       (default '()))
-  (initrd operating-system-initrd
-          (default gnu-system-initrd))
+  (initrd operating-system-initrd                 ; monadic derivation
+          (default (gnu-system-initrd)))
 
   (host-name operating-system-host-name)          ; string
 
@@ -321,8 +321,9 @@ alias ll='ls -l'
                                      "--config" ,dmd-conf))))
        (kernel  ->  (operating-system-kernel os))
        (kernel-dir  (package-file kernel))
-       (initrd  ->  (operating-system-initrd os))
-       (initrd-file (package-file initrd))
+       (initrd      (operating-system-initrd os))
+       (initrd-file -> (string-append (derivation->output-path initrd)
+                                      "/initrd"))
        (entries ->  (list (menu-entry
                            (label (string-append
                                    "GNU system with "
@@ -331,7 +332,7 @@ alias ll='ls -l'
                            (linux kernel)
                            (linux-arguments `("--root=/dev/vda1"
                                               ,(string-append "--load=" boot)))
-                           (initrd initrd))))
+                           (initrd initrd-file))))
        (grub.cfg (grub-configuration-file entries))
        (extras   (links (delete-duplicates
                          (append (append-map service-inputs services)

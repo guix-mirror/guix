@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +35,6 @@
   #:use-module (gnu packages zile)
   #:use-module (gnu packages grub)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages linux-initrd)
   #:use-module (gnu packages package-management)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
@@ -43,6 +42,7 @@
 
   #:use-module (gnu system shadow)
   #:use-module (gnu system linux)
+  #:use-module (gnu system linux-initrd)
   #:use-module (gnu system grub)
   #:use-module (gnu system dmd)
   #:use-module (gnu system)
@@ -67,7 +67,7 @@
                                              (system (%current-system))
                                              (inputs '())
                                              (linux linux-libre)
-                                             (initrd qemu-initrd)
+                                             initrd
                                              (qemu qemu/smb-shares)
                                              (env-vars '())
                                              (modules '())
@@ -78,10 +78,10 @@
                                              (references-graphs #f)
                                              (disk-image-size
                                               (* 100 (expt 2 20))))
-  "Evaluate EXP in a QEMU virtual machine running LINUX with INITRD.  In the
-virtual machine, EXP has access to all of INPUTS from the store; it should put
-its output files in the `/xchg' directory, which is copied to the derivation's
-output when the VM terminates.
+  "Evaluate EXP in a QEMU virtual machine running LINUX with INITRD (a
+derivation).  In the virtual machine, EXP has access to all of INPUTS from the
+store; it should put its output files in the `/xchg' directory, which is
+copied to the derivation's output when the VM terminates.
 
 When MAKE-DISK-IMAGE? is true, then create a QEMU disk image of
 DISK-IMAGE-SIZE bytes and return it.
@@ -178,6 +178,9 @@ made available under the /xchg CIFS share."
        (user-builder (text-file "builder-in-linux-vm"
                                 (object->string exp*)))
        (coreutils -> (car (assoc-ref %final-inputs "coreutils")))
+       (initrd       (if initrd
+                         (return initrd)
+                         (qemu-initrd)))          ; default initrd
        (inputs       (lower-inputs `(("qemu" ,qemu)
                                      ("linux" ,linux)
                                      ("initrd" ,initrd)
