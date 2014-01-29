@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +57,9 @@
             package->derivation
             built-derivations
             derivation-expression
-            lower-inputs))
+            lower-inputs)
+  #:replace (imported-modules
+             compiled-modules))
 
 ;;; Commentary:
 ;;;
@@ -310,7 +312,7 @@ containing TEXT."
 (define* (package-file package
                        #:optional file
                        #:key (system (%current-system)) (output "out"))
-  "Return as a monadic value in the absolute file name of FILE within the
+  "Return as a monadic value the absolute file name of FILE within the
 OUTPUT directory of PACKAGE.  When FILE is omitted, return the name of the
 OUTPUT directory of PACKAGE."
   (lambda (store)
@@ -341,6 +343,12 @@ input list as a monadic value."
 
 (define package->derivation
   (store-lift package-derivation))
+
+(define imported-modules
+  (store-lift (@ (guix derivations) imported-modules)))
+
+(define compiled-modules
+  (store-lift (@ (guix derivations) compiled-modules)))
 
 (define built-derivations
   (store-lift build-derivations))
