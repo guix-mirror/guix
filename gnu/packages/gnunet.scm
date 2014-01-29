@@ -25,11 +25,15 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages gstreamer)
+  #:use-module (gnu packages libidn)
   #:use-module (gnu packages libjpeg)
   #:use-module (gnu packages libtiff)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:use-module ((guix licenses)
@@ -123,3 +127,60 @@ also features security features such as basic and digest authentication
 and support for SSL3 and TLS.")
    (license license:lgpl2.1+)
    (home-page "http://www.gnu.org/software/libmicrohttpd/")))
+
+(define-public gnurl
+  (package
+   (name "gnurl")
+   (version "7.34.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "https://gnunet.org/sites/default/files/gnurl-"
+                                version ".tar.bz2"))
+            (sha256
+             (base32
+              "0kpi9wx9lg938b982smjg54acdwswdshs2bzf10sj5r6zmb05ygp"))))
+   (build-system gnu-build-system)
+   (inputs `(("gnutls" ,gnutls)
+             ("libidn" ,libidn)
+             ("zlib" ,zlib)))
+   (native-inputs
+    `(("perl" ,perl)
+      ("groff" ,groff)
+      ("python" ,python-2)))
+   (arguments
+    `(#:configure-flags '("--enable-ipv6" "--with-gnutls" "--without-libssh2"
+                          "--without-libmetalink" "--without-winidn"
+                          "--without-librtmp" "--without-nghttp2"
+                          "--without-nss" "--without-cyassl"
+                          "--without-polarssl" "--without-ssl"
+                          "--without-winssl" "--without-darwinssl"
+                          "--disable-sspi" "--disable-ntlm-wb"
+                          "--disable-ldap" "--disable-rtsp" "--disable-dict"
+                          "--disable-telnet" "--disable-tftp" "--disable-pop3"
+                          "--disable-imap" "--disable-smtp" "--disable-gopher"
+                          "--disable-file" "--disable-ftp")
+     #:test-target "test"
+     #:parallel-tests? #f
+     ;; We have to patch runtests.pl in tests/ directory and add a failing
+     ;; test due to curl->gnurl name change to tests/data/DISABLED
+     #:phases
+      (alist-cons-before
+       'check 'patch-runtests
+       (lambda _
+         (with-directory-excursion "tests"
+           (substitute* "runtests.pl"
+             (("/bin/sh")
+              (which "sh")))
+           (let* ((port (open-file "data/DISABLED" "a")))
+             (newline port)
+             (display "1022" port)
+             (close port))))
+       %standard-phases)))
+   (synopsis "Microfork of cURL with support for the HTTP/HTTPS/GnuTLS subset of cURL")
+   (description
+    "Gnurl is a microfork of cURL, a command line tool for transferring data
+with URL syntax. While cURL supports many crypto backends, libgnurl only
+supports HTTPS, HTTPS and GnuTLS.")
+   (license (license:bsd-style "file://COPYING"
+                       "See COPYING in the distribution."))
+   (home-page "https://gnunet.org/gnurl")))
