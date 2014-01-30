@@ -168,6 +168,17 @@
                           _ before after)
                          (string-append "CONFIG_" before "VIRTIO"
                                         after "=m\n")))
+
+                      ;; XXX: For some reason, some virtio modules need to be
+                      ;; explicitly added.
+                      (let ((port (open-file ".config" "a")))
+                        (display (string-append "CONFIG_NET_9P_VIRTIO=m\n"
+                                                "CONFIG_VIRTIO_NET=m\n"
+                                                "CONFIG_VIRTIO_BLK=m\n"
+                                                "CONFIG_VIRTIO_BALLOON=m\n")
+                                 port)
+                        (close-port port))
+
                       (zero? (system* "make" "oldconfig")))
 
                     ;; Call the default `build' phase so `-j' is correctly
