@@ -154,7 +154,7 @@ made available under the /xchg CIFS share."
                (#f '())))
 
          (and (zero?
-               (system* qemu "-nographic" "-no-reboot"
+               (system* qemu "-enable-kvm" "-nographic" "-no-reboot"
                         "-net" "nic,model=e1000"
                         "-net" (string-append "user,smb=" (getcwd))
                         "-kernel" linux
@@ -188,6 +188,7 @@ made available under the /xchg CIFS share."
                                      ("builder" ,user-builder)
                                      ,@inputs))))
     (derivation-expression name builder
+                           ;; TODO: Require the "kvm" feature.
                            #:system system
                            #:inputs inputs
                            #:env-vars env-vars
