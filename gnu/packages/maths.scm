@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,16 +27,24 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
+  #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages less)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages gl)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages xml))
 
@@ -225,4 +234,58 @@ plotting engine by third-party applications like Octave.")
     ;;  X11 Style with the additional restriction that derived works may only be
     ;;  distributed as patches to the original.
     (license (license:fsf-free
-              "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright"))))
+	      "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright"))))
+
+;; For a fully featured Octave, users  are strongly recommended also to install
+;; the following packages: texinfo, less, ghostscript, gnuplot.
+(define-public octave
+  (package
+    (name "octave")
+    (version "3.8.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/octave/octave-"
+			  version ".tar.gz"))
+      (sha256
+       (base32
+	"0ks9pr154syw0vb3jn6xsnrkkrbvf9y7i7gaxa28rz6ngxbxvq9l"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("lapack" ,lapack)
+       ("readline" ,readline)
+       ("glpk" ,glpk)
+       ("curl" ,curl)
+       ("pcre" ,pcre)
+       ("fltk" ,fltk)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("libxft" ,libxft)
+       ("mesa" ,mesa)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("gfortran" ,gfortran-4.8)
+       ("pkg-config" ,pkg-config)
+       ("perl" ,perl)
+       ;; The following inputs are not actually used in the build process.  However, the
+       ;; ./configure gratuitously tests for their existence and assumes that programs not
+       ;; present at build time are also not, and can never be, available at run time!
+       ;; If these inputs are therefore not present, support for them will be built out.
+       ;; However, Octave will still run without them, albeit without the features they
+       ;; provide.
+       ("less" ,less)
+       ("texinfo" ,texinfo)
+       ("ghostscript" ,ghostscript)
+       ("gnuplot" ,gnuplot)))
+    (arguments
+     `(#:configure-flags (list (string-append "--with-shell="
+			    (assoc-ref %build-inputs "bash")
+			    "/bin/sh"))))
+    (home-page "http://www.gnu.org/software/octave/")
+    (synopsis "High-level language for numerical computation")
+    (description "GNU Octave is a high-level interpreted language that is specialized
+for numerical computations.  It can be used for both linear and non-linear
+applications and it provides great support for visualizing results.  Work may
+be performed both at the interactive command-line as well as via script
+files.")
+    (license license:gpl3+)))
