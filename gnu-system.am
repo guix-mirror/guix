@@ -259,6 +259,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/glibc-make-4.0.patch			\
+  gnu/packages/patches/gnunet-fix-scheduler.patch		\
+  gnu/packages/patches/gnunet-fix-tests.patch    		\
   gnu/packages/patches/gobject-introspection-cc.patch		\
   gnu/packages/patches/grub-gets-undeclared.patch		\
   gnu/packages/patches/gstreamer-0.10-bison3.patch		\

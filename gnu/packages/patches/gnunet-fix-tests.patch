@@ -1,0 +1,46 @@
+diff -ru a/src/peerinfo-tool/Makefile.in b/src/peerinfo-tool/Makefile.in
+--- src/peerinfo-tool/Makefile.in	2013-12-24 13:55:04.000000000 +0100
++++ src/peerinfo-tool/Makefile.in	2014-01-30 13:07:52.275965484 +0100
+@@ -335,9 +335,6 @@
+   $(top_builddir)/src/statistics/libgnunetstatistics.la \
+   $(top_builddir)/src/util/libgnunetutil.la 
+ 
+-@HAVE_PYTHON_TRUE@check_SCRIPTS = \
+-@HAVE_PYTHON_TRUE@ test_gnunet_peerinfo.py 
+-
+ @ENABLE_TEST_RUN_TRUE@TESTS = $(check_SCRIPTS)
+ do_subst = $(SED) -e 's,[@]PYTHON[@],$(PYTHON),g'
+ EXTRA_DIST = \
+diff -ru a/src/revocation/test_revocation.conf b/src/revocation/test_revocation.conf
+--- src/revocation/test_revocation.conf	2013-12-21 18:57:06.000000000 +0100
++++ src/revocation/test_revocation.conf	2014-01-30 15:00:02.841340556 +0100
+@@ -20,6 +20,9 @@
+ [transport-udp]
+ BROADCAST = NO
+ 
++[nat]
++RETURN_LOCAL_ADDRESSES = YES
++
+ [peerinfo]
+ USE_INCLUDED_HELLOS = NO
+ 
+Index: src/gns/test_gns_cname_lookup.sh
+===================================================================
+--- src/gns/test_gns_cname_lookup.sh	(revision 32117)
++++ src/gns/test_gns_cname_lookup.sh	(revision 32118)
+@@ -13,6 +13,15 @@
+ 	exit 77
+ fi
+ 
++# permissive DNS resolver we will use for the test
++DNS_RESOLVER="8.8.8.8"
++if ! nslookup gnunet.org $DNS_RESOLVER &> /dev/null
++then
++  echo "Cannot reach DNS, skipping test"
++  exit 77
++fi
++
++
+ rm -rf /tmp/test-gnunet-gns-peer-1/
+ 
+ TEST_DOMAIN_PLUS="www.gnu"
