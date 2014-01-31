@@ -330,7 +330,7 @@ alias ll='ls -l'
                                    (package-full-name kernel)
                                    " (technology preview)"))
                            (linux kernel)
-                           (linux-arguments `("--root=/dev/vda1"
+                           (linux-arguments `("--root=/dev/sda1"
                                               ,(string-append "--load=" boot)))
                            (initrd initrd-file))))
        (grub.cfg (grub-configuration-file entries))

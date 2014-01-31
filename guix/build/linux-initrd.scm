@@ -81,10 +81,15 @@
   (unless (file-exists? (scope "dev"))
     (mkdir (scope "dev")))
 
-  ;; Make the device nodes for QEMU's hard disk and partitions.
-  (mknod (scope "dev/vda") 'block-special #o644 (device-number 8 0))
-  (mknod (scope "dev/vda1") 'block-special #o644 (device-number 8 1))
-  (mknod (scope "dev/vda2") 'block-special #o644 (device-number 8 2))
+  ;; Make the device nodes for SCSI disks.
+  (mknod (scope "dev/sda") 'block-special #o644 (device-number 8 0))
+  (mknod (scope "dev/sda1") 'block-special #o644 (device-number 8 1))
+  (mknod (scope "dev/sda2") 'block-special #o644 (device-number 8 2))
+
+  ;; The virtio (para-virtualized) block devices, as supported by QEMU/KVM.
+  (mknod (scope "dev/vda") 'block-special #o644 (device-number 252 0))
+  (mknod (scope "dev/vda1") 'block-special #o644 (device-number 252 1))
+  (mknod (scope "dev/vda2") 'block-special #o644 (device-number 252 2))
 
   ;; TTYs.
   (mknod (scope "dev/tty") 'char-special #o600

@@ -294,18 +294,18 @@ such as /etc files."
                                 (assoc-ref %build-inputs "gawk") "/bin"))
 
          (display "creating partition table...\n")
-         (and (zero? (system* parted "/dev/vda" "mklabel" "msdos"
+         (and (zero? (system* parted "/dev/sda" "mklabel" "msdos"
                               "mkpart" "primary" "ext2" "1MiB"
                               ,(format #f "~aB"
                                        (- disk-image-size
                                           (* 5 (expt 2 20))))))
               (begin
                 (display "creating ext3 partition...\n")
-                (and (zero? (system* mkfs "-F" "/dev/vda1"))
+                (and (zero? (system* mkfs "-F" "/dev/sda1"))
                      (let ((store (string-append "/fs" ,%store-directory)))
                        (display "mounting partition...\n")
                        (mkdir "/fs")
-                       (mount "/dev/vda1" "/fs" "ext3")
+                       (mount "/dev/sda1" "/fs" "ext3")
                        (mkdir-p "/fs/boot/grub")
                        (symlink grub.cfg "/fs/boot/grub/grub.cfg")
 
@@ -379,7 +379,7 @@ such as /etc files."
                        (and (zero?
                              (system* grub "--no-floppy"
                                       "--boot-directory" "/fs/boot"
-                                      "/dev/vda"))
+                                      "/dev/sda"))
                             (zero? (system* umount "/fs"))
                             (reboot))))))))
     #:system system
