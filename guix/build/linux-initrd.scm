@@ -217,7 +217,13 @@ the new root."
     (unless (file-exists? "/root")
       (mkdir "/root"))
     (if root
-        (mount root "/root" "ext3")
+        (catch #t
+          (lambda ()
+            (mount root "/root" "ext3"))
+          (lambda args
+            (format (current-error-port) "exception while mounting '~a': ~s~%"
+                    root args)
+            (start-repl)))
         (mount "none" "/root" "tmpfs"))
     (mount-essential-file-systems #:root "/root")
 
