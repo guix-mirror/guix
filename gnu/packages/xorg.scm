@@ -4377,7 +4377,10 @@ tracking.")
                                     ; the compiled keyboard maps go?
              (string-append "--with-xkb-bin-directory="
                             (assoc-ref %build-inputs "xkbcomp")
-                            "/bin"))
+                            "/bin")
+
+             ;; For the log file, etc.
+             "--localstatedir=/var")
        #:phases
         (alist-replace
          'configure
@@ -4385,6 +4388,12 @@ tracking.")
            (let ((configure (assoc-ref %standard-phases 'configure)))
              (substitute* (find-files "." "\\.c$")
                (("/bin/sh") (which "sh")))
+
+             ;; Don't try to 'mkdir /var'.
+             (substitute* "hw/xfree86/Makefile.in"
+               (("mkdir(.*)logdir.*")
+                "true\n"))
+
              (apply configure args)))
          %standard-phases)))
     (home-page "http://www.x.org/wiki/")
