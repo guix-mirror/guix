@@ -30,6 +30,7 @@
             make-essential-device-nodes
             configure-qemu-networking
             mount-qemu-smb-share
+            mount-qemu-9p
             bind-mount
             load-linux-module*
             device-number
@@ -145,6 +146,17 @@ Vanilla QEMU's `-smb' option just exports a /qemu share, whereas our
     (mount (string-append "//" server share) mount-point "cifs" 0
            (string->pointer "guest,sec=none"))))
 
+(define (mount-qemu-9p source mount-point)
+  "Mount QEMU's 9p file system from SOURCE at MOUNT-POINT.
+
+This uses the 'virtio' transport, which requires the various virtio Linux
+modules to be loaded."
+
+  (format #t "mounting QEMU's 9p share '~a'...\n" source)
+  (let ((server "10.0.2.4"))
+    (mount source mount-point "9p" 0
+           (string->pointer "trans=virtio"))))
+
 (define (bind-mount source target)
   "Bind-mount SOURCE at TARGET."
   (define MS_BIND 4096)                           ; from libc's <sys/mount.h>
@@ -242,8 +254,10 @@ the new root."
                 (let ((target (string-append "/root/" target)))
                   (mkdir-p target)
                   (mount-qemu-smb-share source target)))
-               ;; TODO: Add 9p.
-               )
+               (('9p source target)
+                (let ((target (string-append "/root/" target)))
+                  (mkdir-p target)
+                  (mount-qemu-9p source target))))
               mounts)
 
     (when guile-modules-in-chroot?

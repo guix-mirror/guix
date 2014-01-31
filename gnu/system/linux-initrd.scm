@@ -207,11 +207,20 @@ exception and backtrace!)."
     ;; Modules needed to mount CIFS file systems.
     '("md4.ko" "ecb.ko" "cifs.ko"))
 
+  (define virtio-9p-modules
+    ;; Modules for the 9p paravirtualized file system.
+    '("9pnet.ko" "9p.ko" "9pnet_virtio.ko"))
+
   (define linux-modules
     ;; Modules added to the initrd and loaded from the initrd.
-    (if (assoc-ref mounts 'cifs)
-        cifs-modules
-        '()))
+    `("virtio.ko" "virtio_ring.ko" "virtio_pci.ko"
+      "virtio_balloon.ko" "virtio_blk.ko" "virtio_net.ko"
+      ,@(if (assoc-ref mounts 'cifs)
+            cifs-modules
+            '())
+      ,@(if (assoc-ref mounts '9p)
+            virtio-9p-modules
+            '())))
 
   (expression->initrd
    `(begin
