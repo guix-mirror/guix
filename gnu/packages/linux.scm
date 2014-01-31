@@ -173,6 +173,8 @@
                       ;; explicitly added.
                       (let ((port (open-file ".config" "a")))
                         (display (string-append "CONFIG_NET_9P_VIRTIO=m\n"
+                                                "CONFIG_NET_9P=m\n"
+                                                "CONFIG_9P_FS=m\n"
                                                 "CONFIG_VIRTIO_NET=m\n"
                                                 "CONFIG_VIRTIO_BLK=m\n"
                                                 "CONFIG_VIRTIO_BALLOON=m\n")
