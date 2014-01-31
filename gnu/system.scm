@@ -38,6 +38,16 @@
             operating-system?
             operating-system-services
             operating-system-packages
+            operating-system-bootloader-entries
+            operating-system-host-name
+            operating-system-kernel
+            operating-system-initrd
+            operating-system-users
+            operating-system-groups
+            operating-system-packages
+            operating-system-timezone
+            operating-system-locale
+            operating-system-services
 
             operating-system-derivation))
 

@@ -53,7 +53,9 @@
 
   #:export (expression->derivation-in-linux-vm
             qemu-image
-            system-qemu-image))
+            system-qemu-image
+            system-qemu-image/shared-store
+            system-qemu-image/shared-store-script))
 
 
 ;;; Commentary:
@@ -323,8 +325,9 @@ such as /etc files."
 
                        ;; Optionally, register the inputs in the image's store.
                        (let* ((guix     (assoc-ref %build-inputs "guix"))
-                              (register (string-append guix
-                                                       "/sbin/guix-register")))
+                              (register (and guix
+                                             (string-append guix
+                                                            "/sbin/guix-register"))))
                          ,@(if initialize-store?
                                (match inputs-to-copy
                                  (((graph-files . _) ...)
@@ -441,6 +444,35 @@ such as /etc files."
                    tzdata
                    guix))))
 
+(define (operating-system-build-gid os)
+  "Return as a monadic value the group id for build users of OS, or #f."
+  (anym %store-monad
+        (lambda (service)
+          (and (equal? '(guix-daemon)
+                       (service-provision service))
+               (match (service-user-groups service)
+                 ((group)
+                  (user-group-id group)))))
+        (operating-system-services os)))
+
+(define (operating-system-default-contents os)
+  "Return a list of directives suitable for 'system-qemu-image' describing the
+basic contents of the root file system of OS."
+  (mlet* %store-monad ((os-drv         (operating-system-derivation os))
+                       (os-dir      -> (derivation->output-path os-drv))
+                       (build-user-gid (operating-system-build-gid os)))
+    (return `((directory "/nix/store" 0 ,(or build-user-gid 0))
+              (directory "/etc")
+              (directory "/var/log")                     ; for dmd
+              (directory "/var/run/nscd")
+              (directory "/var/nix/gcroots")
+              ("/var/nix/gcroots/system" -> ,os-dir)
+              (directory "/tmp")
+              (directory "/var/nix/profiles/per-user/root" 0 0)
+              (directory "/var/nix/profiles/per-user/guest"
+                         1000 100)
+              (directory "/home/guest" 1000 100)))))
+
 (define* (system-qemu-image #:optional (os %demo-operating-system)
                             #:key (disk-image-size (* 900 (expt 2 20))))
   "Return the derivation of a QEMU image of DISK-IMAGE-SIZE bytes of the GNU
@@ -449,29 +481,78 @@ system as described by OS."
       ((os-drv      (operating-system-derivation os))
        (os-dir   -> (derivation->output-path os-drv))
        (grub.cfg -> (string-append os-dir "/grub.cfg"))
-       (build-user-gid (anym %store-monad         ; XXX
-                             (lambda (service)
-                               (and (equal? '(guix-daemon)
-                                            (service-provision service))
-                                    (match (service-user-groups service)
-                                      ((group)
-                                       (user-group-id group)))))
-                             (operating-system-services os)))
-       (populate -> `((directory "/nix/store" 0 ,build-user-gid)
-                      (directory "/etc")
-                      (directory "/var/log")      ; for dmd
-                      (directory "/var/run/nscd")
-                      (directory "/var/nix/gcroots")
-                      ("/var/nix/gcroots/system" -> ,os-dir)
-                      (directory "/tmp")
-                      (directory "/var/nix/profiles/per-user/root" 0 0)
-                      (directory "/var/nix/profiles/per-user/guest"
-                                 1000 100)
-                      (directory "/home/guest" 1000 100))))
+       (populate    (operating-system-default-contents os)))
     (qemu-image  #:grub-configuration grub.cfg
                  #:populate populate
                  #:disk-image-size disk-image-size
                  #:initialize-store? #t
                  #:inputs-to-copy `(("system" ,os-drv)))))
+
+(define* (system-qemu-image/shared-store
+          #:optional (os %demo-operating-system)
+          #:key (disk-image-size (* 15 (expt 2 20))))
+  "Return a derivation that builds a QEMU image of OS that shares its store
+with the host."
+  (mlet* %store-monad
+      ((os-drv      (operating-system-derivation os))
+       (os-dir   -> (derivation->output-path os-drv))
+       (grub.cfg -> (string-append os-dir "/grub.cfg"))
+       (populate    (operating-system-default-contents os)))
+    ;; TODO: Initialize the database so Guix can be used in the guest.
+    (qemu-image #:grub-configuration grub.cfg
+                #:populate populate
+                #:disk-image-size disk-image-size)))
+
+(define* (system-qemu-image/shared-store-script
+          #:optional (os %demo-operating-system)
+          #:key
+          (qemu (package (inherit qemu)
+                  ;; FIXME/TODO: Use 9p instead of this hack.
+                  (source (package-source qemu/smb-shares))))
+          (graphic? #t))
+  "Return a derivation that builds a script to run a virtual machine image of
+OS that shares its store with the host."
+  (let* ((initrd (qemu-initrd #:mounts `((cifs "/store" ,(%store-prefix)))
+                              #:volatile-root? #t))
+         (os     (operating-system (inherit os) (initrd initrd))))
+    (define builder
+      (mlet %store-monad ((image  (system-qemu-image/shared-store os))
+                          (qemu   (package-file qemu
+                                                "bin/qemu-system-x86_64"))
+                          (bash   (package-file bash "bin/sh"))
+                          (kernel (package-file (operating-system-kernel os)
+                                                "bzImage"))
+                          (initrd initrd)
+                          (os-drv (operating-system-derivation os)))
+        (return `(let ((out (assoc-ref %outputs "out")))
+                   (call-with-output-file out
+                     (lambda (port)
+                       (display
+                        (string-append "#!" ,bash "
+# TODO: -virtfs local,path=XXX,security_model=none,mount_tag=store
+exec " ,qemu " -enable-kvm -no-reboot -net nic,model=virtio \
+  -net user,smb=$PWD \
+  -kernel " ,kernel " -initrd "
+  ,(string-append (derivation->output-path initrd) "/initrd") " \
+-append \"" ,(if graphic? "" "console=ttyS0 ")
+"--load=" ,(derivation->output-path os-drv) "/boot --root=/dev/vda1\" \
+  -drive file=" ,(derivation->output-path image)
+  ",if=virtio,cache=writeback,werror=report,readonly\n")
+                        port)))
+                   (chmod out #o555)
+                   #t))))
+
+    (mlet %store-monad ((image   (system-qemu-image/shared-store os))
+                        (initrd  initrd)
+                        (qemu    (package->derivation qemu))
+                        (bash    (package->derivation bash))
+                        (os      (operating-system-derivation os))
+                        (builder builder))
+      (derivation-expression "run-vm.sh" builder
+                             #:inputs `(("qemu" ,qemu)
+                                        ("image" ,image)
+                                        ("bash" ,bash)
+                                        ("initrd" ,initrd)
+                                        ("os" ,os))))))
 
 ;;; vm.scm ends here
