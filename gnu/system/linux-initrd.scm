@@ -191,6 +191,7 @@ list of Guile module names to be embedded in the initrd."
 
 (define* (qemu-initrd #:key
                       guile-modules-in-chroot?
+                      volatile-root?
                       (mounts `((cifs "/store" ,(%store-prefix))
                                 (cifs "/xchg" "/xchg"))))
   "Return a monadic derivation that builds an initrd for use in a QEMU guest
@@ -202,7 +203,10 @@ be mounted atop the root file system, where each item has the form:
 When GUILE-MODULES-IN-CHROOT? is true, make core Guile modules available in
 the new root.  This is necessary is the file specified as '--load' needs
 access to these modules (which is the case if it wants to even just print an
-exception and backtrace!)."
+exception and backtrace!).
+
+When VOLATILE-ROOT? is true, the root file system is writable but any changes
+to it are lost."
   (define cifs-modules
     ;; Modules needed to mount CIFS file systems.
     '("md4.ko" "ecb.ko" "cifs.ko"))
@@ -229,7 +233,8 @@ exception and backtrace!)."
       (boot-system #:mounts ',mounts
                    #:linux-modules ',linux-modules
                    #:qemu-guest-networking? #t
-                   #:guile-modules-in-chroot? ',guile-modules-in-chroot?))
+                   #:guile-modules-in-chroot? ',guile-modules-in-chroot?
+                   #:volatile-root? ',volatile-root?))
    #:name "qemu-initrd"
    #:modules '((guix build utils)
                (guix build linux-initrd))

@@ -24,6 +24,7 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 ftw)
   #:use-module (guix build utils)
   #:export (mount-essential-file-systems
             linux-command-line
@@ -179,6 +180,7 @@ the last argument of `mknod'."
                       (linux-modules '())
                       qemu-guest-networking?
                       guile-modules-in-chroot?
+                      volatile-root?
                       (mounts '()))
   "This procedure is meant to be called from an initrd.  Boot a system by
 first loading LINUX-MODULES, then setting up QEMU guest networking if
@@ -191,7 +193,10 @@ MOUNTS must be a list of elements of the form:
   (FILE-SYSTEM-TYPE SOURCE TARGET)
 
 When GUILE-MODULES-IN-CHROOT? is true, make core Guile modules available in
-the new root."
+the new root.
+
+When VOLATILE-ROOT? is true, the root file system is writable but any changes
+to it are lost."
   (define (resolve file)
     ;; If FILE is a symlink to an absolute file name, resolve it as if we were
     ;; under /root.
@@ -200,6 +205,8 @@ the new root."
           (let ((target (readlink file)))
             (resolve (string-append "/root" target)))
           file)))
+
+  (define MS_RDONLY 1)
 
   (display "Welcome, this is GNU's early boot Guile.\n")
   (display "Use '--repl' for an initrd REPL.\n\n")
@@ -236,12 +243,36 @@ the new root."
     (if root
         (catch #t
           (lambda ()
-            (mount root "/root" "ext3"))
+            (if volatile-root?
+                (begin
+                  ;; XXX: For lack of a union file system...
+                  (mkdir-p "/real-root")
+                  (mount root "/real-root" "ext3" MS_RDONLY)
+                  (mount "none" "/root" "tmpfs")
+
+                  ;; XXX: 'copy-recursively' cannot deal with device nodes, so
+                  ;; explicitly avoid /dev.
+                  (for-each (lambda (file)
+                              (unless (string=? "dev" file)
+                                (copy-recursively (string-append "/real-root/"
+                                                                 file)
+                                                  (string-append "/root/"
+                                                                 file)
+                                                  #:log (%make-void-port
+                                                         "w"))))
+                            (scandir "/real-root"
+                                     (lambda (file)
+                                       (not (member file '("." ".."))))))
+
+                  ;; TODO: Unmount /real-root.
+                  )
+                (mount root "/root" "ext3")))
           (lambda args
             (format (current-error-port) "exception while mounting '~a': ~s~%"
                     root args)
             (start-repl)))
         (mount "none" "/root" "tmpfs"))
+
     (mount-essential-file-systems #:root "/root")
 
     (unless (file-exists? "/root/dev")
