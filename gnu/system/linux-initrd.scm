@@ -27,6 +27,7 @@
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
+  #:use-module (ice-9 regex)
   #:export (expression->initrd
             qemu-initrd
             gnu-system-initrd))
@@ -57,6 +58,10 @@ list of Guile module names to be embedded in the initrd."
 
   ;; General Linux overview in `Documentation/early-userspace/README' and
   ;; `Documentation/filesystems/ramfs-rootfs-initramfs.txt'.
+
+  (define (string->regexp str)
+    ;; Return a regexp that matches STR exactly.
+    (string-append "^" (regexp-quote str) "$"))
 
   (define builder
     `(begin
@@ -119,7 +124,8 @@ list of Guile module names to be embedded in the initrd."
                                    (string-append linux "/lib/modules"))))
              (mkdir "modules")
              ,@(map (lambda (module)
-                      `(match (find-files module-dir ,module)
+                      `(match (find-files module-dir
+                                          ,(string->regexp module))
                          ((file)
                           (format #t "copying '~a'...~%" file)
                           (copy-file file (string-append "modules/"
