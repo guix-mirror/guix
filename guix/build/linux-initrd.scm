@@ -97,6 +97,13 @@
   (mknod (scope "dev/mem") 'char-special #o640 (device-number 1 1))
   (mknod (scope "dev/kmem") 'char-special #o640 (device-number 1 2))
 
+  ;; Inputs (used by Xorg.)
+  (unless (file-exists? (scope "dev/input"))
+    (mkdir (scope "dev/input")))
+  (mknod (scope "dev/input/mice") 'char-special #o640 (device-number 13 63))
+  (mknod (scope "dev/input/mouse0") 'char-special #o640 (device-number 13 32))
+  (mknod (scope "dev/input/event0") 'char-special #o640 (device-number 13 64))
+
   ;; TTYs.
   (mknod (scope "dev/tty") 'char-special #o600
          (device-number 5 0))
