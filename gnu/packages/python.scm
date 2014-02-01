@@ -28,9 +28,11 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages sqlite)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -99,10 +101,12 @@
        #:configure-flags
         (let ((bz2 (assoc-ref %build-inputs "bzip2"))
               (gdbm (assoc-ref %build-inputs "gdbm"))
+              (libffi (assoc-ref %build-inputs "libffi"))
               (openssl (assoc-ref %build-inputs "openssl"))
               (readline (assoc-ref %build-inputs "readline"))
               (zlib (assoc-ref %build-inputs "zlib")))
          (list "--enable-shared"                  ; allow embedding
+               "--with-system-ffi"                ; build ctypes
                (string-append "CPPFLAGS="
                 "-I" bz2 "/include "
                 "-I" gdbm "/include "
@@ -112,6 +116,7 @@
                (string-append "LDFLAGS="
                 "-L" bz2 "/lib "
                 "-L" gdbm "/lib "
+                "-L" libffi "/lib "
                 "-L" openssl "/lib "
                 "-L" readline "/lib "
                 "-L" zlib "/lib")))
@@ -138,10 +143,13 @@
     (inputs
      `(("bzip2" ,bzip2)
        ("gdbm" ,gdbm)
+       ("libffi" ,libffi)                         ; for ctypes
        ("openssl" ,openssl)
        ("readline" ,readline)
        ("zlib" ,zlib)
        ("patchelf" ,patchelf)))                   ; for (guix build rpath)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
