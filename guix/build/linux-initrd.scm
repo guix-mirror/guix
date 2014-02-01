@@ -93,6 +93,10 @@
   (mknod (scope "dev/vda1") 'block-special #o644 (device-number 252 1))
   (mknod (scope "dev/vda2") 'block-special #o644 (device-number 252 2))
 
+  ;; Memory (used by Xorg's VESA driver.)
+  (mknod (scope "dev/mem") 'char-special #o640 (device-number 1 1))
+  (mknod (scope "dev/kmem") 'char-special #o640 (device-number 1 2))
+
   ;; TTYs.
   (mknod (scope "dev/tty") 'char-special #o600
          (device-number 5 0))
