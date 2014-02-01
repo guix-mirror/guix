@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +29,10 @@
                 #:select (guix))
   #:use-module ((gnu packages linux)
                 #:select (net-tools))
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages gl)
+
   #:use-module (gnu system shadow)                ; for user accounts/groups
   #:use-module (gnu system linux)                 ; for PAM services
   #:use-module (ice-9 match)
@@ -54,6 +58,7 @@
             nscd-service
             guix-service
             static-networking-service
+            xorg-service
 
             dmd-configuration-file))
 
@@ -264,6 +269,94 @@ true, it must be a string specifying the default network gateway."
                 ,@(if gateway
                       `(("net-tools" ,net-tools))
                       '())))))))
+
+(define (xorg-service)
+  "Return a service that starts the Xorg graphical display server."
+  (define (xserver.conf)
+    (mlet %store-monad ((fonts (package-file font-adobe75dpi
+                                             "lib/X11/fonts"))
+                        (xorg  (package-file xorg-server
+                                             "lib/xorg/modules"))
+                        (vesa  (package-file xf86-video-vesa
+                                             "lib/xorg/modules/drivers"))
+                        (kbd   (package-file xf86-input-keyboard
+                                             "lib/xorg/modules/input"))
+                        (mouse (package-file xf86-input-mouse
+                                             "lib/xorg/modules/input")))
+      (text-file "xserver.conf"                   ; let's go!
+                 (string-append "
+Section \"Files\"
+  FontPath \"" fonts "\"
+  ModulePath \"" vesa "\"
+  ModulePath \"" mouse "\"
+  ModulePath \"" kbd "\"
+  ModulePath \"" xorg "\"
+  ModulePath \"" xorg "/extensions\"
+  ModulePath \"" xorg "/multimedia\"
+EndSection
+
+Section \"ServerFlags\"
+  Option \"AllowMouseOpenFail\" \"on""
+EndSection
+
+Section \"Monitor\"
+  Identifier \"Monitor[0]\"
+EndSection
+
+Section \"InputClass\"
+  Identifier \"Generic keyboard\"
+  MatchIsKeyboard \"on\"
+  Option \"XkbRules\" \"base\"
+  Option \"XkbModel\" \"pc104\"
+EndSection
+
+Section \"ServerLayout\"
+  Identifier \"Layout\"
+  Screen \"Screen-vesa\"
+EndSection
+
+Section \"Device\"
+  Identifier \"Device-vesa\"
+  Driver \"vesa\"
+EndSection
+
+Section \"Screen\"
+  Identifier \"Screen-vesa\"
+  Device \"Device-vesa\"
+EndSection"))))
+
+  (mlet %store-monad ((xorg-bin    (package-file xorg-server "bin/X"))
+                      (dri         (package-file mesa "lib/dri"))
+                      (xkbcomp-bin (package-file xkbcomp "bin"))
+                      (xkb-dir     (package-file xkeyboard-config
+                                                 "share/X11/xkb"))
+                      (sh          (package-file bash "bin/sh"))
+                      (config      (xserver.conf)))
+    (return
+     (service
+      (documentation "The X11 graphic server")
+      (provision '(xorg-server))
+      (requirement '(host-name))
+      (start `(make-forkexec-constructor
+               ;; XXX: 'make-forkexec-constructor' should allow use to specify
+               ;; env vars.
+               ,sh "-c" ,(string-append "XORG_DRI_DRIVER_PATH=" dri " "
+                                        "XKB_BINDIR=" xkbcomp-bin " "
+                                        xorg-bin " -ac -logverbose -verbose "
+                                        "-xkbdir " xkb-dir " "
+                                        "-config " config " "
+                                        "-nolisten tcp :0 vt7")))
+      (stop  `(make-kill-destructor))
+      (respawn? #f)
+      (inputs `(("xorg" ,xorg-server)
+                ("mesa" ,mesa)
+                ("xkbcomp" ,xkbcomp)
+                ("xkeyboard-config" ,xkeyboard-config)
+                ("vesa" ,xf86-video-vesa)
+                ("mouse" ,xf86-input-mouse)
+                ("kbd" ,xf86-input-keyboard)
+                ("fonts" ,font-adobe75dpi)
+                ("bash" ,bash)))))))
 
 
 (define (dmd-configuration-file services etc)
