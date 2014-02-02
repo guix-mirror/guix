@@ -26,13 +26,13 @@
 (define-public file
   (package
    (name "file")
-   (version "5.12")
+   (version "5.16")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.astron.com/pub/file/file-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "08ix4xrvan0k80n0l5lqfmc4azjv5lyhvhwdxny4r09j5smhv78r"))))
+                     "0qcj72mp8fzvh29h70mksxynax9mk5c6p8gzqw5qlyn34rvsrg28"))))
    (build-system gnu-build-system)
    (native-inputs
     ;; This package depends upon a native install of itself.
