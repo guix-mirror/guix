@@ -458,15 +458,20 @@ such as /etc files."
 (define (operating-system-default-contents os)
   "Return a list of directives suitable for 'system-qemu-image' describing the
 basic contents of the root file system of OS."
-  (mlet* %store-monad ((os-drv         (operating-system-derivation os))
-                       (os-dir      -> (derivation->output-path os-drv))
-                       (build-user-gid (operating-system-build-gid os)))
-    (return `((directory "/nix/store" 0 ,(or build-user-gid 0))
+  (mlet* %store-monad ((os-drv    (operating-system-derivation os))
+                       (os-dir -> (derivation->output-path os-drv))
+                       (build-gid (operating-system-build-gid os))
+                       (profile   (operating-system-profile-directory os)))
+    (return `((directory "/nix/store" 0 ,(or build-gid 0))
               (directory "/etc")
               (directory "/var/log")                     ; for dmd
               (directory "/var/run/nscd")
               (directory "/var/nix/gcroots")
               ("/var/nix/gcroots/system" -> ,os-dir)
+              (directory "/run")
+              ("/run/current-system" -> ,profile)
+              (directory "/bin")
+              ("/bin/sh" -> "/run/current-system/bin/sh")
               (directory "/tmp")
               (directory "/var/nix/profiles/per-user/root" 0 0)
               (directory "/var/nix/profiles/per-user/guest"

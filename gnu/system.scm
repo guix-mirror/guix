@@ -49,6 +49,7 @@
             operating-system-locale
             operating-system-services
 
+            operating-system-profile-directory
             operating-system-derivation))
 
 ;;; Commentary:
@@ -284,6 +285,17 @@ alias ll='ls -l'
                            ("pam.d" ,pam.d))
                 #:name "etc")))
 
+(define (operating-system-profile-derivation os)
+  "Return a derivation that builds the default profile of OS."
+  ;; TODO: Replace with a real profile with a manifest.
+  (union (operating-system-packages os)
+         #:name "default-profile"))
+
+(define (operating-system-profile-directory os)
+  "Return the directory name of the default profile of OS."
+  (mlet %store-monad ((drv (operating-system-profile-derivation os)))
+    (return (derivation->output-path drv))))
+
 (define (operating-system-derivation os)
   "Return a derivation that builds OS."
   (mlet* %store-monad
@@ -310,11 +322,8 @@ alias ll='ls -l'
                                               services))))
        (groups   -> (append (operating-system-groups os)
                             (append-map service-user-groups services)))
-       (packages -> (operating-system-packages os))
 
-       ;; TODO: Replace with a real profile with a manifest.
-       (profile-drv (union packages
-                           #:name "default-profile"))
+       (profile-drv (operating-system-profile-derivation os))
        (profile ->  (derivation->output-path profile-drv))
        (etc-drv     (etc-directory #:accounts accounts #:groups groups
                                    #:pam-services pam-services
