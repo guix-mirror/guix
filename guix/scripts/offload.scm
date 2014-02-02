@@ -108,7 +108,7 @@ determined."
       (save-module-excursion
        (lambda ()
          (set-current-module %user-module)
-         (primitive-load %machine-file))))
+         (primitive-load file))))
     (lambda args
       (match args
         (('system-error . _)
@@ -117,10 +117,10 @@ determined."
            (if (= ENOENT err)
                '()
                (leave (_ "failed to open machine file '~a': ~a~%")
-                      %machine-file (strerror err)))))
+                      file (strerror err)))))
         (_
          (leave (_ "failed to load machine file '~a': ~s~%")
-                %machine-file args))))))
+                file args))))))
 
 (define (open-ssh-gateway machine)
   "Initiate an SSH connection gateway to MACHINE, and return the PID of the
