@@ -23,6 +23,7 @@
   #:use-module ((system syntax)
                 #:select (syntax-local-binding))
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-26)
   #:export (;; Monads.
@@ -53,6 +54,7 @@
             store-lift
             run-with-store
             text-file
+            text-file*
             package-file
             package->derivation
             built-derivations
@@ -305,9 +307,58 @@ in the store monad."
 
 (define* (text-file name text)
   "Return as a monadic value the absolute file name in the store of the file
-containing TEXT."
+containing TEXT, a string."
   (lambda (store)
     (add-text-to-store store name text '())))
+
+(define* (text-file* name #:rest text)
+  "Return as a monadic value a derivation that builds a text file containing
+all of TEXT.  TEXT may list, in addition to strings, packages, derivations,
+and store file names; the resulting store file holds references to all these."
+  (define inputs
+    ;; Transform packages and derivations from TEXT into a valid input list.
+    (filter-map (match-lambda
+                 ((? package? p) `("x" ,p))
+                 ((? derivation? d) `("x" ,d))
+                 ((x ...) `("x" ,@x))
+                 ((? string? s)
+                  (and (direct-store-path? s) `("x" ,s)))
+                 (x x))
+                text))
+
+  (define (computed-text text inputs)
+    ;; Using the lowered INPUTS, return TEXT with derivations replaced with
+    ;; their output file name.
+    (define (real-string? s)
+      (and (string? s) (not (direct-store-path? s))))
+
+    (let loop ((inputs inputs)
+               (text   text)
+               (result '()))
+      (match text
+        (()
+         (string-concatenate-reverse result))
+        (((? real-string? head) rest ...)
+         (loop inputs rest (cons head result)))
+        ((_ rest ...)
+         (match inputs
+           (((_ (? derivation? drv) sub-drv ...) inputs ...)
+            (loop inputs rest
+                  (cons (apply derivation->output-path drv
+                               sub-drv)
+                        result)))
+           (((_ file) inputs ...)
+            ;; FILE is the result of 'add-text-to-store' or so.
+            (loop inputs rest (cons file result))))))))
+
+  (define (builder inputs)
+    `(call-with-output-file (assoc-ref %outputs "out")
+       (lambda (port)
+         (display ,(computed-text text inputs) port))))
+
+  (mlet %store-monad ((inputs (lower-inputs inputs)))
+    (derivation-expression name (builder inputs)
+                           #:inputs inputs)))
 
 (define* (package-file package
                        #:optional file

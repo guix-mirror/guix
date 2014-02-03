@@ -1590,23 +1590,22 @@ in a monad---values that carry this additional context---are called
 Consider this ``normal'' procedure:
 
 @example
-(define (profile.sh store)
-  ;; Return the name of a shell script in the store that
-  ;; initializes the 'PATH' environment variable.
-  (let* ((drv (package-derivation store coreutils))
-         (out (derivation->output-path drv)))
-    (add-text-to-store store "profile.sh"
-                       (format #f "export PATH=~a/bin" out))))
+(define (sh-symlink store)
+  ;; Return a derivation that symlinks the 'bash' executable.
+  (let* ((drv (package-derivation store bash))
+         (out (derivation->output-path drv))
+         (sh  (string-append out "/bin/bash")))
+    (build-expression->derivation store "sh"
+                                  `(symlink ,sh %output))))
 @end example
 
 Using @code{(guix monads)}, it may be rewritten as a monadic function:
 
 @example
-(define (profile.sh)
+(define (sh-symlink)
   ;; Same, but return a monadic value.
-  (mlet %store-monad ((bin (package-file coreutils "bin")))
-    (text-file "profile.sh"
-               (string-append "export PATH=" bin))))
+  (mlet %store-monad ((sh (package-file bash "bin")))
+    (derivation-expression "sh" `(symlink ,sh %output))))
 @end example
 
 There are two things to note in the second version: the @code{store}
@@ -1672,7 +1671,32 @@ open store connection.
 
 @deffn {Monadic Procedure} text-file @var{name} @var{text}
 Return as a monadic value the absolute file name in the store of the file
-containing @var{text}.
+containing @var{text}, a string.
+@end deffn
+
+@deffn {Monadic Procedure} text-file* @var{name} @var{text} @dots{}
+Return as a monadic value a derivation that builds a text file
+containing all of @var{text}.  @var{text} may list, in addition to
+strings, packages, derivations, and store file names; the resulting
+store file holds references to all these.
+
+This variant should be preferred over @code{text-file} anytime the file
+to create will reference items from the store.  This is typically the
+case when building a configuration file that embeds store file names,
+like this:
+
+@example
+(define (profile.sh)
+  ;; Return the name of a shell script in the store that
+  ;; initializes the 'PATH' environment variable.
+  (text-file* "profile.sh"
+              "export PATH=" coreutils "/bin:"
+              grep "/bin:" sed "/bin\n"))
+@end example
+
+In this example, the resulting @file{/nix/store/@dots{}-profile.sh} file
+will references @var{coreutils}, @var{grep}, and @var{sed}, thereby
+preventing them from being garbage-collected during its lifetime.
 @end deffn
 
 @deffn {Monadic Procedure} package-file @var{package} [@var{file}] @

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -125,6 +125,30 @@
                    (equal? guile
                            (readlink (string-append out "/guile-rocks"))))))
     #:guile-for-build (package-derivation %store %bootstrap-guile)))
+
+(test-assert "text-file*"
+  (let ((references (store-lift references)))
+    (run-with-store %store
+      (mlet* %store-monad
+          ((drv  (package->derivation %bootstrap-guile))
+           (guile -> (derivation->output-path drv))
+           (file (text-file "bar" "This is bar."))
+           (text (text-file* "foo"
+                             %bootstrap-guile "/bin/guile "
+                             `(,%bootstrap-guile "out") "/bin/guile "
+                             drv "/bin/guile "
+                             file))
+           (done (built-derivations (list text)))
+           (out -> (derivation->output-path text))
+           (refs (references out)))
+        ;; Make sure we get the right references and the right content.
+        (return (and (lset= string=? refs (list guile file))
+                     (equal? (call-with-input-file out get-string-all)
+                             (string-append guile "/bin/guile "
+                                            guile "/bin/guile "
+                                            guile "/bin/guile "
+                                            file)))))
+      #:guile-for-build (package-derivation %store %bootstrap-guile))))
 
 (test-assert "mapm"
   (every (lambda (monad run)
