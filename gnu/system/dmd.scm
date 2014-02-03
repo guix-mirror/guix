@@ -273,26 +273,15 @@ true, it must be a string specifying the default network gateway."
 (define (xorg-service)
   "Return a service that starts the Xorg graphical display server."
   (define (xserver.conf)
-    (mlet %store-monad ((fonts (package-file font-adobe75dpi
-                                             "lib/X11/fonts"))
-                        (xorg  (package-file xorg-server
-                                             "lib/xorg/modules"))
-                        (vesa  (package-file xf86-video-vesa
-                                             "lib/xorg/modules/drivers"))
-                        (kbd   (package-file xf86-input-keyboard
-                                             "lib/xorg/modules/input"))
-                        (mouse (package-file xf86-input-mouse
-                                             "lib/xorg/modules/input")))
-      (text-file "xserver.conf"                   ; let's go!
-                 (string-append "
+    (text-file* "xserver.conf" "
 Section \"Files\"
-  FontPath \"" fonts "\"
-  ModulePath \"" vesa "\"
-  ModulePath \"" mouse "\"
-  ModulePath \"" kbd "\"
-  ModulePath \"" xorg "\"
-  ModulePath \"" xorg "/extensions\"
-  ModulePath \"" xorg "/multimedia\"
+  FontPath \"" font-adobe75dpi "/lib/X11/fonts\"
+  ModulePath \"" xf86-video-vesa "/lib/xorg/modules/drivers\"
+  ModulePath \"" xf86-input-mouse "/lib/xorg/modules/input\"
+  ModulePath \"" xf86-input-keyboard "/lib/xorg/modules/input\"
+  ModulePath \"" xorg-server "/lib/xorg/modules\"
+  ModulePath \"" xorg-server "/lib/xorg/modules/extensions\"
+  ModulePath \"" xorg-server "/lib/xorg/modules/multimedia\"
 EndSection
 
 Section \"ServerFlags\"
@@ -323,7 +312,7 @@ EndSection
 Section \"Screen\"
   Identifier \"Screen-vesa\"
   Device \"Device-vesa\"
-EndSection"))))
+EndSection"))
 
   (mlet %store-monad ((xorg-bin    (package-file xorg-server "bin/X"))
                       (dri         (package-file mesa "lib/dri"))
@@ -344,19 +333,17 @@ EndSection"))))
                                         "XKB_BINDIR=" xkbcomp-bin " "
                                         xorg-bin " -ac -logverbose -verbose "
                                         "-xkbdir " xkb-dir " "
-                                        "-config " config " "
+                                        "-config "
+                                        (derivation->output-path config) " "
                                         "-nolisten tcp :0 vt7")))
       (stop  `(make-kill-destructor))
       (respawn? #f)
       (inputs `(("xorg" ,xorg-server)
-                ("mesa" ,mesa)
                 ("xkbcomp" ,xkbcomp)
                 ("xkeyboard-config" ,xkeyboard-config)
-                ("vesa" ,xf86-video-vesa)
-                ("mouse" ,xf86-input-mouse)
-                ("kbd" ,xf86-input-keyboard)
-                ("fonts" ,font-adobe75dpi)
-                ("bash" ,bash)))))))
+                ("mesa" ,mesa)
+                ("bash" ,bash)
+                ("xorg.conf" ,config)))))))
 
 
 (define (dmd-configuration-file services etc)
