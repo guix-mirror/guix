@@ -40,6 +40,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/bdb.scm				\
   gnu/packages/bdw-gc.scm			\
   gnu/packages/bison.scm			\
+  gnu/packages/boost.scm			\
   gnu/packages/bootstrap.scm			\
   gnu/packages/cdrom.scm			\
   gnu/packages/cflow.scm			\
