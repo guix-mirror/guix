@@ -251,38 +251,39 @@ GNU dmd (http://www.gnu.org/software/dmd/).
 You can log in as 'guest' or 'root' with no password.
 "))
 
-       ;; Assume TZDATA is installed---e.g., as part of the system packages.
-       ;; Users can choose not to have it.
-       (tzdir      (package-file tzdata "share/zoneinfo"))
-
        ;; TODO: Generate bashrc from packages' search-paths.
-       (bashrc    (text-file "bashrc" (string-append "
+       (bashrc    (text-file* "bashrc"  "
 export PS1='\\u@\\h\\$ '
 
 export LC_ALL=\"" locale "\"
 export TZ=\"" timezone "\"
-export TZDIR=\"" tzdir "\"
+export TZDIR=\"" tzdata "/share/zoneinfo\"
 
 export PATH=$HOME/.guix-profile/bin:" profile "/bin:" profile "/sbin
 export CPATH=$HOME/.guix-profile/include:" profile "/include
 export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
 alias ls='ls -p --color'
 alias ll='ls -l'
-")))
+"))
 
+       (tz-file  (package-file tzdata
+                               (string-append "share/zoneinfo/" timezone)))
        (files -> `(("services" ,services)
                    ("protocols" ,protocols)
                    ("rpc" ,rpc)
                    ("pam.d" ,(derivation->output-path pam.d))
                    ("login.defs" ,login.defs)
                    ("issue" ,issue)
-                   ("profile" ,bashrc)
+                   ("profile" ,(derivation->output-path bashrc))
+                   ("localtime" ,tz-file)
                    ("passwd" ,passwd)
                    ("shadow" ,shadow)
                    ("group" ,group))))
     (file-union files
                 #:inputs `(("net" ,net-base)
-                           ("pam.d" ,pam.d))
+                           ("pam.d" ,pam.d)
+                           ("bashrc" ,bashrc)
+                           ("tzdata" ,tzdata))
                 #:name "etc")))
 
 (define (operating-system-profile-derivation os)
@@ -329,7 +330,7 @@ alias ll='ls -l'
                                    #:pam-services pam-services
                                    #:locale (operating-system-locale os)
                                    #:timezone (operating-system-timezone os)
-                                   #:profile profile))
+                                   #:profile profile-drv))
        (etc     ->  (derivation->output-path etc-drv))
        (dmd-conf  (dmd-configuration-file services etc))
 
