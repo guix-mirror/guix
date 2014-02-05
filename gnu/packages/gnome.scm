@@ -496,3 +496,30 @@ the API")
 additional GDK objects which support OpenGL rendering in GTK+ and GtkWidget
 API add-ons to make GTK+ widgets OpenGL-capable.")
     (license lgpl2.1+)))
+
+(define-public glade3
+  (package
+    (name "glade")
+    (version "3.8.4")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnome/sources/" name "/"
+                          (substring version 0 (string-rindex version #\.)) "/"
+                          name "3-" version ".tar.xz"))
+              (sha256
+               (base32 "021xgq2l18w3rvwms9aq2idm0fk66vwb4f777gs0qh3ap5shgbn7"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+" ,gtk+-2)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("python" ,python)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://glade.gnome.org")
+    (synopsis "GTK+ rapid application development tool")
+    (description "Glade is a rapid application development (RAD) tool to
+enable quick & easy development of user interfaces for the GTK+ toolkit and
+the GNOME desktop environment.")
+    (license lgpl2.0+)))
