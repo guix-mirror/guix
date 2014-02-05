@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,14 +73,14 @@ dependencies.")
 (define-public guile-wm
   (package
     (name "guile-wm")
-    (version "0.2")
+    (version "1.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.markwitmer.com/dist/guile-wm-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0vv6avpkl6lgrhy2a16z470fqjhvzi4r93qwl87xw9v5dvldf08p"))))
+                "1l9qcz236jxvryndimjy62cf8zxf8i3f8vg3zpqqjhw15j9mdk3r"))))
     (build-system gnu-build-system)
     (arguments '(;; The '.scm' files go to $(datadir), so set that to the
                  ;; standard value.
