@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Guy Grant <gzg@riseup.net>
+;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages libpng)
@@ -34,13 +36,17 @@
 (define-public slim
   (package
     (name "slim")
-    (version "1.3.3")
+    (version "1.3.6")
     (source (origin
 	     (method url-fetch)
-	     (uri (string-append "mirror://sourceforge/project/slim.berlios/slim-"
+             ;; Used to be available from
+             ;; mirror://sourceforge/project/slim.berlios/.
+	     (uri (string-append "http://download.berlios.de/slim/slim-"
 				  version ".tar.gz"))
 	     (sha256
-	      (base32 "1fdvipj3658s8dm78djmfr8xhg6l8rr7kc4qcb34bjrnkkclhln1"))))
+	      (base32 "1pqhk22jb4aja4hkrm7rjgbgzjyh7i4zswdgf5nw862l2znzxpi1"))
+             (patches (map search-patch
+                           (list "slim-config.patch" "slim-session.patch")))))
     (build-system cmake-build-system)
     (inputs `(("linux-pam" ,linux-pam)
 	      ("libpng" ,libpng)
@@ -62,12 +68,23 @@
 		 (lambda _
 		   (substitute* "CMakeLists.txt"
 		     (("/etc")
-		      (string-append
-		       (assoc-ref %outputs "out") "/etc"))))
+		      (string-append (assoc-ref %outputs "out") "/etc"))
+                     (("install.*systemd.*")
+                      ;; The build system's logic here is: if "Linux", then
+                      ;; "systemd".  Strip that.
+                      "")))
 		 %standard-phases)
-       #:configure-flags '("-DUSE_PAM=yes" "-DUSE_CONSOLEKIT=no")
+       #:configure-flags '("-DUSE_PAM=yes" "-DUSE_CONSOLEKIT=no"
+
+                           ;; Don't build libslim.so, because then the build
+                           ;; system is unable to set the right RUNPATH on the
+                           ;; 'slim' binary.
+                           "-DBUILD_SHARED_LIBS=OFF"
+
+                           ;; Leave a valid RUNPATH upon install.
+                           "-DCMAKE_SKIP_BUILD_RPATH=ON")
        #:tests? #f))
-    (home-page "http://www.slim.berlios.de/")
+    (home-page "http://slim.berlios.de/")
     (synopsis "Desktop-independent graphcal login manager for X11")
     (description
      "SLiM is a Desktop-independent graphical login manager for X11, derived
