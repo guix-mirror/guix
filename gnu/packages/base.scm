@@ -340,7 +340,11 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 
                           ;; Install BFD.  It ends up in a hidden directory,
                           ;; but it's here.
-                          "--enable-install-libbfd")))
+                          "--enable-install-libbfd"
+
+                          ;; Make sure 'ar' and 'ranlib' produce archives in a
+                          ;; deterministic fashion.
+                          "--enable-deterministic-archives")))
 
    (synopsis "Binary utilities: bfd gas gprof ld")
    (description
