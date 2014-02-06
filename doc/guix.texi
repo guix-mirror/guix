@@ -502,6 +502,30 @@ the daemon makes the new file a hard link to the other file.  This
 slightly increases the input/output load at the end of a build process.
 This option disables this.
 
+@item --gc-keep-outputs[=yes|no]
+Tell whether the garbage collector (GC) must keep outputs of live
+derivations.
+
+When set to ``yes'', the GC will keep the outputs of any live derivation
+available in the store---the @code{.drv} files.  The default is ``no'',
+meaning that derivation outputs are kept only if they are GC roots.
+
+@item --gc-keep-derivations[=yes|no]
+Tell whether the garbage collector (GC) must keep derivations
+corresponding to live outputs.
+
+When set to ``yes'', as is the case by default, the GC keeps
+derivations---i.e., @code{.drv} files---as long as at least one of their
+outputs is live.  This allows users to keep track of the origins of
+items in their store.  Setting it to ``no'' saves a bit of disk space.
+
+Note that when both @code{--gc-keep-derivations} and
+@code{--gc-keep-outputs} are used, the effect is to keep all the build
+prerequisites (the sources, compiler, libraries, and other build-time
+tools) of live objects in the store, regardless of whether these
+prerequisites are live.  This is convenient for developers since it
+saves rebuilds or downloads.
+
 @item --impersonate-linux-2.6
 On Linux-based systems, impersonate Linux 2.6.  This means that the
 kernel's @code{uname} system call will report 2.6 as the release number.
