@@ -242,12 +242,11 @@ used to apply commands with arbitrarily long arguments.")
               "04hjzzv434fb8ak3hh3dyhdvg3hqjjwvjmjxqzk1gh2jh6cr8gjv"))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
-             ("gmp"  ,gmp)
-
-             ;; Perl is needed to run tests; remove it from cross builds.
-             ,@(if (%current-target-system)
-                   '()
-                   `(("perl" ,perl)))))
+             ("gmp"  ,gmp)))
+   (native-inputs
+    ;; Perl is needed to run tests in native builds, and to run the bundled
+    ;; copy of help2man.
+    `(("perl" ,perl)))
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
