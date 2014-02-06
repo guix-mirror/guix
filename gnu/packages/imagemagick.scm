@@ -37,14 +37,14 @@
 (define-public imagemagick
   (package
     (name "imagemagick")
-    (version "6.8.7-9")
+    (version "6.8.8-4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0625hqddc93qjd5923yivy74jyagk3n2bi2kjgykn86g7kxh7fcd"))))
+               "0bfxhfymkdbvardlr0nbjfmv53m47lcl9kkycipk4hxawfs927jr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
