@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,15 +33,14 @@
 (define-public gdb
   (package
     (name "gdb")
-    (version "7.6.2")
+    (version "7.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1s6hjqmq7xz10hqx45dgrpfh5mla578shn3zxgnrsv66w4n0wsig"))
-             (patches (list (search-patch "gdb-loongson-madd-fix.patch")))))
+               "08vcb97j1b7vxwq6088wb6s3g3bm8iwikd922y0xsgbbxv3d2104"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
