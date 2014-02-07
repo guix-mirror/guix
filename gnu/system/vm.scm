@@ -485,6 +485,7 @@ basic contents of the root file system of OS."
               (directory "/tmp")
               (directory "/var/nix/profiles/per-user/root" 0 0)
 
+              (directory "/root" 0 0)             ; an exception
               ,@(append-map user-directories
                             (operating-system-users os))))))
 

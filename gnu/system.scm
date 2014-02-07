@@ -317,7 +317,7 @@ alias ll='ls -l'
                             (password "")
                             (uid 0) (gid 0)
                             (comment "System administrator")
-                            (home-directory "/"))
+                            (home-directory "/root"))
                           (append (operating-system-users os)
                                   (append-map service-user-accounts
                                               services))))
