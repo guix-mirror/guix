@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -421,4 +422,38 @@ including tools for signing keys, keyring analysis, and party preparation.
     (description
      "Pinentry provides a console and a GTK+ GUI that allows users to
 enter a passphrase when `gpg' or `gpg2' is run and needs it.")
+    (license gpl2+)))
+
+(define-public paperkey
+  (package
+    (name "paperkey")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.jabberwocky.com/"
+                                  "software/paperkey/paperkey-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1yybj8bj68v4lxwpn596b6ismh2fyixw5vlqqg26byrn4d9dfmsv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (alist-replace
+        'check
+        (lambda* (#:key #:allow-other-keys #:rest args)
+          (let ((check (assoc-ref %standard-phases 'check)))
+            (substitute* '("checks/roundtrip.sh"
+                           "checks/roundtrip-raw.sh")
+              (("/bin/echo") "echo"))
+            (apply check args)))
+        %standard-phases)))
+    (home-page "http://www.jabberwocky.com/software/paperkey/")
+    (synopsis "Backup OpenPGP keys to paper")
+    (description
+     "Paperkey extracts the secret bytes from an OpenPGP (GnuPG, PGP, etc) key
+for printing with paper and ink, which have amazingly long retention
+qualities.  To reconstruct a secret key, you re-enter those
+bytes (whether by hand, OCR, QR code, or the like) and paperkey can use
+them to transform your existing public key into a secret key.")
     (license gpl2+)))
