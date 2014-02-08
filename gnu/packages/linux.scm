@@ -885,3 +885,38 @@ the command line or a script.")
      "Iotop is a Python program with a top like user interface to show the
 processes currently causing I/O.")
     (license gpl2+)))
+
+(define-public fuse
+  (package
+    (name "fuse")
+    (version "2.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/fuse/fuse-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "071r6xjgssy8vwdn6m28qq1bqxsd2bphcd2mzhq0grf5ybm87sqb"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("util-linux" ,util-linux)))
+    (arguments
+     '(#:configure-flags (list (string-append "MOUNT_FUSE_PATH="
+                                              (assoc-ref %outputs "out")
+                                              "/sbin")
+                               (string-append "INIT_D_PATH="
+                                              (assoc-ref %outputs "out")
+                                              "/etc/init.d")
+                               (string-append "UDEV_RULES_PATH="
+                                              (assoc-ref %outputs "out")
+                                              "/etc/udev"))))
+    (home-page "http://fuse.sourceforge.net/")
+    (synopsis "Support file systems implemented in user space")
+    (description
+     "As a consequence of its monolithic design, file system code for Linux
+normally goes into the kernel itself---which is not only a robustness issue,
+but also an impediment to system extensibility.  FUSE, for \"file systems in
+user space\", is a kernel module and user-space library that tries to address
+part of this problem by allowing users to run file system implementations as
+user-space processes.")
+    (license (list lgpl2.1                        ; library
+                   gpl2+))))                      ; command-line utilities
