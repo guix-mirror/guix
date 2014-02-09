@@ -299,6 +299,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/scheme48-tests.patch			\
   gnu/packages/patches/slim-session.patch			\
   gnu/packages/patches/slim-config.patch			\
+  gnu/packages/patches/slim-sigusr1.patch			\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
   gnu/packages/patches/valgrind-glibc.patch			\

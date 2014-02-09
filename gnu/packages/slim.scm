@@ -46,7 +46,8 @@
 	     (sha256
 	      (base32 "1pqhk22jb4aja4hkrm7rjgbgzjyh7i4zswdgf5nw862l2znzxpi1"))
              (patches (map search-patch
-                           (list "slim-config.patch" "slim-session.patch")))))
+                           (list "slim-config.patch" "slim-session.patch"
+                                 "slim-sigusr1.patch")))))
     (build-system cmake-build-system)
     (inputs `(("linux-pam" ,linux-pam)
 	      ("libpng" ,libpng)
