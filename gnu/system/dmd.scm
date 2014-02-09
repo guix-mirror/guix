@@ -275,7 +275,7 @@ true, it must be a string specifying the default network gateway."
   (define (xserver.conf)
     (text-file* "xserver.conf" "
 Section \"Files\"
-  FontPath \"" font-adobe75dpi "/lib/X11/fonts\"
+  FontPath \"" font-adobe75dpi "/share/font/X11/75dpi\"
   ModulePath \"" xf86-video-vesa "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-input-mouse "/lib/xorg/modules/input\"
   ModulePath \"" xf86-input-keyboard "/lib/xorg/modules/input\"
