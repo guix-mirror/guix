@@ -120,14 +120,14 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "6.1p1")
+   (version "6.5p1")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "ftp://ftp.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "04f4l4vx6f964v5qjm03nhyixdc3llc90z6cj70r0bl5q3v5ghfi"))))
+                     "09wh7mi65aahyxd2xvq1makckhd5laid8c0pb8njaidrbpamw6d1"))))
    (build-system gnu-build-system)
    (inputs `(("groff" ,groff)
              ("openssl" ,openssl)
@@ -150,7 +150,7 @@ a server that supports the SSH-2 protocol.")
          (let ((check (assoc-ref %standard-phases 'check)))
            ;; remove tests that require the user sshd
            (substitute* "regress/Makefile"
-                        (("t9 t-exec") "t9"))
+                        (("t10 t-exec") "t10"))
            (apply check args)))
        (alist-replace
         'install
