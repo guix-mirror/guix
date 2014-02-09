@@ -22,9 +22,9 @@
   #:use-module (guix derivations)
   #:use-module (guix records)
   #:use-module ((gnu packages base)
-                #:select (glibc-final))
+                #:select (glibc-final guile-final))
   #:use-module ((gnu packages admin)
-                #:select (mingetty inetutils shadow))
+                #:select (dmd mingetty inetutils shadow))
   #:use-module ((gnu packages package-management)
                 #:select (guix))
   #:use-module ((gnu packages linux)
@@ -32,6 +32,8 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages slim)
+  #:use-module (gnu packages ratpoison)
 
   #:use-module (gnu system shadow)                ; for user accounts/groups
   #:use-module (gnu system linux)                 ; for PAM services
@@ -58,7 +60,8 @@
             nscd-service
             guix-service
             static-networking-service
-            xorg-service
+            xorg-start-command
+            slim-service
 
             dmd-configuration-file))
 
@@ -270,8 +273,12 @@ true, it must be a string specifying the default network gateway."
                       `(("net-tools" ,net-tools))
                       '())))))))
 
-(define (xorg-service)
-  "Return a service that starts the Xorg graphical display server."
+(define* (xorg-start-command #:key
+                             (guile guile-final)
+                             (xorg-server xorg-server))
+  "Return a derivation that builds a GUILE script to start the X server from
+XORG-SERVER.  Usually the X server is started by a login manager."
+
   (define (xserver.conf)
     (text-file* "xserver.conf" "
 Section \"Files\"
@@ -314,36 +321,103 @@ Section \"Screen\"
   Device \"Device-vesa\"
 EndSection"))
 
-  (mlet %store-monad ((xorg-bin    (package-file xorg-server "bin/X"))
+  (mlet %store-monad ((guile-bin   (package-file guile "bin/guile"))
+                      (xorg-bin    (package-file xorg-server "bin/X"))
                       (dri         (package-file mesa "lib/dri"))
                       (xkbcomp-bin (package-file xkbcomp "bin"))
                       (xkb-dir     (package-file xkeyboard-config
                                                  "share/X11/xkb"))
-                      (sh          (package-file bash "bin/sh"))
                       (config      (xserver.conf)))
+    (define builder
+      ;; Write a small wrapper around the X server.
+      `(let ((out (assoc-ref %outputs "out")))
+         (call-with-output-file out
+           (lambda (port)
+             (format port "#!~a --no-auto-compile~%!#~%" ,guile-bin)
+             (write '(begin
+                       (setenv "XORG_DRI_DRIVER_PATH" ,dri)
+                       (setenv "XKB_BINDIR" ,xkbcomp-bin)
+
+                       (apply execl
+
+                              ,xorg-bin "-ac" "-logverbose" "-verbose"
+                              "-xkbdir" ,xkb-dir
+                              "-config" ,(derivation->output-path config)
+                              "-nolisten" "tcp" "-terminate"
+
+                              ;; Note: SLiM and other display managers add the
+                              ;; '-auth' flag by themselves.
+                              (cdr (command-line))))
+                    port)))
+         (chmod out #o555)
+         #t))
+
+    (mlet %store-monad ((inputs (lower-inputs
+                                 `(("xorg" ,xorg-server)
+                                   ("xkbcomp" ,xkbcomp)
+                                   ("xkeyboard-config" ,xkeyboard-config)
+                                   ("mesa" ,mesa)
+                                   ("guile" ,guile)
+                                   ("xorg.conf" ,config)))))
+      (derivation-expression "start-xorg" builder
+                             #:inputs inputs))))
+
+(define* (slim-service #:key (slim slim)
+                       (allow-empty-passwords? #t) auto-login?
+                       (default-user "")
+                       (xauth xauth) (dmd dmd) (bash bash)
+                       startx)
+  "Return a service that spawns the SLiM graphical login manager, which in
+turn start the X display server with STARTX, a command as returned by
+'xorg-start-command'.
+
+When ALLOW-EMPTY-PASSWORDS? is true, allow logins with an empty password.
+When AUTO-LOGIN? is true, log in automatically as DEFAULT-USER."
+  (define (slim.cfg)
+    ;; TODO: Run "bash -login ~/.xinitrc %session".
+    (mlet %store-monad ((startx (or startx (xorg-start-command))))
+      (text-file* "slim.cfg"  "
+default_path /run/current-system/bin
+default_xserver " startx "
+xserver_arguments :0 vt7
+xauth_path " xauth "/bin/xauth
+authfile /var/run/slim.auth
+
+# The login command.  '%session' is replaced by the chosen session name, one
+# of the names specified in the 'sessions' setting: 'wmaker', 'xfce', etc.
+login_cmd  exec " ratpoison "/bin/ratpoison
+
+halt_cmd " dmd "/sbin/halt
+reboot_cmd " dmd "/sbin/reboot
+" (if auto-login?
+      (string-append "auto_login yes\ndefault_user " default-user)
+      ""))))
+
+  (mlet %store-monad ((slim-bin (package-file slim "bin/slim"))
+                      (bash-bin (package-file bash "bin/bash"))
+                      (slim.cfg (slim.cfg)))
     (return
      (service
-      (documentation "The X11 graphic server")
+      (documentation "Xorg display server")
       (provision '(xorg-server))
       (requirement '(host-name))
-      (start `(make-forkexec-constructor
-               ;; XXX: 'make-forkexec-constructor' should allow use to specify
-               ;; env vars.
-               ,sh "-c" ,(string-append "XORG_DRI_DRIVER_PATH=" dri " "
-                                        "XKB_BINDIR=" xkbcomp-bin " "
-                                        xorg-bin " -ac -logverbose -verbose "
-                                        "-xkbdir " xkb-dir " "
-                                        "-config "
-                                        (derivation->output-path config) " "
-                                        "-nolisten tcp :0 vt7")))
+      (start
+       ;; XXX: Work around the inability to specify env. vars. directly.
+       `(make-forkexec-constructor
+         ,bash-bin "-c"
+         ,(string-append "SLIM_CFGFILE=" (derivation->output-path slim.cfg)
+                         " " slim-bin
+                         " -nodaemon")))
       (stop  `(make-kill-destructor))
-      (respawn? #f)
-      (inputs `(("xorg" ,xorg-server)
-                ("xkbcomp" ,xkbcomp)
-                ("xkeyboard-config" ,xkeyboard-config)
-                ("mesa" ,mesa)
-                ("bash" ,bash)
-                ("xorg.conf" ,config)))))))
+      (inputs `(("slim" ,slim)
+                ("slim.cfg" ,slim.cfg)
+                ("bash" ,bash)))
+      (respawn? #t)
+      (pam-services
+       ;; Tell PAM about 'slim'.
+       (list (unix-pam-service
+              "slim"
+              #:allow-empty-passwords? allow-empty-passwords?)))))))
 
 
 (define (dmd-configuration-file services etc)
