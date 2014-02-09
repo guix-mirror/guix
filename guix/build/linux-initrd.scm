@@ -318,6 +318,7 @@ to it are lost."
     (if to-load
         (begin
           (format #t "loading '~a'...\n" to-load)
+          (chdir "/root")
           (chroot "/root")
           ;; TODO: Remove /lib, /share, and /loader.go.
           (catch #t
