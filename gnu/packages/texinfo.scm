@@ -50,3 +50,17 @@ package includes both the tools necessary to produce Info documents from
 their source and the command-line Info reader.  The emphasis of the language
 is on expressing the content semantically, avoiding physical markup commands.")
     (license gpl3+)))
+
+(define-public texinfo-4
+  (package (inherit texinfo)
+    (version "4.13a")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnu/texinfo/texinfo-"
+                    version
+                    ".tar.lzma"))
+              (sha256
+               (base32
+                "1rf9ckpqwixj65bw469i634897xwlgkm5i9g2hv3avl6mv7b0a3d"))))
+    (inputs `(("ncurses" ,ncurses) ("xz" ,xz)))))
