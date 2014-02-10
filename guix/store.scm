@@ -732,10 +732,10 @@ is raised if the set of paths read from PORT is not signed (as per
     (= 1 (read-int s))))
 
 (define* (export-paths server paths port #:key (sign? #t))
-  "Export the store paths listed in PATHS to PORT, signing them if SIGN?
-is true."
+  "Export the store paths listed in PATHS to PORT, in topological order,
+signing them if SIGN? is true."
   (let ((s (nix-server-socket server)))
-    (let loop ((paths paths))
+    (let loop ((paths (topologically-sorted server paths)))
       (match paths
         (()
          (write-int 0 port))
