@@ -163,7 +163,7 @@ makefiles."
                              '())
                        ,@(if docdir
                              (list (string-append "--docdir=" docdir
-                                                  "/doc/" (package-name)))
+                                                  "/share/doc/" (package-name)))
                              '())
                        ,@(if target               ; cross building
                              (list (string-append "--host=" target))
