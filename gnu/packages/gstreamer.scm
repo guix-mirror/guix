@@ -43,6 +43,10 @@
        (base32
         "0c0irk85jd2cihm5pmf4zxhlpg08qpxjcqv1l9qn2n3h2gsaj2lf"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; XXX: Temporarily disable tests to work around 'gst/gstbus' test
+     ;; failure: <https://bugzilla.gnome.org/show_bug.cgi?id=724073>.
+     '(#:tests? #f))
     (inputs `(("glib" ,glib)))
     (native-inputs
      `(("bison" ,bison)
@@ -51,8 +55,7 @@
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
     (home-page "http://gstreamer.freedesktop.org/")
-    (synopsis
-     "Multimedia library")
+    (synopsis "Multimedia library")
     (description
      "GStreamer is a library for constructing graphs of media-handling
 components.  The applications it supports range from simple Ogg/Vorbis
