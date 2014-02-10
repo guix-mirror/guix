@@ -234,6 +234,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
   gnu/packages/patches/cdparanoia-fpic.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
+  gnu/packages/patches/coreutils-dummy-man.patch		\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\

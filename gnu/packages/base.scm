@@ -239,14 +239,19 @@ used to apply commands with arbitrarily long arguments.")
                                 version ".tar.xz"))
             (sha256
              (base32
-              "04hjzzv434fb8ak3hh3dyhdvg3hqjjwvjmjxqzk1gh2jh6cr8gjv"))))
+              "04hjzzv434fb8ak3hh3dyhdvg3hqjjwvjmjxqzk1gh2jh6cr8gjv"))
+            (patches (list (search-patch "coreutils-dummy-man.patch")))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)))
    (native-inputs
     ;; Perl is needed to run tests in native builds, and to run the bundled
-    ;; copy of help2man.
-    `(("perl" ,perl)))
+    ;; copy of help2man.  However, don't pass it when cross-compiling since
+    ;; that would lead it to try to run programs to get their '--help' output
+    ;; for help2man.
+    (if (%current-target-system)
+        '()
+        `(("perl" ,perl))))
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early

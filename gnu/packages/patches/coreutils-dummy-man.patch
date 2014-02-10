@@ -1,0 +1,17 @@
+Coreutils commit b3578fc9ffe70b9466687f9f6470a85f1a0ab14f.
+
+   * man/dummy-man: Recognize the option --info-page=... as no-op.
+
+This fixes "dummy-man: too many non-option arguments" when
+cross-compiling.
+
+--- a/man/dummy-man
++++ b/man/dummy-man
+@@ -30,6 +30,7 @@ while test $# -gt 0; do
+     # in the makefile.
+     --include=*);;
+     --include) shift;;
++    --info-page=*);;
+     -*) fatal_ "invalid or unrecognized help2man option '$1'";;
+     --) shift; break;;
+      *) break;;
