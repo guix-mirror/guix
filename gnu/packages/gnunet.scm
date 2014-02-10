@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -213,16 +214,17 @@ supports HTTPS, HTTPS and GnuTLS.")
       (patch-flags '("-p0"))))
    (build-system gnu-build-system)
    (inputs
-    `(("gnutls" ,gnutls)
-      ("glpk" ,glpk)
+    `(("glpk" ,glpk)
+      ("gnurl" ,gnurl)
+      ("gnutls" ,gnutls)
       ("libextractor" ,libextractor)
       ("libgcrypt" ,libgcrypt)
-      ("gnurl" ,gnurl)
       ("libidn" ,libidn)
+      ("libmicrohttpd" ,libmicrohttpd)
+      ("libtool" ,libtool)`
+      ("libunistring" ,libunistring)
       ("openssl" ,openssl)
       ("opus" ,opus)
-      ("libtool" ,libtool)
-      ("libunistring" ,libunistring)
       ("pulseaudio", pulseaudio)
       ("sqlite" ,sqlite)
       ("zlib" ,zlib)))
@@ -231,19 +233,19 @@ supports HTTPS, HTTPS and GnuTLS.")
       ("python" ,python-2)))
    (arguments
     '(#:phases
-       ;; swap check and install phases and set paths to installed binaries
-       (alist-cons-before
-        'check 'set-path-for-check
-        (lambda* (#:key outputs #:allow-other-keys)
-         (let ((out (assoc-ref outputs "out")))
-          (setenv "GNUNET_PREFIX" out)
-          (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))))
-       (alist-cons-after
-        'install 'check
-        (assoc-ref %standard-phases 'check)
-       (alist-delete
-        'check
-       %standard-phases)))))
+        ;; swap check and install phases and set paths to installed binaries
+        (alist-cons-before
+         'check 'set-path-for-check
+         (lambda* (#:key outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out")))
+           (setenv "GNUNET_PREFIX" out)
+           (setenv "PATH" (string-append (getenv "PATH") ":" out "/bin"))))
+         (alist-cons-after
+          'install 'check
+          (assoc-ref %standard-phases 'check)
+          (alist-delete
+           'check
+           %standard-phases)))))
    (synopsis "Anonymous peer-to-peer file-sharing framework")
    (description
     "GNUnet is a framework for secure, peer-to-peer networking.  It works in a
