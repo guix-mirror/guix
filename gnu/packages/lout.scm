@@ -37,14 +37,14 @@
                 (("^LOUTLIBDIR[[:blank:]]*=.*$")
                  (string-append "LOUTLIBDIR = " out "/lib/lout\n"))
                 (("^LOUTDOCDIR[[:blank:]]*=.*$")
-                 (string-append "LOUTDOCDIR = " doc "/doc/lout\n"))
+                 (string-append "LOUTDOCDIR = " doc "/share/doc/lout\n"))
                 (("^MANDIR[[:blank:]]*=.*$")
                  (string-append "MANDIR = " out "/man\n")))
               (mkdir out)
               (mkdir (string-append out "/bin"))
               (mkdir (string-append out "/lib"))
               (mkdir (string-append out "/man"))
-              (mkdir-p (string-append doc "/doc/lout")))))
+              (mkdir-p (string-append doc "/share/doc/lout")))))
         (install-man-phase
          '(lambda* (#:key outputs #:allow-other-keys)
             (zero? (system* "make" "installman"))))
@@ -60,7 +60,7 @@
             (every (lambda (doc)
                      (format #t "doc: building `~a'...~%" doc)
                      (with-directory-excursion doc
-                       (let ((file (string-append out "/doc/lout/"
+                       (let ((file (string-append out "/share/doc/lout/"
                                                   doc ".ps")))
                          (and (or (file-exists? "outfile.ps")
                                   (zero? (system* "lout" "-r4" "-o"
@@ -72,7 +72,7 @@
                                               "-dPDFSETTINGS=/prepress"
                                               "-sPAPERSIZE=a4"
                                               file
-                                              (string-append out "/doc/lout/"
+                                              (string-append out "/share/doc/lout/"
                                                              doc ".pdf")))))))
                    '("design" "expert" "slides" "user")))))
    (package
