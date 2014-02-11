@@ -144,7 +144,10 @@ and support for SSL3 and TLS.")
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "0kpi9wx9lg938b982smjg54acdwswdshs2bzf10sj5r6zmb05ygp"))))
+              "0kpi9wx9lg938b982smjg54acdwswdshs2bzf10sj5r6zmb05ygp"))
+            ;; This patch fixes testcase 172 which uses a hardcoded cookie
+            ;; expiration value which is expired as of Feb 1, 2014.
+            (patches (list (search-patch "curl-fix-test172.patch")))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("libidn" ,libidn)

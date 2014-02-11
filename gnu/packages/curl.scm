@@ -22,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages groff)
@@ -42,7 +43,11 @@
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "13bhfs41yf60ys2hrikqxjwfzaj0gm91kqzsgc5fr4grzmpm38nx"))))
+              "13bhfs41yf60ys2hrikqxjwfzaj0gm91kqzsgc5fr4grzmpm38nx"))
+            (patches
+             ;; This patch fixes testcase 172 which uses a hardcoded cookie
+             ;; expiration value which is expired as of Feb 1, 2014.
+             (list (search-patch "curl-fix-test172.patch")))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)
