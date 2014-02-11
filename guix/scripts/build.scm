@@ -279,11 +279,6 @@ build."
                                  (_ #f))
                                 opts)))
 
-        (unless (assoc-ref opts 'log-file?)
-          (show-what-to-build store drv
-                              #:use-substitutes? (assoc-ref opts 'substitutes?)
-                              #:dry-run? (assoc-ref opts 'dry-run?)))
-
         ;; TODO: Add more options.
         (set-build-options store
                            #:keep-failed? (assoc-ref opts 'keep-failed?)
@@ -293,6 +288,11 @@ build."
                            #:use-build-hook? (assoc-ref opts 'build-hook?)
                            #:max-silent-time (assoc-ref opts 'max-silent-time)
                            #:verbosity (assoc-ref opts 'verbosity))
+
+        (unless (assoc-ref opts 'log-file?)
+          (show-what-to-build store drv
+                              #:use-substitutes? (assoc-ref opts 'substitutes?)
+                              #:dry-run? (assoc-ref opts 'dry-run?)))
 
         (cond ((assoc-ref opts 'log-file?)
                (for-each (lambda (file)
