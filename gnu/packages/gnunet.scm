@@ -221,7 +221,7 @@ supports HTTPS, HTTPS and GnuTLS.")
       ("libgcrypt" ,libgcrypt)
       ("libidn" ,libidn)
       ("libmicrohttpd" ,libmicrohttpd)
-      ("libtool" ,libtool)`
+      ("libtool" ,libtool)
       ("libunistring" ,libunistring)
       ("openssl" ,openssl)
       ("opus" ,opus)
