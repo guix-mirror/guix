@@ -100,8 +100,8 @@
 
 (define %protocol-version #x10c)
 
-(define %worker-magic-1 #x6e697863)
-(define %worker-magic-2 #x6478696f)
+(define %worker-magic-1 #x6e697863)               ; "nixc"
+(define %worker-magic-2 #x6478696f)               ; "dxio"
 
 (define (protocol-major magic)
   (logand magic #xff00))
