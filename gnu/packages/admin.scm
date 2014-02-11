@@ -349,14 +349,14 @@ connection alive.")
 (define-public isc-dhcp
   (package
     (name "isc-dhcp")
-    (version "4.3.0a1")
+    (version "4.3.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://ftp.isc.org/isc/dhcp/"
                                   version "/dhcp-" version ".tar.gz"))
               (sha256
                (base32
-                "0001n26m4488nl95h53wg60sywbli4d246vz2h8lpv70jlrq9q1p"))))
+                "12mydvj6x3zcl3gla06bywfkkrgg03g66fijs94mwb7kbiym3dm7"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
@@ -383,9 +383,9 @@ connection alive.")
 
                      (system* "tar" "xf" "bind.tar.gz")
                      (for-each patch-shebang
-                               (find-files "bind-9.9.5b1" ".*"))
+                               (find-files "bind-9.9.5" ".*"))
                      (zero? (system* "tar" "cf" "bind.tar.gz"
-                                     "bind-9.9.5b1"))))
+                                     "bind-9.9.5"))))
                  (alist-cons-after
                   'install 'post-install
                   (lambda* (#:key inputs outputs #:allow-other-keys)
