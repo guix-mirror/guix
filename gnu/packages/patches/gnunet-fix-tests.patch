@@ -44,3 +44,15 @@ Index: src/gns/test_gns_cname_lookup.sh
  rm -rf /tmp/test-gnunet-gns-peer-1/
  
  TEST_DOMAIN_PLUS="www.gnu"
+Index: src/integration-tests/confs/test_defaults.conf
+===================================================================
+--- src/integration-tests/confs/test_defaults.conf	(revision 32320)
++++ src/integration-tests/confs/test_defaults.conf	(working copy)
+@@ -17,6 +17,7 @@
+ EXTERNAL_ADDRESS = 127.0.0.1
+ INTERNAL_ADDRESS = 127.0.0.1
+ BINDTO = 127.0.0.1
++RETURN_LOCAL_ADDRESSES = YES
+ 
+ [hostlist]
+ SERVERS =

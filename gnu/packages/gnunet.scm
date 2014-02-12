@@ -153,8 +153,9 @@ and support for SSL3 and TLS.")
              ("libidn" ,libidn)
              ("zlib" ,zlib)))
    (native-inputs
-    `(("perl" ,perl)
-      ("groff" ,groff)
+    `(("groff" ,groff)
+      ("perl" ,perl)
+      ("pkg-config" ,pkg-config)
       ("python" ,python-2)))
    (arguments
     `(#:configure-flags '("--enable-ipv6" "--with-gnutls" "--without-libssh2"
@@ -211,7 +212,8 @@ supports HTTPS, HTTPS and GnuTLS.")
         (search-patch "gnunet-fix-scheduler.patch")
         ;; Patch to fix bugs in testcases:
         ;; * Disable peerinfo-tool tests as they depend on reverse DNS lookups
-        ;; * Allow revocation testcase to run on loopback; upstream: #32130
+        ;; * Allow revocation and integration-tests testcases to run on
+        ;;   loopback; upstream: #32130, #32326
         ;; * Skip GNS testcases requiring DNS lookups; upstream: #32118
         (search-patch "gnunet-fix-tests.patch")))
       (patch-flags '("-p0"))))
