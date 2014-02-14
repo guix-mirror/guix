@@ -139,7 +139,15 @@
              (with-directory-excursion out
                (for-each (cut augment-rpath <> lib)
                          (find-files "bin" ".*")))))
-         %standard-phases)))
+         (alist-replace
+          'configure
+          (lambda* (#:key outputs #:allow-other-keys #:rest args)
+            (let ((configure (assoc-ref %standard-phases 'configure)))
+             (substitute* "Lib/subprocess.py"
+               (("args = \\[\"/bin/sh")
+                (string-append "args = [\"" (which "sh"))))
+             (apply configure args)))
+          %standard-phases))))
     (inputs
      `(("bzip2" ,bzip2)
        ("gdbm" ,gdbm)
