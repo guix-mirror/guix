@@ -105,6 +105,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gxmessage.scm			\
   gnu/packages/help2man.scm			\
   gnu/packages/hugs.scm				\
+  gnu/packages/hurd.scm				\
   gnu/packages/icu4c.scm			\
   gnu/packages/idutils.scm			\
   gnu/packages/imagemagick.scm			\
