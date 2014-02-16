@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,72 @@
   #:use-module ((gnu packages base)
                 #:select (tar))
   #:use-module (gnu packages compression))
+
+(define-public ttf-dejavu
+  (package
+    (name "ttf-dejavu")
+    (version "2.34")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/dejavu/"
+                                 version "/dejavu-fonts-ttf-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "0pgb0a3ngamidacmrvasg51ck3gp8gn93w6sf1s8snwzx4x2r9yh"))))
+    (build-system trivial-build-system)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+
+                   (let ((tar      (string-append (assoc-ref %build-inputs
+                                                             "tar")
+                                                  "/bin/tar"))
+                         (PATH     (string-append (assoc-ref %build-inputs
+                                                             "bzip2")
+                                                  "/bin"))
+                         (font-dir (string-append
+                                    %output "/share/fonts/truetype"))
+                         (conf-dir (string-append
+                                    %output "/share/fontconfig/conf.avail"))
+                         (doc-dir  (string-append
+                                    %output "/share/doc/" ,name "-" ,version)))
+                     (setenv "PATH" PATH)
+                     (system* tar "xvf" (assoc-ref %build-inputs "source"))
+
+                     (mkdir-p font-dir)
+                     (mkdir-p conf-dir)
+                     (mkdir-p doc-dir)
+                     (chdir (string-append "dejavu-fonts-ttf-" ,version))
+                     (for-each (lambda (ttf)
+                                 (copy-file ttf
+                                            (string-append font-dir "/"
+                                                           (basename ttf))))
+                               (find-files "ttf" "\\.ttf$"))
+                     (for-each (lambda (conf)
+                                 (copy-file conf
+                                            (string-append conf-dir "/"
+                                                           (basename conf))))
+                               (find-files "fontconfig" "\\.conf$"))
+                     (for-each (lambda (doc)
+                                 (copy-file doc
+                                            (string-append doc-dir "/"
+                                                           (basename doc))))
+                               (find-files "." "\\.txt$|^[A-Z][A-Z]*$"))))))
+    (native-inputs `(("source" ,source)
+                     ("tar" ,tar)
+                     ("bzip2" ,bzip2)))
+    (home-page "http://dejavu-fonts.org/")
+    (synopsis "Vera font family derivate with additional characters")
+    (description "DejaVu provides an expanded version of the Vera font family
+aiming for quality and broader Unicode coverage while retaining the original
+Vera style.  DejaVu currently works towards conformance with the Multilingual
+European Standards (MES-1 and MES-2) for Unicode coverage.  The DejaVu fonts
+provide serif, sans and monospaced variants.")
+    (license
+     (license:x11-style
+      "http://dejavu-fonts.org/"))))
 
 (define-public ttf-bitstream-vera
   (package
