@@ -137,17 +137,13 @@ and support for SSL3 and TLS.")
 (define-public gnurl
   (package
    (name "gnurl")
-   (version "7.34.0")
+   (version "7.35.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "https://gnunet.org/sites/default/files/gnurl-"
                                 version ".tar.bz2"))
             (sha256
-             (base32
-              "0kpi9wx9lg938b982smjg54acdwswdshs2bzf10sj5r6zmb05ygp"))
-            ;; This patch fixes testcase 172 which uses a hardcoded cookie
-            ;; expiration value which is expired as of Feb 1, 2014.
-            (patches (list (search-patch "curl-fix-test172.patch")))))
+             (base32 "0dzj22f5z6ppjj1aq1bml64iwbzzcd8w1qy3bgpk6gnzqslsxknf"))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("libidn" ,libidn)
