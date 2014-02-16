@@ -28,7 +28,7 @@
 (define-public icu4c
   (package
    (name "icu4c")
-   (version "50.1.1")
+   (version "52.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://download.icu-project.org/files/icu4c/"
@@ -37,7 +37,7 @@
                    (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                    "-src.tgz"))
             (sha256 (base32
-                     "13yz0kk6zsgj94idnlr3vbg8iph5z4ly4b4xrd5wfja7q3ijdx56"))))
+                     "14l0kl17nirc34frcybzg0snknaks23abhdxkmsqg3k9sil5wk9g"))))
    (build-system gnu-build-system)
    (inputs
     `(("patchelf" ,patchelf)
@@ -61,7 +61,7 @@
         (lambda* (#:key #:allow-other-keys #:rest args)
          (let ((configure (assoc-ref %standard-phases 'configure)))
            ;; patch out two occurrences of /bin/sh from configure script
-           ;; that might have disappeared in a release later than 50.1.1
+           ;; that might have disappeared in a release later than 52.1
            (substitute* "configure"
              (("`/bin/sh")
              (string-append "`" (which "bash"))))
