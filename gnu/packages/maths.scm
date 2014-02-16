@@ -236,6 +236,36 @@ plotting engine by third-party applications like Octave.")
     (license (license:fsf-free
 	      "http://gnuplot.cvs.sourceforge.net/gnuplot/gnuplot/Copyright"))))
 
+(define-public hdf5
+  (package
+    (name "hdf5")
+    (version "1.8.12")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-"
+                          version ".tar.bz2"))
+      (sha256
+       (base32 "0f9n0v3p3lwc7564791a39c6cn1d3dbrn7d1j3ikqsi27a8hy23d"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+        (alist-replace
+         'configure
+         (lambda* (#:key target system outputs #:allow-other-keys #:rest args)
+           (let ((configure (assoc-ref %standard-phases 'configure)))
+             (substitute* "configure"
+                   (("/bin/mv") "mv"))
+             (apply configure args)))
+         %standard-phases)))
+    (outputs '("out" "bin" "lib" "include"))
+    (home-page "http://www.hdfgroup.org")
+    (synopsis "Management suite for  extremely large and complex data")
+    (description "HDF5 is a suite that makes possible the management of
+extremely large and complex data collections.")
+    (license (license:x11-style "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
+
+
 ;; For a fully featured Octave, users  are strongly recommended also to install
 ;; the following packages: texinfo, less, ghostscript, gnuplot.
 (define-public octave
@@ -260,6 +290,8 @@ plotting engine by third-party applications like Octave.")
        ("fltk" ,fltk)
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
+       ("hdf5-lib" ,hdf5 "lib")
+       ("hdf5-include" ,hdf5 "include")
        ("libxft" ,libxft)
        ("mesa" ,mesa)
        ("zlib" ,zlib)))
