@@ -21,6 +21,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:select (gpl3+ lgpl3+ lgpl2.0+))
+  #:use-module (gnu packages)
   #:use-module (gnu packages m4)
   #:use-module (gnu packages compression))
 
@@ -92,7 +93,8 @@
                    "/patchelf-" version ".tar.bz2"))
              (sha256
               (base32
-               "00bw29vdsscsili65wcb5ay0gvg1w0ljd00sb5xc6br8bylpyzpw"))))
+               "00bw29vdsscsili65wcb5ay0gvg1w0ljd00sb5xc6br8bylpyzpw"))
+             (patches (list (search-patch "patchelf-page-size.patch")))))
     (build-system gnu-build-system)
     (home-page "http://nixos.org/patchelf.html")
     (synopsis "Modify the dynamic linker and RPATH of ELF executables")
