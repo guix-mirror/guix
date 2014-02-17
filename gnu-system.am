@@ -184,6 +184,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/scheme.scm			\
   gnu/packages/screen.scm			\
   gnu/packages/sdl.scm				\
+  gnu/packages/search.scm			\
   gnu/packages/serveez.scm			\
   gnu/packages/shishi.scm			\
   gnu/packages/skribilo.scm			\
