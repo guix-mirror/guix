@@ -71,17 +71,10 @@ Export/import one or more packages from/to the store.\n"))
   -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""))
   (display (_ "
       --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
-  (display (_ "
-  -n, --dry-run          do not build the derivations"))
-  (display (_ "
-      --fallback         fall back to building when the substituter fails"))
-  (display (_ "
-      --no-substitutes   build instead of resorting to pre-built substitutes"))
-  (display (_ "
-      --max-silent-time=SECONDS
-                         mark the build as failed after SECONDS of silence"))
-  (display (_ "
-  -c, --cores=N          allow the use of up to N CPU cores for the build"))
+
+  (newline)
+  (show-build-options-help)
+
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -92,81 +85,60 @@ Export/import one or more packages from/to the store.\n"))
 
 (define %options
   ;; Specifications of the command-line options.
-  (list (option '(#\h "help") #f #f
-                (lambda args
-                  (show-help)
-                  (exit 0)))
-        (option '(#\V "version") #f #f
-                (lambda args
-                  (show-version-and-exit "guix build")))
+  (cons* (option '(#\h "help") #f #f
+                 (lambda args
+                   (show-help)
+                   (exit 0)))
+         (option '(#\V "version") #f #f
+                 (lambda args
+                   (show-version-and-exit "guix build")))
 
-        (option '("export") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'export #t result)))
-        (option '("import") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'import #t result)))
-        (option '("missing") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'missing #t result)))
-        (option '("generate-key") #f #t
-                (lambda (opt name arg result)
-                  (catch 'gcry-error
-                    (lambda ()
-                      (let ((params
-                             (string->canonical-sexp
-                              (or arg "(genkey (rsa (nbits 4:4096)))"))))
-                        (alist-cons 'generate-key params result)))
-                    (lambda args
-                      (leave (_ "invalid key generation parameters: ~s~%")
-                             arg)))))
-        (option '("authorize") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'authorize #t result)))
+         (option '("export") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'export #t result)))
+         (option '("import") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'import #t result)))
+         (option '("missing") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'missing #t result)))
+         (option '("generate-key") #f #t
+                 (lambda (opt name arg result)
+                   (catch 'gcry-error
+                     (lambda ()
+                       (let ((params
+                              (string->canonical-sexp
+                               (or arg "(genkey (rsa (nbits 4:4096)))"))))
+                         (alist-cons 'generate-key params result)))
+                     (lambda args
+                       (leave (_ "invalid key generation parameters: ~s~%")
+                              arg)))))
+         (option '("authorize") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'authorize #t result)))
 
-        (option '(#\S "source") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'source? #t result)))
-        (option '(#\s "system") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'system arg
-                              (alist-delete 'system result eq?))))
-        (option '("target") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'target arg
-                              (alist-delete 'target result eq?))))
-        (option '(#\e "expression") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'expression arg result)))
-        (option '(#\c "cores") #t #f
-                (lambda (opt name arg result)
-                  (let ((c (false-if-exception (string->number arg))))
-                    (if c
-                        (alist-cons 'cores c result)
-                        (leave (_ "~a: not a number~%") arg)))))
-        (option '(#\n "dry-run") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'dry-run? #t result)))
-        (option '("fallback") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'fallback? #t
-                              (alist-delete 'fallback? result))))
-        (option '("no-substitutes") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'substitutes? #f
-                              (alist-delete 'substitutes? result))))
-        (option '("max-silent-time") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'max-silent-time (string->number* arg)
-                              result)))
-        (option '(#\r "root") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'gc-root arg result)))
-        (option '("verbosity") #t #f
-                (lambda (opt name arg result)
-                  (let ((level (string->number arg)))
-                    (alist-cons 'verbosity level
-                                (alist-delete 'verbosity result)))))))
+         (option '(#\S "source") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'source? #t result)))
+         (option '(#\s "system") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'system arg
+                               (alist-delete 'system result eq?))))
+         (option '("target") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'target arg
+                               (alist-delete 'target result eq?))))
+         (option '(#\e "expression") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'expression arg result)))
+         (option '(#\n "dry-run") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'dry-run? #t result)))
+         (option '(#\r "root") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'gc-root arg result)))
+
+         %standard-build-options))
 
 (define (options->derivations+files store opts)
   "Given OPTS, the result of 'args-fold', return a list of derivations to
@@ -219,15 +191,10 @@ build and a list of store files to transfer."
 resulting archive to the standard output port."
   (let-values (((drv files)
                 (options->derivations+files store opts)))
+    (set-build-options-from-command-line store opts)
     (show-what-to-build store drv
                         #:use-substitutes? (assoc-ref opts 'substitutes?)
                         #:dry-run? (assoc-ref opts 'dry-run?))
-
-    (set-build-options store
-                       #:build-cores (or (assoc-ref opts 'cores) 0)
-                       #:fallback? (assoc-ref opts 'fallback?)
-                       #:use-substitutes? (assoc-ref opts 'substitutes?)
-                       #:max-silent-time (assoc-ref opts 'max-silent-time))
 
     (if (or (assoc-ref opts 'dry-run?)
             (build-derivations store drv))
