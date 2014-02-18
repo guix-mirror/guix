@@ -36,14 +36,14 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.28.1")
+   (version "7.35.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "13bhfs41yf60ys2hrikqxjwfzaj0gm91kqzsgc5fr4grzmpm38nx"))
+              "14w5cwh6b1426lxkq6kp6h4vxryr4n7wfrrwhny1r4123q7n8ab9"))
             (patches
              ;; This patch fixes testcase 172 which uses a hardcoded cookie
              ;; expiration value which is expired as of Feb 1, 2014.
