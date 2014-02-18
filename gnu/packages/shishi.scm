@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,9 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages libidn)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -40,8 +44,11 @@
        (base32
         "032qf72cpjdfffq1yq54gz3ahgqf2ijca4vl31sfabmjzq9q370d"))))
     (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs
      `(("gnutls" ,gnutls)
+       ("libidn" ,libidn)
+       ("linux-pam" ,linux-pam)
        ("zlib" ,zlib)
        ;; libgcrypt 1.6 fails because of the following test:
        ;;  #include <gcrypt.h>
