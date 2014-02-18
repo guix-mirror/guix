@@ -31,6 +31,7 @@
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages ssh))
 
 (define-public curl
@@ -59,9 +60,18 @@
      `(("perl" ,perl)
        ;; to enable the --manual option and make test 1026 pass
        ("groff" ,groff)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
    (arguments
-    `(#:configure-flags '("--with-gnutls" "--with-gssapi")))
+    `(#:configure-flags '("--with-gnutls" "--with-gssapi")
+      ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
+      #:phases
+      (alist-cons-before
+       'check 'patch-runtests
+       (lambda _
+           (substitute* "tests/runtests.pl"
+             (("/bin/sh") (which "sh"))))
+       %standard-phases)))
    (synopsis "curl, command line tool for transferring data with URL syntax")
    (description
     "curl is a command line tool for transferring data with URL syntax,
