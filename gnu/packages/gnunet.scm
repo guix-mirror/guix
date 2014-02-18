@@ -167,20 +167,13 @@ and support for SSL3 and TLS.")
                           "--disable-file" "--disable-ftp")
      #:test-target "test"
      #:parallel-tests? #f
-     ;; We have to patch runtests.pl in tests/ directory and add a failing
-     ;; test due to curl->gnurl name change to tests/data/DISABLED
+     ;; We have to patch runtests.pl in tests/ directory
      #:phases
       (alist-cons-before
        'check 'patch-runtests
        (lambda _
-         (with-directory-excursion "tests"
-           (substitute* "runtests.pl"
-             (("/bin/sh")
-              (which "sh")))
-           (let* ((port (open-file "data/DISABLED" "a")))
-             (newline port)
-             (display "1022" port)
-             (close port))))
+         (substitute* "tests/runtests.pl"
+                      (("/bin/sh") (which "sh"))))
        %standard-phases)))
    (synopsis "Microfork of cURL with support for the HTTP/HTTPS/GnuTLS subset of cURL")
    (description
