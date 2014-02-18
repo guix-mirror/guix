@@ -77,6 +77,7 @@ MODULES =					\
   guix/scripts/substitute-binary.scm		\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
+  guix/scripts/system.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 

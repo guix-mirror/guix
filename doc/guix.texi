@@ -2547,8 +2547,9 @@ instantiated.  Then we show how this mechanism can be extended, for
 instance to support new system services.
 
 @menu
-* Using the Configuration System::      Customizing your GNU system.
-* Defining Services::                   Adding new service definitions.
+* Using the Configuration System::  Customizing your GNU system.
+* Invoking guix system::        Instantiating a system configuration.
+* Defining Services::           Adding new service definitions.
 @end menu
 
 @node Using the Configuration System
@@ -2614,13 +2615,12 @@ daemon listening on port 2222, and allowing remote @code{root} logins
 right command-line options, possibly with supporting configuration files
 generated as needed (@pxref{Defining Services}).
 
-@c TODO: update when that command exists
 Assuming the above snippet is stored in the @file{my-system-config.scm}
-file, the (yet unwritten!) @command{guix system --boot
-my-system-config.scm} command instantiates that configuration, and makes
-it the default GRUB boot entry.  The normal way to change the system's
-configuration is by updating this file and re-running the @command{guix
-system} command.
+file, the @command{guix system boot my-system-config.scm} command
+instantiates that configuration, and makes it the default GRUB boot
+entry (@pxref{Invoking guix system}).  The normal way to change the
+system's configuration is by updating this file and re-running the
+@command{guix system} command.
 
 At the Scheme level, the bulk of an @code{operating-system} declaration
 is instantiated with the following monadic procedure (@pxref{The Store
@@ -2634,6 +2634,33 @@ The output of the derivation is a single directory that refers to all
 the packages, configuration files, and other supporting files needed to
 instantiate @var{os}.
 @end deffn
+
+@node Invoking guix system
+@subsection Invoking @code{guix system}
+
+Once you have written an operating system declaration, as seen in the
+previous section, it can be @dfn{instantiated} using the @command{guix
+system} command.  The synopsis is:
+
+@example
+guix system @var{options}@dots{} @var{action} @var{file}
+@end example
+
+@var{file} must be the name of a file containing an
+@code{operating-system} declaration.  @var{action} specifies how the
+operating system is instantiate.  Currently only one value is supported:
+
+@table @code
+@item vm
+@cindex virtual machine
+Build a virtual machine that contain the operating system declared in
+@var{file}, and return a script to run that virtual machine (VM).
+
+The VM shares its store with the host system.
+@end table
+
+@var{options} can contain any of the common build options provided by
+@command{guix build} (@pxref{Invoking guix build}).
 
 
 @node Defining Services
