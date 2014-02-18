@@ -73,6 +73,7 @@
                      (zero?
                       (system* "./configure"
                                (string-append "--cc=" (which "gcc"))
+                               "--disable-debug-info" ; save build space
                                (string-append "--prefix=" out)
                                (string-append "--smbd=" samba
                                               "/sbin/smbd")))))
