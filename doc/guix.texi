@@ -2562,7 +2562,7 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
 
 @findex operating-system
 @lisp
-(use-modules (gnu services base)
+(use-modules (gnu services base)   ; for '%base-services'
              (gnu services ssh)    ; for 'lsh-service'
              (gnu system shadow)   ; for 'user-account'
              (gnu packages base)   ; Coreutils, grep, etc.
@@ -2591,7 +2591,7 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
                    procps psmisc
                    zile less))
    (services (cons (lsh-service #:port 2222 #:allow-root-login? #t)
-                   %standard-services))))
+                   %base-services))))
 @end lisp
 
 This example should be self-describing.  The @code{packages} field lists
@@ -2601,8 +2601,9 @@ visible on the system, for all user accounts---i.e., in every user's
 @code{PATH} environment variable---in addition to the per-user profiles
 (@pxref{Invoking guix package}).
 
+@vindex %base-services
 The @code{services} field lists @dfn{system services} to be made
-available when the system starts.  The @var{%standard-services} list,
+available when the system starts.  The @var{%base-services} list,
 from the @code{(gnu services base)} module, provides the basic services one
 would expect from a GNU system: a login service (mingetty) on each tty,
 syslogd, libc's name service cache daemon (nscd), etc.

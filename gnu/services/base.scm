@@ -32,7 +32,8 @@
             mingetty-service
             nscd-service
             syslog-service
-            guix-service))
+            guix-service
+            %base-services))
 
 ;;; Commentary:
 ;;;
@@ -172,5 +173,19 @@ BUILD-ACCOUNTS user accounts available under BUILD-USER-GID."
                                  (id build-user-gid)
                                  (members (map user-account-name
                                                user-accounts)))))))))
+
+(define %base-services
+  ;; Convenience variable holding the basic services.
+  (let ((motd (text-file "motd" "
+This is the GNU operating system, welcome!\n\n")))
+    (list (mingetty-service "tty1" #:motd motd)
+          (mingetty-service "tty2" #:motd motd)
+          (mingetty-service "tty3" #:motd motd)
+          (mingetty-service "tty4" #:motd motd)
+          (mingetty-service "tty5" #:motd motd)
+          (mingetty-service "tty6" #:motd motd)
+          (syslog-service)
+          (guix-service)
+          (nscd-service))))
 
 ;;; base.scm ends here

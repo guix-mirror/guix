@@ -29,8 +29,6 @@
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
   #:use-module (gnu services base)
-  #:use-module ((gnu services networking)
-                #:select (static-networking-service))
   #:use-module (gnu system grub)
   #:use-module (gnu system shadow)
   #:use-module (gnu system linux)
@@ -107,23 +105,7 @@
   (locale   operating-system-locale)              ; string
 
   (services operating-system-services             ; list of monadic services
-            (default
-              (let ((motd (text-file "motd" "
-This is the GNU operating system, welcome!\n\n")))
-                (list (mingetty-service "tty1" #:motd motd)
-                      (mingetty-service "tty2" #:motd motd)
-                      (mingetty-service "tty3" #:motd motd)
-                      (mingetty-service "tty4" #:motd motd)
-                      (mingetty-service "tty5" #:motd motd)
-                      (mingetty-service "tty6" #:motd motd)
-                      (syslog-service)
-                      (guix-service)
-                      (nscd-service)
-
-                      ;; QEMU networking settings.
-                      (static-networking-service "eth0" "10.0.2.10"
-                                                 #:name-servers '("10.0.2.3")
-                                                 #:gateway "10.0.2.2"))))))
+            (default %base-services)))
 
 
 
