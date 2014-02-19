@@ -227,6 +227,11 @@ directories or regular files."
        (group      (group-file groups))
        (pam.d      (pam-services->directory pam-services))
        (login.defs (text-file "login.defs" "# Empty for now.\n"))
+       (shells     (text-file "shells"            ; used by xterm and others
+                              "\
+/bin/sh
+/run/current-system/bin/sh
+/run/current-system/bin/bash\n"))
        (issue      (text-file "issue" "
 This is an alpha preview of the GNU system.  Welcome.
 
@@ -260,6 +265,7 @@ alias ll='ls -l'
                    ("pam.d" ,(derivation->output-path pam.d))
                    ("login.defs" ,login.defs)
                    ("issue" ,issue)
+                   ("shells" ,shells)
                    ("profile" ,(derivation->output-path bashrc))
                    ("localtime" ,tz-file)
                    ("passwd" ,passwd)
