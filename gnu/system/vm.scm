@@ -44,8 +44,8 @@
   #:use-module (gnu system linux)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu system grub)
-  #:use-module (gnu system dmd)
   #:use-module (gnu system)
+  #:use-module (gnu services)
 
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)

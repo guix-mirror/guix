@@ -36,7 +36,7 @@
     (for-each (lambda (iface)
                 (module-use! module (resolve-interface iface)))
               '((gnu system)
-                (gnu system dmd)
+                (gnu services)
                 (gnu system shadow)))
     module))
 

@@ -70,7 +70,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/fonts.scm			\
   gnu/packages/fontutils.scm			\
   gnu/packages/freeipmi.scm			\
-  gnu/packages/games.scm                        \
+  gnu/packages/games.scm			\
   gnu/packages/gawk.scm				\
   gnu/packages/gcal.scm				\
   gnu/packages/gcc.scm				\
@@ -210,7 +210,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/vpn.scm				\
   gnu/packages/w3m.scm				\
   gnu/packages/wdiff.scm			\
-  gnu/packages/web.scm                          \
+  gnu/packages/web.scm				\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
   gnu/packages/wordnet.scm			\
@@ -223,8 +223,13 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
 						\
+  gnu/services.scm				\
+  gnu/services/base.scm				\
+  gnu/services/dmd.scm				\
+  gnu/services/networking.scm			\
+  gnu/services/xorg.scm				\
+						\
   gnu/system.scm				\
-  gnu/system/dmd.scm				\
   gnu/system/grub.scm				\
   gnu/system/linux.scm				\
   gnu/system/linux-initrd.scm			\
