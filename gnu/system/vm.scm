@@ -414,36 +414,6 @@ such as /etc files."
 ;;; Stand-alone VM image.
 ;;;
 
-(define %demo-operating-system
-  (operating-system
-   (host-name "gnu")
-   (timezone "Europe/Paris")
-   (locale "en_US.UTF-8")
-   (users (list (user-account
-                 (name "guest")
-                 (password "")
-                 (uid 1000) (gid 100)
-                 (comment "Guest of GNU")
-                 (home-directory "/home/guest"))))
-   (packages (list coreutils
-                   bash
-                   guile-2.0
-                   dmd
-                   gcc-final
-                   ld-wrapper                    ; must come before BINUTILS
-                   binutils-final
-                   glibc-final
-                   inetutils
-                   findutils
-                   grep
-                   sed
-                   procps
-                   psmisc
-                   zile
-                   less
-                   tzdata
-                   guix))))
-
 (define (operating-system-build-gid os)
   "Return as a monadic value the group id for build users of OS, or #f."
   (anym %store-monad
@@ -489,7 +459,7 @@ basic contents of the root file system of OS."
               ,@(append-map user-directories
                             (operating-system-users os))))))
 
-(define* (system-qemu-image #:optional (os %demo-operating-system)
+(define* (system-qemu-image os
                             #:key (disk-image-size (* 900 (expt 2 20))))
   "Return the derivation of a QEMU image of DISK-IMAGE-SIZE bytes of the GNU
 system as described by OS."
@@ -505,7 +475,7 @@ system as described by OS."
                  #:inputs-to-copy `(("system" ,os-drv)))))
 
 (define* (system-qemu-image/shared-store
-          #:optional (os %demo-operating-system)
+          os
           #:key (disk-image-size (* 15 (expt 2 20))))
   "Return a derivation that builds a QEMU image of OS that shares its store
 with the host."
@@ -520,7 +490,7 @@ with the host."
                 #:disk-image-size disk-image-size)))
 
 (define* (system-qemu-image/shared-store-script
-          #:optional (os %demo-operating-system)
+          os
           #:key
           (qemu (package (inherit qemu)
                   ;; FIXME/TODO: Use 9p instead of this hack.
