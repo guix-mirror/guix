@@ -226,10 +226,12 @@ components), libgpg-error (centralized GnuPG error values), and libskba
        (base32
         "15h429h6pd67iiv580bjmwbkadpxsdppw0xrqpcm4dvm24jc271d"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+     ;; Needs to be propagated because gpgme.h includes gpg-error.h.
+     `(("libgpg-error" ,libgpg-error)))
     (inputs
      `(("gnupg" ,gnupg)
-       ("libassuan" ,libassuan)
-       ("libgpg-error" ,libgpg-error)))
+       ("libassuan" ,libassuan)))
     (home-page "http://www.gnupg.org/related_software/gpgme/")
     (synopsis "library providing simplified access to GnuPG functionality")
     (description
