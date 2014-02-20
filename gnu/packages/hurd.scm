@@ -20,7 +20,9 @@
   #:use-module (guix licenses)
   #:use-module (guix download)
   #:use-module (guix packages)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages bison))
 
 (define-public gnumach-headers
   (package
@@ -54,4 +56,33 @@
     (synopsis "GNU Mach kernel headers")
     (description
      "Headers of the GNU Mach kernel.")
+    (license gpl2+)))
+
+(define-public mig
+  (package
+    (name "mig")
+    (version "1.4")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/mig/mig-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "1jgzggnbp22sa8z5dilm43zy12vlf1pjxfb3kh13xrfhcay0l97b"))))
+    (build-system gnu-build-system)
+    (inputs `(("gnumach-headers" ,gnumach-headers)))
+    (native-inputs
+     `(("flex" ,flex)
+       ("bison" ,bison)))
+    (arguments `(#:tests? #f))
+    (home-page "http://www.gnu.org/software/hurd/microkernel/mach/mig/gnu_mig.html")
+    (synopsis "Mach 3.0 interface generator for the Hurd")
+    (description
+     "GNU MIG is the GNU distribution of the Mach 3.0 interface generator
+MIG, as maintained by the GNU Hurd developers for the GNU project.
+You need this tool to compile the GNU Mach and GNU Hurd distributions,
+and to compile the GNU C library for the Hurd. Also,you will need it
+for other software in the GNU system that uses Mach-based inter-process
+communication.")
     (license gpl2+)))
