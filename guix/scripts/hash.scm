@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -99,11 +99,6 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                   (alist-cons 'argument arg result))
                 %default-options))
 
-  (define (eof->null x)
-    (if (eof-object? x)
-        #vu8()
-        x))
-
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda
                             (('argument . value)
@@ -117,8 +112,7 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
        (catch 'system-error
          (lambda ()
            (format #t "~a~%"
-                   (call-with-input-file file
-                     (compose fmt sha256 eof->null get-bytevector-all))))
+                   (fmt (call-with-input-file file port-sha256))))
          (lambda args
            (leave (_ "~a~%")
                   (strerror (system-error-errno args))))))
