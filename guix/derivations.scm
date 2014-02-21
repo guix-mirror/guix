@@ -558,11 +558,11 @@ HASH-ALGO, of the derivation NAME.  RECURSIVE? has the same meaning as for
                      #:key
                      (system (%current-system)) (env-vars '())
                      (inputs '()) (outputs '("out"))
-                     hash hash-algo hash-mode recursive?
+                     hash hash-algo recursive?
                      references-graphs
                      local-build?)
   "Build a derivation with the given arguments, and return the resulting
-<derivation> object.  When HASH, HASH-ALGO, and HASH-MODE are given, a
+<derivation> object.  When HASH and HASH-ALGO are given, a
 fixed-output derivation is created---i.e., one whose result is known in
 advance, such as a file download.  If, in addition, RECURSIVE? is true, then
 that fixed output may be an executable file or a directory and HASH must be

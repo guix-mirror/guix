@@ -1486,13 +1486,13 @@ a derivation is the @code{derivation} procedure:
 
 @deffn {Scheme Procedure} derivation @var{store} @var{name} @var{builder} @
   @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
-  [#:recursive? #f] [#:hash-mode #f] [#:inputs '()] [#:env-vars '()] @
+  [#:recursive? #f] [#:inputs '()] [#:env-vars '()] @
   [#:system (%current-system)] [#:references-graphs #f] @
   [#:local-build? #f]
 Build a derivation with the given arguments, and return the resulting
 @code{<derivation>} object.
 
-When @var{hash}, @var{hash-algo}, and @var{hash-mode} are given, a
+When @var{hash} and @var{hash-algo} are given, a
 @dfn{fixed-output derivation} is created---i.e., one whose result is
 known in advance, such as a file download.  If, in addition,
 @var{recursive?} is true, then that fixed output may be an executable
