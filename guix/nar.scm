@@ -177,8 +177,13 @@ sub-directories of FILE as needed."
         ((directory)
          (write-string "type" p)
          (write-string "directory" p)
-         (let ((entries (remove (cut member <> '("." ".."))
-                                (scandir f))))
+         (let* ((select? (negate (cut member <> '("." ".."))))
+
+                ;; 'scandir' defaults to 'string-locale<?' to sort files, but
+                ;; this happens to be case-insensitive (at least in 'en_US'
+                ;; locale on libc 2.18.)  Conversely, we want files to be
+                ;; sorted in a case-sensitive fashion.
+                (entries (scandir f select? string<?)))
            (for-each (lambda (e)
                        (let ((f (string-append f "/" e)))
                          (write-string "entry" p)

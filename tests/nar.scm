@@ -19,10 +19,14 @@
 (define-module (test-nar)
   #:use-module (guix nar)
   #:use-module (guix store)
-  #:use-module ((guix hash) #:select (open-sha256-input-port))
+  #:use-module ((guix hash)
+                #:select (open-sha256-port open-sha256-input-port))
+  #:use-module ((guix packages)
+                #:select (base32))
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -189,6 +193,27 @@
         (output (%make-void-port "w")))
     (write-file input output)
     #t))
+
+(test-equal "write-file puts file in C locale collation order"
+  (base32 "0sfn5r63k88w9ls4hivnvscg82bqg8a0w7955l6xlk4g96jnb2z3")
+  (let ((input (string-append %test-dir ".input")))
+    (dynamic-wind
+      (lambda ()
+        (define (touch file)
+          (call-with-output-file (string-append input "/" file)
+            (const #t)))
+
+        (mkdir input)
+        (touch "B")
+        (touch "Z")
+        (touch "a")
+        (symlink "B" (string-append input "/z")))
+      (lambda ()
+        (let-values (((port get-hash) (open-sha256-port)))
+          (write-file input port)
+          (get-hash)))
+      (lambda ()
+        (rm-rf input)))))
 
 (test-assert "write-file + restore-file"
   (let* ((input  (string-append (dirname (search-path %load-path "guix.scm"))
