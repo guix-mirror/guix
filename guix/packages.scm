@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -106,7 +106,7 @@
   origin make-origin
   origin?
   (uri       origin-uri)                          ; string
-  (method    origin-method)                       ; symbol
+  (method    origin-method)                       ; procedure
   (sha256    origin-sha256)                       ; bytevector
   (file-name origin-file-name (default #f))       ; optional file name
   (patches   origin-patches (default '()))        ; list of file names
