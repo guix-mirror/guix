@@ -1958,6 +1958,19 @@ If the @option{--format} option is not specified, @command{guix hash}
 will output the hash in @code{nix-base32}.  This representation is used
 in the definitions of packages.
 
+@item --recursive
+@itemx -r
+Compute the hash on @var{file} recursively.
+
+In this case, the hash is computed on an archive containing @var{file},
+including its children if it is a directory.  Some of @var{file}'s
+meta-data is part of the archive; for instance, when @var{file} is a
+regular file, the hash is different depending on whether @var{file} is
+executable or not.  Meta-data such as time stamps has no impact on the
+hash (@pxref{Invoking guix archive}).
+@c FIXME: Replace xref above with xref to an ``Archive'' section when
+@c it exists.
+
 @end table
 
 @node Invoking guix refresh

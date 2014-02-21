@@ -195,8 +195,8 @@ sub-directories of FILE as needed."
          (write-string "target" p)
          (write-string (readlink f) p))
         (else
-         (raise (condition (&message (message "ENOSYS"))
-                           (&nar-error)))))
+         (raise (condition (&message (message "unsupported file type"))
+                           (&nar-error (file f) (port port))))))
       (write-string ")" p))))
 
 (define (restore-file port file)
