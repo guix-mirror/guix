@@ -1095,11 +1095,19 @@ the target machine's store.  The @code{--missing} option can help figure
 out which items are missing from the target's store.
 
 Archives are stored in the ``Nix archive'' or ``Nar'' format, which is
-comparable in spirit to `tar'.  When exporting, the daemon digitally
-signs the contents of the archive, and that digital signature is
-appended.  When importing, the daemon verifies the signature and rejects
-the import in case of an invalid signature or if the signing key is not
-authorized.
+comparable in spirit to `tar', but with a few noteworthy differences
+that make it more appropriate for our purposes.  First, rather than
+recording all Unix meta-data for each file, the Nar format only mentions
+the file type (regular, directory, or symbolic link); Unix permissions
+and owner/group are dismissed.  Second, the order in which directory
+entries are stored always follows the order of file names according to
+the C locale collation order.  This makes archive production fully
+deterministic.
+
+When exporting, the daemon digitally signs the contents of the archive,
+and that digital signature is appended.  When importing, the daemon
+verifies the signature and rejects the import in case of an invalid
+signature or if the signing key is not authorized.
 @c FIXME: Add xref to daemon doc about signatures.
 
 The main options are:
