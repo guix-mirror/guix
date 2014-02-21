@@ -298,7 +298,8 @@ format.")
                                   version "/mpc123-" version ".tar.gz"))
               (sha256
                (base32
-                "0sf4pns0245009z6mbxpx7kqy4kwl69bc95wz9v23wgappsvxgy1"))))
+                "0sf4pns0245009z6mbxpx7kqy4kwl69bc95wz9v23wgappsvxgy1"))
+              (patches (list (search-patch "mpc123-initialize-ao.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
