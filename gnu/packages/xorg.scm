@@ -38,7 +38,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
-  #:use-module (gnu packages xml))
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages ncurses))
 
 
 
@@ -4377,7 +4378,10 @@ tracking.")
                                     ; the compiled keyboard maps go?
              (string-append "--with-xkb-bin-directory="
                             (assoc-ref %build-inputs "xkbcomp")
-                            "/bin"))
+                            "/bin")
+
+             ;; For the log file, etc.
+             "--localstatedir=/var")
        #:phases
         (alist-replace
          'configure
@@ -4385,6 +4389,12 @@ tracking.")
            (let ((configure (assoc-ref %standard-phases 'configure)))
              (substitute* (find-files "." "\\.c$")
                (("/bin/sh") (which "sh")))
+
+             ;; Don't try to 'mkdir /var'.
+             (substitute* "hw/xfree86/Makefile.in"
+               (("mkdir(.*)logdir.*")
+                "true\n"))
+
              (apply configure args)))
          %standard-phases)))
     (home-page "http://www.x.org/wiki/")
@@ -4699,4 +4709,45 @@ icccm: Both client and window-manager helpers for ICCCM.")
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
+    (license license:x11)))
+
+(define-public xterm
+  (package
+    (name "xterm")
+    (version "301")
+    (source (origin
+              (method url-fetch)
+              (uri                                ; XXX: constant URL!
+               "http://invisible-island.net/datafiles/release/xterm.tar.gz")
+              (sha256
+               (base32
+                "040rarvv18zg0lk7qy0m3n7gv10mh40jic708wvng01z4rlbpfhz"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--enable-wide-chars" "--enable-256-color"
+                           "--enable-load-vt-fonts" "--enable-i18n"
+                           "--enable-doublechars" "--enable-luit"
+                           "--enable-mini-luit")
+       #:tests? #f))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("luit" ,luit)
+       ("libXft" ,libxft)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("ncurses" ,ncurses)
+       ("libICE" ,libice)
+       ("libSM" ,libsm)
+       ("libX11" ,libx11)
+       ("libXext" ,libxext)
+       ("libXt" ,libxt)
+       ("xproto" ,xproto)
+       ("libXaw" ,libxaw)))
+    (home-page "http://invisible-island.net/xterm")
+    (synopsis "Terminal emulator for the X Window System")
+    (description
+     "The xterm program is a terminal emulator for the X Window System.  It
+provides DEC VT102/VT220 (VTxxx) and Tektronix 4014 compatible terminals for
+programs that cannot use the window system directly.")
     (license license:x11)))

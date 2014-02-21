@@ -112,7 +112,8 @@
   (write-long-long size p)
   (call-with-binary-input-file file
     ;; Use `sendfile' when available (Guile 2.0.8+).
-    (if (compile-time-value (defined? 'sendfile))
+    (if (and (compile-time-value (defined? 'sendfile))
+             (file-port? p))
         (cut sendfile p <> size 0)
         (cut dump <> p size)))
   (write-padding size p))
@@ -176,8 +177,13 @@ sub-directories of FILE as needed."
         ((directory)
          (write-string "type" p)
          (write-string "directory" p)
-         (let ((entries (remove (cut member <> '("." ".."))
-                                (scandir f))))
+         (let* ((select? (negate (cut member <> '("." ".."))))
+
+                ;; 'scandir' defaults to 'string-locale<?' to sort files, but
+                ;; this happens to be case-insensitive (at least in 'en_US'
+                ;; locale on libc 2.18.)  Conversely, we want files to be
+                ;; sorted in a case-sensitive fashion.
+                (entries (scandir f select? string<?)))
            (for-each (lambda (e)
                        (let ((f (string-append f "/" e)))
                          (write-string "entry" p)
@@ -194,8 +200,8 @@ sub-directories of FILE as needed."
          (write-string "target" p)
          (write-string (readlink f) p))
         (else
-         (raise (condition (&message (message "ENOSYS"))
-                           (&nar-error)))))
+         (raise (condition (&message (message "unsupported file type"))
+                           (&nar-error (file f) (port port))))))
       (write-string ")" p))))
 
 (define (restore-file port file)

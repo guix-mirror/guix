@@ -30,6 +30,7 @@
   #:use-module (gnu packages bdb)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages pulseaudio)
@@ -38,7 +39,8 @@
   #:use-module (gnu packages autotools)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python))
 
 (define-public (system->linux-architecture arch)
   "Return the Linux architecture name for ARCH, a Guix system name such as
@@ -146,7 +148,7 @@
     (license gpl2+)))
 
 (define-public linux-libre
-  (let* ((version "3.12")
+  (let* ((version "3.13")
          (build-phase
           '(lambda* (#:key system #:allow-other-keys #:rest args)
              (let ((arch (car (string-split system #\-))))
@@ -161,7 +163,24 @@
                       (format #t "enabling additional modules...~%")
                       (substitute* ".config"
                         (("^# CONFIG_CIFS.*$")
-                         "CONFIG_CIFS=m\n"))
+                         "CONFIG_CIFS=m\n")
+                        (("^# CONFIG_([[:graph:]]*)VIRTIO([[:graph:]]*) .*$"
+                          _ before after)
+                         (string-append "CONFIG_" before "VIRTIO"
+                                        after "=m\n")))
+
+                      ;; XXX: For some reason, some virtio modules need to be
+                      ;; explicitly added.
+                      (let ((port (open-file ".config" "a")))
+                        (display (string-append "CONFIG_NET_9P_VIRTIO=m\n"
+                                                "CONFIG_NET_9P=m\n"
+                                                "CONFIG_9P_FS=m\n"
+                                                "CONFIG_VIRTIO_NET=m\n"
+                                                "CONFIG_VIRTIO_BLK=m\n"
+                                                "CONFIG_VIRTIO_BALLOON=m\n")
+                                 port)
+                        (close-port port))
+
                       (zero? (system* "make" "oldconfig")))
 
                     ;; Call the default `build' phase so `-j' is correctly
@@ -192,7 +211,7 @@
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0drjxm9h2k9bik2mhrqqqi6cm5rn2db647wf0zvb58xldj0zmhb6"))))
+               "15pdizzxnnvpxmdb1lbi01kpingmdvj17b01vzbyjymi4vwfws3f"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
@@ -840,3 +859,64 @@ settings.")
      "Aumix adjusts an audio mixer from X, the console, a terminal,
 the command line or a script.")
     (license gpl2+)))
+
+(define-public iotop
+  (package
+    (name "iotop")
+    (version "0.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://guichaz.free.fr/iotop/files/iotop-"
+                           version ".tar.gz"))
+       (sha256 (base32
+                "1kp8mqg2pbxq4xzpianypadfxcsyfgwcaqgqia6h9fsq6zyh4z0s"))))
+    (build-system python-build-system)
+    (arguments
+     ;; The setup.py script expects python-2.
+     `(#:python ,python-2
+       ;; There are currently no checks in the package.
+       #:tests? #f))
+    (native-inputs `(("python" ,python-2)))
+    (home-page "http://guichaz.free.fr/iotop/")
+    (synopsis
+     "Displays the IO activity of running processes")
+    (description
+     "Iotop is a Python program with a top like user interface to show the
+processes currently causing I/O.")
+    (license gpl2+)))
+
+(define-public fuse
+  (package
+    (name "fuse")
+    (version "2.9.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/fuse/fuse-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "071r6xjgssy8vwdn6m28qq1bqxsd2bphcd2mzhq0grf5ybm87sqb"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("util-linux" ,util-linux)))
+    (arguments
+     '(#:configure-flags (list (string-append "MOUNT_FUSE_PATH="
+                                              (assoc-ref %outputs "out")
+                                              "/sbin")
+                               (string-append "INIT_D_PATH="
+                                              (assoc-ref %outputs "out")
+                                              "/etc/init.d")
+                               (string-append "UDEV_RULES_PATH="
+                                              (assoc-ref %outputs "out")
+                                              "/etc/udev"))))
+    (home-page "http://fuse.sourceforge.net/")
+    (synopsis "Support file systems implemented in user space")
+    (description
+     "As a consequence of its monolithic design, file system code for Linux
+normally goes into the kernel itself---which is not only a robustness issue,
+but also an impediment to system extensibility.  FUSE, for \"file systems in
+user space\", is a kernel module and user-space library that tries to address
+part of this problem by allowing users to run file system implementations as
+user-space processes.")
+    (license (list lgpl2.1                        ; library
+                   gpl2+))))                      ; command-line utilities

@@ -34,6 +34,7 @@ MODULES =					\
   guix/pki.scm					\
   guix/utils.scm				\
   guix/download.scm				\
+  guix/git-download.scm				\
   guix/monads.scm				\
   guix/profiles.scm				\
   guix/serialization.scm			\
@@ -54,6 +55,7 @@ MODULES =					\
   guix/ui.scm					\
   guix/build/download.scm			\
   guix/build/cmake-build-system.scm		\
+  guix/build/git.scm				\
   guix/build/gnome.scm				\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
@@ -77,6 +79,7 @@ MODULES =					\
   guix/scripts/substitute-binary.scm		\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
+  guix/scripts/system.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 

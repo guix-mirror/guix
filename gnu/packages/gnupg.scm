@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -61,14 +62,14 @@ Daemon and possibly more in the future.")
 (define-public libgcrypt
   (package
     (name "libgcrypt")
-    (version "1.6.0")
+    (version "1.6.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnupg/libgcrypt/libgcrypt-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "024plbybsmnxbp39hs92lp6dzvkz2cb70nv69qrwr55d02350bb6"))))
+               "0w10vhpj1r5nq7qm6jp21p1v1vhf37701cw8yilygzzqd7mfzhx1"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("libgpg-error" ,libgpg-error)))
@@ -221,10 +222,12 @@ components), libgpg-error (centralized GnuPG error values), and libskba
        (base32
         "15h429h6pd67iiv580bjmwbkadpxsdppw0xrqpcm4dvm24jc271d"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+     ;; Needs to be propagated because gpgme.h includes gpg-error.h.
+     `(("libgpg-error" ,libgpg-error)))
     (inputs
      `(("gnupg" ,gnupg)
-       ("libassuan" ,libassuan)
-       ("libgpg-error" ,libgpg-error)))
+       ("libassuan" ,libassuan)))
     (home-page "http://www.gnupg.org/related_software/gpgme/")
     (synopsis "library providing simplified access to GnuPG functionality")
     (description
@@ -417,4 +420,38 @@ including tools for signing keys, keyring analysis, and party preparation.
     (description
      "Pinentry provides a console and a GTK+ GUI that allows users to
 enter a passphrase when `gpg' or `gpg2' is run and needs it.")
+    (license gpl2+)))
+
+(define-public paperkey
+  (package
+    (name "paperkey")
+    (version "1.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.jabberwocky.com/"
+                                  "software/paperkey/paperkey-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1yybj8bj68v4lxwpn596b6ismh2fyixw5vlqqg26byrn4d9dfmsv"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (alist-replace
+        'check
+        (lambda* (#:key #:allow-other-keys #:rest args)
+          (let ((check (assoc-ref %standard-phases 'check)))
+            (substitute* '("checks/roundtrip.sh"
+                           "checks/roundtrip-raw.sh")
+              (("/bin/echo") "echo"))
+            (apply check args)))
+        %standard-phases)))
+    (home-page "http://www.jabberwocky.com/software/paperkey/")
+    (synopsis "Backup OpenPGP keys to paper")
+    (description
+     "Paperkey extracts the secret bytes from an OpenPGP (GnuPG, PGP, etc) key
+for printing with paper and ink, which have amazingly long retention
+qualities.  To reconstruct a secret key, you re-enter those
+bytes (whether by hand, OCR, QR code, or the like) and paperkey can use
+them to transform your existing public key into a secret key.")
     (license gpl2+)))

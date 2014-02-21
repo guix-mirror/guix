@@ -1,0 +1,69 @@
+Improve the determination of pageSize in patchelf.cc.
+
+Patch by Mark H Weaver <mhw@netris.org>.
+
+--- patchelf/src/patchelf.cc.orig	1969-12-31 19:00:01.000000000 -0500
++++ patchelf/src/patchelf.cc	2014-02-16 20:15:06.283203125 -0500
+@@ -21,11 +21,19 @@
+ using namespace std;
+ 
+ 
+-#ifdef MIPSEL
+-/* The lemote fuloong 2f kernel defconfig sets a page size of 16KB */
+-const unsigned int pageSize = 4096*4;
+-#else
++/* Note that some platforms support multiple page sizes.  Therefore,
++   it is not enough to query the current page size.  'pageSize' must
++   be the maximum architectural page size for the platform, which is
++   typically defined in the corresponding ABI document.
++
++   XXX FIXME: This won't work when we're cross-compiling.  */
++
++#if defined __MIPSEL__ || defined __MIPSEB__ || defined __aarch64__
++const unsigned int pageSize = 65536;
++#elif defined __x86_64__ || defined __i386__ || defined __arm__
+ const unsigned int pageSize = 4096;
++#else
++# error maximum architectural page size unknown for this platform
+ #endif
+ 
+ 
+--- patchelf/tests/no-rpath.sh.orig	1969-12-31 19:00:01.000000000 -0500
++++ patchelf/tests/no-rpath.sh	2014-02-16 20:44:12.036376953 -0500
+@@ -1,22 +1,22 @@
+ #! /bin/sh -e
+ 
+-rm -rf scratch
+-mkdir -p scratch
++if [ "$(uname -m)" = i686 -a "$(uname -s)" = Linux ]; then
++    rm -rf scratch
++    mkdir -p scratch
+ 
+-cp no-rpath scratch/
++    cp no-rpath scratch/
+ 
+-oldRPath=$(../src/patchelf --print-rpath scratch/no-rpath)
+-if test -n "$oldRPath"; then exit 1; fi
+-../src/patchelf \
+-  --set-interpreter "$(../src/patchelf --print-interpreter ../src/patchelf)" \
+-  --set-rpath /foo:/bar:/xxxxxxxxxxxxxxx scratch/no-rpath
++    oldRPath=$(../src/patchelf --print-rpath scratch/no-rpath)
++    if test -n "$oldRPath"; then exit 1; fi
++    ../src/patchelf \
++      --set-interpreter "$(../src/patchelf --print-interpreter ../src/patchelf)" \
++      --set-rpath /foo:/bar:/xxxxxxxxxxxxxxx scratch/no-rpath
+ 
+-newRPath=$(../src/patchelf --print-rpath scratch/no-rpath)
+-if ! echo "$newRPath" | grep -q '/foo:/bar'; then
+-    echo "incomplete RPATH"
+-    exit 1
+-fi
++    newRPath=$(../src/patchelf --print-rpath scratch/no-rpath)
++    if ! echo "$newRPath" | grep -q '/foo:/bar'; then
++        echo "incomplete RPATH"
++        exit 1
++    fi
+ 
+-if [ "$(uname -m)" = i686 -a "$(uname -s)" = Linux ]; then
+     cd scratch && ./no-rpath
+ fi

@@ -1,0 +1,27 @@
+Allow the configuration file and theme directory to be specified at run time.
+Patch by Eelco Dolstra, from Nixpkgs.
+
+--- slim-1.3.6/app.cpp	2013-10-02 00:38:05.000000000 +0200
++++ slim-1.3.6/app.cpp	2013-10-15 11:02:55.629263422 +0200
+@@ -200,7 +200,9 @@
+ 
+ 	/* Read configuration and theme */
+ 	cfg = new Cfg;
+-	cfg->readConf(CFGFILE);
++	char *cfgfile = getenv("SLIM_CFGFILE");
++	if (!cfgfile) cfgfile = CFGFILE;
++	cfg->readConf(cfgfile);
+ 	string themebase = "";
+ 	string themefile = "";
+ 	string themedir = "";
+@@ -208,7 +210,9 @@
+ 	if (testing) {
+ 		themeName = testtheme;
+ 	} else {
+-		themebase = string(THEMESDIR) + "/";
++		char *themesdir = getenv("SLIM_THEMESDIR");
++		if (!themesdir) themesdir = THEMESDIR;
++		themebase = string(themesdir) + "/";
+ 		themeName = cfg->getOption("current_theme");
+ 		string::size_type pos;
+ 		if ((pos = themeName.find(",")) != string::npos) {

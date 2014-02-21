@@ -12,6 +12,7 @@ guix/scripts/hash.scm
 guix/scripts/pull.scm
 guix/scripts/substitute-binary.scm
 guix/scripts/authenticate.scm
+guix/scripts/system.scm
 guix/gnu-maintenance.scm
 guix/ui.scm
 guix/http-client.scm

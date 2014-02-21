@@ -590,3 +590,22 @@ are easily extensible via inheritance.  You can create user interfaces either
 in code or with the Glade User Interface designer, using libglademm.  There's
 extensive documentation, including API reference and a tutorial.")
     (license license:lgpl2.1+)))
+
+
+(define-public gtkmm-2
+  (package (inherit gtkmm)
+    (version "2.24.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnome/sources/gtkmm/"
+                                 (string-take version 4) "/gtkmm-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "0gcm91sc1a05c56kzh74l370ggj0zz8nmmjvjaaxgmhdq8lpl369"))))
+    (propagated-inputs
+     `(("pangomm" ,pangomm)
+       ("cairomm" ,cairomm)
+       ("atkmm" ,atkmm)
+       ("gtk+" ,gtk+-2)
+       ("glibmm" ,glibmm)))))

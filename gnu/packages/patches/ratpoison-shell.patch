@@ -1,0 +1,91 @@
+Use $SHELL instead of hardcoding /bin/sh in ratpoison.
+
+Patch by Mark H Weaver <mhw@netris.org>.
+
+--- ratpoison/src/actions.c.orig	2013-04-06 21:37:43.000000000 -0400
++++ ratpoison/src/actions.c	2014-02-13 00:34:10.992553710 -0500
+@@ -19,6 +19,7 @@
+  */
+ 
+ #include <unistd.h>
++#include <stdlib.h>
+ #include <ctype.h>		/* for isspace */
+ #include <sys/wait.h>
+ #include <X11/keysym.h>
+@@ -223,12 +223,12 @@
+   add_command ("escape",        cmd_escape,     1, 1, 1,
+                "Key: ", arg_KEY);
+   add_command ("exec",          cmd_exec,       1, 1, 1,
+-               "/bin/sh -c ", arg_SHELLCMD);
++               "$SHELL -c ", arg_SHELLCMD);
+   add_command ("execa",		cmd_execa,	1, 1, 1, 
+-	       "/bin/sh -c ", arg_SHELLCMD);
++	       "$SHELL -c ", arg_SHELLCMD);
+   add_command ("execf",		cmd_execf,	2, 2, 2, 
+ 	       "frame to execute in:", arg_FRAME,
+-	       "/bin/sh -c ", arg_SHELLCMD);
++	       "$SHELL -c ", arg_SHELLCMD);
+   add_command ("fdump",         cmd_fdump,      1, 0, 0,
+                "", arg_NUMBER);
+   add_command ("focus",         cmd_next_frame, 0, 0, 0);
+@@ -359,7 +359,7 @@
+   add_command ("unsetenv",      cmd_unsetenv,   1, 1, 1,
+                "Variable: ", arg_STRING);
+   add_command ("verbexec",      cmd_verbexec,   1, 1, 1,
+-               "/bin/sh -c ", arg_SHELLCMD);
++               "$SHELL -c ", arg_SHELLCMD);
+   add_command ("version",       cmd_version,    0, 0, 0);
+   add_command ("vsplit",        cmd_v_split,    1, 0, 0,
+                "Split: ", arg_STRING);
+@@ -2627,6 +2627,9 @@
+   pid = fork();
+   if (pid == 0)
+     {
++      char *shell_path;
++      char *shell_name;
++
+       /* Some process setup to make sure the spawned process runs
+          in its own session. */
+       putenv(current_screen()->display_string);
+@@ -2641,7 +2644,18 @@
+       /* raw means don't run it through sh.  */
+       if (raw)
+         execl (cmd, cmd, NULL);
+-      execl("/bin/sh", "sh", "-c", cmd, NULL);
++
++      shell_path = getenv ("SHELL");
++      if (shell_path == NULL)
++        shell_path = "/bin/sh";
++
++      shell_name = strrchr (shell_path, '/');
++      if (shell_name == NULL)
++        shell_name = shell_path;
++      else
++        shell_name++;
++
++      execl(shell_path, shell_name, "-c", cmd, NULL);
+       _exit(EXIT_FAILURE);
+     }
+ 
+--- ratpoison/src/events.c.orig	2013-04-06 20:05:48.000000000 -0400
++++ ratpoison/src/events.c	2014-02-13 00:34:39.327758789 -0500
+@@ -920,7 +920,7 @@
+             {
+               /* Report any child that didn't return 0. */
+               if (cur->status != 0)
+-                marked_message_printf (0,0, "/bin/sh -c \"%s\" finished (%d)",
++                marked_message_printf (0,0, "$SHELL -c \"%s\" finished (%d)",
+                                        cur->cmd, cur->status);
+               list_del  (&cur->node);
+               free (cur->cmd);
+--- ratpoison/src/messages.h.orig	2012-07-20 20:25:33.000000000 -0400
++++ ratpoison/src/messages.h	2014-02-13 00:34:28.608398437 -0500
+@@ -41,7 +41,7 @@
+ 
+ #define MESSAGE_PROMPT_SWITCH_TO_WINDOW "Switch to window: "
+ #define MESSAGE_PROMPT_NEW_WINDOW_NAME  "Set window's title to: "
+-#define MESSAGE_PROMPT_SHELL_COMMAND    "/bin/sh -c "
++#define MESSAGE_PROMPT_SHELL_COMMAND    "$SHELL -c "
+ #define MESSAGE_PROMPT_COMMAND          ":"
+ #define MESSAGE_PROMPT_SWITCH_WM        "Switch to wm: "
+ #define MESSAGE_PROMPT_XTERM_COMMAND    MESSAGE_PROMPT_SHELL_COMMAND TERM_PROG " -e "

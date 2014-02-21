@@ -1,0 +1,19 @@
+Description: Zero ao_sample_format structure to cope with libao 1.0.0
+Author: Colin Watson <cjwatson@debian.org>
+Bug-Debian: http://bugs.debian.org/591396
+Bug-Ubuntu: https://bugs.launchpad.net/bugs/710268
+Forwarded: no
+Last-Update: 2013-05-07
+
+Index: b/ao.c
+===================================================================
+--- a/ao.c
++++ b/ao.c
+@@ -123,6 +123,7 @@
+ 
+   /* initialize ao_format struct */
+   /* XXX VERY WRONG */
++  memset(&ao_fmt, 0, sizeof(ao_fmt));
+   ao_fmt.bits=16;       /*tmp_stream_info.average_bitrate;*/
+   ao_fmt.rate=streaminfo->sample_freq;
+   ao_fmt.channels=streaminfo->channels;

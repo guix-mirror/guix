@@ -34,6 +34,11 @@
   #:use-module (srfi srfi-37)
   #:autoload   (gnu packages) (find-best-packages-by-name)
   #:export (derivation-from-expression
+
+            %standard-build-options
+            set-build-options-from-command-line
+            show-build-options-help
+
             guix-build))
 
 (define (derivation-from-expression store str package-derivation
@@ -101,6 +106,79 @@ present, return the preferred newest version."
 
 
 ;;;
+;;; Standard command-line build options.
+;;;
+
+(define (show-build-options-help)
+  "Display on the current output port help about the standard command-line
+options handled by 'set-build-options-from-command-line', and listed in
+'%standard-build-options'."
+  (display (_ "
+  -K, --keep-failed      keep build tree of failed builds"))
+  (display (_ "
+  -n, --dry-run          do not build the derivations"))
+  (display (_ "
+      --fallback         fall back to building when the substituter fails"))
+  (display (_ "
+      --no-substitutes   build instead of resorting to pre-built substitutes"))
+  (display (_ "
+      --no-build-hook    do not attempt to offload builds via the build hook"))
+  (display (_ "
+      --max-silent-time=SECONDS
+                         mark the build as failed after SECONDS of silence"))
+  (display (_ "
+      --verbosity=LEVEL  use the given verbosity LEVEL"))
+  (display (_ "
+  -c, --cores=N          allow the use of up to N CPU cores for the build")))
+
+(define (set-build-options-from-command-line store opts)
+  "Given OPTS, an alist as returned by 'args-fold' given
+'%standard-build-options', set the corresponding build options on STORE."
+  ;; TODO: Add more options.
+  (set-build-options store
+                     #:keep-failed? (assoc-ref opts 'keep-failed?)
+                     #:build-cores (or (assoc-ref opts 'cores) 0)
+                     #:fallback? (assoc-ref opts 'fallback?)
+                     #:use-substitutes? (assoc-ref opts 'substitutes?)
+                     #:use-build-hook? (assoc-ref opts 'build-hook?)
+                     #:max-silent-time (assoc-ref opts 'max-silent-time)
+                     #:verbosity (assoc-ref opts 'verbosity)))
+
+(define %standard-build-options
+  ;; List of standard command-line options for tools that build something.
+  (list (option '(#\K "keep-failed") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'keep-failed? #t result)))
+        (option '("fallback") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'fallback? #t
+                              (alist-delete 'fallback? result))))
+        (option '("no-substitutes") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'substitutes? #f
+                              (alist-delete 'substitutes? result))))
+        (option '("no-build-hook") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'build-hook? #f
+                              (alist-delete 'build-hook? result))))
+        (option '("max-silent-time") #t #f
+                (lambda (opt name arg result)
+                  (alist-cons 'max-silent-time (string->number* arg)
+                              result)))
+        (option '("verbosity") #t #f
+                (lambda (opt name arg result)
+                  (let ((level (string->number arg)))
+                    (alist-cons 'verbosity level
+                                (alist-delete 'verbosity result)))))
+        (option '(#\c "cores") #t #f
+                (lambda (opt name arg result)
+                  (let ((c (false-if-exception (string->number arg))))
+                    (if c
+                        (alist-cons 'cores c result)
+                        (leave (_ "~a: not a number~%") arg)))))))
+
+
+;;;
 ;;; Command-line options.
 ;;;
 
@@ -126,27 +204,12 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
   -d, --derivations      return the derivation paths of the given packages"))
   (display (_ "
-  -K, --keep-failed      keep build tree of failed builds"))
-  (display (_ "
-  -n, --dry-run          do not build the derivations"))
-  (display (_ "
-      --fallback         fall back to building when the substituter fails"))
-  (display (_ "
-      --no-substitutes   build instead of resorting to pre-built substitutes"))
-  (display (_ "
-      --no-build-hook    do not attempt to offload builds via the build hook"))
-  (display (_ "
-      --max-silent-time=SECONDS
-                         mark the build as failed after SECONDS of silence"))
-  (display (_ "
-  -c, --cores=N          allow the use of up to N CPU cores for the build"))
-  (display (_ "
   -r, --root=FILE        make FILE a symlink to the result, and register it
                          as a garbage collector root"))
   (display (_ "
-      --verbosity=LEVEL  use the given verbosity LEVEL"))
-  (display (_ "
       --log-file         return the log file names for the given derivations"))
+  (newline)
+  (show-build-options-help)
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -157,70 +220,42 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
 
 (define %options
   ;; Specifications of the command-line options.
-  (list (option '(#\h "help") #f #f
-                (lambda args
-                  (show-help)
-                  (exit 0)))
-        (option '(#\V "version") #f #f
-                (lambda args
-                  (show-version-and-exit "guix build")))
+  (cons* (option '(#\h "help") #f #f
+                 (lambda args
+                   (show-help)
+                   (exit 0)))
+         (option '(#\V "version") #f #f
+                 (lambda args
+                   (show-version-and-exit "guix build")))
 
-        (option '(#\S "source") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'source? #t result)))
-        (option '(#\s "system") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'system arg
-                              (alist-delete 'system result eq?))))
-        (option '("target") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'target arg
-                              (alist-delete 'target result eq?))))
-        (option '(#\d "derivations") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'derivations-only? #t result)))
-        (option '(#\e "expression") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'expression arg result)))
-        (option '(#\K "keep-failed") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'keep-failed? #t result)))
-        (option '(#\c "cores") #t #f
-                (lambda (opt name arg result)
-                  (let ((c (false-if-exception (string->number arg))))
-                    (if c
-                        (alist-cons 'cores c result)
-                        (leave (_ "~a: not a number~%") arg)))))
-        (option '(#\n "dry-run") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'dry-run? #t result)))
-        (option '("fallback") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'fallback? #t
-                              (alist-delete 'fallback? result))))
-        (option '("no-substitutes") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'substitutes? #f
-                              (alist-delete 'substitutes? result))))
-        (option '("no-build-hook") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'build-hook? #f
-                              (alist-delete 'build-hook? result))))
-        (option '("max-silent-time") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'max-silent-time (string->number* arg)
-                              result)))
-        (option '(#\r "root") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'gc-root arg result)))
-        (option '("verbosity") #t #f
-                (lambda (opt name arg result)
-                  (let ((level (string->number arg)))
-                    (alist-cons 'verbosity level
-                                (alist-delete 'verbosity result)))))
-        (option '("log-file") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'log-file? #t result)))))
+         (option '(#\S "source") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'source? #t result)))
+         (option '(#\s "system") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'system arg
+                               (alist-delete 'system result eq?))))
+         (option '("target") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'target arg
+                               (alist-delete 'target result eq?))))
+         (option '(#\d "derivations") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'derivations-only? #t result)))
+         (option '(#\e "expression") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'expression arg result)))
+         (option '(#\n "dry-run") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'dry-run? #t result)))
+         (option '(#\r "root") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'gc-root arg result)))
+         (option '("log-file") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'log-file? #t result)))
+
+         %standard-build-options))
 
 (define (options->derivations store opts)
   "Given OPTS, the result of 'args-fold', return a list of derivations to
@@ -279,20 +314,11 @@ build."
                                  (_ #f))
                                 opts)))
 
+        (set-build-options-from-command-line store opts)
         (unless (assoc-ref opts 'log-file?)
           (show-what-to-build store drv
                               #:use-substitutes? (assoc-ref opts 'substitutes?)
                               #:dry-run? (assoc-ref opts 'dry-run?)))
-
-        ;; TODO: Add more options.
-        (set-build-options store
-                           #:keep-failed? (assoc-ref opts 'keep-failed?)
-                           #:build-cores (or (assoc-ref opts 'cores) 0)
-                           #:fallback? (assoc-ref opts 'fallback?)
-                           #:use-substitutes? (assoc-ref opts 'substitutes?)
-                           #:use-build-hook? (assoc-ref opts 'build-hook?)
-                           #:max-silent-time (assoc-ref opts 'max-silent-time)
-                           #:verbosity (assoc-ref opts 'verbosity))
 
         (cond ((assoc-ref opts 'log-file?)
                (for-each (lambda (file)

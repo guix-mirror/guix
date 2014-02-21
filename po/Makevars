@@ -6,7 +6,7 @@ subdir = po
 top_builddir = ..
 
 # These options get passed to xgettext.  We want to catch standard
-# gettext uses, package synopses and descriptions, and SRFI-34 error
+# gettext uses, package synopses and descriptions, and SRFI-35 error
 # condition messages.
 XGETTEXT_OPTIONS =				\
   --language=Scheme --from-code=UTF-8		\

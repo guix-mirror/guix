@@ -27,15 +27,16 @@
 (define-public gnu-pw-mgr
   (package
     (name "gnu-pw-mgr")
-    (version "1.0")
+    (version "1.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnu/gnu-pw-mgr/gnu-pw-mgr-"
+      (uri (string-append "mirror://gnu/gnu-pw-mgr/gpw-"
+                          version "/gnu-pw-mgr-"
                           version ".tar.gz"))
       (sha256
        (base32
-        "0sn9gzngqkrv74iwxzn5ldqx3w73w9paldcdh8rsv9yvgarv2bm4"))))
+        "1nqkwjsdcif51d1s4dizr1ifx0qpmkjzvi375vc27dwbav4dwalx"))))
     (build-system gnu-build-system)
     (inputs `(("which" ,which)))
     (home-page "http://www.gnu.org/software/gnu-pw-mgr/")

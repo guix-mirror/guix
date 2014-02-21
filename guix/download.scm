@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -108,7 +108,10 @@
        "ftp://gd.tuwien.ac.at/pub/infosys/servers/http/apache/dist/"
        "http://apache.belnet.be/"
        "http://mirrors.ircam.fr/pub/apache/"
-       "http://apache-mirror.rbc.ru/pub/apache/")
+       "http://apache-mirror.rbc.ru/pub/apache/"
+
+       ;; As a last resort, try the archive.
+       "http://archive.apache.org/dist/")
       (xorg               ; from http://www.x.org/wiki/Releases/Download
        "http://www.x.org/releases/" ; main mirrors
        "ftp://mirror.csclub.uwaterloo.ca/x.org/" ; North America

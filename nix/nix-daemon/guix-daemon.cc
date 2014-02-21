@@ -30,6 +30,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <strings.h>
 #include <exception>
 
 /* Variables used by `nix-daemon.cc'.  */
@@ -68,6 +69,8 @@ builds derivations on behalf of its clients.";
 #define GUIX_OPT_LISTEN 11
 #define GUIX_OPT_NO_SUBSTITUTES 12
 #define GUIX_OPT_NO_BUILD_HOOK 13
+#define GUIX_OPT_GC_KEEP_OUTPUTS 14
+#define GUIX_OPT_GC_KEEP_DERIVATIONS 15
 
 static const struct argp_option options[] =
   {
@@ -111,12 +114,36 @@ static const struct argp_option options[] =
       " (this option has no effect in this configuration)"
 #endif
     },
+    { "gc-keep-outputs", GUIX_OPT_GC_KEEP_OUTPUTS,
+      "yes/no", OPTION_ARG_OPTIONAL,
+      "Tell whether the GC must keep outputs of live derivations" },
+    { "gc-keep-derivations", GUIX_OPT_GC_KEEP_DERIVATIONS,
+      "yes/no", OPTION_ARG_OPTIONAL,
+      "Tell whether the GC must keep derivations corresponding \
+to live outputs" },
+
     { "listen", GUIX_OPT_LISTEN, "SOCKET", 0,
       "Listen for connections on SOCKET" },
     { "debug", GUIX_OPT_DEBUG, 0, 0,
       "Produce debugging output" },
     { 0, 0, 0, 0, 0 }
   };
+
+
+/* Convert ARG to a Boolean value, or throw an error if it does not denote a
+   Boolean.  */
+static bool
+string_to_bool (const char *arg, bool dflt = true)
+{
+  if (arg == NULL)
+    return dflt;
+  else if (strcasecmp (arg, "yes") == 0)
+    return true;
+  else if (strcasecmp (arg, "no") == 0)
+    return false;
+  else
+    throw nix::Error (format ("'%1%': invalid Boolean value") % arg);
+}
 
 /* Parse a single option. */
 static error_t
@@ -167,6 +194,12 @@ parse_opt (int key, char *arg, struct argp_state *state)
       break;
     case GUIX_OPT_DEBUG:
       verbosity = lvlDebug;
+      break;
+    case GUIX_OPT_GC_KEEP_OUTPUTS:
+      settings.gcKeepOutputs = string_to_bool (arg);
+      break;
+    case GUIX_OPT_GC_KEEP_DERIVATIONS:
+      settings.gcKeepDerivations = string_to_bool (arg);
       break;
     case 'c':
       settings.buildCores = atoi (arg);

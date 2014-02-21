@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -103,21 +103,26 @@ single leaf."
       (leaf leaf))))
 
 (define (file=? file1 file2)
-  "Return #t if the contents of FILE1 and FILE2 are identical, #f otherwise."
-  (and (= (stat:size (stat file1)) (stat:size (stat file2)))
-       (call-with-input-file file1
-         (lambda (port1)
-           (call-with-input-file file2
-             (lambda (port2)
-               (define len 8192)
-               (define buf1 (make-bytevector len))
-               (define buf2 (make-bytevector len))
-               (let loop ()
-                 (let ((n1 (get-bytevector-n! port1 buf1 0 len))
-                       (n2 (get-bytevector-n! port2 buf2 0 len)))
-                   (and (equal? n1 n2)
-                        (or (eof-object? n1)
-                            (loop)))))))))))
+  "Return #t if FILE1 and FILE2 are regular files and their contents are
+identical, #f otherwise."
+  (let ((st1 (stat file1))
+        (st2 (stat file2)))
+    (and (eq? (stat:type st1) 'regular)
+         (eq? (stat:type st2) 'regular)
+         (= (stat:size st1) (stat:size st2))
+         (call-with-input-file file1
+           (lambda (port1)
+             (call-with-input-file file2
+               (lambda (port2)
+                 (define len 8192)
+                 (define buf1 (make-bytevector len))
+                 (define buf2 (make-bytevector len))
+                 (let loop ()
+                   (let ((n1 (get-bytevector-n! port1 buf1 0 len))
+                         (n2 (get-bytevector-n! port2 buf2 0 len)))
+                     (and (equal? n1 n2)
+                          (or (eof-object? n1)
+                              (loop))))))))))))
 
 (define* (union-build output directories
                       #:key (log-port (current-error-port)))

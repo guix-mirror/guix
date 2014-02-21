@@ -28,19 +28,19 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses)
-		#:renamer (symbol-prefix-proc 'license:)))
+  #:renamer (symbol-prefix-proc 'license:)))
 
 (define-public ncdc
   (package
     (name "ncdc")
-    (version "1.18.1")
+    (version "1.19")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://dev.yorhel.nl/download/ncdc-" version
-			   ".tar.gz"))
+                           ".tar.gz"))
        (sha256 (base32
-		"11c6z9c3vv2vg01q02r53m28q3cx6x66j1l63f1mbk1crlqpf9fc"))))
+                "1wgvqwfxq9kc729h2r528n55821w87sfbm4h21mr6pvkpfw30hf2"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,bzip2)

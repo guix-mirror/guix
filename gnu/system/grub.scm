@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -41,7 +41,7 @@
   (linux           menu-entry-linux)
   (linux-arguments menu-entry-linux-arguments
                    (default '()))
-  (initrd          menu-entry-initrd))
+  (initrd          menu-entry-initrd))            ; file name of the initrd
 
 (define* (grub-configuration-file entries
                                   #:key (default-entry 1) (timeout 5)
@@ -66,10 +66,7 @@ search.file ~a~%"
     (match-lambda
      (($ <menu-entry> label linux arguments initrd)
       (mlet %store-monad ((linux  (package-file linux "bzImage"
-                                                #:system system))
-                          (initrd (package-file initrd "initrd"
                                                 #:system system)))
-        ;; XXX: Assume that INITRD is a directory containing an 'initrd' file.
         (return (format #f "menuentry ~s {
   linux ~a ~a
   initrd ~a

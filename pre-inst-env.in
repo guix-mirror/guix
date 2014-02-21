@@ -45,7 +45,10 @@ NIX_ROOT_FINDER="$abs_top_builddir/nix/scripts/list-runtime-roots"
 NIX_SUBSTITUTERS="$abs_top_builddir/nix/scripts/substitute-binary"
 NIX_SETUID_HELPER="$abs_top_builddir/nix-setuid-helper"
 NIX_BUILD_HOOK="$abs_top_builddir/nix/scripts/offload"
-export NIX_ROOT_FINDER NIX_SETUID_HELPER NIX_SUBSTITUTERS NIX_BUILD_HOOK
+NIX_LIBEXEC_DIR="@abs_top_builddir@/nix/scripts" # for 'guix-authenticate'
+
+export NIX_ROOT_FINDER NIX_SETUID_HELPER NIX_SUBSTITUTERS	\
+    NIX_BUILD_HOOK NIX_LIBEXEC_DIR
 
 # The 'guix-register' program.
 GUIX_REGISTER="$abs_top_builddir/guix-register"

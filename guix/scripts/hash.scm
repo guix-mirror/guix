@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -20,12 +20,14 @@
 (define-module (guix scripts hash)
   #:use-module (guix base32)
   #:use-module (guix hash)
+  #:use-module (guix nar)
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (rnrs io ports)
   #:use-module (rnrs files)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:export (guix-hash))
@@ -43,10 +45,12 @@
   (display (_ "Usage: guix hash [OPTION] FILE
 Return the cryptographic hash of FILE.
 
-Supported formats: 'nix-base32' (default), 'base32', and 'base16'
-('hex' and 'hexadecimal' can be used as well).\n"))
+Supported formats: 'nix-base32' (default), 'base32', and 'base16' ('hex'
+and 'hexadecimal' can be used as well).\n"))
   (format #t (_ "
   -f, --format=FMT       write the hash in the given format"))
+  (format #t (_ "
+  -r, --recursive        compute the hash on FILE recursively"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -73,6 +77,9 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
 
                   (alist-cons 'format fmt-proc
                               (alist-delete 'format result))))
+        (option '(#\r "recursive") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'recursive? #t result)))
 
         (option '(#\h "help") #f #f
                 (lambda args
@@ -99,11 +106,6 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                   (alist-cons 'argument arg result))
                 %default-options))
 
-  (define (eof->null x)
-    (if (eof-object? x)
-        #vu8()
-        x))
-
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda
                             (('argument . value)
@@ -112,13 +114,22 @@ Supported formats: 'nix-base32' (default), 'base32', and 'base16'
                            (reverse opts)))
          (fmt  (assq-ref opts 'format)))
 
+    (define (file-hash file)
+      ;; Compute the hash of FILE.
+      ;; Catch and gracefully report possible '&nar-error' conditions.
+      (with-error-handling
+        (if (assoc-ref opts 'recursive?)
+            (let-values (((port get-hash) (open-sha256-port)))
+              (write-file file port)
+              (flush-output-port port)
+              (get-hash))
+            (call-with-input-file file port-sha256))))
+
     (match args
       ((file)
        (catch 'system-error
          (lambda ()
-           (format #t "~a~%"
-                   (call-with-input-file file
-                     (compose fmt sha256 eof->null get-bytevector-all))))
+           (format #t "~a~%" (fmt (file-hash file))))
          (lambda args
            (leave (_ "~a~%")
                   (strerror (system-error-errno args))))))

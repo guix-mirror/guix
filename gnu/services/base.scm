@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,74 +16,31 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu system dmd)
-  #:use-module (guix store)
-  #:use-module (guix packages)
-  #:use-module (guix derivations)
-  #:use-module (guix records)
+(define-module (gnu services base)
+  #:use-module (gnu services)
+  #:use-module (gnu system shadow)                ; 'user-account', etc.
+  #:use-module (gnu system linux)                 ; 'pam-service', etc.
+  #:use-module (gnu packages admin)
   #:use-module ((gnu packages base)
                 #:select (glibc-final))
-  #:use-module ((gnu packages admin)
-                #:select (mingetty inetutils shadow))
-  #:use-module ((gnu packages package-management)
-                #:select (guix))
-  #:use-module ((gnu packages linux)
-                #:select (net-tools))
-  #:use-module (gnu system shadow)                ; for user accounts/groups
-  #:use-module (gnu system linux)                 ; for PAM services
-  #:use-module (ice-9 match)
-  #:use-module (ice-9 format)
+  #:use-module (gnu packages package-management)
+  #:use-module (guix monads)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
-  #:use-module (guix monads)
-  #:export (service?
-            service
-            service-provision
-            service-requirement
-            service-respawn?
-            service-start
-            service-stop
-            service-inputs
-            service-user-accounts
-            service-user-groups
-            service-pam-services
-
-            host-name-service
-            syslog-service
+  #:use-module (ice-9 format)
+  #:export (host-name-service
             mingetty-service
             nscd-service
+            syslog-service
             guix-service
-            static-networking-service
-
-            dmd-configuration-file))
+            %base-services))
 
 ;;; Commentary:
 ;;;
-;;; System services as cajoled by dmd.
+;;; Base system services---i.e., services that 99% of the users will want to
+;;; use.
 ;;;
 ;;; Code:
-
-(define-record-type* <service>
-  service make-service
-  service?
-  (documentation service-documentation            ; string
-                 (default "[No documentation.]"))
-  (provision     service-provision)               ; list of symbols
-  (requirement   service-requirement              ; list of symbols
-                 (default '()))
-  (respawn?      service-respawn?                 ; Boolean
-                 (default #t))
-  (start         service-start)                   ; expression
-  (stop          service-stop                     ; expression
-                 (default #f))
-  (inputs        service-inputs                   ; list of inputs
-                 (default '()))
-  (user-accounts service-user-accounts            ; list of <user-account>
-                 (default '()))
-  (user-groups   service-user-groups              ; list of <user-groups>
-                 (default '()))
-  (pam-services  service-pam-services             ; list of <pam-service>
-                 (default '())))
 
 (define (host-name-service name)
   "Return a service that sets the host name to NAME."
@@ -217,100 +174,18 @@ BUILD-ACCOUNTS user accounts available under BUILD-USER-GID."
                                  (members (map user-account-name
                                                user-accounts)))))))))
 
-(define* (static-networking-service interface ip
-                                    #:key
-                                    gateway
-                                    (name-servers '())
-                                    (inetutils inetutils)
-                                    (net-tools net-tools))
-  "Return a service that starts INTERFACE with address IP.  If GATEWAY is
-true, it must be a string specifying the default network gateway."
+(define %base-services
+  ;; Convenience variable holding the basic services.
+  (let ((motd (text-file "motd" "
+This is the GNU operating system, welcome!\n\n")))
+    (list (mingetty-service "tty1" #:motd motd)
+          (mingetty-service "tty2" #:motd motd)
+          (mingetty-service "tty3" #:motd motd)
+          (mingetty-service "tty4" #:motd motd)
+          (mingetty-service "tty5" #:motd motd)
+          (mingetty-service "tty6" #:motd motd)
+          (syslog-service)
+          (guix-service)
+          (nscd-service))))
 
-  ;; TODO: Eventually we should do this using Guile's networking procedures,
-  ;; like 'configure-qemu-networking' does, but the patch that does this is
-  ;; not yet in stock Guile.
-  (mlet %store-monad ((ifconfig (package-file inetutils "bin/ifconfig"))
-                      (route    (package-file net-tools "sbin/route")))
-    (return
-     (service
-      (documentation
-       (string-append "Set up networking on the '" interface
-                      "' interface using a static IP address."))
-      (provision '(networking))
-      (start `(lambda _
-                ;; Return #t if successfully started.
-                (and (zero? (system* ,ifconfig ,interface ,ip "up"))
-                     ,(if gateway
-                          `(zero? (system* ,route "add" "-net" "default"
-                                           "gw" ,gateway))
-                          #t)
-                     ,(if (pair? name-servers)
-                          `(call-with-output-file "/etc/resolv.conf"
-                             (lambda (port)
-                               (display
-                                "# Generated by 'static-networking-service'.\n"
-                                port)
-                               (for-each (lambda (server)
-                                           (format port "nameserver ~a~%"
-                                                   server))
-                                         ',name-servers)))
-                          #t))))
-      (stop  `(lambda _
-                ;; Return #f is successfully stopped.
-                (not (and (system* ,ifconfig ,interface "down")
-                          (system* ,route "del" "-net" "default")))))
-      (respawn? #f)
-      (inputs `(("inetutils" ,inetutils)
-                ,@(if gateway
-                      `(("net-tools" ,net-tools))
-                      '())))))))
-
-
-(define (dmd-configuration-file services etc)
-  "Return the dmd configuration file for SERVICES, that initializes /etc from
-ETC on startup."
-  (define config
-    `(begin
-       (use-modules (ice-9 ftw))
-
-       (register-services
-        ,@(map (match-lambda
-                (($ <service> documentation provision requirement
-                    respawn? start stop)
-                 `(make <service>
-                    #:docstring ,documentation
-                    #:provides ',provision
-                    #:requires ',requirement
-                    #:respawn? ,respawn?
-                    #:start ,start
-                    #:stop ,stop)))
-               services))
-
-       ;; /etc is a mixture of static and dynamic settings.  Here is where we
-       ;; initialize it from the static part.
-       (format #t "populating /etc from ~a...~%" ,etc)
-       (let ((rm-f (lambda (f)
-                     (false-if-exception (delete-file f)))))
-         (rm-f "/etc/static")
-         (symlink ,etc "/etc/static")
-         (for-each (lambda (file)
-                     ;; TODO: Handle 'shadow' specially so that changed
-                     ;; password aren't lost.
-                     (let ((target (string-append "/etc/" file))
-                           (source (string-append "/etc/static/" file)))
-                       (rm-f target)
-                       (symlink source target)))
-                   (scandir ,etc
-                            (lambda (file)
-                              (not (member file '("." ".."))))))
-
-         ;; Prevent ETC from being GC'd.
-         (rm-f "/var/nix/gcroots/etc-directory")
-         (symlink ,etc "/var/nix/gcroots/etc-directory"))
-
-       (format #t "starting services...~%")
-       (for-each start ',(append-map service-provision services))))
-
-  (text-file "dmd.conf" (object->string config)))
-
-;;; dmd.scm ends here
+;;; base.scm ends here

@@ -1,0 +1,33 @@
+This patch fixes SLiM so it really waits for the X server to be ready
+before attempting to connect to it.  Indeed, the X server notices that
+its parent process has a handler for SIGUSR1, and consequently sends it
+SIGUSR1 when it's ready to accept connections.
+
+The problem was that SLiM doesn't pay attention to SIGUSR1.  So in practice,
+if X starts slowly, then SLiM gets ECONNREFUSED a couple of time on
+/tmp/.X11-unix/X0, then goes on trying to connect to localhost:6000,
+where nobody answers; eventually, it times out and tries again on
+/tmp/.X11-unix/X0, and finally it shows up on the screen.
+
+Patch by L. Courtès.
+
+--- slim-1.3.6/app.cpp	2014-02-05 15:27:20.000000000 +0100
++++ slim-1.3.6/app.cpp	2014-02-09 22:42:04.000000000 +0100
+@@ -119,7 +119,9 @@ void CatchSignal(int sig) {
+ 	exit(ERR_EXIT);
+ }
+ 
++static volatile int got_sigusr1 = 0;
+ void User1Signal(int sig) {
++	got_sigusr1 = 1;
+ 	signal(sig, User1Signal);
+ }
+ 
+@@ -884,6 +886,7 @@ int App::WaitForServer() {
+ 	int	ncycles	 = 120;
+ 	int	cycles;
+ 
++	while (!got_sigusr1);
+ 	for(cycles = 0; cycles < ncycles; cycles++) {
+ 		if((Dpy = XOpenDisplay(DisplayName))) {
+ 			XSetIOErrorHandler(xioerror);

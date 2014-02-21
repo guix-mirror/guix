@@ -1,7 +1,7 @@
 Patch shebangs in source that gets unpacked by `configure'.
 
---- bigloo4.0b/gc/install-gc-7.3alpha3-20130330	2013-08-19 10:45:20.000000000 +0200
-+++ bigloo4.0b/gc/install-gc-7.3alpha3-20130330	2013-08-19 10:46:36.000000000 +0200
+--- bigloo4.1a/gc/install-gc-7.4.0	2014-02-04 14:55:03.000000000 +0100
++++ bigloo4.1a/gc/install-gc-7.4.0	2014-02-04 14:55:36.000000000 +0100
 @@ -29,10 +29,12 @@ fi
  
  # untar the two versions of the GC

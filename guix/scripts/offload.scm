@@ -108,7 +108,7 @@ determined."
       (save-module-excursion
        (lambda ()
          (set-current-module %user-module)
-         (primitive-load %machine-file))))
+         (primitive-load file))))
     (lambda args
       (match args
         (('system-error . _)
@@ -117,10 +117,10 @@ determined."
            (if (= ENOENT err)
                '()
                (leave (_ "failed to open machine file '~a': ~a~%")
-                      %machine-file (strerror err)))))
+                      file (strerror err)))))
         (_
          (leave (_ "failed to load machine file '~a': ~s~%")
-                %machine-file args))))))
+                file args))))))
 
 (define (open-ssh-gateway machine)
   "Initiate an SSH connection gateway to MACHINE, and return the PID of the
@@ -170,9 +170,9 @@ running lsh gateway upon success, or #f on failure."
 
 (define* (offload drv machine
                   #:key print-build-trace? (max-silent-time 3600)
-                  (build-timeout 7200))
+                  (build-timeout 7200) (log-port (current-output-port)))
   "Perform DRV on MACHINE, assuming DRV and its prerequisites are available
-there.  Return a read pipe from where to read the build log."
+there, and write the build log to LOG-PORT.  Return the exit status."
   (format (current-error-port) "offloading '~a' to '~a'...~%"
           (derivation-file-name drv) (build-machine-name machine))
   (format (current-error-port) "@ build-remote ~a ~a~%"
@@ -185,7 +185,13 @@ there.  Return a read pipe from where to read the build log."
                              ,(format #f "--max-silent-time=~a"
                                       max-silent-time)
                              ,(derivation-file-name drv)))))
-    pipe))
+    (let loop ((line (read-line pipe)))
+      (unless (eof-object? line)
+        (display line log-port)
+        (newline log-port)
+        (loop (read-line pipe))))
+
+    (close-pipe pipe)))
 
 (define (send-files files machine)
   "Send the subset of FILES that's missing to MACHINE's store.  Return #t on
@@ -291,20 +297,25 @@ success, #f otherwise."
                  (outputs (string-tokenize (read-line))))
              (when (send-files (cons (derivation-file-name drv) inputs)
                                machine)
-               (let ((log (offload drv machine
-                                   #:print-build-trace? print-build-trace?
-                                   #:max-silent-time max-silent-time
-                                   #:build-timeout build-timeout)))
-                 (let loop ((line (read-line log)))
-                   (if (eof-object? line)
-                       (close-pipe log)
-                       (begin
-                         (display line) (newline)
-                         (loop (read-line log))))))
-               (retrieve-files outputs machine)))
-           (format (current-error-port) "done with offloaded '~a'~%"
-                   (derivation-file-name drv))
-           (kill pid SIGTERM))
+               (let ((status (offload drv machine
+                                      #:print-build-trace? print-build-trace?
+                                      #:max-silent-time max-silent-time
+                                      #:build-timeout build-timeout)))
+                 (kill pid SIGTERM)
+                 (if (zero? status)
+                     (begin
+                       (retrieve-files outputs machine)
+                       (format (current-error-port)
+                               "done with offloaded '~a'~%"
+                               (derivation-file-name drv)))
+                     (begin
+                       (format (current-error-port)
+                               "derivation '~a' offloaded to '~a' failed \
+with exit code ~a~%"
+                               (derivation-file-name drv)
+                               (build-machine-name machine)
+                               (status:exit-val status))
+                       (primitive-exit (status:exit-val status))))))))
           (#f
            (display "# decline\n")))
         (display "# decline\n"))))

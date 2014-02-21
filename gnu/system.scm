@@ -22,15 +22,17 @@
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix derivations)
-  #:use-module (gnu packages linux-initrd)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages package-management)
-  #:use-module (gnu system dmd)
+  #:use-module (gnu services)
+  #:use-module (gnu services dmd)
+  #:use-module (gnu services base)
   #:use-module (gnu system grub)
   #:use-module (gnu system shadow)
   #:use-module (gnu system linux)
+  #:use-module (gnu system linux-initrd)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -38,7 +40,18 @@
             operating-system?
             operating-system-services
             operating-system-packages
+            operating-system-bootloader-entries
+            operating-system-host-name
+            operating-system-kernel
+            operating-system-initrd
+            operating-system-users
+            operating-system-groups
+            operating-system-packages
+            operating-system-timezone
+            operating-system-locale
+            operating-system-services
 
+            operating-system-profile-directory
             operating-system-derivation))
 
 ;;; Commentary:
@@ -58,8 +71,8 @@
               (default grub))
   (bootloader-entries operating-system-bootloader-entries ; list
                       (default '()))
-  (initrd operating-system-initrd
-          (default gnu-system-initrd))
+  (initrd operating-system-initrd                 ; monadic derivation
+          (default (gnu-system-initrd)))
 
   (host-name operating-system-host-name)          ; string
 
@@ -92,23 +105,7 @@
   (locale   operating-system-locale)              ; string
 
   (services operating-system-services             ; list of monadic services
-            (default
-              (let ((motd (text-file "motd" "
-This is the GNU operating system, welcome!\n\n")))
-                (list (mingetty-service "tty1" #:motd motd)
-                      (mingetty-service "tty2" #:motd motd)
-                      (mingetty-service "tty3" #:motd motd)
-                      (mingetty-service "tty4" #:motd motd)
-                      (mingetty-service "tty5" #:motd motd)
-                      (mingetty-service "tty6" #:motd motd)
-                      (syslog-service)
-                      (guix-service)
-                      (nscd-service)
-
-                      ;; QEMU networking settings.
-                      (static-networking-service "eth0" "10.0.2.10"
-                                                 #:name-servers '("10.0.2.3")
-                                                 #:gateway "10.0.2.2"))))))
+            (default %base-services)))
 
 
 
@@ -233,6 +230,11 @@ directories or regular files."
        (group      (group-file groups))
        (pam.d      (pam-services->directory pam-services))
        (login.defs (text-file "login.defs" "# Empty for now.\n"))
+       (shells     (text-file "shells"            ; used by xterm and others
+                              "\
+/bin/sh
+/run/current-system/bin/sh
+/run/current-system/bin/bash\n"))
        (issue      (text-file "issue" "
 This is an alpha preview of the GNU system.  Welcome.
 
@@ -243,39 +245,52 @@ GNU dmd (http://www.gnu.org/software/dmd/).
 You can log in as 'guest' or 'root' with no password.
 "))
 
-       ;; Assume TZDATA is installed---e.g., as part of the system packages.
-       ;; Users can choose not to have it.
-       (tzdir      (package-file tzdata "share/zoneinfo"))
-
        ;; TODO: Generate bashrc from packages' search-paths.
-       (bashrc    (text-file "bashrc" (string-append "
+       (bashrc    (text-file* "bashrc"  "
 export PS1='\\u@\\h\\$ '
 
 export LC_ALL=\"" locale "\"
 export TZ=\"" timezone "\"
-export TZDIR=\"" tzdir "\"
+export TZDIR=\"" tzdata "/share/zoneinfo\"
 
 export PATH=$HOME/.guix-profile/bin:" profile "/bin:" profile "/sbin
 export CPATH=$HOME/.guix-profile/include:" profile "/include
 export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
 alias ls='ls -p --color'
 alias ll='ls -l'
-")))
+"))
 
+       (tz-file  (package-file tzdata
+                               (string-append "share/zoneinfo/" timezone)))
        (files -> `(("services" ,services)
                    ("protocols" ,protocols)
                    ("rpc" ,rpc)
                    ("pam.d" ,(derivation->output-path pam.d))
                    ("login.defs" ,login.defs)
                    ("issue" ,issue)
-                   ("profile" ,bashrc)
+                   ("shells" ,shells)
+                   ("profile" ,(derivation->output-path bashrc))
+                   ("localtime" ,tz-file)
                    ("passwd" ,passwd)
                    ("shadow" ,shadow)
                    ("group" ,group))))
     (file-union files
                 #:inputs `(("net" ,net-base)
-                           ("pam.d" ,pam.d))
+                           ("pam.d" ,pam.d)
+                           ("bashrc" ,bashrc)
+                           ("tzdata" ,tzdata))
                 #:name "etc")))
+
+(define (operating-system-profile-derivation os)
+  "Return a derivation that builds the default profile of OS."
+  ;; TODO: Replace with a real profile with a manifest.
+  (union (operating-system-packages os)
+         #:name "default-profile"))
+
+(define (operating-system-profile-directory os)
+  "Return the directory name of the default profile of OS."
+  (mlet %store-monad ((drv (operating-system-profile-derivation os)))
+    (return (derivation->output-path drv))))
 
 (define (operating-system-derivation os)
   "Return a derivation that builds OS."
@@ -297,23 +312,20 @@ alias ll='ls -l'
                             (password "")
                             (uid 0) (gid 0)
                             (comment "System administrator")
-                            (home-directory "/"))
+                            (home-directory "/root"))
                           (append (operating-system-users os)
                                   (append-map service-user-accounts
                                               services))))
        (groups   -> (append (operating-system-groups os)
                             (append-map service-user-groups services)))
-       (packages -> (operating-system-packages os))
 
-       ;; TODO: Replace with a real profile with a manifest.
-       (profile-drv (union packages
-                           #:name "default-profile"))
+       (profile-drv (operating-system-profile-derivation os))
        (profile ->  (derivation->output-path profile-drv))
        (etc-drv     (etc-directory #:accounts accounts #:groups groups
                                    #:pam-services pam-services
                                    #:locale (operating-system-locale os)
                                    #:timezone (operating-system-timezone os)
-                                   #:profile profile))
+                                   #:profile profile-drv))
        (etc     ->  (derivation->output-path etc-drv))
        (dmd-conf  (dmd-configuration-file services etc))
 
@@ -324,17 +336,18 @@ alias ll='ls -l'
                                      "--config" ,dmd-conf))))
        (kernel  ->  (operating-system-kernel os))
        (kernel-dir  (package-file kernel))
-       (initrd  ->  (operating-system-initrd os))
-       (initrd-file (package-file initrd))
+       (initrd      (operating-system-initrd os))
+       (initrd-file -> (string-append (derivation->output-path initrd)
+                                      "/initrd"))
        (entries ->  (list (menu-entry
                            (label (string-append
                                    "GNU system with "
                                    (package-full-name kernel)
                                    " (technology preview)"))
                            (linux kernel)
-                           (linux-arguments `("--root=/dev/vda1"
+                           (linux-arguments `("--root=/dev/sda1"
                                               ,(string-append "--load=" boot)))
-                           (initrd initrd))))
+                           (initrd initrd-file))))
        (grub.cfg (grub-configuration-file entries))
        (extras   (links (delete-duplicates
                          (append (append-map service-inputs services)

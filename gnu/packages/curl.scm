@@ -22,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages groff)
@@ -30,19 +31,24 @@
   #:use-module (gnu packages openldap)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages ssh))
 
 (define-public curl
   (package
    (name "curl")
-   (version "7.28.1")
+   (version "7.35.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "13bhfs41yf60ys2hrikqxjwfzaj0gm91kqzsgc5fr4grzmpm38nx"))))
+              "14w5cwh6b1426lxkq6kp6h4vxryr4n7wfrrwhny1r4123q7n8ab9"))
+            (patches
+             ;; This patch fixes testcase 172 which uses a hardcoded cookie
+             ;; expiration value which is expired as of Feb 1, 2014.
+             (list (search-patch "curl-fix-test172.patch")))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)
@@ -54,9 +60,18 @@
      `(("perl" ,perl)
        ;; to enable the --manual option and make test 1026 pass
        ("groff" ,groff)
-       ("pkg-config" ,pkg-config)))
+       ("pkg-config" ,pkg-config)
+       ("python" ,python-2)))
    (arguments
-    `(#:configure-flags '("--with-gnutls" "--with-gssapi")))
+    `(#:configure-flags '("--with-gnutls" "--with-gssapi")
+      ;; Add a phase to patch '/bin/sh' occurances in tests/runtests.pl
+      #:phases
+      (alist-cons-before
+       'check 'patch-runtests
+       (lambda _
+           (substitute* "tests/runtests.pl"
+             (("/bin/sh") (which "sh"))))
+       %standard-phases)))
    (synopsis "curl, command line tool for transferring data with URL syntax")
    (description
     "curl is a command line tool for transferring data with URL syntax,

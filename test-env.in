@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -53,9 +53,6 @@ then
 	chmod 400 "$NIX_CONF_DIR/signing-key.sec"
     fi
 
-    # For 'guix-authenticate'.
-    NIX_LIBEXEC_DIR="@abs_top_builddir@/nix/scripts"
-
     # A place to store data of the substituter.
     GUIX_BINARY_SUBSTITUTE_URL="file://$NIX_STATE_DIR/substituter-data"
     rm -rf "$NIX_STATE_DIR/substituter-data"
@@ -67,7 +64,7 @@ then
     export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR			\
 	NIX_LOCALSTATE_DIR NIX_LOG_DIR NIX_STATE_DIR NIX_DB_DIR		\
 	NIX_ROOT_FINDER NIX_SETUID_HELPER GUIX_BINARY_SUBSTITUTE_URL	\
-        NIX_CONF_DIR NIX_LIBEXEC_DIR XDG_CACHE_HOME
+        NIX_CONF_DIR XDG_CACHE_HOME
 
     # Do that because store.scm calls `canonicalize-path' on it.
     mkdir -p "$NIX_STORE_DIR"

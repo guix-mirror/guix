@@ -55,14 +55,21 @@
               (base32
                "005d993xcac8236fpvd1iawkz4wqjybkpn8dbwaliqz5jfkidlyn"))))
     (build-system gnu-build-system)
-    (arguments '(#:tests? #f)) ; no check target
+    (arguments
+     '(;; Explicitly link against Xext because SDL tries to dlopen it and
+       ;; doesn't go very far otherwise (see
+       ;; <https://lists.gnu.org/archive/html/guix-devel/2013-11/msg00088.html>
+       ;; for details.)
+       #:configure-flags '("LDFLAGS=-lXext")
+
+       #:tests? #f)) ; no check target
     (propagated-inputs
      ;; SDL headers include X11 headers.
      `(("libx11" ,libx11)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libxrandr" ,libxrandr)
               ("mesa" ,mesa)
               ("alsa-lib" ,alsa-lib)
-              ("pkg-config" ,pkg-config)
               ("pulseaudio" ,pulseaudio)))
     (synopsis "Cross platform game development library")
     (description "Simple DirectMedia Layer is a cross-platform development

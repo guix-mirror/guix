@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,7 +30,8 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages which)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (srfi srfi-1))
 
 (define-public libtasn1
   (package
@@ -61,17 +63,19 @@ specifications.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.2.4")
+    (version "3.2.11")
     (source (origin
              (method url-fetch)
              (uri
               ;; Note: Releases are no longer on ftp.gnu.org since the
               ;; schism (after version 3.1.5).
-              (string-append "mirror://gnupg/gnutls/v3.2/gnutls-"
-                             version ".tar.xz"))
+              (string-append "mirror://gnupg/gnutls/v"
+                             (string-join (take (string-split version #\.) 2)
+                                          ".")
+                             "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "0zvhzy87v9dfxfvmg1pl951kw55rp647cqdza8942fxq7spp158i"))))
+               "1hgk3k8f6wqijca3bsjbfn8pzyfva509y4j2vaxhm4ynfa5cai5q"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))

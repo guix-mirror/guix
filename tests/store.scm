@@ -398,6 +398,25 @@ Deriver: ~a~%"
                                  get-string-all))
                              files)))))))
 
+(test-assert "export/import paths, ensure topological order"
+  (let* ((file1 (add-text-to-store %store "foo" (random-text)))
+         (file2 (add-text-to-store %store "bar" (random-text)
+                                   (list file1)))
+         (files (list file1 file2))
+         (dump1 (call-with-bytevector-output-port
+                 (cute export-paths %store (list file1 file2) <>)))
+         (dump2 (call-with-bytevector-output-port
+                 (cute export-paths %store (list file2 file1) <>))))
+    (delete-paths %store files)
+    (and (every (negate file-exists?) files)
+         (bytevector=? dump1 dump2)
+         (let* ((source   (open-bytevector-input-port dump1))
+                (imported (import-paths %store source)))
+           (and (equal? imported (list file1 file2))
+                (every file-exists? files)
+                (null? (references %store file1))
+                (equal? (list file1) (references %store file2)))))))
+
 (test-assert "import corrupt path"
   (let* ((text (random-text))
          (file (add-text-to-store %store "text" text))
