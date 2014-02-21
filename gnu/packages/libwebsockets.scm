@@ -50,22 +50,12 @@
     (build-system gnu-build-system)
 
     (arguments
-     '(#:phases (alist-replace
-                 'unpack
-                 ;; FIXME: Remove this when gnu-build-system handles that
-                 ;; case correctly.
-                 (lambda* (#:key source #:allow-other-keys)
-                   (mkdir "source")
-                   (chdir "source")
-                   (copy-recursively source ".")
-                   #t)
-
-                 (alist-cons-before
-                  'configure 'bootstrap
-                  (lambda _
-                    (chmod "libwebsockets-api-doc.html" #o666)
-                    (zero? (system* "./autogen.sh")))
-                  %standard-phases))))
+     '(#:phases (alist-cons-before
+                 'configure 'bootstrap
+                 (lambda _
+                   (chmod "libwebsockets-api-doc.html" #o666)
+                   (zero? (system* "./autogen.sh")))
+                 %standard-phases)))
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("libtool" ,libtool "bin")

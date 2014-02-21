@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,8 +90,17 @@
   #t)
 
 (define* (unpack #:key source #:allow-other-keys)
-  (and (zero? (system* "tar" "xvf" source))
-       (chdir (first-subdirectory "."))))
+  "Unpack SOURCE in the working directory, and change directory within the
+source.  When SOURCE is a directory, copy it in a sub-directory of the current
+working directory."
+  (if (file-is-directory? source)
+      (begin
+        (mkdir "source")
+        (chdir "source")
+        (copy-recursively source ".")
+        #t)
+      (and (zero? (system* "tar" "xvf" source))
+           (chdir (first-subdirectory ".")))))
 
 (define* (patch-source-shebangs #:key source #:allow-other-keys)
   "Patch shebangs in all source files; this includes non-executable
