@@ -1,17 +1,28 @@
-Coreutils commit b3578fc9ffe70b9466687f9f6470a85f1a0ab14f.
+Patch from <http://git.yoctoproject.org/cgit.cgi/poky/plain/meta/recipes-core/coreutils/coreutils-8.22/fix-for-dummy-man-usage.patch>.
 
-   * man/dummy-man: Recognize the option --info-page=... as no-op.
+Fix for 'dummy-man' usage, when cross-compiling.
 
-This fixes "dummy-man: too many non-option arguments" when
-cross-compiling.
+The options should be before the final argument, otherwise, the following error
+would appear when compiling:
 
---- a/man/dummy-man
-+++ b/man/dummy-man
-@@ -30,6 +30,7 @@ while test $# -gt 0; do
-     # in the makefile.
-     --include=*);;
-     --include) shift;;
-+    --info-page=*);;
-     -*) fatal_ "invalid or unrecognized help2man option '$1'";;
-     --) shift; break;;
-      *) break;;
+  dummy-man: too many non-option arguments
+
+Signed-off-by: Chen Qi <Qi.Chen@windriver.com>
+---
+ man/local.mk |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/man/local.mk b/man/local.mk
+index 7cef5e3..dc0865f 100644
+--- a/man/local.mk
++++ b/man/local.mk
+@@ -189,8 +189,8 @@ man/yes.1:       src/yes
+ 	  && $(run_help2man)						\
+ 		     --source='$(PACKAGE_STRING)'			\
+ 		     --include=$(srcdir)/man/$$name.x			\
+-		     --output=$$t/$$name.1 $$t/$$name			\
+ 		     --info-page='coreutils \(aq'$$name' invocation\(aq' \
++		     --output=$$t/$$name.1 $$t/$$name			\
+ 	  && sed \
+ 	       -e 's|$*\.td/||g' \
+ 	       -e '/For complete documentation/d' \
