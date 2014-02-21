@@ -31,6 +31,7 @@
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:autoload   (ice-9 ftw)  (scandir)
   #:use-module (ice-9 match)
@@ -186,7 +187,10 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
             ((nix-protocol-error? c)
              ;; FIXME: Server-provided error messages aren't i18n'd.
              (leave (_ "build failed: ~a~%")
-                    (nix-protocol-error-message c))))
+                    (nix-protocol-error-message c)))
+            ((message-condition? c)
+             ;; Normally '&message' error conditions have an i18n'd message.
+             (leave (_ "~a~%") (gettext (condition-message c)))))
     ;; Catch EPIPE and the likes.
     (catch 'system-error
       thunk
