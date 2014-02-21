@@ -112,7 +112,8 @@
   (write-long-long size p)
   (call-with-binary-input-file file
     ;; Use `sendfile' when available (Guile 2.0.8+).
-    (if (compile-time-value (defined? 'sendfile))
+    (if (and (compile-time-value (defined? 'sendfile))
+             (file-port? p))
         (cut sendfile p <> size 0)
         (cut dump <> p size)))
   (write-padding size p))

@@ -183,6 +183,13 @@
 
 (test-begin "nar")
 
+(test-assert "write-file supports non-file output ports"
+  (let ((input  (string-append (dirname (search-path %load-path "guix.scm"))
+                               "/guix"))
+        (output (%make-void-port "w")))
+    (write-file input output)
+    #t))
+
 (test-assert "write-file + restore-file"
   (let* ((input  (string-append (dirname (search-path %load-path "guix.scm"))
                                 "/guix"))
