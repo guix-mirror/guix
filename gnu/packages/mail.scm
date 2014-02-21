@@ -174,7 +174,7 @@ operating systems.")
     (version "2.6.19")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://download.gnome.org/sources/gmime/"
+              (uri (string-append "mirror://gnome/sources/gmime/"
                                   (string-join (take (string-split version #\.)
                                                      2)
                                                ".")
