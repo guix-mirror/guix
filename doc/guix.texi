@@ -1478,7 +1478,7 @@ a derivation is the @code{derivation} procedure:
 
 @deffn {Scheme Procedure} derivation @var{store} @var{name} @var{builder} @
   @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
-  [#:hash-mode #f] [#:inputs '()] [#:env-vars '()] @
+  [#:recursive? #f] [#:hash-mode #f] [#:inputs '()] [#:env-vars '()] @
   [#:system (%current-system)] [#:references-graphs #f] @
   [#:local-build? #f]
 Build a derivation with the given arguments, and return the resulting
@@ -1486,7 +1486,10 @@ Build a derivation with the given arguments, and return the resulting
 
 When @var{hash}, @var{hash-algo}, and @var{hash-mode} are given, a
 @dfn{fixed-output derivation} is created---i.e., one whose result is
-known in advance, such as a file download.
+known in advance, such as a file download.  If, in addition,
+@var{recursive?} is true, then that fixed output may be an executable
+file or a directory and @var{hash} must be the hash of an archive
+containing this output.
 
 When @var{references-graphs} is true, it must be a list of file
 name/store path pairs.  In that case, the reference graph of each store
@@ -1526,7 +1529,7 @@ the caller to directly pass a Guile expression as the build script:
        @var{name} @var{exp} @
        [#:system (%current-system)] [#:inputs '()] @
        [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
-       [#:env-vars '()] [#:modules '()] @
+       [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
        [#:references-graphs #f] [#:local-build? #f] [#:guile-for-build #f]
 Return a derivation that executes Scheme expression @var{exp} as a
 builder for derivation @var{name}.  @var{inputs} must be a list of

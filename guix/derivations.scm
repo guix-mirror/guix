@@ -47,6 +47,7 @@
             derivation-output-path
             derivation-output-hash-algo
             derivation-output-hash
+            derivation-output-recursive?
 
             <derivation-input>
             derivation-input?
@@ -91,11 +92,12 @@
   (file-name derivation-file-name))               ; the .drv file name
 
 (define-record-type <derivation-output>
-  (make-derivation-output path hash-algo hash)
+  (make-derivation-output path hash-algo hash recursive?)
   derivation-output?
   (path       derivation-output-path)             ; store path
   (hash-algo  derivation-output-hash-algo)        ; symbol | #f
-  (hash       derivation-output-hash))            ; bytevector | #f
+  (hash       derivation-output-hash)             ; bytevector | #f
+  (recursive? derivation-output-recursive?))      ; Boolean
 
 (define-record-type <derivation-input>
   (make-derivation-input path sub-derivations)
@@ -241,14 +243,19 @@ that second value is the empty list."
                   (match output
                     ((name path "" "")
                      (alist-cons name
-                                 (make-derivation-output path #f #f)
+                                 (make-derivation-output path #f #f #f)
                                  result))
                     ((name path hash-algo hash)
                      ;; fixed-output
-                     (let ((algo (string->symbol hash-algo))
-                           (hash (base16-string->bytevector hash)))
+                     (let* ((rec? (string-prefix? "r:" hash-algo))
+                            (algo (string->symbol
+                                   (if rec?
+                                       (string-drop hash-algo 2)
+                                       hash-algo)))
+                            (hash (base16-string->bytevector hash)))
                        (alist-cons name
-                                   (make-derivation-output path algo hash)
+                                   (make-derivation-output path algo
+                                                           hash rec?)
                                    result)))))
                 '()
                 x))
@@ -368,9 +375,12 @@ that form."
 
   (define (write-output output port)
     (match output
-     ((name . ($ <derivation-output> path hash-algo hash))
+     ((name . ($ <derivation-output> path hash-algo hash recursive?))
       (write-tuple (list name path
-                         (or (and=> hash-algo symbol->string) "")
+                         (if hash-algo
+                             (string-append (if recursive? "r:" "")
+                                            (symbol->string hash-algo))
+                             "")
                          (or (and=> hash bytevector->base16-string)
                              ""))
                    write
@@ -476,11 +486,14 @@ in SIZE bytes."
     "Return the hash of DRV, modulo its fixed-output inputs, as a bytevector."
     (match drv
       (($ <derivation> ((_ . ($ <derivation-output> path
-                                (? symbol? hash-algo) (? bytevector? hash)))))
+                                (? symbol? hash-algo) (? bytevector? hash)
+                                (? boolean? recursive?)))))
        ;; A fixed-output derivation.
        (sha256
         (string->utf8
-         (string-append "fixed:out:" (symbol->string hash-algo)
+         (string-append "fixed:out:"
+                        (if recursive? "r:" "")
+                        (symbol->string hash-algo)
                         ":" (bytevector->base16-string hash)
                         ":" path))))
       (($ <derivation> outputs inputs sources
@@ -527,17 +540,33 @@ the derivation called NAME with hash HASH."
                   name
                   (string-append name "-" output))))
 
+(define (fixed-output-path output hash-algo hash recursive? name)
+  "Return an output path for the fixed output OUTPUT defined by HASH of type
+HASH-ALGO, of the derivation NAME.  RECURSIVE? has the same meaning as for
+'add-to-store'."
+  (if (and recursive? (eq? hash-algo 'sha256))
+      (store-path "source" hash name)
+      (let ((tag (string-append "fixed:" output ":"
+                                (if recursive? "r:" "")
+                                (symbol->string hash-algo) ":"
+                                (bytevector->base16-string hash) ":")))
+        (store-path (string-append "output:" output)
+                    (sha256 (string->utf8 tag))
+                    name))))
+
 (define* (derivation store name builder args
                      #:key
                      (system (%current-system)) (env-vars '())
                      (inputs '()) (outputs '("out"))
-                     hash hash-algo hash-mode
+                     hash hash-algo hash-mode recursive?
                      references-graphs
                      local-build?)
   "Build a derivation with the given arguments, and return the resulting
 <derivation> object.  When HASH, HASH-ALGO, and HASH-MODE are given, a
 fixed-output derivation is created---i.e., one whose result is known in
-advance, such as a file download.
+advance, such as a file download.  If, in addition, RECURSIVE? is true, then
+that fixed output may be an executable file or a directory and HASH must be
+the hash of an archive containing this output.
 
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs.  In that case, the reference graph of each store path is exported in
@@ -555,12 +584,16 @@ derivations where the costs of data transfers would outweigh the benefits."
        (let* ((drv-hash (derivation-hash drv))
               (outputs  (map (match-lambda
                               ((output-name . ($ <derivation-output>
-                                                 _ algo hash))
-                               (let ((path (output-path output-name
-                                                        drv-hash name)))
+                                                 _ algo hash rec?))
+                               (let ((path (if hash
+                                               (fixed-output-path output-name
+                                                                  algo hash
+                                                                  rec? name)
+                                               (output-path output-name
+                                                            drv-hash name))))
                                  (cons output-name
                                        (make-derivation-output path algo
-                                                               hash)))))
+                                                               hash rec?)))))
                              outputs)))
          (make-derivation outputs inputs sources system builder args
                           (map (match-lambda
@@ -618,7 +651,8 @@ derivations where the costs of data transfers would outweigh the benefits."
   (let* ((outputs    (map (lambda (name)
                             ;; Return outputs with an empty path.
                             (cons name
-                                  (make-derivation-output "" hash-algo hash)))
+                                  (make-derivation-output "" hash-algo
+                                                          hash recursive?)))
                           outputs))
          (inputs     (map (match-lambda
                            (((? derivation? drv))
@@ -909,7 +943,7 @@ they can refer to each other."
                                        (system (%current-system))
                                        (inputs '())
                                        (outputs '("out"))
-                                       hash hash-algo
+                                       hash hash-algo recursive?
                                        (env-vars '())
                                        (modules '())
                                        guile-for-build
@@ -1056,6 +1090,7 @@ LOCAL-BUILD?."
                                env-vars)
 
                 #:hash hash #:hash-algo hash-algo
+                #:recursive? recursive?
                 #:outputs outputs
                 #:references-graphs references-graphs
                 #:local-build? local-build?)))

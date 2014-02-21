@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,7 +23,8 @@
   #:use-module (guix utils)
   #:use-module (guix hash)
   #:use-module (guix base32)
-  #:use-module ((guix packages) #:select (package-derivation))
+  #:use-module ((guix packages) #:select (package-derivation base32))
+  #:use-module ((guix build utils) #:select (executable-file?))
   #:use-module ((gnu packages) #:select (search-bootstrap-binary))
   #:use-module (gnu packages bootstrap)
   #:use-module ((gnu packages guile) #:select (guile-1.8))
@@ -189,6 +190,23 @@
     (and succeeded?
          (equal? (derivation->output-path drv1)
                  (derivation->output-path drv2)))))
+
+(test-assert "fixed-output derivation, recursive"
+  (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
+                                        "echo -n hello > $out" '()))
+         (hash       (sha256 (string->utf8 "hello")))
+         (drv        (derivation %store "fixed-rec"
+                                 %bash `(,builder)
+                                 #:inputs `((,builder))
+                                 #:hash (base32 "0sg9f58l1jj88w6pdrfdpj5x9b1zrwszk84j81zvby36q9whhhqa")
+                                 #:hash-algo 'sha256
+                                 #:recursive? #t))
+         (succeeded? (build-derivations %store (list drv))))
+    (and succeeded?
+         (let ((p (derivation->output-path drv)))
+           (and (equal? (string->utf8 "hello")
+                        (call-with-input-file p get-bytevector-all))
+                (bytevector? (query-path-hash %store p)))))))
 
 (test-assert "derivation with a fixed-output input"
   ;; A derivation D using a fixed-output derivation F doesn't has the same
@@ -636,6 +654,54 @@ Deriver: ~a~%"
                    (derivation-path->output-path
                     (derivation-file-name final1)))
          (build-derivations %store (list final1 final2)))))
+
+(test-assert "build-expression->derivation produces recursive fixed-output"
+  (let* ((builder '(begin
+                     (use-modules (srfi srfi-26))
+                     (mkdir %output)
+                     (chdir %output)
+                     (call-with-output-file "exe"
+                       (cut display "executable" <>))
+                     (chmod "exe" #o777)
+                     (symlink "exe" "symlink")
+                     (mkdir "subdir")))
+         (drv     (build-expression->derivation %store "fixed-rec" builder
+                                                #:hash-algo 'sha256
+                                                #:hash (base32
+                                                        "10k1lw41wyrjf9mxydi0is5nkpynlsvgslinics4ppir13g7d74p")
+                                                #:recursive? #t)))
+    (and (build-derivations %store (list drv))
+         (let* ((dir    (derivation->output-path drv))
+                (exe    (string-append dir "/exe"))
+                (link   (string-append dir "/symlink"))
+                (subdir (string-append dir "/subdir")))
+           (and (executable-file? exe)
+                (string=? "executable"
+                          (call-with-input-file exe get-string-all))
+                (string=? "exe" (readlink link))
+                (file-is-directory? subdir))))))
+
+(test-assert "build-expression->derivation uses recursive fixed-output"
+  (let* ((builder '(call-with-output-file %output
+                     (lambda (port)
+                       (display "hello" port))))
+         (fixed   (build-expression->derivation %store "small-fixed-rec"
+                                                builder
+                                                #:hash-algo 'sha256
+                                                #:hash (base32
+                                                        "0sg9f58l1jj88w6pdrfdpj5x9b1zrwszk84j81zvby36q9whhhqa")
+                                                #:recursive? #t))
+         (in      (derivation->output-path fixed))
+         (builder `(begin
+                     (mkdir %output)
+                     (chdir %output)
+                     (symlink ,in "symlink")))
+         (drv     (build-expression->derivation %store "fixed-rec-user"
+                                                builder
+                                                #:inputs `(("fixed" ,fixed)))))
+    (and (build-derivations %store (list drv))
+         (let ((out (derivation->output-path drv)))
+           (string=? (readlink (string-append out "/symlink")) in)))))
 
 (test-assert "build-expression->derivation with #:references-graphs"
   (let* ((input   (add-text-to-store %store "foo" "hello"
