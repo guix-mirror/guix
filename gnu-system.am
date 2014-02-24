@@ -206,6 +206,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/tor.scm				\
   gnu/packages/uucp.scm				\
   gnu/packages/unrtf.scm			\
+  gnu/packages/upnp.scm				\
   gnu/packages/valgrind.scm			\
   gnu/packages/version-control.scm		\
   gnu/packages/video.scm			\
