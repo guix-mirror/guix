@@ -4,7 +4,7 @@
             test-approximate test-assert test-error test-apply test-with-runner
             test-match-nth test-match-all test-match-any test-match-name
             test-skip test-expect-fail test-read-eval-string
-            test-runner-group-path test-group-with-cleanup
+            test-runner-group-path test-group test-group-with-cleanup
             test-result-ref test-result-set! test-result-clear test-result-remove
             test-result-kind test-passed?
             test-log-to-file
@@ -34,6 +34,8 @@
             test-on-bad-count-simple test-on-bad-end-name-simple
             test-on-final-simple test-on-test-end-simple
             test-on-final-simple))
+
+(cond-expand-provide (current-module) '(srfi-64))
 
 ;; Load Per Bothner's original SRFI-64 implementation.
 (load-from-path "srfi/srfi-64.upstream.scm")
