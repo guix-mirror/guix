@@ -17,12 +17,25 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages mpd)
+  #:use-module (srfi srfi-1)
   #:use-module (gnu packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:export (libmpdclient))
+  #:use-module (gnu packages avahi)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages mp3)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xiph)
+  #:export (libmpdclient
+            mpd))
 
 (define libmpdclient
   (package
@@ -45,4 +58,66 @@
     (description "A stable, documented, asynchronous API library for
 interfacing MPD in the C, C++ & Objective C languages.")
     (home-page "http://www.musicpd.org/libs/libmpdclient/")
-    (license bsd-3)))
+    (license license:bsd-3)))
+
+(define mpd
+  (package
+    (name "mpd")
+    (version "0.18.8")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "http://musicpd.org/download/mpd/"
+                              (string-join (take (string-split
+                                                  version #\.) 2) ".")
+                              "/mpd-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1ryqh0xf76xv4mpwy1gjwy275ar4wmbzifa9ccjim9r7lk2hgp5v"))))
+    (build-system gnu-build-system)
+    (inputs `(("ao" ,ao)
+              ("alsa-lib" ,alsa-lib)
+              ("avahi" ,avahi)
+              ("curl" ,curl)
+              ("ffmpeg" ,ffmpeg)
+              ("flac" ,flac)
+              ("glib" ,glib)
+              ("lame" ,lame)
+              ("libid3tag" ,libid3tag)
+              ("libmad" ,libmad)
+              ("libmpdclient" ,libmpdclient)
+              ("libsamplerate" ,libsamplerate)
+              ("libsndfile" ,libsndfile)
+              ("libvorbis" ,libvorbis)
+              ("opus" ,opus)
+              ("pkg-config" ,pkg-config)
+              ("pulseaudio" ,pulseaudio)
+              ("sqlite" ,sqlite)
+              ("zlib" ,zlib)))
+    ;; Missing optional inputs:
+    ;;   libyajl
+    ;;   libcdio_paranoia
+    ;;   libmms
+    ;;   libadplug
+    ;;   libaudiofile
+    ;;   faad2
+    ;;   fluidsynth
+    ;;   libgme
+    ;;   libshout
+    ;;   libmpg123
+    ;;   libmodplug
+    ;;   libmpcdec
+    ;;   libsidplay2
+    ;;   libwavpack
+    ;;   libwildmidi
+    ;;   libtwolame
+    ;;   libroar
+    ;;   libjack
+    ;;   OpenAL
+    (synopsis "Music Player Daemon")
+    (description "Music Player Daemon (MPD) is a flexible, powerful,
+server-side application for playing music.  Through plugins and libraries it
+can play a variety of sound files while being controlled by its network
+protocol.")
+    (home-page "http://www.musicpd.org/")
+    (license license:gpl2)))
