@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,19 +26,20 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages help2man)
   #:use-module (gnu packages ncurses)
-  #:use-module (gnu packages bash))
+  #:use-module (gnu packages bash)
+  #:use-module (gnu packages pkg-config))
 
 (define-public zile
   (package
     (name "zile")
-    (version "2.4.9")
+    (version "2.4.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/zile/zile-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0j801c28ypm924rw3lqyb6khxyslg6ycrv16wmmwcam0mk3mj6f7"))))
+               "1ca2bkhl8k4n7a5d8g33ccs603p83a4h3vz9bwxcqxq43jjnwddn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
@@ -55,7 +57,8 @@
        ("bash" ,bash)))
     (native-inputs
      `(("perl" ,perl)
-       ("help2man" ,help2man)))
+       ("help2man" ,help2man)
+       ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnu.org/software/zile/")
     (synopsis "Zile is lossy Emacs, a lightweight Emacs clone")
     (description
