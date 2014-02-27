@@ -132,7 +132,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/libunistring.scm			\
   gnu/packages/libusb.scm			\
   gnu/packages/libunwind.scm			\
-  gnu/packages/libwebsockets.scm		\
   gnu/packages/lightning.scm			\
   gnu/packages/linux.scm			\
   gnu/packages/lout.scm				\
@@ -146,6 +145,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/maths.scm			\
   gnu/packages/mit-krb5.scm			\
   gnu/packages/moe.scm				\
+  gnu/packages/mpd.scm				\
   gnu/packages/mp3.scm				\
   gnu/packages/multiprecision.scm		\
   gnu/packages/mtools.scm			\
@@ -206,6 +206,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/tor.scm				\
   gnu/packages/uucp.scm				\
   gnu/packages/unrtf.scm			\
+  gnu/packages/upnp.scm				\
   gnu/packages/valgrind.scm			\
   gnu/packages/version-control.scm		\
   gnu/packages/video.scm			\

@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Aljosha Papsch <misc@rpapsch.de>
+;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,9 +23,12 @@
                 #:renamer (symbol-prefix-proc 'l:))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system perl)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages apr)
+  #:use-module (gnu packages autotools)
+  #:use-module ((gnu packages compression) #:select (zlib))
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl))
@@ -65,6 +69,52 @@ Internet and the Web to communicate, plan, and develop the server and its
 related documentation.")
     (license l:asl2.0)
     (home-page "https://httpd.apache.org/")))
+
+(define-public libwebsockets
+  (package
+    (name "libwebsockets")
+    (version "1.2")
+    (source (origin
+              ;; The project does not publish tarballs, so we have to take
+              ;; things from Git.
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.libwebsockets.org/libwebsockets")
+                    (commit (string-append "v" version
+                                           "-chrome26-firefox18"))))
+              (sha256
+               (base32
+                "1293hbz8qj4p27m1qjf8dn97r10xjyiwdpq491m87zi025s558cl"))
+              (file-name (string-append name "-" version))))
+
+    ;; The package has both CMake and GNU build systems, but the latter is
+    ;; apparently better supported (CMake-generated makefiles lack an
+    ;; 'install' target, for instance.)
+    (build-system gnu-build-system)
+
+    (arguments
+     '(#:phases (alist-cons-before
+                 'configure 'bootstrap
+                 (lambda _
+                   (chmod "libwebsockets-api-doc.html" #o666)
+                   (zero? (system* "./autogen.sh")))
+                 %standard-phases)))
+
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("libtool" ,libtool "bin")
+                     ("perl" ,perl)))             ; to build the HTML doc
+    (inputs `(("zlib" ,zlib)
+              ("openssl" ,openssl)))
+    (synopsis "WebSockets library written in C")
+    (description
+     "libwebsockets is a library that allows C programs to establish client
+and server WebSockets connections---a protocol layered above HTTP that allows
+for efficient socket-like bidirectional reliable communication channels.")
+    (home-page "http://libwebsockets.org/")
+
+    ;; This is LGPLv2.1-only with extra exceptions specified in 'LICENSE'.
+    (license l:lgpl2.1)))
 
 (define-public perl-html-tagset
   (package
