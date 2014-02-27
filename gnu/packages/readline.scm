@@ -38,14 +38,14 @@
                         (find-files lib "\\.a"))))))
     (package
       (name "readline")
-      (version "6.2")
+      (version "6.3")
       (source (origin
                (method url-fetch)
                (uri (string-append "mirror://gnu/readline/readline-"
                                    version ".tar.gz"))
                (sha256
                 (base32
-                 "10ckm2bd2rkxhvdmj7nmbsylmihw0abwcsnxf8y27305183rd9kr"))
+                 "0hzxr9jxqqx5sxsv9vmlxdnvlr9vi4ih1avjb869hbs6p5qn1fjn"))
                (patches (list (search-patch "readline-link-ncurses.patch")))
                (patch-flags '("-p0"))))
       (build-system gnu-build-system)
