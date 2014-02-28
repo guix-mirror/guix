@@ -379,8 +379,6 @@ library for working with executable and object formats is also included.")
              '(substitute* "sysdeps/unix/sysv/linux/configure"
                 (("use_ldconfig=yes")
                  "use_ldconfig=no")))
-            (modules '((guix build utils)))
-            (imported-modules modules)
             (patches (list (search-patch "glibc-ldd-x86_64.patch")))))
    (build-system gnu-build-system)
 
