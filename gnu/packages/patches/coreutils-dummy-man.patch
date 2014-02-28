@@ -1,4 +1,4 @@
-Patch from <http://git.yoctoproject.org/cgit.cgi/poky/plain/meta/recipes-core/coreutils/coreutils-8.22/fix-for-dummy-man-usage.patch>.
+Patch adapted from <http://git.yoctoproject.org/cgit.cgi/poky/plain/meta/recipes-core/coreutils/coreutils-8.22/fix-for-dummy-man-usage.patch>.
 
 Fix for 'dummy-man' usage, when cross-compiling.
 
@@ -7,16 +7,9 @@ would appear when compiling:
 
   dummy-man: too many non-option arguments
 
-Signed-off-by: Chen Qi <Qi.Chen@windriver.com>
----
- man/local.mk |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/man/local.mk b/man/local.mk
-index 7cef5e3..dc0865f 100644
---- a/man/local.mk
-+++ b/man/local.mk
-@@ -189,8 +189,8 @@ man/yes.1:       src/yes
+--- coreutils-8.22/Makefile.in	2013-12-13 16:20:00.000000000 +0100
++++ coreutils-8.22/Makefile.in	2014-02-28 10:53:27.000000000 +0100
+@@ -9977,8 +9977,8 @@ man/yes.1:       src/yes
  	  && $(run_help2man)						\
  		     --source='$(PACKAGE_STRING)'			\
  		     --include=$(srcdir)/man/$$name.x			\
