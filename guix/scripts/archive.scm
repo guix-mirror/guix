@@ -64,6 +64,9 @@ Export/import one or more packages from/to the store.\n"))
       --generate-key[=PARAMETERS]
                          generate a key pair with the given parameters"))
   (display (_ "
+      --authorize        authorize imports signed by the public key on stdin"))
+  (newline)
+  (display (_ "
   -e, --expression=EXPR  build the package or derivation EXPR evaluates to"))
   (display (_ "
   -S, --source           build the packages' source derivations"))
