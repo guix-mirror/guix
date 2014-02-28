@@ -68,10 +68,9 @@ basis for almost any application.")
               (sha256
                (base32
                 "1qqjy9zfzgny0rkb27c8c7dfsylvb6n0ld8h3an2r83pmaqr9gwb"))
+              (modules '((guix build utils)))
               (snippet
                '(begin
-                  (use-modules (guix build utils))
-
                   (substitute* "src/testsuite/functions.sh"
                     (("localhost")
                      ;; Avoid host name lookups since they don't work in
