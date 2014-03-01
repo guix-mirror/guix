@@ -268,15 +268,45 @@ success, #f otherwise."
   "Return #t if M1 is faster than M2."
   (> (build-machine-speed m1) (build-machine-speed m2)))
 
+(define (machine-load machine)
+  "Return the load of MACHINE, divided by the number of parallel builds
+allowed on MACHINE."
+  (let* ((pipe (remote-pipe machine OPEN_READ `("cat" "/proc/loadavg")))
+         (line (read-line pipe)))
+    (close-pipe pipe)
+    (if (eof-object? line)
+        1.
+        (match (string-tokenize line)
+          ((one five fifteen . _)
+           (let* ((raw        (string->number five))
+                  (jobs       (build-machine-parallel-builds machine))
+                  (normalized (/ raw jobs)))
+             (format (current-error-port) "load on machine '~a' is ~s\
+ (normalized: ~s)~%"
+                     (build-machine-name machine) raw normalized)
+             normalized))
+          (_
+           1.)))))
+
+(define (machine-less-loaded? m1 m2)
+  "Return #t if the load on M1 is lower than that on M2."
+  (< (machine-load m1) (machine-load m2)))
+
+(define (machine-less-loaded-or-faster? m1 m2)
+  "Return #t if M1 is either less loaded or faster than M2."
+  (or (machine-less-loaded? m1 m2)
+      (machine-faster? m1 m2)))
+
 (define (choose-build-machine requirements machines)
   "Return the best machine among MACHINES fulfilling REQUIREMENTS, or #f."
-  ;; FIXME: Take machine load into account, and/or shuffle MACHINES.
   (let ((machines (sort (filter (cut machine-matches? <> requirements)
                                 machines)
-                        machine-faster?)))
+                        machine-less-loaded-or-faster?)))
     (match machines
       ((head . _)
-       head)
+       ;; Return the best machine unless it's already overloaded.
+       (and (< (machine-load head) 2.)
+            head))
       (_ #f))))
 
 (define* (process-request wants-local? system drv features
