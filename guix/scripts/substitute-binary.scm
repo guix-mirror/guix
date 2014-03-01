@@ -38,6 +38,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
   #:use-module (web uri)
   #:use-module (guix http-client)
   #:export (guix-substitute-binary))
@@ -133,33 +134,38 @@ provide."
                             (if buffered? "rb" "r0b"))))
        (values port (stat:size (stat port)))))
     ((http)
-     ;; On Guile 2.0.5, `http-fetch' fetches the whole thing at once.  So
-     ;; honor TIMEOUT? to disable the timeout when fetching a nar.
-     ;;
-     ;; Test this with:
-     ;;   sudo tc qdisc add dev eth0 root netem delay 1500ms
-     ;; and then cancel with:
-     ;;   sudo tc qdisc del dev eth0 root
-     (let ((port #f))
-       (with-timeout (if (or timeout? (guile-version>? "2.0.5"))
-                         %fetch-timeout
-                         0)
-         (begin
-           (warning (_ "while fetching ~a: server is unresponsive~%")
-                    (uri->string uri))
-           (warning (_ "try `--no-substitutes' if the problem persists~%"))
+     (guard (c ((http-get-error? c)
+                (leave (_ "download from '~a' failed: ~a, ~s~%")
+                       (uri->string (http-get-error-uri c))
+                       (http-get-error-code c)
+                       (http-get-error-reason c))))
+       ;; On Guile 2.0.5, `http-fetch' fetches the whole thing at once.  So
+       ;; honor TIMEOUT? to disable the timeout when fetching a nar.
+       ;;
+       ;; Test this with:
+       ;;   sudo tc qdisc add dev eth0 root netem delay 1500ms
+       ;; and then cancel with:
+       ;;   sudo tc qdisc del dev eth0 root
+       (let ((port #f))
+         (with-timeout (if (or timeout? (guile-version>? "2.0.5"))
+                           %fetch-timeout
+                           0)
+           (begin
+             (warning (_ "while fetching ~a: server is unresponsive~%")
+                      (uri->string uri))
+             (warning (_ "try `--no-substitutes' if the problem persists~%"))
 
-           ;; Before Guile v2.0.9-39-gfe51c7b, EINTR was reported to the user,
-           ;; and thus PORT had to be closed and re-opened.  This is not the
-           ;; case afterward.
-           (unless (or (guile-version>? "2.0.9")
-                       (version>? (version) "2.0.9.39"))
-             (when port
-               (close-port port))))
-         (begin
-           (when (or (not port) (port-closed? port))
-             (set! port (open-socket-for-uri uri #:buffered? buffered?)))
-           (http-fetch uri #:text? #f #:port port)))))))
+             ;; Before Guile v2.0.9-39-gfe51c7b, EINTR was reported to the user,
+             ;; and thus PORT had to be closed and re-opened.  This is not the
+             ;; case afterward.
+             (unless (or (guile-version>? "2.0.9")
+                         (version>? (version) "2.0.9.39"))
+               (when port
+                 (close-port port))))
+           (begin
+             (when (or (not port) (port-closed? port))
+               (set! port (open-socket-for-uri uri #:buffered? buffered?)))
+             (http-fetch uri #:text? #f #:port port))))))))
 
 (define-record-type <cache>
   (%make-cache url store-directory wants-mass-query?)
