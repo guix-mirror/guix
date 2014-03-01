@@ -26,6 +26,7 @@
   #:use-module (guix profiles)
   #:use-module (guix utils)
   #:use-module (guix config)
+  #:use-module (guix scripts build)
   #:use-module ((guix build utils) #:select (directory-exists? mkdir-p))
   #:use-module ((guix ftp-client) #:select (ftp-open))
   #:use-module (ice-9 format)
@@ -460,6 +461,7 @@ ENTRIES, a list of manifest entries, in the context of PROFILE."
   ;; Alist of default option values.
   `((profile . ,%current-profile)
     (max-silent-time . 3600)
+    (verbosity . 0)
     (substitutes? . #t)))
 
 (define (show-help)
@@ -484,18 +486,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -d, --delete-generations[=PATTERN]
                          delete generations matching PATTERN"))
-  (newline)
   (display (_ "
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
-  (display (_ "
-  -n, --dry-run          show what would be done without actually doing it"))
-  (display (_ "
-      --fallback         fall back to building when the substituter fails"))
-  (display (_ "
-      --no-substitutes   build instead of resorting to pre-built substitutes"))
-  (display (_ "
-      --max-silent-time=SECONDS
-                         mark the build as failed after SECONDS of silence"))
+  (newline)
   (display (_ "
       --bootstrap        use the bootstrap Guile to build the profile"))
   (display (_ "
@@ -510,6 +503,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   -A, --list-available[=REGEXP]
                          list available packages matching REGEXP"))
   (newline)
+  (show-build-options-help)
+  (newline)
   (display (_ "
   -h, --help             display this help and exit"))
   (display (_ "
@@ -519,107 +514,94 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
 
 (define %options
   ;; Specification of the command-line options.
-  (list (option '(#\h "help") #f #f
-                (lambda args
-                  (show-help)
-                  (exit 0)))
-        (option '(#\V "version") #f #f
-                (lambda args
-                  (show-version-and-exit "guix package")))
+  (cons* (option '(#\h "help") #f #f
+                 (lambda args
+                   (show-help)
+                   (exit 0)))
+         (option '(#\V "version") #f #f
+                 (lambda args
+                   (show-version-and-exit "guix package")))
 
-        (option '(#\i "install") #f #t
-                (lambda (opt name arg result arg-handler)
-                  (let arg-handler ((arg arg) (result result))
-                    (values (if arg
-                                (alist-cons 'install arg result)
-                                result)
-                            arg-handler))))
-        (option '(#\e "install-from-expression") #t #f
-                (lambda (opt name arg result arg-handler)
-                  (values (alist-cons 'install (read/eval-package-expression arg)
-                                      result)
-                          #f)))
-        (option '(#\r "remove") #f #t
-                (lambda (opt name arg result arg-handler)
-                  (let arg-handler ((arg arg) (result result))
-                    (values (if arg
-                                (alist-cons 'remove arg result)
-                                result)
-                            arg-handler))))
-        (option '(#\u "upgrade") #f #t
-                (lambda (opt name arg result arg-handler)
-                  (let arg-handler ((arg arg) (result result))
-                    (values (alist-cons 'upgrade arg
-                                        ;; Delete any prior "upgrade all"
-                                        ;; command, or else "--upgrade gcc"
-                                        ;; would upgrade everything.
-                                        (delete '(upgrade . #f) result))
-                            arg-handler))))
-        (option '("roll-back") #f #f
-                (lambda (opt name arg result arg-handler)
-                  (values (alist-cons 'roll-back? #t result)
-                          #f)))
-        (option '(#\l "list-generations") #f #t
-                (lambda (opt name arg result arg-handler)
-                  (values (cons `(query list-generations ,(or arg ""))
-                                result)
-                          #f)))
-        (option '(#\d "delete-generations") #f #t
-                (lambda (opt name arg result arg-handler)
-                  (values (alist-cons 'delete-generations (or arg "")
-                                      result)
-                          #f)))
-        (option '("search-paths") #f #f
-                (lambda (opt name arg result arg-handler)
-                  (values (cons `(query search-paths) result)
-                          #f)))
-        (option '(#\p "profile") #t #f
-                (lambda (opt name arg result arg-handler)
-                  (values (alist-cons 'profile arg
-                                      (alist-delete 'profile result))
-                          #f)))
-        (option '(#\n "dry-run") #f #f
-                (lambda (opt name arg result arg-handler)
-                  (values (alist-cons 'dry-run? #t result)
-                          #f)))
-        (option '("fallback") #f #f
-                (lambda (opt name arg result arg-handler)
-                  (values (alist-cons 'fallback? #t
-                                      (alist-delete 'fallback? result))
-                          #f)))
-        (option '("no-substitutes") #f #f
-                (lambda (opt name arg result arg-handler)
-                  (values (alist-cons 'substitutes? #f
-                                      (alist-delete 'substitutes? result))
-                          #f)))
-        (option '("max-silent-time") #t #f
-                (lambda (opt name arg result arg-handler)
-                  (values (alist-cons 'max-silent-time (string->number* arg)
-                                      result)
-                          #f)))
-        (option '("bootstrap") #f #f
-                (lambda (opt name arg result arg-handler)
-                  (values (alist-cons 'bootstrap? #t result)
-                          #f)))
-        (option '("verbose") #f #f
-                (lambda (opt name arg result arg-handler)
-                  (values (alist-cons 'verbose? #t result)
-                          #f)))
-        (option '(#\s "search") #t #f
-                (lambda (opt name arg result arg-handler)
-                  (values (cons `(query search ,(or arg ""))
-                                result)
-                          #f)))
-        (option '(#\I "list-installed") #f #t
-                (lambda (opt name arg result arg-handler)
-                  (values (cons `(query list-installed ,(or arg ""))
-                                result)
-                          #f)))
-        (option '(#\A "list-available") #f #t
-                (lambda (opt name arg result arg-handler)
-                  (values (cons `(query list-available ,(or arg ""))
-                                result)
-                          #f)))))
+         (option '(#\i "install") #f #t
+                 (lambda (opt name arg result arg-handler)
+                   (let arg-handler ((arg arg) (result result))
+                     (values (if arg
+                                 (alist-cons 'install arg result)
+                                 result)
+                             arg-handler))))
+         (option '(#\e "install-from-expression") #t #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (alist-cons 'install (read/eval-package-expression arg)
+                                       result)
+                           #f)))
+         (option '(#\r "remove") #f #t
+                 (lambda (opt name arg result arg-handler)
+                   (let arg-handler ((arg arg) (result result))
+                     (values (if arg
+                                 (alist-cons 'remove arg result)
+                                 result)
+                             arg-handler))))
+         (option '(#\u "upgrade") #f #t
+                 (lambda (opt name arg result arg-handler)
+                   (let arg-handler ((arg arg) (result result))
+                     (values (alist-cons 'upgrade arg
+                                         ;; Delete any prior "upgrade all"
+                                         ;; command, or else "--upgrade gcc"
+                                         ;; would upgrade everything.
+                                         (delete '(upgrade . #f) result))
+                             arg-handler))))
+         (option '("roll-back") #f #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (alist-cons 'roll-back? #t result)
+                           #f)))
+         (option '(#\l "list-generations") #f #t
+                 (lambda (opt name arg result arg-handler)
+                   (values (cons `(query list-generations ,(or arg ""))
+                                 result)
+                           #f)))
+         (option '(#\d "delete-generations") #f #t
+                 (lambda (opt name arg result arg-handler)
+                   (values (alist-cons 'delete-generations (or arg "")
+                                       result)
+                           #f)))
+         (option '("search-paths") #f #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (cons `(query search-paths) result)
+                           #f)))
+         (option '(#\p "profile") #t #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (alist-cons 'profile arg
+                                       (alist-delete 'profile result))
+                           #f)))
+         (option '(#\n "dry-run") #f #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (alist-cons 'dry-run? #t result)
+                           #f)))
+         (option '("bootstrap") #f #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (alist-cons 'bootstrap? #t result)
+                           #f)))
+         (option '("verbose") #f #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (alist-cons 'verbose? #t result)
+                           #f)))
+         (option '(#\s "search") #t #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (cons `(query search ,(or arg ""))
+                                 result)
+                           #f)))
+         (option '(#\I "list-installed") #f #t
+                 (lambda (opt name arg result arg-handler)
+                   (values (cons `(query list-installed ,(or arg ""))
+                                 result)
+                           #f)))
+         (option '(#\A "list-available") #f #t
+                 (lambda (opt name arg result arg-handler)
+                   (values (cons `(query list-available ,(or arg ""))
+                                 result)
+                           #f)))
+
+         %standard-build-options))
 
 (define (options->installable opts manifest)
   "Given MANIFEST, the current manifest, and OPTS, the result of 'args-fold',
@@ -1052,13 +1034,7 @@ more information.~%"))
     (or (process-query opts)
         (with-error-handling
           (parameterize ((%store (open-connection)))
-            (set-build-options (%store)
-                               #:print-build-trace #f
-                               #:fallback? (assoc-ref opts 'fallback?)
-                               #:use-substitutes?
-                               (assoc-ref opts 'substitutes?)
-                               #:max-silent-time
-                               (assoc-ref opts 'max-silent-time))
+            (set-build-options-from-command-line (%store) opts)
 
             (parameterize ((%guile-for-build
                             (package-derivation (%store)
