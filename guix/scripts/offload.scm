@@ -122,38 +122,40 @@ determined."
          (leave (_ "failed to load machine file '~a': ~s~%")
                 file args))))))
 
-(define (open-ssh-gateway machine)
-  "Initiate an SSH connection gateway to MACHINE, and return the PID of the
-running lsh gateway upon success, or #f on failure."
-  (catch 'system-error
-    (lambda ()
-      (let* ((port   (open-pipe* OPEN_READ %lsh-command
-                                 "-l" (build-machine-user machine)
-                                 "-i" (build-machine-private-key machine)
-                                 ;; XXX: With lsh 2.1, passing '--write-pid'
-                                 ;; last causes the PID not to be printed.
-                                 "--write-pid" "--gateway" "--background" "-z"
-                                 (build-machine-name machine)))
-             (line   (read-line port))
-             (status (close-pipe port)))
-       (if (zero? status)
-           (let ((pid (string->number line)))
-             (if (integer? pid)
-                 pid
-                 (begin
-                   (warning (_ "'~a' did not write its PID on stdout: ~s~%")
-                            %lsh-command line)
-                   #f)))
-           (begin
-             (warning (_ "failed to initiate SSH connection to '~a':\
- '~a' exited with ~a~%")
-                      (build-machine-name machine)
-                      %lsh-command
-                      (status:exit-val status))
-             #f))))
-    (lambda args
-      (leave (_ "failed to execute '~a': ~a~%")
-             %lsh-command (strerror (system-error-errno args))))))
+;;; FIXME: The idea was to open the connection to MACHINE once for all, but
+;;; lshg is currently non-functional.
+;; (define (open-ssh-gateway machine)
+;;   "Initiate an SSH connection gateway to MACHINE, and return the PID of the
+;; running lsh gateway upon success, or #f on failure."
+;;   (catch 'system-error
+;;     (lambda ()
+;;       (let* ((port   (open-pipe* OPEN_READ %lsh-command
+;;                                  "-l" (build-machine-user machine)
+;;                                  "-i" (build-machine-private-key machine)
+;;                                  ;; XXX: With lsh 2.1, passing '--write-pid'
+;;                                  ;; last causes the PID not to be printed.
+;;                                  "--write-pid" "--gateway" "--background" "-z"
+;;                                  (build-machine-name machine)))
+;;              (line   (read-line port))
+;;              (status (close-pipe port)))
+;;        (if (zero? status)
+;;            (let ((pid (string->number line)))
+;;              (if (integer? pid)
+;;                  pid
+;;                  (begin
+;;                    (warning (_ "'~a' did not write its PID on stdout: ~s~%")
+;;                             %lsh-command line)
+;;                    #f)))
+;;            (begin
+;;              (warning (_ "failed to initiate SSH connection to '~a':\
+;;  '~a' exited with ~a~%")
+;;                       (build-machine-name machine)
+;;                       %lsh-command
+;;                       (status:exit-val status))
+;;              #f))))
+;;     (lambda args
+;;       (leave (_ "failed to execute '~a': ~a~%")
+;;              %lsh-command (strerror (system-error-errno args))))))
 
 (define (remote-pipe machine mode command)
   "Run COMMAND on MACHINE, assuming an lsh gateway has been set up."
@@ -324,34 +326,30 @@ allowed on MACHINE."
                    (features features)))
          (machine (choose-build-machine reqs (build-machines))))
     (if machine
-        (match (open-ssh-gateway machine)
-          ((? integer? pid)
-           (display "# accept\n")
-           (let ((inputs  (string-tokenize (read-line)))
-                 (outputs (string-tokenize (read-line))))
-             (when (send-files (cons (derivation-file-name drv) inputs)
-                               machine)
-               (let ((status (offload drv machine
-                                      #:print-build-trace? print-build-trace?
-                                      #:max-silent-time max-silent-time
-                                      #:build-timeout build-timeout)))
-                 (kill pid SIGTERM)
-                 (if (zero? status)
-                     (begin
-                       (retrieve-files outputs machine)
-                       (format (current-error-port)
-                               "done with offloaded '~a'~%"
-                               (derivation-file-name drv)))
-                     (begin
-                       (format (current-error-port)
-                               "derivation '~a' offloaded to '~a' failed \
+        (begin
+          (display "# accept\n")
+          (let ((inputs  (string-tokenize (read-line)))
+                (outputs (string-tokenize (read-line))))
+            (when (send-files (cons (derivation-file-name drv) inputs)
+                              machine)
+              (let ((status (offload drv machine
+                                     #:print-build-trace? print-build-trace?
+                                     #:max-silent-time max-silent-time
+                                     #:build-timeout build-timeout)))
+                (if (zero? status)
+                    (begin
+                      (retrieve-files outputs machine)
+                      (format (current-error-port)
+                              "done with offloaded '~a'~%"
+                              (derivation-file-name drv)))
+                    (begin
+                      (format (current-error-port)
+                              "derivation '~a' offloaded to '~a' failed \
 with exit code ~a~%"
-                               (derivation-file-name drv)
-                               (build-machine-name machine)
-                               (status:exit-val status))
-                       (primitive-exit (status:exit-val status))))))))
-          (#f
-           (display "# decline\n")))
+                              (derivation-file-name drv)
+                              (build-machine-name machine)
+                              (status:exit-val status))
+                      (primitive-exit (status:exit-val status))))))))
         (display "# decline\n"))))
 
 (define-syntax-rule (with-nar-error-handling body ...)
