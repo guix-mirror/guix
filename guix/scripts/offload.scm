@@ -161,6 +161,10 @@ running lsh gateway upon success, or #f on failure."
     (lambda ()
       (apply open-pipe* mode %lshg-command
              "-l" (build-machine-user machine) "-z"
+
+             ;; XXX: Remove '-i' when %LSHG-COMMAND really is lshg.
+             "-i" (build-machine-private-key machine)
+
              (build-machine-name machine)
              command))
     (lambda args
