@@ -312,11 +312,13 @@ property manipulation.")
                                   (system* "make" "install")))))))
                  %standard-phases)))
     (native-inputs
-      ;; For the Perl bindings.
-      `(("swig" ,swig)))
+      `(("pkg-config" ,pkg-config)
+        ;; For the Perl bindings.
+        ("swig" ,swig)))
     (inputs
       `(("apr" ,apr)
         ("apr-util" ,apr-util)
+        ("neon" ,neon-0.29.6)
         ("perl" ,perl)
         ("python" ,python-2) ; incompatible with Python 3 (print syntax)
         ("sqlite" ,sqlite)
