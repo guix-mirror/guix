@@ -789,21 +789,6 @@ suggest setting these variables to @code{@var{profile}/include} and
 @itemx -p @var{profile}
 Use @var{profile} instead of the user's default profile.
 
-@item --dry-run
-@itemx -n
-Show what would be done without actually doing it.
-
-@item --fallback
-When substituting a pre-built binary fails, fall back to building
-packages locally.
-
-@item --no-substitutes
-Do not use substitutes for build products.  That is, always build things
-locally instead of allowing downloads of pre-built binaries.
-
-@item --max-silent-time=@var{seconds}
-Same as for @command{guix build} (@pxref{Invoking guix build}).
-
 @item --verbose
 Produce verbose output.  In particular, emit the environment's build log
 on the standard error port.
@@ -917,6 +902,10 @@ Note that deleting generations prevents roll-back to them.
 Consequently, this command must be used with care.
 
 @end table
+
+Finally, since @command{guix package} may actually start build
+processes, it supports all the common build options that @command{guix
+build} supports (@pxref{Invoking guix build, common build options}).
 
 @node Packages with Multiple Outputs
 @section Packages with Multiple Outputs
@@ -1176,7 +1165,7 @@ guix archive --export git:gui /nix/store/...-emacs-24.3 > great.nar
 If the specified packages are not built yet, @command{guix archive}
 automatically builds them.  The build process may be controlled with the
 same options that can be passed to the @command{guix build} command
-(@pxref{Invoking guix build}).
+(@pxref{Invoking guix build, common build options}).
 
 
 @c *********************************************************************
@@ -1843,6 +1832,37 @@ configuration triplets,, configure, GNU Configure and Build System}).
 Return the derivation paths, not the output paths, of the given
 packages.
 
+@item --root=@var{file}
+@itemx -r @var{file}
+Make @var{file} a symlink to the result, and register it as a garbage
+collector root.
+
+@item --log-file
+Return the build log file names for the given
+@var{package-or-derivation}s, or raise an error if build logs are
+missing.
+
+This works regardless of how packages or derivations are specified.  For
+instance, the following invocations are equivalent:
+
+@example
+guix build --log-file `guix build -d guile`
+guix build --log-file `guix build guile`
+guix build --log-file guile
+guix build --log-file -e '(@@ (gnu packages guile) guile-2.0)'
+@end example
+
+
+@end table
+
+@cindex common build options
+In addition, a number of options that control the build process are
+common to @command{guix build} and other commands that can spawn builds,
+such as @command{guix package} or @command{guix archive}.  These are the
+following:
+
+@table @code
+
 @item --keep-failed
 @itemx -K
 Keep the build tree of failed builds.  Thus, if a build fail, its build
@@ -1870,36 +1890,15 @@ instead of offloading builds to remote machines.
 When the build or substitution process remains silent for more than
 @var{seconds}, terminate it and report a build failure.
 
-@item --cores=@var{n}
-@itemx -c @var{n}
-Allow the use of up to @var{n} CPU cores for the build.  The special
-value @code{0} means to use as many CPU cores as available.
-
-@item --root=@var{file}
-@itemx -r @var{file}
-Make @var{file} a symlink to the result, and register it as a garbage
-collector root.
-
 @item --verbosity=@var{level}
 Use the given verbosity level.  @var{level} must be an integer between 0
 and 5; higher means more verbose output.  Setting a level of 4 or more
 may be helpful when debugging setup issues with the build daemon.
 
-@item --log-file
-Return the build log file names for the given
-@var{package-or-derivation}s, or raise an error if build logs are
-missing.
-
-This works regardless of how packages or derivations are specified.  For
-instance, the following invocations are equivalent:
-
-@example
-guix build --log-file `guix build -d guile`
-guix build --log-file `guix build guile`
-guix build --log-file guile
-guix build --log-file -e '(@@ (gnu packages guile) guile-2.0)'
-@end example
-
+@item --cores=@var{n}
+@itemx -c @var{n}
+Allow the use of up to @var{n} CPU cores for the build.  The special
+value @code{0} means to use as many CPU cores as available.
 
 @end table
 
