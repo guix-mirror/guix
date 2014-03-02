@@ -20,7 +20,8 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (bsd-3 bsd-style psfl x11 gpl2+ lgpl2.1+))
+                #:select (bsd-3 bsd-style psfl x11 x11-style
+                          gpl2 gpl2+ lgpl2.1+))
   #:use-module ((guix licenses) #:select (zlib)
                                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (gnu packages)
@@ -504,6 +505,55 @@ recording and playback via diversions, and dynamic, chainable filters.  The
 system is highly configurable via command line options and embedded
 commands.")
     (license lgpl2.1+)))
+
+(define-public python2-element-tree
+  (package
+    (name "python2-element-tree")
+    (version "1.2.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://effbot.org/media/downloads/elementtree-"
+                    version "-20050316.tar.gz"))
+              (sha256
+               (base32
+                "016bphqnlg0l4vslahhw4r0aanw95bpypy65r1i1acyb2wj5z7dj"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2                       ; seems to be part of Python 3
+       #:tests? #f))                            ; no 'test' sub-command
+    (synopsis "Toolkit for XML processing in Python")
+    (description
+     "ElementTree is a Python library supporting lightweight XML processing.")
+    (home-page "http://effbot.org/zone/element-index.htm")
+    (license (x11-style "http://docs.python.org/2/license.html"
+                        "Like \"CWI LICENSE AGREEMENT FOR PYTHON \
+0.9.0 THROUGH 1.2\"."))))
+
+(define-public python2-pybugz
+  (package
+    (name "python2-pybugz")
+    (version "0.6.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://bits.liquidx.net/projects/pybugz/pybugz-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "17ni00p08gp5lkxlrrcnvi3x09fmajnlbz4da03qcgl9q21ym4jd"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:python ,python-2                         ; SyntaxError with Python 3
+       #:tests? #f))                              ; no 'test' sub-command
+    (inputs `(("element-tree" ,python2-element-tree)))
+    (synopsis "Python and command-line interface to Bugzilla")
+    (description
+     "PyBugz is a Python library and command-line tool to query the Bugzilla
+bug tracking system.  It is meant as an aid to speed up interaction with the
+bug tracker.")
+    (home-page "http://www.liquidx.net/pybugz/")
+    (license gpl2)))
 
 (define-public scons
   (package
