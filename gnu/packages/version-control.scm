@@ -281,14 +281,14 @@ property manipulation.")
 (define-public subversion
   (package
     (name "subversion")
-    (version "1.7.8")
+    (version "1.7.14")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://archive.apache.org/dist/subversion/subversion-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "11inl9n1riahfnbk1fax0dysm2swakzhzhpmm2zvga6fikcx90zw"))))
+               "038jbcpwm083abp0rvk0fhnx65kp9mz1qvzs3f83ig8fxcvqzb64"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
