@@ -266,6 +266,18 @@ WebDAV metadata support, wrappers for PROPFIND and PROPPATCH to simplify
 property manipulation.")
     (license gpl2+))) ; for documentation and tests; source under lgpl2.0+
 
+(define-public neon-0.29.6
+  (package (inherit neon)
+    (name "neon")
+    (version "0.29.6")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.webdav.org/neon/neon-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0hzbjqdx1z8zw0vmbknf159wjsxbcq8ii0wgwkqhxj3dimr0nr4w"))))))
+
 (define-public subversion
   (package
     (name "subversion")
