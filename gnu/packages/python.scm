@@ -146,8 +146,17 @@
              (substitute* "Lib/subprocess.py"
                (("args = \\[\"/bin/sh")
                 (string-append "args = [\"" (which "sh"))))
+             (substitute*
+               '("Lib/distutils/tests/test_spawn.py"
+                 "Lib/test/test_subprocess.py")
+               (("/bin/sh") (which "sh")))
              (apply configure args)))
-          %standard-phases))))
+          (alist-cons-before
+           'check 'pre-check
+           (lambda _
+             ;; 'Lib/test/test_site.py' needs a valid $HOME
+             (setenv "HOME" (getcwd)))
+           %standard-phases)))))
     (inputs
      `(("bzip2" ,bzip2)
        ("gdbm" ,gdbm)
@@ -183,9 +192,19 @@ data types.")
       (method url-fetch)
       (uri (string-append "https://www.python.org/ftp/python/"
                           version "/Python-" version ".tar.xz"))
+       (patches (list (search-patch "python-fix-tests.patch")))
+       (patch-flags '("-p0"))
       (sha256
        (base32
         "11f6hg9wdhm6hyzj49gxlvvp1s0l5hqgcsq1i4ayygqs1arpb4ik"))))
+    (arguments
+     (let ((args `(#:modules ((guix build gnu-build-system)
+                              (guix build utils)
+                             (srfi srfi-1)
+                              (srfi srfi-26))
+                   ,@(package-arguments python-2))))
+       (substitute-keyword-arguments args
+         ((#:tests? _) #t))))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")

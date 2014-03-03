@@ -1,0 +1,66 @@
+See the discussion about the issues fixed here at:
+http://bugs.python.org/issue20868 .
+
+--- Lib/test/test_shutil.py     2014-03-01 03:02:36.088311000 +0100
++++ Lib/test/test_shutil.py     2014-03-01 04:56:37.768311000 +0100
+@@ -1053,6 +1053,7 @@
+         self.assertRaises(ValueError, make_archive, base_name, 'xxx')
+ 
+     @requires_zlib
++    @unittest.skipIf(True, "getgrgid(0)[0] raises a KeyError on Guix")
+     def test_make_archive_owner_group(self):
+         # testing make_archive with owner and group, with various combinations
+         # this works even if there's not gid/uid support
+@@ -1081,6 +1082,7 @@
+ 
+ 
+     @requires_zlib
++    @unittest.skipIf(True, "getgrgid(0)[0] raises a KeyError on Guix")
+     @unittest.skipUnless(UID_GID_SUPPORT, "Requires grp and pwd support")
+     def test_tarfile_root_owner(self):
+         tmpdir, tmpdir2, base_name =  self._create_files()
+
+--- Lib/test/test_posixpath.py	2014-03-01 05:46:56.984311000 +0100
++++ Lib/test/test_posixpath.py	2014-03-07 00:59:20.888311000 +0100
+@@ -319,7 +319,11 @@
+                 del env['HOME']
+                 home = pwd.getpwuid(os.getuid()).pw_dir
+                 # $HOME can end with a trailing /, so strip it (see #17809)
+-                self.assertEqual(posixpath.expanduser("~"), home.rstrip("/"))
++                # The Guix builders have '/' as a home directory, so
++                # home.rstrip("/") will be an empty string and the test will
++                # fail. Let's just disable it since it does not really make
++                # sense with such a bizarre setup.
++                # self.assertEqual(posixpath.expanduser("~"), home.rstrip("/"))
+ 
+     def test_normpath(self):
+         self.assertEqual(posixpath.normpath(""), ".")
+--- Lib/test/test_socket.py.orig	2014-03-02 22:14:12.264311000 +0100
++++ Lib/test/test_socket.py	2014-03-21 03:50:45.660311000 +0100
+@@ -819,6 +819,8 @@
+             self.assertRaises(OverflowError, socket.htonl, k)
+             self.assertRaises(OverflowError, socket.htons, k)
+ 
++    @unittest.skipUnless(os.path.exists("/etc/services"),
++                         "getservbyname uses /etc/services, which is not in the chroot")
+     def testGetServBy(self):
+         eq = self.assertEqual
+         # Find one service that exists, then check all the related interfaces.
+@@ -1104,6 +1106,8 @@
+         self.assertRaises(ValueError, s.ioctl, -1, None)
+         s.ioctl(socket.SIO_KEEPALIVE_VALS, (1, 100, 100))
+ 
++    @unittest.skipUnless(os.path.exists("/etc/gai.conf"),
++                         "getaddrinfo() will fail")
+     def testGetaddrinfo(self):
+         try:
+             socket.getaddrinfo('localhost', 80)
+@@ -1174,6 +1178,8 @@
+         # only IP addresses are allowed
+         self.assertRaises(socket.error, socket.getnameinfo, ('mail.python.org',0), 0)
+ 
++    @unittest.skipUnless(os.path.exists("/etc/gai.conf"),
++                         "getaddrinfo() will fail")
+     @unittest.skipUnless(support.is_resource_enabled('network'),
+                          'network is not enabled')
+     def test_idna(self):
