@@ -26,14 +26,14 @@
 (define-public libgc
   (package
    (name "libgc")
-   (version "7.2d")
+   (version "7.2e")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://www.hboehm.info/gc/gc_source/gc-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0phwa5driahnpn79zqff14w9yc8sn3599cxz91m78hqdcpl0mznr"))))
+              "0jxgr71rhk58dzc1ihqs51vldh2qs1m154bn41qh6q1dm145nc89"))))
    (build-system gnu-build-system)
    (arguments
     ;; Make it so that we don't rely on /proc.  This is especially useful in
