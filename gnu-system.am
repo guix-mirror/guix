@@ -139,6 +139,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lsof.scm				\
   gnu/packages/lua.scm				\
   gnu/packages/lvm.scm				\
+  gnu/packages/lynx.scm				\
   gnu/packages/m4.scm				\
   gnu/packages/mail.scm				\
   gnu/packages/make-bootstrap.scm		\
