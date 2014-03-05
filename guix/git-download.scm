@@ -84,6 +84,7 @@ type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
                                   #:recursive? #t
                                   #:modules '((guix build git)
                                               (guix build utils))
-                                  #:guile-for-build guile-for-build)))
+                                  #:guile-for-build guile-for-build
+                                  #:local-build? #t)))
 
 ;;; git-download.scm ends here
