@@ -240,7 +240,9 @@ used to apply commands with arbitrarily long arguments.")
             (sha256
              (base32
               "04hjzzv434fb8ak3hh3dyhdvg3hqjjwvjmjxqzk1gh2jh6cr8gjv"))
-            (patches (list (search-patch "coreutils-dummy-man.patch")))))
+            (patches (list (search-patch "coreutils-dummy-man.patch")
+                           ;; TODO: remove this patch for >= 8.23
+                           (search-patch "coreutils-skip-nohup.patch")))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)))
