@@ -29,13 +29,15 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:export (libmpdclient
-            mpd))
+            mpd
+            ncmpc))
 
 (define libmpdclient
   (package
@@ -120,4 +122,28 @@ server-side application for playing music.  Through plugins and libraries it
 can play a variety of sound files while being controlled by its network
 protocol.")
     (home-page "http://www.musicpd.org/")
+    (license license:gpl2)))
+
+(define ncmpc
+  (package
+    (name "ncmpc")
+    (version "0.21")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "http://musicpd.org/download/ncmpc/"
+                              (car (string-split version #\.))
+                              "/ncmpc-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1gpy6rr0awl6xgkswmr8rdvqfkrz83rmwk441c00a9d4z3zb1a16"))))
+    (build-system gnu-build-system)
+    (inputs `(("glib" ,glib)
+              ("libmpdclient" ,libmpdclient)
+              ("ncurses" ,ncurses)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "A curses Music Player Daemon client")
+    (description "ncmpc is a fully featured MPD client, which runs in a
+terminal using ncurses.")
+    (home-page "http://www.musicpd.org/clients/ncmpc/")
     (license license:gpl2)))
