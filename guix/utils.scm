@@ -252,6 +252,22 @@ buffered data is lost."
          ((string-contains %host-type "linux") #(0 1 2))    ; *-linux-gnu
          (else                                 #(1 2 3))))) ; *-gnu*
 
+(define %libc-errno-pointer
+  ;; Glibc's 'errno' pointer.
+  (let ((errno-loc (dynamic-func "__errno_location" (dynamic-link))))
+    (and errno-loc
+         (let ((proc (pointer->procedure '* errno-loc '())))
+           (proc)))))
+
+(define (errno)
+  "Return the current errno."
+  ;; XXX: We assume that nothing changes 'errno' while we're doing all this.
+  ;; In particular, that means that no async must be running here.
+  (if %libc-errno-pointer
+      (let ((bv (pointer->bytevector %libc-errno-pointer (sizeof int))))
+        (bytevector-sint-ref bv 0 (native-endianness) (sizeof int)))
+      0))
+
 (define fcntl-flock
   (let* ((ptr  (dynamic-func "fcntl" (dynamic-link)))
          (proc (pointer->procedure int ptr `(,int ,int *))))
@@ -282,7 +298,7 @@ must be a symbol, one of 'read-lock, 'write-lock, or 'unlock."
         (or (zero? err)
 
             ;; Presumably we got EAGAIN or so.
-            (throw 'flock-error fd))))))
+            (throw 'flock-error (errno)))))))
 
 
 ;;;
