@@ -27,6 +27,9 @@
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match))
 
+(define temp-file
+  (string-append "t-utils-" (number->string (getpid))))
+
 (test-begin "utils")
 
 (test-assert "bytevector->base16-string->bytevector"
@@ -139,33 +142,43 @@
                    (append pids1 pids2)))
            (equal? (get-bytevector-all decompressed) data)))))
 
+(false-if-exception (delete-file temp-file))
 (test-equal "fcntl-flock"
-  0                                               ; the child's exit status
-  (let ((file (open-input-file (search-path %load-path "guix.scm"))))
-    (fcntl-flock file 'read-lock)
+  42                                              ; the child's exit status
+  (let ((file (open-file temp-file "w0")))
+    ;; Acquire an exclusive lock.
+    (fcntl-flock file 'write-lock)
     (match (primitive-fork)
       (0
        (dynamic-wind
          (const #t)
          (lambda ()
-           ;; Taking a read lock should be OK.
-           (fcntl-flock file 'read-lock)
-           (fcntl-flock file 'unlock)
-
-           (catch 'flock-error
-             (lambda ()
-               ;; Taking an exclusive lock should raise an exception.
-               (fcntl-flock file 'write-lock))
-             (lambda args
-               (primitive-exit 0)))
+           ;; Reopen FILE read-only so we can have a read lock.
+           (let ((file (open-file temp-file "r")))
+             ;; Wait until we can acquire the lock.
+             (fcntl-flock file 'read-lock)
+             (primitive-exit (read file)))
            (primitive-exit 1))
          (lambda ()
            (primitive-exit 2))))
       (pid
+       ;; Write garbage and wait.
+       (display "hello, world!"  file)
+       (force-output file)
+       (sleep 1)
+
+       ;; Write the real answer.
+       (seek file 0 SEEK_SET)
+       (truncate-file file 0)
+       (write 42 file)
+       (force-output file)
+
+       ;; Unlock, which should let the child continue.
+       (fcntl-flock file 'unlock)
+
        (match (waitpid pid)
          ((_  . status)
           (let ((result (status:exit-val status)))
-            (fcntl-flock file 'unlock)
             (close-port file)
             result)))))))
 
@@ -177,6 +190,8 @@
                   "/qvs2rj2ia5vci3wsdb7qvydrmacig4pg-bash-4.2-p24")))
 
 (test-end)
+
+(false-if-exception (delete-file temp-file))
 
 
 (exit (= (test-runner-fail-count (test-runner-current)) 0))
