@@ -176,6 +176,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/popt.scm				\
   gnu/packages/pth.scm				\
   gnu/packages/pulseaudio.scm			\
+  gnu/packages/pretty-print.scm			\
   gnu/packages/python.scm			\
   gnu/packages/qemu.scm				\
   gnu/packages/qt.scm				\
@@ -322,6 +323,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/slim-session.patch			\
   gnu/packages/patches/slim-config.patch			\
   gnu/packages/patches/slim-sigusr1.patch			\
+  gnu/packages/patches/source-highlight-regexrange-test.patch	\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
   gnu/packages/patches/valgrind-glibc.patch			\
