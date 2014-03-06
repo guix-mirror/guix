@@ -23,7 +23,7 @@
   #:use-module (guix derivations)
   #:use-module (guix nar)
   #:use-module (guix utils)
-  #:use-module ((guix build utils) #:select (which))
+  #:use-module ((guix build utils) #:select (which mkdir-p))
   #:use-module (guix ui)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -303,6 +303,38 @@ allowed on MACHINE."
   (or (machine-less-loaded? m1 m2)
       (machine-faster? m1 m2)))
 
+(define (machine-lock-file machine)
+  "Return the name of MACHINE's lock file."
+  (string-append %state-directory "/offload/"
+                 (build-machine-name machine) ".lock"))
+
+(define (lock-machine machine)
+  "Wait to acquire MACHINE's lock, and return the lock."
+  (let ((file (machine-lock-file machine)))
+    (mkdir-p (dirname file))
+    (let ((port (open-file file "w0")))
+      (fcntl-flock port 'write-lock)
+      port)))
+
+(define (unlock-machine machine lock)
+  "Unlock LOCK, MACHINE's lock."
+  (fcntl-flock lock 'unlock)
+  (close-port lock)
+  #t)
+
+(define-syntax-rule (with-machine-lock machine exp ...)
+  "Wait to acquire MACHINE's exclusive lock, and evaluate EXP in that
+context."
+  (let* ((m    machine)
+         (lock (lock-machine m)))
+    (dynamic-wind
+      (lambda ()
+        #t)
+      (lambda ()
+        exp ...)
+      (lambda ()
+        (unlock-machine m lock)))))
+
 (define (choose-build-machine requirements machines)
   "Return the best machine among MACHINES fulfilling REQUIREMENTS, or #f."
   (let ((machines (sort (filter (cut machine-matches? <> requirements)
@@ -330,15 +362,21 @@ allowed on MACHINE."
           (display "# accept\n")
           (let ((inputs  (string-tokenize (read-line)))
                 (outputs (string-tokenize (read-line))))
-            (when (send-files (cons (derivation-file-name drv) inputs)
-                              machine)
+            ;; Acquire MACHINE's exclusive lock to serialize file transfers
+            ;; to/from MACHINE in the presence of several 'offload' hook
+            ;; instance.
+            (when (with-machine-lock machine
+                    (send-files (cons (derivation-file-name drv) inputs)
+                                machine))
               (let ((status (offload drv machine
                                      #:print-build-trace? print-build-trace?
                                      #:max-silent-time max-silent-time
                                      #:build-timeout build-timeout)))
                 (if (zero? status)
                     (begin
-                      (retrieve-files outputs machine)
+                      ;; Likewise (see above.)
+                      (with-machine-lock machine
+                        (retrieve-files outputs machine))
                       (format (current-error-port)
                               "done with offloaded '~a'~%"
                               (derivation-file-name drv)))
@@ -419,5 +457,9 @@ This tool is meant to be used internally by 'guix-daemon'.\n"))
      (show-bug-report-information))
     (x
      (leave (_ "invalid arguments: ~{~s ~}~%") x))))
+
+;;; Local Variables:
+;;; eval: (put 'with-machine-lock 'scheme-indent-function 1)
+;;; End:
 
 ;;; offload.scm ends here
