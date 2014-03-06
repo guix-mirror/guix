@@ -399,7 +399,9 @@ Deriver: ~a~%"
                              files)))))))
 
 (test-assert "export/import paths, ensure topological order"
-  (let* ((file1 (add-text-to-store %store "foo" (random-text)))
+  (let* ((file0 (add-text-to-store %store "baz" (random-text)))
+         (file1 (add-text-to-store %store "foo" (random-text)
+                                   (list file0)))
          (file2 (add-text-to-store %store "bar" (random-text)
                                    (list file1)))
          (files (list file1 file2))
@@ -412,9 +414,10 @@ Deriver: ~a~%"
          (bytevector=? dump1 dump2)
          (let* ((source   (open-bytevector-input-port dump1))
                 (imported (import-paths %store source)))
+           ;; DUMP1 should contain exactly FILE1 and FILE2, not FILE0.
            (and (equal? imported (list file1 file2))
                 (every file-exists? files)
-                (null? (references %store file1))
+                (equal? (list file0) (references %store file1))
                 (equal? (list file1) (references %store file2)))))))
 
 (test-assert "import corrupt path"
