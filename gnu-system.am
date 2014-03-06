@@ -252,6 +252,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-madd-fix.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
+  gnu/packages/patches/bitlbee-fix-tests.patch			\
+  gnu/packages/patches/bitlbee-memset-fix.patch			\
   gnu/packages/patches/cdparanoia-fpic.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
