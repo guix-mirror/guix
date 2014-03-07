@@ -143,7 +143,7 @@
            (equal? (get-bytevector-all decompressed) data)))))
 
 (false-if-exception (delete-file temp-file))
-(test-equal "fcntl-flock"
+(test-equal "fcntl-flock wait"
   42                                              ; the child's exit status
   (let ((file (open-file temp-file "w0")))
     ;; Acquire an exclusive lock.
@@ -181,6 +181,48 @@
           (let ((result (status:exit-val status)))
             (close-port file)
             result)))))))
+
+(test-equal "fcntl-flock non-blocking"
+  EAGAIN                                          ; the child's exit status
+  (match (pipe)
+    ((input . output)
+     (match (primitive-fork)
+       (0
+        (dynamic-wind
+          (const #t)
+          (lambda ()
+            (close-port output)
+
+            ;; Wait for the green light.
+            (read-char input)
+
+            ;; Open FILE read-only so we can have a read lock.
+            (let ((file (open-file temp-file "w")))
+              (catch 'flock-error
+                (lambda ()
+                  ;; This attempt should throw EAGAIN.
+                  (fcntl-flock file 'write-lock #:wait? #f))
+                (lambda (key errno)
+                  (primitive-exit errno))))
+            (primitive-exit -1))
+          (lambda ()
+            (primitive-exit -2))))
+       (pid
+        (close-port input)
+        (let ((file (open-file temp-file "w")))
+          ;; Acquire an exclusive lock.
+          (fcntl-flock file 'write-lock)
+
+          ;; Tell the child to continue.
+          (write 'green-light output)
+          (force-output output)
+
+          (match (waitpid pid)
+            ((_  . status)
+             (let ((result (status:exit-val status)))
+               (fcntl-flock file 'unlock)
+               (close-port file)
+               result)))))))))
 
 ;; This is actually in (guix store).
 (test-equal "store-path-package-name"

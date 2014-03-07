@@ -244,6 +244,13 @@ buffered data is lost."
          ((string-contains %host-type "linux") 7) ; *-linux-gnu
          (else 9))))                              ; *-gnu*
 
+(define F_SETLK
+  ;; Likewise: GNU/Hurd and SPARC use 8, while the others typically use 6.
+  (compile-time-value
+   (cond ((string-contains %host-type "sparc") 8) ; sparc-*-linux-gnu
+         ((string-contains %host-type "linux") 6) ; *-linux-gnu
+         (else 8))))                              ; *-gnu*
+
 (define F_xxLCK
   ;; The F_RDLCK, F_WRLCK, and F_UNLCK constants.
   (compile-time-value
@@ -271,9 +278,11 @@ buffered data is lost."
 (define fcntl-flock
   (let* ((ptr  (dynamic-func "fcntl" (dynamic-link)))
          (proc (pointer->procedure int ptr `(,int ,int *))))
-    (lambda (fd-or-port operation)
+    (lambda* (fd-or-port operation #:key (wait? #t))
       "Perform locking OPERATION on the file beneath FD-OR-PORT.  OPERATION
-must be a symbol, one of 'read-lock, 'write-lock, or 'unlock."
+must be a symbol, one of 'read-lock, 'write-lock, or 'unlock.  When WAIT? is
+true, block until the lock is acquired; otherwise, thrown an 'flock-error'
+exception if it's already taken."
       (define (operation->int op)
         (case op
           ((read-lock)  (vector-ref F_xxLCK 0))
@@ -289,7 +298,9 @@ must be a symbol, one of 'read-lock, 'write-lock, or 'unlock."
       ;; XXX: 'fcntl' is a vararg function, but here we happily use the
       ;; standard ABI; crossing fingers.
       (let ((err (proc fd
-                       F_SETLKW                   ; lock & wait
+                       (if wait?
+                           F_SETLKW               ; lock & wait
+                           F_SETLK)               ; non-blocking attempt
                        (make-c-struct %struct-flock
                                       (list (operation->int operation)
                                             SEEK_SET
