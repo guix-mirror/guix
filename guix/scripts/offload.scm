@@ -309,6 +309,10 @@ allowed on MACHINE."
                  (build-machine-name machine)
                  "." (symbol->string hint) ".lock"))
 
+(define (machine-choice-lock-file)
+  "Return the name of the file used as a lock when choosing a build machine."
+  (string-append %state-directory "/offload/machine-choice.lock"))
+
 (define (lock-file file)
   "Wait and acquire an exclusive lock on FILE.  Return an open port."
   (mkdir-p (dirname file))
@@ -339,17 +343,86 @@ context."
   (with-file-lock (machine-lock-file machine hint)
     exp ...))
 
+
+(define (machine-slot-file machine slot)
+  "Return the file name of MACHINE's file for SLOT."
+  ;; For each machine we have a bunch of files representing each build slot.
+  ;; When choosing a build machine, we attempt to get an exclusive lock on one
+  ;; of these; if we fail, that means all the build slots are already taken.
+  ;; Inspired by Nix's build-remote.pl.
+  (string-append  (string-append %state-directory "/offload/"
+                                 (build-machine-name machine)
+                                 "/" (number->string slot))))
+
+(define (acquire-build-slot machine)
+  "Attempt to acquire a build slot on MACHINE.  Return the port representing
+the slot, or #f if none is available.
+
+This mechanism allows us to set a hard limit on the number of simultaneous
+connections allowed to MACHINE."
+  (mkdir-p (dirname (machine-slot-file machine 0)))
+  (with-machine-lock machine 'slots
+    (any (lambda (slot)
+           (let ((port (open-file (machine-slot-file machine slot)
+                                  "w0")))
+             (catch 'flock-error
+               (lambda ()
+                 (fcntl-flock port 'write-lock #:wait? #f)
+                 ;; Got it!
+                 (format (current-error-port)
+                         "process ~a acquired build slot '~a'~%"
+                         (getpid) (port-filename port))
+                 port)
+               (lambda args
+                 ;; PORT is already locked by another process.
+                 (close-port port)
+                 #f))))
+         (iota (build-machine-parallel-builds machine)))))
+
+(define (release-build-slot slot)
+  "Release SLOT, a build slot as returned as by 'acquire-build-slot'."
+  (close-port slot))
+
 (define (choose-build-machine requirements machines)
   "Return the best machine among MACHINES fulfilling REQUIREMENTS, or #f."
-  (let ((machines (sort (filter (cut machine-matches? <> requirements)
-                                machines)
-                        machine-less-loaded-or-faster?)))
-    (match machines
-      ((head . _)
-       ;; Return the best machine unless it's already overloaded.
-       (and (< (machine-load head) 2.)
-            head))
-      (_ #f))))
+
+  ;; Proceed like this:
+  ;;   1. Acquire the global machine-choice lock.
+  ;;   2. For all MACHINES, attempt to acquire a build slot, and filter out
+  ;;      those machines for which we failed.
+  ;;   3. Choose the best machine among those that are left.
+  ;;   4. Release the previously-acquired build slots of the other machines.
+  ;;   5. Release the global machine-choice lock.
+
+  (with-file-lock (machine-choice-lock-file)
+    (define machines+slots
+      (map (lambda (machine)
+             (let ((slot (acquire-build-slot machine)))
+               (and slot (list machine slot))))
+           machines))
+
+    (define (undecorate pred)
+      (match-lambda
+       ((machine slot)
+        (and (pred machine)
+             (list machine slot)))))
+
+    (let ((machines+slots (sort (filter (undecorate
+                                         (cut machine-matches? <> requirements))
+                                        machines+slots)
+                                (undecorate machine-less-loaded-or-faster?))))
+      (match machines+slots
+        (((best slot) (others slots) ...)
+         ;; Release slots from the uninteresting machines.
+         (for-each release-build-slot slots)
+
+         ;; Return the best machine unless it's already overloaded.
+         (if (< (machine-load best) 2.)
+             best
+             (begin
+               (release-build-slot slot)
+               #f)))
+        (() #f)))))
 
 (define* (process-request wants-local? system drv features
                           #:key
