@@ -383,6 +383,10 @@ connections allowed to MACHINE."
   "Release SLOT, a build slot as returned as by 'acquire-build-slot'."
   (close-port slot))
 
+(define %slots
+  ;; List of acquired build slots (open ports).
+  '())
+
 (define (choose-build-machine requirements machines)
   "Return the best machine among MACHINES fulfilling REQUIREMENTS, or #f."
 
@@ -418,7 +422,10 @@ connections allowed to MACHINE."
 
          ;; Return the best machine unless it's already overloaded.
          (if (< (machine-load best) 2.)
-             best
+             (begin
+               ;; Prevent SLOT from being GC'd.
+               (set! %slots (cons slot %slots))
+               best)
              (begin
                (release-build-slot slot)
                #f)))
