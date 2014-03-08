@@ -396,10 +396,10 @@ connections allowed to MACHINE."
 
   (with-file-lock (machine-choice-lock-file)
     (define machines+slots
-      (map (lambda (machine)
-             (let ((slot (acquire-build-slot machine)))
-               (and slot (list machine slot))))
-           machines))
+      (filter-map (lambda (machine)
+                    (let ((slot (acquire-build-slot machine)))
+                      (and slot (list machine slot))))
+                  machines))
 
     (define (undecorate pred)
       (match-lambda
