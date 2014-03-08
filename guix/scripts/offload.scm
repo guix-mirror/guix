@@ -309,32 +309,35 @@ allowed on MACHINE."
                  (build-machine-name machine)
                  "." (symbol->string hint) ".lock"))
 
-(define (lock-machine machine hint)
-  "Wait to acquire MACHINE's lock for HINT, and return the lock."
-  (let ((file (machine-lock-file machine hint)))
-    (mkdir-p (dirname file))
-    (let ((port (open-file file "w0")))
-      (fcntl-flock port 'write-lock)
-      port)))
+(define (lock-file file)
+  "Wait and acquire an exclusive lock on FILE.  Return an open port."
+  (mkdir-p (dirname file))
+  (let ((port (open-file file "w0")))
+    (fcntl-flock port 'write-lock)
+    port))
 
-(define (unlock-machine lock)
+(define (unlock-file lock)
   "Unlock LOCK."
   (fcntl-flock lock 'unlock)
   (close-port lock)
   #t)
 
-(define-syntax-rule (with-machine-lock machine hint exp ...)
-  "Wait to acquire MACHINE's exclusive lock for HINT, and evaluate EXP in that
-context."
-  (let* ((m    machine)
-         (lock (lock-machine m hint)))
+(define-syntax-rule (with-file-lock file exp ...)
+  "Wait to acquire a lock on FILE and evaluate EXP in that context."
+  (let ((port (lock-file file)))
     (dynamic-wind
       (lambda ()
         #t)
       (lambda ()
         exp ...)
       (lambda ()
-        (unlock-machine lock)))))
+        (unlock-file port)))))
+
+(define-syntax-rule (with-machine-lock machine hint exp ...)
+  "Wait to acquire MACHINE's exclusive lock for HINT, and evaluate EXP in that
+context."
+  (with-file-lock (machine-lock-file machine hint)
+    exp ...))
 
 (define (choose-build-machine requirements machines)
   "Return the best machine among MACHINES fulfilling REQUIREMENTS, or #f."
@@ -461,6 +464,7 @@ This tool is meant to be used internally by 'guix-daemon'.\n"))
 
 ;;; Local Variables:
 ;;; eval: (put 'with-machine-lock 'scheme-indent-function 2)
+;;; eval: (put 'with-file-lock 'scheme-indent-function 1)
 ;;; End:
 
 ;;; offload.scm ends here
