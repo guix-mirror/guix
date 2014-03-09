@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +45,8 @@
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("zlib" ,zlib)))
+    (arguments
+     `(#:parallel-tests? #f))
     (home-page "http://librdf.org/raptor/")
     (synopsis "RDF syntax library")
     (description "Raptor is a C library providing a set of parsers and
