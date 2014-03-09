@@ -127,6 +127,8 @@ options handled by 'set-build-options-from-command-line', and listed in
       --max-silent-time=SECONDS
                          mark the build as failed after SECONDS of silence"))
   (display (_ "
+      --timeout=SECONDS  mark the build as failed after SECONDS of activity"))
+  (display (_ "
       --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (_ "
   -c, --cores=N          allow the use of up to N CPU cores for the build")))
@@ -142,6 +144,7 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:use-substitutes? (assoc-ref opts 'substitutes?)
                      #:use-build-hook? (assoc-ref opts 'build-hook?)
                      #:max-silent-time (assoc-ref opts 'max-silent-time)
+                     #:timeout (assoc-ref opts 'timeout)
                      #:verbosity (assoc-ref opts 'verbosity)))
 
 (define %standard-build-options
@@ -174,6 +177,11 @@ options handled by 'set-build-options-from-command-line', and listed in
                   (apply values
                          (alist-cons 'max-silent-time (string->number* arg)
                                      result)
+                         rest)))
+        (option '("timeout") #t #f
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'timeout (string->number* arg) result)
                          rest)))
         (option '("verbosity") #t #f
                 (lambda (opt name arg result . rest)

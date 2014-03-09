@@ -1903,6 +1903,13 @@ instead of offloading builds to remote machines.
 When the build or substitution process remains silent for more than
 @var{seconds}, terminate it and report a build failure.
 
+@item --timeout=@var{seconds}
+Likewise, when the build or substitution process lasts for more than
+@var{seconds}, terminate it and report a build failure.
+
+By default there is no timeout.  This behavior can be restored with
+@code{--timeout=0}.
+
 @item --verbosity=@var{level}
 Use the given verbosity level.  @var{level} must be an integer between 0
 and 5; higher means more verbose output.  Setting a level of 4 or more
