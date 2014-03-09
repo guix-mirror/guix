@@ -2270,6 +2270,15 @@ called @code{gnew}, you may run this command from the Guix build tree:
 Using @code{--keep-failed} makes it easier to debug build failures since
 it provides access to the failed build tree.
 
+If the package is unknown to the @command{guix} command, it may be that
+the source file contains a syntax error, or lacks a @code{define-public}
+clause to export the package variable.  To figure it out, you may load
+the module from Guile to get more information about the actual error:
+
+@example
+./pre-inst-env guile -c '(use-modules (gnu packages gnew))'
+@end example
+
 Once your package builds correctly, please send us a patch
 (@pxref{Contributing}).  Well, if you need help, we will be happy to
 help you too.  Once the patch is committed in the Guix repository, the
@@ -2784,10 +2793,10 @@ deco,,, dmd, GNU dmd Manual}).
 @chapter Contributing
 
 This project is a cooperative effort, and we need your help to make it
-grow!  Please get in touch with us on @email{guix-devel@@gnu.org}.  We
-welcome ideas, bug reports, patches, and anything that may be helpful to
-the project.  We particularly welcome help on packaging
-(@pxref{Packaging Guidelines}).
+grow!  Please get in touch with us on @email{guix-devel@@gnu.org} and
+@code{#guix} on the Freenode IRC network.  We welcome ideas, bug
+reports, patches, and anything that may be helpful to the project.  We
+particularly welcome help on packaging (@pxref{Packaging Guidelines}).
 
 Please see the
 @url{http://git.savannah.gnu.org/cgit/guix.git/tree/HACKING,

@@ -2,8 +2,9 @@
 
 #+TITLE: Hacking GNU Guix and Its Incredible Distro
 
-Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+Copyright © 2014 Pierre-Antoine Rault <par@rigelk.eu>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
@@ -85,7 +86,11 @@ wrapping it, swallowing or rejecting the following s-expression, etc.
 Development is done using the Git distributed version control system.  Thus,
 access to the repository is not strictly necessary.  We welcome contributions
 in the form of patches as produced by ‘git format-patch’ sent to
-guix-devel@gnu.org.  Please write commit logs in the [[http://www.gnu.org/prep/standards/html_node/Change-Logs.html#Change-Logs][GNU ChangeLog format]].
+guix-devel@gnu.org.  Please write commit logs in the [[http://www.gnu.org/prep/standards/html_node/Change-Logs.html#Change-Logs][GNU ChangeLog
+format]]; you can check the commit history for examples.
+
+When posting a patch to the mailing list, use "[PATCH] ..." as a subject.  You
+may use your email client or the ‘git send-mail’ command.
 
 As you become a regular contributor, you may find it convenient to have write
 access to the repository (see below.)
