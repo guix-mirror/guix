@@ -827,7 +827,7 @@ must be an absolute store file name, or a derivation file name."
   (cond ((derivation-path? file)
          (let* ((base    (basename file))
                 (log     (string-append (dirname %state-directory) ; XXX
-                                        "/log/nix/drvs/"
+                                        "/log/guix/drvs/"
                                         (string-take base 2) "/"
                                         (string-drop base 2)))
                 (log.bz2 (string-append log ".bz2")))
