@@ -197,7 +197,7 @@
                       result))))))
 
 (define-syntax write-arg
-  (syntax-rules (integer boolean file string string-list
+  (syntax-rules (integer boolean file string string-list string-pairs
                  store-path store-path-list base16)
     ((_ integer arg p)
      (write-int arg p))
@@ -209,6 +209,8 @@
      (write-string arg p))
     ((_ string-list arg p)
      (write-string-list arg p))
+    ((_ string-pairs arg p)
+     (write-string-pairs arg p))
     ((_ store-path arg p)
      (write-store-path arg p))
     ((_ store-path-list arg p)
@@ -430,6 +432,7 @@ encoding conversion errors."
                             #:key keep-failed? keep-going? fallback?
                             (verbosity 0)
                             (max-build-jobs (current-processor-count))
+                            timeout
                             (max-silent-time 3600)
                             (use-build-hook? #t)
                             (build-verbosity 0)
@@ -462,12 +465,11 @@ encoding conversion errors."
     (when (>= (nix-server-minor-version server) 10)
       (send (boolean use-substitutes?)))
     (when (>= (nix-server-minor-version server) 12)
-      (send (string-list (fold-right (lambda (pair result)
-                                       (match pair
-                                         ((h . t)
-                                          (cons* h t result))))
-                                     '()
-                                     binary-caches))))
+      (let ((pairs (if timeout
+                       `(("build-timeout" . ,(number->string timeout))
+                         ,@binary-caches)
+                       binary-caches)))
+        (send (string-pairs pairs))))
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))
 

@@ -446,6 +446,20 @@
       (build-derivations store (list drv))
       #f)))
 
+(test-assert "build-expression->derivation and timeout"
+  (let* ((store      (let ((s (open-connection)))
+                       (set-build-options s #:timeout 1)
+                       s))
+         (builder    '(begin (sleep 100) (mkdir %output) #t))
+         (drv        (build-expression->derivation store "slow" builder))
+         (out-path   (derivation->output-path drv)))
+    (guard (c ((nix-protocol-error? c)
+               (and (string-contains (nix-protocol-error-message c)
+                                     "failed")
+                    (not (valid-path? store out-path)))))
+      (build-derivations store (list drv))
+      #f)))
+
 (test-assert "build-expression->derivation and derivation-prerequisites-to-build"
   (let ((drv (build-expression->derivation %store "fail" #f)))
     ;; The only direct dependency is (%guile-for-build) and it's already
