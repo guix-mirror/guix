@@ -174,6 +174,86 @@ determined."
                %lshg-command (strerror (system-error-errno args)))
       #f)))
 
+
+;;;
+;;; Synchronization.
+;;;
+
+(define (lock-file file)
+  "Wait and acquire an exclusive lock on FILE.  Return an open port."
+  (mkdir-p (dirname file))
+  (let ((port (open-file file "w0")))
+    (fcntl-flock port 'write-lock)
+    port))
+
+(define (unlock-file lock)
+  "Unlock LOCK."
+  (fcntl-flock lock 'unlock)
+  (close-port lock)
+  #t)
+
+(define-syntax-rule (with-file-lock file exp ...)
+  "Wait to acquire a lock on FILE and evaluate EXP in that context."
+  (let ((port (lock-file file)))
+    (dynamic-wind
+      (lambda ()
+        #t)
+      (lambda ()
+        exp ...)
+      (lambda ()
+        (unlock-file port)))))
+
+(define-syntax-rule (with-machine-lock machine hint exp ...)
+  "Wait to acquire MACHINE's exclusive lock for HINT, and evaluate EXP in that
+context."
+  (with-file-lock (machine-lock-file machine hint)
+    exp ...))
+
+
+(define (machine-slot-file machine slot)
+  "Return the file name of MACHINE's file for SLOT."
+  ;; For each machine we have a bunch of files representing each build slot.
+  ;; When choosing a build machine, we attempt to get an exclusive lock on one
+  ;; of these; if we fail, that means all the build slots are already taken.
+  ;; Inspired by Nix's build-remote.pl.
+  (string-append  (string-append %state-directory "/offload/"
+                                 (build-machine-name machine)
+                                 "/" (number->string slot))))
+
+(define (acquire-build-slot machine)
+  "Attempt to acquire a build slot on MACHINE.  Return the port representing
+the slot, or #f if none is available.
+
+This mechanism allows us to set a hard limit on the number of simultaneous
+connections allowed to MACHINE."
+  (mkdir-p (dirname (machine-slot-file machine 0)))
+  (with-machine-lock machine 'slots
+    (any (lambda (slot)
+           (let ((port (open-file (machine-slot-file machine slot)
+                                  "w0")))
+             (catch 'flock-error
+               (lambda ()
+                 (fcntl-flock port 'write-lock #:wait? #f)
+                 ;; Got it!
+                 (format (current-error-port)
+                         "process ~a acquired build slot '~a'~%"
+                         (getpid) (port-filename port))
+                 port)
+               (lambda args
+                 ;; PORT is already locked by another process.
+                 (close-port port)
+                 #f))))
+         (iota (build-machine-parallel-builds machine)))))
+
+(define (release-build-slot slot)
+  "Release SLOT, a build slot as returned as by 'acquire-build-slot'."
+  (close-port slot))
+
+
+;;;
+;;; Offloading.
+;;;
+
 (define* (offload drv machine
                   #:key print-build-trace? (max-silent-time 3600)
                   (build-timeout 7200) (log-port (current-output-port)))
@@ -299,6 +379,11 @@ success, #f otherwise."
 
              (zero? (close-pipe pipe)))))))
 
+
+;;;
+;;; Scheduling.
+;;;
+
 (define (machine-matches? machine requirements)
   "Return #t if MACHINE matches REQUIREMENTS."
   (and (string=? (build-requirements-system requirements)
@@ -350,75 +435,6 @@ allowed on MACHINE."
   "Return the name of the file used as a lock when choosing a build machine."
   (string-append %state-directory "/offload/machine-choice.lock"))
 
-(define (lock-file file)
-  "Wait and acquire an exclusive lock on FILE.  Return an open port."
-  (mkdir-p (dirname file))
-  (let ((port (open-file file "w0")))
-    (fcntl-flock port 'write-lock)
-    port))
-
-(define (unlock-file lock)
-  "Unlock LOCK."
-  (fcntl-flock lock 'unlock)
-  (close-port lock)
-  #t)
-
-(define-syntax-rule (with-file-lock file exp ...)
-  "Wait to acquire a lock on FILE and evaluate EXP in that context."
-  (let ((port (lock-file file)))
-    (dynamic-wind
-      (lambda ()
-        #t)
-      (lambda ()
-        exp ...)
-      (lambda ()
-        (unlock-file port)))))
-
-(define-syntax-rule (with-machine-lock machine hint exp ...)
-  "Wait to acquire MACHINE's exclusive lock for HINT, and evaluate EXP in that
-context."
-  (with-file-lock (machine-lock-file machine hint)
-    exp ...))
-
-
-(define (machine-slot-file machine slot)
-  "Return the file name of MACHINE's file for SLOT."
-  ;; For each machine we have a bunch of files representing each build slot.
-  ;; When choosing a build machine, we attempt to get an exclusive lock on one
-  ;; of these; if we fail, that means all the build slots are already taken.
-  ;; Inspired by Nix's build-remote.pl.
-  (string-append  (string-append %state-directory "/offload/"
-                                 (build-machine-name machine)
-                                 "/" (number->string slot))))
-
-(define (acquire-build-slot machine)
-  "Attempt to acquire a build slot on MACHINE.  Return the port representing
-the slot, or #f if none is available.
-
-This mechanism allows us to set a hard limit on the number of simultaneous
-connections allowed to MACHINE."
-  (mkdir-p (dirname (machine-slot-file machine 0)))
-  (with-machine-lock machine 'slots
-    (any (lambda (slot)
-           (let ((port (open-file (machine-slot-file machine slot)
-                                  "w0")))
-             (catch 'flock-error
-               (lambda ()
-                 (fcntl-flock port 'write-lock #:wait? #f)
-                 ;; Got it!
-                 (format (current-error-port)
-                         "process ~a acquired build slot '~a'~%"
-                         (getpid) (port-filename port))
-                 port)
-               (lambda args
-                 ;; PORT is already locked by another process.
-                 (close-port port)
-                 #f))))
-         (iota (build-machine-parallel-builds machine)))))
-
-(define (release-build-slot slot)
-  "Release SLOT, a build slot as returned as by 'acquire-build-slot'."
-  (close-port slot))
 
 (define %slots
   ;; List of acquired build slots (open ports).
