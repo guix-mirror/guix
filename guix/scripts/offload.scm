@@ -199,6 +199,43 @@ there, and write the build log to LOG-PORT.  Return the exit status."
 
     (close-pipe pipe)))
 
+(define* (transfer-and-offload drv machine
+                               #:key
+                               (inputs '())
+                               (outputs '())
+                               (max-silent-time 3600)
+                               (build-timeout 7200)
+                               print-build-trace?)
+  "Offload DRV to MACHINE.  Prior to the actual offloading, transfer all of
+INPUTS to MACHINE; if building DRV succeeds, retrieve all of OUTPUTS from
+MACHINE."
+  ;; Acquire MACHINE's exclusive lock to serialize file transfers
+  ;; to/from MACHINE in the presence of several 'offload' hook
+  ;; instance.
+  (when (with-machine-lock machine 'bandwidth
+          (send-files (cons (derivation-file-name drv) inputs)
+                      machine))
+    (let ((status (offload drv machine
+                           #:print-build-trace? print-build-trace?
+                           #:max-silent-time max-silent-time
+                           #:build-timeout build-timeout)))
+      (if (zero? status)
+          (begin
+            ;; Likewise (see above.)
+            (with-machine-lock machine 'bandwidth
+              (retrieve-files outputs machine))
+            (format (current-error-port)
+                    "done with offloaded '~a'~%"
+                    (derivation-file-name drv)))
+          (begin
+            (format (current-error-port)
+                    "derivation '~a' offloaded to '~a' failed \
+with exit code ~a~%"
+                    (derivation-file-name drv)
+                    (build-machine-name machine)
+                    (status:exit-val status))
+            (primitive-exit (status:exit-val status)))))))
+
 (define (send-files files machine)
   "Send the subset of FILES that's missing to MACHINE's store.  Return #t on
 success, #f otherwise."
@@ -387,8 +424,8 @@ connections allowed to MACHINE."
   ;; List of acquired build slots (open ports).
   '())
 
-(define (choose-build-machine requirements machines)
-  "Return the best machine among MACHINES fulfilling REQUIREMENTS, or #f."
+(define (choose-build-machine machines)
+  "Return the best machine among MACHINES, or #f."
 
   ;; Proceed like this:
   ;;   1. Acquire the global machine-choice lock.
@@ -411,9 +448,7 @@ connections allowed to MACHINE."
         (and (pred machine)
              (list machine slot)))))
 
-    (let ((machines+slots (sort (filter (undecorate
-                                         (cut machine-matches? <> requirements))
-                                        machines+slots)
+    (let ((machines+slots (sort machines+slots
                                 (undecorate machine-less-loaded-or-faster?))))
       (match machines+slots
         (((best slot) (others slots) ...)
@@ -436,43 +471,33 @@ connections allowed to MACHINE."
                           print-build-trace? (max-silent-time 3600)
                           (build-timeout 7200))
   "Process a request to build DRV."
-  (let* ((local?  (and wants-local? (string=? system (%current-system))))
-         (reqs    (build-requirements
-                   (system system)
-                   (features features)))
-         (machine (choose-build-machine reqs (build-machines))))
-    (if machine
-        (begin
-          (display "# accept\n")
-          (let ((inputs  (string-tokenize (read-line)))
-                (outputs (string-tokenize (read-line))))
-            ;; Acquire MACHINE's exclusive lock to serialize file transfers
-            ;; to/from MACHINE in the presence of several 'offload' hook
-            ;; instance.
-            (when (with-machine-lock machine 'bandwidth
-                    (send-files (cons (derivation-file-name drv) inputs)
-                                machine))
-              (let ((status (offload drv machine
-                                     #:print-build-trace? print-build-trace?
-                                     #:max-silent-time max-silent-time
-                                     #:build-timeout build-timeout)))
-                (if (zero? status)
-                    (begin
-                      ;; Likewise (see above.)
-                      (with-machine-lock machine 'bandwidth
-                        (retrieve-files outputs machine))
-                      (format (current-error-port)
-                              "done with offloaded '~a'~%"
-                              (derivation-file-name drv)))
-                    (begin
-                      (format (current-error-port)
-                              "derivation '~a' offloaded to '~a' failed \
-with exit code ~a~%"
-                              (derivation-file-name drv)
-                              (build-machine-name machine)
-                              (status:exit-val status))
-                      (primitive-exit (status:exit-val status))))))))
-        (display "# decline\n"))))
+  (let* ((local?     (and wants-local? (string=? system (%current-system))))
+         (reqs       (build-requirements
+                      (system system)
+                      (features features)))
+         (candidates (filter (cut machine-matches? <> reqs)
+                             (build-machines))))
+    (match candidates
+      (()
+       ;; We'll never be able to match REQS.
+       (display "# decline\n"))
+      ((_ ...)
+       (let ((machine (choose-build-machine candidates)))
+         (if machine
+             (begin
+               ;; Offload DRV to MACHINE.
+               (display "# accept\n")
+               (let ((inputs  (string-tokenize (read-line)))
+                     (outputs (string-tokenize (read-line))))
+                 (transfer-and-offload drv machine
+                                       #:inputs inputs
+                                       #:outputs outputs
+                                       #:max-silent-time max-silent-time
+                                       #:build-timeout build-timeout
+                                       #:print-build-trace? print-build-trace?)))
+
+             ;; Not now, all the machines are busy.
+             (display "# postpone\n")))))))
 
 (define-syntax-rule (with-nar-error-handling body ...)
   "Execute BODY with any &nar-error suitably reported to the user."
