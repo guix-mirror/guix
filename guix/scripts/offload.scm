@@ -256,7 +256,7 @@ connections allowed to MACHINE."
 
 (define* (offload drv machine
                   #:key print-build-trace? (max-silent-time 3600)
-                  (build-timeout 7200) (log-port (current-output-port)))
+                  build-timeout (log-port (current-output-port)))
   "Perform DRV on MACHINE, assuming DRV and its prerequisites are available
 there, and write the build log to LOG-PORT.  Return the exit status."
   (format (current-error-port) "offloading '~a' to '~a'...~%"
@@ -267,9 +267,12 @@ there, and write the build log to LOG-PORT.  Return the exit status."
   ;; FIXME: Protect DRV from garbage collection on MACHINE.
   (let ((pipe (remote-pipe machine OPEN_READ
                            `("guix" "build"
-                             ;; FIXME: more options
                              ,(format #f "--max-silent-time=~a"
                                       max-silent-time)
+                             ,@(if build-timeout
+                                   (list (format #f "--timeout=~a"
+                                                 build-timeout))
+                                   '())
                              ,(derivation-file-name drv)))))
     (let loop ((line (read-line pipe)))
       (unless (eof-object? line)
@@ -284,7 +287,7 @@ there, and write the build log to LOG-PORT.  Return the exit status."
                                (inputs '())
                                (outputs '())
                                (max-silent-time 3600)
-                               (build-timeout 7200)
+                               build-timeout
                                print-build-trace?)
   "Offload DRV to MACHINE.  Prior to the actual offloading, transfer all of
 INPUTS to MACHINE; if building DRV succeeds, retrieve all of OUTPUTS from
@@ -485,7 +488,7 @@ allowed on MACHINE."
 (define* (process-request wants-local? system drv features
                           #:key
                           print-build-trace? (max-silent-time 3600)
-                          (build-timeout 7200))
+                          build-timeout)
   "Process a request to build DRV."
   (let* ((local?     (and wants-local? (string=? system (%current-system))))
          (reqs       (build-requirements
