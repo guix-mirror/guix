@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
@@ -29,7 +29,8 @@
   #:use-module (rnrs io ports)
   #:re-export (alist-cons
                alist-delete)
-  #:export (directory-exists?
+  #:export (%store-directory
+            directory-exists?
             executable-file?
             call-with-ascii-input-file
             with-directory-excursion
@@ -61,6 +62,11 @@
 ;;;
 ;;; Directories.
 ;;;
+
+(define (%store-directory)
+  "Return the directory name of the store."
+  (or (getenv "NIX_STORE")
+      "/gnu/store"))
 
 (define (directory-exists? dir)
   "Return #t if DIR exists and is a directory."
@@ -443,7 +449,7 @@ all subject to the substitutions."
 
 
 ;;;
-;;; Patching shebangs---e.g., /bin/sh -> /nix/store/xyz...-bash/bin/sh.
+;;; Patching shebangs---e.g., /bin/sh -> /gnu/store/xyz...-bash/bin/sh.
 ;;;
 
 (define* (dump-port in out
@@ -630,8 +636,7 @@ for each unmatched character."
                    (unmatched (car matched) result)))))))
 
 (define* (remove-store-references file
-                                  #:optional (store (or (getenv "NIX_STORE")
-                                                        "/nix/store")))
+                                  #:optional (store (%store-directory)))
   "Remove from FILE occurrences of file names in STORE; return #t when
 store paths were encountered in FILE, #f otherwise.  This procedure is
 known as `nuke-refs' in Nixpkgs."

@@ -368,8 +368,7 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
 
          ;; SOURCE may be either a directory or a tarball.
          (and (if (file-is-directory? source)
-                  (let* ((store      (or (getenv "NIX_STORE")
-                                         "/nix/store"))
+                  (let* ((store     (or (getenv "NIX_STORE") "/gnu/store"))
                          (len       (+ 1 (string-length store)))
                          (base      (string-drop source len))
                          (dash      (string-index base #\-))
