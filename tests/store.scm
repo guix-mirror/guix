@@ -190,9 +190,18 @@
          (s1 (topologically-sorted %store (list y)))
          (s2 (topologically-sorted %store (list c y)))
          (s3 (topologically-sorted %store (cons y (references %store y)))))
-    (and (equal? s1 (list w x a b c d y))
-         (equal? s2 (list a b c w x d y))
-         (lset= string=? s1 s3))))
+    ;; The order in which 'references' returns the references of Y is
+    ;; unspecified, so accommodate.
+    (let* ((x-then-d? (equal? (references %store y) (list x d))))
+      (and (equal? s1
+                   (if x-then-d?
+                       (list w x a b c d y)
+                       (list a b c d w x y)))
+           (equal? s2
+                   (if x-then-d?
+                       (list a b c w x d y)
+                       (list a b c d w x y)))
+           (lset= string=? s1 s3)))))
 
 (test-assert "log-file, derivation"
   (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
