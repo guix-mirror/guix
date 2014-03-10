@@ -22,7 +22,9 @@
   #:use-module (guix packages)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages flex)
-  #:use-module (gnu packages bison))
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages autotools))
 
 (define-public gnumach-headers
   (package
@@ -85,4 +87,44 @@ You need this tool to compile the GNU Mach and GNU Hurd distributions,
 and to compile the GNU C library for the Hurd. Also,you will need it
 for other software in the GNU system that uses Mach-based inter-process
 communication.")
+    (license gpl2+)))
+
+(define-public hurd-headers
+  (package
+    (name "hurd-headers")
+    (version "0.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/hurd/hurd-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0lvkz3r0ngb4bsn2hzdc9vjpyrfa3ls36jivrvy1n7f7f55zan7q"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(;; Autoconf shouldn't be necessary but there seems to be a bug in the
+       ;; build system triggering its use.
+       ("autoconf" ,autoconf)
+
+       ("mig" ,mig)))
+    (arguments
+     `(#:phases (alist-replace
+                 'install
+                 (lambda _
+                   (zero? (system* "make" "install-headers" "no_deps=t")))
+                 (alist-delete 'build %standard-phases))
+
+       #:configure-flags '(;; Pretend we're on GNU/Hurd; 'configure' wants
+                           ;; that.
+                           "--host=i686-pc-gnu"
+
+                           ;; Reduce set of dependencies.
+                           "--without-parted")
+
+       #:tests? #f))
+    (home-page "http://www.gnu.org/software/hurd/hurd.html")
+    (synopsis "GNU Hurd headers")
+    (description
+     "This package provides C headers of the GNU Hurd, used to build the GNU C
+Library and other user programs.")
     (license gpl2+)))

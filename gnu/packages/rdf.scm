@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,6 +45,8 @@
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
        ("zlib" ,zlib)))
+    (arguments
+     `(#:parallel-tests? #f))
     (home-page "http://librdf.org/raptor/")
     (synopsis "RDF syntax library")
     (description "Raptor is a C library providing a set of parsers and
@@ -76,11 +78,12 @@ HTML and JSON.")
               (base32
                "08gb5d8bgy7vc6qd6r1kkmmc5rli67dlglpjqjlahpnvs26r1cwl"))))
     (build-system cmake-build-system)
-    ;; FIXME: Add optional dependencies: Raptor, Redland, odbci, clucene; doxygen
-    (inputs
-     `(("qt" ,qt-4)))
+    ;; FIXME: Add optional dependencies: Redland, odbci, clucene; doxygen
     (native-inputs
      `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("qt" ,qt-4)
+       ("raptor2" ,raptor2)))
     (home-page "http://soprano.sourceforge.net/")
     (synopsis "RDF data library for Qt")
     (description "Soprano (formerly known as QRDF) is a library which

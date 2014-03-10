@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -208,6 +209,31 @@ servers.  It includes several libraries: libassuan (IPC between GnuPG
 components), libgpg-error (centralized GnuPG error values), and libskba
 (working with X.509 certificates and CMS data).")
     (license gpl3+)))
+
+(define-public gnupg-1
+  (package (inherit gnupg)
+    (version "1.4.16")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
+                          ".tar.bz2"))
+      (sha256
+       (base32
+        "0bsa1yqa3ybhvmc4ys73amdpcmckrlq1fsxjl2980cxada778fvv"))))
+    (inputs
+     `(("zlib" ,guix:zlib)
+       ("bzip2" ,guix:bzip2)
+       ("curl" ,curl)
+       ("readline" ,readline)
+       ("libgpg-error" ,libgpg-error)))
+    (arguments
+     `(#:phases (alist-cons-after
+                 'unpack 'patch-check-sh
+                 (lambda _
+                   (substitute* "checks/Makefile.in"
+                     (("/bin/sh") (which "bash"))))
+                 %standard-phases)))))
 
 (define-public gpgme
   (package

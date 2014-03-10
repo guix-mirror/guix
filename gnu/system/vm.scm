@@ -383,7 +383,13 @@ such as /etc files."
                              (system* grub "--no-floppy"
                                       "--boot-directory" "/fs/boot"
                                       "/dev/sda"))
-                            (zero? (system* umount "/fs"))
+                            (begin
+                              (when (file-exists? "/fs/dev/pts")
+                                ;; Unmount devpts so /fs itself can be
+                                ;; unmounted (failing to do that leads to
+                                ;; EBUSY.)
+                                (system* umount "/fs/dev/pts"))
+                              (zero? (system* umount "/fs")))
                             (reboot))))))))
     #:system system
     #:inputs `(("parted" ,parted)

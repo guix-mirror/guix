@@ -26,10 +26,14 @@ GUIX_ASSERT_SUPPORTED_SYSTEM
 
 AC_ARG_WITH(store-dir,
   AC_HELP_STRING([--with-store-dir=PATH],
-    [path of the store (defaults to /nix/store)]),
+    [file name of the store (defaults to /gnu/store)]),
   [storedir="$withval"],
-  [storedir="/nix/store"])
+  [storedir="/gnu/store"])
 AC_SUBST(storedir)
+
+dnl Better be verbose.
+AC_MSG_CHECKING([for the store directory])
+AC_MSG_RESULT([$storedir])
 
 AC_ARG_ENABLE([daemon],
   [AS_HELP_STRING([--disable-daemon], [build the Nix daemon (C++)])],

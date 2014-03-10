@@ -127,6 +127,8 @@ options handled by 'set-build-options-from-command-line', and listed in
       --max-silent-time=SECONDS
                          mark the build as failed after SECONDS of silence"))
   (display (_ "
+      --timeout=SECONDS  mark the build as failed after SECONDS of activity"))
+  (display (_ "
       --verbosity=LEVEL  use the given verbosity LEVEL"))
   (display (_ "
   -c, --cores=N          allow the use of up to N CPU cores for the build")))
@@ -142,39 +144,57 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:use-substitutes? (assoc-ref opts 'substitutes?)
                      #:use-build-hook? (assoc-ref opts 'build-hook?)
                      #:max-silent-time (assoc-ref opts 'max-silent-time)
+                     #:timeout (assoc-ref opts 'timeout)
                      #:verbosity (assoc-ref opts 'verbosity)))
 
 (define %standard-build-options
   ;; List of standard command-line options for tools that build something.
   (list (option '(#\K "keep-failed") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'keep-failed? #t result)))
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'keep-failed? #t result)
+                         rest)))
         (option '("fallback") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'fallback? #t
-                              (alist-delete 'fallback? result))))
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'fallback? #t
+                                     (alist-delete 'fallback? result))
+                         rest)))
         (option '("no-substitutes") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'substitutes? #f
-                              (alist-delete 'substitutes? result))))
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'substitutes? #f
+                                     (alist-delete 'substitutes? result))
+                         rest)))
         (option '("no-build-hook") #f #f
-                (lambda (opt name arg result)
-                  (alist-cons 'build-hook? #f
-                              (alist-delete 'build-hook? result))))
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'build-hook? #f
+                                     (alist-delete 'build-hook? result))
+                         rest)))
         (option '("max-silent-time") #t #f
-                (lambda (opt name arg result)
-                  (alist-cons 'max-silent-time (string->number* arg)
-                              result)))
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'max-silent-time (string->number* arg)
+                                     result)
+                         rest)))
+        (option '("timeout") #t #f
+                (lambda (opt name arg result . rest)
+                  (apply values
+                         (alist-cons 'timeout (string->number* arg) result)
+                         rest)))
         (option '("verbosity") #t #f
-                (lambda (opt name arg result)
+                (lambda (opt name arg result . rest)
                   (let ((level (string->number arg)))
-                    (alist-cons 'verbosity level
-                                (alist-delete 'verbosity result)))))
+                    (apply values
+                           (alist-cons 'verbosity level
+                                       (alist-delete 'verbosity result))
+                           rest))))
         (option '(#\c "cores") #t #f
-                (lambda (opt name arg result)
+                (lambda (opt name arg result . rest)
                   (let ((c (false-if-exception (string->number arg))))
                     (if c
-                        (alist-cons 'cores c result)
+                        (apply values (alist-cons 'cores c result) rest)
                         (leave (_ "~a: not a number~%") arg)))))))
 
 

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -63,7 +63,7 @@ specifications.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.2.11")
+    (version "3.2.12")
     (source (origin
              (method url-fetch)
              (uri
@@ -75,8 +75,12 @@ specifications.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "1hgk3k8f6wqijca3bsjbfn8pzyfva509y4j2vaxhm4ynfa5cai5q"))))
+               "0195nliarszq5mginli6d2f5z7ljnd7mwa46iy9z8pkcgy56khbl"))))
     (build-system gnu-build-system)
+    (arguments
+     ;; Work around build issue reported at
+     ;; <https://lists.gnu.org/archive/html/guix-devel/2014-03/msg00027.html>.
+     '(#:make-flags '("CPPFLAGS=-DENABLE_RSA_EXPORT")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs

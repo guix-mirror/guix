@@ -23,7 +23,7 @@
   #:use-module (guix derivations)
   #:use-module (guix nar)
   #:use-module (guix utils)
-  #:use-module ((guix build utils) #:select (which))
+  #:use-module ((guix build utils) #:select (which mkdir-p))
   #:use-module (guix ui)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -122,38 +122,40 @@ determined."
          (leave (_ "failed to load machine file '~a': ~s~%")
                 file args))))))
 
-(define (open-ssh-gateway machine)
-  "Initiate an SSH connection gateway to MACHINE, and return the PID of the
-running lsh gateway upon success, or #f on failure."
-  (catch 'system-error
-    (lambda ()
-      (let* ((port   (open-pipe* OPEN_READ %lsh-command
-                                 "-l" (build-machine-user machine)
-                                 "-i" (build-machine-private-key machine)
-                                 ;; XXX: With lsh 2.1, passing '--write-pid'
-                                 ;; last causes the PID not to be printed.
-                                 "--write-pid" "--gateway" "--background" "-z"
-                                 (build-machine-name machine)))
-             (line   (read-line port))
-             (status (close-pipe port)))
-       (if (zero? status)
-           (let ((pid (string->number line)))
-             (if (integer? pid)
-                 pid
-                 (begin
-                   (warning (_ "'~a' did not write its PID on stdout: ~s~%")
-                            %lsh-command line)
-                   #f)))
-           (begin
-             (warning (_ "failed to initiate SSH connection to '~a':\
- '~a' exited with ~a~%")
-                      (build-machine-name machine)
-                      %lsh-command
-                      (status:exit-val status))
-             #f))))
-    (lambda args
-      (leave (_ "failed to execute '~a': ~a~%")
-             %lsh-command (strerror (system-error-errno args))))))
+;;; FIXME: The idea was to open the connection to MACHINE once for all, but
+;;; lshg is currently non-functional.
+;; (define (open-ssh-gateway machine)
+;;   "Initiate an SSH connection gateway to MACHINE, and return the PID of the
+;; running lsh gateway upon success, or #f on failure."
+;;   (catch 'system-error
+;;     (lambda ()
+;;       (let* ((port   (open-pipe* OPEN_READ %lsh-command
+;;                                  "-l" (build-machine-user machine)
+;;                                  "-i" (build-machine-private-key machine)
+;;                                  ;; XXX: With lsh 2.1, passing '--write-pid'
+;;                                  ;; last causes the PID not to be printed.
+;;                                  "--write-pid" "--gateway" "--background" "-z"
+;;                                  (build-machine-name machine)))
+;;              (line   (read-line port))
+;;              (status (close-pipe port)))
+;;        (if (zero? status)
+;;            (let ((pid (string->number line)))
+;;              (if (integer? pid)
+;;                  pid
+;;                  (begin
+;;                    (warning (_ "'~a' did not write its PID on stdout: ~s~%")
+;;                             %lsh-command line)
+;;                    #f)))
+;;            (begin
+;;              (warning (_ "failed to initiate SSH connection to '~a':\
+;;  '~a' exited with ~a~%")
+;;                       (build-machine-name machine)
+;;                       %lsh-command
+;;                       (status:exit-val status))
+;;              #f))))
+;;     (lambda args
+;;       (leave (_ "failed to execute '~a': ~a~%")
+;;              %lsh-command (strerror (system-error-errno args))))))
 
 (define (remote-pipe machine mode command)
   "Run COMMAND on MACHINE, assuming an lsh gateway has been set up."
@@ -161,6 +163,10 @@ running lsh gateway upon success, or #f on failure."
     (lambda ()
       (apply open-pipe* mode %lshg-command
              "-l" (build-machine-user machine) "-z"
+
+             ;; XXX: Remove '-i' when %LSHG-COMMAND really is lshg.
+             "-i" (build-machine-private-key machine)
+
              (build-machine-name machine)
              command))
     (lambda args
@@ -168,9 +174,89 @@ running lsh gateway upon success, or #f on failure."
                %lshg-command (strerror (system-error-errno args)))
       #f)))
 
+
+;;;
+;;; Synchronization.
+;;;
+
+(define (lock-file file)
+  "Wait and acquire an exclusive lock on FILE.  Return an open port."
+  (mkdir-p (dirname file))
+  (let ((port (open-file file "w0")))
+    (fcntl-flock port 'write-lock)
+    port))
+
+(define (unlock-file lock)
+  "Unlock LOCK."
+  (fcntl-flock lock 'unlock)
+  (close-port lock)
+  #t)
+
+(define-syntax-rule (with-file-lock file exp ...)
+  "Wait to acquire a lock on FILE and evaluate EXP in that context."
+  (let ((port (lock-file file)))
+    (dynamic-wind
+      (lambda ()
+        #t)
+      (lambda ()
+        exp ...)
+      (lambda ()
+        (unlock-file port)))))
+
+(define-syntax-rule (with-machine-lock machine hint exp ...)
+  "Wait to acquire MACHINE's exclusive lock for HINT, and evaluate EXP in that
+context."
+  (with-file-lock (machine-lock-file machine hint)
+    exp ...))
+
+
+(define (machine-slot-file machine slot)
+  "Return the file name of MACHINE's file for SLOT."
+  ;; For each machine we have a bunch of files representing each build slot.
+  ;; When choosing a build machine, we attempt to get an exclusive lock on one
+  ;; of these; if we fail, that means all the build slots are already taken.
+  ;; Inspired by Nix's build-remote.pl.
+  (string-append  (string-append %state-directory "/offload/"
+                                 (build-machine-name machine)
+                                 "/" (number->string slot))))
+
+(define (acquire-build-slot machine)
+  "Attempt to acquire a build slot on MACHINE.  Return the port representing
+the slot, or #f if none is available.
+
+This mechanism allows us to set a hard limit on the number of simultaneous
+connections allowed to MACHINE."
+  (mkdir-p (dirname (machine-slot-file machine 0)))
+  (with-machine-lock machine 'slots
+    (any (lambda (slot)
+           (let ((port (open-file (machine-slot-file machine slot)
+                                  "w0")))
+             (catch 'flock-error
+               (lambda ()
+                 (fcntl-flock port 'write-lock #:wait? #f)
+                 ;; Got it!
+                 (format (current-error-port)
+                         "process ~a acquired build slot '~a'~%"
+                         (getpid) (port-filename port))
+                 port)
+               (lambda args
+                 ;; PORT is already locked by another process.
+                 (close-port port)
+                 #f))))
+         (iota (build-machine-parallel-builds machine)))))
+
+(define (release-build-slot slot)
+  "Release SLOT, a build slot as returned as by 'acquire-build-slot'."
+  (close-port slot))
+
+
+;;;
+;;; Offloading.
+;;;
+
 (define* (offload drv machine
                   #:key print-build-trace? (max-silent-time 3600)
-                  (build-timeout 7200) (log-port (current-output-port)))
+                  build-timeout (log-port (current-output-port)))
   "Perform DRV on MACHINE, assuming DRV and its prerequisites are available
 there, and write the build log to LOG-PORT.  Return the exit status."
   (format (current-error-port) "offloading '~a' to '~a'...~%"
@@ -181,9 +267,12 @@ there, and write the build log to LOG-PORT.  Return the exit status."
   ;; FIXME: Protect DRV from garbage collection on MACHINE.
   (let ((pipe (remote-pipe machine OPEN_READ
                            `("guix" "build"
-                             ;; FIXME: more options
                              ,(format #f "--max-silent-time=~a"
                                       max-silent-time)
+                             ,@(if build-timeout
+                                   (list (format #f "--timeout=~a"
+                                                 build-timeout))
+                                   '())
                              ,(derivation-file-name drv)))))
     (let loop ((line (read-line pipe)))
       (unless (eof-object? line)
@@ -192,6 +281,43 @@ there, and write the build log to LOG-PORT.  Return the exit status."
         (loop (read-line pipe))))
 
     (close-pipe pipe)))
+
+(define* (transfer-and-offload drv machine
+                               #:key
+                               (inputs '())
+                               (outputs '())
+                               (max-silent-time 3600)
+                               build-timeout
+                               print-build-trace?)
+  "Offload DRV to MACHINE.  Prior to the actual offloading, transfer all of
+INPUTS to MACHINE; if building DRV succeeds, retrieve all of OUTPUTS from
+MACHINE."
+  ;; Acquire MACHINE's exclusive lock to serialize file transfers
+  ;; to/from MACHINE in the presence of several 'offload' hook
+  ;; instance.
+  (when (with-machine-lock machine 'bandwidth
+          (send-files (cons (derivation-file-name drv) inputs)
+                      machine))
+    (let ((status (offload drv machine
+                           #:print-build-trace? print-build-trace?
+                           #:max-silent-time max-silent-time
+                           #:build-timeout build-timeout)))
+      (if (zero? status)
+          (begin
+            ;; Likewise (see above.)
+            (with-machine-lock machine 'bandwidth
+              (retrieve-files outputs machine))
+            (format (current-error-port)
+                    "done with offloaded '~a'~%"
+                    (derivation-file-name drv)))
+          (begin
+            (format (current-error-port)
+                    "derivation '~a' offloaded to '~a' failed \
+with exit code ~a~%"
+                    (derivation-file-name drv)
+                    (build-machine-name machine)
+                    (status:exit-val status))
+            (primitive-exit (status:exit-val status)))))))
 
 (define (send-files files machine)
   "Send the subset of FILES that's missing to MACHINE's store.  Return #t on
@@ -256,6 +382,11 @@ success, #f otherwise."
 
              (zero? (close-pipe pipe)))))))
 
+
+;;;
+;;; Scheduling.
+;;;
+
 (define (machine-matches? machine requirements)
   "Return #t if MACHINE matches REQUIREMENTS."
   (and (string=? (build-requirements-system requirements)
@@ -268,57 +399,124 @@ success, #f otherwise."
   "Return #t if M1 is faster than M2."
   (> (build-machine-speed m1) (build-machine-speed m2)))
 
-(define (choose-build-machine requirements machines)
-  "Return the best machine among MACHINES fulfilling REQUIREMENTS, or #f."
-  ;; FIXME: Take machine load into account, and/or shuffle MACHINES.
-  (let ((machines (sort (filter (cut machine-matches? <> requirements)
-                                machines)
-                        machine-faster?)))
-    (match machines
-      ((head . _)
-       head)
-      (_ #f))))
+(define (machine-load machine)
+  "Return the load of MACHINE, divided by the number of parallel builds
+allowed on MACHINE."
+  (let* ((pipe (remote-pipe machine OPEN_READ `("cat" "/proc/loadavg")))
+         (line (read-line pipe)))
+    (close-pipe pipe)
+    (if (eof-object? line)
+        1.
+        (match (string-tokenize line)
+          ((one five fifteen . _)
+           (let* ((raw        (string->number five))
+                  (jobs       (build-machine-parallel-builds machine))
+                  (normalized (/ raw jobs)))
+             (format (current-error-port) "load on machine '~a' is ~s\
+ (normalized: ~s)~%"
+                     (build-machine-name machine) raw normalized)
+             normalized))
+          (_
+           1.)))))
+
+(define (machine-less-loaded? m1 m2)
+  "Return #t if the load on M1 is lower than that on M2."
+  (< (machine-load m1) (machine-load m2)))
+
+(define (machine-less-loaded-or-faster? m1 m2)
+  "Return #t if M1 is either less loaded or faster than M2."
+  (or (machine-less-loaded? m1 m2)
+      (machine-faster? m1 m2)))
+
+(define (machine-lock-file machine hint)
+  "Return the name of MACHINE's lock file for HINT."
+  (string-append %state-directory "/offload/"
+                 (build-machine-name machine)
+                 "." (symbol->string hint) ".lock"))
+
+(define (machine-choice-lock-file)
+  "Return the name of the file used as a lock when choosing a build machine."
+  (string-append %state-directory "/offload/machine-choice.lock"))
+
+
+(define %slots
+  ;; List of acquired build slots (open ports).
+  '())
+
+(define (choose-build-machine machines)
+  "Return the best machine among MACHINES, or #f."
+
+  ;; Proceed like this:
+  ;;   1. Acquire the global machine-choice lock.
+  ;;   2. For all MACHINES, attempt to acquire a build slot, and filter out
+  ;;      those machines for which we failed.
+  ;;   3. Choose the best machine among those that are left.
+  ;;   4. Release the previously-acquired build slots of the other machines.
+  ;;   5. Release the global machine-choice lock.
+
+  (with-file-lock (machine-choice-lock-file)
+    (define machines+slots
+      (filter-map (lambda (machine)
+                    (let ((slot (acquire-build-slot machine)))
+                      (and slot (list machine slot))))
+                  machines))
+
+    (define (undecorate pred)
+      (match-lambda
+       ((machine slot)
+        (and (pred machine)
+             (list machine slot)))))
+
+    (let ((machines+slots (sort machines+slots
+                                (undecorate machine-less-loaded-or-faster?))))
+      (match machines+slots
+        (((best slot) (others slots) ...)
+         ;; Release slots from the uninteresting machines.
+         (for-each release-build-slot slots)
+
+         ;; Return the best machine unless it's already overloaded.
+         (if (< (machine-load best) 2.)
+             (begin
+               ;; Prevent SLOT from being GC'd.
+               (set! %slots (cons slot %slots))
+               best)
+             (begin
+               (release-build-slot slot)
+               #f)))
+        (() #f)))))
 
 (define* (process-request wants-local? system drv features
                           #:key
                           print-build-trace? (max-silent-time 3600)
-                          (build-timeout 7200))
+                          build-timeout)
   "Process a request to build DRV."
-  (let* ((local?  (and wants-local? (string=? system (%current-system))))
-         (reqs    (build-requirements
-                   (system system)
-                   (features features)))
-         (machine (choose-build-machine reqs (build-machines))))
-    (if machine
-        (match (open-ssh-gateway machine)
-          ((? integer? pid)
-           (display "# accept\n")
-           (let ((inputs  (string-tokenize (read-line)))
-                 (outputs (string-tokenize (read-line))))
-             (when (send-files (cons (derivation-file-name drv) inputs)
-                               machine)
-               (let ((status (offload drv machine
-                                      #:print-build-trace? print-build-trace?
-                                      #:max-silent-time max-silent-time
-                                      #:build-timeout build-timeout)))
-                 (kill pid SIGTERM)
-                 (if (zero? status)
-                     (begin
-                       (retrieve-files outputs machine)
-                       (format (current-error-port)
-                               "done with offloaded '~a'~%"
-                               (derivation-file-name drv)))
-                     (begin
-                       (format (current-error-port)
-                               "derivation '~a' offloaded to '~a' failed \
-with exit code ~a~%"
-                               (derivation-file-name drv)
-                               (build-machine-name machine)
-                               (status:exit-val status))
-                       (primitive-exit (status:exit-val status))))))))
-          (#f
-           (display "# decline\n")))
-        (display "# decline\n"))))
+  (let* ((local?     (and wants-local? (string=? system (%current-system))))
+         (reqs       (build-requirements
+                      (system system)
+                      (features features)))
+         (candidates (filter (cut machine-matches? <> reqs)
+                             (build-machines))))
+    (match candidates
+      (()
+       ;; We'll never be able to match REQS.
+       (display "# decline\n"))
+      ((_ ...)
+       (let ((machine (choose-build-machine candidates)))
+         (if machine
+             (begin
+               ;; Offload DRV to MACHINE.
+               (display "# accept\n")
+               (let ((inputs  (string-tokenize (read-line)))
+                     (outputs (string-tokenize (read-line))))
+                 (transfer-and-offload drv machine
+                                       #:inputs inputs
+                                       #:outputs outputs
+                                       #:max-silent-time max-silent-time
+                                       #:build-timeout build-timeout
+                                       #:print-build-trace? print-build-trace?)))
+
+             ;; Not now, all the machines are busy.
+             (display "# postpone\n")))))))
 
 (define-syntax-rule (with-nar-error-handling body ...)
   "Execute BODY with any &nar-error suitably reported to the user."
@@ -387,5 +585,10 @@ This tool is meant to be used internally by 'guix-daemon'.\n"))
      (show-bug-report-information))
     (x
      (leave (_ "invalid arguments: ~{~s ~}~%") x))))
+
+;;; Local Variables:
+;;; eval: (put 'with-machine-lock 'scheme-indent-function 2)
+;;; eval: (put 'with-file-lock 'scheme-indent-function 1)
+;;; End:
 
 ;;; offload.scm ends here

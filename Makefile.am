@@ -263,7 +263,7 @@ gen-ChangeLog:
 	  mv $(distdir)/cl-t $(distdir)/ChangeLog;	\
 	fi
 
-# Make sure we're not shipping a file that embeds a local /nix/store file name.
+# Make sure we're not shipping a file that embeds a local /gnu/store file name.
 assert-no-store-file-names:
 	if grep -r --exclude=*.texi --exclude=*.info				\
 	     "$(storedir)/[a-z0-9]{32}-" $(distdir) ;				\

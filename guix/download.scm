@@ -242,7 +242,11 @@ must be a list of symbol/URL-list pairs."
                                               (guix build utils)
                                               (guix ftp-client))
                                   #:guile-for-build guile-for-build
-                                  #:env-vars env-vars)))
+                                  #:env-vars env-vars
+
+                                  ;; In general, offloading downloads is not a
+                                  ;; good idea.
+                                  #:local-build? #t)))
 
 (define* (download-to-store store url #:optional (name (basename url))
                             #:key (log (current-error-port)))

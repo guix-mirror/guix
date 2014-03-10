@@ -190,9 +190,18 @@
          (s1 (topologically-sorted %store (list y)))
          (s2 (topologically-sorted %store (list c y)))
          (s3 (topologically-sorted %store (cons y (references %store y)))))
-    (and (equal? s1 (list w x a b c d y))
-         (equal? s2 (list a b c w x d y))
-         (lset= string=? s1 s3))))
+    ;; The order in which 'references' returns the references of Y is
+    ;; unspecified, so accommodate.
+    (let* ((x-then-d? (equal? (references %store y) (list x d))))
+      (and (equal? s1
+                   (if x-then-d?
+                       (list w x a b c d y)
+                       (list a b c d w x y)))
+           (equal? s2
+                   (if x-then-d?
+                       (list a b c w x d y)
+                       (list a b c d w x y)))
+           (lset= string=? s1 s3)))))
 
 (test-assert "log-file, derivation"
   (let* ((b (add-text-to-store %store "build" "echo $foo > $out" '()))
@@ -399,7 +408,9 @@ Deriver: ~a~%"
                              files)))))))
 
 (test-assert "export/import paths, ensure topological order"
-  (let* ((file1 (add-text-to-store %store "foo" (random-text)))
+  (let* ((file0 (add-text-to-store %store "baz" (random-text)))
+         (file1 (add-text-to-store %store "foo" (random-text)
+                                   (list file0)))
          (file2 (add-text-to-store %store "bar" (random-text)
                                    (list file1)))
          (files (list file1 file2))
@@ -412,9 +423,10 @@ Deriver: ~a~%"
          (bytevector=? dump1 dump2)
          (let* ((source   (open-bytevector-input-port dump1))
                 (imported (import-paths %store source)))
+           ;; DUMP1 should contain exactly FILE1 and FILE2, not FILE0.
            (and (equal? imported (list file1 file2))
                 (every file-exists? files)
-                (null? (references %store file1))
+                (equal? (list file0) (references %store file1))
                 (equal? (list file1) (references %store file2)))))))
 
 (test-assert "import corrupt path"

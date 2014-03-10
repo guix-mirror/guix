@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -275,6 +275,10 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
   (define contains-digit?
     (cut string-any char-set:digit <>))
 
+  (define patch-directory-name?
+    ;; Return #t for patch directory names such as 'bash-4.2-patches'.
+    (cut string-suffix? "patches" <>))
+
   (let-values (((server directory) (ftp-server/directory project)))
     (define conn (ftp-open server))
 
@@ -284,6 +288,9 @@ open (resp. close) FTP connections; this can be useful to reuse connections."
              ;; Filter out sub-directories that do not contain digits---e.g.,
              ;; /gnuzilla/lang and /gnupg/patches.
              (subdirs (filter-map (match-lambda
+                                   (((? patch-directory-name? dir)
+                                     'directory . _)
+                                    #f)
                                    (((? contains-digit? dir) 'directory . _)
                                     dir)
                                    (_ #f))

@@ -1,7 +1,7 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
-# Copyright © 2013 Mark H Weaver <mhw@netris.org>
+# Copyright © 2013, 2014 Mark H Weaver <mhw@netris.org>
 #
 # This file is part of GNU Guix.
 #
@@ -139,10 +139,12 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lsof.scm				\
   gnu/packages/lua.scm				\
   gnu/packages/lvm.scm				\
+  gnu/packages/lynx.scm				\
   gnu/packages/m4.scm				\
   gnu/packages/mail.scm				\
   gnu/packages/make-bootstrap.scm		\
   gnu/packages/maths.scm			\
+  gnu/packages/messaging.scm			\
   gnu/packages/mit-krb5.scm			\
   gnu/packages/moe.scm				\
   gnu/packages/mpd.scm				\
@@ -174,6 +176,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/popt.scm				\
   gnu/packages/pth.scm				\
   gnu/packages/pulseaudio.scm			\
+  gnu/packages/pretty-print.scm			\
   gnu/packages/python.scm			\
   gnu/packages/qemu.scm				\
   gnu/packages/qt.scm				\
@@ -249,6 +252,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
+  gnu/packages/patches/bitlbee-fix-tests.patch			\
+  gnu/packages/patches/bitlbee-memset-fix.patch			\
   gnu/packages/patches/cdparanoia-fpic.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/coreutils-dummy-man.patch		\
@@ -318,6 +323,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/slim-session.patch			\
   gnu/packages/patches/slim-config.patch			\
   gnu/packages/patches/slim-sigusr1.patch			\
+  gnu/packages/patches/source-highlight-regexrange-test.patch	\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
   gnu/packages/patches/valgrind-glibc.patch			\

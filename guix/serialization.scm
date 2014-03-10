@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,11 +22,13 @@
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match)
   #:export (write-int read-int
             write-long-long read-long-long
             write-padding
             write-string read-string read-latin1-string
             write-string-list read-string-list
+            write-string-pairs
             write-store-path read-store-path
             write-store-path-list read-store-path-list))
 
@@ -93,6 +95,14 @@
 (define (write-string-list l p)
   (write-int (length l) p)
   (for-each (cut write-string <> p) l))
+
+(define (write-string-pairs l p)
+  (write-int (length l) p)
+  (for-each (match-lambda
+             ((first . second)
+              (write-string first p)
+              (write-string second p)))
+            l))
 
 (define (read-string-list p)
   (let ((len (read-int p)))

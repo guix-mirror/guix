@@ -36,6 +36,9 @@
                 #:select (tar))
   #:use-module ((gnu packages compression)
                 #:select (gzip))
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config))
 
 (define-public dmd
@@ -429,3 +432,53 @@ connection alive.")
 reference implementation of all aspects of DHCP, through a suite of DHCP
 tools: server, client, and relay agent.")
     (license isc)))
+
+(define-public libpcap
+  (package
+    (name "libpcap")
+    (version "1.5.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.tcpdump.org/release/libpcap-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "14wyjywrdi1ikaj6yc9c72m6m2r64z94lb0gm7k1a3q6q5cj3scs"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("bison" ,bison) ("flex" ,flex)))
+    (arguments '(#:tests? #f))                    ; no 'check' target
+    (home-page "http://www.tcpdump.org")
+    (synopsis "Network packet capture library")
+    (description
+     "libpcap is an interface for user-level packet capture.  It provides a
+portable framework for low-level network monitoring.  Applications include
+network statistics collection, security monitoring, network debugging, etc.")
+
+    ;; fad-*.c and a couple other files are BSD-4, but the rest is BSD-3.
+    (license bsd-3)))
+
+(define-public jnettop
+  (package
+    (name "jnettop")
+    (version "0.13.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://jnettop.kubs.info/dist/jnettop-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1855np7c4b0bqzhf1l1dyzxb90fpnvrirdisajhci5am6als31z9"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("ncurses" ,ncurses)
+       ("libpcap" ,libpcap)))
+    (home-page "http://jnettop.kubs.info/")
+    (synopsis "Visualize network traffic by bandwidth use")
+    (description
+     "Jnettop is a traffic visualiser, which captures traffic going
+through the host it is running from and displays streams sorted
+by bandwidth they use.")
+    (license gpl2+)))

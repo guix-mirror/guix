@@ -197,7 +197,7 @@
                       result))))))
 
 (define-syntax write-arg
-  (syntax-rules (integer boolean file string string-list
+  (syntax-rules (integer boolean file string string-list string-pairs
                  store-path store-path-list base16)
     ((_ integer arg p)
      (write-int arg p))
@@ -209,6 +209,8 @@
      (write-string arg p))
     ((_ string-list arg p)
      (write-string-list arg p))
+    ((_ string-pairs arg p)
+     (write-string-pairs arg p))
     ((_ store-path arg p)
      (write-store-path arg p))
     ((_ store-path-list arg p)
@@ -430,6 +432,7 @@ encoding conversion errors."
                             #:key keep-failed? keep-going? fallback?
                             (verbosity 0)
                             (max-build-jobs (current-processor-count))
+                            timeout
                             (max-silent-time 3600)
                             (use-build-hook? #t)
                             (build-verbosity 0)
@@ -462,12 +465,11 @@ encoding conversion errors."
     (when (>= (nix-server-minor-version server) 10)
       (send (boolean use-substitutes?)))
     (when (>= (nix-server-minor-version server) 12)
-      (send (string-list (fold-right (lambda (pair result)
-                                       (match pair
-                                         ((h . t)
-                                          (cons* h t result))))
-                                     '()
-                                     binary-caches))))
+      (let ((pairs (if timeout
+                       `(("build-timeout" . ,(number->string timeout))
+                         ,@binary-caches)
+                       binary-caches)))
+        (send (string-pairs pairs))))
     (let loop ((done? (process-stderr server)))
       (or done? (process-stderr server)))))
 
@@ -734,8 +736,13 @@ is raised if the set of paths read from PORT is not signed (as per
 (define* (export-paths server paths port #:key (sign? #t))
   "Export the store paths listed in PATHS to PORT, in topological order,
 signing them if SIGN? is true."
+  (define ordered
+    ;; Sort PATHS, but don't include their references.
+    (filter (cut member <> paths)
+            (topologically-sorted server paths)))
+
   (let ((s (nix-server-socket server)))
-    (let loop ((paths (topologically-sorted server paths)))
+    (let loop ((paths ordered))
       (match paths
         (()
          (write-int 0 port))
@@ -822,7 +829,7 @@ must be an absolute store file name, or a derivation file name."
   (cond ((derivation-path? file)
          (let* ((base    (basename file))
                 (log     (string-append (dirname %state-directory) ; XXX
-                                        "/log/nix/drvs/"
+                                        "/log/guix/drvs/"
                                         (string-take base 2) "/"
                                         (string-drop base 2)))
                 (log.bz2 (string-append log ".bz2")))

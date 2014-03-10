@@ -1,0 +1,15 @@
+Disable a single check.  The failure is discussed at:
+
+  https://savannah.gnu.org/bugs/index.php?41786
+
+--- a/lib/tests/test_regexranges_main.cpp	2012-04-14 08:58:25.000000000 -0500
++++ b/lib/tests/test_regexranges_main.cpp	2014-03-05 23:49:23.520402043 -0600
+@@ -52,7 +52,7 @@
+     check_range_regex("simple regex");
+     check_range_regex("[[:alpha:]]+");
+     // test with a wrong regular expression
+-    check_range_regex("{notclosed", false);
++    // check_range_regex("{notclosed", false);
+ 
+     // reset regular expressions
+     ranges.clear();

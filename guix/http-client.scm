@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012 Free Software Foundation, Inc.
 ;;;
 ;;; This file is part of GNU Guix.
@@ -23,18 +23,35 @@
   #:use-module (web client)
   #:use-module (web response)
   #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (guix ui)
   #:use-module (guix utils)
-  #:export (open-socket-for-uri
+  #:export (&http-get-error
+            http-get-error?
+            http-get-error-uri
+            http-get-error-code
+            http-get-error-reason
+
+            open-socket-for-uri
             http-fetch))
 
 ;;; Commentary:
 ;;;
-;;; HTTP client portable among Guile versions.
+;;; HTTP client portable among Guile versions, and with proper error condition
+;;; reporting.
 ;;;
 ;;; Code:
+
+;; HTTP GET error.
+(define-condition-type &http-get-error &error
+  http-get-error?
+  (uri    http-get-error-uri)                     ; URI
+  (code   http-get-error-code)                    ; integer
+  (reason http-get-error-reason))                 ; string
+
 
 (define-syntax when-guile<=2.0.5
   (lambda (s)
@@ -154,7 +171,9 @@ unbuffered."
   "Return an input port containing the data at URI, and the expected number of
 bytes available or #f.  If TEXT? is true, the data at URI is considered to be
 textual.  Follow any HTTP redirection.  When BUFFERED? is #f, return an
-unbuffered port, suitable for use in `filtered-port'."
+unbuffered port, suitable for use in `filtered-port'.
+
+Raise an '&http-get-error' condition if downloading fails."
   (let loop ((uri uri))
     (let ((port (or port
                     (open-socket-for-uri uri
@@ -202,7 +221,11 @@ unbuffered port, suitable for use in `filtered-port'."
                      (uri->string uri))
              (loop uri)))
           (else
-           (error "download failed" uri code
-                  (response-reason-phrase resp))))))))
+           (raise (condition (&http-get-error
+                              (uri uri)
+                              (code code)
+                              (reason (response-reason-phrase resp)))
+                             (&message
+                              (message "download failed"))))))))))
 
 ;;; http-client.scm ends here
