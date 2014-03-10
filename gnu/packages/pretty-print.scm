@@ -179,7 +179,7 @@ different programming languages.")
     ;; The ctags that comes with emacs does not support the --excmd options,
     ;; so can't be used
     (inputs
-     `(("boost" ,boost-1.54)))
+     `(("boost" ,boost)))
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
