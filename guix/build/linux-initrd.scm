@@ -114,6 +114,14 @@
                   (device-number 4 n))
            (loop (+ 1 n)))))
 
+  ;; Pseudo ttys.
+  (mknod (scope "dev/ptmx") 'char-special #o666
+         (device-number 5 2))
+
+  (unless (file-exists? (scope "dev/pts"))
+    (mkdir (scope "dev/pts")))
+  (mount "none" (scope "dev/pts") "devpts")
+
   ;; Rendez-vous point for syslogd.
   (mknod (scope "dev/log") 'socket #o666 0)
   (mknod (scope "dev/kmsg") 'char-special #o600 (device-number 1 11))
