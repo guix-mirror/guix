@@ -40,6 +40,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system python))
 
 (define-public (system->linux-architecture arch)
@@ -920,3 +921,27 @@ part of this problem by allowing users to run file system implementations as
 user-space processes.")
     (license (list lgpl2.1                        ; library
                    gpl2+))))                      ; command-line utilities
+
+(define-public unionfs-fuse
+  (package
+    (name "unionfs-fuse")
+    (version "0.26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://podgorny.cz/unionfs-fuse/releases/unionfs-fuse-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "0qpnr4czgc62vsfnmv933w62nq3xwcbnvqch72qakfgca75rsp4d"))))
+    (build-system cmake-build-system)
+    (inputs `(("fuse" ,fuse)))
+    (arguments '(#:tests? #f))                    ; no tests
+    (home-page "http://podgorny.cz/moin/UnionFsFuse")
+    (synopsis "User-space union file system")
+    (description
+     "UnionFS-FUSE is a flexible union file system implementation in user
+space, using the FUSE library.  Mounting a union file system allows you to
+\"aggregate\" the contents of several directories into a single mount point.
+UnionFS-FUSE additionally supports copy-on-write.")
+    (license bsd-3)))
