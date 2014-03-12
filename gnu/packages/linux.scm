@@ -945,3 +945,19 @@ space, using the FUSE library.  Mounting a union file system allows you to
 \"aggregate\" the contents of several directories into a single mount point.
 UnionFS-FUSE additionally supports copy-on-write.")
     (license bsd-3)))
+
+(define-public unionfs-fuse/static
+  (package (inherit unionfs-fuse)
+    (synopsis "User-space union file system (statically linked)")
+    (name (string-append (package-name unionfs-fuse) "-static"))
+    (source (origin (inherit (package-source unionfs-fuse))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Add -ldl to the libraries, because libfuse.a needs that.
+               '(substitute* "src/CMakeLists.txt"
+                  (("target_link_libraries(.*)\\)" _ libs)
+                   (string-append "target_link_libraries"
+                                  libs " dl)"))))))
+    (arguments
+     '(#:tests? #f
+       #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")))))
