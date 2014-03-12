@@ -165,6 +165,8 @@
                       (substitute* ".config"
                         (("^# CONFIG_CIFS.*$")
                          "CONFIG_CIFS=m\n")
+                        (("^# CONFIG_FUSE_FS.*$")
+                         "CONFIG_FUSE_FS=m\n")
                         (("^# CONFIG_([[:graph:]]*)VIRTIO([[:graph:]]*) .*$"
                           _ before after)
                          (string-append "CONFIG_" before "VIRTIO"
