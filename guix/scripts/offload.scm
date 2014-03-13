@@ -165,7 +165,7 @@ determined."
     (lambda ()
       (apply open-pipe* mode %lshg-command "-z"
              "-l" (build-machine-user machine)
-             "-p" (build-machine-port machine)
+             "-p" (number->string (build-machine-port machine))
 
              ;; XXX: Remove '-i' when %LSHG-COMMAND really is lshg.
              "-i" (build-machine-private-key machine)
@@ -331,7 +331,7 @@ success, #f otherwise."
            (missing (filtered-port
                      (list (which %lshg-command)
                            "-l" (build-machine-user machine)
-                           "-p" (build-machine-port machine)
+                           "-p" (number->string (build-machine-port machine))
                            "-i" (build-machine-private-key machine)
                            (build-machine-name machine)
                            "guix" "archive" "--missing")
