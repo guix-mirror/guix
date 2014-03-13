@@ -23,6 +23,7 @@
   #:use-module (guix store)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module (guix monads)
   #:use-module (guix ui)
   #:use-module (guix pki)
   #:use-module (guix pk-crypto)
@@ -142,6 +143,24 @@ Export/import one or more packages from/to the store.\n"))
                    (alist-cons 'gc-root arg result)))
 
          %standard-build-options))
+
+(define (derivation-from-expression store str package-derivation
+                                    system source?)
+  "Read/eval STR and return the corresponding derivation path for SYSTEM.
+When SOURCE? is true and STR evaluates to a package, return the derivation of
+the package source; otherwise, use PACKAGE-DERIVATION to compute the
+derivation of a package."
+  (match (read/eval str)
+    ((? package? p)
+     (if source?
+         (let ((source (package-source p)))
+           (if source
+               (package-source-derivation store source)
+               (leave (_ "package `~a' has no source~%")
+                      (package-name p))))
+         (package-derivation store p system)))
+    ((? procedure? proc)
+     (run-with-store store (proc) #:system system))))
 
 (define (options->derivations+files store opts)
   "Given OPTS, the result of 'args-fold', return a list of derivations to

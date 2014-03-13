@@ -34,31 +34,11 @@
   #:use-module (srfi srfi-37)
   #:autoload   (gnu packages) (find-best-packages-by-name)
   #:autoload   (guix download) (download-to-store)
-  #:export (derivation-from-expression
-
-            %standard-build-options
+  #:export (%standard-build-options
             set-build-options-from-command-line
             show-build-options-help
 
             guix-build))
-
-(define (derivation-from-expression store str package-derivation
-                                    system source?)
-  "Read/eval STR and return the corresponding derivation path for SYSTEM.
-When SOURCE? is true and STR evaluates to a package, return the derivation of
-the package source; otherwise, use PACKAGE-DERIVATION to compute the
-derivation of a package."
-  (match (read/eval str)
-    ((? package? p)
-     (if source?
-         (let ((source (package-source p)))
-           (if source
-               (package-source-derivation store source)
-               (leave (_ "package `~a' has no source~%")
-                      (package-name p))))
-         (package-derivation store p system)))
-    ((? procedure? proc)
-     (run-with-store store (proc) #:system system))))
 
 (define (specification->package spec)
   "Return a package matching SPEC.  SPEC may be a package name, or a package
@@ -322,16 +302,15 @@ build."
   (define sys  (assoc-ref opts 'system))
 
   (let ((opts (options/with-source store
-                                   (options/resolve-packages opts))))
+                                   (options/resolve-packages store opts))))
     (filter-map (match-lambda
-                 (('expression . str)
-                  (derivation-from-expression store str package->derivation
-                                              sys src?))
                  (('argument . (? package? p))
                   (if src?
                       (let ((s (package-source p)))
                         (package-source-derivation store s))
                       (package->derivation store p sys)))
+                 (('argument . (? derivation? drv))
+                  drv)
                  (('argument . (? derivation-path? drv))
                   (call-with-input-file drv read-derivation))
                  (('argument . (? store-path?))
@@ -340,14 +319,24 @@ build."
                  (_ #f))
                 opts)))
 
-(define (options/resolve-packages opts)
+(define (options/resolve-packages store opts)
   "Return OPTS with package specification strings replaced by actual
 packages."
+  (define system
+    (or (assoc-ref opts 'system) (%current-system)))
+
   (map (match-lambda
         (('argument . (? string? spec))
          (if (store-path? spec)
              `(argument . ,spec)
              `(argument . ,(specification->package spec))))
+        (('expression . str)
+         (match (read/eval str)
+           ((? package? p)
+            `(argument . ,p))
+           ((? procedure? proc)
+            (let ((drv (run-with-store store (proc) #:system system)))
+              `(argument . ,drv)))))
         (opt opt))
        opts))
 
