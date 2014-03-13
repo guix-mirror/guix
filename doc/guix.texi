@@ -345,6 +345,9 @@ A number of optional fields may be specified:
 
 @table @code
 
+@item port
+Port number of the machine's SSH server (default: 22).
+
 @item private-key
 The SSH private key file to use when connecting to the machine.
 
