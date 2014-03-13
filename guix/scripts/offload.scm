@@ -466,10 +466,14 @@ allowed on MACHINE."
                   machines))
 
     (define (undecorate pred)
-      (match-lambda
-       ((machine slot)
-        (and (pred machine)
-             (list machine slot)))))
+      (lambda (a b)
+        (match a
+          ((machine1 slot1)
+           (match b
+             ((machine2 slot2)
+              (if (pred machine1 machine2)
+                  (list machine1 slot1)
+                  (list machine2 slot2))))))))
 
     (let ((machines+slots (sort machines+slots
                                 (undecorate machine-less-loaded-or-faster?))))
