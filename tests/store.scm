@@ -87,7 +87,12 @@
               (%store-prefix)
               "/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7/bin/guile")))))
 
-(test-skip (if %store 0 10))
+(test-skip (if %store 0 11))
+
+(test-assert "hash-part->path"
+  (let ((p (add-text-to-store %store "hello" "hello, world")))
+    (equal? (hash-part->path %store (store-path-hash-part p))
+            p)))
 
 (test-assert "dead-paths"
   (let ((p (add-text-to-store %store "random-text" (random-text))))
