@@ -369,8 +369,9 @@ while the locks are held."
     port)
 
   (define (assert-valid-signature signature hash file)
-    ;; Bail out if SIGNATURE, an sexp, doesn't match HASH, a bytevector
-    ;; containing the expected hash for FILE.
+    ;; Bail out if SIGNATURE, which must be a string as produced by
+    ;; 'canonical-sexp->string', doesn't match HASH, a bytevector containing
+    ;; the expected hash for FILE.
     (let* ((signature (catch 'gcry-error
                         (lambda ()
                           (string->canonical-sexp signature))
