@@ -66,13 +66,13 @@ for configuration, scripting, and rapid prototyping.")
 (define-public luajit
   (package
     (name "luajit")
-    (version "2.0.2")
+    (version "2.0.3")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://luajit.org/download/LuaJIT-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0f3cykihfdn3gi6na9p0xjd4jnv26z18m441n5vyg42q9abh4ln0"))))
+               (base32 "0ydxpqkmsn2c341j4r2v6r5r0ig3kbwv3i9jran3iv81s6r6rgjm"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f                      ;luajit is distributed without tests
