@@ -901,7 +901,7 @@ processes currently causing I/O.")
                (base32
                 "071r6xjgssy8vwdn6m28qq1bqxsd2bphcd2mzhq0grf5ybm87sqb"))))
     (build-system gnu-build-system)
-    (native-inputs `(("util-linux" ,util-linux)))
+    (inputs `(("util-linux" ,util-linux)))
     (arguments
      '(#:configure-flags (list (string-append "MOUNT_FUSE_PATH="
                                               (assoc-ref %outputs "out")
@@ -911,7 +911,20 @@ processes currently causing I/O.")
                                               "/etc/init.d")
                                (string-append "UDEV_RULES_PATH="
                                               (assoc-ref %outputs "out")
-                                              "/etc/udev"))))
+                                              "/etc/udev"))
+      #:phases (alist-cons-before
+                'build 'set-file-names
+                (lambda* (#:key inputs #:allow-other-keys)
+                  ;; libfuse calls out to mount(8) and umount(8).  Make sure
+                  ;; it refers to the right ones.
+                  (substitute* '("lib/mount_util.c" "util/mount_util.c")
+                    (("/bin/(u?)mount" _ maybe-u)
+                     (string-append (assoc-ref inputs "util-linux")
+                                    "/bin/" maybe-u "mount")))
+                  (substitute* '("util/mount.fuse.c")
+                    (("/bin/sh")
+                     (which "sh"))))
+                %standard-phases)))
     (home-page "http://fuse.sourceforge.net/")
     (synopsis "Support file systems implemented in user space")
     (description
