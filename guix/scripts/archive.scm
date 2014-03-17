@@ -110,9 +110,12 @@ Export/import one or more packages from/to the store.\n"))
                  (lambda (opt name arg result)
                    (catch 'gcry-error
                      (lambda ()
+                       ;; XXX: Curve25519 was actually introduced in
+                       ;; libgcrypt 1.6.0.
                        (let ((params
                               (string->canonical-sexp
-                               (or arg "(genkey (rsa (nbits 4:4096)))"))))
+                               (or arg "\
+ (genkey (ecdsa (curve Ed25519) (flags rfc6979)))"))))
                          (alist-cons 'generate-key params result)))
                      (lambda (key err)
                        (leave (_ "invalid key generation parameters: ~a: ~a~%")
