@@ -46,7 +46,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.python.org/ftp/python/"
+      (uri (string-append "https://www.python.org/ftp/python/"
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
@@ -165,7 +165,7 @@ data types.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.python.org/ftp/python/"
+      (uri (string-append "https://www.python.org/ftp/python/"
                           version "/Python-" version ".tar.xz"))
       (sha256
        (base32
