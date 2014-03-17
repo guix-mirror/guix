@@ -134,7 +134,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
 (define pulseaudio
   (package
     (name "pulseaudio")
-    (version "4.0")
+    (version "5.0")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -142,10 +142,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                    version ".tar.xz"))
              (sha256
               (base32
-               "1bndz4l8jxyq3zq128gzp3gryxl6yjs66j2y1d7yabw2n5mv7kim"))
-             (patches (map search-patch
-                           '("pulseaudio-test-timeouts.patch"
-                             "pulseaudio-volume-test.patch")))))
+               "0fgrr8v7yfh0byhzdv4c87v9lkj8g7gpjm8r9xrbvpa92a5kmhcr"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/var" ;"--sysconfdir=/etc"
