@@ -345,6 +345,9 @@ A number of optional fields may be specified:
 
 @table @code
 
+@item port
+Port number of the machine's SSH server (default: 22).
+
 @item private-key
 The SSH private key file to use when connecting to the machine.
 
@@ -1839,6 +1842,34 @@ to build packages in a complete 32-bit environment.
 Cross-build for @var{triplet}, which must be a valid GNU triplet, such
 as @code{"mips64el-linux-gnu"} (@pxref{Configuration Names, GNU
 configuration triplets,, configure, GNU Configure and Build System}).
+
+@item --with-source=@var{source}
+Use @var{source} as the source of the corresponding package.
+@var{source} must be a file name or a URL, as for @command{guix
+download} (@pxref{Invoking guix download}).
+
+The ``corresponding package'' is taken to be one specified on the
+command line whose name matches the base of @var{source}---e.g., if
+@var{source} is @code{/src/guile-2.0.10.tar.gz}, the corresponding
+package is @code{guile}.  Likewise, the version string is inferred from
+@var{source}; in the previous example, it's @code{2.0.10}.
+
+This option allows users to try out versions of packages other than the
+one provided by the distribution.  The example below downloads
+@file{ed-1.7.tar.gz} from a GNU mirror and uses that as the source for
+the @code{ed} package:
+
+@example
+guix build ed --with-source=mirror://gnu/ed/ed-1.7.tar.gz
+@end example
+
+As a developer, @code{--with-source} makes it easy to test release
+candidates:
+
+@example
+guix build guile --with-source=../guile-2.0.9.219-e1bb7.tar.xz
+@end example
+
 
 @item --derivations
 @itemx -d

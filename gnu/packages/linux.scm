@@ -165,6 +165,8 @@
                       (substitute* ".config"
                         (("^# CONFIG_CIFS.*$")
                          "CONFIG_CIFS=m\n")
+                        (("^# CONFIG_FUSE_FS.*$")
+                         "CONFIG_FUSE_FS=m\n")
                         (("^# CONFIG_([[:graph:]]*)VIRTIO([[:graph:]]*) .*$"
                           _ before after)
                          (string-append "CONFIG_" before "VIRTIO"
@@ -899,7 +901,7 @@ processes currently causing I/O.")
                (base32
                 "071r6xjgssy8vwdn6m28qq1bqxsd2bphcd2mzhq0grf5ybm87sqb"))))
     (build-system gnu-build-system)
-    (native-inputs `(("util-linux" ,util-linux)))
+    (inputs `(("util-linux" ,util-linux)))
     (arguments
      '(#:configure-flags (list (string-append "MOUNT_FUSE_PATH="
                                               (assoc-ref %outputs "out")
@@ -909,7 +911,20 @@ processes currently causing I/O.")
                                               "/etc/init.d")
                                (string-append "UDEV_RULES_PATH="
                                               (assoc-ref %outputs "out")
-                                              "/etc/udev"))))
+                                              "/etc/udev"))
+      #:phases (alist-cons-before
+                'build 'set-file-names
+                (lambda* (#:key inputs #:allow-other-keys)
+                  ;; libfuse calls out to mount(8) and umount(8).  Make sure
+                  ;; it refers to the right ones.
+                  (substitute* '("lib/mount_util.c" "util/mount_util.c")
+                    (("/bin/(u?)mount" _ maybe-u)
+                     (string-append (assoc-ref inputs "util-linux")
+                                    "/bin/" maybe-u "mount")))
+                  (substitute* '("util/mount.fuse.c")
+                    (("/bin/sh")
+                     (which "sh"))))
+                %standard-phases)))
     (home-page "http://fuse.sourceforge.net/")
     (synopsis "Support file systems implemented in user space")
     (description
@@ -945,3 +960,19 @@ space, using the FUSE library.  Mounting a union file system allows you to
 \"aggregate\" the contents of several directories into a single mount point.
 UnionFS-FUSE additionally supports copy-on-write.")
     (license bsd-3)))
+
+(define-public unionfs-fuse/static
+  (package (inherit unionfs-fuse)
+    (synopsis "User-space union file system (statically linked)")
+    (name (string-append (package-name unionfs-fuse) "-static"))
+    (source (origin (inherit (package-source unionfs-fuse))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Add -ldl to the libraries, because libfuse.a needs that.
+               '(substitute* "src/CMakeLists.txt"
+                  (("target_link_libraries(.*)\\)" _ libs)
+                   (string-append "target_link_libraries"
+                                  libs " dl)"))))))
+    (arguments
+     '(#:tests? #f
+       #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")))))

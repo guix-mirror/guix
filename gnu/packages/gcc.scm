@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -186,7 +186,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
            'configure 'post-configure
            (lambda _
              ;; Don't store configure flags, to avoid retaining references to
-             ;; build-time dependencies---e.g., `--with-ppl=/nix/store/xxx'.
+             ;; build-time dependencies---e.g., `--with-ppl=/gnu/store/xxx'.
              (substitute* "Makefile"
                (("^TOPLEVEL_CONFIGURE_ARGUMENTS=(.*)$" _ rest)
                 "TOPLEVEL_CONFIGURE_ARGUMENTS=\n")))

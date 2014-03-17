@@ -57,6 +57,7 @@
             set-build-options
             valid-path?
             query-path-hash
+            hash-part->path
             add-text-to-store
             add-to-store
             build-derivations
@@ -500,6 +501,18 @@ encoding conversion errors."
 (define-operation (query-path-hash (store-path path))
   "Return the SHA256 hash of PATH as a bytevector."
   base16)
+
+(define hash-part->path
+  (let ((query-path-from-hash-part
+         (operation (query-path-from-hash-part (string hash))
+                    #f
+                    store-path)))
+   (lambda (server hash-part)
+     "Return the store path whose hash part is HASH-PART (a nix-base32
+string).  Raise an error if no such path exists."
+     ;; This RPC is primarily used by Hydra to reply to HTTP GETs of
+     ;; /HASH.narinfo.
+     (query-path-from-hash-part server hash-part))))
 
 (define add-text-to-store
   ;; A memoizing version of `add-to-store', to avoid repeated RPCs with

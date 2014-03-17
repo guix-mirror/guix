@@ -373,7 +373,7 @@ such as /etc files."
                                      ;; (not 'futime'), so the timestamp of
                                      ;; symlinks cannot be changed, and there
                                      ;; are symlinks here pointing to
-                                     ;; /nix/store, which is the host,
+                                     ;; /gnu/store, which is the host,
                                      ;; read-only store.
                                      (unless (eq? (stat:type s) 'symlink)
                                        (utime file 0 0 0 0))))
@@ -448,7 +448,7 @@ basic contents of the root file system of OS."
                        (os-dir -> (derivation->output-path os-drv))
                        (build-gid (operating-system-build-gid os))
                        (profile   (operating-system-profile-directory os)))
-    (return `((directory "/nix/store" 0 ,(or build-gid 0))
+    (return `((directory ,(%store-prefix) 0 ,(or build-gid 0))
               (directory "/etc")
               (directory "/var/log")                     ; for dmd
               (directory "/var/run/nscd")

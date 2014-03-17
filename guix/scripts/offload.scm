@@ -56,6 +56,8 @@
   build-machine make-build-machine
   build-machine?
   (name            build-machine-name)            ; string
+  (port            build-machine-port             ; number
+                   (default 22))
   (system          build-machine-system)          ; string
   (user            build-machine-user)            ; string
   (private-key     build-machine-private-key      ; file name
@@ -161,8 +163,9 @@ determined."
   "Run COMMAND on MACHINE, assuming an lsh gateway has been set up."
   (catch 'system-error
     (lambda ()
-      (apply open-pipe* mode %lshg-command
-             "-l" (build-machine-user machine) "-z"
+      (apply open-pipe* mode %lshg-command "-z"
+             "-l" (build-machine-user machine)
+             "-p" (number->string (build-machine-port machine))
 
              ;; XXX: Remove '-i' when %LSHG-COMMAND really is lshg.
              "-i" (build-machine-private-key machine)
@@ -328,6 +331,7 @@ success, #f otherwise."
            (missing (filtered-port
                      (list (which %lshg-command)
                            "-l" (build-machine-user machine)
+                           "-p" (number->string (build-machine-port machine))
                            "-i" (build-machine-private-key machine)
                            (build-machine-name machine)
                            "guix" "archive" "--missing")
@@ -462,10 +466,14 @@ allowed on MACHINE."
                   machines))
 
     (define (undecorate pred)
-      (match-lambda
-       ((machine slot)
-        (and (pred machine)
-             (list machine slot)))))
+      (lambda (a b)
+        (match a
+          ((machine1 slot1)
+           (match b
+             ((machine2 slot2)
+              (if (pred machine1 machine2)
+                  (list machine1 slot1)
+                  (list machine2 slot2))))))))
 
     (let ((machines+slots (sort machines+slots
                                 (undecorate machine-less-loaded-or-faster?))))

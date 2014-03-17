@@ -255,8 +255,9 @@ omitted.  Write progress reports to LOG."
   (define uri
     (string->uri url))
 
-  (if (memq (uri-scheme uri) '(file #f))
-      (add-to-store store name #f "sha256" (uri-path uri))
+  (if (or (not uri) (memq (uri-scheme uri) '(file #f)))
+      (add-to-store store name #f "sha256"
+                    (if uri (uri-path uri) url))
       (call-with-temporary-output-file
        (lambda (temp port)
          (let ((result

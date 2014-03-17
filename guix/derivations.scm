@@ -451,13 +451,13 @@ that form."
   ;; This procedure is called frequently, so memoize it.
   (memoize
    (lambda* (path #:optional (output "out"))
-     "Read the derivation from PATH (`/nix/store/xxx.drv'), and return the store
+     "Read the derivation from PATH (`/gnu/store/xxx.drv'), and return the store
 path of its output OUTPUT."
      (derivation->output-path (call-with-input-file path read-derivation)
                               output))))
 
 (define (derivation-path->output-paths path)
-  "Read the derivation from PATH (`/nix/store/xxx.drv'), and return the
+  "Read the derivation from PATH (`/gnu/store/xxx.drv'), and return the
 list of name/path pairs of its outputs."
   (derivation->output-paths (call-with-input-file path read-derivation)))
 

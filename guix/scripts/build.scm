@@ -33,31 +33,12 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
   #:autoload   (gnu packages) (find-best-packages-by-name)
-  #:export (derivation-from-expression
-
-            %standard-build-options
+  #:autoload   (guix download) (download-to-store)
+  #:export (%standard-build-options
             set-build-options-from-command-line
             show-build-options-help
 
             guix-build))
-
-(define (derivation-from-expression store str package-derivation
-                                    system source?)
-  "Read/eval STR and return the corresponding derivation path for SYSTEM.
-When SOURCE? is true and STR evaluates to a package, return the derivation of
-the package source; otherwise, use PACKAGE-DERIVATION to compute the
-derivation of a package."
-  (match (read/eval str)
-    ((? package? p)
-     (if source?
-         (let ((source (package-source p)))
-           (if source
-               (package-source-derivation store source)
-               (leave (_ "package `~a' has no source~%")
-                      (package-name p))))
-         (package-derivation store p system)))
-    ((? procedure? proc)
-     (run-with-store store (proc) #:system system))))
 
 (define (specification->package spec)
   "Return a package matching SPEC.  SPEC may be a package name, or a package
@@ -103,6 +84,31 @@ present, return the preferred newest version."
       (lambda args
         (leave (_ "failed to create GC root `~a': ~a~%")
                root (strerror (system-error-errno args)))))))
+
+(define (package-with-source store p uri)
+  "Return a package based on P but with its source taken from URI.  Extract
+the new package's version number from URI."
+  (define (numeric-extension? file-name)
+    ;; Return true if FILE-NAME ends with digits.
+    (string-every char-set:hex-digit (file-extension file-name)))
+
+  (define (tarball-base-name file-name)
+    ;; Return the "base" of FILE-NAME, removing '.tar.gz' or similar
+    ;; extensions.
+    ;; TODO: Factorize.
+    (cond ((numeric-extension? file-name)
+           file-name)
+          ((string=? (file-extension file-name) "tar")
+           (file-sans-extension file-name))
+          (else
+           (tarball-base-name (file-sans-extension file-name)))))
+
+  (let ((base (tarball-base-name (basename uri))))
+    (let-values (((name version)
+                  (package-name->name+version base)))
+      (package (inherit p)
+               (version (or version (package-version p)))
+               (source (download-to-store store uri))))))
 
 
 ;;;
@@ -222,6 +228,9 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
       --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""))
   (display (_ "
+      --with-source=SOURCE
+                         use SOURCE when building the corresponding package"))
+  (display (_ "
   -d, --derivations      return the derivation paths of the given packages"))
   (display (_ "
   -r, --root=FILE        make FILE a symlink to the result, and register it
@@ -274,6 +283,9 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
          (option '("log-file") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'log-file? #t result)))
+         (option '("with-source") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'with-source arg result)))
 
          %standard-build-options))
 
@@ -289,23 +301,80 @@ build."
   (define src? (assoc-ref opts 'source?))
   (define sys  (assoc-ref opts 'system))
 
-  (filter-map (match-lambda
-               (('expression . str)
-                (derivation-from-expression store str package->derivation
-                                            sys src?))
-               (('argument . (? derivation-path? drv))
-                (call-with-input-file drv read-derivation))
-               (('argument . (? store-path?))
-                ;; Nothing to do; maybe for --log-file.
-                #f)
-               (('argument . (? string? x))
-                (let ((p (specification->package x)))
+  (let ((opts (options/with-source store
+                                   (options/resolve-packages store opts))))
+    (filter-map (match-lambda
+                 (('argument . (? package? p))
                   (if src?
                       (let ((s (package-source p)))
                         (package-source-derivation store s))
-                      (package->derivation store p sys))))
-               (_ #f))
-              opts))
+                      (package->derivation store p sys)))
+                 (('argument . (? derivation? drv))
+                  drv)
+                 (('argument . (? derivation-path? drv))
+                  (call-with-input-file drv read-derivation))
+                 (('argument . (? store-path?))
+                  ;; Nothing to do; maybe for --log-file.
+                  #f)
+                 (_ #f))
+                opts)))
+
+(define (options/resolve-packages store opts)
+  "Return OPTS with package specification strings replaced by actual
+packages."
+  (define system
+    (or (assoc-ref opts 'system) (%current-system)))
+
+  (map (match-lambda
+        (('argument . (? string? spec))
+         (if (store-path? spec)
+             `(argument . ,spec)
+             `(argument . ,(specification->package spec))))
+        (('expression . str)
+         (match (read/eval str)
+           ((? package? p)
+            `(argument . ,p))
+           ((? procedure? proc)
+            (let ((drv (run-with-store store (proc) #:system system)))
+              `(argument . ,drv)))))
+        (opt opt))
+       opts))
+
+(define (options/with-source store opts)
+  "Process with 'with-source' options in OPTS, replacing the relevant package
+arguments with packages that use the specified source."
+  (define new-sources
+    (filter-map (match-lambda
+                 (('with-source . uri)
+                  (cons (package-name->name+version (basename uri))
+                        uri))
+                 (_ #f))
+                opts))
+
+  (let loop ((opts    opts)
+             (sources new-sources)
+             (result  '()))
+    (match opts
+      (()
+       (unless (null? sources)
+         (warning (_ "sources do not match any package:~{ ~a~}~%")
+                  (match sources
+                    (((name . uri) ...)
+                     uri))))
+       (reverse result))
+      ((('argument . (? package? p)) tail ...)
+       (let ((source (assoc-ref sources (package-name p))))
+         (loop tail
+               (alist-delete (package-name p) sources)
+               (alist-cons 'argument
+                           (if source
+                               (package-with-source store p source)
+                               p)
+                           result))))
+      ((('with-source . _) tail ...)
+       (loop tail sources result))
+      ((head tail ...)
+       (loop tail sources (cons head result))))))
 
 
 ;;;
