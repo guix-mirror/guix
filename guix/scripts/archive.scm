@@ -114,9 +114,10 @@ Export/import one or more packages from/to the store.\n"))
                               (string->canonical-sexp
                                (or arg "(genkey (rsa (nbits 4:4096)))"))))
                          (alist-cons 'generate-key params result)))
-                     (lambda args
-                       (leave (_ "invalid key generation parameters: ~s~%")
-                              arg)))))
+                     (lambda (key err)
+                       (leave (_ "invalid key generation parameters: ~a: ~a~%")
+                              (error-source err)
+                              (error-string err))))))
          (option '("authorize") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'authorize #t result)))
