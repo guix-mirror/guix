@@ -87,7 +87,39 @@
               (%store-prefix)
               "/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7/bin/guile")))))
 
-(test-skip (if %store 0 11))
+(test-skip (if %store 0 13))
+
+(test-assert "valid-path? live"
+  (let ((p (add-text-to-store %store "hello" "hello, world")))
+    (valid-path? %store p)))
+
+(test-assert "valid-path? false"
+  (not (valid-path? %store
+                    (string-append (%store-prefix) "/"
+                                   (make-string 32 #\e) "-foobar"))))
+
+(test-assert "valid-path? error"
+  (with-store s
+    (guard (c ((nix-protocol-error? c) #t))
+      (valid-path? s "foo")
+      #f)))
+
+(test-assert "valid-path? recovery"
+  ;; Prior to Nix commit 51800e0 (18 Mar. 2014), the daemon would immediately
+  ;; close the connection after receiving a 'valid-path?' RPC with a non-store
+  ;; file name.  See
+  ;; <http://article.gmane.org/gmane.linux.distributions.nixos/12411> for
+  ;; details.
+  (with-store s
+    (let-syntax ((true-if-error (syntax-rules ()
+                                  ((_ exp)
+                                   (guard (c ((nix-protocol-error? c) #t))
+                                     exp #f)))))
+      (and (true-if-error (valid-path? s "foo"))
+           (true-if-error (valid-path? s "bar"))
+           (true-if-error (valid-path? s "baz"))
+           (true-if-error (valid-path? s "chbouib"))
+           (valid-path? s (add-text-to-store s "valid" "yeah"))))))
 
 (test-assert "hash-part->path"
   (let ((p (add-text-to-store %store "hello" "hello, world")))
