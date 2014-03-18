@@ -23,7 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages pkg-config))
 
-(define-public libgc
+(define-public libgc-7.2
   (package
    (name "libgc")
    (version "7.2e")
@@ -86,8 +86,8 @@ lock-free code, experiment with thread programming paradigms, etc.")
     ;; Some source files are X11-style, others are GPLv2+.
     (license gpl2+)))
 
-(define-public libgc-7.4
-  (package (inherit libgc)
+(define-public libgc
+  (package (inherit libgc-7.2)
     (version "7.4.0")
     (source (origin
               (method url-fetch)
