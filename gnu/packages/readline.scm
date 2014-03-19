@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,7 +53,13 @@
       (arguments `(#:configure-flags
                    (list (string-append "LDFLAGS=-Wl,-rpath -Wl,"
                                         (assoc-ref %build-inputs "ncurses")
-                                        "/lib"))
+                                        "/lib")
+
+                         ;; This test does an 'AC_TRY_RUN', which aborts when
+                         ;; cross-compiling, so provide the correct answer.
+                         ,@(if (%current-target-system)
+                               '("bash_cv_wcwidth_broken=no")
+                               '()))
 
                    #:phases (alist-cons-after
                              'install 'post-install
