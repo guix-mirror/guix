@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,14 +37,14 @@
 (define-public imagemagick
   (package
     (name "imagemagick")
-    (version "6.8.8-4")
+    (version "6.8.8-8")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://imagemagick/ImageMagick-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0bfxhfymkdbvardlr0nbjfmv53m47lcl9kkycipk4hxawfs927jr"))))
+               "1b1j4j6gyxd02nm7v70d8prjvh09dk9klralrr8avm9ys1wqd7r4"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before
