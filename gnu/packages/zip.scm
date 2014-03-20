@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -89,7 +90,9 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
          (lambda* (#:key inputs outputs #:allow-other-keys)
            (let* ((out (assoc-ref outputs "out")))
              (copy-file "unix/Makefile" "Makefile")
-             (substitute* "Makefile" (("/usr/local") out))))
+             (substitute* "Makefile"
+               (("/usr/local") out)
+               (("/man/") "/share/man/"))))
         %standard-phases)))
     (home-page "http://www.info-zip.org/UnZip.html")
     (synopsis "Unzip decompression and file extraction utility")
