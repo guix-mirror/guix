@@ -287,10 +287,11 @@ main (int argc, char *argv[])
 	  string subs = getEnv ("NIX_SUBSTITUTERS", "default");
 
 	  if (subs == "default")
-	    settings.substituters.push_back (settings.nixLibexecDir
-					     + "/guix/substitute-binary");
-	  else
-	    settings.substituters = tokenizeString<Strings> (subs, ":");
+	    {
+	      string subst =
+		settings.nixLibexecDir + "/guix/substitute-binary";
+	      setenv ("NIX_SUBSTITUTERS", subst.c_str (), 1);
+	    }
 	}
 
       if (geteuid () == 0 && settings.buildUsersGroup.empty ())
