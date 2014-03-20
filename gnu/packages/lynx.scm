@@ -33,13 +33,15 @@
 (define-public lynx
   (package
     (name "lynx")
-    (version "2.8.8")
+    (version "2.8.8rel.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append "http://lynx.isc.org/lynx" version
-                                  "/lynx" version ".tar.bz2"))
+              (uri (string-append
+                    "http://lynx.isc.org/lynx"
+                    (substring version 0 (string-index version char-set:letter))
+                    "/lynx" version ".tar.bz2"))
               (sha256
-               (base32 "00jcfmx4bxnrzywzzlllz3z45a2mc4fl91ca5lrzz1pyr1s1qnm2"))))
+               (base32 "1rxysl08acqll5b87368f04kckl8sggy1qhnq59gsxyny1ffg039"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("perl" ,perl)))
