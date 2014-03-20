@@ -57,7 +57,7 @@
 ;;; Available licenses.
 ;;;
 ;;; This list is based on these links:
-;;; https://github.com/NixOS/nixpkgs/blob/master/pkgs/lib/licenses.nix
+;;; https://github.com/NixOS/nixpkgs/blob/master/lib/licenses.nix
 ;;; https://www.gnu.org/licenses/license-list
 ;;;
 ;;; Code:
