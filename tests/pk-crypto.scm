@@ -184,6 +184,8 @@
                        #:key-type (key-type public))
                       public)))))
 
+;; Ed25519 appeared in libgcrypt 1.6.0.
+(test-skip (if (version>? (gcrypt-version) "1.6.0") 0 1))
 (test-assert "sign + verify, Ed25519"
   (let* ((pair   (string->canonical-sexp %ecc-key-pair))
          (secret (find-sexp-token pair 'private-key))

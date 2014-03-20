@@ -24,7 +24,8 @@
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
-  #:export (canonical-sexp?
+  #:export (gcrypt-version
+            canonical-sexp?
             error-source
             error-string
             string->canonical-sexp
@@ -85,6 +86,17 @@
     (lambda (func)
       "Return a pointer to symbol FUNC in libgcrypt."
       (dynamic-func func lib))))
+
+(define gcrypt-version
+  ;; According to the manual, this function must be called before any other,
+  ;; and it's not clear whether it can be called more than once.  So call it
+  ;; right here from the top level.
+  (let* ((ptr     (libgcrypt-func "gcry_check_version"))
+         (proc    (pointer->procedure '* ptr '(*)))
+         (version (pointer->string (proc %null-pointer))))
+    (lambda ()
+      "Return the version number of libgcrypt as a string."
+      version)))
 
 (define finalize-canonical-sexp!
   (libgcrypt-func "gcry_sexp_release"))

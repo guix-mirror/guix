@@ -87,6 +87,13 @@ Export/import one or more packages from/to the store.\n"))
   (newline)
   (show-bug-report-information))
 
+(define %key-generation-parameters
+  ;; Default key generation parameters.  We prefer Ed25519, but it was
+  ;; introduced in libgcrypt 1.6.0.
+  (if (version>? (gcrypt-version) "1.6.0")
+      "(genkey (ecdsa (curve Ed25519) (flags rfc6979)))"
+      "(genkey (rsa (nbits 4:4096)))"))
+
 (define %options
   ;; Specifications of the command-line options.
   (cons* (option '(#\h "help") #f #f
@@ -114,8 +121,7 @@ Export/import one or more packages from/to the store.\n"))
                        ;; libgcrypt 1.6.0.
                        (let ((params
                               (string->canonical-sexp
-                               (or arg "\
- (genkey (ecdsa (curve Ed25519) (flags rfc6979)))"))))
+                               (or arg %key-generation-parameters))))
                          (alist-cons 'generate-key params result)))
                      (lambda (key err)
                        (leave (_ "invalid key generation parameters: ~a: ~a~%")
