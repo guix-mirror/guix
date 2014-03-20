@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,6 +40,13 @@
     (inputs
      `(("ncurses", ncurses)
        ("perl" ,perl)))
+    (arguments
+     `(#:configure-flags
+       ;; By default, man and info pages are put in PREFIX/{man,info},
+       ;; but we want them in PREFIX/share/{man,info}.
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "--mandir=" out "/share/man")
+               (string-append "--infodir=" out "/share/info")))))
     (home-page "http://www.gnu.org/software/screen/")
     (synopsis "Full-screen window manager providing multiple terminals")
     (description
