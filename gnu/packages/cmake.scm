@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,7 +23,8 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages file))
+  #:use-module (gnu packages file)
+  #:use-module (srfi srfi-1))
 
 (define-public cmake
   (package
@@ -32,15 +34,15 @@
              (method url-fetch)
              (uri (string-append
                    "http://www.cmake.org/files/v"
-                   (substring version 0
-                    (string-index version #\. (+ 1 (string-index version #\.))))
+                   (string-join (take (string-split version #\.) 2)
+                                ".")
                    "/cmake-" version ".tar.gz"))
              (sha256
               (base32 "11q21vyrr6c6smyjy81k2k07zmn96ggjia9im9cxwvj0n88bm1fq"))
              (patches (list (search-patch "cmake-fix-tests.patch")))))
     (build-system gnu-build-system)
     (arguments
-     '(#:test-target "test"
+     `(#:test-target "test"
        #:phases (alist-replace
                  'configure
                  (lambda* (#:key outputs #:allow-other-keys)
@@ -61,8 +63,20 @@
                          "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
                          "Tests/CMakeLists.txt")
                        (("/bin/sh") (which "sh")))
-                     (zero? (system* "./configure"
-                             (string-append "--prefix=" out)))))
+                     (zero? (system*
+                             "./configure"
+                             (string-append "--prefix=" out)
+                             ;; By default, the man pages and other docs land
+                             ;; in PREFIX/man and PREFIX/doc, but we want them
+                             ;; in share/{man,doc}.  Note that unlike
+                             ;; autoconf-generated configure scripts, cmake's
+                             ;; configure prepends "PREFIX/" to what we pass
+                             ;; to --mandir and --docdir.
+                             "--mandir=share/man"
+                             ,(string-append
+                               "--docdir=share/doc/cmake-"
+                               (string-join (take (string-split version #\.) 2)
+                                            "."))))))
                  %standard-phases)))
     (inputs
      `(("file" ,file)))
