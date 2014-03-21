@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -202,7 +203,12 @@ OpenBSD's sndio.")
              (list (search-patch "flac-fix-memcmp-not-declared.patch")))))
    (build-system gnu-build-system)
    (arguments
-    `(#:parallel-tests? #f))
+    `(#:parallel-tests? #f
+      ;; By default, man pages are put in PREFIX/man,
+      ;; but we want them in PREFIX/share/man.
+      #:configure-flags (list (string-append "--mandir="
+                                             (assoc-ref %outputs "out")
+                                             "/share/man"))))
    ;; FIXME: configure also looks for xmms, input could be added once it exists
    (inputs `(("libogg" ,libogg)))
    (synopsis "flac free lossless audio codec")
