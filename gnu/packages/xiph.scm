@@ -80,7 +80,8 @@ periodic timestamps for seeking.")
               "1gby6hapz9njx4l9g0pndyk4q83z5fgrgc30mfwfgx7bllspsk43"))))
    (build-system gnu-build-system)
    (propagated-inputs `(("libogg" ,libogg)))
-   (arguments `(#:configure-flags '("LDFLAGS=-lm")))
+   (arguments `(#:configure-flags '("LDFLAGS=-lm")
+                #:parallel-tests? #f))
    (synopsis "libvorbis, a library implementing the vorbis audio format")
    (description
     "The libvorbis library implements the ogg vorbis audio format,
