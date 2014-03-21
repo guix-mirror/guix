@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -108,14 +109,14 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.0
   (package
    (name "guile")
-   (version "2.0.10")
+   (version "2.0.11")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/guile/guile-" version
                                 ".tar.xz"))
             (sha256
              (base32
-              "0vhvlbpmj560r8xl2r085ww16rlhbyq032am67dija09r63b0zm6"))))
+              "1qh3j7308qvsjgwf7h94yqgckpbgz2k3yqdkzsyhqcafvfka9l5f"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
