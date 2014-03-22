@@ -30,7 +30,7 @@ then
     NIX_IGNORE_SYMLINK_STORE=1	# in case the store is a symlink
     NIX_STORE_DIR="@GUIX_TEST_ROOT@/store"
     NIX_LOCALSTATE_DIR="@GUIX_TEST_ROOT@/var"
-    NIX_LOG_DIR="@GUIX_TEST_ROOT@/var/log/nix"
+    NIX_LOG_DIR="@GUIX_TEST_ROOT@/var/log/guix"
     NIX_DB_DIR="@GUIX_TEST_ROOT@/db"
     NIX_ROOT_FINDER="@abs_top_builddir@/nix/scripts/list-runtime-roots"
 

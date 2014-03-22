@@ -39,11 +39,12 @@
   (call-with-input-file file
     (compose string->canonical-sexp get-string-all)))
 
-(define (read-hash-data file)
-  "Read sha256 hash data from FILE and return it as a gcrypt sexp."
+(define (read-hash-data file key-type)
+  "Read sha256 hash data from FILE and return it as a gcrypt sexp.  KEY-TYPE
+is a symbol representing the type of public key algo being used."
   (let* ((hex (call-with-input-file file get-string-all))
          (bv  (base16-string->bytevector (string-trim-both hex))))
-    (bytevector->hash-data bv)))
+    (bytevector->hash-data bv #:key-type key-type)))
 
 
 ;;;
@@ -64,7 +65,7 @@
                             (leave
                              (_ "cannot find public key for secret key '~a'~%")
                              key)))
-            (data       (read-hash-data hash-file))
+            (data       (read-hash-data hash-file (key-type public-key)))
             (signature  (signature-sexp data secret-key public-key)))
        (display (canonical-sexp->string signature))
        #t))

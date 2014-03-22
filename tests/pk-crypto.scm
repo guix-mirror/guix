@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,7 +31,7 @@
 ;; Test the (guix pk-crypto) module.
 
 (define %key-pair
-  ;; Key pair that was generated with:
+  ;; RSA key pair that was generated with:
   ;;   (generate-key (string->canonical-sexp "(genkey (rsa (nbits 4:1024)))"))
   ;; which takes a bit of time.
   "(key-data
@@ -47,6 +47,20 @@
       (p #00D47F185147EC39393CCDA4E7323FFC20FC8B8073E2A54DD63BA392A66975E4204CA48572496A9DFD7522436B852C07472A5AB25B7706F7C14E6F33FBC420FF3B#)
       (q #00E9AD22F158060BC9AE3601DA623AFC60FFF3058795802CA92371C00097335CF9A23D7782DE353C9DBA93D7BB99E6A24A411107605E722481C5C191F80D7EB77F#)
       (u #59B45B95AE01A7A7370FAFDB08FE73A4793CE37F228961B09B1B1E7DDAD9F8D3E28F5C5E8B4B067E6B8E0BBF3F690B42991A79E46108DDCDA2514323A66964DE#))))")
+
+(define %ecc-key-pair
+  ;; Ed25519 key pair generated with:
+  ;;   (generate-key (string->canonical-sexp "(genkey (ecdsa (curve Ed25519) (flags rfc6979 transient)))"))
+  "(key-data
+      (public-key
+        (ecc
+          (curve Ed25519)
+          (q #94869C1B9E69DB8DD910B7F7F4D6E56A63A964A59AE8F90F6703ACDDF6F50C81#)))
+      (private-key
+        (ecc
+          (curve Ed25519)
+          (q #94869C1B9E69DB8DD910B7F7F4D6E56A63A964A59AE8F90F6703ACDDF6F50C81#)
+          (d #6EFB32D0B4EC6B3237B523539F1979379B82726AAA605EB2FBA6775B2B777B78#))))")
 
 (test-begin "pk-crypto")
 
@@ -148,8 +162,32 @@
            (and (string=? algo "sha256")
                 (bytevector=? value bv))))))
 
+(test-equal "key-type"
+  '(rsa ecc)
+  (map (compose key-type
+                (cut find-sexp-token <> 'public-key)
+                string->canonical-sexp)
+       (list %key-pair %ecc-key-pair)))
+
 (test-assert "sign + verify"
   (let* ((pair   (string->canonical-sexp %key-pair))
+         (secret (find-sexp-token pair 'private-key))
+         (public (find-sexp-token pair 'public-key))
+         (data   (bytevector->hash-data
+                  (sha256 (string->utf8 "Hello, world."))
+                  #:key-type (key-type public)))
+         (sig    (sign data secret)))
+    (and (verify sig data public)
+         (not (verify sig
+                      (bytevector->hash-data
+                       (sha256 (string->utf8 "Hi!"))
+                       #:key-type (key-type public))
+                      public)))))
+
+;; Ed25519 appeared in libgcrypt 1.6.0.
+(test-skip (if (version>? (gcrypt-version) "1.6.0") 0 1))
+(test-assert "sign + verify, Ed25519"
+  (let* ((pair   (string->canonical-sexp %ecc-key-pair))
          (secret (find-sexp-token pair 'private-key))
          (public (find-sexp-token pair 'public-key))
          (data   (bytevector->hash-data

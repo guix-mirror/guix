@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -179,8 +180,14 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
                         (let ((out (assoc-ref outputs "out")))
                           (setenv "CONFIG_SHELL" (which "bash"))
                           (zero?
-                           (system* "./configure"
-                                    (string-append "--prefix=" out)))))
+                           (system*
+                            "./configure"
+                            (string-append "--prefix=" out)
+                            ;; By default, man and info pages are put in
+                            ;; PREFIX/{man,info}, but we want them in
+                            ;; PREFIX/share/{man,info}.
+                            (string-append "--mandir=" out "/share/man")
+                            (string-append "--infodir=" out "/share/info")))))
                       %standard-phases)))
     (home-page "http://www.gnu.org/software/bc/")
     (synopsis "Arbitrary precision numeric processing language")

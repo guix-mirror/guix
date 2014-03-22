@@ -84,8 +84,8 @@ guix-register --prefix "$new_store" "$closure"
 NIX_IGNORE_SYMLINK_STORE=1
 NIX_STORE_DIR="$new_store_dir"
 NIX_STATE_DIR="$new_store$localstatedir"
-NIX_LOG_DIR="$new_store$localstatedir/log/nix"
-NIX_DB_DIR="$new_store$localstatedir/nix/db"
+NIX_LOG_DIR="$new_store$localstatedir/log/guix"
+NIX_DB_DIR="$new_store$localstatedir/guix/db"
 
 export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR NIX_STATE_DIR	\
   NIX_LOG_DIR NIX_DB_DIR

@@ -1260,13 +1260,13 @@ tracking.")
             "1gdv6559cdz1lfw73x7wsvax1fkvphmayrymprljhyyb5nwk5kkz"))))
     (build-system gnu-build-system)
     (propagated-inputs
-     ;; xft.pc refers to 'xrender'.
-      `(("libxrender" ,libxrender)))
-    (inputs
-      `(("libx11" ,libx11)
-        ("xproto" ,xproto)
+     ;; xft.pc refers to all these.
+      `(("libxrender" ,libxrender)
         ("freetype" ,freetype)
         ("fontconfig" ,fontconfig)))
+    (inputs
+      `(("libx11" ,libx11)
+        ("xproto" ,xproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -4731,14 +4731,14 @@ icccm: Both client and window-manager helpers for ICCCM.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "301")
+    (version "303")
     (source (origin
               (method url-fetch)
               (uri                                ; XXX: constant URL!
                "http://invisible-island.net/datafiles/release/xterm.tar.gz")
               (sha256
                (base32
-                "040rarvv18zg0lk7qy0m3n7gv10mh40jic708wvng01z4rlbpfhz"))))
+                "0n7hay16aam9kfn642ri0wj5yzilbjm3l8znxc2p5dx9pn3rkwla"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-256-color"

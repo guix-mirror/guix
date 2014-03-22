@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -500,7 +501,7 @@ with the Linux kernel.")
 (define-public tzdata
   (package
     (name "tzdata")
-    (version "2013d")
+    (version "2014a")
     (source (origin
              (method url-fetch)
              (uri (string-append
@@ -508,7 +509,7 @@ with the Linux kernel.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "011v63ppr73vhjgxv00inkn5pc7z48i8lhbapkpdq3kfczq9c76d"))))
+               "1cg843ajz4g16axpz56zvalwsbp1s764na2bk4fb44ayx162bzvw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f
@@ -555,7 +556,7 @@ with the Linux kernel.")
                                 version ".tar.gz"))
                           (sha256
                            (base32
-                            "1dh7nzmfxs8fps4bzcd2lz5fz24zxy2123a99avxsk34jh6bk7id"))))))
+                            "1xfkqi1q8cnxqbv8azdj5pqlzhkjz6xag09f1z0s8rxi86jkpf85"))))))
     (home-page "http://www.iana.org/time-zones")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)

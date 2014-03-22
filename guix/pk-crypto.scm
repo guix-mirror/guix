@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,7 +24,8 @@
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
   #:use-module (ice-9 match)
-  #:export (canonical-sexp?
+  #:export (gcrypt-version
+            canonical-sexp?
             error-source
             error-string
             string->canonical-sexp
@@ -39,6 +40,7 @@
             canonical-sexp-list?
             bytevector->hash-data
             hash-data->bytevector
+            key-type
             sign
             verify
             generate-key
@@ -84,6 +86,17 @@
     (lambda (func)
       "Return a pointer to symbol FUNC in libgcrypt."
       (dynamic-func func lib))))
+
+(define gcrypt-version
+  ;; According to the manual, this function must be called before any other,
+  ;; and it's not clear whether it can be called more than once.  So call it
+  ;; right here from the top level.
+  (let* ((ptr     (libgcrypt-func "gcry_check_version"))
+         (proc    (pointer->procedure '* ptr '(*)))
+         (version (pointer->string (proc %null-pointer))))
+    (lambda ()
+      "Return the version number of libgcrypt as a string."
+      version)))
 
 (define finalize-canonical-sexp!
   (libgcrypt-func "gcry_sexp_release"))
@@ -232,15 +245,31 @@ Return #f if that element does not exist, or if it's a list."
   "Return an s-expression representing NUMBER."
   (string->canonical-sexp (string-append "#" (number->string number 16) "#")))
 
-(define* (bytevector->hash-data bv #:optional (hash-algo "sha256"))
+(define* (bytevector->hash-data bv
+                                #:optional
+                                (hash-algo "sha256")
+                                #:key (key-type 'ecc))
   "Given BV, a bytevector containing a hash, return an s-expression suitable
-for use as the data for 'sign'."
+for use as the data for 'sign'.  KEY-TYPE must be a symbol: 'dsa, 'ecc, or
+'rsa."
   (string->canonical-sexp
-   (format #f "(data (flags pkcs1) (hash \"~a\" #~a#))"
+   (format #f "(data (flags ~a) (hash \"~a\" #~a#))"
+           (case key-type
+             ((ecc dsa) "rfc6979")
+             ((rsa)     "pkcs1")
+             (else (error "unknown key type" key-type)))
            hash-algo
            (bytevector->base16-string bv))))
 
-(define (hash-data->bytevector data)
+(define (key-type sexp)
+  "Return a symbol denoting the type of key representing by SEXP--e.g., 'rsa',
+'ecc'--or #f if SEXP does not denote a valid key."
+  (case (canonical-sexp-nth-data sexp 0)
+    ((public-key private-key)
+     (canonical-sexp-nth-data (canonical-sexp-nth sexp 1) 0))
+    (else #f)))
+
+(define* (hash-data->bytevector data)
   "Return two values: the hash value (a bytevector), and the hash algorithm (a
 string) extracted from DATA, an sexp as returned by 'bytevector->hash-data'.
 Return #f if DATA does not conform."

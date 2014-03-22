@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -121,14 +122,14 @@ a server that supports the SSH-2 protocol.")
 (define-public openssh
   (package
    (name "openssh")
-   (version "6.5p1")
+   (version "6.6p1")
    (source (origin
             (method url-fetch)
             (uri (string-append
                    "ftp://ftp.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "09wh7mi65aahyxd2xvq1makckhd5laid8c0pb8njaidrbpamw6d1"))))
+                     "1fq3w86q05y5nn6z878wm312k0svaprw8k007188fd259dkg1ha8"))))
    (build-system gnu-build-system)
    (inputs `(("groff" ,groff)
              ("openssl" ,openssl)

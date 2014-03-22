@@ -125,9 +125,10 @@ again."
         (sigaction SIGALRM SIG_DFL)
         (apply values result)))))
 
-(define* (fetch uri #:key (buffered? #t) (timeout? #t))
+(define* (fetch uri #:key (buffered? #t) (timeout? #t) (quiet-404? #f))
   "Return a binary input port to URI and the number of bytes it's expected to
-provide."
+provide.  If QUIET-404? is true, HTTP 404 error conditions are passed through
+to the caller without emitting an error message."
   (case (uri-scheme uri)
     ((file)
      (let ((port (open-file (uri-path uri)
@@ -135,10 +136,12 @@ provide."
        (values port (stat:size (stat port)))))
     ((http)
      (guard (c ((http-get-error? c)
-                (leave (_ "download from '~a' failed: ~a, ~s~%")
-                       (uri->string (http-get-error-uri c))
-                       (http-get-error-code c)
-                       (http-get-error-reason c))))
+                (let ((code (http-get-error-code c)))
+                  (if (and (= code 404) quiet-404?)
+                      (raise c)
+                      (leave (_ "download from '~a' failed: ~a, ~s~%")
+                             (uri->string (http-get-error-uri c))
+                             code (http-get-error-reason c))))))
        ;; On Guile 2.0.5, `http-fetch' fetches the whole thing at once.  So
        ;; honor TIMEOUT? to disable the timeout when fetching a nar.
        ;;
@@ -275,8 +278,9 @@ reading PORT."
   "Return the <narinfo> record for PATH, or #f if CACHE does not hold PATH."
   (define (download url)
     ;; Download the .narinfo from URL, and return its contents as a list of
-    ;; key/value pairs.
-    (false-if-exception (fetch (string->uri url))))
+    ;; key/value pairs.  Don't emit an error message upon 404.
+    (false-if-exception (fetch (string->uri url)
+                               #:quiet-404? #t)))
 
   (and (string=? (cache-store-directory cache) (%store-prefix))
        (and=> (download (string-append (cache-url cache) "/"

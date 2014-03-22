@@ -159,19 +159,35 @@ determined."
 ;;       (leave (_ "failed to execute '~a': ~a~%")
 ;;              %lsh-command (strerror (system-error-errno args))))))
 
-(define (remote-pipe machine mode command)
+(define-syntax with-error-to-port
+  (syntax-rules ()
+    ((_ port exp0 exp ...)
+     (let ((new port)
+           (old (current-error-port)))
+       (dynamic-wind
+         (lambda ()
+           (set-current-error-port new))
+         (lambda ()
+           exp0 exp ...)
+         (lambda ()
+           (set-current-error-port old)))))))
+
+(define* (remote-pipe machine mode command
+                      #:key (error-port (current-error-port)))
   "Run COMMAND on MACHINE, assuming an lsh gateway has been set up."
   (catch 'system-error
     (lambda ()
-      (apply open-pipe* mode %lshg-command "-z"
-             "-l" (build-machine-user machine)
-             "-p" (number->string (build-machine-port machine))
+      ;; Let the child inherit ERROR-PORT.
+      (with-error-to-port error-port
+        (apply open-pipe* mode %lshg-command "-z"
+               "-l" (build-machine-user machine)
+               "-p" (number->string (build-machine-port machine))
 
-             ;; XXX: Remove '-i' when %LSHG-COMMAND really is lshg.
-             "-i" (build-machine-private-key machine)
+               ;; XXX: Remove '-i' when %LSHG-COMMAND really is lshg.
+               "-i" (build-machine-private-key machine)
 
-             (build-machine-name machine)
-             command))
+               (build-machine-name machine)
+               command)))
     (lambda args
       (warning (_ "failed to execute '~a': ~a~%")
                %lshg-command (strerror (system-error-errno args)))
@@ -257,9 +273,18 @@ connections allowed to MACHINE."
 ;;; Offloading.
 ;;;
 
+(define (build-log-port)
+  "Return the default port where build logs should be sent.  The default is
+file descriptor 4, which is open by the daemon before running the offload
+hook."
+  (let ((port (fdopen 4 "w0")))
+    ;; Make sure file descriptor 4 isn't closed when PORT is GC'd.
+    (set-port-revealed! port 1)
+    port))
+
 (define* (offload drv machine
                   #:key print-build-trace? (max-silent-time 3600)
-                  build-timeout (log-port (current-output-port)))
+                  build-timeout (log-port (build-log-port)))
   "Perform DRV on MACHINE, assuming DRV and its prerequisites are available
 there, and write the build log to LOG-PORT.  Return the exit status."
   (format (current-error-port) "offloading '~a' to '~a'...~%"
@@ -276,7 +301,11 @@ there, and write the build log to LOG-PORT.  Return the exit status."
                                    (list (format #f "--timeout=~a"
                                                  build-timeout))
                                    '())
-                             ,(derivation-file-name drv)))))
+                             ,(derivation-file-name drv))
+
+                           ;; Since 'guix build' writes the build log to its
+                           ;; stderr, everything will go directly to LOG-PORT.
+                           #:error-port log-port)))
     (let loop ((line (read-line pipe)))
       (unless (eof-object? line)
         (display line log-port)
@@ -597,6 +626,7 @@ This tool is meant to be used internally by 'guix-daemon'.\n"))
 ;;; Local Variables:
 ;;; eval: (put 'with-machine-lock 'scheme-indent-function 2)
 ;;; eval: (put 'with-file-lock 'scheme-indent-function 1)
+;;; eval: (put 'with-error-to-port 'scheme-indent-function 1)
 ;;; End:
 
 ;;; offload.scm ends here

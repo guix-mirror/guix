@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -317,6 +318,13 @@ ONC RPC numbers")
               (base32
                "1frjcdkhkpzk0f84hx6hmw5l0ynpmji8vcbaxg8h5k2svyxz0nmm"))))
     (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags
+       ;; By default, man and info pages are put in PREFIX/{man,info},
+       ;; but we want them in PREFIX/share/{man,info}.
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "--mandir=" out "/share/man")
+               (string-append "--infodir=" out "/share/info")))))
     (home-page "http://netcat.sourceforge.net")
     (synopsis "Read and write data over TCP/IP")
     (description

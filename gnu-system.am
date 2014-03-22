@@ -89,6 +89,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gnome.scm			\
   gnu/packages/gnunet.scm			\
   gnu/packages/gnupg.scm			\
+  gnu/packages/gnustep.scm			\
   gnu/packages/gnutls.scm			\
   gnu/packages/gnuzilla.scm			\
   gnu/packages/gnu-pw-mgr.scm			\
