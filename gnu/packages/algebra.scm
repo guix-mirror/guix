@@ -27,7 +27,8 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix utils))
 
 
 (define-public mpfrcx
@@ -231,3 +232,14 @@ transform (DFT) in one or more dimensions, of arbitrary input size, and of
 both real and complex data (as well as of even/odd data---i.e. the discrete
 cosine/ sine transforms or DCT/DST).")
     (license gpl2+)))
+
+(define-public fftwf
+  (package (inherit fftw)
+    (name "fftwf")
+    (arguments
+     (substitute-keyword-arguments (package-arguments fftw)
+       ((#:configure-flags cf)
+        `(cons "--enable-float" ,cf))))
+    (description
+     (string-append (package-description fftw)
+                    "  Single-precision version."))))

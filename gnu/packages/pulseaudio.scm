@@ -168,7 +168,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
        ("pkg-config" ,pkg-config)
        ("m4" ,m4)
        ("libtool" ,libtool)
-       ("fftw" ,fftw)
+       ("fftwf" ,fftwf)
        ("avahi" ,avahi)
        ("check" ,check)))
     (propagated-inputs
