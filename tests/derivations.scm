@@ -524,6 +524,9 @@ Deriver: ~a~%"
                 (basename
                  (derivation-file-name drv)))))     ; Deriver
 
+    ;; Make sure substitutes are usable.
+    (set-build-options store #:use-substitutes? #t)
+
     (let-values (((build download)
                   (derivation-prerequisites-to-build store drv))
                  ((build* download*)
