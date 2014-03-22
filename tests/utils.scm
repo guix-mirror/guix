@@ -150,6 +150,17 @@
       (any (compose (negate zero?) cdr waitpid)
            pids))))
 
+(test-assert "compressed-port, decompressed-port, non-file"
+  (let ((data (call-with-input-file (search-path %load-path "guix.scm")
+                get-bytevector-all)))
+    (let*-values (((compressed pids1)
+                   (compressed-port 'xz (open-bytevector-input-port data)))
+                  ((decompressed pids2)
+                   (decompressed-port 'xz compressed)))
+      (and (every (compose zero? cdr waitpid)
+                  (append pids1 pids2))
+           (equal? (get-bytevector-all decompressed) data)))))
+
 (false-if-exception (delete-file temp-file))
 (test-equal "fcntl-flock wait"
   42                                              ; the child's exit status

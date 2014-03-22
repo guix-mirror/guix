@@ -400,16 +400,6 @@ indefinitely."
     (call-with-output-file expiry-file
       (cute write (time-second now) <>))))
 
-(define (decompressed-port compression input)
-  "Return an input port where INPUT is decompressed according to COMPRESSION,
-along with a list of PIDs to wait for."
-  (match compression
-    ("none"  (values input '()))
-    ("bzip2" (filtered-port `(,%bzip2 "-dc") input))
-    ("xz"    (filtered-port `(,%xz "-dc") input))
-    ("gzip"  (filtered-port `(,%gzip "-dc") input))
-    (else    (error "unsupported compression scheme" compression))))
-
 (define (progress-report-port report-progress port)
   "Return a port that calls REPORT-PROGRESS every time something is read from
 PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
@@ -598,7 +588,8 @@ substituter disabled~%")
                                                        (current-error-port))))
                          (progress-report-port progress raw)))
                       ((input pids)
-                       (decompressed-port (narinfo-compression narinfo)
+                       (decompressed-port (and=> (narinfo-compression narinfo)
+                                                 string->symbol)
                                           progress)))
           ;; Unpack the Nar at INPUT into DESTINATION.
           (restore-file input destination)
