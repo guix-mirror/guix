@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -40,6 +40,17 @@ test -f "$sig"
 hash2="`guix authenticate rsautl -verify		\
           -inkey $abs_top_srcdir/tests/signing-key.pub	\
           -pubin -in $sig`"
+test "$hash2" = `cat "$hash"`
+
+# Same thing in a pipeline, using the command line syntax that Nix/Crypto.pm
+# uses.
+hash2="`						\
+  cat "$hash"						\
+  | guix authenticate rsautl -sign			\
+    -inkey "$abs_top_srcdir/tests/signing-key.sec"	\
+  | guix authenticate rsautl -verify			\
+          -inkey $abs_top_srcdir/tests/signing-key.pub	\
+          -pubin`"
 test "$hash2" = `cat "$hash"`
 
 # Detect corrupt signatures.

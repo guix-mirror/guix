@@ -90,14 +90,22 @@ to stdout upon success."
 
 (define (guix-authenticate . args)
   (match args
+    ;; As invoked by guix-daemon.
     (("rsautl" "-sign" "-inkey" key "-in" hash-file)
      (call-with-input-file hash-file
        (lambda (port)
          (sign-with-key key port))))
+    ;; As invoked by Nix/Crypto.pm (used by Hydra.)
+    (("rsautl" "-sign" "-inkey" key)
+     (sign-with-key key (current-input-port)))
+    ;; As invoked by guix-daemon.
     (("rsautl" "-verify" "-inkey" _ "-pubin" "-in" signature-file)
      (call-with-input-file signature-file
        (lambda (port)
          (validate-signature port))))
+    ;; As invoked by Nix/Crypto.pm (used by Hydra.)
+    (("rsautl" "-verify" "-inkey" _ "-pubin")
+     (validate-signature (current-input-port)))
     (("--help")
      (display (_ "Usage: guix authenticate OPTION...
 Sign or verify the signature on the given file.  This tool is meant to
