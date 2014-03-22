@@ -34,18 +34,53 @@
 ;;;
 ;;; Code:
 
-(define (read-canonical-sexp file)
-  "Read a gcrypt sexp from FILE and return it."
-  (call-with-input-file file
-    (compose string->canonical-sexp get-string-all)))
+(define read-canonical-sexp
+  ;; Read a gcrypt sexp from a port and return it.
+  (compose string->canonical-sexp get-string-all))
 
-(define (read-hash-data file key-type)
-  "Read sha256 hash data from FILE and return it as a gcrypt sexp.  KEY-TYPE
+(define (read-hash-data port key-type)
+  "Read sha256 hash data from PORT and return it as a gcrypt sexp.  KEY-TYPE
 is a symbol representing the type of public key algo being used."
-  (let* ((hex (call-with-input-file file get-string-all))
+  (let* ((hex (get-string-all port))
          (bv  (base16-string->bytevector (string-trim-both hex))))
     (bytevector->hash-data bv #:key-type key-type)))
 
+(define (sign-with-key key-file port)
+  "Sign the hash read from PORT with KEY-FILE, and write an sexp that includes
+both the hash and the actual signature."
+  (let* ((secret-key (call-with-input-file key-file read-canonical-sexp))
+         (public-key (if (string-suffix? ".sec" key-file)
+                         (call-with-input-file
+                             (string-append (string-drop-right key-file 4)
+                                            ".pub")
+                           read-canonical-sexp)
+                         (leave
+                          (_ "cannot find public key for secret key '~a'~%")
+                          key-file)))
+         (data       (read-hash-data port (key-type public-key)))
+         (signature  (signature-sexp data secret-key public-key)))
+    (display (canonical-sexp->string signature))
+    #t))
+
+(define (validate-signature port)
+  "Read the signature from PORT (which is as produced above), check whether
+its public key is authorized, verify the signature, and print the signed data
+to stdout upon success."
+  (let* ((signature (read-canonical-sexp port))
+         (subject   (signature-subject signature))
+         (data      (signature-signed-data signature)))
+    (if (and data subject)
+        (if (authorized-key? subject)
+            (if (valid-signature? signature)
+                (let ((hash (hash-data->bytevector data)))
+                  (display (bytevector->base16-string hash))
+                  #t)                              ; success
+                (leave (_ "error: invalid signature: ~a~%")
+                       (canonical-sexp->string signature)))
+            (leave (_ "error: unauthorized public key: ~a~%")
+                   (canonical-sexp->string subject)))
+        (leave (_ "error: corrupt signature data: ~a~%")
+               (canonical-sexp->string signature)))))
 
 ;;;
 ;;; Entry point with 'openssl'-compatible interface.  We support this
@@ -56,38 +91,13 @@ is a symbol representing the type of public key algo being used."
 (define (guix-authenticate . args)
   (match args
     (("rsautl" "-sign" "-inkey" key "-in" hash-file)
-     ;; Sign the hash in HASH-FILE with KEY, and return an sexp that includes
-     ;; both the hash and the actual signature.
-     (let* ((secret-key (read-canonical-sexp key))
-            (public-key (if (string-suffix? ".sec" key)
-                            (read-canonical-sexp
-                             (string-append (string-drop-right key 4) ".pub"))
-                            (leave
-                             (_ "cannot find public key for secret key '~a'~%")
-                             key)))
-            (data       (read-hash-data hash-file (key-type public-key)))
-            (signature  (signature-sexp data secret-key public-key)))
-       (display (canonical-sexp->string signature))
-       #t))
+     (call-with-input-file hash-file
+       (lambda (port)
+         (sign-with-key key port))))
     (("rsautl" "-verify" "-inkey" _ "-pubin" "-in" signature-file)
-     ;; Read the signature as produced above, check whether its public key is
-     ;; authorized, and verify the signature, and print the signed data to
-     ;; stdout upon success.
-     (let* ((signature (read-canonical-sexp signature-file))
-            (subject   (signature-subject signature))
-            (data      (signature-signed-data signature)))
-       (if (and data subject)
-           (if (authorized-key? subject)
-               (if (valid-signature? signature)
-                   (let ((hash (hash-data->bytevector data)))
-                     (display (bytevector->base16-string hash))
-                     #t)                          ; success
-                   (leave (_ "error: invalid signature: ~a~%")
-                          (canonical-sexp->string signature)))
-               (leave (_ "error: unauthorized public key: ~a~%")
-                      (canonical-sexp->string subject)))
-           (leave (_ "error: corrupt signature data: ~a~%")
-                  (canonical-sexp->string signature)))))
+     (call-with-input-file signature-file
+       (lambda (port)
+         (validate-signature port))))
     (("--help")
      (display (_ "Usage: guix authenticate OPTION...
 Sign or verify the signature on the given file.  This tool is meant to
