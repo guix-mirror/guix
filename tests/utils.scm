@@ -142,6 +142,14 @@
                    (append pids1 pids2)))
            (equal? (get-bytevector-all decompressed) data)))))
 
+(test-assert "filtered-port, does not exist"
+  (let* ((file  (search-path %load-path "guix.scm"))
+         (input (open-file file "r0b")))
+    (let-values (((port pids)
+                  (filtered-port '("/does/not/exist") input)))
+      (any (compose (negate zero?) cdr waitpid)
+           pids))))
+
 (false-if-exception (delete-file temp-file))
 (test-equal "fcntl-flock wait"
   42                                              ; the child's exit status

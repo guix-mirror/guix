@@ -155,18 +155,29 @@ COMMAND (a list).  In addition, return a list of PIDs that the caller must
 wait.  When INPUT is a file port, it must be unbuffered; otherwise, any
 buffered data is lost."
   (let loop ((input input)
-             (pids '()))
+             (pids  '()))
     (if (file-port? input)
         (match (pipe)
           ((in . out)
            (match (primitive-fork)
              (0
-              (close-port in)
-              (close-port (current-input-port))
-              (dup2 (fileno input) 0)
-              (close-port (current-output-port))
-              (dup2 (fileno out) 1)
-              (apply execl (car command) command))
+              (dynamic-wind
+                (const #f)
+                (lambda ()
+                  (close-port in)
+                  (close-port (current-input-port))
+                  (dup2 (fileno input) 0)
+                  (close-port (current-output-port))
+                  (dup2 (fileno out) 1)
+                  (catch 'system-error
+                    (lambda ()
+                      (apply execl (car command) command))
+                    (lambda args
+                      (format (current-error-port)
+                              "filtered-port: failed to execute '~{~a ~}': ~a~%"
+                              command (strerror (system-error-errno args))))))
+                (lambda ()
+                  (primitive-_exit 1))))
              (child
               (close-port out)
               (values in (cons child pids))))))
@@ -184,7 +195,7 @@ buffered data is lost."
                   (dump-port input out))
                 (lambda ()
                   (false-if-exception (close out))
-                  (primitive-exit 0))))
+                  (primitive-_exit 0))))
              (child
               (close-port out)
               (loop in (cons child pids)))))))))
