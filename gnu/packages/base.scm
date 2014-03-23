@@ -474,7 +474,17 @@ library for working with executable and object formats is also included.")
                     ;; Same for `popen'.
                     (substitute* "libio/iopopen.c"
                       (("/bin/sh")
-                       (string-append out "/bin/bash")))))
+                       (string-append out "/bin/bash")))
+
+                    ;; Make sure we don't retain a reference to the
+                    ;; bootstrap Perl.
+                    (substitute* "malloc/mtrace.pl"
+                      (("^#!.*")
+                       ;; The shebang can be omitted, because there's the
+                       ;; "bilingual" eval/exec magic at the top of the file.
+                       "")
+                      (("exec @PERL@")
+                       "exec perl"))))
                 (alist-cons-after
                  'install 'install-locales
                  (lambda _
