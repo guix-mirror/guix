@@ -73,7 +73,8 @@
 
             filtered-port
             compressed-port
-            decompressed-port))
+            decompressed-port
+            compressed-output-port))
 
 
 ;;;
@@ -221,6 +222,47 @@ a symbol such as 'xz."
     ('bzip2        (filtered-port `(,%bzip2 "-c") input))
     ('xz           (filtered-port `(,%xz "-c") input))
     ('gzip         (filtered-port `(,%gzip "-c") input))
+    (else          (error "unsupported compression scheme" compression))))
+
+(define (filtered-output-port command output)
+  "Return an output port.  Data written to that port is filtered through
+COMMAND and written to OUTPUT, an output file port.  In addition, return a
+list of PIDs to wait for.  OUTPUT must be unbuffered; otherwise, any buffered
+data is lost."
+  (match (pipe)
+    ((in . out)
+     (match (primitive-fork)
+       (0
+        (dynamic-wind
+          (const #f)
+          (lambda ()
+            (close-port out)
+            (close-port (current-input-port))
+            (dup2 (fileno in) 0)
+            (close-port (current-output-port))
+            (dup2 (fileno output) 1)
+            (catch 'system-error
+              (lambda ()
+                (apply execl (car command) command))
+              (lambda args
+                (format (current-error-port)
+                        "filtered-output-port: failed to execute '~{~a ~}': ~a~%"
+                        command (strerror (system-error-errno args))))))
+          (lambda ()
+            (primitive-_exit 1))))
+       (child
+        (close-port in)
+        (values out (list child)))))))
+
+(define (compressed-output-port compression output)
+  "Return an output port whose input is compressed according to COMPRESSION,
+a symbol such as 'xz, and then written to OUTPUT.  In addition return a list
+of PIDs to wait for."
+  (match compression
+    ((or #f 'none) (values output '()))
+    ('bzip2        (filtered-output-port `(,%bzip2 "-c") output))
+    ('xz           (filtered-output-port `(,%xz "-c") output))
+    ('gzip         (filtered-output-port `(,%gzip "-c") output))
     (else          (error "unsupported compression scheme" compression))))
 
 
