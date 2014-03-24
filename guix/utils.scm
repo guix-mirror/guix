@@ -21,6 +21,7 @@
   #:use-module (guix config)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-39)
   #:use-module (srfi srfi-60)
@@ -74,7 +75,9 @@
             filtered-port
             compressed-port
             decompressed-port
-            compressed-output-port))
+            call-with-decompressed-port
+            compressed-output-port
+            call-with-compressed-output-port))
 
 
 ;;;
@@ -224,6 +227,22 @@ a symbol such as 'xz."
     ('gzip         (filtered-port `(,%gzip "-c") input))
     (else          (error "unsupported compression scheme" compression))))
 
+(define (call-with-decompressed-port compression port proc)
+  "Call PROC with a wrapper around PORT, a file port, that decompresses data
+read from PORT according to COMPRESSION, a symbol such as 'xz.  PORT is closed
+as soon as PROC's dynamic extent is entered."
+  (let-values (((decompressed pids)
+                (decompressed-port compression port)))
+    (dynamic-wind
+      (const #f)
+      (lambda ()
+        (close-port port)
+        (proc decompressed))
+      (lambda ()
+        (close-port decompressed)
+        (unless (every (compose zero? cdr waitpid) pids)
+          (error "decompressed-port failure" pids))))))
+
 (define (filtered-output-port command output)
   "Return an output port.  Data written to that port is filtered through
 COMMAND and written to OUTPUT, an output file port.  In addition, return a
@@ -264,6 +283,22 @@ of PIDs to wait for."
     ('xz           (filtered-output-port `(,%xz "-c") output))
     ('gzip         (filtered-output-port `(,%gzip "-c") output))
     (else          (error "unsupported compression scheme" compression))))
+
+(define (call-with-compressed-output-port compression port proc)
+  "Call PROC with a wrapper around PORT, a file port, that compresses data
+that goes to PORT according to COMPRESSION, a symbol such as 'xz.  PORT is
+closed as soon as PROC's dynamic extent is entered."
+  (let-values (((compressed pids)
+                (compressed-output-port compression port)))
+    (dynamic-wind
+      (const #f)
+      (lambda ()
+        (close-port port)
+        (proc compressed))
+      (lambda ()
+        (close-port compressed)
+        (unless (every (compose zero? cdr waitpid) pids)
+          (error "compressed-output-port failure" pids))))))
 
 
 ;;;

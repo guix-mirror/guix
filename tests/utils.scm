@@ -162,23 +162,16 @@
            (equal? (get-bytevector-all decompressed) data)))))
 
 (false-if-exception (delete-file temp-file))
-(test-equal "compressed-output-port + decompressed-port"
-  '((0) "Hello, compressed port!")
-  (let ((text   "Hello, compressed port!")
-        (output (open-file temp-file "w0b")))
-    (let-values (((compressed pids)
-                  (compressed-output-port 'xz output)))
-      (display text compressed)
-      (close-port compressed)
-      (close-port output)
-      (and (every (compose zero? cdr waitpid) pids)
-           (let*-values (((input)
-                          (open-file temp-file "r0b"))
-                         ((decompressed pids)
-                          (decompressed-port 'xz input)))
-             (let ((str (get-string-all decompressed)))
-               (list (map (compose cdr waitpid) pids)
-                     str)))))))
+(test-assert "compressed-output-port + decompressed-port"
+  (let* ((file (search-path %load-path "guix/derivations.scm"))
+         (data (call-with-input-file file get-bytevector-all)))
+    (call-with-compressed-output-port 'xz (open-file temp-file "w0b")
+      (lambda (compressed)
+        (put-bytevector compressed data)))
+
+    (bytevector=? data
+                  (call-with-decompressed-port 'xz (open-file temp-file "r0b")
+                    get-bytevector-all))))
 
 (false-if-exception (delete-file temp-file))
 (test-equal "fcntl-flock wait"

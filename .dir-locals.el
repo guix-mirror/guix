@@ -22,6 +22,8 @@
    (eval . (put 'with-error-handling 'scheme-indent-function 0))
    (eval . (put 'with-mutex 'scheme-indent-function 1))
    (eval . (put 'with-atomic-file-output 'scheme-indent-function 1))
+   (eval . (put 'call-with-compressed-output-port 'scheme-indent-function 2))
+   (eval . (put 'call-with-decompressed-port 'scheme-indent-function 2))
 
    (eval . (put 'syntax-parameterize 'scheme-indent-function 1))
    (eval . (put 'with-monad 'scheme-indent-function 1))
