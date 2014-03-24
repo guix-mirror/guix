@@ -377,19 +377,22 @@ success, #f otherwise."
 
       ;; Compute the subset of FILES missing on MACHINE, and send them in
       ;; topologically sorted order so that they can actually be imported.
-      (let ((files (missing-files (topologically-sorted store files)))
-            (pipe  (remote-pipe machine OPEN_WRITE
-                                '("guix" "archive" "--import"))))
+      (let* ((files (missing-files (topologically-sorted store files)))
+             (pipe  (remote-pipe machine OPEN_WRITE
+                                 '("xz" "-dc" "|"
+                                   "guix" "archive" "--import"))))
         (format #t (_ "sending ~a store files to '~a'...~%")
                 (length files) (build-machine-name machine))
-        (catch 'system-error
-          (lambda ()
-            (export-paths store files pipe))
-          (lambda args
-            (warning (_ "failed while exporting files to '~a': ~a~%")
-                     (build-machine-name machine)
-                     (strerror (system-error-errno args)))))
-        (zero? (close-pipe pipe))))))
+        (call-with-compressed-output-port 'xz pipe
+          (lambda (compressed)
+            (catch 'system-error
+              (lambda ()
+                (export-paths store files compressed))
+              (lambda args
+                (warning (_ "failed while exporting files to '~a': ~a~%")
+                         (build-machine-name machine)
+                         (strerror (system-error-errno args)))))))
+        #t))))
 
 (define (retrieve-files files machine)
   "Retrieve FILES from MACHINE's store, and import them."
@@ -397,7 +400,8 @@ success, #f otherwise."
     (build-machine-name machine))
 
   (let ((pipe (remote-pipe machine OPEN_READ
-                           `("guix" "archive" "--export" ,@files))))
+                           `("guix" "archive" "--export" ,@files
+                             "|" "xz" "-c"))))
     (and pipe
          (with-store store
            (guard (c ((nix-protocol-error? c)
@@ -409,11 +413,13 @@ success, #f otherwise."
 
              ;; We cannot use the 'import-paths' RPC here because we already
              ;; hold the locks for FILES.
-             (restore-file-set pipe
-                               #:log-port (current-error-port)
-                               #:lock? #f)
+             (call-with-decompressed-port 'xz pipe
+               (lambda (decompressed)
+                 (restore-file-set decompressed
+                                   #:log-port (current-error-port)
+                                   #:lock? #f)))
 
-             (zero? (close-pipe pipe)))))))
+             #t)))))
 
 
 ;;;
