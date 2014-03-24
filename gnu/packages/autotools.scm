@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -27,7 +28,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module (ice-9 match)
+  #:export (autoconf-wrapper))
 
 (define-public autoconf
   (package
@@ -59,11 +62,23 @@ scripts are self-contained and portable, freeing the user from needing to
 know anything about Autoconf or M4.")
     (license gpl3+))) ; some files are under GPLv2+
 
-(define-public autoconf-wrapper
-  ;; An Autoconf wrapper that generates `configure' scripts that use our
-  ;; own Bash instead of /bin/sh in shebangs.  For that reason, it
-  ;; should only be used internally---users should not end up
-  ;; distributing `configure' files with a system-specific shebang.
+(define-public autoconf-2.68
+  (package (inherit autoconf)
+    (version "2.68")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/autoconf/autoconf-"
+                          version ".tar.xz"))
+      (sha256
+       (base32
+        "1fjm21k2na07f3vasf288a0zx66lbv0hd3l9bvv3q8p62s3pg569"))))))
+
+(define* (autoconf-wrapper #:optional (autoconf autoconf))
+  "Return an wrapper around AUTOCONF that generates `configure' scripts that
+use our own Bash instead of /bin/sh in shebangs.  For that reason, it should
+only be used internally---users should not end up distributing `configure'
+files with a system-specific shebang."
   (package (inherit autoconf)
     (location (source-properties->location (current-source-location)))
     (name (string-append (package-name autoconf) "-wrapper"))
@@ -144,7 +159,7 @@ exec ~a --no-auto-compile \"$0\" \"$@\"
               (list (search-patch "automake-skip-amhello-tests.patch")))))
     (build-system gnu-build-system)
     (inputs
-     `(("autoconf" ,autoconf-wrapper)
+     `(("autoconf" ,(autoconf-wrapper))
        ("perl" ,perl)))
     (native-search-paths
      (list (search-path-specification
