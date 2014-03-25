@@ -54,6 +54,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cross-base.scm			\
   gnu/packages/cryptsetup.scm			\
   gnu/packages/curl.scm				\
+  gnu/packages/cursynth.scm			\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/dc.scm				\
   gnu/packages/dejagnu.scm			\
