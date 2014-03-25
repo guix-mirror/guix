@@ -108,8 +108,11 @@ remote applications.")
             (sha256 (base32
                      "0vdr478dbhbdgnniqmirawjb7mrcxckn4slhhrijxnzrkmgziipa"))))
    (build-system gnu-build-system)
-   (inputs `(("libgcrypt" ,libgcrypt)
-             ("zlib" ,zlib)))
+   ;; The installed libssh2.pc file does not include paths to libgcrypt and
+   ;; zlib libraries, so we need to propagate the inputs.
+   (propagated-inputs `(("libgcrypt" ,libgcrypt)
+                        ("zlib" ,zlib)))
+   (arguments '(#:configure-flags `("--with-libgcrypt")))
    (synopsis "libssh2, a client-side C library implementing the SSH2 protocol")
    (description
     "libssh2 is a library intended to allow software developers access to
