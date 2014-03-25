@@ -196,9 +196,9 @@ which is not available during bootstrap."
   "Fetch data from URI and write it to FILE.  Return FILE on success."
 
   (define post-2.0.7?
-    (or (string>? (major-version) "2")
-        (string>? (minor-version) "0")
-        (string>? (micro-version) "7")
+    (or (> (string->number (major-version)) 2)
+        (> (string->number (minor-version)) 0)
+        (> (string->number (micro-version)) 7)
         (string>? (version) "2.0.7")))
 
   (define headers
