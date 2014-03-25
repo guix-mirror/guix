@@ -41,6 +41,7 @@
              (guix derivations)
              ((guix utils) #:select (%current-system))
              (gnu packages)
+             (gnu packages gcc)
              (gnu packages base)
              (gnu packages gawk)
              (gnu packages guile)
@@ -90,7 +91,7 @@ SYSTEM."
   ;; Note: Don't put the '-final' package variants because (1) that's
   ;; implicit, and (2) they cannot be cross-built (due to the explicit input
   ;; chain.)
-  (list gcc glibc binutils
+  (list gcc-4.8 gcc-4.7 glibc binutils
         gmp mpfr mpc coreutils findutils diffutils patch sed grep
         gawk gnu-gettext hello guile-2.0 zlib gzip xz
         %bootstrap-binaries-tarball
