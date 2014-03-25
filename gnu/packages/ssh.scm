@@ -187,7 +187,7 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.5.0")
+    (version "0.6.0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -195,7 +195,7 @@ Additionally, various channel-specific options can be negotiated.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "13wk2fj08b8zjylvf78l3d9pf8y3zqcd7h75jf15a46iprk00n7q"))))
+                "1v4y5vrwg0g6804pzbr160zahlqvj7k7iwys2bdpfzp7m2i47siq"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
@@ -227,11 +227,11 @@ Additionally, various channel-specific options can be negotiated.")
                                               (assoc-ref %outputs "out")
                                               "/share/guile/site/2.0"))
 
-       ;; Two client/server tests use the same port.
-       #:parallel-tests? #f
+       ;; Building the .go requires building libguile-ssh.so first.
+       #:parallel-build? #f
 
-       ;; XXX: There are test failures reported and being fixed.
-       #:tests? #f))
+       ;; Tests are not parallel-safe.
+       #:parallel-tests? #f))
     (native-inputs `(("autoconf" ,autoconf)
                      ("automake" ,automake)
                      ("libtool" ,libtool "bin")
