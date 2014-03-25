@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,21 +31,27 @@
 (define-public recutils
   (package
    (name "recutils")
-   (version "1.6")
+   (version "1.7")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/recutils/recutils-"
                                 version ".tar.gz"))
             (sha256
              (base32
-              "0dxmz73n4qaasqymx97nlw6in98r6lnsfp0586hwkn95d3ll306s"))))
+              "0cdwa4094x3yx7vn98xykvnlp9rngvd58d19vs3vh5hrvggccg93"))))
    (build-system gnu-build-system)
+
+   ;; Running tests in parallel leads to test failures and crashes in
+   ;; torture/utils.
+   (arguments '(#:parallel-tests? #f))
+
    (native-inputs `(("emacs" ,emacs)
                     ("bc" ,bc)))
 
    ;; TODO: Add more optional inputs.
    ;; FIXME: Our Bash doesn't have development headers (need for the 'readrec'
    ;; built-in command), but it's not clear how to get them installed.
+   ;; See <https://lists.gnu.org/archive/html/bug-bash/2014-03/msg00125.html>.
    (inputs `(("curl" ,curl)
              ("libgcrypt" ,libgcrypt)
              ("check" ,check)))
