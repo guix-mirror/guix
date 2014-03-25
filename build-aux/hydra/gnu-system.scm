@@ -111,15 +111,8 @@ SYSTEM."
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
   (define systems
-    (match (filter-map (match-lambda
-                        (('system . value)
-                         value)
-                        (_ #f))
-                       arguments)
-      ((lst ..1)
-       lst)
-      (_
-       (list (%current-system)))))
+    ;; Systems we want to build for.
+    '("x86_64-linux" "i686-linux"))
 
   (define subset
     (match (assoc-ref arguments 'subset)
