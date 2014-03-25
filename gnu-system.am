@@ -146,6 +146,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mail.scm				\
   gnu/packages/make-bootstrap.scm		\
   gnu/packages/maths.scm			\
+  gnu/packages/mc.scm				\
   gnu/packages/messaging.scm			\
   gnu/packages/mit-krb5.scm			\
   gnu/packages/moe.scm				\
@@ -305,6 +306,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/m4-gets-undeclared.patch			\
   gnu/packages/patches/m4-readlink-EINVAL.patch			\
   gnu/packages/patches/make-impure-dirs.patch			\
+  gnu/packages/patches/mc-fix-ncurses-build.patch		\
   gnu/packages/patches/mcron-install.patch			\
   gnu/packages/patches/mit-krb5-init-fix.patch			\
   gnu/packages/patches/mpc123-initialize-ao.patch		\
