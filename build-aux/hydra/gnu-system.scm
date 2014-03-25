@@ -87,7 +87,10 @@ SYSTEM."
            (cut package-cross-derivation <> <> target <>))))
 
 (define %core-packages
-  (list gcc-final glibc-final binutils
+  ;; Note: Don't put the '-final' package variants because (1) that's
+  ;; implicit, and (2) they cannot be cross-built (due to the explicit input
+  ;; chain.)
+  (list gcc glibc binutils
         gmp mpfr mpc coreutils findutils diffutils patch sed grep
         gawk gnu-gettext hello guile-2.0 zlib gzip xz
         %bootstrap-binaries-tarball
