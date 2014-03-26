@@ -214,11 +214,12 @@ failure."
                           '("StoreDir" "WantMassQuery")))))
 
 (define-record-type <narinfo>
-  (%make-narinfo path uri compression file-hash file-size nar-hash nar-size
+  (%make-narinfo path uri uri-base compression file-hash file-size nar-hash nar-size
                  references deriver system signature contents)
   narinfo?
   (path         narinfo-path)
   (uri          narinfo-uri)
+  (uri-base     narinfo-uri-base)        ; URI of the cache it originates from
   (compression  narinfo-compression)
   (file-hash    narinfo-file-hash)
   (file-size    narinfo-file-size)
@@ -261,6 +262,7 @@ must contain the original contents of a narinfo file."
                    ;; Handle the case where URL is a relative URL.
                    (or (string->uri url)
                        (string->uri (string-append cache-url "/" url)))
+                   cache-url
 
                    compression file-hash
                    (and=> file-size string->number)
@@ -350,9 +352,9 @@ build full URIs from relative URIs found while reading PORT."
   "Return the external representation of NARINFO."
   (call-with-output-string (cut write-narinfo narinfo <>)))
 
-(define (string->narinfo str)
+(define (string->narinfo str cache-uri)
   "Return the narinfo represented by STR."
-  (call-with-input-string str (cut read-narinfo <>)))
+  (call-with-input-string str (cut read-narinfo <> cache-uri)))
 
 (define (fetch-narinfo cache path)
   "Return the <narinfo> record for PATH, or #f if CACHE does not hold PATH."
@@ -390,7 +392,8 @@ check what it has."
                    (store-path-hash-part path)))
 
   (define (cache-entry narinfo)
-    `(narinfo (version 0)
+    `(narinfo (version 1)
+              (cache-uri ,(narinfo-uri-base narinfo))
               (date ,(time-second now))
               (value ,(and=> narinfo narinfo->string))))
 
@@ -400,18 +403,23 @@ check what it has."
                      (call-with-input-file cache-file
                        (lambda (p)
                          (match (read p)
-                           (('narinfo ('version 0) ('date date)
-                                      ('value #f))
+                           (('narinfo ('version 1)
+                                      ('cache-uri cache-uri)
+                                      ('date date) ('value #f))
                             ;; A cached negative lookup.
                             (if (obsolete? date now %narinfo-negative-ttl)
                                 (values #f #f)
                                 (values #t #f)))
-                           (('narinfo ('version 0) ('date date)
-                                      ('value value))
+                           (('narinfo ('version 1)
+                                      ('cache-uri cache-uri)
+                                      ('date date) ('value value))
                             ;; A cached positive lookup
                             (if (obsolete? date now %narinfo-ttl)
                                 (values #f #f)
-                                (values #t (string->narinfo value))))))))
+                                (values #t (string->narinfo value
+                                                            cache-uri))))
+                           (('narinfo ('version v) _ ...)
+                            (values #f #f))))))
                    (lambda _
                      (values #f #f)))))
     (if valid?
@@ -440,10 +448,10 @@ indefinitely."
         (call-with-input-file file
           (lambda (port)
             (match (read port)
-              (('narinfo ('version 0) ('date date)
+              (('narinfo ('version 1) ('cache-uri _) ('date date)
                          ('value #f))
                (obsolete? date now %narinfo-negative-ttl))
-              (('narinfo ('version 0) ('date date)
+              (('narinfo ('version 1) ('cache-uri _) ('date date)
                          ('value _))
                (obsolete? date now %narinfo-ttl))
               (_ #t)))))
