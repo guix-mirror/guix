@@ -136,7 +136,7 @@ determined."
 ;;                                  "-i" (build-machine-private-key machine)
 ;;                                  ;; XXX: With lsh 2.1, passing '--write-pid'
 ;;                                  ;; last causes the PID not to be printed.
-;;                                  "--write-pid" "--gateway" "--background" "-z"
+;;                                  "--write-pid" "--gateway" "--background"
 ;;                                  (build-machine-name machine)))
 ;;              (line   (read-line port))
 ;;              (status (close-pipe port)))
@@ -179,7 +179,7 @@ determined."
     (lambda ()
       ;; Let the child inherit ERROR-PORT.
       (with-error-to-port error-port
-        (apply open-pipe* mode %lshg-command "-z"
+        (apply open-pipe* mode %lshg-command
                "-l" (build-machine-user machine)
                "-p" (number->string (build-machine-port machine))
 
