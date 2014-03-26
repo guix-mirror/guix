@@ -376,7 +376,6 @@ success, #f otherwise."
                (warning (_ "failed to export files for '~a': ~s~%")
                         (build-machine-name machine)
                         c)
-               (false-if-exception (close-pipe pipe))
                #f))
 
       ;; Compute the subset of FILES missing on MACHINE, and send them in
