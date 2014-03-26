@@ -83,14 +83,14 @@ solve the shortest vector problem.")
 (define-public pari-gp
   (package
    (name "pari-gp")
-   (version "2.5.5")
+   (version "2.7.0")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://pari.math.u-bordeaux.fr/pub/pari/unix/pari-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "058nw1fhggy7idii4f124ami521lv3izvngs9idfz964aks8cvvn"))))
+                     "1hk7lmq09crr9jvia8nxzhvbwf8mw62xk456i96jg8dljh0r9sgz"))))
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)
              ("perl" ,perl)
@@ -103,17 +103,10 @@ solve the shortest vector problem.")
       #:phases
       (alist-replace
        'configure
-       (lambda* (#:key inputs outputs #:allow-other-keys)
-         (let ((out (assoc-ref outputs "out"))
-               (readline (assoc-ref inputs "readline"))
-               (gmp (assoc-ref inputs "gmp")))
+       (lambda* (#:key outputs #:allow-other-keys)
+         (let ((out (assoc-ref outputs "out")))
            (zero?
-            (system* "./Configure"
-                     (string-append "--prefix=" out)
-                     (string-append "--with-readline=" readline)
-                     (string-append "--with-gmp=" gmp)))))
-       ;; FIXME: readline and gmp will be detected automatically in the next
-       ;; stable release
+            (system* "./Configure" (string-append "--prefix=" out)))))
        %standard-phases)))
    (synopsis "PARI/GP, a computer algebra system for number theory")
    (description
