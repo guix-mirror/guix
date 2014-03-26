@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2012, 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -123,15 +123,16 @@ PARI is also available as a C library to allow for faster computations.")
 (define-public gp2c
   (package
    (name "gp2c")
-   (version "0.0.8")
+   (version "0.0.8pl1")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://pari.math.u-bordeaux.fr/pub/pari/GP2C/gp2c-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "03fgiwy2si264g3zfgw2yi6i2l8szl5m106zgwk77sddshk20b34"))))
+                     "0r1xrshgx0db2snmacwvg5r99fhd9rpblcfs86pfsp23hnjxj9i0"))))
    (build-system gnu-build-system)
+   (native-inputs `(("perl" ,perl)))
    (inputs `(("pari-gp" ,pari-gp)))
    (arguments
     '(#:configure-flags
