@@ -52,6 +52,7 @@ MODULES =					\
   guix/http-client.scm				\
   guix/gnupg.scm				\
   guix/store.scm				\
+  guix/svn-download.scm				\
   guix/ui.scm					\
   guix/build/download.scm			\
   guix/build/cmake-build-system.scm		\
@@ -66,6 +67,7 @@ MODULES =					\
   guix/build/union.scm				\
   guix/build/pull.scm				\
   guix/build/rpath.scm				\
+  guix/build/svn.scm				\
   guix/packages.scm				\
   guix/snix.scm					\
   guix/scripts/download.scm			\
