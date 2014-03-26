@@ -71,8 +71,6 @@ basis for almost any application.")
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  (use-modules (guix build utils))
-
                   (substitute* "src/testsuite/functions.sh"
                     (("localhost")
                      ;; Avoid host name lookups since they don't work in

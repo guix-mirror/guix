@@ -253,12 +253,13 @@ dist_patch_DATA =						\
   gnu/packages/patches/avahi-localstatedir.patch		\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
-  gnu/packages/patches/binutils-loongson-madd-fix.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
   gnu/packages/patches/bitlbee-fix-tests.patch			\
   gnu/packages/patches/bitlbee-memset-fix.patch			\
   gnu/packages/patches/cdparanoia-fpic.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
+  gnu/packages/patches/coreutils-dummy-man.patch		\
+  gnu/packages/patches/coreutils-skip-nohup.patch		\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/curl-fix-test172.patch			\
   gnu/packages/patches/dbus-localstatedir.patch			\
@@ -278,7 +279,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
-  gnu/packages/patches/glibc-make-4.0.patch			\
   gnu/packages/patches/gnunet-fix-scheduler.patch		\
   gnu/packages/patches/gnunet-fix-tests.patch    		\
   gnu/packages/patches/gobject-introspection-cc.patch		\
@@ -312,7 +312,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\
-  gnu/packages/patches/python-fix-dbm.patch			\
+  gnu/packages/patches/python-fix-tests.patch			\
   gnu/packages/patches/qemu-make-4.0.patch			\
   gnu/packages/patches/qemu-multiple-smb-shares.patch		\
   gnu/packages/patches/qt4-tests.patch				\

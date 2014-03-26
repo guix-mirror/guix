@@ -51,14 +51,14 @@
                  (symlink "bash" "sh"))))))
     (package
      (name "bash")
-     (version "4.2")
+     (version "4.3")
      (source (origin
               (method url-fetch)
               (uri (string-append
                     "mirror://gnu/bash/bash-" version ".tar.gz"))
               (sha256
                (base32
-                "1n5kbblp5ykbz5q8aq88lsif2z0gnvddg9babk33024wxiwi2ym2"))))
+                "1m14s1f61mf6bijfibcjm9y6pkyvz6gibyl8p4hxq90fisi8gimg"))))
      (build-system gnu-build-system)
      (inputs `(("readline" ,readline)
                ("ncurses" ,ncurses)))             ; TODO: add texinfo

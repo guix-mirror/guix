@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -38,14 +38,14 @@
                         (find-files lib "\\.a"))))))
     (package
       (name "readline")
-      (version "6.2")
+      (version "6.3")
       (source (origin
                (method url-fetch)
                (uri (string-append "mirror://gnu/readline/readline-"
                                    version ".tar.gz"))
                (sha256
                 (base32
-                 "10ckm2bd2rkxhvdmj7nmbsylmihw0abwcsnxf8y27305183rd9kr"))
+                 "0hzxr9jxqqx5sxsv9vmlxdnvlr9vi4ih1avjb869hbs6p5qn1fjn"))
                (patches (list (search-patch "readline-link-ncurses.patch")))
                (patch-flags '("-p0"))))
       (build-system gnu-build-system)
@@ -53,7 +53,13 @@
       (arguments `(#:configure-flags
                    (list (string-append "LDFLAGS=-Wl,-rpath -Wl,"
                                         (assoc-ref %build-inputs "ncurses")
-                                        "/lib"))
+                                        "/lib")
+
+                         ;; This test does an 'AC_TRY_RUN', which aborts when
+                         ;; cross-compiling, so provide the correct answer.
+                         ,@(if (%current-target-system)
+                               '("bash_cv_wcwidth_broken=no")
+                               '()))
 
                    #:phases (alist-cons-after
                              'install 'post-install

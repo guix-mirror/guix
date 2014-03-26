@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -108,14 +109,14 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.0
   (package
    (name "guile")
-   (version "2.0.9")
+   (version "2.0.11")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/guile/guile-" version
                                 ".tar.xz"))
             (sha256
              (base32
-              "0nw9y8vjyz4r61v06p9msks5lm58pd91irmzg4k487vmv743h2pp"))))
+              "1qh3j7308qvsjgwf7h94yqgckpbgz2k3yqdkzsyhqcafvfka9l5f"))))
    (build-system gnu-build-system)
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
@@ -136,7 +137,7 @@ without requiring the source code to be rewritten.")
 
       ;; The headers and/or `guile-2.0.pc' refer to these packages, so they
       ;; must be propagated.
-      ("bdw-gc" ,libgc-7.4)
+      ("bdw-gc" ,libgc)
       ("gmp" ,gmp)))
 
    (self-native-input? #t)
@@ -152,11 +153,7 @@ without requiring the source code to be rewritten.")
                     (substitute* "module/ice-9/popen.scm"
                       (("/bin/sh")
                        (string-append bash "/bin/bash")))))
-                %standard-phases)
-
-      ,@(if (%current-target-system)
-            '(#:configure-flags '("CC_FOR_BUILD=gcc"))
-            '())))
+                %standard-phases)))
 
    (native-search-paths
     (list (search-path-specification
@@ -179,15 +176,7 @@ without requiring the source code to be rewritten.")
 (define-public guile-2.0/fixed
   ;; A package of Guile 2.0 that's rarely changed.  It is the one used
   ;; in the `base' module, and thus changing it entails a full rebuild.
-  (package (inherit guile-2.0)
-    (location (source-properties->location (current-source-location)))
-
-    ;; Keep using the stable libgc.
-    (propagated-inputs (map (match-lambda
-                             (("bdw-gc" _)
-                              `("bdw-gc" ,libgc))
-                             (x x))
-                            (package-propagated-inputs guile-2.0)))))
+  guile-2.0)
 
 
 ;;;

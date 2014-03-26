@@ -502,10 +502,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                    `(;; When `configure' checks for ltdl availability, it
                      ;; doesn't try to link using libtool, and thus fails
                      ;; because of a missing -ldl.  Work around that.
-                     #:configure-flags '("LDFLAGS=-ldl"
-                                         ,@(if (%current-target-system)
-                                               '("CC_FOR_BUILD=gcc")
-                                               '()))
+                     #:configure-flags '("LDFLAGS=-ldl")
 
                      #:phases (alist-cons-before
                                'configure 'static-guile

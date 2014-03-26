@@ -50,10 +50,6 @@
        (base32
         "0pz58vr12qihq2f0bypjxsb6cf6ajq5258fmfm8s6lvwm3b9xz6a"))))
     (build-system gnu-build-system)
-    (arguments
-     (if (%current-target-system)
-         '(#:configure-flags '("CC_FOR_BUILD=gcc"))
-         '()))
     (home-page "http://gnupg.org")
     (synopsis
      "Libgpg-error, a small library that defines common error values for all GnuPG components")

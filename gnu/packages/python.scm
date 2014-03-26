@@ -28,9 +28,11 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gdbm)
   #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages libffi)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages sqlite)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -99,10 +101,12 @@
        #:configure-flags
         (let ((bz2 (assoc-ref %build-inputs "bzip2"))
               (gdbm (assoc-ref %build-inputs "gdbm"))
+              (libffi (assoc-ref %build-inputs "libffi"))
               (openssl (assoc-ref %build-inputs "openssl"))
               (readline (assoc-ref %build-inputs "readline"))
               (zlib (assoc-ref %build-inputs "zlib")))
          (list "--enable-shared"                  ; allow embedding
+               "--with-system-ffi"                ; build ctypes
                (string-append "CPPFLAGS="
                 "-I" bz2 "/include "
                 "-I" gdbm "/include "
@@ -112,6 +116,7 @@
                (string-append "LDFLAGS="
                 "-L" bz2 "/lib "
                 "-L" gdbm "/lib "
+                "-L" libffi "/lib "
                 "-L" openssl "/lib "
                 "-L" readline "/lib "
                 "-L" zlib "/lib")))
@@ -134,14 +139,34 @@
              (with-directory-excursion out
                (for-each (cut augment-rpath <> lib)
                          (find-files "bin" ".*")))))
-         %standard-phases)))
+         (alist-replace
+          'configure
+          (lambda* (#:key outputs #:allow-other-keys #:rest args)
+            (let ((configure (assoc-ref %standard-phases 'configure)))
+             (substitute* "Lib/subprocess.py"
+               (("args = \\[\"/bin/sh")
+                (string-append "args = [\"" (which "sh"))))
+             (substitute*
+               '("Lib/distutils/tests/test_spawn.py"
+                 "Lib/test/test_subprocess.py")
+               (("/bin/sh") (which "sh")))
+             (apply configure args)))
+          (alist-cons-before
+           'check 'pre-check
+           (lambda _
+             ;; 'Lib/test/test_site.py' needs a valid $HOME
+             (setenv "HOME" (getcwd)))
+           %standard-phases)))))
     (inputs
      `(("bzip2" ,bzip2)
        ("gdbm" ,gdbm)
+       ("libffi" ,libffi)                         ; for ctypes
        ("openssl" ,openssl)
        ("readline" ,readline)
        ("zlib" ,zlib)
        ("patchelf" ,patchelf)))                   ; for (guix build rpath)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")
@@ -167,9 +192,19 @@ data types.")
       (method url-fetch)
       (uri (string-append "https://www.python.org/ftp/python/"
                           version "/Python-" version ".tar.xz"))
+       (patches (list (search-patch "python-fix-tests.patch")))
+       (patch-flags '("-p0"))
       (sha256
        (base32
         "11f6hg9wdhm6hyzj49gxlvvp1s0l5hqgcsq1i4ayygqs1arpb4ik"))))
+    (arguments
+     (let ((args `(#:modules ((guix build gnu-build-system)
+                              (guix build utils)
+                             (srfi srfi-1)
+                              (srfi srfi-26))
+                   ,@(package-arguments python-2))))
+       (substitute-keyword-arguments args
+         ((#:tests? _) #t))))
     (native-search-paths
      (list (search-path-specification
             (variable "PYTHONPATH")

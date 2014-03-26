@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -32,6 +32,8 @@
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages pkg-config)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -69,14 +71,14 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "2.15")
+   (version "2.18")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "052kjsafg2x7n2zpy3iw4pzwf8fdfng5pcvi9v3chx3rb1786nmz"))))
+              "08773flbnx28ksy0y4mzd4iifysh7yysmzn8rkz9f57sfx86whz6"))))
    (build-system gnu-build-system)
    (synopsis "Print lines matching a pattern")
    (description
@@ -231,22 +233,28 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.21")
+   (version "8.22")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "064f512185iysqqcvhnhaf3bfmzrvcgs7n405qsyp99zmfyl9amd"))))
+              "04hjzzv434fb8ak3hh3dyhdvg3hqjjwvjmjxqzk1gh2jh6cr8gjv"))
+            (patches (list (search-patch "coreutils-dummy-man.patch")
+                           ;; TODO: remove this patch for >= 8.23
+                           (search-patch "coreutils-skip-nohup.patch")))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
-             ("gmp"  ,gmp)
-
-             ;; Perl is needed to run tests; remove it from cross builds.
-             ,@(if (%current-target-system)
-                   '()
-                   `(("perl" ,perl)))))
+             ("gmp"  ,gmp)))
+   (native-inputs
+    ;; Perl is needed to run tests in native builds, and to run the bundled
+    ;; copy of help2man.  However, don't pass it when cross-compiling since
+    ;; that would lead it to try to run programs to get their '--help' output
+    ;; for help2man.
+    (if (%current-target-system)
+        '()
+        `(("perl" ,perl))))
    (outputs '("out" "debug"))
    (arguments
     `(#:parallel-build? #f            ; help2man may be called too early
@@ -285,6 +293,7 @@ functionality beyond that which is outlined in the POSIX standard.")
               "1nyvn8mknw0mf7727lprva3lisl1y0n03lvar342rrpdmz3qc1p6"))
             (patches (list (search-patch "make-impure-dirs.patch")))))
    (build-system gnu-build-system)
+   (native-inputs `(("pkg-config", pkg-config)))  ; to detect Guile
    (inputs `(("guile" ,guile-2.0)))
    (outputs '("out" "debug"))
    (arguments
@@ -312,23 +321,17 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 (define-public binutils
   (package
    (name "binutils")
-   (version "2.23.2")
+   (version "2.24")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/binutils/binutils-"
                                 version ".tar.bz2"))
             (sha256
              (base32
-              "15qhbkz3r266xaa52slh857qn3abw7rb2x2jnhpfrafpzrb4x4gy"))
+              "0ds1y7qa0xqihw4ihnsgg6bxanmb228r228ddvwzgrv4jszcbs75"))
             (patches (list (search-patch "binutils-ld-new-dtags.patch")
-                           (search-patch "binutils-loongson-workaround.patch")
-                           (search-patch "binutils-loongson-madd-fix.patch")))))
+                           (search-patch "binutils-loongson-workaround.patch")))))
    (build-system gnu-build-system)
-
-   ;; Split Binutils in several outputs, mostly to avoid collisions in
-   ;; user profiles with GCC---e.g., libiberty.a.
-   (outputs '("out"                        ; ar, ld, binutils.info, etc.
-              "lib"))                      ; libbfd.a, bfd.h, etc.
 
    ;; TODO: Add dependency on zlib + those for Gold.
    (arguments
@@ -341,7 +344,15 @@ change.  GNU make offers many powerful extensions over the standard utility.")
 
                           ;; Glibc 2.17 has a "comparison of unsigned
                           ;; expression >= 0 is always true" in wchar.h.
-                          "--disable-werror")))
+                          "--disable-werror"
+
+                          ;; Install BFD.  It ends up in a hidden directory,
+                          ;; but it's here.
+                          "--enable-install-libbfd"
+
+                          ;; Make sure 'ar' and 'ranlib' produce archives in a
+                          ;; deterministic fashion.
+                          "--enable-deterministic-archives")))
 
    (synopsis "Binary utilities: bfd gas gprof ld")
    (description
@@ -356,14 +367,14 @@ library for working with executable and object formats is also included.")
 (define-public glibc
   (package
    (name "glibc")
-   (version "2.18")
+   (version "2.19")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "18spla703zav8dq9fw7rbzkyv9qfisxb26p7amg1x3wjh7iy3d1c"))
+              "18m2dssd6ja5arxmdxinc90xvpqcsnqjfwmjl2as07j0i3srff9d"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -372,10 +383,7 @@ library for working with executable and object formats is also included.")
                 (("use_ldconfig=yes")
                  "use_ldconfig=no")))
             (modules '((guix build utils)))
-            (imported-modules modules)
-            (patches (map search-patch
-                          '("glibc-ldd-x86_64.patch"
-                            "glibc-make-4.0.patch")))))
+            (patches (list (search-patch "glibc-ldd-x86_64.patch")))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -466,7 +474,17 @@ library for working with executable and object formats is also included.")
                     ;; Same for `popen'.
                     (substitute* "libio/iopopen.c"
                       (("/bin/sh")
-                       (string-append out "/bin/bash")))))
+                       (string-append out "/bin/bash")))
+
+                    ;; Make sure we don't retain a reference to the
+                    ;; bootstrap Perl.
+                    (substitute* "malloc/mtrace.pl"
+                      (("^#!.*")
+                       ;; The shebang can be omitted, because there's the
+                       ;; "bilingual" eval/exec magic at the top of the file.
+                       "")
+                      (("exec @PERL@")
+                       "exec perl"))))
                 (alist-cons-after
                  'install 'install-locales
                  (lambda _
@@ -474,6 +492,11 @@ library for working with executable and object formats is also included.")
                  %standard-phases))))
 
    (inputs `(("static-bash" ,(static-package bash-light))))
+
+   ;; To build the manual, we need Texinfo and Perl.
+   (native-inputs `(("texinfo" ,texinfo)
+                    ("perl" ,perl)))
+
    (synopsis "The GNU C Library")
    (description
     "Any Unix-like operating system needs a C library: the library which
@@ -584,6 +607,7 @@ and daylight-saving rules.")
                              (copy-file "make"
                                         (string-append bin "/make"))))
                 ,phases))))))
+     (native-inputs '())                          ; no need for 'pkg-config'
      (inputs %bootstrap-inputs))))
 
 (define diffutils-boot0
@@ -736,6 +760,13 @@ identifier SYSTEM."
      (native-inputs (alist-delete "texinfo"
                                   (package-native-inputs gcc-4.8))))))
 
+(define perl-boot0
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs perl
+                                 %boot0-inputs
+                                 (current-source-location)
+                                 #:guile %bootstrap-guile)))
+
 (define (linux-libre-headers-boot0)
   "Return Linux-Libre header files for the bootstrap environment."
   ;; Note: this is wrapped in a thunk to nicely handle circular dependencies
@@ -746,12 +777,20 @@ identifier SYSTEM."
                   #:implicit-inputs? #f
                   ,@(package-arguments linux-libre-headers)))
      (native-inputs
-      (let ((perl (package-with-explicit-inputs perl
-                                                %boot0-inputs
-                                                (current-source-location)
-                                                #:guile %bootstrap-guile)))
-        `(("perl" ,perl)
-          ,@%boot0-inputs))))))
+      `(("perl" ,perl-boot0)
+        ,@%boot0-inputs)))))
+
+(define texinfo-boot0
+  ;; Texinfo used to build libc's manual.
+  ;; We build without ncurses because it fails to build at this stage, and
+  ;; because we don't need the stand-alone Info reader.
+  ;; Also, use %BOOT0-INPUTS to avoid building Perl once more.
+  (let ((texinfo (package (inherit texinfo)
+                   (inputs (alist-delete "ncurses" (package-inputs texinfo))))))
+    (package-with-bootstrap-guile
+     (package-with-explicit-inputs texinfo %boot0-inputs
+                                   (current-source-location)
+                                   #:guile %bootstrap-guile))))
 
 (define %boot1-inputs
   ;; 2nd stage inputs.
@@ -785,6 +824,9 @@ identifier SYSTEM."
                             "--enable-obsolete-rpc")
                       ,flags)))))
      (propagated-inputs `(("linux-headers" ,(linux-libre-headers-boot0))))
+     (native-inputs
+      `(("texinfo" ,texinfo-boot0)
+        ("perl" ,perl-boot0)))
      (inputs
       `( ;; A native GCC is needed to build `cross-rpcgen'.
         ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))

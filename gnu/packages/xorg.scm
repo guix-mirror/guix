@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1742,6 +1743,22 @@ tracking.")
             "1vbmrcn5n3wp4pyw0n4c3pyvzlc4yf7jzgngavfdq5zwfbgfsybx"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:phases (alist-cons-after
+                 'unpack 'fix-makefile-in
+                 (lambda _
+                   (substitute* "Makefile.in"
+                     ;; Install xorg-macros.pc in PREFIX/lib/pkgconfig,
+                     ;; not PREFIX/share/pkgconfig.
+                     (("\\$\\(datadir\\)/pkgconfig") "$(libdir)/pkgconfig")))
+                 (alist-cons-after
+                  'install 'post-install-cleanup
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let ((out (assoc-ref outputs "out")))
+                      (with-directory-excursion out
+                        (delete-file "share/util-macros/INSTALL")
+                        (rmdir "share/util-macros"))))
+                  %standard-phases))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")

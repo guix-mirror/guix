@@ -315,6 +315,20 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
            (dash (string-index sans #\-)))
       (string-drop sans (+ 1 dash))))
 
+  (define (numeric-extension? file-name)
+    ;; Return true if FILE-NAME ends with digits.
+    (string-every char-set:hex-digit (file-extension file-name)))
+
+  (define (tarxz-name file-name)
+    ;; Return a '.tar.xz' file name based on FILE-NAME.
+    (let ((base (if (numeric-extension? file-name)
+                    original-file-name
+                    (file-sans-extension file-name))))
+      (string-append base
+                     (if (equal? (file-extension base) "tar")
+                         ".xz"
+                         ".tar.xz"))))
+
   (define patch-inputs
     (map (lambda (number patch)
            (list (string-append "patch" (number->string number))
@@ -327,7 +341,8 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
   (define builder
     `(begin
        (use-modules (ice-9 ftw)
-                    (srfi srfi-1))
+                    (srfi srfi-1)
+                    (guix build utils))
 
        (let ((out     (assoc-ref %outputs "out"))
              (xz      (assoc-ref %build-inputs "xz"))
@@ -342,14 +357,27 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
              (format (current-error-port) "applying '~a'...~%" patch*)
              (zero? (system* patch "--batch" ,@flags "--input" patch*))))
 
+         (define (first-file directory)
+           ;; Return the name of the first file in DIRECTORY.
+           (car (scandir directory
+                         (lambda (name)
+                           (not (member name '("." "..")))))))
+
          (setenv "PATH" (string-append xz "/bin" ":"
                                        decomp "/bin"))
-         (and (zero? (system* tar "xvf" source))
-              (let ((directory (car (scandir "."
-                                             (lambda (name)
-                                               (not
-                                                (member name
-                                                        '("." ".."))))))))
+
+         ;; SOURCE may be either a directory or a tarball.
+         (and (if (file-is-directory? source)
+                  (let* ((store     (or (getenv "NIX_STORE") "/gnu/store"))
+                         (len       (+ 1 (string-length store)))
+                         (base      (string-drop source len))
+                         (dash      (string-index base #\-))
+                         (directory (string-drop base (+ 1 dash))))
+                    (mkdir directory)
+                    (copy-recursively source directory)
+                    #t)
+                  (zero? (system* tar "xvf" source)))
+              (let ((directory (first-file ".")))
                 (format (current-error-port)
                         "source is under '~a'~%" directory)
                 (chdir directory)
@@ -375,23 +403,23 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                      (zero? (system* tar "cvfa" out directory))))))))
 
 
-  (let ((name   (string-append (file-sans-extension original-file-name)
-                               ".xz"))
-        (inputs (filter-map (match-lambda
-                             ((name (? package? p))
-                              (and (member name (cons decompression-type
-                                                      '("tar" "xz" "patch")))
-                                   (list name
-                                         (package-derivation store p
-                                                             system)))))
-                            (or inputs (%standard-patch-inputs)))))
+  (let ((name    (tarxz-name original-file-name))
+        (inputs  (filter-map (match-lambda
+                              ((name (? package? p))
+                               (and (member name (cons decompression-type
+                                                       '("tar" "xz" "patch")))
+                                    (list name
+                                          (package-derivation store p
+                                                              system)))))
+                             (or inputs (%standard-patch-inputs))))
+        (modules (delete-duplicates (cons '(guix build utils) modules))))
 
-   (build-expression->derivation store name builder
+    (build-expression->derivation store name builder
                                  #:inputs `(("source" ,source)
                                             ,@inputs
                                             ,@patch-inputs)
                                  #:system system
-                                 #:modules imported-modules
+                                 #:modules modules
                                  #:guile-for-build guile-for-build)))
 
 (define* (package-source-derivation store source
