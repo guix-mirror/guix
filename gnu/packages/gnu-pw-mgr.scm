@@ -31,8 +31,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnu/gnu-pw-mgr/gpw-"
-                          version "/gnu-pw-mgr-"
+      (uri (string-append "mirror://gnu/gnu-pw-mgr/gnu-pw-mgr-"
                           version ".tar.gz"))
       (sha256
        (base32
