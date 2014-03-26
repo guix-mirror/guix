@@ -324,10 +324,10 @@ there, and write the build log to LOG-PORT.  Return the exit status."
   "Offload DRV to MACHINE.  Prior to the actual offloading, transfer all of
 INPUTS to MACHINE; if building DRV succeeds, retrieve all of OUTPUTS from
 MACHINE."
-  ;; Acquire MACHINE's exclusive lock to serialize file transfers
-  ;; to/from MACHINE in the presence of several 'offload' hook
-  ;; instance.
-  (when (with-machine-lock machine 'bandwidth
+  ;; Acquire MACHINE's upload or download lock to serialize file transfers in
+  ;; a given direction to/from MACHINE in the presence of several 'offload'
+  ;; hook instance.
+  (when (with-machine-lock machine 'upload
           (send-files (cons (derivation-file-name drv) inputs)
                       machine))
     (let ((status (offload drv machine
@@ -337,7 +337,7 @@ MACHINE."
       (if (zero? status)
           (begin
             ;; Likewise (see above.)
-            (with-machine-lock machine 'bandwidth
+            (with-machine-lock machine 'download
               (retrieve-files outputs machine))
             (format (current-error-port)
                     "done with offloaded '~a'~%"
