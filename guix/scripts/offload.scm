@@ -26,6 +26,7 @@
   #:use-module ((guix build utils) #:select (which mkdir-p))
   #:use-module (guix ui)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -356,15 +357,18 @@ with exit code ~a~%"
 success, #f otherwise."
   (define (missing-files files)
     ;; Return the subset of FILES not already on MACHINE.
-    (let* ((files   (format #f "~{~a~%~}" files))
-           (missing (filtered-port
-                     (list (which %lshg-command)
-                           "-l" (build-machine-user machine)
-                           "-p" (number->string (build-machine-port machine))
-                           "-i" (build-machine-private-key machine)
-                           (build-machine-name machine)
-                           "guix" "archive" "--missing")
-                     (open-input-string files))))
+    (let*-values (((files)
+                   (format #f "~{~a~%~}" files))
+                  ((missing pids)
+                   (filtered-port
+                    (list (which %lshg-command)
+                          "-l" (build-machine-user machine)
+                          "-p" (number->string (build-machine-port machine))
+                          "-i" (build-machine-private-key machine)
+                          (build-machine-name machine)
+                          "guix" "archive" "--missing")
+                    (open-input-string files))))
+      (for-each waitpid pids)
       (string-tokenize (get-string-all missing))))
 
   (with-store store
