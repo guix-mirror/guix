@@ -296,6 +296,13 @@ main (int argc, char *argv[])
 	      setenv ("NIX_SUBSTITUTERS", subst.c_str (), 1);
 	    }
 	}
+      else
+	/* Clear the substituter list to make sure nothing ever gets
+	   substituted, regardless of the client's settings.  */
+	setenv ("NIX_SUBSTITUTERS", "", 1);
+
+      /* Effect the $NIX_SUBSTITUTERS change.  */
+      settings.update ();
 
       if (geteuid () == 0 && settings.buildUsersGroup.empty ())
 	fprintf (stderr, "warning: daemon is running as root, so "
