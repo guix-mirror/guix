@@ -187,7 +187,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	}
       break;
     case GUIX_OPT_NO_SUBSTITUTES:
-      settings.useSubstitutes = false;
+      settings.set ("build-use-substitutes", "false");
       break;
     case GUIX_OPT_NO_BUILD_HOOK:
       settings.useBuildHook = false;
@@ -202,10 +202,10 @@ parse_opt (int key, char *arg, struct argp_state *state)
       settings.gcKeepDerivations = string_to_bool (arg);
       break;
     case 'c':
-      settings.buildCores = atoi (arg);
+      settings.set ("build-cores", arg);
       break;
     case 'M':
-      settings.maxBuildJobs = atoi (arg);
+      settings.set ("build-max-jobs", arg);
       break;
     case GUIX_OPT_SYSTEM:
       settings.thisSystem = arg;
@@ -263,7 +263,7 @@ main (int argc, char *argv[])
 
       /* Use our substituter by default.  */
       settings.substituters.clear ();
-      settings.useSubstitutes = true;
+      settings.set ("build-use-substitutes", "true");
 
 #ifdef HAVE_DAEMON_OFFLOAD_HOOK
       /* Use our build hook for distributed builds by default.  */
@@ -281,6 +281,9 @@ main (int argc, char *argv[])
 #endif
 
       argp_parse (&argp, argc, argv, 0, 0, 0);
+
+      /* Effect all the changes made via 'settings.set'.  */
+      settings.update ();
 
       if (settings.useSubstitutes)
 	{
