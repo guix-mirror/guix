@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,10 @@
   #:use-module (guix config)
   #:use-module (guix records)
   #:use-module (guix nar)
+  #:use-module (guix hash)
+  #:use-module (guix base64)
+  #:use-module (guix pk-crypto)
+  #:use-module (guix pki)
   #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix build download)
                 #:select (progress-proc uri-abbreviation))
@@ -33,15 +38,21 @@
   #:use-module (ice-9 format)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 binary-ports)
+  #:use-module (rnrs io ports)
+  #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (web uri)
   #:use-module (guix http-client)
-  #:export (guix-substitute-binary))
+  #:export (narinfo-signature->canonical-sexp
+            read-narinfo
+            write-narinfo
+            guix-substitute-binary))
 
 ;;; Comment:
 ;;;
@@ -59,6 +70,16 @@
   (or (and=> (getenv "XDG_CACHE_HOME")
              (cut string-append <> "/guix/substitute-binary"))
       (string-append %state-directory "/substitute-binary/cache")))
+
+(define %allow-unauthenticated-substitutes?
+  ;; Whether to allow unchecked substitutes.  This is useful for testing
+  ;; purposes, and should be avoided otherwise.
+  (and (and=> (getenv "GUIX_ALLOW_UNAUTHENTICATED_SUBSTITUTES")
+              (cut string-ci=? <> "yes"))
+       (begin
+         (warning (_ "authentication and authorization of substitutes \
+disabled!~%"))
+         #t)))
 
 (define %narinfo-ttl
   ;; Number of seconds during which cached narinfo lookups are considered
@@ -194,7 +215,7 @@ failure."
 
 (define-record-type <narinfo>
   (%make-narinfo path uri compression file-hash file-size nar-hash nar-size
-                 references deriver system)
+                 references deriver system signature contents)
   narinfo?
   (path         narinfo-path)
   (uri          narinfo-uri)
@@ -205,15 +226,38 @@ failure."
   (nar-size     narinfo-size)
   (references   narinfo-references)
   (deriver      narinfo-deriver)
-  (system       narinfo-system))
+  (system       narinfo-system)
+  (signature    narinfo-signature)      ; canonical sexp
+  ;; The original contents of a narinfo file.  This field is needed because we
+  ;; want to preserve the exact textual representation for verification purposes.
+  ;; See <https://lists.gnu.org/archive/html/guix-devel/2014-02/msg00340.html>
+  ;; for more information.
+  (contents     narinfo-contents))
 
-(define (narinfo-maker cache-url)
-  "Return a narinfo constructor for narinfos originating from CACHE-URL."
+(define (narinfo-signature->canonical-sexp str)
+  "Return the value of a narinfo's 'Signature' field as a canonical sexp."
+  (match (string-split str #\;)
+    ((version _ sig)
+     (let ((maybe-number (string->number version)))
+       (cond ((not (number? maybe-number))
+              (leave (_ "signature version must be a number: ~a~%")
+                     version))
+             ;; Currently, there are no other versions.
+             ((not (= 1 maybe-number))
+              (leave (_ "unsupported signature version: ~a~%")
+                     maybe-number))
+             (else (string->canonical-sexp
+                    (utf8->string (base64-decode sig)))))))
+    (x
+     (leave (_ "invalid format of the signature field: ~a~%") x))))
+
+(define (narinfo-maker str cache-url)
+  "Return a narinfo constructor for narinfos originating from CACHE-URL.  STR
+must contain the original contents of a narinfo file."
   (lambda (path url compression file-hash file-size nar-hash nar-size
-                references deriver system)
+                references deriver system signature)
     "Return a new <narinfo> object."
     (%make-narinfo path
-
                    ;; Handle the case where URL is a relative URL.
                    (or (string->uri url)
                        (string->uri (string-append cache-url "/" url)))
@@ -226,45 +270,81 @@ failure."
                    (match deriver
                      ((or #f "") #f)
                      (_ deriver))
-                   system)))
+                   system
+                   (narinfo-signature->canonical-sexp signature)
+                   str)))
 
-(define* (read-narinfo port #:optional url)
-  "Read a narinfo from PORT in its standard external form.  If URL is true, it
-must be a string used to build full URIs from relative URIs found while
-reading PORT."
-  (alist->record (fields->alist port)
-                 (narinfo-maker url)
-                 '("StorePath" "URL" "Compression"
-                   "FileHash" "FileSize" "NarHash" "NarSize"
-                   "References" "Deriver" "System")))
+;;; XXX: The following function is nearly an exact copy of the one from
+;;; 'guix/nar.scm'.  Factorize as soon as we know how to make the latter
+;;; public (see <https://lists.gnu.org/archive/html/guix-devel/2014-03/msg00097.html>).
+;;; Keep this one private to avoid confusion.
+(define* (assert-valid-signature signature hash port
+                                 #:optional (acl (current-acl)))
+  "Bail out if SIGNATURE, a string (as produced by 'canonical-sexp->string'),
+doesn't match HASH, a bytevector containing the expected hash for FILE."
+  (let* ((&nar-signature-error    (@@ (guix nar) &nar-signature-error))
+         (&nar-invalid-hash-error (@@ (guix nar) &nar-invalid-hash-error))
+         ;; XXX: This is just to keep the errors happy; get a sensible
+         ;; filename.
+         (file      #f)
+         (signature (catch 'gcry-error
+                      (lambda ()
+                        (string->canonical-sexp signature))
+                      (lambda (err . _)
+                        (raise (condition
+                                (&message
+                                 (message "signature is not a valid \
+s-expression"))
+                                (&nar-signature-error
+                                 (file file)
+                                 (signature signature) (port port)))))))
+         (subject   (signature-subject signature))
+         (data      (signature-signed-data signature)))
+    (if (and data subject)
+        (if (authorized-key? subject acl)
+            (if (equal? (hash-data->bytevector data) hash)
+                (unless (valid-signature? signature)
+                  (raise (condition
+                          (&message (message "invalid signature"))
+                          (&nar-signature-error
+                           (file file) (signature signature) (port port)))))
+                (raise (condition (&message (message "invalid hash"))
+                                  (&nar-invalid-hash-error
+                                   (port port) (file file)
+                                   (signature signature)
+                                   (expected (hash-data->bytevector data))
+                                   (actual hash)))))
+            (raise (condition (&message (message "unauthorized public key"))
+                              (&nar-signature-error
+                               (signature signature) (file file) (port port)))))
+        (raise (condition
+                (&message (message "corrupt signature data"))
+                (&nar-signature-error
+                 (signature signature) (file file) (port port)))))))
+
+(define* (read-narinfo port #:optional url (acl (current-acl)))
+  "Read a narinfo from PORT.  If URL is true, it must be a string used to
+build full URIs from relative URIs found while reading PORT."
+  (let* ((str       (utf8->string (get-bytevector-all port)))
+         (rx        (make-regexp "(.+)^[[:blank:]]*Signature:[[:blank:]].+$"))
+         (res       (or (regexp-exec rx str)
+                        (leave (_ "cannot find the Signature line: ~a~%")
+                               str)))
+         (hash      (sha256 (string->utf8 (match:substring res 1))))
+         (narinfo   (alist->record (fields->alist (open-input-string str))
+                                   (narinfo-maker str url)
+                                   '("StorePath" "URL" "Compression"
+                                     "FileHash" "FileSize" "NarHash" "NarSize"
+                                     "References" "Deriver" "System"
+                                     "Signature")))
+         (signature (canonical-sexp->string (narinfo-signature narinfo))))
+    (unless %allow-unauthenticated-substitutes?
+      (assert-valid-signature signature hash port acl))
+    narinfo))
 
 (define (write-narinfo narinfo port)
   "Write NARINFO to PORT."
-  (define (empty-string-if-false x)
-    (or x ""))
-
-  (define (number-or-empty-string x)
-    (if (number? x)
-        (number->string x)
-        ""))
-
-  (object->fields narinfo
-                  `(("StorePath" . ,narinfo-path)
-                    ("URL" . ,(compose uri->string narinfo-uri))
-                    ("Compression" . ,narinfo-compression)
-                    ("FileHash" . ,(compose empty-string-if-false
-                                            narinfo-file-hash))
-                    ("FileSize" . ,(compose number-or-empty-string
-                                            narinfo-file-size))
-                    ("NarHash" . ,(compose empty-string-if-false
-                                           narinfo-hash))
-                    ("NarSize" . ,(compose number-or-empty-string
-                                           narinfo-size))
-                    ("References" . ,(compose string-join narinfo-references))
-                    ("Deriver" . ,(compose empty-string-if-false
-                                           narinfo-deriver))
-                    ("System" . ,narinfo-system))
-                  port))
+  (put-bytevector port (string->utf8 (narinfo-contents narinfo))))
 
 (define (narinfo->string narinfo)
   "Return the external representation of NARINFO."

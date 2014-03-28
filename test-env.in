@@ -58,12 +58,17 @@ then
     rm -rf "$NIX_STATE_DIR/substituter-data"
     mkdir -p "$NIX_STATE_DIR/substituter-data"
 
+    # For a number of tests, we want to allow unsigned narinfos, for
+    # simplicity.
+    GUIX_ALLOW_UNAUTHENTICATED_SUBSTITUTES=yes
+
     # Place for the substituter's cache.
     XDG_CACHE_HOME="$NIX_STATE_DIR/cache-$$"
 
     export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR			\
 	NIX_LOCALSTATE_DIR NIX_LOG_DIR NIX_STATE_DIR NIX_DB_DIR		\
 	NIX_ROOT_FINDER NIX_SETUID_HELPER GUIX_BINARY_SUBSTITUTE_URL	\
+        GUIX_ALLOW_UNAUTHENTICATED_SUBSTITUTES				\
         NIX_CONF_DIR XDG_CACHE_HOME
 
     # Do that because store.scm calls `canonicalize-path' on it.
