@@ -43,47 +43,6 @@
 
 (test-begin "union")
 
-(test-equal "tree-union, empty"
-  '()
-  (tree-union '()))
-
-(test-equal "tree-union, leaves only"
-  '(a b c d)
-  (tree-union '(a b c d)))
-
-(test-equal "tree-union, simple"
-  '((bin ls touch make awk gawk))
-  (tree-union '((bin ls touch)
-                (bin make)
-                (bin awk gawk))))
-
-(test-equal "tree-union, several levels"
-  '((share (doc (make README) (coreutils README)))
-    (bin ls touch make))
-  (tree-union '((bin ls touch)
-                (share (doc (coreutils README)))
-                (bin make)
-                (share (doc (make README))))))
-
-(test-equal "delete-duplicate-leaves, default"
-  '(bin make touch ls)
-  (delete-duplicate-leaves '(bin ls make touch ls)))
-
-(test-equal "delete-duplicate-leaves, file names"
-  '("doc" ("info"
-           "/binutils/ld.info"
-           "/gcc/gcc.info"
-           "/binutils/standards.info"))
-  (let ((leaf=? (lambda (a b)
-                  (string=? (basename a) (basename b)))))
-    (delete-duplicate-leaves '("doc"
-                               ("info"
-                                "/binutils/ld.info"
-                                "/binutils/standards.info"
-                                "/gcc/gcc.info"
-                                "/gcc/standards.info"))
-                             leaf=?)))
-
 (test-skip (if (and %store
                     (false-if-exception
                      (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)))

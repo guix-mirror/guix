@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,16 +18,13 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build union)
-  #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
-  #:export (tree-union
-            delete-duplicate-leaves
-            union-build))
+  #:export (union-build))
 
 ;;; Commentary:
 ;;;
@@ -35,72 +33,20 @@
 ;;;
 ;;; Code:
 
-(define (tree-union trees)
-  "Return a tree that is the union of the trees listed in TREES.  Each
-tree has the form (PARENT LEAVES ...) or just LEAF, where each leaf is
-itself a tree. "
-  (let loop ((trees trees))
-    (match trees
-      (()                                         ; nothing left
-       '())
-      (_
-       (let ((dirs   (filter pair? trees))
-             (leaves (remove pair? trees)))
-         `(,@leaves
-           ,@(fold (lambda (dir result)
-                     (cons `(,dir
-                             ,@(loop
-                                (concatenate
-                                 (filter-map (match-lambda
-                                              ((head children ...)
-                                               (and (equal? head dir)
-                                                    children)))
-                                             dirs))))
-                           result))
-                   '()
-                   (delete-duplicates (map car dirs)))))))))
+(define (files-in-directory dirname)
+  (let ((dir (opendir dirname)))
+    (let loop ((files '()))
+      (match (readdir dir)
+        ((or "." "..")
+         (loop files))
+        ((? eof-object?)
+         (closedir dir)
+         (sort files string<?))
+        (file
+         (loop (cons file files)))))))
 
-(define* (delete-duplicate-leaves tree
-                                  #:optional
-                                  (leaf=? equal?)
-                                  (delete-duplicates (match-lambda
-                                                      ((head _ ...) head))))
-  "Delete duplicate leaves from TREE.  Two leaves are considered equal
-when LEAF=? applied to them returns #t.  Each collision (list of leaves
-that are LEAF=?) is passed to DELETE-DUPLICATES, which must return a
-single leaf."
-  (let loop ((tree tree))
-    (match tree
-      ((dir children ...)
-       (let ((dirs   (filter pair? children))
-             (leaves (remove pair? children)))
-         (define collisions
-           (fold (lambda (leaf result)
-                   (define same?
-                     (cut leaf=? leaf <>))
-
-                   (if (any (cut find same? <>) result)
-                       result
-                       (match (filter same? leaves)
-                         ((_)
-                          result)
-                         ((collision ...)
-                          (cons collision result)))))
-                 '()
-                 leaves))
-
-         (define non-collisions
-           (filter (lambda (leaf)
-                     (match (filter (cut leaf=? leaf <>) leaves)
-                       ((_) #t)
-                       ((_ _ ..1) #f)))
-                   leaves))
-
-         `(,dir
-           ,@non-collisions
-           ,@(map delete-duplicates collisions)
-           ,@(map loop dirs))))
-      (leaf leaf))))
+(define (file-is-directory? file)
+  (eq? 'directory (stat:type (stat file))))
 
 (define (file=? file1 file2)
   "Return #t if FILE1 and FILE2 are regular files and their contents are
@@ -124,110 +70,82 @@ identical, #f otherwise."
                           (or (eof-object? n1)
                               (loop))))))))))))
 
-(define* (union-build output directories
+(define* (union-build output inputs
                       #:key (log-port (current-error-port)))
   "Build in the OUTPUT directory a symlink tree that is the union of all
-the DIRECTORIES."
-  (define (file-tree dir)
-    ;; Return the contents of DIR as a tree.
+the INPUTS."
 
-    (define (others-have-it? subdir)
-      ;; Return #t if other elements of DIRECTORIES have SUBDIR.
-      (let ((subdir (substring subdir (string-length dir))))
-        (any (lambda (other)
-               (and (not (string=? other dir))
-                    (file-exists? (string-append other "/" subdir))))
-             directories)))
+  (define (symlink* input output)
+    (format log-port "`~a' ~~> `~a'~%" input output)
+    (symlink input output))
 
-    (match (file-system-fold (lambda (subdir stat result) ; enter?
-                               ;; No need to traverse DIR since there's
-                               ;; nothing to union it with.  Thus, we avoid
-                               ;; creating a gazillon symlinks (think
-                               ;; share/emacs/24.3, share/texmf, etc.)
-                               (or (string=? subdir dir)
-                                   (others-have-it? subdir)))
-                             (lambda (file stat result) ; leaf
-                               (match result
-                                 (((siblings ...) rest ...)
-                                  `((,file ,@siblings) ,@rest))))
-                             (lambda (dir stat result)  ; down
-                               `(() ,@result))
-                             (lambda (dir stat result)  ; up
-                               (match result
-                                 (((leaves ...) (siblings ...) rest ...)
-                                  `(((,(basename dir) ,@leaves) ,@siblings)
-                                    ,@rest))))
-                             (lambda (dir stat result)  ; skip
-                               ;; DIR is not available elsewhere, so treat it
-                               ;; as a leaf.
-                               (match result
-                                 (((siblings ...) rest ...)
-                                  `((,dir ,@siblings) ,@rest))))
-                             (lambda (file stat errno result)
-                               (format (current-error-port) "union-build: ~a: ~a~%"
-                                       file (strerror errno)))
-                             '(())
-                             dir)
-      (((tree)) tree)
-      (()       #f)))
+  (define (resolve-collisions output dirs files)
+    (cond ((null? dirs)
+           ;; The inputs are all files.
+           (format (current-error-port)
+                   "warning: collision encountered: ~{~a ~}~%"
+                   files)
 
-  (define tree-leaves
-    ;; Return the leaves of the given tree.
-    (match-lambda
-     (((? string?) leaves ...)
-      leaves)))
+           (let ((file (first files)))
+             ;; TODO: Implement smarter strategies.
+             (format (current-error-port)
+                     "warning: arbitrarily choosing ~a~%"
+                     file)
 
-  (define (leaf=? a b)
-    (equal? (basename a) (basename b)))
+             (symlink* file output)))
 
-  (define (resolve-collision leaves)
-    ;; LEAVES all have the same basename, so choose one of them.
-    (match (delete-duplicates leaves string=?)
-      ((one-and-the-same)
-       ;; LEAVES all actually point to the same file, so nothing to worry
-       ;; about.
-       one-and-the-same)
-      ((and lst (head rest ...))
-       ;; A real collision, unless those files are all identical.
-       (unless (every (cut file=? head <>) rest)
-         (format (current-error-port) "warning: collision encountered: ~{~a ~}~%"
-                 lst)
+          (else
+           ;; The inputs are a mixture of files and directories
+           (error "union-build: collision between file and directories"
+                  `((files ,files) (dirs ,dirs))))))
 
-         ;; TODO: Implement smarter strategies.
-         (format (current-error-port) "warning: arbitrarily choosing ~a~%"
-                 head))
-       head)))
+  (define (union output inputs)
+    (match inputs
+      ((input)
+       ;; There's only one input, so just make a link.
+       (symlink* input output))
+      (_
+       (call-with-values (lambda () (partition file-is-directory? inputs))
+         (match-lambda*
+           ((dirs ())
+            ;; All inputs are directories.  Create a new directory
+            ;; where we will merge the input directories.
+            (mkdir output)
+
+            ;; Build a hash table mapping each file to a list of input
+            ;; directories containing that file.
+            (let ((table (make-hash-table)))
+
+              (define (add-to-table! file dir)
+                (hash-set! table file (cons dir (hash-ref table file '()))))
+
+              ;; Populate the table.
+              (for-each (lambda (dir)
+                          (for-each (cut add-to-table! <> dir)
+                                    (files-in-directory dir)))
+                        dirs)
+
+              ;; Now iterate over the table and recursively
+              ;; perform a union for each entry.
+              (hash-for-each (lambda (file dirs-with-file)
+                               (union (string-append output "/" file)
+                                      (map (cut string-append <> "/" file)
+                                           (reverse dirs-with-file))))
+                             table)))
+
+           ((() (file (? (cut file=? <> file)) ...))
+            ;; There are no directories, and all files have the same contents,
+            ;; so there's no conflict.
+            (symlink* file output))
+
+           ((dirs files)
+            (resolve-collisions output dirs files)))))))
 
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)
   (when (file-port? log-port)
     (setvbuf log-port _IOLBF))
 
-  (mkdir output)
-  (let loop ((tree (delete-duplicate-leaves
-                    (cons "."
-                          (tree-union
-                           (append-map (compose tree-leaves file-tree)
-                                       (delete-duplicates directories))))
-                    leaf=?
-                    resolve-collision))
-             (dir  '()))
-    (match tree
-      ((? string?)
-       ;; A leaf: create a symlink.
-       (let* ((dir    (string-join dir "/"))
-              (target (string-append output "/" dir "/" (basename tree))))
-         (format log-port "`~a' ~~> `~a'~%" tree target)
-         (symlink tree target)))
-      (((? string? subdir) leaves ...)
-       ;; A sub-directory: create it in OUTPUT, and iterate over LEAVES.
-       (unless (string=? subdir ".")
-         (let ((dir (string-join dir "/")))
-           (mkdir (string-append output "/" dir "/" subdir))))
-       (for-each (cute loop <> `(,@dir ,subdir))
-                 leaves))
-      ((leaves ...)
-       ;; A series of leaves: iterate over them.
-       (for-each (cut loop <> dir) leaves)))))
+  (union output (delete-duplicates inputs)))
 
 ;;; union.scm ends here
