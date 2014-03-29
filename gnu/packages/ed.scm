@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,20 +21,22 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (gnu packages compression))
 
 (define-public ed
   (package
     (name "ed")
-    (version "1.9")
+    (version "1.10")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/ed/ed-"
-                                 version ".tar.gz"))
+                                 version ".tar.lz"))
              (sha256
               (base32
-               "122syihsx2hwzj75mkf5a9ssiky2xby748kp4cc00wzhmp7p5cym"))))
+               "16kycdm5fcvpdr41hxb2da8da6jzs9dqznsg5552z6rh28n0jh4m"))))
     (build-system gnu-build-system)
+    (native-inputs `(("lzip" ,lzip)))
     (arguments
      '(#:configure-flags '("CC=gcc")
        #:phases (alist-cons-before 'patch-source-shebangs 'patch-test-suite
