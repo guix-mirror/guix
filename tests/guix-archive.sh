@@ -39,6 +39,8 @@ cmp "$archive" "$archive_alt"
 guix archive --export `guix build guile-bootstrap` > "$archive_alt"
 cmp "$archive" "$archive_alt"
 
+# Check the exit value and stderr upon import.
+guix archive --import < "$archive"
 guix archive --import < "$archive" 2>&1 | grep "import.*guile-bootstrap"
 
 if guix archive something-that-does-not-exist
