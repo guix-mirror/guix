@@ -24,7 +24,13 @@
   #:use-module (guix nar)
   #:use-module (guix pk-crypto)
   #:use-module (guix pki)
+  #:use-module (guix config)
+  #:use-module ((guix store) #:select (%store-prefix))
+  #:use-module ((guix build utils) #:select (delete-file-recursively))
   #:use-module (rnrs bytevectors)
+  #:use-module (rnrs io ports)
+  #:use-module (web uri)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module ((srfi srfi-64) #:hide (test-error)))
 
@@ -36,52 +42,37 @@
 ;;; XXX: Replace with 'test-error' from SRFI-64 as soon as it allow us to
 ;;; catch specific exceptions.
 (define-syntax-rule (test-error* name exp)
-  (test-assert name
+  (test-equal name
+    1
     (catch 'quit
       (lambda ()
         exp
         #f)
-      (const #t))))
-
-(define %keypair
-  ;; (display (canonical-sexp->string
-  ;;           (generate-key "(genkey (rsa (nbits 4:1024)))")))
-  (string->canonical-sexp
-   "(key-data
- (public-key
-  (rsa
-   (n #00D74A00F16DD109A8E773291856A4EF9EE2C2D975E0BC207EA24245C9CFE39E32D8BA5442A2720A57E3A9D9E55E596A8B19CB2EF844E5E859362593914BD626433C887FB798AE87E1DA95D372DFC81E220B8802B04CEC818D9B6B4E2108817755AEBAC23D2FD2B0AB82A52FD785194F3C2D7B9327212588DB74D464EEE5DC9F5B#)
-   (e #010001#)
-   )
-  )
- (private-key
-  (rsa
-   (n #00D74A00F16DD109A8E773291856A4EF9EE2C2D975E0BC207EA24245C9CFE39E32D8BA5442A2720A57E3A9D9E55E596A8B19CB2EF844E5E859362593914BD626433C887FB798AE87E1DA95D372DFC81E220B8802B04CEC818D9B6B4E2108817755AEBAC23D2FD2B0AB82A52FD785194F3C2D7B9327212588DB74D464EEE5DC9F5B#)
-   (e #010001#)
-   (d #40E6D963EF143E9241BC10DE7A785C988C89EB1EC33253A5796AFB38FCC804D015500EC8CBCA0F5E318EE9D660DC19E7774E2E89BFD38379297EA87EFBDAC24BA32EE5339215382B2C89F5A817FD9131CA8E8A0A70D58E26E847AD0C447053671A6B2D7746087DE058A02B17701752B8A36EB414435921615AE7CAA8AC48E451#)
-   (p #00EA88C0C19FE83C09285EF49FF88A1159357FD870031C20F15EF5103FBEB10925299BCA197F7143D6792A1BA7044EDA572EC94FA6B00889F9857216CF5B984403#)
-   (q #00EAFE541EE9E0531255A85CADBEF64D5F679766D7209F521ADD131CF4B7DA9DF5414901342A146EE84FAA1E35EE0D0F6CE3F5F25989C0D1E9FA5B678D78C113C9#)
-   (u #59C80FA2C48181F6855691C9D443619BA46C7648056E081697C370D8096E8EF165122D5E55F8FD6A2DCC404FA8BDCDC1FD20B4D76A433F25E8FD6901EC2DBDAD#)
-   )
-  )
- )"))
+      (lambda (key value)
+        value))))
 
 (define %public-key
-  (find-sexp-token %keypair 'public-key))
+  ;; This key is known to be in the ACL by default.
+  (call-with-input-file (string-append %config-directory "/signing-key.pub")
+    (compose string->canonical-sexp get-string-all)))
 
 (define %private-key
-  (find-sexp-token %keypair 'private-key))
+  (call-with-input-file (string-append %config-directory "/signing-key.sec")
+    (compose string->canonical-sexp get-string-all)))
 
-(define (signature-body str)
+(define* (signature-body str #:key (public-key %public-key))
+  "Return the signature of STR as the base64-encoded body of a narinfo's
+'Signature' field."
   (base64-encode
    (string->utf8
     (canonical-sexp->string
      (signature-sexp (bytevector->hash-data (sha256 (string->utf8 str))
                                             #:key-type 'rsa)
                      %private-key
-                     %public-key)))))
+                     public-key)))))
 
 (define %signature-body
+  ;; Body of the signature of the word "secret".
   (signature-body "secret"))
 
 (define %wrong-public-key
@@ -93,9 +84,11 @@
  )"))
 
 (define %wrong-signature
-  (let* ((body (string->canonical-sexp
-                (utf8->string
-                 (base64-decode %signature-body))))
+  ;; 'Signature' field where the public key doesn't match the private key used
+  ;; to make the signature.
+  (let* ((body       (string->canonical-sexp
+                      (utf8->string
+                       (base64-decode %signature-body))))
          (data       (canonical-sexp->string (find-sexp-token body 'data)))
          (sig-val    (canonical-sexp->string (find-sexp-token body 'sig-val)))
          (public-key (canonical-sexp->string %wrong-public-key))
@@ -106,14 +99,18 @@
     (string-append "1;irrelevant;" body*)))
 
 (define* (signature str #:optional (body %signature-body))
+  "Return the 'Signature' field value with STR as the version part and BODY as
+the actual base64-encoded signature part."
   (string-append str ";irrelevant;" body))
 
 (define %signature
+  ;; Signature computed over the word "secret".
   (signature "1" %signature-body))
 
 (define %acl
   (public-keys->acl (list %public-key)))
 
+
 (test-begin "substitute-binary")
 
 (test-error* "not a number"
@@ -127,7 +124,7 @@
 
 (define-syntax-rule (test-error-condition name pred exp)
   (test-assert name
-    (guard (condition ((pred condition) (pk 'true condition #t))
+    (guard (condition ((pred condition) #t)
                       (else #f))
       exp
       #f)))
@@ -135,63 +132,142 @@
 ;;; XXX: Do we need a better predicate hierarchy for these tests?
 (test-error-condition "corrupt signature data"
   nar-signature-error?
-  (assert-valid-signature "invalid sexp" "irrelevant"
+  (assert-valid-signature (string->canonical-sexp "(foo bar baz)") "irrelevant"
                           (open-input-string "irrelevant")
                           %acl))
 
 (test-error-condition "unauthorized public key"
   nar-signature-error?
-  (assert-valid-signature (canonical-sexp->string
-                           (narinfo-signature->canonical-sexp %signature))
+  (assert-valid-signature (narinfo-signature->canonical-sexp %signature)
                           "irrelevant"
                           (open-input-string "irrelevant")
                           (public-keys->acl '())))
 
 (test-error-condition "invalid signature"
   nar-signature-error?
-  (assert-valid-signature (canonical-sexp->string
-                           (narinfo-signature->canonical-sexp
-                            %wrong-signature))
+  (assert-valid-signature (narinfo-signature->canonical-sexp
+                           %wrong-signature)
                           (sha256 (string->utf8 "secret"))
                           (open-input-string "irrelevant")
                           (public-keys->acl (list %wrong-public-key))))
 
+
 (define %narinfo
-  "StorePath: /nix/store/foo
+  (string-append "StorePath: " (%store-prefix)
+                 "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo
 URL: nar/foo
 Compression: bzip2
 NarHash: sha256:7
 NarSize: 42
 References: bar baz
-Deriver: foo.drv
-System: mips64el-linux\n")
+Deriver: " (%store-prefix) "/foo.drv
+System: mips64el-linux\n"))
 
 (define (narinfo sig)
+  "Return a narinfo with SIG as its 'Signature' field."
   (format #f "~aSignature: ~a~%" %narinfo sig))
 
 (define %signed-narinfo
+  ;; Narinfo with a valid signature.
   (narinfo (signature "1" (signature-body %narinfo))))
 
-(test-error-condition "invalid hash"
+(define (call-with-narinfo narinfo thunk)
+  "Call THUNK in a context where $GUIX_BINARY_SUBSTITUTE_URL is populated with
+a file for NARINFO."
+  (let ((narinfo-directory (and=> (string->uri (getenv
+                                                "GUIX_BINARY_SUBSTITUTE_URL"))
+                                  uri-path))
+        (cache-directory   (string-append (getenv "XDG_CACHE_HOME")
+                                          "/guix/substitute-binary/")))
+    (dynamic-wind
+      (lambda ()
+        (when (file-exists? cache-directory)
+          (delete-file-recursively cache-directory))
+        (call-with-output-file (string-append narinfo-directory
+                                              "/nix-cache-info")
+          (lambda (port)
+            (format port "StoreDir: ~a\nWantMassQuery: 0\n"
+                    (%store-prefix))))
+        (call-with-output-file (string-append narinfo-directory "/"
+                                              "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+                                              ".narinfo")
+          (cut display narinfo <>))
+
+        (set! (@@ (guix scripts substitute-binary)
+                  %allow-unauthenticated-substitutes?)
+              #f))
+      thunk
+      (lambda ()
+        (delete-file-recursively cache-directory)))))
+
+(define-syntax-rule (with-narinfo narinfo body ...)
+  (call-with-narinfo narinfo (lambda () body ...)))
+
+
+(test-equal "query narinfo with invalid hash"
   ;; The hash of '%signature' is computed over the word "secret", not
   ;; '%narinfo'.
-  nar-invalid-hash-error?
-  (read-narinfo (open-input-string (narinfo %signature))
-                "https://example.com" %acl))
+  ""
 
-(test-assert "valid read-narinfo"
-  (read-narinfo (open-input-string %signed-narinfo)
-                "https://example.com" %acl))
+  (with-narinfo (narinfo %signature)
+    (string-trim-both
+     (with-output-to-string
+       (lambda ()
+         (with-input-from-string (string-append "have " (%store-prefix)
+                                                "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+           (lambda ()
+             (guix-substitute-binary "--query"))))))))
 
-(test-equal "valid write-narinfo"
-  %signed-narinfo
-  (call-with-output-string
-   (lambda (port)
-     (write-narinfo (read-narinfo (open-input-string %signed-narinfo)
-                                  "https://example.com" %acl)
-                    port))))
+(test-equal "query narinfo signed with authorized key"
+  (string-append (%store-prefix) "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+
+  (with-narinfo %signed-narinfo
+    (string-trim-both
+     (with-output-to-string
+       (lambda ()
+         (with-input-from-string (string-append "have " (%store-prefix)
+                                                "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+           (lambda ()
+             (guix-substitute-binary "--query"))))))))
+
+(test-equal "query narinfo signed with unauthorized key"
+  ""                                              ; not substitutable
+
+  (with-narinfo (narinfo (signature "1"
+                                    (signature-body %narinfo
+                                                    #:public-key %wrong-public-key)))
+    (string-trim-both
+     (with-output-to-string
+       (lambda ()
+         (with-input-from-string (string-append "have " (%store-prefix)
+                                                "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+           (lambda ()
+             (guix-substitute-binary "--query"))))))))
+
+(test-error* "substitute, invalid hash"
+  ;; The hash of '%signature' is computed over the word "secret", not
+  ;; '%narinfo'.
+  (with-narinfo (narinfo %signature)
+    (guix-substitute-binary "--substitute"
+                            (string-append (%store-prefix)
+                                           "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                            "foo")))
+
+(test-error* "substitute, unauthorized key"
+  (with-narinfo (narinfo (signature "1"
+                                    (signature-body %narinfo
+                                                    #:public-key %wrong-public-key)))
+    (guix-substitute-binary "--substitute"
+                            (string-append (%store-prefix)
+                                           "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                            "foo")))
 
 (test-end "substitute-binary")
 
 
 (exit (= (test-runner-fail-count (test-runner-current)) 0))
+
+;;; Local Variables:
+;;; eval: (put 'with-narinfo 'scheme-indent-function 1)
+;;; eval: (put 'test-error* 'scheme-indent-function 1)
+;;; End:

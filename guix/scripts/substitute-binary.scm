@@ -247,8 +247,19 @@ failure."
              ((not (= 1 maybe-number))
               (leave (_ "unsupported signature version: ~a~%")
                      maybe-number))
-             (else (string->canonical-sexp
-                    (utf8->string (base64-decode sig)))))))
+             (else
+              (let ((signature (utf8->string (base64-decode sig))))
+                (catch 'gcry-error
+                  (lambda ()
+                    (string->canonical-sexp signature))
+                  (lambda (err . _)
+                    (raise (condition
+                            (&message
+                             (message "signature is not a valid \
+s-expression"))
+                            (&nar-signature-error
+                             (file #f)
+                             (signature signature) (port #f)))))))))))
     (x
      (leave (_ "invalid format of the signature field: ~a~%") x))))
 
@@ -273,8 +284,12 @@ must contain the original contents of a narinfo file."
                      ((or #f "") #f)
                      (_ deriver))
                    system
-                   (narinfo-signature->canonical-sexp signature)
+                   (false-if-exception
+                    (and=> signature narinfo-signature->canonical-sexp))
                    str)))
+
+(define &nar-signature-error    (@@ (guix nar) &nar-signature-error))
+(define &nar-invalid-hash-error (@@ (guix nar) &nar-invalid-hash-error))
 
 ;;; XXX: The following function is nearly an exact copy of the one from
 ;;; 'guix/nar.scm'.  Factorize as soon as we know how to make the latter
@@ -282,24 +297,11 @@ must contain the original contents of a narinfo file."
 ;;; Keep this one private to avoid confusion.
 (define* (assert-valid-signature signature hash port
                                  #:optional (acl (current-acl)))
-  "Bail out if SIGNATURE, a string (as produced by 'canonical-sexp->string'),
-doesn't match HASH, a bytevector containing the expected hash for FILE."
-  (let* ((&nar-signature-error    (@@ (guix nar) &nar-signature-error))
-         (&nar-invalid-hash-error (@@ (guix nar) &nar-invalid-hash-error))
-         ;; XXX: This is just to keep the errors happy; get a sensible
-         ;; filename.
+  "Bail out if SIGNATURE, a canonical sexp, doesn't match HASH, a bytevector
+containing the expected hash for FILE."
+  (let* (;; XXX: This is just to keep the errors happy; get a sensible
+         ;; file name.
          (file      #f)
-         (signature (catch 'gcry-error
-                      (lambda ()
-                        (string->canonical-sexp signature))
-                      (lambda (err . _)
-                        (raise (condition
-                                (&message
-                                 (message "signature is not a valid \
-s-expression"))
-                                (&nar-signature-error
-                                 (file file)
-                                 (signature signature) (port port)))))))
          (subject   (signature-subject signature))
          (data      (signature-signed-data signature)))
     (if (and data subject)
@@ -324,25 +326,42 @@ s-expression"))
                 (&nar-signature-error
                  (signature signature) (file file) (port port)))))))
 
-(define* (read-narinfo port #:optional url (acl (current-acl)))
+(define* (read-narinfo port #:optional url)
   "Read a narinfo from PORT.  If URL is true, it must be a string used to
-build full URIs from relative URIs found while reading PORT."
-  (let* ((str       (utf8->string (get-bytevector-all port)))
-         (rx        (make-regexp "(.+)^[[:blank:]]*Signature:[[:blank:]].+$"))
-         (res       (or (regexp-exec rx str)
-                        (leave (_ "cannot find the Signature line: ~a~%")
-                               str)))
-         (hash      (sha256 (string->utf8 (match:substring res 1))))
-         (narinfo   (alist->record (fields->alist (open-input-string str))
-                                   (narinfo-maker str url)
-                                   '("StorePath" "URL" "Compression"
-                                     "FileHash" "FileSize" "NarHash" "NarSize"
-                                     "References" "Deriver" "System"
-                                     "Signature")))
-         (signature (canonical-sexp->string (narinfo-signature narinfo))))
-    (unless %allow-unauthenticated-substitutes?
-      (assert-valid-signature signature hash port acl))
-    narinfo))
+build full URIs from relative URIs found while reading PORT.
+
+No authentication and authorization checks are performed here!"
+  (let ((str (utf8->string (get-bytevector-all port))))
+    (alist->record (call-with-input-string str fields->alist)
+                   (narinfo-maker str url)
+                   '("StorePath" "URL" "Compression"
+                     "FileHash" "FileSize" "NarHash" "NarSize"
+                     "References" "Deriver" "System"
+                     "Signature"))))
+
+(define %signature-line-rx
+  ;; Regexp matching a signature line in a narinfo.
+  (make-regexp "(.+)^[[:blank:]]*Signature:[[:blank:]].+$"))
+
+(define* (assert-valid-narinfo narinfo #:optional (acl (current-acl)))
+  "Raise an exception if NARINFO lacks a signature, has an invalid signature,
+or is signed by an unauthorized key."
+  (let* ((contents  (narinfo-contents narinfo))
+         (res       (regexp-exec %signature-line-rx contents)))
+    (if (not res)
+        (if %allow-unauthenticated-substitutes?
+            narinfo
+            (leave (_ "narinfo lacks a signature: ~s~%")
+                   contents))
+        (let ((hash      (sha256 (string->utf8 (match:substring res 1))))
+              (signature (narinfo-signature narinfo)))
+          (unless %allow-unauthenticated-substitutes?
+            (assert-valid-signature signature hash #f acl))
+          narinfo))))
+
+(define (valid-narinfo? narinfo)
+  "Return #t if NARINFO's signature is not valid."
+  (false-if-exception (begin (assert-valid-narinfo narinfo) #t)))
 
 (define (write-narinfo narinfo port)
   "Write NARINFO to PORT."
@@ -353,7 +372,8 @@ build full URIs from relative URIs found while reading PORT."
   (call-with-output-string (cut write-narinfo narinfo <>)))
 
 (define (string->narinfo str cache-uri)
-  "Return the narinfo represented by STR."
+  "Return the narinfo represented by STR.  Assume CACHE-URI as the base URI of
+the cache STR originates form."
   (call-with-input-string str (cut read-narinfo <> cache-uri)))
 
 (define (fetch-narinfo cache path)
@@ -391,9 +411,9 @@ check what it has."
     (string-append %narinfo-cache-directory "/"
                    (store-path-hash-part path)))
 
-  (define (cache-entry narinfo)
+  (define (cache-entry cache-uri narinfo)
     `(narinfo (version 1)
-              (cache-uri ,(narinfo-uri-base narinfo))
+              (cache-uri ,cache-uri)
               (date ,(time-second now))
               (value ,(and=> narinfo narinfo->string))))
 
@@ -432,7 +452,7 @@ check what it has."
           (when cache
             (with-atomic-file-output cache-file
               (lambda (out)
-                (write (cache-entry narinfo) out))))
+                (write (cache-entry (cache-url cache) narinfo) out))))
           narinfo))))
 
 (define (remove-expired-cached-narinfos)
@@ -570,6 +590,21 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
       (lambda (n proc lst)
         (par-map proc lst))))
 
+(define (check-acl-initialized)
+  "Warn if the ACL is uninitialized."
+  (define (singleton? acl)
+    ;; True if ACL contains just the user's public key.
+    (and (file-exists? %public-key-file)
+         (let ((key (call-with-input-file %public-key-file
+                      (compose string->canonical-sexp
+                               get-string-all))))
+           (equal? (acl->public-keys acl) (list key)))))
+
+  (let ((acl (current-acl)))
+    (when (or (null? acl) (singleton? acl))
+      (warning (_ "ACL for archive imports seems to be uninitialized, \
+substitutes may be unavailable\n")))))
+
 (define (guix-substitute-binary . args)
   "Implement the build daemon's substituter protocol."
   (mkdir-p %narinfo-cache-directory)
@@ -598,96 +633,102 @@ substituter disabled~%")
   (force-output (current-output-port))
 
   (with-networking
-   (match args
-     (("--query")
-      (let ((cache (delay (open-cache %cache-url))))
-        (let loop ((command (read-line)))
-          (or (eof-object? command)
-              (begin
-                (match (string-tokenize command)
-                  (("have" paths ..1)
-                   ;; Return the subset of PATHS available in CACHE.
-                   (let ((substitutable
-                          (if cache
-                              (n-par-map* %lookup-threads
-                                          (cut lookup-narinfo cache <>)
-                                          paths)
-                              '())))
-                     (for-each (lambda (narinfo)
-                                 (when narinfo
-                                   (format #t "~a~%" (narinfo-path narinfo))))
-                               (filter narinfo? substitutable))
-                     (newline)))
-                  (("info" paths ..1)
-                   ;; Reply info about PATHS if it's in CACHE.
-                   (let ((substitutable
-                          (if cache
-                              (n-par-map* %lookup-threads
-                                          (cut lookup-narinfo cache <>)
-                                          paths)
-                              '())))
-                     (for-each (lambda (narinfo)
-                                 (format #t "~a\n~a\n~a\n"
-                                         (narinfo-path narinfo)
-                                         (or (and=> (narinfo-deriver narinfo)
-                                                    (cute string-append
-                                                          (%store-prefix) "/"
-                                                          <>))
-                                             "")
-                                         (length (narinfo-references narinfo)))
-                                 (for-each (cute format #t "~a/~a~%"
-                                                 (%store-prefix) <>)
-                                           (narinfo-references narinfo))
-                                 (format #t "~a\n~a\n"
-                                         (or (narinfo-file-size narinfo) 0)
-                                         (or (narinfo-size narinfo) 0)))
-                               (filter narinfo? substitutable))
-                     (newline)))
-                  (wtf
-                   (error "unknown `--query' command" wtf)))
-                (loop (read-line)))))))
-     (("--substitute" store-path destination)
-      ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
-      (let* ((cache   (delay (open-cache %cache-url)))
-             (narinfo (lookup-narinfo cache store-path))
-             (uri     (narinfo-uri narinfo)))
-        ;; Tell the daemon what the expected hash of the Nar itself is.
-        (format #t "~a~%" (narinfo-hash narinfo))
+   (with-error-handling                           ; for signature errors
+     (match args
+       (("--query")
+        (let ((cache (delay (open-cache %cache-url))))
+          (define (valid? obj)
+            (and (narinfo? obj) (valid-narinfo? obj)))
 
-        (format (current-error-port) "downloading `~a' from `~a'~:[~*~; (~,1f MiB installed)~]...~%"
-                store-path (uri->string uri)
+          (let loop ((command (read-line)))
+            (or (eof-object? command)
+                (begin
+                  (match (string-tokenize command)
+                    (("have" paths ..1)
+                     ;; Return the subset of PATHS available in CACHE.
+                     (let ((substitutable
+                            (if cache
+                                (n-par-map* %lookup-threads
+                                            (cut lookup-narinfo cache <>)
+                                            paths)
+                                '())))
+                       (for-each (lambda (narinfo)
+                                   (format #t "~a~%" (narinfo-path narinfo)))
+                                 (filter valid? substitutable))
+                       (newline)))
+                    (("info" paths ..1)
+                     ;; Reply info about PATHS if it's in CACHE.
+                     (let ((substitutable
+                            (if cache
+                                (n-par-map* %lookup-threads
+                                            (cut lookup-narinfo cache <>)
+                                            paths)
+                                '())))
+                       (for-each (lambda (narinfo)
+                                   (format #t "~a\n~a\n~a\n"
+                                           (narinfo-path narinfo)
+                                           (or (and=> (narinfo-deriver narinfo)
+                                                      (cute string-append
+                                                            (%store-prefix) "/"
+                                                            <>))
+                                               "")
+                                           (length (narinfo-references narinfo)))
+                                   (for-each (cute format #t "~a/~a~%"
+                                                   (%store-prefix) <>)
+                                             (narinfo-references narinfo))
+                                   (format #t "~a\n~a\n"
+                                           (or (narinfo-file-size narinfo) 0)
+                                           (or (narinfo-size narinfo) 0)))
+                                 (filter valid? substitutable))
+                       (newline)))
+                    (wtf
+                     (error "unknown `--query' command" wtf)))
+                  (loop (read-line)))))))
+       (("--substitute" store-path destination)
+        ;; Download STORE-PATH and add store it as a Nar in file DESTINATION.
+        (let* ((cache   (delay (open-cache %cache-url)))
+               (narinfo (lookup-narinfo cache store-path))
+               (uri     (narinfo-uri narinfo)))
+          ;; Make sure it is signed and everything.
+          (assert-valid-narinfo narinfo)
 
-                ;; Use the Nar size as an estimate of the installed size.
-                (narinfo-size narinfo)
-                (and=> (narinfo-size narinfo)
-                       (cute / <> (expt 2. 20))))
-        (let*-values (((raw download-size)
-                       ;; Note that Hydra currently generates Nars on the fly
-                       ;; and doesn't specify a Content-Length, so
-                       ;; DOWNLOAD-SIZE is #f in practice.
-                       (fetch uri #:buffered? #f #:timeout? #f))
-                      ((progress)
-                       (let* ((comp     (narinfo-compression narinfo))
-                              (dl-size  (or download-size
-                                            (and (equal? comp "none")
-                                                 (narinfo-size narinfo))))
-                              (progress (progress-proc (uri-abbreviation uri)
-                                                       dl-size
-                                                       (current-error-port))))
-                         (progress-report-port progress raw)))
-                      ((input pids)
-                       (decompressed-port (and=> (narinfo-compression narinfo)
-                                                 string->symbol)
-                                          progress)))
-          ;; Unpack the Nar at INPUT into DESTINATION.
-          (restore-file input destination)
-          (every (compose zero? cdr waitpid) pids))))
-     (("--version")
-      (show-version-and-exit "guix substitute-binary"))
-     (("--help")
-      (show-help))
-     (opts
-      (leave (_ "~a: unrecognized options~%") opts)))))
+          ;; Tell the daemon what the expected hash of the Nar itself is.
+          (format #t "~a~%" (narinfo-hash narinfo))
+
+          (format (current-error-port) "downloading `~a' from `~a'~:[~*~; (~,1f MiB installed)~]...~%"
+                  store-path (uri->string uri)
+
+                  ;; Use the Nar size as an estimate of the installed size.
+                  (narinfo-size narinfo)
+                  (and=> (narinfo-size narinfo)
+                         (cute / <> (expt 2. 20))))
+          (let*-values (((raw download-size)
+                         ;; Note that Hydra currently generates Nars on the fly
+                         ;; and doesn't specify a Content-Length, so
+                         ;; DOWNLOAD-SIZE is #f in practice.
+                         (fetch uri #:buffered? #f #:timeout? #f))
+                        ((progress)
+                         (let* ((comp     (narinfo-compression narinfo))
+                                (dl-size  (or download-size
+                                              (and (equal? comp "none")
+                                                   (narinfo-size narinfo))))
+                                (progress (progress-proc (uri-abbreviation uri)
+                                                         dl-size
+                                                         (current-error-port))))
+                           (progress-report-port progress raw)))
+                        ((input pids)
+                         (decompressed-port (and=> (narinfo-compression narinfo)
+                                                   string->symbol)
+                                            progress)))
+            ;; Unpack the Nar at INPUT into DESTINATION.
+            (restore-file input destination)
+            (every (compose zero? cdr waitpid) pids))))
+       (("--version")
+        (show-version-and-exit "guix substitute-binary"))
+       (("--help")
+        (show-help))
+       (opts
+        (leave (_ "~a: unrecognized options~%") opts))))))
 
 
 ;;; Local Variables:
