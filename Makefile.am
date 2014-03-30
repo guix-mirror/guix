@@ -177,6 +177,8 @@ tests/guix-gc.log:							\
   $(patsubst %.sh,%.log,$(filter-out tests/guix-gc.sh,$(SH_TESTS)))	\
   $(SCM_TESTS:%.scm=%.log)
 
+# Public key used to sign substitutes from hydra.gnu.org.
+pkgdata_DATA = hydra.gnu.org.pub
 
 EXTRA_DIST =					\
   HACKING					\
