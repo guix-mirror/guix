@@ -25,6 +25,7 @@
   #:use-module (guix pk-crypto)
   #:use-module (guix pki)
   #:use-module (guix config)
+  #:use-module (guix base32)
   #:use-module ((guix store) #:select (%store-prefix))
   #:use-module ((guix build utils) #:select (delete-file-recursively))
   #:use-module (rnrs bytevectors)
@@ -146,9 +147,10 @@ version identifier.."
   ;; Skeleton of the narinfo used below.
   (string-append "StorePath: " (%store-prefix)
                  "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo
-URL: nar/foo
-Compression: bzip2
-NarHash: sha256:7
+URL: example.nar
+Compression: none
+NarHash: sha256:" (bytevector->nix-base32-string
+                   (sha256 (string->utf8 "Substitutable data."))) "
 NarSize: 42
 References: bar baz
 Deriver: " (%store-prefix) "/foo.drv
@@ -176,6 +178,15 @@ a file for NARINFO."
                                               ".narinfo")
           (cut display narinfo <>))
 
+        ;; Prepare the nar.
+        (call-with-output-file
+            (string-append narinfo-directory "/example.out")
+          (cut display "Substitutable data." <>))
+        (call-with-output-file
+            (string-append narinfo-directory "/example.nar")
+          (cute write-file
+                (string-append narinfo-directory "/example.out") <>))
+
         (set! (@@ (guix scripts substitute-binary)
                   %allow-unauthenticated-substitutes?)
               #f))
@@ -186,6 +197,18 @@ a file for NARINFO."
 (define-syntax-rule (with-narinfo narinfo body ...)
   (call-with-narinfo narinfo (lambda () body ...)))
 
+
+(test-equal "query narinfo without signature"
+  ""                                              ; not substitutable
+
+  (with-narinfo %narinfo
+    (string-trim-both
+     (with-output-to-string
+       (lambda ()
+         (with-input-from-string (string-append "have " (%store-prefix)
+                                                "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+           (lambda ()
+             (guix-substitute-binary "--query"))))))))
 
 (test-equal "query narinfo with invalid hash"
   ;; The hash in the signature differs from the hash of %NARINFO.
@@ -232,6 +255,13 @@ a file for NARINFO."
            (lambda ()
              (guix-substitute-binary "--query"))))))))
 
+(test-error* "substitute, no signature"
+  (with-narinfo %narinfo
+    (guix-substitute-binary "--substitute"
+                            (string-append (%store-prefix)
+                                           "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                            "foo")))
+
 (test-error* "substitute, invalid hash"
   ;; The hash in the signature differs from the hash of %NARINFO.
   (with-narinfo (string-append %narinfo "Signature: "
@@ -252,6 +282,21 @@ a file for NARINFO."
                             (string-append (%store-prefix)
                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
                             "foo")))
+
+(test-equal "substitute, authorized key"
+  "Substitutable data."
+  (with-narinfo (string-append %narinfo "Signature: "
+                               (signature-field %narinfo))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        (guix-substitute-binary "--substitute"
+                                (string-append (%store-prefix)
+                                               "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
+                                "substitute-retrieved")
+        (call-with-input-file "substitute-retrieved" get-string-all))
+      (lambda ()
+        (false-if-exception (delete-file "substitute-retrieved"))))))
 
 (test-end "substitute-binary")
 
