@@ -428,7 +428,8 @@ the Daemon, build users}).
 @item --no-substitutes
 @cindex substitutes
 Do not use substitutes for build products.  That is, always build things
-locally instead of allowing downloads of pre-built binaries.
+locally instead of allowing downloads of pre-built binaries
+(@pxref{Substitutes}).
 
 By default substitutes are used, unless the client---such as the
 @command{guix package} command---is explicitly invoked with
@@ -569,6 +570,7 @@ management tools it provides.
 @menu
 * Features::                    How Guix will make your life brighter.
 * Invoking guix package::       Package installation, removal, etc.
+* Substitutes::                 Downloading pre-built binaries.
 * Packages with Multiple Outputs::  Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
 * Invoking guix pull::          Fetching the latest Guix and distribution.
@@ -633,18 +635,13 @@ thanks to the isolated build environments that are used, a given build
 is likely to yield bit-identical files when performed on different
 machines (@pxref{Invoking guix-daemon, container}).
 
-@cindex substitute
+@cindex substitutes
 This foundation allows Guix to support @dfn{transparent binary/source
-deployment}.  When a pre-built binary for a @file{/gnu/store} path is
+deployment}.  When a pre-built binary for a @file{/gnu/store} item is
 available from an external source---a @dfn{substitute}, Guix just
-downloads it@footnote{@c XXX: Remove me when outdated.
-As of version @value{VERSION}, substitutes are downloaded from
-@url{http://hydra.gnu.org/} but are @emph{not} authenticated---i.e.,
-Guix cannot tell whether binaries it downloaded have been tampered with,
-nor whether they come from the genuine @code{gnu.org} build farm.  This
-will be fixed in future versions.  In the meantime, concerned users can
-opt for @code{--no-substitutes} (@pxref{Invoking guix-daemon}).};
-otherwise, it builds the package from source, locally.
+downloads it and unpacks it;
+otherwise, it builds the package from source, locally
+(@pxref{Substitutes}).
 
 @node Invoking guix package
 @section Invoking @command{guix package}
@@ -911,6 +908,105 @@ Consequently, this command must be used with care.
 Finally, since @command{guix package} may actually start build
 processes, it supports all the common build options that @command{guix
 build} supports (@pxref{Invoking guix build, common build options}).
+
+@node Substitutes
+@section Substitutes
+
+@cindex substitutes
+@cindex pre-built binaries
+Guix supports transparent source/binary deployment, which means that it
+can either build things locally, or download pre-built items from a
+server.  We call these pre-built items @dfn{substitutes}---they are
+substitutes for local build results.  In many cases, downloading a
+substitute is much faster than building things locally.
+
+Substitutes can be anything resulting from a derivation build
+(@pxref{Derivations}).  Of course, in the common case, they are
+pre-built package binaries, but source tarballs, for instance, which
+also result from derivation builds, can be available as substitutes.
+
+The @code{hydra.gnu.org} server is a front-end to a build farm that
+builds packages from the GNU distribution continuously for some
+architectures, and makes them available as substitutes.
+
+@cindex security
+@cindex digital signatures
+To allow Guix to download substitutes from @code{hydra.gnu.org}, you
+must add its public key to the access control list (ACL) of archive
+imports, using the @command{guix archive} command (@pxref{Invoking guix
+archive}).  Doing so implies that you trust @code{hydra.gnu.org} to not
+be compromised and to serve genuine substitutes.
+
+This public key is installed along with Guix, in
+@code{@var{prefix}/share/guix/hydra.gnu.org.pub}, where @var{prefix} is
+the installation prefix of Guix.  If you installed Guix from source,
+make sure you checked the GPG signature of
+@file{guix-@value{VERSION}.tar.gz}, which contains this public key file.
+Then, you can run something like this:
+
+@example
+# guix archive --authorize < hydra.gnu.org.pub
+@end example
+
+Once this is in place, the output of a command like @code{guix build}
+should change from something like:
+
+@example
+$ guix build emacs --dry-run
+The following derivations would be built:
+   /gnu/store/yr7bnx8xwcayd6j95r2clmkdl1qh688w-emacs-24.3.drv
+   /gnu/store/x8qsh1hlhgjx6cwsjyvybnfv2i37z23w-dbus-1.6.4.tar.gz.drv
+   /gnu/store/1ixwp12fl950d15h2cj11c73733jay0z-alsa-lib-1.0.27.1.tar.bz2.drv
+   /gnu/store/nlma1pw0p603fpfiqy7kn4zm105r5dmw-util-linux-2.21.drv
+@dots{}
+@end example
+
+@noindent
+to something like:
+
+@example
+$ guix build emacs --dry-run
+The following files would be downloaded:
+   /gnu/store/pk3n22lbq6ydamyymqkkz7i69wiwjiwi-emacs-24.3
+   /gnu/store/2ygn4ncnhrpr61rssa6z0d9x22si0va3-libjpeg-8d
+   /gnu/store/71yz6lgx4dazma9dwn2mcjxaah9w77jq-cairo-1.12.16
+   /gnu/store/7zdhgp0n1518lvfn8mb96sxqfmvqrl7v-libxrender-0.9.7
+@dots{}
+@end example
+
+@noindent
+This indicates that substitutes from @code{hydra.gnu.org} are usable and
+will be downloaded, when possible, for future builds.
+
+Guix ignores substitutes that are not signed, or that are not signed by
+one of the keys listed in the ACL.  It also detects and raise an error
+when attempting to use a substitute that has been tampered with.
+
+The substitute mechanism can be disabled globally by running
+@code{guix-daemon} with @code{--no-substitutes} (@pxref{Invoking
+guix-daemon}).  It can also be disabled temporarily by passing the
+@code{--no-substitutes} option to @command{guix package}, @command{guix
+build}, and other command-line tools.
+
+
+Today, each individual's control over their own computing is at the
+mercy of institutions, corporations, and groups with enough power and
+determination to subvert the computing infrastructure and exploit its
+weaknesses.  While using @code{hydra.gnu.org} substitutes can be
+convenient, we encourage users to also build on their own, or even run
+their own build farm, such that @code{hydra.gnu.org} is less of an
+interesting target.
+
+Guix has the foundations to maximize build reproducibility
+(@pxref{Features}).  In most cases, independent builds of a given
+package or derivation should yield bit-identical results.  Thus, through
+a diverse set of independent package builds, we can strengthen the
+integrity of our systems.
+
+In the future, we want Guix to have support to publish and retrieve
+binaries to/from other users, in a peer-to-peer fashion.  If you would
+like to discuss this project, join us on @email{guix-devel@@gnu.org}.
+
 
 @node Packages with Multiple Outputs
 @section Packages with Multiple Outputs
@@ -1923,7 +2019,8 @@ packages locally.
 
 @item --no-substitutes
 Do not use substitutes for build products.  That is, always build things
-locally instead of allowing downloads of pre-built binaries.
+locally instead of allowing downloads of pre-built binaries
+(@pxref{Substitutes}).
 
 @item --no-build-hook
 Do not attempt to offload builds @i{via} the daemon's ``build hook''
@@ -2321,8 +2418,8 @@ system}.
 Users can obtain the new package definition simply by running
 @command{guix pull} (@pxref{Invoking guix pull}).  When
 @code{hydra.gnu.org} is done building the package, installing the
-package automatically downloads binaries from there (except when using
-@code{--no-substitutes}).  The only place where human intervention is
+package automatically downloads binaries from there
+(@pxref{Substitutes}).  The only place where human intervention is
 needed is to review and apply the patch.
 
 
