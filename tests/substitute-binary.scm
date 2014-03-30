@@ -30,8 +30,10 @@
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (web uri)
+  #:use-module (ice-9 regex)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module ((srfi srfi-64) #:hide (test-error)))
 
 (define assert-valid-signature
@@ -60,20 +62,16 @@
   (call-with-input-file (string-append %config-directory "/signing-key.sec")
     (compose string->canonical-sexp get-string-all)))
 
-(define* (signature-body str #:key (public-key %public-key))
-  "Return the signature of STR as the base64-encoded body of a narinfo's
+(define* (signature-body bv #:key (public-key %public-key))
+  "Return the signature of BV as the base64-encoded body of a narinfo's
 'Signature' field."
   (base64-encode
    (string->utf8
     (canonical-sexp->string
-     (signature-sexp (bytevector->hash-data (sha256 (string->utf8 str))
+     (signature-sexp (bytevector->hash-data (sha256 bv)
                                             #:key-type 'rsa)
                      %private-key
                      public-key)))))
-
-(define %signature-body
-  ;; Body of the signature of the word "secret".
-  (signature-body "secret"))
 
 (define %wrong-public-key
   (string->canonical-sexp "(public-key
@@ -83,76 +81,69 @@
   )
  )"))
 
-(define %wrong-signature
-  ;; 'Signature' field where the public key doesn't match the private key used
-  ;; to make the signature.
-  (let* ((body       (string->canonical-sexp
-                      (utf8->string
-                       (base64-decode %signature-body))))
-         (data       (canonical-sexp->string (find-sexp-token body 'data)))
-         (sig-val    (canonical-sexp->string (find-sexp-token body 'sig-val)))
-         (public-key (canonical-sexp->string %wrong-public-key))
-         (body*      (base64-encode
-                      (string->utf8
-                       (string-append "(signature \n" data sig-val
-                                      public-key " )\n")))))
-    (string-append "1;irrelevant;" body*)))
+(define* (signature-field bv-or-str
+                          #:key (version "1") (public-key %public-key))
+  "Return the 'Signature' field value of bytevector/string BV-OR-STR, using
+PUBLIC-KEY as the signature's principal, and using VERSION as the signature
+version identifier.."
+  (string-append version ";example.gnu.org;"
+                 (signature-body (if (string? bv-or-str)
+                                     (string->utf8 bv-or-str)
+                                     bv-or-str)
+                                 #:public-key public-key)))
 
-(define* (signature str #:optional (body %signature-body))
-  "Return the 'Signature' field value with STR as the version part and BODY as
-the actual base64-encoded signature part."
-  (string-append str ";irrelevant;" body))
-
-(define %signature
-  ;; Signature computed over the word "secret".
-  (signature "1" %signature-body))
-
-(define %acl
-  (public-keys->acl (list %public-key)))
 
 
 (test-begin "substitute-binary")
 
 (test-error* "not a number"
-  (narinfo-signature->canonical-sexp (signature "not a number")))
+  (narinfo-signature->canonical-sexp
+   (signature-field "foo" #:version "not a number")))
 
 (test-error* "wrong version number"
-  (narinfo-signature->canonical-sexp (signature "2")))
+  (narinfo-signature->canonical-sexp
+   (signature-field "foo" #:version "2")))
 
 (test-assert "valid narinfo-signature->canonical-sexp"
-  (canonical-sexp? (narinfo-signature->canonical-sexp %signature)))
+  (canonical-sexp? (narinfo-signature->canonical-sexp (signature-field "foo"))))
 
-(define-syntax-rule (test-error-condition name pred exp)
+(define-syntax-rule (test-error-condition name pred message-rx exp)
   (test-assert name
-    (guard (condition ((pred condition) #t)
+    (guard (condition ((pred condition)
+                       (and (string-match message-rx
+                                          (condition-message condition))
+                            #t))
                       (else #f))
       exp
       #f)))
 
-;;; XXX: Do we need a better predicate hierarchy for these tests?
 (test-error-condition "corrupt signature data"
-  nar-signature-error?
+    nar-signature-error? "corrupt"
   (assert-valid-signature (string->canonical-sexp "(foo bar baz)") "irrelevant"
                           (open-input-string "irrelevant")
-                          %acl))
+                          (public-keys->acl (list %public-key))))
 
 (test-error-condition "unauthorized public key"
-  nar-signature-error?
-  (assert-valid-signature (narinfo-signature->canonical-sexp %signature)
+    nar-signature-error? "unauthorized"
+  (assert-valid-signature (narinfo-signature->canonical-sexp
+                           (signature-field "foo"))
                           "irrelevant"
                           (open-input-string "irrelevant")
                           (public-keys->acl '())))
 
 (test-error-condition "invalid signature"
-  nar-signature-error?
-  (assert-valid-signature (narinfo-signature->canonical-sexp
-                           %wrong-signature)
-                          (sha256 (string->utf8 "secret"))
-                          (open-input-string "irrelevant")
-                          (public-keys->acl (list %wrong-public-key))))
+    nar-signature-error? "invalid signature"
+  (let ((message "this is the message that we sign"))
+    (assert-valid-signature (narinfo-signature->canonical-sexp
+                             (signature-field message
+                                              #:public-key %wrong-public-key))
+                            (sha256 (string->utf8 message))
+                            (open-input-string "irrelevant")
+                            (public-keys->acl (list %wrong-public-key)))))
 
 
 (define %narinfo
+  ;; Skeleton of the narinfo used below.
   (string-append "StorePath: " (%store-prefix)
                  "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo
 URL: nar/foo
@@ -162,14 +153,6 @@ NarSize: 42
 References: bar baz
 Deriver: " (%store-prefix) "/foo.drv
 System: mips64el-linux\n"))
-
-(define (narinfo sig)
-  "Return a narinfo with SIG as its 'Signature' field."
-  (format #f "~aSignature: ~a~%" %narinfo sig))
-
-(define %signed-narinfo
-  ;; Narinfo with a valid signature.
-  (narinfo (signature "1" (signature-body %narinfo))))
 
 (define (call-with-narinfo narinfo thunk)
   "Call THUNK in a context where $GUIX_BINARY_SUBSTITUTE_URL is populated with
@@ -205,11 +188,12 @@ a file for NARINFO."
 
 
 (test-equal "query narinfo with invalid hash"
-  ;; The hash of '%signature' is computed over the word "secret", not
-  ;; '%narinfo'.
+  ;; The hash in the signature differs from the hash of %NARINFO.
   ""
 
-  (with-narinfo (narinfo %signature)
+  (with-narinfo (string-append %narinfo "Signature: "
+                               (signature-field "different body")
+                               "\n")
     (string-trim-both
      (with-output-to-string
        (lambda ()
@@ -221,7 +205,9 @@ a file for NARINFO."
 (test-equal "query narinfo signed with authorized key"
   (string-append (%store-prefix) "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
 
-  (with-narinfo %signed-narinfo
+  (with-narinfo (string-append %narinfo "Signature: "
+                               (signature-field %narinfo)
+                               "\n")
     (string-trim-both
      (with-output-to-string
        (lambda ()
@@ -233,9 +219,11 @@ a file for NARINFO."
 (test-equal "query narinfo signed with unauthorized key"
   ""                                              ; not substitutable
 
-  (with-narinfo (narinfo (signature "1"
-                                    (signature-body %narinfo
-                                                    #:public-key %wrong-public-key)))
+  (with-narinfo (string-append %narinfo "Signature: "
+                               (signature-field
+                                %narinfo
+                                #:public-key %wrong-public-key)
+                               "\n")
     (string-trim-both
      (with-output-to-string
        (lambda ()
@@ -245,18 +233,21 @@ a file for NARINFO."
              (guix-substitute-binary "--query"))))))))
 
 (test-error* "substitute, invalid hash"
-  ;; The hash of '%signature' is computed over the word "secret", not
-  ;; '%narinfo'.
-  (with-narinfo (narinfo %signature)
+  ;; The hash in the signature differs from the hash of %NARINFO.
+  (with-narinfo (string-append %narinfo "Signature: "
+                               (signature-field "different body")
+                               "\n")
     (guix-substitute-binary "--substitute"
                             (string-append (%store-prefix)
                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
                             "foo")))
 
 (test-error* "substitute, unauthorized key"
-  (with-narinfo (narinfo (signature "1"
-                                    (signature-body %narinfo
-                                                    #:public-key %wrong-public-key)))
+  (with-narinfo (string-append %narinfo "Signature: "
+                               (signature-field
+                                %narinfo
+                                #:public-key %wrong-public-key)
+                               "\n")
     (guix-substitute-binary "--substitute"
                             (string-append (%store-prefix)
                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
@@ -269,5 +260,6 @@ a file for NARINFO."
 
 ;;; Local Variables:
 ;;; eval: (put 'with-narinfo 'scheme-indent-function 1)
+;;; eval: (put 'test-error-condition 'scheme-indent-function 3)
 ;;; eval: (put 'test-error* 'scheme-indent-function 1)
 ;;; End:
