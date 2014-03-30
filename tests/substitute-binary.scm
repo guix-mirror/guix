@@ -27,6 +27,7 @@
   #:use-module (guix config)
   #:use-module (guix base32)
   #:use-module ((guix store) #:select (%store-prefix))
+  #:use-module ((guix ui) #:select (guix-warning-port))
   #:use-module ((guix build utils) #:select (delete-file-recursively))
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
@@ -44,15 +45,21 @@
 
 ;;; XXX: Replace with 'test-error' from SRFI-64 as soon as it allow us to
 ;;; catch specific exceptions.
-(define-syntax-rule (test-error* name exp)
+(define-syntax-rule (test-quit name error-rx exp)
+  "Emit a test that passes when EXP throws to 'quit' with value 1, and when
+it writes to GUIX-WARNING-PORT a messages that matches ERROR-RX."
   (test-equal name
-    1
-    (catch 'quit
-      (lambda ()
-        exp
-        #f)
-      (lambda (key value)
-        value))))
+    '(1 #t)
+    (let ((error-output (open-output-string)))
+      (parameterize ((guix-warning-port error-output))
+        (catch 'quit
+          (lambda ()
+            exp
+            #f)
+          (lambda (key value)
+            (list value
+                  (let ((message (get-output-string error-output)))
+                    (->bool (string-match error-rx message))))))))))
 
 (define %public-key
   ;; This key is known to be in the ACL by default.
@@ -97,11 +104,13 @@ version identifier.."
 
 (test-begin "substitute-binary")
 
-(test-error* "not a number"
+(test-quit "not a number"
+    "signature version"
   (narinfo-signature->canonical-sexp
    (signature-field "foo" #:version "not a number")))
 
-(test-error* "wrong version number"
+(test-quit "wrong version number"
+    "unsupported.*version"
   (narinfo-signature->canonical-sexp
    (signature-field "foo" #:version "2")))
 
@@ -255,14 +264,16 @@ a file for NARINFO."
            (lambda ()
              (guix-substitute-binary "--query"))))))))
 
-(test-error* "substitute, no signature"
+(test-quit "substitute, no signature"
+    "lacks a signature"
   (with-narinfo %narinfo
     (guix-substitute-binary "--substitute"
                             (string-append (%store-prefix)
                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
                             "foo")))
 
-(test-error* "substitute, invalid hash"
+(test-quit "substitute, invalid hash"
+    "hash"
   ;; The hash in the signature differs from the hash of %NARINFO.
   (with-narinfo (string-append %narinfo "Signature: "
                                (signature-field "different body")
@@ -272,7 +283,8 @@ a file for NARINFO."
                                            "/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa-foo")
                             "foo")))
 
-(test-error* "substitute, unauthorized key"
+(test-quit "substitute, unauthorized key"
+    "unauthorized"
   (with-narinfo (string-append %narinfo "Signature: "
                                (signature-field
                                 %narinfo
@@ -306,5 +318,5 @@ a file for NARINFO."
 ;;; Local Variables:
 ;;; eval: (put 'with-narinfo 'scheme-indent-function 1)
 ;;; eval: (put 'test-error-condition 'scheme-indent-function 3)
-;;; eval: (put 'test-error* 'scheme-indent-function 1)
+;;; eval: (put 'test-quit 'scheme-indent-function 2)
 ;;; End:
