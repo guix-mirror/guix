@@ -51,21 +51,17 @@
                           (guix build utils)
                           (guix build rpath))
       #:phases
-      (alist-replace
-       'unpack
-       (lambda* (#:key source #:allow-other-keys)
-        (and (zero? (system* "tar" "xvf" source))
-             (chdir "icu/source")))
-       (alist-replace
-        'configure
-        (lambda* (#:key #:allow-other-keys #:rest args)
-         (let ((configure (assoc-ref %standard-phases 'configure)))
-           ;; patch out two occurrences of /bin/sh from configure script
-           ;; that might have disappeared in a release later than 52.1
-           (substitute* "configure"
-             (("`/bin/sh")
-             (string-append "`" (which "bash"))))
-           (apply configure args)))
+      (alist-cons-after
+       'unpack 'chdir-to-source
+       (lambda _ (chdir "source"))
+       (alist-cons-before
+        'configure 'patch-configure
+        (lambda _
+          ;; patch out two occurrences of /bin/sh from configure script
+          ;; that might have disappeared in a release later than 52.1
+          (substitute* "configure"
+            (("`/bin/sh")
+             (string-append "`" (which "bash")))))
        (alist-cons-after
         'strip 'add-lib-to-runpath
         (lambda* (#:key outputs #:allow-other-keys)

@@ -47,14 +47,12 @@
                            (assoc-ref %build-inputs "libjpeg-8")
                            "/include"))
       #:phases
-      (alist-replace
-       'configure
-       (lambda* (#:key #:allow-other-keys #:rest args)
-        (let ((configure (assoc-ref %standard-phases 'configure)))
-          (substitute* "configure"
-            (("`/usr/bin/file")
-            (string-append "`" (which "file"))))
-          (apply configure args)))
+      (alist-cons-before
+       'configure 'patch-configure
+       (lambda _
+         (substitute* "configure"
+           (("`/usr/bin/file")
+            (string-append "`" (which "file")))))
       %standard-phases)))
    (synopsis "Libtiff, a library for handling TIFF files")
    (description

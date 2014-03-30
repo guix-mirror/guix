@@ -140,23 +140,19 @@ a server that supports the SSH-2 protocol.")
    (arguments
     `(#:test-target "tests"
       #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys #:rest args)
-         (let ((configure (assoc-ref %standard-phases 'configure))
-               (out (assoc-ref outputs "out")))
-           (apply configure args)
-           (substitute* "Makefile"
-                        (("PRIVSEP_PATH=/var/empty")
-                        (string-append "PRIVSEP_PATH=" out "/var/empty")))))
-       (alist-replace
-        'check
-        (lambda* (#:key #:allow-other-keys #:rest args)
-         (let ((check (assoc-ref %standard-phases 'check)))
-           ;; remove tests that require the user sshd
-           (substitute* "regress/Makefile"
-                        (("t10 t-exec") "t10"))
-           (apply check args)))
+       (alist-cons-after
+        'configure 'reset-/var/empty
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out")))
+            (substitute* "Makefile"
+              (("PRIVSEP_PATH=/var/empty")
+               (string-append "PRIVSEP_PATH=" out "/var/empty")))))
+       (alist-cons-before
+        'check 'patch-tests
+        (lambda _
+          ;; remove tests that require the user sshd
+          (substitute* "regress/Makefile"
+            (("t10 t-exec") "t10")))
        (alist-replace
         'install
         (lambda* (#:key (make-flags '()) #:allow-other-keys)

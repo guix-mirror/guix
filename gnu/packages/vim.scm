@@ -44,15 +44,13 @@
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key #:allow-other-keys #:rest args)
-          (let ((configure (assoc-ref %standard-phases 'configure)))
-           (apply configure args)
+        (alist-cons-after
+         'configure 'patch-config-files
+         (lambda _
            (substitute* "runtime/tools/mve.awk"
              (("/usr/bin/nawk") (which "gawk")))
            (substitute* "src/testdir/Makefile"
-             (("/bin/sh") (which "sh")))))
+             (("/bin/sh") (which "sh"))))
           %standard-phases)))
     (inputs
      `(("gawk", gawk)
@@ -61,7 +59,7 @@
        ("perl", perl)
        ("tcsh" ,tcsh))) ; For runtime/tools/vim32
     (home-page "http://www.vim.org/")
-    (synopsis "VIM 7.3, a text editor based on vi.")
+    (synopsis "Text editor based on vi")
     (description
      "Vim is a highly configurable text editor built to enable efficient text
 editing. It is an improved version of the vi editor distributed with most UNIX
@@ -70,5 +68,5 @@ systems.
 Vim is often called a \"programmer's editor,\" and so useful for programming
 that many consider it an entire IDE. It's not just for programmers, though. Vim
 is perfect for all kinds of text editing, from composing email to editing
-configuration files. ")
+configuration files.")
     (license license:vim)))

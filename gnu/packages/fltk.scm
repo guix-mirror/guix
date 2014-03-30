@@ -40,19 +40,14 @@
       `(("libx11" ,libx11)
         ("mesa" ,mesa)))
     (arguments
-     `(#:phases
-       (alist-replace
-        'check
-        (lambda* (#:key inputs #:allow-other-keys) #t) ;; fltk does not have a
-                                                       ;; check target
-        (alist-replace
-         'configure
-         (lambda* (#:key outputs #:allow-other-keys #:rest args)
-           (let ((configure (assoc-ref %standard-phases 'configure)))
-             (substitute* "makeinclude.in"
-               (("/bin/sh") (which "sh")))
-             (apply configure args)))
-         %standard-phases))))
+     `(#:tests? #f                      ;TODO: compile programs in "test" dir
+       #:phases
+       (alist-cons-before
+        'configure 'patch-makeinclude
+        (lambda _
+          (substitute* "makeinclude.in"
+            (("/bin/sh") (which "sh"))))
+        %standard-phases)))
     (home-page "https://www.fltk.org")
     (synopsis "3D C++ GUI library")
     (description "FLTK is a C++ GUI toolkit providing modern GUI functionality without the

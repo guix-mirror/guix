@@ -280,7 +280,7 @@ archiving.  Lzip is a clean implementation of the LZMA algorithm.")
          'patch-source-shebangs 'unpatch-source-shebang
          ;; revert the patch-shebang phase on a script which is
          ;; in fact test data
-         (lambda* (#:key #:allow-other-keys)
+         (lambda _
            (substitute* "tests/shar-1.ok"
              (((which "sh")) "/bin/sh")))
          %standard-phases)))

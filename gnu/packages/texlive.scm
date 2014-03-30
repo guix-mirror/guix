@@ -116,12 +116,10 @@
          "--with-system-zziplib")
       #:phases
        (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys #:rest args)
-         (let ((configure (assoc-ref %standard-phases 'configure)))
-           (substitute* "utils/psutils/Makefile.in"
-             (("/usr/bin/env perl") (which "perl")))
-           (apply configure args)))
+        'configure 'patch-perl-shebang
+        (lambda _
+          (substitute* "utils/psutils/Makefile.in"
+            (("/usr/bin/env perl") (which "perl"))))
        (alist-cons-after
         'install 'postinst
          (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)

@@ -250,20 +250,19 @@ plotting engine by third-party applications like Octave.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key target system outputs #:allow-other-keys #:rest args)
-           (let ((configure (assoc-ref %standard-phases 'configure)))
-             (substitute* "configure"
-                   (("/bin/mv") "mv"))
-             (apply configure args)))
+        (alist-cons-before
+         'configure 'patch-configure
+         (lambda _
+           (substitute* "configure"
+             (("/bin/mv") "mv")))
          %standard-phases)))
     (outputs '("out" "bin" "lib" "include"))
     (home-page "http://www.hdfgroup.org")
     (synopsis "Management suite for  extremely large and complex data")
     (description "HDF5 is a suite that makes possible the management of
 extremely large and complex data collections.")
-    (license (license:x11-style "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
+    (license (license:x11-style
+              "http://www.hdfgroup.org/ftp/HDF5/current/src/unpacked/COPYING"))))
 
 
 ;; For a fully featured Octave, users  are strongly recommended also to install

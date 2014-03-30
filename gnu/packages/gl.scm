@@ -159,7 +159,7 @@ Polygon meshes, and Extruded polygon meshes")
         #:phases
          (alist-cons-after
           'unpack 'remove-symlink
-          (lambda* (#:key #:allow-other-keys)
+          (lambda _
             ;; remove dangling symlink to /usr/include/wine/windows
             (delete-file "src/gallium/state_trackers/d3d1x/w32api"))
          %standard-phases)))

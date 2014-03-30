@@ -142,27 +142,19 @@ printing, and psresize, for adjusting page sizes.")
         ("tcl" ,tcl)))
    (arguments
     `(#:phases
-      (alist-replace
-       'configure
-       (lambda* (#:key #:allow-other-keys #:rest args)
-        (let ((configure (assoc-ref %standard-phases 'configure)))
-          (apply configure args)
-          (substitute* "base/all-arch.mak"
-            (("/bin/sh") (which "bash")))
-          (substitute* "base/unixhead.mak"
-            (("/bin/sh") (which "bash")))))
-      (alist-replace
-       'build
-       (lambda* (#:key #:allow-other-keys #:rest args)
-        (let ((build (assoc-ref %standard-phases 'build)))
-          (apply build args)
-          (system* "make" "so")))
-      (alist-replace
-       'install
-       (lambda* (#:key #:allow-other-keys #:rest args)
-        (let ((install (assoc-ref %standard-phases 'install)))
-          (apply install args)
-          (system* "make" "install-so")))
+      (alist-cons-after
+       'configure 'patch-config-files
+       (lambda _
+         (substitute* "base/all-arch.mak"
+           (("/bin/sh") (which "bash")))
+         (substitute* "base/unixhead.mak"
+           (("/bin/sh") (which "bash"))))
+      (alist-cons-after
+       'build 'build-so
+       (lambda _ (system* "make" "so"))
+      (alist-cons-after
+       'install 'install-so
+       (lambda _ (system* "make" "install-so"))
       %standard-phases)))))
    (synopsis "PostScript and PDF interpreter")
    (description

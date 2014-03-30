@@ -117,15 +117,13 @@ as well as the classic centralized workflow.")
                                              "/bin/wish8.6")) ; XXX
 
       #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key #:allow-other-keys #:rest args)
-          (let ((configure (assoc-ref %standard-phases 'configure)))
-            (and (apply configure args)
-                 (substitute* "Makefile"
-                   (("/bin/sh") (which "sh"))
-                   (("/usr/bin/perl") (which "perl"))
-                   (("/usr/bin/python") (which "python"))))))
+       (alist-cons-after
+        'configure 'patch-makefile-shebangs
+        (lambda _
+          (substitute* "Makefile"
+            (("/bin/sh") (which "sh"))
+            (("/usr/bin/perl") (which "perl"))
+            (("/usr/bin/python") (which "python"))))
         (alist-cons-after
          'install 'split
          (lambda* (#:key inputs outputs #:allow-other-keys)

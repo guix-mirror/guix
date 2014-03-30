@@ -64,7 +64,7 @@
     `(#:phases
       (alist-replace
        'configure
-       (lambda* (#:key #:allow-other-keys #:rest args)
+       (lambda _
         (copy-file "config.mk.in" "config.mk")
         (let ((f (open-file "config.mk" "a")))
          (display "CC=gcc\n" f)
@@ -77,30 +77,29 @@
          (substitute* "converter/ppm/Makefile" (("hpcdtoppm") ""))
          ;; drop programs without license, see
          ;; http://packages.debian.org/changelogs/pool/main/n/netpbm-free/netpbm-free_10.0-12.2/libnetpbm10.copyright
-         (substitute* "converter/pbm/Makefile" (("pbmto4425") ""))
-         (substitute* "converter/pbm/Makefile" (("pbmtoln03") ""))
-         (substitute* "converter/pbm/Makefile" (("pbmtolps") ""))
-         (substitute* "converter/pbm/Makefile" (("pbmtopk") ""))
-         (substitute* "converter/pbm/Makefile" (("pktopbm") ""))
+         (substitute* "converter/pbm/Makefile"
+           (("pbmto4425") "")
+           (("pbmtoln03") "")
+           (("pbmtolps") "")
+           (("pbmtopk") "")
+           (("pktopbm") ""))
          (substitute* "converter/pgm/Makefile" (("spottopgm") ""))
-         (substitute* "converter/ppm/Makefile" (("ppmtopjxl") ""))
-         ))
-      (alist-replace
-       'check
-       (lambda* (#:key #:allow-other-keys #:rest args)
-        (let ((check (assoc-ref %standard-phases 'check)))
-          ;; install temporarily into /tmp/netpbm
-          (system* "make" "package")
-          ;; remove test requiring X
-          (substitute* "test/all-in-place.test" (("pamx") ""))
-          ;; do not worry about non-existing file
-          (substitute* "test/all-in-place.test" (("^rm ") "rm -f "))
-          ;; remove four tests that fail for unknown reasons
-          (substitute* "test/Test-Order" (("all-in-place.test") ""))
-          (substitute* "test/Test-Order" (("pnmpsnr.test") ""))
-          (substitute* "test/Test-Order" (("pnmremap1.test") ""))
-          (substitute* "test/Test-Order" (("gif-roundtrip.test") ""))
-          (apply check args)))
+         (substitute* "converter/ppm/Makefile" (("ppmtopjxl") ""))))
+      (alist-cons-before
+       'check 'setup-check
+       (lambda _
+         ;; install temporarily into /tmp/netpbm
+         (system* "make" "package")
+         ;; remove test requiring X
+         (substitute* "test/all-in-place.test" (("pamx") ""))
+         ;; do not worry about non-existing file
+         (substitute* "test/all-in-place.test" (("^rm ") "rm -f "))
+         ;; remove four tests that fail for unknown reasons
+         (substitute* "test/Test-Order"
+           (("all-in-place.test") "")
+           (("pnmpsnr.test") "")
+           (("pnmremap1.test") "")
+           (("gif-roundtrip.test") "")))
       (alist-replace
        'install
        (lambda* (#:key outputs make-flags #:allow-other-keys)

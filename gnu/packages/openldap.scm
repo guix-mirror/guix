@@ -57,14 +57,11 @@
    (arguments
     `(#:tests? #f
       #:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key #:allow-other-keys #:rest args)
-         (let ((configure (assoc-ref %standard-phases 'configure)))
-           (apply configure args)
-           (copy-file (which "libtool") "libtool")))
+       (alist-cons-after
+        'configure 'provide-libtool
+        (lambda _ (copy-file (which "libtool") "libtool"))
        %standard-phases)))
-   (synopsis "openldap, an implementation of the Lightweight Directory Access Protocol")
+   (synopsis "Implementation of the Lightweight Directory Access Protocol")
    (description
     "OpenLDAP is a free implementation of the Lightweight Directory Access Protocol.")
    (license openldap2.8)

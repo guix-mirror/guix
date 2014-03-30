@@ -50,13 +50,11 @@
    (build-system gnu-build-system)
    (arguments
     `(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key #:allow-other-keys #:rest args)
-         (let ((configure (assoc-ref %standard-phases 'configure)))
-           ;; remove option that is not supported by gcc any more
-           (substitute* "configure" ((" -fforce-mem") ""))
-           (apply configure args)))
+       (alist-cons-before
+        'configure 'remove-unsupported-gcc-flags
+        (lambda _
+          ;; remove option that is not supported by gcc any more
+          (substitute* "configure" ((" -fforce-mem") "")))
        %standard-phases)))
    (synopsis "libmad, an MPEG audio decoder")
    (description
@@ -105,20 +103,19 @@ versions of ID3v2")
    (build-system gnu-build-system)
    (arguments
     `(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key #:allow-other-keys #:rest args)
-          (let ((configure (assoc-ref %standard-phases 'configure)))
-            (substitute* "configure"
-              (("iomanip.h") "")) ; drop check for unused header
-            ;; see http://www.linuxfromscratch.org/patches/downloads/id3lib/
-            (substitute* "include/id3/id3lib_strings.h"
-              (("include <string>") "include <cstring>\n#include <string>"))
-            (substitute* "include/id3/writers.h"
-              (("//\\#include <string.h>") "#include <cstring>"))
-            (substitute* "examples/test_io.cpp"
-              (("dami;") "dami;\nusing namespace std;"))
-            (apply configure args)))
+       (alist-cons-before
+        'configure 'apply-patches
+        ;; TODO: create a patch for origin instead?
+        (lambda _
+          (substitute* "configure"
+            (("iomanip.h") "")) ; drop check for unused header
+          ;; see http://www.linuxfromscratch.org/patches/downloads/id3lib/
+          (substitute* "include/id3/id3lib_strings.h"
+            (("include <string>") "include <cstring>\n#include <string>"))
+          (substitute* "include/id3/writers.h"
+            (("//\\#include <string.h>") "#include <cstring>"))
+          (substitute* "examples/test_io.cpp"
+            (("dami;") "dami;\nusing namespace std;")))
          %standard-phases)))
    (synopsis "a library for reading, writing, and manipulating ID3v1 and ID3v2 tags")
    (description

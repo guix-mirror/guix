@@ -45,23 +45,20 @@
        ("ncurses" ,ncurses)))
     (arguments
      `(#:phases
-       (alist-replace
-        'check
-        (lambda* (#:key inputs #:allow-other-keys #:rest args)
-          (let ((check (assoc-ref %standard-phases 'check)))
-            ;; Take care of pwd
-            (substitute* '("tests/commands.at" "tests/variables.at")
-              (("/bin/pwd") (which "pwd")))
-            ;; The .at files create shell scripts without shebangs. Erk.
-            (substitute* "tests/commands.at"
-              (("./output.sh") "/bin/sh output.sh"))
-            (substitute* "tests/syntax.at"
-              (("; other_script.csh") "; /bin/sh other_script.csh"))
-            ;; Now, let's generate the test suite, patch it and finally run the
-            ;; tests.
-            (system* "make" "tests/testsuite")
-            (substitute* "tests/testsuite" (("/bin/sh") (which "sh")))
-            (apply check args)))
+       (alist-cons-before
+        'check 'patch-test-scripts
+        (lambda _
+          ;; Take care of pwd
+          (substitute* '("tests/commands.at" "tests/variables.at")
+            (("/bin/pwd") (which "pwd")))
+          ;; The .at files create shell scripts without shebangs. Erk.
+          (substitute* "tests/commands.at"
+            (("./output.sh") "/bin/sh output.sh"))
+          (substitute* "tests/syntax.at"
+            (("; other_script.csh") "; /bin/sh other_script.csh"))
+          ;; Now, let's generate the test suite and patch it
+          (system* "make" "tests/testsuite")
+          (substitute* "tests/testsuite" (("/bin/sh") (which "sh"))))
         (alist-cons-after
          'install 'post-install
          (lambda* (#:key inputs outputs #:allow-other-keys)

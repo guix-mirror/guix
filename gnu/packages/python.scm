@@ -139,18 +139,13 @@
              (with-directory-excursion out
                (for-each (cut augment-rpath <> lib)
                          (find-files "bin" ".*")))))
-         (alist-replace
-          'configure
-          (lambda* (#:key outputs #:allow-other-keys #:rest args)
-            (let ((configure (assoc-ref %standard-phases 'configure)))
-             (substitute* "Lib/subprocess.py"
-               (("args = \\[\"/bin/sh")
-                (string-append "args = [\"" (which "sh"))))
-             (substitute*
-               '("Lib/distutils/tests/test_spawn.py"
-                 "Lib/test/test_subprocess.py")
-               (("/bin/sh") (which "sh")))
-             (apply configure args)))
+         (alist-cons-before
+          'configure 'patch-lib-shells
+          (lambda _
+            (substitute* '("Lib/subprocess.py"
+                           "Lib/distutils/tests/test_spawn.py"
+                           "Lib/test/test_subprocess.py")
+              (("/bin/sh") (which "sh"))))
           (alist-cons-before
            'check 'pre-check
            (lambda _

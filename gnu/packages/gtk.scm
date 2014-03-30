@@ -331,14 +331,12 @@ is part of the GNOME accessibility project.")
       ("python-wrapper" ,python-wrapper)))
    (arguments
     `(#:phases
-      (alist-replace
-       'configure
-       (lambda* (#:key #:allow-other-keys #:rest args)
-        (let ((configure (assoc-ref %standard-phases 'configure)))
-          ;; FIXME: re-enable tests requiring an X server
-          (substitute* "gtk/Makefile.in"
-           (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits ."))
-          (apply configure args)))
+      (alist-cons-before
+       'configure 'disable-tests
+       (lambda _
+         ;; FIXME: re-enable tests requiring an X server
+         (substitute* "gtk/Makefile.in"
+           (("SUBDIRS = theme-bits . tests") "SUBDIRS = theme-bits .")))
       %standard-phases)))
    (synopsis "Cross-platform toolkit for creating graphical user interfaces")
    (description

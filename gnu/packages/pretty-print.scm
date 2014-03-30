@@ -56,13 +56,11 @@
        ("perl" ,perl)
        ("file" ,file)))
     (arguments
-     '(#:phases (alist-replace
-                 'configure
-                 (lambda* (#:key #:allow-other-keys #:rest args)
-                   (let ((configure (assoc-ref %standard-phases 'configure)))
-                     (substitute* "configure"
-                       (("/usr/bin/file") (which "file")))
-                     (apply configure args)))
+     '(#:phases (alist-cons-before
+                 'configure 'patch-configure
+                 (lambda _
+                   (substitute* "configure"
+                     (("/usr/bin/file") (which "file"))))
                  (alist-cons-before
                   'build 'patch-scripts
                   (lambda _
@@ -121,13 +119,11 @@ special cases, such as pretty-printing \"--help\" output.")
     (arguments
      ;; Must define DIFF_CMD for tests to pass
      '(#:configure-flags '("CPPFLAGS=-DDIFF_CMD=\\\"diff\\\"")
-       #:phases (alist-replace
-                 'configure
-                 (lambda* (#:key #:allow-other-keys #:rest args)
-                   (let ((configure (assoc-ref %standard-phases 'configure)))
-                     (substitute* "configure"
-                       (("/usr/bin/file") (which "file")))
-                     (apply configure args)))
+       #:phases (alist-cons-before
+                 'configure 'patch-configure
+                 (lambda _
+                   (substitute* "configure"
+                     (("/usr/bin/file") (which "file"))))
                  %standard-phases)))
     (home-page "http://www.gnu.org/software/trueprint")
     (synopsis "Pretty-print C sources and other plain text to PostScript")
@@ -189,16 +185,14 @@ different programming languages.")
        (list (string-append "--with-boost="
                             (assoc-ref %build-inputs "boost")))
        #:parallel-tests? #f             ;There appear to be race conditions
-       #:phases (alist-replace
-                 'configure
-                 (lambda* (#:key #:allow-other-keys #:rest args)
-                   (let ((configure (assoc-ref %standard-phases 'configure)))
-                     (substitute* "configure"
-                       (("/usr/bin/file") (which "file")))
-                     (apply configure args)))
+       #:phases (alist-cons-before
+                 'configure 'patch-configure
+                 (lambda _
+                   (substitute* "configure"
+                     (("/usr/bin/file") (which "file"))))
                  (alist-cons-before
                   'check 'patch-test-files
-                  (lambda* (#:key inputs #:allow-other-keys)
+                  (lambda _
                     ;; Unpatch shebangs in test input so that source-highlight
                     ;; is still able to infer input language
                     (substitute* '("tests/test.sh"

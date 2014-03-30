@@ -196,13 +196,11 @@ dynamic loading, and an object system.")
        ("libffi" ,libffi)))
     (arguments
      `(#:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key #:allow-other-keys #:rest args)
-          (let ((configure (assoc-ref %standard-phases 'configure)))
+        (alist-cons-before
+         'configure 'patch-paths
+         (lambda _
            (substitute* "giscanner/sourcescanner.py"
-             (("GUIX_GCC_PATH") (which "gcc")))
-           (apply configure args)))
+             (("GUIX_GCC_PATH") (which "gcc"))))
          %standard-phases)))
     (home-page "https://wiki.gnome.org/GObjectIntrospection")
     (synopsis "Generate interface introspection data for GObject libraries")

@@ -191,13 +191,11 @@ specifications are building blocks of S/MIME and TLS.")
        ("readline" ,readline)))
    (arguments
     `(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key #:allow-other-keys #:rest args)
-         (let ((configure (assoc-ref %standard-phases 'configure)))
-           (substitute* "tests/openpgp/Makefile.in"
-             (("/bin/sh") (which "bash")))
-           (apply configure args)))
+       (alist-cons-before
+        'configure 'patch-config-files
+        (lambda _
+          (substitute* "tests/openpgp/Makefile.in"
+            (("/bin/sh") (which "bash"))))
        %standard-phases)))
     (home-page "http://gnupg.org/")
     (synopsis "GNU Privacy Guard")
@@ -286,12 +284,10 @@ and every application benefits from this.")
    (arguments
     `(#:tests? #f
       #:phases
-       (alist-replace
+       (alist-delete
         'configure
-        (lambda* (#:key #:allow-other-keys) #t)
-       (alist-replace
+       (alist-delete
         'build
-        (lambda* (#:key #:allow-other-keys) #t)
        (alist-replace
         'install
         (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -334,13 +330,9 @@ PGP keysigning parties.")
    (arguments
     `(#:tests? #f
       #:phases
-      (alist-replace
-       'unpack
-       (lambda* (#:key #:allow-other-keys #:rest args)
-         (let ((unpack (assoc-ref %standard-phases 'unpack)))
-           (apply unpack args)
-           ;; remove spurious symlink
-           (delete-file "keyanalyze/pgpring/depcomp")))
+      (alist-cons-after
+       'unpack 'remove-spurious-links
+       (lambda _ (delete-file "keyanalyze/pgpring/depcomp"))
       (alist-replace
        'configure
        (lambda* (#:key outputs #:allow-other-keys)
@@ -463,14 +455,12 @@ enter a passphrase when `gpg' or `gpg2' is run and needs it.")
     (build-system gnu-build-system)
     (arguments
      `(#:phases
-       (alist-replace
-        'check
-        (lambda* (#:key #:allow-other-keys #:rest args)
-          (let ((check (assoc-ref %standard-phases 'check)))
-            (substitute* '("checks/roundtrip.sh"
-                           "checks/roundtrip-raw.sh")
-              (("/bin/echo") "echo"))
-            (apply check args)))
+       (alist-cons-before
+        'check 'patch-check-scripts
+        (lambda _
+          (substitute* '("checks/roundtrip.sh"
+                         "checks/roundtrip-raw.sh")
+            (("/bin/echo") "echo")))
         %standard-phases)))
     (home-page "http://www.jabberwocky.com/software/paperkey/")
     (synopsis "Backup OpenPGP keys to paper")

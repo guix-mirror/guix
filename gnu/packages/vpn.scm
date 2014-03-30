@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -98,8 +99,8 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
    (version "4.99")
    (source (origin
             (method url-fetch)
-            (uri (string-append "ftp://ftp.infradead.org/pub/openconnect/openconnect-"
-                                version ".tar.gz"))
+            (uri (string-append "ftp://ftp.infradead.org/pub/openconnect/"
+                                "openconnect-" version ".tar.gz"))
             (sha256 (base32
                      "1rd8pap455wzkx19i0sy3cqap524b6fwcjvqynxp6lhm01di4bd6"))))
    (build-system gnu-build-system)
@@ -112,19 +113,10 @@ Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
     `(("gettext" ,gnu-gettext)
       ("pkg-config" ,pkg-config)))
    (arguments
-    `(#:phases
-      (alist-replace
-       'configure
-       (lambda* (#:key inputs #:allow-other-keys #:rest args)
-         (let ((vpnc (assoc-ref inputs "vpnc"))
-               (configure (assoc-ref %standard-phases 'configure)))
-           (apply configure
-                  (append args
-                          (list '#:configure-flags
-                                (list (string-append "--with-vpnc-script="
-                                                     vpnc
-                                                     "/etc/vpnc/vpnc-script")))))))
-       %standard-phases)))
+    `(#:configure-flags
+      `(,(string-append "--with-vpnc-script="
+                        (assoc-ref %build-inputs "vpnc")
+                        "/etc/vpnc/vpnc-script"))))
    (synopsis "Client for Cisco VPN")
    (description
     "OpenConnect is a client for Cisco's AnyConnect SSL VPN, which is

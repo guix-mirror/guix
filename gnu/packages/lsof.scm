@@ -41,13 +41,13 @@
       #:phases
       (alist-replace
        'unpack
-       (lambda* (#:key source name version #:allow-other-keys)
+       (lambda* (#:key source #:allow-other-keys)
          (let ((unpack (assoc-ref %standard-phases 'unpack)))
-           (apply unpack (list #:source source))
-           (apply unpack (list #:source (car (find-files "." "\\.tar$"))))))
+           (unpack #:source source)
+           (unpack #:source (car (find-files "." "\\.tar$")))))
       (alist-replace
        'configure
-       (lambda* (#:key #:allow-other-keys)
+       (lambda _
          (setenv "LSOF_CC" "gcc")
          (setenv "LSOF_MAKE" "make")
          (system* "./Configure" "linux"))
