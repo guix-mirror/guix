@@ -252,14 +252,10 @@ failure."
                 (catch 'gcry-error
                   (lambda ()
                     (string->canonical-sexp signature))
-                  (lambda (err . _)
-                    (raise (condition
-                            (&message
-                             (message "signature is not a valid \
-s-expression"))
-                            (&nar-signature-error
-                             (file #f)
-                             (signature signature) (port #f)))))))))))
+                  (lambda (err . rest)
+                    (leave (_ "signature is not a valid \
+s-expression: ~s~%")
+                           signature))))))))
     (x
      (leave (_ "invalid format of the signature field: ~a~%") x))))
 
@@ -288,43 +284,21 @@ must contain the original contents of a narinfo file."
                     (and=> signature narinfo-signature->canonical-sexp))
                    str)))
 
-(define &nar-signature-error    (@@ (guix nar) &nar-signature-error))
-(define &nar-invalid-hash-error (@@ (guix nar) &nar-invalid-hash-error))
-
-;;; XXX: The following function is nearly an exact copy of the one from
-;;; 'guix/nar.scm'.  Factorize as soon as we know how to make the latter
-;;; public (see <https://lists.gnu.org/archive/html/guix-devel/2014-03/msg00097.html>).
-;;; Keep this one private to avoid confusion.
-(define* (assert-valid-signature signature hash port
+(define* (assert-valid-signature narinfo signature hash
                                  #:optional (acl (current-acl)))
-  "Bail out if SIGNATURE, a canonical sexp, doesn't match HASH, a bytevector
-containing the expected hash for FILE."
-  (let* (;; XXX: This is just to keep the errors happy; get a sensible
-         ;; file name.
-         (file      #f)
-         (subject   (signature-subject signature))
-         (data      (signature-signed-data signature)))
-    (if (and data subject)
-        (if (authorized-key? subject acl)
-            (if (equal? (hash-data->bytevector data) hash)
-                (unless (valid-signature? signature)
-                  (raise (condition
-                          (&message (message "invalid signature"))
-                          (&nar-signature-error
-                           (file file) (signature signature) (port port)))))
-                (raise (condition (&message (message "invalid hash"))
-                                  (&nar-invalid-hash-error
-                                   (port port) (file file)
-                                   (signature signature)
-                                   (expected (hash-data->bytevector data))
-                                   (actual hash)))))
-            (raise (condition (&message (message "unauthorized public key"))
-                              (&nar-signature-error
-                               (signature signature) (file file) (port port)))))
-        (raise (condition
-                (&message (message "corrupt signature data"))
-                (&nar-signature-error
-                 (signature signature) (file file) (port port)))))))
+  "Bail out if SIGNATURE, a canonical sexp representing the signature of
+NARINFO, doesn't match HASH, a bytevector containing the hash of NARINFO."
+  (let ((uri (uri->string (narinfo-uri narinfo))))
+    (signature-case (signature hash acl)
+      (valid-signature #t)
+      (invalid-signature
+       (leave (_ "invalid signature for '~a'~%") uri))
+      (hash-mismatch
+       (leave (_ "hash mismatch for '~a'~%") uri))
+      (unauthorized-key
+       (leave (_ "'~a' is signed with an unauthorized key~%") uri))
+      (corrupt-signature
+       (leave (_ "signature on '~a' is corrupt~%") uri)))))
 
 (define* (read-narinfo port #:optional url)
   "Read a narinfo from PORT.  If URL is true, it must be a string used to
@@ -343,22 +317,29 @@ No authentication and authorization checks are performed here!"
   ;; Regexp matching a signature line in a narinfo.
   (make-regexp "(.+)^[[:blank:]]*Signature:[[:blank:]].+$"))
 
+(define (narinfo-sha256 narinfo)
+  "Return the sha256 hash of NARINFO as a bytevector, or #f if NARINFO lacks a
+'Signature' field."
+  (let ((contents (narinfo-contents narinfo)))
+    (match (regexp-exec %signature-line-rx contents)
+      (#f #f)
+      ((= (cut match:substring <> 1) above-signature)
+       (sha256 (string->utf8 above-signature))))))
+
 (define* (assert-valid-narinfo narinfo
                                #:optional (acl (current-acl))
                                #:key (verbose? #t))
   "Raise an exception if NARINFO lacks a signature, has an invalid signature,
 or is signed by an unauthorized key."
-  (let* ((contents  (narinfo-contents narinfo))
-         (res       (regexp-exec %signature-line-rx contents)))
-    (if (not res)
+  (let ((hash (narinfo-sha256 narinfo)))
+    (if (not hash)
         (if %allow-unauthenticated-substitutes?
             narinfo
-            (leave (_ "narinfo lacks a signature: ~s~%")
-                   contents))
-        (let ((hash      (sha256 (string->utf8 (match:substring res 1))))
-              (signature (narinfo-signature narinfo)))
+            (leave (_ "narinfo for '~a' lacks a signature~%")
+                   (uri->string (narinfo-uri narinfo))))
+        (let ((signature (narinfo-signature narinfo)))
           (unless %allow-unauthenticated-substitutes?
-            (assert-valid-signature signature hash #f acl)
+            (assert-valid-signature narinfo signature hash acl)
             (when verbose?
               (format (current-error-port)
                       "found valid signature for '~a', from '~a'~%"
@@ -366,12 +347,15 @@ or is signed by an unauthorized key."
                       (uri->string (narinfo-uri narinfo)))))
           narinfo))))
 
-(define (valid-narinfo? narinfo)
+(define* (valid-narinfo? narinfo #:optional (acl (current-acl)))
   "Return #t if NARINFO's signature is not valid."
-  (false-if-exception
-   (begin
-     (assert-valid-narinfo narinfo #:verbose? #f)
-     #t)))
+  (or %allow-unauthenticated-substitutes?
+      (let ((hash      (narinfo-sha256 narinfo))
+            (signature (narinfo-signature narinfo)))
+        (and hash signature
+             (signature-case (signature hash acl)
+               (valid-signature #t)
+               (else #f))))))
 
 (define (write-narinfo narinfo port)
   "Write NARINFO to PORT."

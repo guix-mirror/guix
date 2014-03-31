@@ -38,13 +38,6 @@
   #:use-module (srfi srfi-35)
   #:use-module ((srfi srfi-64) #:hide (test-error)))
 
-(define assert-valid-signature
-  ;; (guix scripts substitute-binary) does not export this function in order to
-  ;; avoid misuse.
-  (@@ (guix scripts substitute-binary) assert-valid-signature))
-
-;;; XXX: Replace with 'test-error' from SRFI-64 as soon as it allow us to
-;;; catch specific exceptions.
 (define-syntax-rule (test-quit name error-rx exp)
   "Emit a test that passes when EXP throws to 'quit' with value 1, and when
 it writes to GUIX-WARNING-PORT a messages that matches ERROR-RX."
@@ -117,39 +110,6 @@ version identifier.."
 (test-assert "valid narinfo-signature->canonical-sexp"
   (canonical-sexp? (narinfo-signature->canonical-sexp (signature-field "foo"))))
 
-(define-syntax-rule (test-error-condition name pred message-rx exp)
-  (test-assert name
-    (guard (condition ((pred condition)
-                       (and (string-match message-rx
-                                          (condition-message condition))
-                            #t))
-                      (else #f))
-      exp
-      #f)))
-
-(test-error-condition "corrupt signature data"
-    nar-signature-error? "corrupt"
-  (assert-valid-signature (string->canonical-sexp "(foo bar baz)") "irrelevant"
-                          (open-input-string "irrelevant")
-                          (public-keys->acl (list %public-key))))
-
-(test-error-condition "unauthorized public key"
-    nar-signature-error? "unauthorized"
-  (assert-valid-signature (narinfo-signature->canonical-sexp
-                           (signature-field "foo"))
-                          "irrelevant"
-                          (open-input-string "irrelevant")
-                          (public-keys->acl '())))
-
-(test-error-condition "invalid signature"
-    nar-signature-error? "invalid signature"
-  (let ((message "this is the message that we sign"))
-    (assert-valid-signature (narinfo-signature->canonical-sexp
-                             (signature-field message
-                                              #:public-key %wrong-public-key))
-                            (sha256 (string->utf8 message))
-                            (open-input-string "irrelevant")
-                            (public-keys->acl (list %wrong-public-key)))))
 
 
 (define %narinfo
@@ -317,6 +277,5 @@ a file for NARINFO."
 
 ;;; Local Variables:
 ;;; eval: (put 'with-narinfo 'scheme-indent-function 1)
-;;; eval: (put 'test-error-condition 'scheme-indent-function 3)
 ;;; eval: (put 'test-quit 'scheme-indent-function 2)
 ;;; End:

@@ -372,40 +372,41 @@ while the locks are held."
     ;; Bail out if SIGNATURE, which must be a string as produced by
     ;; 'canonical-sexp->string', doesn't match HASH, a bytevector containing
     ;; the expected hash for FILE.
-    (let* ((signature (catch 'gcry-error
-                        (lambda ()
-                          (string->canonical-sexp signature))
-                        (lambda (err . _)
-                          (raise (condition
-                                  (&message
-                                   (message "signature is not a valid \
+    (let ((signature (catch 'gcry-error
+                       (lambda ()
+                         (string->canonical-sexp signature))
+                       (lambda (err . _)
+                         (raise (condition
+                                 (&message
+                                  (message "signature is not a valid \
 s-expression"))
-                                  (&nar-signature-error
-                                   (file file)
-                                   (signature signature) (port port)))))))
-           (subject   (signature-subject signature))
-           (data      (signature-signed-data signature)))
-      (if (and data subject)
-          (if (authorized-key? subject)
-              (if (equal? (hash-data->bytevector data) hash)
-                  (unless (valid-signature? signature)
-                    (raise (condition
-                            (&message (message "invalid signature"))
-                            (&nar-signature-error
-                             (file file) (signature signature) (port port)))))
-                  (raise (condition (&message (message "invalid hash"))
-                                    (&nar-invalid-hash-error
-                                     (port port) (file file)
-                                     (signature signature)
-                                     (expected (hash-data->bytevector data))
-                                     (actual hash)))))
-              (raise (condition (&message (message "unauthorized public key"))
-                                (&nar-signature-error
-                                 (signature signature) (file file) (port port)))))
-          (raise (condition
-                  (&message (message "corrupt signature data"))
-                  (&nar-signature-error
-                   (signature signature) (file file) (port port)))))))
+                                 (&nar-signature-error
+                                  (file file)
+                                  (signature signature) (port port))))))))
+      (signature-case (signature hash (current-acl))
+        (valid-signature #t)
+        (invalid-signature
+         (raise (condition
+                 (&message (message "invalid signature"))
+                 (&nar-signature-error
+                  (file file) (signature signature) (port port)))))
+        (hash-mismatch
+         (raise (condition (&message (message "invalid hash"))
+                           (&nar-invalid-hash-error
+                            (port port) (file file)
+                            (signature signature)
+                            (expected (hash-data->bytevector
+                                       (signature-signed-data signature)))
+                            (actual hash)))))
+        (unauthorized-key
+         (raise (condition (&message (message "unauthorized public key"))
+                           (&nar-signature-error
+                            (signature signature) (file file) (port port)))))
+        (corrupt-signature
+         (raise (condition
+                 (&message (message "corrupt signature data"))
+                 (&nar-signature-error
+                  (signature signature) (file file) (port port))))))))
 
   (let loop ((n     (read-long-long port))
              (files '()))
