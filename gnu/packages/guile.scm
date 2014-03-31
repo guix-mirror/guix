@@ -326,4 +326,28 @@ for Guile\".")
     ;; details.
     (license gpl3+)))
 
+(define-public guile-json
+  (package
+    (name "guile-json")
+    (version "0.3.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://savannah/guile-json/guile-json-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0nz2sx61kd6cfflwzxxq0cb9dz0asb81abbhfawv4p9ghciqdr3g"))))
+    (build-system gnu-build-system)
+    (inputs `(("guile" ,guile-2.0)))
+    (home-page "http://savannah.nongnu.org/projects/guile-json/")
+    (synopsis "JSON module for Guile")
+    (description
+     "Guile-json supports parsing and building JSON documents according to the
+http:://json.org specification. These are the main features:
+- Strictly complies to http://json.org specification.
+- Build JSON documents programmatically via macros.
+- Unicode support for strings.
+- Allows JSON pretty printing.")
+    (license lgpl3+)))
+
 ;;; guile.scm ends here
