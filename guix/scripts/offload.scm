@@ -350,7 +350,10 @@ with exit code ~a~%"
                     (derivation-file-name drv)
                     (build-machine-name machine)
                     (status:exit-val status))
-            (primitive-exit (status:exit-val status)))))))
+
+            ;; Use exit code 100 for a permanent build failure.  The daemon
+            ;; interprets other non-zero codes as transient build failures.
+            (primitive-exit 100))))))
 
 (define (send-files files machine)
   "Send the subset of FILES that's missing to MACHINE's store.  Return #t on
