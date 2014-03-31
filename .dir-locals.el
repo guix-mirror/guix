@@ -8,6 +8,7 @@
   ((indent-tabs-mode . nil)
    (eval . (put 'test-assert 'scheme-indent-function 1))
    (eval . (put 'test-equal 'scheme-indent-function 1))
+   (eval . (put 'test-eq 'scheme-indent-function 1))
    (eval . (put 'call-with-input-string 'scheme-indent-function 1))
    (eval . (put 'guard 'scheme-indent-function 1))
    (eval . (put 'lambda* 'scheme-indent-function 1))
@@ -24,6 +25,7 @@
    (eval . (put 'with-atomic-file-output 'scheme-indent-function 1))
    (eval . (put 'call-with-compressed-output-port 'scheme-indent-function 2))
    (eval . (put 'call-with-decompressed-port 'scheme-indent-function 2))
+   (eval . (put 'signature-case 'scheme-indent-function 1))
 
    (eval . (put 'syntax-parameterize 'scheme-indent-function 1))
    (eval . (put 'with-monad 'scheme-indent-function 1))

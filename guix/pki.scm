@@ -34,7 +34,8 @@
             signature-sexp
             signature-subject
             signature-signed-data
-            valid-signature?))
+            valid-signature?
+            signature-case))
 
 ;;; Commentary:
 ;;;
@@ -156,5 +157,64 @@ PUBLIC-KEY (see <http://theworld.com/~cme/spki.txt> for examples.)"
          (public-key (signature-subject sig)))
     (and data signature
          (verify signature data public-key))))
+
+(define* (%signature-status signature hash
+                            #:optional (acl (current-acl)))
+  "Return a symbol denoting the status of SIGNATURE vs. HASH vs. ACL.
+
+This procedure must only be used internally, because it would be easy to
+forget some of the cases."
+  (let ((subject (signature-subject signature))
+        (data    (signature-signed-data signature)))
+    (if (and data subject)
+        (if (authorized-key? subject acl)
+            (if (equal? (hash-data->bytevector data) hash)
+                (if (valid-signature? signature)
+                    'valid-signature
+                    'invalid-signature)
+                'hash-mismatch)
+            'unauthorized-key)
+        'corrupt-signature)))
+
+(define-syntax signature-case
+  (syntax-rules (valid-signature invalid-signature
+                 hash-mismatch unauthorized-key corrupt-signature
+                 else)
+    "\
+Match the cases of the verification of SIGNATURE against HASH and ACL:
+
+  - the 'valid-signature' case if SIGNATURE is indeed a signature of HASH with
+    a key present in ACL;
+  - 'invalid-signature' if SIGNATURE is incorrect;
+  - 'hash-mismatch' if the hash in SIGNATURE does not match HASH;
+  - 'unauthorized-key' if the public key in SIGNATURE is not listed in ACL;
+  - 'corrupt-signature' if SIGNATURE is not a valid signature sexp.
+
+This macro guarantees at compile-time that all these cases are handled.
+
+SIGNATURE, and ACL must be canonical sexps; HASH must be a bytevector."
+
+    ;; Simple case: we only care about valid signatures.
+    ((_ (signature hash acl)
+        (valid-signature valid-exp ...)
+        (else else-exp ...))
+     (case (%signature-status signature hash acl)
+       ((valid-signature) valid-exp ...)
+       (else else-exp ...)))
+
+    ;; Full case.
+    ((_ (signature hash acl)
+        (valid-signature valid-exp ...)
+        (invalid-signature invalid-exp ...)
+        (hash-mismatch mismatch-exp ...)
+        (unauthorized-key unauthorized-exp ...)
+        (corrupt-signature corrupt-exp ...))
+     (case (%signature-status signature hash acl)
+       ((valid-signature) valid-exp ...)
+       ((invalid-signature) invalid-exp ...)
+       ((hash-mismatch) mismatch-exp ...)
+       ((unauthorized-key) unauthorized-exp ...)
+       ((corrupt-signature) corrupt-exp ...)
+       (else (error "bogus signature status"))))))
 
 ;;; pki.scm ends here
