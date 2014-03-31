@@ -343,7 +343,9 @@ No authentication and authorization checks are performed here!"
   ;; Regexp matching a signature line in a narinfo.
   (make-regexp "(.+)^[[:blank:]]*Signature:[[:blank:]].+$"))
 
-(define* (assert-valid-narinfo narinfo #:optional (acl (current-acl)))
+(define* (assert-valid-narinfo narinfo
+                               #:optional (acl (current-acl))
+                               #:key (verbose? #t))
   "Raise an exception if NARINFO lacks a signature, has an invalid signature,
 or is signed by an unauthorized key."
   (let* ((contents  (narinfo-contents narinfo))
@@ -356,12 +358,20 @@ or is signed by an unauthorized key."
         (let ((hash      (sha256 (string->utf8 (match:substring res 1))))
               (signature (narinfo-signature narinfo)))
           (unless %allow-unauthenticated-substitutes?
-            (assert-valid-signature signature hash #f acl))
+            (assert-valid-signature signature hash #f acl)
+            (when verbose?
+              (format (current-error-port)
+                      "found valid signature for '~a', from '~a'~%"
+                      (narinfo-path narinfo)
+                      (uri->string (narinfo-uri narinfo)))))
           narinfo))))
 
 (define (valid-narinfo? narinfo)
   "Return #t if NARINFO's signature is not valid."
-  (false-if-exception (begin (assert-valid-narinfo narinfo) #t)))
+  (false-if-exception
+   (begin
+     (assert-valid-narinfo narinfo #:verbose? #f)
+     #t)))
 
 (define (write-narinfo narinfo port)
   "Write NARINFO to PORT."
