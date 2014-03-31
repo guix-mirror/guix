@@ -979,7 +979,7 @@ This indicates that substitutes from @code{hydra.gnu.org} are usable and
 will be downloaded, when possible, for future builds.
 
 Guix ignores substitutes that are not signed, or that are not signed by
-one of the keys listed in the ACL.  It also detects and raise an error
+one of the keys listed in the ACL.  It also detects and raises an error
 when attempting to use a substitute that has been tampered with.
 
 The substitute mechanism can be disabled globally by running
