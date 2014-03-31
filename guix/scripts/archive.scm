@@ -286,6 +286,7 @@ the input port."
 
     ;; Add KEY to the ACL and write that.
     (let ((acl (public-keys->acl (cons key (acl->public-keys acl)))))
+      (mkdir-p (dirname %acl-file))
       (with-atomic-file-output %acl-file
         (lambda (port)
           (display (canonical-sexp->string acl) port))))))
