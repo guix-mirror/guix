@@ -95,14 +95,12 @@
        ("tcl" ,tcl)))
     (arguments
      '(#:configure-flags
-       (list (string-append "--with-tcl="
-                            (assoc-ref %build-inputs "tcl")
-                            "/lib")
-             (string-append "--with-tclinclude="
-                            (assoc-ref %build-inputs "tcl")
-                            "/include")
-             (string-append "--exec-prefix="
-                            (assoc-ref %outputs "out")))
+       (let ((out (assoc-ref %outputs "out"))
+             (tcl (assoc-ref %build-inputs "tcl")))
+         (list (string-append "--with-tcl=" tcl "/lib")
+               (string-append "--with-tclinclude=" tcl "/include")
+               (string-append "--exec-prefix=" out)
+               (string-append "--mandir=" out "/share/man")))
 
        #:phases (alist-cons-before
                  'configure 'set-path-to-stty
