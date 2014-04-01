@@ -630,9 +630,10 @@ substituter disabled~%")
    (with-error-handling                           ; for signature errors
      (match args
        (("--query")
-        (let ((cache (delay (open-cache %cache-url))))
+        (let ((cache (delay (open-cache %cache-url)))
+              (acl   (current-acl)))
           (define (valid? obj)
-            (and (narinfo? obj) (valid-narinfo? obj)))
+            (and (narinfo? obj) (valid-narinfo? obj acl)))
 
           (let loop ((command (read-line)))
             (or (eof-object? command)
