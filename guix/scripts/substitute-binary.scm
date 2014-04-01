@@ -99,9 +99,9 @@ disabled!~%"))
 (set! regexp-exec
       (let ((real regexp-exec)
             (lock (make-mutex)))
-        (lambda args
+        (lambda (rx str . rest)
           (with-mutex lock
-            (apply real args)))))
+            (apply real rx str rest)))))
 
 (define fields->alist
   ;; The narinfo format is really just like recutils.
