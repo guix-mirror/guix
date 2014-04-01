@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,7 +36,13 @@
        (base32
         "0ckjqw5kz5m30srqi87idj7xhpw6bpki43mj07bazjm2qmh3cdbj"))))
     (build-system gnu-build-system)
-    (arguments '(#:parallel-build? #f))
+    (arguments
+     '(#:parallel-build? #f
+       ;; By default, man pages are put in PREFIX/man,
+       ;; but we want them in PREFIX/share/man.
+       #:configure-flags (list (string-append "--mandir="
+                                              (assoc-ref %outputs "out")
+                                              "/share/man"))))
     (home-page "http://www.gnu.org/software/pth")
     (synopsis "Portable thread library")
     (description
