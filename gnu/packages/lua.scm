@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Raimon Grau <raimonster@gmail.com>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,8 +50,10 @@
                   'install
                   (lambda* (#:key outputs #:allow-other-keys)
                     (let ((out (assoc-ref outputs "out")))
-                      (zero? (system
-                              (string-append "make install INSTALL_TOP=" out)))))
+                      (zero? (system* "make" "install"
+                                      (string-append "INSTALL_TOP=" out)
+                                      (string-append "INSTALL_MAN=" out
+                                                     "/share/man/man1")))))
                   (alist-delete 'configure %standard-phases)))))
     (home-page "http://www.lua.org/")
     (synopsis "An embeddable scripting language.")
