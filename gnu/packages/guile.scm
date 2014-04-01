@@ -336,7 +336,14 @@ for Guile\".")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0nz2sx61kd6cfflwzxxq0cb9dz0asb81abbhfawv4p9ghciqdr3g"))))
+               "0nz2sx61kd6cfflwzxxq0cb9dz0asb81abbhfawv4p9ghciqdr3g"))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Make sure everything goes under .../site/2.0, like Guile's
+              ;; search paths expects.
+              '(substitute* '("Makefile.in" "json/Makefile.in")
+                 (("moddir =.*/share/guile/site" all)
+                  (string-append all "/2.0"))))))
     (build-system gnu-build-system)
     (inputs `(("guile" ,guile-2.0)))
     (home-page "http://savannah.nongnu.org/projects/guile-json/")
