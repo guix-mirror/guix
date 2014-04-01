@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -152,7 +153,10 @@ parse JSON formatted strings back into the C representation of JSON objects.")
                  (lambda _
                    ;; 'tests/lock-autospawn-test.c' wants to create a file
                    ;; under ~/.config/pulse.
-                   (setenv "HOME" (getcwd)))
+                   (setenv "HOME" (getcwd))
+                   ;; 'thread-test' needs more time on hydra and on slower
+                   ;; machines, so we set the default timeout to 120 seconds.
+                   (setenv "CK_DEFAULT_TIMEOUT" "120"))
                  %standard-phases)))
     (inputs
      ;; TODO: Add optional inputs (GTK+?).
