@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -35,6 +36,16 @@
             (sha256 (base32
                      "0f9655vqdvfwbxvs1gpa7py8k1z71aqh8hp73f65vazwbfz436wa"))))
    (build-system gnu-build-system)
+   (arguments
+    `(#:phases (alist-cons-after
+                'unpack 'fix-docdir
+                (lambda _
+                  ;; Although indent uses a modern autoconf in which docdir
+                  ;; defaults to PREFIX/share/doc, the doc/Makefile.am
+                  ;; overrides this to be in PREFIX/doc.  Fix this.
+                  (substitute* "doc/Makefile.in"
+                    (("^docdir = .*$") "docdir = @docdir@\n")))
+                %standard-phases)))
    (synopsis "Code reformatter")
    (description
     "Indent is a program that makes source code easier to read by
