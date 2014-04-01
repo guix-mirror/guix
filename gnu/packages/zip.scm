@@ -43,15 +43,15 @@
     (inputs `(("bzip2" ,bzip2)))
     (arguments
      `(#:tests? #f ; no test target
-       #:make-flags '("generic_gcc")
-       #:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key outputs #:allow-other-keys)
-           (let* ((out (assoc-ref outputs "out")))
-             (copy-file "unix/Makefile" "Makefile")
-             (substitute* "Makefile" (("/usr/local") out))))
-        %standard-phases)))
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list "-f" "unix/Makefile"
+                            (string-append "prefix=" out)
+                            (string-append "MANDIR=" out "/share/man/man1")))
+       #:phases (alist-replace
+                 'build
+                 (lambda* (#:key (make-flags '()) #:allow-other-keys)
+                   (zero? (apply system* "make" "generic_gcc" make-flags)))
+                 (alist-delete 'configure %standard-phases))))
     (home-page "http://www.info-zip.org/Zip.html")
     (synopsis "Zip compression and file packing utility")
     (description
