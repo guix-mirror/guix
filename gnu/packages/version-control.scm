@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -63,8 +64,14 @@
      `(("gettext" ,gnu-gettext)))
     (arguments
      `(#:tests? #f ; no test target
-       #:python ,python-2)) ; Python 3 apparently not yet supported, see
+       #:python ,python-2   ; Python 3 apparently not yet supported, see
                             ; https://answers.launchpad.net/bzr/+question/229048
+       #:phases (alist-cons-after
+                 'unpack 'fix-mandir
+                 (lambda _
+                   (substitute* "setup.py"
+                     (("man/man1") "share/man/man1")))
+                 %standard-phases)))
     (home-page "https://gnu.org/software/bazaar")
     (synopsis "Version control system supporting both distributed and centralized workflows")
     (description
