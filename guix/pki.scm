@@ -46,30 +46,22 @@
 ;;;
 ;;; Code:
 
-(define (acl-entry-sexp public-key)
-  "Return a SPKI-style ACL entry sexp for PUBLIC-KEY, authorizing imports
-signed by the corresponding secret key (see the IETF draft at
-<http://theworld.com/~cme/spki.txt> for the ACL format.)"
+(define (public-keys->acl keys)
+  "Return an ACL that lists all of KEYS with a '(guix import)'
+tag---meaning that all of KEYS are authorized for archive imports.  Each
+element in KEYS must be a canonical sexp with type 'public-key'."
+
+  ;; Use SPKI-style ACL entry sexp for PUBLIC-KEY, authorizing imports
+  ;; signed by the corresponding secret key (see the IETF draft at
+  ;; <http://theworld.com/~cme/spki.txt> for the ACL format.)
+  ;;
   ;; Note: We always use PUBLIC-KEY to designate the subject.  Someday we may
   ;; want to have name certificates and to use subject names instead of
   ;; complete keys.
-  (string->canonical-sexp
-   (format #f
-           "(entry ~a (tag (guix import)))"
-           (canonical-sexp->string public-key))))
-
-(define (acl-sexp entries)
-  "Return an ACL sexp from ENTRIES, a list of 'entry' sexps."
-  (string->canonical-sexp
-   (string-append "(acl "
-                  (string-join (map canonical-sexp->string entries))
-                  ")")))
-
-(define (public-keys->acl keys)
-  "Return an ACL canonical sexp that lists all of KEYS with a '(guix import)'
-tag---meaning that all of KEYS are authorized for archive imports.  Each
-element in KEYS must be a canonical sexp with type 'public-key'."
-  (acl-sexp (map acl-entry-sexp keys)))
+  `(acl ,@(map (lambda (key)
+                 `(entry ,(canonical-sexp->sexp key)
+                         (tag (guix import))))
+               keys)))
 
 (define %acl-file
   (string-append %config-directory "/acl"))
@@ -96,18 +88,19 @@ element in KEYS must be a canonical sexp with type 'public-key'."
                      port)))))))
 
 (define (current-acl)
-  "Return the current ACL as a canonical sexp."
+  "Return the current ACL."
   (ensure-acl)
   (if (file-exists? %acl-file)
       (call-with-input-file %acl-file
-        (compose string->canonical-sexp
+        (compose canonical-sexp->sexp
+                 string->canonical-sexp
                  get-string-all))
       (public-keys->acl '())))                    ; the empty ACL
 
 (define (acl->public-keys acl)
   "Return the public keys (as canonical sexps) listed in ACL with the '(guix
 import)' tag."
-  (match (canonical-sexp->sexp acl)
+  (match acl
     (('acl
       ('entry subject-keys
               ('tag ('guix 'import)))
@@ -116,12 +109,14 @@ import)' tag."
     (_
      (error "invalid access-control list" acl))))
 
-(define* (authorized-key? key
-                          #:optional (acl (current-acl)))
+(define* (authorized-key? key #:optional (acl (current-acl)))
   "Return #t if KEY (a canonical sexp) is an authorized public key for archive
 imports according to ACL."
+  ;; Note: ACL is kept in native sexp form to make 'authorized-key?' faster,
+  ;; by not having to convert it with 'canonical-sexp->sexp' on each call.
+  ;; TODO: We could use a better data type for ACLs.
   (let ((key (canonical-sexp->sexp key)))
-    (match (canonical-sexp->sexp acl)
+    (match acl
       (('acl
         ('entry subject-keys
                 ('tag ('guix 'import)))

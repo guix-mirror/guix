@@ -289,7 +289,8 @@ the input port."
       (mkdir-p (dirname %acl-file))
       (with-atomic-file-output %acl-file
         (lambda (port)
-          (display (canonical-sexp->string acl) port))))))
+          (display (canonical-sexp->string (sexp->canonical-sexp acl))
+                   port))))))
 
 (define (guix-archive . args)
   (define (parse-options)
