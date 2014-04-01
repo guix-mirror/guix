@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,7 +48,9 @@
                      ;; OCaml uses "-prefix <prefix>" rather than the usual
                      ;; "--prefix=<prefix>".
                      (let ((out (assoc-ref outputs "out")))
-                      (zero? (system* "./configure" "-prefix" out))))
+                      (zero? (system* "./configure" "-prefix" out
+                                      "-mandir"
+                                      (string-append out "/share/man")))))
                    (alist-replace
                     'build
                     (lambda* (#:key outputs #:allow-other-keys)
