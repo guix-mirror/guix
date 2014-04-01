@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -37,8 +37,10 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages flex)
+  #:use-module (gnu packages bdb)
   #:use-module ((guix licenses)
-                #:select (gpl2+ gpl3+ lgpl2.1+ lgpl3+))
+                #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -210,5 +212,37 @@ operating systems.")
 the creation and parsing of messages using the Multipurpose Internet Mail
 Extension (MIME).")
     (license (list lgpl2.1+ gpl2+ gpl3+))))
+
+(define-public bogofilter
+  (package
+    (name "bogofilter")
+    (version "1.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/bogofilter/bogofilter-"
+                                  version "/bogofilter-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1d56n2m9inm8gnzm88aa27xl2a7sp7aff3484vmflpqkinjqf0p1"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'check 'pre-check
+                 (lambda _
+                   (substitute* "src/tests/t.frame"
+                     (("GREP=/bin/grep")
+                      (string-append "GREP=" (which "grep") "\n"))))
+                 %standard-phases)))
+    (native-inputs `(("flex" ,flex)))
+    (inputs `(("bdb" ,bdb)))
+    (home-page "http://bogofilter.sourceforge.net/")
+    (synopsis "Mail classifier based on a Bayesian filter")
+    (description
+     "Bogofilter is a mail filter that classifies mail as spam or ham
+ (non-spam) by a statistical analysis of the message's header and
+content (body).  The program is able to learn from the user's classifications
+and corrections.  It is based on a Bayesian filter.")
+    (license gpl2)))
 
 ;;; mail.scm ends here
