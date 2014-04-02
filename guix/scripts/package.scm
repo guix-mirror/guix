@@ -723,6 +723,11 @@ removed from MANIFEST."
                (_ #f))
               options))
 
+(define (maybe-register-gc-root store profile)
+  "Register PROFILE as a GC root, unless it doesn't need it."
+  (unless (string=? profile %current-profile)
+    (add-indirect-root store (canonicalize-path profile))))
+
 
 ;;;
 ;;; Entry point.
@@ -915,6 +920,7 @@ more information.~%"))
                               (let ((count (length entries)))
                                 (switch-symlinks name prof)
                                 (switch-symlinks profile name)
+                                (maybe-register-gc-root (%store) profile)
                                 (format #t (N_ "~a package in profile~%"
                                                "~a packages in profile~%"
                                                count)

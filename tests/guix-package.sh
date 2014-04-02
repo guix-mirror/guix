@@ -41,6 +41,9 @@ guix package --bootstrap -p "$profile" -i guile-bootstrap
 test -L "$profile" && test -L "$profile-1-link"
 test -f "$profile/bin/guile"
 
+# Make sure the profile is a GC root.
+guix gc --list-live | grep "`readlink "$profile-1-link"`"
+
 # Installing the same package a second time does nothing.
 guix package --bootstrap -p "$profile" -i guile-bootstrap
 test -L "$profile" && test -L "$profile-1-link"
@@ -209,6 +212,10 @@ fi
 default_profile="`readlink "$HOME/.guix-profile"`"
 for i in `seq 1 3`
 do
+    # Make sure the current generation is a GC root.
+    profile_link="`readlink "$default_profile"`"
+    guix gc --list-live | grep "`readlink "$profile_link"`"
+
     guix package --bootstrap --roll-back
     ! test -f "$HOME/.guix-profile/bin"
     ! test -f "$HOME/.guix-profile/lib"
