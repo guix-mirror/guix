@@ -38,14 +38,14 @@
 (define-public libssh
   (package
     (name "libssh")
-    (version "0.5.5")
+    (version "0.6.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append "https://red.libssh.org/attachments/download/51/libssh-"
-                                  version ".tar.gz"))
+              (uri (string-append "https://red.libssh.org/attachments/download/87/libssh-"
+                                  version ".tar.xz"))
               (sha256
                (base32
-                "17cfdff4hc0ijzrr15biq29fiabafz0bw621zlkbwbc1zh2hzpy0"))))
+                "1jyaj9h1iglvn02hrvcchbx8ycjpj8b91h8mi459k7q5jp2xgd9b"))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_GCRYPT=ON"
