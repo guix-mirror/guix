@@ -29,7 +29,7 @@
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.8.2")
+   (version "3.8.4.2")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -49,7 +49,7 @@
                     "/sqlite-autoconf-" numeric-version ".tar.gz")))
             (sha256
              (base32
-              "14pg9zlwbwsj5w7f3qr25d3nniyv82gmczwlvpj0i0ic1431v1d0"))))
+              "19gicv5vdi5c0p8shr1bmihldj409aqz3r4wr7d3pwb6xf1xv4p4"))))
    (build-system gnu-build-system)
    (home-page "http://www.sqlite.org/")
    (synopsis "The SQLite database management system")
