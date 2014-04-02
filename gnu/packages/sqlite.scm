@@ -49,7 +49,9 @@
                     "/sqlite-autoconf-" numeric-version ".tar.gz")))
             (sha256
              (base32
-              "19gicv5vdi5c0p8shr1bmihldj409aqz3r4wr7d3pwb6xf1xv4p4"))))
+              "19gicv5vdi5c0p8shr1bmihldj409aqz3r4wr7d3pwb6xf1xv4p4"))
+            (patches
+             (list (search-patch "sqlite-large-page-size-fix.patch")))))
    (build-system gnu-build-system)
    (home-page "http://www.sqlite.org/")
    (synopsis "The SQLite database management system")
