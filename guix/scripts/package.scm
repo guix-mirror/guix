@@ -417,8 +417,11 @@ current settings and report only settings not already effective."
     (define manifest-entry->package
       (match-lambda
        (($ <manifest-entry> name version)
-        (match (append (find-packages-by-name name version)
-                       (find-packages-by-name name))
+        ;; Use 'find-best-packages-by-name' and not 'find-packages-by-name';
+        ;; the former traverses the module tree only once and then allows for
+        ;; efficient access via a vhash.
+        (match (or (find-best-packages-by-name name version)
+                   (find-best-packages-by-name name #f))
           ((p _ ...) p)
           (_ #f)))))
 
