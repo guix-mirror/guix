@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -690,9 +691,11 @@ manpages.")
        #:parallel-build? #f
 
        #:tests? #f                                ; no test suite
-       #:make-flags (list "CC=gcc"
-                          (string-append "BASEDIR="
-                                         (assoc-ref %outputs "out")))))
+       #:make-flags (let ((out (assoc-ref %outputs "out")))
+                      (list "CC=gcc"
+                            (string-append "BASEDIR=" out)
+                            (string-append "INSTALLNLSDIR=" out "/share/locale")
+                            (string-append "mandir=/share/man")))))
 
     ;; Use the big Debian patch set (the thing does not even compile out of
     ;; the box.)
