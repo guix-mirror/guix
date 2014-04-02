@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,7 +22,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages))
+  #:use-module (gnu packages)
+  #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match))
 
 (define-public sqlite
   (package
@@ -32,9 +35,18 @@
             ;; TODO: Download from sqlite.org once this bug :
             ;; http://lists.gnu.org/archive/html/bug-guile/2013-01/msg00027.html
             ;; has been fixed.
-            (uri (string-append
-                  "mirror://sourceforge/sqlite.mirror/SQLite%20"
-                  version "/sqlite-autoconf-3080200.tar.gz"))
+            (uri (let ((numeric-version
+                        (match (string-split version #\.)
+                          ((first-digit other-digits ...)
+                           (string-append first-digit
+                                          (string-pad-right
+                                           (string-concatenate
+                                            (map (cut string-pad <> 2 #\0)
+                                                 other-digits))
+                                           6 #\0))))))
+                   (string-append
+                    "mirror://sourceforge/sqlite.mirror/SQLite%20" version
+                    "/sqlite-autoconf-" numeric-version ".tar.gz")))
             (sha256
              (base32
               "14pg9zlwbwsj5w7f3qr25d3nniyv82gmczwlvpj0i0ic1431v1d0"))))
