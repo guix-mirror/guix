@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,13 +27,13 @@
 (define-public file
   (package
    (name "file")
-   (version "5.16")
+   (version "5.18")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.astron.com/pub/file/file-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "0qcj72mp8fzvh29h70mksxynax9mk5c6p8gzqw5qlyn34rvsrg28"))))
+                     "01xz106biz6x4h5ilymg5v3367djvgnfp4lm87132cjqdmqgn6b5"))))
    (build-system gnu-build-system)
    (native-inputs
     ;; This package depends upon a native install of itself.
