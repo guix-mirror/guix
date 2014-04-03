@@ -25,7 +25,8 @@ CLEANFILES += $(BUILT_SOURCES)
 
 noinst_LIBRARIES = libformat.a libutil.a libstore.a
 
-AM_CXXFLAGS = -Wall
+# Use '-std=c++0x' for 'std::shared_ptr'.
+AM_CXXFLAGS = -Wall -std=c++0x
 
 libformat_a_SOURCES =				\
   nix/boost/format/free_funcs.cc		\
@@ -119,7 +120,7 @@ libstore_a_CPPFLAGS =				\
   -DNIX_BIN_DIR=\"$(bindir)\"			\
   -DOPENSSL_PATH="\"guix-authenticate\""
 
-libstore_a_CXXFLAGS =				\
+libstore_a_CXXFLAGS = $(AM_CXXFLAGS)		\
   $(SQLITE3_CFLAGS) $(LIBGCRYPT_CFLAGS)
 
 bin_PROGRAMS = guix-daemon
