@@ -34,10 +34,7 @@ libformat_a_SOURCES =				\
   nix/boost/format/format_implementation.cc
 
 libformat_headers =				\
-  nix/boost/weak_ptr.hpp			\
   nix/boost/throw_exception.hpp			\
-  nix/boost/checked_delete.hpp			\
-  nix/boost/shared_ptr.hpp			\
   nix/boost/format.hpp				\
   nix/boost/assert.hpp				\
   nix/boost/format/macros_default.hpp		\
@@ -47,10 +44,7 @@ libformat_headers =				\
   nix/boost/format/group.hpp			\
   nix/boost/format/feed_args.hpp		\
   nix/boost/format/internals_fwd.hpp		\
-  nix/boost/format/internals.hpp		\
-  nix/boost/detail/workaround.hpp		\
-  nix/boost/detail/shared_count.hpp		\
-  nix/boost/enable_shared_from_this.hpp
+  nix/boost/format/internals.hpp
 
 libformat_a_CPPFLAGS =				\
   -I$(top_srcdir)/nix
