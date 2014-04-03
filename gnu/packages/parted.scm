@@ -53,7 +53,11 @@
     (inputs
      ;; XXX: add 'lvm2'.
      `(("check" ,check)
-       ("readline" ,readline)
+
+       ;; With Readline 6.3, parted/ui.c fails to build because it uses the
+       ;; now undefined 'CPPFunction' type.
+       ("readline" ,readline-6.2)
+
        ("util-linux" ,util-linux)))
     (native-inputs
      `(("gettext" ,gnu-gettext)))

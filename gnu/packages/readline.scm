@@ -74,3 +74,14 @@ features both Emacs-like and vi-like keybindings, making its usage
 comfortable for anyone.")
       (license gpl3+)
       (home-page "http://savannah.gnu.org/projects/readline/"))))
+
+(define-public readline-6.2
+  (package (inherit readline)
+    (version "6.2")
+    (source (origin (inherit (package-source readline))
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/readline/readline-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "10ckm2bd2rkxhvdmj7nmbsylmihw0abwcsnxf8y27305183rd9kr"))))))
