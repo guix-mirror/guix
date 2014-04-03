@@ -245,12 +245,14 @@ environment contains nothing but:
 @c Keep this list in sync with libstore/build.cc! -----------------------
 @itemize
 @item
-the @code{/dev} and @code{/proc} directories@footnote{On some systems
-@code{/dev/shm}, which supports shared memory, is a symlink to another
-directory such as @code{/run/shm}, that is @emph{not} is the chroot.
-When that is the case, shared memory support is unavailable in the
-chroot environment.  The workaround is to make sure that @file{/dev/shm}
-is directly a @code{tmpfs} mount point.};
+a minimal @code{/dev} directory, created mostly independently from the
+host @code{/dev}@footnote{``Mostly'', because while the set of files
+that appear in the chroot's @code{/dev} is fixed, most of these files
+can only be created if the host has them.};
+
+@item
+the @code{/proc} directory; it only shows the container's processes
+since a separate PID name space is used;
 
 @item
 @file{/etc/passwd} with an entry for the current user and an entry for
