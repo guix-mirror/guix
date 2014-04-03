@@ -98,14 +98,14 @@ extraction from CDs.")
 (define-public xorriso
   (package
     (name "xorriso")
-    (version "1.3.4")
+    (version "1.3.6.pl01")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/xorriso/xorriso-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0wvxbvkpdydcbmqi9xz7nv8cna6vp9726ahmmxxyx56cz4xifr4x"))))
+               "07bm20kb4f6q5pbkxhy7w8ggw2gxkrq45cda2kbh6wgphs5z2h7q"))))
     (build-system gnu-build-system)
     (inputs
      `(("acl" ,acl)
