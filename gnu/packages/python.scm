@@ -142,9 +142,13 @@
          (alist-cons-before
           'configure 'patch-lib-shells
           (lambda _
-            (substitute* '("Lib/subprocess.py"
-                           "Lib/distutils/tests/test_spawn.py"
-                           "Lib/test/test_subprocess.py")
+            ;; Filter for existing files, since some may not exist in all
+            ;; versions of python that are built with this recipe.
+            (substitute* (filter file-exists?
+                                 '("Lib/subprocess.py"
+                                   "Lib/popen2.py"
+                                   "Lib/distutils/tests/test_spawn.py"
+                                   "Lib/test/test_subprocess.py"))
               (("/bin/sh") (which "sh"))))
           (alist-cons-before
            'check 'pre-check
