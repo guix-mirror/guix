@@ -30,6 +30,7 @@
             public-keys->acl
             acl->public-keys
             authorized-key?
+            write-acl
 
             signature-sexp
             signature-subject
@@ -83,9 +84,13 @@ element in KEYS must be a canonical sexp with type 'public-key'."
         (mkdir-p (dirname %acl-file))
         (with-atomic-file-output %acl-file
           (lambda (port)
-            (display (canonical-sexp->string
-                      (public-keys->acl (list public-key)))
-                     port)))))))
+            (write-acl (public-keys->acl (list public-key))
+                       port)))))))
+
+(define (write-acl acl port)
+  "Write ACL to PORT in canonical-sexp format."
+  (let ((sexp (sexp->canonical-sexp acl)))
+    (display (canonical-sexp->string sexp) port)))
 
 (define (current-acl)
   "Return the current ACL."

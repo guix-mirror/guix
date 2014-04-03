@@ -288,9 +288,7 @@ the input port."
     (let ((acl (public-keys->acl (cons key (acl->public-keys acl)))))
       (mkdir-p (dirname %acl-file))
       (with-atomic-file-output %acl-file
-        (lambda (port)
-          (display (canonical-sexp->string (sexp->canonical-sexp acl))
-                   port))))))
+        (cut write-acl acl <>)))))
 
 (define (guix-archive . args)
   (define (parse-options)
