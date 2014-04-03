@@ -108,30 +108,8 @@ the INPUTS."
        (call-with-values (lambda () (partition file-is-directory? inputs))
          (match-lambda*
            ((dirs ())
-            ;; All inputs are directories.  Create a new directory
-            ;; where we will merge the input directories.
-            (mkdir output)
-
-            ;; Build a hash table mapping each file to a list of input
-            ;; directories containing that file.
-            (let ((table (make-hash-table)))
-
-              (define (add-to-table! file dir)
-                (hash-set! table file (cons dir (hash-ref table file '()))))
-
-              ;; Populate the table.
-              (for-each (lambda (dir)
-                          (for-each (cut add-to-table! <> dir)
-                                    (files-in-directory dir)))
-                        dirs)
-
-              ;; Now iterate over the table and recursively
-              ;; perform a union for each entry.
-              (hash-for-each (lambda (file dirs-with-file)
-                               (union (string-append output "/" file)
-                                      (map (cut string-append <> "/" file)
-                                           (reverse dirs-with-file))))
-                             table)))
+            ;; All inputs are directories.
+            (union-of-directories output dirs))
 
            ((() (file (? (cut file=? <> file)) ...))
             ;; There are no directories, and all files have the same contents,
@@ -141,11 +119,36 @@ the INPUTS."
            ((dirs files)
             (resolve-collisions output dirs files)))))))
 
+  (define (union-of-directories output dirs)
+    ;; Create a new directory where we will merge the input directories.
+    (mkdir output)
+
+    ;; Build a hash table mapping each file to a list of input
+    ;; directories containing that file.
+    (let ((table (make-hash-table)))
+
+      (define (add-to-table! file dir)
+        (hash-set! table file (cons dir (hash-ref table file '()))))
+
+      ;; Populate the table.
+      (for-each (lambda (dir)
+                  (for-each (cut add-to-table! <> dir)
+                            (files-in-directory dir)))
+                dirs)
+
+      ;; Now iterate over the table and recursively
+      ;; perform a union for each entry.
+      (hash-for-each (lambda (file dirs-with-file)
+                       (union (string-append output "/" file)
+                              (map (cut string-append <> "/" file)
+                                   (reverse dirs-with-file))))
+                     table)))
+
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)
   (when (file-port? log-port)
     (setvbuf log-port _IOLBF))
 
-  (union output (delete-duplicates inputs)))
+  (union-of-directories output (delete-duplicates inputs)))
 
 ;;; union.scm ends here
