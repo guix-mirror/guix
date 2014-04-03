@@ -26,15 +26,15 @@
 (define-public help2man
   (package
     (name "help2man")
-    (version "1.43.3")
+    (version "1.45.1")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/help2man/help2man-"
-                          version ".tar.gz"))
+                          version ".tar.xz"))
       (sha256
        (base32
-        "00yk86rvvaavg7y6i5bvk5xhm417jl9dpr8bqvqdksw0i48qv5v7"))))
+        "1hk7ciqinq7djdb7s94y3jxh06rp8i93bpjmg4r40cniws8wf3y7"))))
     (build-system gnu-build-system)
     (arguments `(;; There's no `check' target.
                  #:tests? #f))
