@@ -115,7 +115,7 @@
          "--with-system-zlib"
          "--with-system-zziplib")
       #:phases
-       (alist-replace
+       (alist-cons-before
         'configure 'patch-perl-shebang
         (lambda _
           (substitute* "utils/psutils/Makefile.in"
