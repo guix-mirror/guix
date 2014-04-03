@@ -174,8 +174,17 @@ determined."
            (set-current-error-port old)))))))
 
 (define* (remote-pipe machine mode command
-                      #:key (error-port (current-error-port)))
-  "Run COMMAND on MACHINE, assuming an lsh gateway has been set up."
+                      #:key (error-port (current-error-port)) (quote? #t))
+  "Run COMMAND (a string list) on MACHINE, assuming an lsh gateway has been
+set up.  When QUOTE? is true, perform shell-quotation of all the elements of
+COMMAND."
+  (define (shell-quote str)
+    ;; Sort-of shell-quote STR so it can be passed as an argument to the
+    ;; shell.
+    (with-output-to-string
+      (lambda ()
+        (write str))))
+
   (catch 'system-error
     (lambda ()
       ;; Let the child inherit ERROR-PORT.
@@ -188,7 +197,9 @@ determined."
                "-i" (build-machine-private-key machine)
 
                (build-machine-name machine)
-               command)))
+               (if quote?
+                   (map shell-quote command)
+                   command))))
     (lambda args
       (warning (_ "failed to execute '~a': ~a~%")
                %lshg-command (strerror (system-error-errno args)))
@@ -283,6 +294,52 @@ hook."
     (set-port-revealed! port 1)
     port))
 
+(define %gc-root-file
+  ;; File name of the temporary GC root we install.
+  (format #f "offload-~a-~a" (gethostname) (getpid)))
+
+(define (register-gc-root file machine)
+  "Mark FILE, a store item, as a garbage collector root on MACHINE."
+  (define script
+    `(begin
+       (use-modules (guix config))
+
+       ;; Note: we can't use 'add-indirect-root' because dangling links under
+       ;; gcroots/auto are automatically deleted by the GC.  This strategy
+       ;; doesn't have this problem, but it requires write access to that
+       ;; directory.
+       (let ((root-directory (string-append %state-directory
+                                            "/gcroots/tmp")))
+         (false-if-exception (mkdir root-directory))
+         (symlink ,file
+                  (string-append root-directory "/" ,%gc-root-file)))))
+
+  (let ((pipe (remote-pipe machine OPEN_READ
+                           `("guile" "-c" ,(object->string script)))))
+    (get-string-all pipe)
+    (close-pipe pipe)))
+
+(define (remove-gc-root machine)
+  "Remove from MACHINE the GC root previously installed with
+'register-gc-root'."
+  (define script
+    `(begin
+       (use-modules (guix config))
+
+       (let ((root-directory (string-append %state-directory
+                                            "/gcroots/tmp")))
+         (false-if-exception
+          (delete-file
+           (string-append root-directory "/" ,%gc-root-file)))
+
+         ;; This one is created with 'guix build -r'.
+         (false-if-exception (delete-file ,%gc-root-file)))))
+
+  (let ((pipe (remote-pipe machine OPEN_READ
+                           `("guile" "-c" ,(object->string script)))))
+    (get-string-all pipe)
+    (close-pipe pipe)))
+
 (define* (offload drv machine
                   #:key print-build-trace? (max-silent-time 3600)
                   build-timeout (log-port (build-log-port)))
@@ -293,9 +350,11 @@ there, and write the build log to LOG-PORT.  Return the exit status."
   (format (current-error-port) "@ build-remote ~a ~a~%"
           (derivation-file-name drv) (build-machine-name machine))
 
-  ;; FIXME: Protect DRV from garbage collection on MACHINE.
+  ;; Normally DRV has already been protected from GC when it was transferred.
+  ;; The '-r' flag below prevents the build result from being GC'd.
   (let ((pipe (remote-pipe machine OPEN_READ
                            `("guix" "build"
+                             "-r" ,%gc-root-file
                              ,(format #f "--max-silent-time=~a"
                                       max-silent-time)
                              ,@(if build-timeout
@@ -329,6 +388,7 @@ MACHINE."
   ;; a given direction to/from MACHINE in the presence of several 'offload'
   ;; hook instance.
   (when (with-machine-lock machine 'upload
+          (register-gc-root (derivation-file-name drv) machine)
           (send-files (cons (derivation-file-name drv) inputs)
                       machine))
     (let ((status (offload drv machine
@@ -340,10 +400,12 @@ MACHINE."
             ;; Likewise (see above.)
             (with-machine-lock machine 'download
               (retrieve-files outputs machine))
+            (false-if-exception (remove-gc-root machine))
             (format (current-error-port)
                     "done with offloaded '~a'~%"
                     (derivation-file-name drv)))
           (begin
+            (false-if-exception (remove-gc-root machine))
             (format (current-error-port)
                     "derivation '~a' offloaded to '~a' failed \
 with exit code ~a~%"
@@ -386,7 +448,8 @@ success, #f otherwise."
       (let* ((files (missing-files (topologically-sorted store files)))
              (pipe  (remote-pipe machine OPEN_WRITE
                                  '("xz" "-dc" "|"
-                                   "guix" "archive" "--import"))))
+                                   "guix" "archive" "--import")
+                                 #:quote? #f)))
         (format #t (_ "sending ~a store files to '~a'...~%")
                 (length files) (build-machine-name machine))
         (call-with-compressed-output-port 'xz pipe
@@ -407,7 +470,8 @@ success, #f otherwise."
 
   (let ((pipe (remote-pipe machine OPEN_READ
                            `("guix" "archive" "--export" ,@files
-                             "|" "xz" "-c"))))
+                             "|" "xz" "-c")
+                           #:quote? #f)))
     (and pipe
          (with-store store
            (guard (c ((nix-protocol-error? c)
