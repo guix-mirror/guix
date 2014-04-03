@@ -61,7 +61,11 @@
        ("libpng" ,libpng)
        ("libxml2" ,libxml2)
        ("libxslt" ,libxslt)
-       ("libgc" ,libgc)
+
+       ;; With libgc 7.4, compilation fails with:
+       ;; gc.cpp:123:1: error: invalid conversion from 'int (*)(void**, const void*)' to 'int (*)(void**, void*)'
+       ("libgc" ,libgc-7.2)
+
        ("freetype" ,freetype)
        ("popt" ,popt)
        ("python" ,python-2)
