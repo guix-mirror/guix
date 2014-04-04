@@ -30,6 +30,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages which)
+  #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -95,6 +96,18 @@ programs, transfer files, and use a secure and transparent tunnel for your
 remote applications.")
     (home-page "http://www.libssh.org")
     (license license:lgpl2.1+)))
+
+(define libssh-0.5                                ; kept private
+  (package (inherit libssh)
+    (version "0.5.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://red.libssh.org/attachments/download/51/libssh-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "17cfdff4hc0ijzrr15biq29fiabafz0bw621zlkbwbc1zh2hzpy0"))
+              (patches (list (search-patch "libssh-CVE-2014-0017.patch")))))))
 
 (define-public libssh2
   (package
@@ -238,7 +251,7 @@ Additionally, various channel-specific options can be negotiated.")
                      ("pkg-config" ,pkg-config)
                      ("which" ,which)))
     (inputs `(("guile" ,guile-2.0)
-              ("libssh" ,libssh)))
+              ("libssh" ,libssh-0.5)))
     (synopsis "Guile bindings to libssh")
     (description
      "Guile-SSH is a library that provides access to the SSH protocol for
