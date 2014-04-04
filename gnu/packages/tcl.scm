@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,11 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
+  #:use-module (gnu packages libpng)
+  #:use-module (gnu packages libjpeg)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xorg)
   #:use-module (guix licenses))
 
@@ -159,3 +165,35 @@ X11 GUIs.")
      "Tk is a graphical toolkit for building graphical user interfaces
 (GUIs) in the Tcl language.")
     (license (package-license tcl))))
+
+(define-public perl-tk
+  (package
+    (name "perl-tk")
+    (version "804.032")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/S/SR/SREZIC/Tk-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "0jarvplhfvnm0shhdm2a5zczlnk9mkf8jvfjiwyhjrr3cy1gl0w0"))))
+    (build-system perl-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("libx11" ,libx11)
+              ("libpng" ,libpng)
+              ("libjpeg" ,libjpeg)))
+    (arguments
+     `(#:make-maker-flags `(,(string-append
+                              "X11=" (assoc-ref %build-inputs "libx11")))))
+    (synopsis "Graphical user interface toolkit for Perl")
+    (description
+     "Tk is a Graphical User Interface ToolKit.")
+    (home-page (string-append "http://search.cpan.org/~srezic/Tk-" version))
+    ;; From the package README: "... you can redistribute it and/or modify it
+    ;; under the same terms as Perl itself, with the exception of all the
+    ;; files in the pTk sub-directory which have separate terms derived from
+    ;; those of the orignal Tix4.1.3 or Tk8.4.* sources. See the files
+    ;; pTk/license.terms, pTk/license.html_lib, and pTk/Tix.license for
+    ;; details of this license."
+    (license (package-license perl))))
