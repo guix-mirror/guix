@@ -94,7 +94,11 @@ basis for almost any application.")
     (inputs
      `(("nettle" ,nettle)
        ("linux-pam" ,linux-pam)
-       ("readline" ,readline)
+
+       ;; 'rl.c' uses the 'CPPFunction' type, which is no longer in
+       ;; Readline 6.3.
+       ("readline" ,readline-6.2)
+
        ("liboop" ,liboop)
        ("zlib" ,guix:zlib)
        ("gmp" ,gmp)))
