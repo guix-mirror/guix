@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages tcl)
   #:use-module ((gnu packages base)
                 #:select (tar))
   #:use-module ((gnu packages compression)
@@ -41,7 +43,8 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xorg))
 
 (define-public dmd
   (package
@@ -492,4 +495,50 @@ network statistics collection, security monitoring, network debugging, etc.")
      "Jnettop is a traffic visualiser, which captures traffic going
 through the host it is running from and displays streams sorted
 by bandwidth they use.")
+    (license gpl2+)))
+
+(define-public clusterssh
+  (package
+    (name "clusterssh")
+    (version "3.28")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/clusterssh/"
+                                  "clusterssh-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1bwggpvaj2al5blg1ynapviv2kpydffpzq2zkhi81najnvzc1rr7"))))
+    (build-system gnu-build-system)
+    (inputs `(("perl" ,perl)))
+    (propagated-inputs `(("xterm" ,xterm)
+                         ("perl-tk" ,perl-tk)
+                         ("perl-x11-protocol" ,perl-x11-protocol)))
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'install 'set-load-paths
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          ;; Put the perl-tk and perl-x11-protocol modules in the perl inc
+          ;; path for PROG
+          (let* ((out  (assoc-ref outputs "out"))
+                 (prog (string-append out "/bin/cssh"))
+                 (perl-ver ,(package-version perl))
+                 (x11-inc (string-append
+                           (assoc-ref inputs "perl-x11-protocol")
+                           "/lib/perl5/site_perl/" perl-ver))
+                 (tk-inc (string-append
+                          (assoc-ref inputs "perl-tk")
+                          "/lib/perl5/site_perl/" perl-ver
+                          "/x86_64-linux")))
+            (wrap-program
+             prog
+             `("PERL5LIB" ":" prefix (,x11-inc ,tk-inc)))))
+        %standard-phases)))
+    ;; The clusterssh.sourceforge.net address requires login to view
+    (home-page "http://sourceforge.net/projects/clusterssh/")
+    (synopsis "Secure concurrent multi-server terminal control")
+    (description
+     "ClusterSSH controls a number of xterm windows via a single graphical
+console window to allow commands to be interactively run on multiple servers
+over ssh connections.")
     (license gpl2+)))
