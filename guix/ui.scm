@@ -194,9 +194,9 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
     ;; Catch EPIPE and the likes.
     (catch 'system-error
       thunk
-      (lambda args
-        (leave (_ "~a~%")
-               (strerror (system-error-errno args)))))))
+      (lambda (key proc format-string format-args . rest)
+        (leave (_ "~a: ~a~%") proc
+               (apply format #f format-string format-args))))))
 
 (define (read/eval str)
   "Read and evaluate STR, raising an error if something goes wrong."
