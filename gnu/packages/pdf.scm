@@ -104,6 +104,7 @@
              ("zlib" ,zlib)))
    (arguments
     `(#:tests? #f ; there is no check target
+      #:parallel-build? #f            ; build fails randomly on 8-way machines
       #:phases
        (alist-replace
         'install
