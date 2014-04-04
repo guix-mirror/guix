@@ -268,15 +268,15 @@ allow automatic login and starting any app.")
 (define-public net-base
   (package
     (name "net-base")
-    (version "5.1")
+    (version "5.2")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://ftp.de.debian.org/debian/pool/main/n/netbase/netbase_"
+                   "mirror://debian/pool/main/n/netbase/netbase_"
                    version ".tar.gz"))
              (sha256
               (base32
-               "17l8xk2x632id5f9x9v5fs9wqc650hldd2lf3dh90r1zisj1ya8d"))))
+               "01rkvqrg7krkx8b432nz6bpi8w3s4cm5q5r891k23cdrc9nsaayn"))))
     (build-system trivial-build-system)
     (arguments
      `(#:modules ((guix build utils))
