@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
@@ -4768,3 +4770,31 @@ icccm: Both client and window-manager helpers for ICCCM.")
 provides DEC VT102/VT220 (VTxxx) and Tektronix 4014 compatible terminals for
 programs that cannot use the window system directly.")
     (license license:x11)))
+
+(define-public perl-x11-protocol
+  (package
+    (name "perl-x11-protocol")
+    (version "0.56")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://cpan/authors/id/S/SM/SMCCAM/X11-Protocol-"
+                   version ".tar.gz"))
+             (sha256
+              (base32
+               "1dq89bh6fqv7l5mbffqcismcljpq5f869bx7g8lg698zgindv5ny"))))
+    (build-system perl-build-system)
+    (arguments '(#:tests? #f))          ;tests require a running x server
+    (synopsis "Raw interface to X Window System servers")
+    (description
+     "X11::Protocol is a client-side interface to the X11 Protocol, allowing
+perl programs to display windows and graphics on X11 servers.")
+    (home-page
+     (string-append "http://search.cpan.org/~smccam/X11-Protocol-" version))
+    ;; From the package README: "you can redistribute and/or modify it under
+    ;; the same terms as Perl itself. (As an exception, the file
+    ;; Keysyms.pm,which is derived from a file in the standard X11
+    ;; distribution, has another, less restrictive copying policy, as do some
+    ;; of the extension modules in the directory Protocol/Ext: see those files
+    ;; for details)."
+    (license (package-license perl))))
