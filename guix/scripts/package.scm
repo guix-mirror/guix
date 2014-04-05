@@ -178,7 +178,7 @@ packages that will/would be installed and removed."
   (match remove
     ((($ <manifest-entry> name version output path _) ..1)
      (let ((len    (length name))
-           (remove (map (cut format #f "  ~a-~a\t~a\t~a" <> <> <> <>)
+           (remove (map (cut format #f "   ~a-~a\t~a\t~a" <> <> <> <>)
                         name version output path)))
        (if dry-run?
            (format (current-error-port)
