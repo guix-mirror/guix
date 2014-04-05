@@ -128,7 +128,7 @@ system.")
   (define (->job name drv)
     (let ((name (symbol-append name (string->symbol ".")
                                (string->symbol system))))
-      `(,name . ,(->alist drv))))
+      `(,name . ,(cut ->alist drv))))
 
   (if (string=? system "x86_64-linux")
       (let* ((dir  (dirname (assoc-ref (current-source-location) 'filename)))
