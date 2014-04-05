@@ -1133,4 +1133,46 @@ store.")
       ("gcc" ,gcc-final)
       ("libc" ,glibc-final))))
 
+(define (gcc-toolchain gcc)
+  "Return a complete toolchain for GCC."
+  (package
+    (name "gcc-toolchain")
+    (version (package-version gcc))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories)))
+
+                   (union-build (assoc-ref %outputs "debug")
+                                (list (assoc-ref %build-inputs
+                                                 "libc-debug"))))))
+    (license (package-license gcc))
+    (synopsis "Complete GCC tool chain for C/C++ development")
+    (description
+     "This package provides a complete GCC tool chain for C/C++ development to
+be installed in user profiles.  This includes GCC, as well as libc (headers
+and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
+    (home-page "http://gcc.gnu.org/")
+    (outputs '("out" "debug"))
+
+    ;; The main raison d'être of this "meta-package" is (1) to conveniently
+    ;; install everything that we need, and (2) to make sure ld-wrapper comes
+    ;; before Binutils' ld in the user's profile.
+    (inputs `(("gcc" ,gcc)
+              ("ld-wrapper" ,(car (assoc-ref %final-inputs "ld-wrapper")))
+              ("binutils" ,binutils-final)
+              ("libc" ,glibc-final)
+              ("libc-debug" ,glibc-final "debug")))))
+
+(define-public gcc-toolchain-4.8
+  (gcc-toolchain gcc-final))
+
 ;;; base.scm ends here
