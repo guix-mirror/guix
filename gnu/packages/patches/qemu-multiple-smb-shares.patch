@@ -10,7 +10,7 @@ the name of the default share.
 -            "[qemu]\n"
 -            "path=%s\n"
 +            "[store]\n"
-+            "path=/nix/store\n"
++            "path=/gnu/store\n"
 +            "read only=yes\n"
 +            "guest ok=yes\n"
 +            "[xchg]\n"
