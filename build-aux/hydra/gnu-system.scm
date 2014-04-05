@@ -36,10 +36,14 @@
                      dir)
              (set! %load-path (cons dir %load-path))))))
 
-(use-modules (guix store)
+(use-modules (guix config)
+             (guix store)
              (guix packages)
              (guix derivations)
+             (guix monads)
+             ((guix licenses) #:select (gpl3+))
              ((guix utils) #:select (%current-system))
+             ((guix scripts system) #:select (read-operating-system))
              (gnu packages)
              (gnu packages gcc)
              (gnu packages base)
@@ -49,6 +53,8 @@
              (gnu packages compression)
              (gnu packages multiprecision)
              (gnu packages make-bootstrap)
+             (gnu system)
+             (gnu system vm)
              (srfi srfi-1)
              (srfi srfi-26)
              (ice-9 match))
@@ -108,6 +114,32 @@ SYSTEM."
   '("mips64el-linux-gnu"
     "mips64el-linux-gnuabi64"))
 
+(define (qemu-jobs store system)
+  "Return a list of jobs that build QEMU images for SYSTEM."
+  (define (->alist drv)
+    `((derivation . ,drv)
+      (description . "Stand-alone QEMU image of the GNU system")
+      (long-description . "This is a demo stand-alone QEMU image of the GNU
+system.")
+      (license . ,gpl3+)
+      (home-page . ,%guix-home-page-url)
+      (maintainers . ("bug-guix@gnu.org"))))
+
+  (define (->job name drv)
+    (let ((name (symbol-append name (string->symbol ".")
+                               (string->symbol system))))
+      `(,name . ,(->alist drv))))
+
+  (if (string=? system "x86_64-linux")
+      (let* ((dir  (dirname (assoc-ref (current-source-location) 'filename)))
+             (file (string-append dir "/demo-os.scm"))
+             (os   (read-operating-system file)))
+        (if (operating-system? os)
+            (list (->job 'qemu-image
+                         (run-with-store store (system-qemu-image os))))
+            '()))
+      '()))
+
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
   (define systems
@@ -156,7 +188,8 @@ SYSTEM."
                                           (cons (package-job store (job-name package)
                                                              package system)
                                                 result)))
-                                    (cross-jobs system)))
+                                    (append (qemu-jobs store system)
+                                            (cross-jobs system))))
                     ((core)
                      ;; Build core packages only.
                      (append (map (lambda (package)

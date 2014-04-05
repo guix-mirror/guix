@@ -28,7 +28,8 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
-  #:export (guix-system))
+  #:export (guix-system
+            read-operating-system))
 
 (define %user-module
   ;; Module in which the machine description file is loaded.
