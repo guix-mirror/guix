@@ -1301,6 +1301,7 @@ package definitions.
 
 @menu
 * Defining Packages::           Defining new packages.
+* Build Systems::               Specifying how packages are built.
 * The Store::                   Manipulating the package store.
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
@@ -1332,9 +1333,10 @@ package looks like this:
              (sha256
               (base32 "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))))
     (build-system gnu-build-system)
+    (arguments `(#:configure-flags '("--enable-silent-rules")))
     (inputs `(("gawk" ,gawk)))
-    (synopsis "GNU Hello")
-    (description "Yeah...")
+    (synopsis "Hello, GNU world: An example GNU package")
+    (description "Guess what GNU Hello prints!")
     (home-page "http://www.gnu.org/software/hello/")
     (license gpl3+)))
 @end example
@@ -1379,22 +1381,17 @@ Scheme expression to modify the source code.
 
 @item
 @cindex GNU Build System
-The @code{build-system} field is set to @var{gnu-build-system}.  The
-@var{gnu-build-system} variable is defined in the @code{(guix
-build-system gnu)} module, and is bound to a @code{<build-system>}
-object.
+The @code{build-system} field specifies the procedure to build the
+package (@pxref{Build Systems}).  Here, @var{gnu-build-system}
+represents the familiar GNU Build System, where packages may be
+configured, built, and installed with the usual @code{./configure &&
+make && make check && make install} command sequence.
 
-Naturally, @var{gnu-build-system} represents the familiar GNU Build
-System, and variants thereof (@pxref{Configuration, configuration and
-makefile conventions,, standards, GNU Coding Standards}).  In a
-nutshell, packages using the GNU Build System may be configured, built,
-and installed with the usual @code{./configure && make && make check &&
-make install} command sequence.  This is what @var{gnu-build-system}
-does.
-
-In addition, @var{gnu-build-system} ensures that the ``standard''
-environment for GNU packages is available.  This includes tools such as
-GCC, Coreutils, Bash, Make, Diffutils, and Patch.
+@item
+The @code{arguments} field specifies options for the build system
+(@pxref{Build Systems}).  Here it is interpreted by
+@var{gnu-build-system} as a request run @file{configure} with the
+@code{--enable-silent-rules} flag.
 
 @item
 The @code{inputs} field specifies inputs to the build process---i.e.,
@@ -1404,40 +1401,23 @@ variable; @var{gawk} is itself bound to a @code{<package>} object.
 
 Note that GCC, Coreutils, Bash, and other essential tools do not need to
 be specified as inputs here.  Instead, @var{gnu-build-system} takes care
-of ensuring that they are present.
+of ensuring that they are present (@pxref{Build Systems}).
 
 However, any other dependencies need to be specified in the
 @code{inputs} field.  Any dependency not specified here will simply be
 unavailable to the build process, possibly leading to a build failure.
 @end itemize
 
-There are other fields that package definitions may provide.  Of
-particular interest is the @code{arguments} field.  When specified, it
-must be bound to a list of additional arguments to be passed to the
-build system.  For instance, the above definition could be augmented
-with the following field initializer:
-
-@example
-    (arguments `(#:tests? #f
-                 #:configure-flags '("--enable-silent-rules")))
-@end example
-
-@noindent
-These are keyword arguments (@pxref{Optional Arguments, keyword
-arguments in Guile,, guile, GNU Guile Reference Manual}).  They are
-passed to @var{gnu-build-system}, which interprets them as meaning ``do
-not run @code{make check}'', and ``run @file{configure} with the
-@code{--enable-silent-rules} flag''.  The value of these keyword
-parameters is actually evaluated in the @dfn{build stratum}---i.e., by a
-Guile process launched by the daemon (@pxref{Derivations}).
-
 Once a package definition is in place@footnote{Simple package
 definitions like the one above may be automatically converted from the
 Nixpkgs distribution using the @command{guix import} command.}, the
 package may actually be built using the @code{guix build} command-line
-tool (@pxref{Invoking guix build}).  Eventually, updating the package
-definition to a new upstream version can be partly automated by the
-@command{guix refresh} command (@pxref{Invoking guix refresh}).
+tool (@pxref{Invoking guix build}).  @xref{Packaging Guidelines}, for
+more information on how to test package definitions.
+
+Eventually, updating the package definition to a new upstream version
+can be partly automated by the @command{guix refresh} command
+(@pxref{Invoking guix refresh}).
 
 Behind the scenes, a derivation corresponding to the @code{<package>}
 object is first computed by the @code{package-derivation} procedure.
@@ -1472,6 +1452,164 @@ and operating system, such as @code{"mips64el-linux-gnu"}
 Configure and Build System}).
 @end deffn
 
+
+@node Build Systems
+@section Build Systems
+
+@cindex build system
+Each package definition specifies a @dfn{build system} and arguments for
+that build system (@pxref{Defining Packages}).  This @code{build-system}
+field represents the build procedure of the package, as well implicit
+dependencies of that build procedure.
+
+Build systems are @code{<build-system>} objects.  The interface to
+create and manipulate them is provided by the @code{(guix build-system)}
+module, and actual build systems are exported by specific modules.
+
+Build systems accept an optional list of @dfn{arguments}.  In package
+definitions, these are passed @i{via} the @code{arguments} field
+(@pxref{Defining Packages}).  They are typically keyword arguments
+(@pxref{Optional Arguments, keyword arguments in Guile,, guile, GNU
+Guile Reference Manual}).  The value of these arguments is usually
+evaluated in the @dfn{build stratum}---i.e., by a Guile process launched
+by the daemon (@pxref{Derivations}).
+
+The main build system is @var{gnu-build-system}, which implements the
+standard build procedure for GNU packages and many other packages.  It
+is provided by the @code{(guix build-system gnu)} module.
+
+@defvr {Scheme Variable} gnu-build-system
+@var{gnu-build-system} represents the GNU Build System, and variants
+thereof (@pxref{Configuration, configuration and makefile conventions,,
+standards, GNU Coding Standards}).
+
+@cindex build phases
+In a nutshell, packages using it configured, built, and installed with
+the usual @code{./configure && make && make check && make install}
+command sequence.  In practice, a few additional steps are often needed.
+All these steps are split up in separate @dfn{phases},
+notably@footnote{Please see the @code{(guix build gnu-build-system)}
+modules for more details about the build phases.}:
+
+@table @code
+@item unpack
+Unpack the source tarball, and change the current directory to the
+extracted source tree.  If the source is actually a directory, copy it
+to the build tree, and enter that directory.
+
+@item patch-source-shebangs
+Patch shebangs encountered in source files so they refer to the right
+store file names.  For instance, this changes @code{#!/bin/sh} to
+@code{#!/gnu/store/@dots{}-bash-4.3/bin/sh}.
+
+@item configure
+Run the @file{configure} script with a number of default options, such
+as @code{--prefix=/gnu/store/@dots{}}, as well as the options specified
+by the @code{#:configure-flags} argument.
+
+@item build
+Run @code{make} with the list of flags specified with
+@code{#:make-flags}.  If the @code{#:parallel-builds?} argument is true
+(the default), build with @code{make -j}.
+
+@item check
+Run @code{make check}, or some other target specified with
+@code{#:test-target}, unless @code{#:tests? #f} is passed.  If the
+@code{#:parallel-tests?} argument is true (the default), run @code{make
+check -j}.
+
+@item install
+Run @code{make install} with the flags listed in @code{#:make-flags}.
+
+@item patch-shebangs
+Patch shebangs on the installed executable files.
+
+@item strip
+Strip debugging symbols from ELF files (unless @code{#:strip-binaries?}
+is false), copying them to the @code{debug} output when available
+(@pxref{Installing Debugging Files}).
+@end table
+
+@vindex %standard-phases
+The build-side module @code{(guix build gnu-build-system)} defines
+@var{%standard-phases} as the default list of build phases.
+@var{%standard-phases} is a list of symbol/procedure pairs, where the
+procedure implements the actual phase.
+
+The list of phases used for a particular package can be changed with the
+@code{#:phases} parameter.  For instance, passing:
+
+@example
+#:phases (alist-delete 'configure %standard-phases)
+@end example
+
+means that all the phases described above will be used, expect the
+@code{configure} phase.
+
+In addition, this build system ensures that the ``standard'' environment
+for GNU packages is available.  This includes tools such as GCC, libc,
+Coreutils, Bash, Make, Diffutils, grep, and sed (see the @code{(guix
+build-system gnu)} module for a complete list.)  We call these the
+@dfn{implicit inputs} of a package, because package definitions don't
+have to mention them.
+@end defvr
+
+Other @code{<build-system>} objects are defined to support other
+conventions and tools used by free software packages.  They inherit most
+of @var{gnu-build-system}, and differ mainly in the set of inputs
+implicitly added to the build process, and in the list of phases
+executed.  Some of these build systems are listed below.
+
+@defvr {Scheme Variable} cmake-build-system
+This variable is exported by @code{(guix build-system cmake)}.  It
+implements the build procedure for packages using the
+@url{http://www.cmake.org, CMake build tool}.
+
+It automatically adds the @code{cmake} package to the set of inputs.
+Which package is used can be specified with the @code{#:cmake}
+parameter.
+@end defvr
+
+@defvr {Scheme Variable} python-build-system
+This variable is exported by @code{(guix build-system python)}.  It
+implements the more or less standard build procedure used by Python
+packages, which consists in running @code{python setup.py build} and
+then @code{python setup.py install --prefix=/gnu/store/@dots{}}.
+
+For packages that install stand-alone Python programs under @code{bin/},
+it takes care of wrapping these programs so their @code{PYTHONPATH}
+environment variable points to all the Python libraries they depend on.
+
+Which Python package is used can be specified with the @code{#:python}
+parameter.
+@end defvr
+
+@defvr {Scheme Variable} perl-build-system
+This variable is exported by @code{(guix build-system perl)}.  It
+implements the standard build procedure for Perl packages, which
+consists in running @code{perl Makefile.PL PREFIX=/gnu/store/@dots{}},
+followed by @code{make} and @code{make install}.
+
+The initial @code{perl Makefile.PL} invocation passes flags specified by
+the @code{#:make-maker-flags} parameter.
+
+Which Perl package is used can be specified with @code{#:perl}.
+@end defvr
+
+
+Lastly, for packages that do not need anything as sophisticated, a
+``trivial'' build system is provided.  It is trivial in the sense that
+it provides basically no support: it does not pull any implicit inputs,
+and does not have a notion of build phases.
+
+@defvr {Scheme Variable} trivial-build-system
+This variable is exported by @code{(guix build-system trivial)}.
+
+This build system requires a @code{#:builder} argument.  This argument
+must be a Scheme expression that builds the package's output(s)---as
+with @code{build-expression->derivation} (@pxref{Derivations,
+@code{build-expression->derivation}}).
+@end defvr
 
 @node The Store
 @section The Store
@@ -2398,7 +2536,9 @@ called @code{gnew}, you may run this command from the Guix build tree:
 @end example
 
 Using @code{--keep-failed} makes it easier to debug build failures since
-it provides access to the failed build tree.
+it provides access to the failed build tree.  Another useful
+command-line option when debugging is @code{--log-file}, to access the
+build log.
 
 If the package is unknown to the @command{guix} command, it may be that
 the source file contains a syntax error, or lacks a @code{define-public}
