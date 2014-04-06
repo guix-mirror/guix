@@ -240,12 +240,15 @@ supports HTTPS, HTTPS and GnuTLS.")
           (alist-delete
            'check
            %standard-phases)))))
-   (synopsis "Anonymous peer-to-peer file-sharing framework")
+   (synopsis "Secure, decentralized, peer-to-peer networking framework")
    (description
-    "GNUnet is a framework for secure, peer-to-peer networking.  It works in a
-decentralized manner and does not rely on any notion of trusted services.  One
-service implemented on it is censorship-resistant file-sharing.  Communication
-is encrypted and anonymity is provided by making messages originating from a
-peer indistinguishable from those that the peer is routing.")
+    "GNUnet is a framework for secure peer-to-peer networking that does not
+use any centralized or otherwise trusted services.  Our high-level goal is to
+provide a strong free software foundation for a global network that provides
+security and privacy.  GNUnet started with an idea for anonymous
+censorship-resistant file-sharing, but has grown to incorporate other
+applications as well as many generic building blocks for secure networking
+applications.  In particular, GNUnet now includes the GNU Name System, a
+privacy-preserving, decentralized public key infrastructure.")
    (license license:gpl3+)
    (home-page "https://gnunet.org/")))

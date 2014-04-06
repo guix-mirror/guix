@@ -150,7 +150,7 @@ indentation counting, function and file indices and more.")
     (synopsis "Generating PostScript, including pretty-printing")
     (description
      "GNU Enscript is a program to convert ASCII text files to PostScript,
-HTML or RTF formats, to be stored in files or sent immediately to a printer.
+HTML or RTF formats, to be stored in files or sent immediately to a printer. 
 It also includes the capability to perform syntax highlighting for several
 different programming languages.")
     (license gpl3+)))
