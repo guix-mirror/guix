@@ -162,3 +162,35 @@ DOS and Windows, OS/2, GNU/Linux and many others.
 Samba is an important component to seamlessly integrate Linux/Unix Servers and
 Desktops into Active Directory environments using the winbind daemon.")
     (license gpl3+)))
+
+(define-public talloc
+  (package
+    (name "talloc")
+    (version "2.1.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.samba.org/ftp/talloc/talloc-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "13zh628hzlp2v9vj70knnfac2xbxqrdhgap30csq4zv4h8w3j087"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; talloc uses a custom configuration script that runs a
+                   ;; python script called 'waf'.
+                   (setenv "CONFIG_SHELL" (which "sh"))
+                   (let ((out (assoc-ref outputs "out")))
+                     (zero? (system* "./configure"
+                                     (string-append "--prefix=" out)))))
+                 %standard-phases)))
+    (inputs
+     `(("python" ,python-2)))
+    (home-page "http://talloc.samba.org")
+    (synopsis "Hierarchical, reference counted memory pool system")
+    (description
+     "Talloc is a hierarchical, reference counted memory pool system with
+destructors.  It is the core memory allocator used in Samba.")
+    (license gpl3+))) ;; The bundled "replace" library uses LGPL3.
