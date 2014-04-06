@@ -117,7 +117,7 @@ SYSTEM."
 (define (qemu-jobs store system)
   "Return a list of jobs that build QEMU images for SYSTEM."
   (define (->alist drv)
-    `((derivation . ,drv)
+    `((derivation . ,(derivation-file-name drv))
       (description . "Stand-alone QEMU image of the GNU system")
       (long-description . "This is a demo stand-alone QEMU image of the GNU
 system.")
