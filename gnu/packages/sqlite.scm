@@ -29,7 +29,7 @@
 (define-public sqlite
   (package
    (name "sqlite")
-   (version "3.8.4.2")
+   (version "3.8.4.3")
    (source (origin
             (method url-fetch)
             ;; TODO: Download from sqlite.org once this bug :
@@ -49,7 +49,7 @@
                     "/sqlite-autoconf-" numeric-version ".tar.gz")))
             (sha256
              (base32
-              "19gicv5vdi5c0p8shr1bmihldj409aqz3r4wr7d3pwb6xf1xv4p4"))
+              "0rcdsk5sz34w8vy0g5yhfms4saiq81i872jxx5m5sjij7bi9bsg0"))
             (patches
              (list (search-patch "sqlite-large-page-size-fix.patch")))))
    (build-system gnu-build-system)
