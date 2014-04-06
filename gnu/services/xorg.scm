@@ -24,6 +24,7 @@
   #:use-module (gnu packages gl)
   #:use-module (gnu packages slim)
   #:use-module (gnu packages ratpoison)
+  #:use-module (gnu packages gnustep)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
   #:use-module (guix monads)
@@ -126,6 +127,37 @@ EndSection"))
       (derivation-expression "start-xorg" builder
                              #:inputs inputs))))
 
+(define* (xinitrc #:key
+                  (guile guile-final)
+                  (ratpoison ratpoison)
+                  (windowmaker windowmaker))
+  "Return a system-wide xinitrc script that starts the specified X session."
+  (mlet %store-monad ((guile-bin     (package-file guile "bin/guile"))
+                      (ratpoison-bin (package-file ratpoison "bin/ratpoison"))
+                      (wmaker-bin    (package-file windowmaker "bin/wmaker"))
+                      (inputs        (lower-inputs
+                                      `(("raptoison" ,ratpoison)
+                                        ("wmaker" ,windowmaker)))))
+    (define builder
+      `(let ((out (assoc-ref %outputs "out")))
+         (call-with-output-file out
+           (lambda (port)
+             (format port "#!~a --no-auto-compile~%!#~%" ,guile-bin)
+             (write '(begin
+                       (use-modules (ice-9 match))
+
+                       ;; TODO: Check for ~/.xsession.
+                       (match (command-line)
+                         ((_ "ratpoison")
+                          (execl ,ratpoison-bin))
+                         (_
+                          (execl ,wmaker-bin))))
+                    port)))
+         (chmod out #o555)
+         #t))
+
+    (derivation-expression "xinitrc" builder #:inputs inputs)))
+
 (define* (slim-service #:key (slim slim)
                        (allow-empty-passwords? #t) auto-login?
                        (default-user "")
@@ -138,8 +170,8 @@ turn start the X display server with STARTX, a command as returned by
 When ALLOW-EMPTY-PASSWORDS? is true, allow logins with an empty password.
 When AUTO-LOGIN? is true, log in automatically as DEFAULT-USER."
   (define (slim.cfg)
-    ;; TODO: Run "bash -login ~/.xinitrc %session".
-    (mlet %store-monad ((startx (or startx (xorg-start-command))))
+    (mlet %store-monad ((startx  (or startx (xorg-start-command)))
+                        (xinitrc (xinitrc)))
       (text-file* "slim.cfg"  "
 default_path /run/current-system/bin
 default_xserver " startx "
@@ -149,7 +181,8 @@ authfile /var/run/slim.auth
 
 # The login command.  '%session' is replaced by the chosen session name, one
 # of the names specified in the 'sessions' setting: 'wmaker', 'xfce', etc.
-login_cmd  exec " ratpoison "/bin/ratpoison
+login_cmd  exec " xinitrc "%session
+sessions   wmaker,ratpoison
 
 halt_cmd " dmd "/sbin/halt
 reboot_cmd " dmd "/sbin/reboot
