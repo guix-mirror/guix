@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -177,13 +178,18 @@ sub-directories of FILE as needed."
         ((directory)
          (write-string "type" p)
          (write-string "directory" p)
-         (let* ((select? (negate (cut member <> '("." ".."))))
-
-                ;; 'scandir' defaults to 'string-locale<?' to sort files, but
-                ;; this happens to be case-insensitive (at least in 'en_US'
-                ;; locale on libc 2.18.)  Conversely, we want files to be
-                ;; sorted in a case-sensitive fashion.
-                (entries (scandir f select? string<?)))
+         (let ((entries
+                ;; NOTE: Guile 2.0.5's 'scandir' returns all subdirectories
+                ;; unconditionally, including "." and "..", regardless of the
+                ;; 'select?' predicate passed to it, so we have to filter
+                ;; those out externally.
+                (filter (negate (cut member <> '("." "..")))
+                        ;; 'scandir' defaults to 'string-locale<?' to sort
+                        ;; files, but this happens to be case-insensitive (at
+                        ;; least in 'en_US' locale on libc 2.18.)  Conversely,
+                        ;; we want files to be sorted in a case-sensitive
+                        ;; fashion.
+                        (scandir f (const #t) string<?))))
            (for-each (lambda (e)
                        (let ((f (string-append f "/" e)))
                          (write-string "entry" p)
