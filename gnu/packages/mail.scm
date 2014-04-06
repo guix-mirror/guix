@@ -86,7 +86,11 @@
        ("guile" ,guile-2.0)
        ("gnutls" ,gnutls)
        ("ncurses" ,ncurses)
-       ("readline" ,readline)
+
+       ;; With Readline 6.3, examples/pop3client.c fails to build because it
+       ;; uses the now undefined 'CPPFunction' type.
+       ("readline" ,readline-6.2)
+
        ("linux-pam" ,linux-pam)
        ("libtool" ,libtool)
        ("gdbm" ,gdbm)))
