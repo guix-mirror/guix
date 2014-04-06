@@ -143,6 +143,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lvm.scm				\
   gnu/packages/lynx.scm				\
   gnu/packages/m4.scm				\
+  gnu/packages/man.scm				\
   gnu/packages/mail.scm				\
   gnu/packages/make-bootstrap.scm		\
   gnu/packages/maths.scm			\
