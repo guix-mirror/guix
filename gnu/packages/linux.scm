@@ -162,26 +162,19 @@
              (let ((build (assoc-ref %standard-phases 'build)))
                (and (zero? (system* "make" "defconfig"))
                     (begin
-                      (format #t "enabling additional modules...~%")
-                      (substitute* ".config"
-                        (("^# CONFIG_CIFS.*$")
-                         "CONFIG_CIFS=m\n")
-                        (("^# CONFIG_FUSE_FS.*$")
-                         "CONFIG_FUSE_FS=m\n")
-                        (("^# CONFIG_([[:graph:]]*)VIRTIO([[:graph:]]*) .*$"
-                          _ before after)
-                         (string-append "CONFIG_" before "VIRTIO"
-                                        after "=m\n")))
-
-                      ;; XXX: For some reason, some virtio modules need to be
-                      ;; explicitly added.
+                      ;; Appending works even when the option wasn't in the
+                      ;; file.  The last one prevails if duplicated.
                       (let ((port (open-file ".config" "a")))
-                        (display (string-append "CONFIG_NET_9P_VIRTIO=m\n"
-                                                "CONFIG_NET_9P=m\n"
-                                                "CONFIG_9P_FS=m\n"
-                                                "CONFIG_VIRTIO_NET=m\n"
+                        (display (string-append "CONFIG_NET_9P=m\n"
+                                                "CONFIG_NET_9P_VIRTIO=m\n"
                                                 "CONFIG_VIRTIO_BLK=m\n"
-                                                "CONFIG_VIRTIO_BALLOON=m\n")
+                                                "CONFIG_VIRTIO_NET=m\n"
+                                                "CONFIG_VIRTIO_PCI=m\n"
+                                                "CONFIG_VIRTIO_BALLOON=m\n"
+                                                "CONFIG_VIRTIO_MMIO=m\n"
+                                                "CONFIG_FUSE_FS=m\n"
+                                                "CONFIG_CIFS=m\n"
+                                                "CONFIG_9P_FS=m\n")
                                  port)
                         (close-port port))
 
