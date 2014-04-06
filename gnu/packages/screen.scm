@@ -57,3 +57,34 @@ then manages the different virtual terminals, allowing you to easily switch
 between them, to detach them from the current session, or even splitting the
 view to show two terminals at once.")
     (license gpl2+)))
+
+(define-public dtach
+  (package
+    (name "dtach")
+    (version "0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/dtach/dtach-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1agjp08zxxxfni62sqx9qsd9526yqwlz7ry07lfq3clavyylwq8n"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; No install target.
+     '(#:phases (alist-replace
+                 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (mkdir-p (string-append out "/bin"))
+                     (copy-file "dtach" (string-append out "/bin/dtach"))))
+                 %standard-phases)
+       ;; No check target.
+       #:tests? #f))
+    (home-page "http://dtach.sourceforge.net/")
+    (synopsis "Emulates the detach feature of screen")
+    (description
+     "dtach is a tiny program that emulates the detach feature of screen,
+allowing you to run a program in an environment that is protected from the
+controlling terminal and attach to it later.")
+    (license gpl2+)))
