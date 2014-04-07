@@ -55,8 +55,6 @@
        (base32
         "1vxzjwmhad6yxx4sk9zvapjgv5salcv10id061q0991ii3dycy9a"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("alsa-lib" ,alsa-lib)
        ("bzip2" ,bzip2)
@@ -78,8 +76,7 @@
      `(("perl" ,perl)
        ("python" ,python-2) ; Python 3 not supported
        ("python2-pysqlite" ,python2-pysqlite)
-       ("pkg-config" ,pkg-config)
-       ("python" ,python-2))) ; Python 3 not supported
+       ("pkg-config" ,pkg-config)))
     (arguments
      `(#:tests? #f ; no check target
 
