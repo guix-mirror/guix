@@ -191,6 +191,7 @@ output in text, PostScript, PDF or HTML.")
      `(#:modules ((guix build cmake-build-system)
                   (guix build utils)
                   (srfi srfi-1))
+       #:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES")
        #:phases (alist-cons-before
                  'check 'patch-python
                  (lambda* (#:key inputs #:allow-other-keys)
