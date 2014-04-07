@@ -1,0 +1,26 @@
+The gendiff1 and gendiff2 tests need the gendiff script that's distributed
+with the rpm package management tool.  Without that script, these tests are
+expected to fail.
+
+Need to mark one of the tests as PHONY to get permissions set correctly on
+built scripts.
+
+--- a/Makefile.in	2011-02-10 09:44:43.000000000 -0600
++++ b/Makefile.in	2014-03-06 17:27:55.610048953 -0600
+@@ -378,6 +378,8 @@
+ # These ones don't work yet.
+ # Feel free to send me patches. :-)
+ XFAIL_TESTS = \
++	tests/gendiff1/run-test \
++	tests/gendiff2/run-test \
+ 	tests/delhunk5/run-test \
+ 	tests/delhunk6/run-test
+ 
+@@ -1106,6 +1108,7 @@
+ 	rm -f $(DESTDIR)$(bindir)/"`echo lsdiff|sed '$(transform)'`"
+ 	rm -f $(DESTDIR)$(bindir)/"`echo grepdiff|sed '$(transform)'`"
+ 
++.PHONY: tests/combine1/run-test
+ tests/combine1/run-test: src/combinediff$(EXEEXT) src/flipdiff$(EXEEXT) \
+ 		src/lsdiff$(EXEEXT) src/grepdiff$(EXEEXT)
+ 	for script in $(bin_SCRIPTS); do \

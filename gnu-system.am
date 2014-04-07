@@ -169,6 +169,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/package-management.scm		\
   gnu/packages/parallel.scm			\
   gnu/packages/parted.scm			\
+  gnu/packages/patchutils.scm			\
   gnu/packages/pcre.scm				\
   gnu/packages/pdf.scm				\
   gnu/packages/pem.scm				\
@@ -312,6 +313,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/mit-krb5-init-fix.patch			\
   gnu/packages/patches/mpc123-initialize-ao.patch		\
   gnu/packages/patches/patchelf-page-size.patch			\
+  gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\
