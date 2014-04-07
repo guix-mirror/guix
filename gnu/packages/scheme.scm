@@ -197,8 +197,7 @@ features usually presented by traditional programming languages
 but not offered by Scheme and functional programming.  Bigloo
 compiles Scheme modules.  It delivers small and fast stand alone
 binary executables.  Bigloo enables full connections between
-Scheme and C programs, between Scheme and Java programs, and
-between Scheme and C# programs.")
+Scheme and C programs and between Scheme and Java programs.")
     (license gpl2+)))
 
 (define-public hop
