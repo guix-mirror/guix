@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -50,6 +51,8 @@
       (method url-fetch)
       (uri (string-append "https://www.python.org/ftp/python/"
                           version "/Python-" version ".tar.xz"))
+      (patches (list (search-patch "python-libffi-mips-n32-fix.patch")))
+      (patch-flags '("-p0"))
       (sha256
        (base32
         "18gnpyh071dxa0rv3silrz92jw9qpblswzwv4gzqcwxzz20qxmhz"))))
@@ -190,7 +193,8 @@ data types.")
               (method url-fetch)
               (uri (string-append "https://www.python.org/ftp/python/"
                                   version "/Python-" version ".tar.xz"))
-              (patches (list (search-patch "python-fix-tests.patch")))
+              (patches (list (search-patch "python-fix-tests.patch")
+                             (search-patch "python-libffi-mips-n32-fix.patch")))
               (patch-flags '("-p0"))
               (sha256
                (base32

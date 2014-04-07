@@ -316,6 +316,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\
   gnu/packages/patches/python-fix-tests.patch			\
+  gnu/packages/patches/python-libffi-mips-n32-fix.patch		\
   gnu/packages/patches/qemu-make-4.0.patch			\
   gnu/packages/patches/qemu-multiple-smb-shares.patch		\
   gnu/packages/patches/qt4-tests.patch				\
