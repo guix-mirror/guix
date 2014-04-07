@@ -185,17 +185,16 @@ data types.")
 
 (define-public python
   (package (inherit python-2)
-    (version "3.3.3")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "https://www.python.org/ftp/python/"
-                          version "/Python-" version ".tar.xz"))
-       (patches (list (search-patch "python-fix-tests.patch")))
-       (patch-flags '("-p0"))
-      (sha256
-       (base32
-        "11f6hg9wdhm6hyzj49gxlvvp1s0l5hqgcsq1i4ayygqs1arpb4ik"))))
+    (version "3.3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://www.python.org/ftp/python/"
+                                  version "/Python-" version ".tar.xz"))
+              (patches (list (search-patch "python-fix-tests.patch")))
+              (patch-flags '("-p0"))
+              (sha256
+               (base32
+                "1rdncc7g8g6f3lfdg33rli1yffbiq8z283xy4f5ksl1l8i49psdb"))))
     (arguments
      (let ((args `(#:modules ((guix build gnu-build-system)
                               (guix build utils)
