@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -26,6 +27,7 @@
   #:use-module (gnu packages groff)
   #:use-module (gnu packages less)
   #:use-module (gnu packages lynx)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config))
 
 (define-public libpipeline
@@ -107,3 +109,32 @@ a flexible and convenient way.")
 accessed using the man command.  It uses a Berkeley DB database in place of
 the traditional flat-text whatis databases.")
     (license gpl2+)))
+
+(define-public help2man
+  (package
+    (name "help2man")
+    (version "1.45.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/help2man/help2man-"
+                          version ".tar.xz"))
+      (sha256
+       (base32
+        "1hk7ciqinq7djdb7s94y3jxh06rp8i93bpjmg4r40cniws8wf3y7"))))
+    (build-system gnu-build-system)
+    (arguments `(;; There's no `check' target.
+                 #:tests? #f))
+    (inputs
+     `(("perl" ,perl)
+       ;; TODO: Add these optional dependencies.
+       ;; ("perl-LocaleGettext" ,perl-LocaleGettext)
+       ;; ("gettext" ,gnu-gettext)
+       ))
+    (home-page "http://www.gnu.org/software/help2man/")
+    (synopsis "Automatically generate man pages from program --help")
+    (description
+     "GNU help2man is a program that converts the output of standard
+\"--help\" and \"--version\" command-line arguments into a manual page
+automatically.")
+    (license gpl3+)))

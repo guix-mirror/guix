@@ -27,7 +27,7 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages help2man)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages pkg-config)

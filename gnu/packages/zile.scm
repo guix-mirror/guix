@@ -24,7 +24,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages bdw-gc)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages help2man)
+  #:use-module (gnu packages man)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages pkg-config))

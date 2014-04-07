@@ -107,7 +107,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/guile-wm.scm			\
   gnu/packages/gv.scm				\
   gnu/packages/gxmessage.scm			\
-  gnu/packages/help2man.scm			\
   gnu/packages/hugs.scm				\
   gnu/packages/hurd.scm				\
   gnu/packages/icu4c.scm			\
