@@ -41,6 +41,7 @@
         ("mesa" ,mesa)))
     (arguments
      `(#:tests? #f                      ;TODO: compile programs in "test" dir
+       #:configure-flags '("--enable-shared")
        #:phases
        (alist-cons-before
         'configure 'patch-makeinclude
