@@ -222,7 +222,7 @@ between Scheme and C# programs.")
           (let ((out (assoc-ref outputs "out")))
             (zero?
              (system* "./configure"
-                      (string-append"--prefix=" out)))))
+                      (string-append "--prefix=" out)))))
         (alist-cons-after
          'strip 'patch-rpath
          (lambda* (#:key outputs #:allow-other-keys)
