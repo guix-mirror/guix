@@ -176,7 +176,7 @@
 (false-if-exception (delete-file temp-file))
 (test-equal "fcntl-flock wait"
   42                                              ; the child's exit status
-  (let ((file (open-file temp-file "w0")))
+  (let ((file (open-file temp-file "w0b")))
     ;; Acquire an exclusive lock.
     (fcntl-flock file 'write-lock)
     (match (primitive-fork)
@@ -185,7 +185,7 @@
          (const #t)
          (lambda ()
            ;; Reopen FILE read-only so we can have a read lock.
-           (let ((file (open-file temp-file "r")))
+           (let ((file (open-file temp-file "r0b")))
              ;; Wait until we can acquire the lock.
              (fcntl-flock file 'read-lock)
              (primitive-exit (read file)))
@@ -228,19 +228,19 @@
             (read-char input)
 
             ;; Open FILE read-only so we can have a read lock.
-            (let ((file (open-file temp-file "w")))
+            (let ((file (open-file temp-file "w0")))
               (catch 'flock-error
                 (lambda ()
                   ;; This attempt should throw EAGAIN.
                   (fcntl-flock file 'write-lock #:wait? #f))
                 (lambda (key errno)
-                  (primitive-exit errno))))
+                  (primitive-exit (pk 'errno errno)))))
             (primitive-exit -1))
           (lambda ()
             (primitive-exit -2))))
        (pid
         (close-port input)
-        (let ((file (open-file temp-file "w")))
+        (let ((file (open-file temp-file "w0")))
           ;; Acquire an exclusive lock.
           (fcntl-flock file 'write-lock)
 
