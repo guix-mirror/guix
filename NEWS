@@ -2,13 +2,60 @@
 #+TITLE: Guix NEWS – history of user-visible changes
 #+STARTUP: content hidestars
 
-Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
   notice and this notice are preserved.
 
 Please send Guix bug reports to bug-guix@gnu.org.
+
+* Changes in 0.6 (since 0.5)
+** Package management
+*** Default store directory changed to /gnu/store
+
+Although it is still possible to configure Guix to use the old store
+directory, we recommend that you start with a fresh install to /gnu/store.
+
+*** Substitutes from hydra.gnu.org must now be signed and authorized
+*** Support for offloading builds to other Guix machines over SSH
+*** New ‘guix archive’ command
+*** New ‘guix system’ command; it can currently build VM images
+*** ‘guix package’ accepts several arguments after -i, -r, and -u
+*** Updating a profile with ‘guix package’ is now noticeably faster
+*** ‘guix build’ can override a package’s source with the new ‘--with-source’
+*** ‘guix build’ has a new ‘--no-build-hook’ option
+*** ‘guix’ commands that build packages have a common set of options
+*** ‘guix hash’ has a new ‘--recursive’ option
+*** Daemon no longer bind-mounts the host’s /dev (improves reproducibility)
+** Programming interfaces
+*** New (guix pk-crypto) and (guix pki) modules for public key cryptography
+*** New #:local-build? parameter for derivations that shouldn’t be offloaded
+*** (gnu system vm) has procedures to build VMs that share the host’s store
+*** New ‘text-file*’ procedure in (guix monads)
+*** System service definitions are now provided by the (guix services) modules
+*** New X and SLiM services in (gnu services xorg)
+*** New (guix git-download) and (guix svn-download) for git/svn checkouts
+** GNU distribution
+*** FIXME new packages
+*** FIXME package updates
+*** New ‘gcc-toolchain’ meta-package, makes it easy to install a GCC tool chain
+*** libc’s Info manual is now installed
+*** Binutils is built with --enable-deterministic-archives
+*** Packages that populated man/man* now populate share/man/man*
+*** Many other packaging improvements
+** Bugs fixed
+*** ‘guix pull’ consumes less memory, compiles in parallel
+*** ‘guix package --list-*’ gracefully handles EPIPE when used in a pipeline
+*** ‘guix package’ handles collisions between a symlink and a directory
+    (http://bugs.gnu.org/17083)
+*** HTTP downloads provide a ‘User-Agent’ field (http://bugs.gnu.org/16703)
+*** ‘guix package’ no longer shows misleading installed package number
+    (http://bugs.gnu.org/16484)
+*** Manual suggests ‘useradd --system’ (http://bugs.gnu.org/16289)
+*** Python is built with ctypes support (http://bugs.gnu.org/16569)
+*** HTTP/TLS connection not terminated properly (http://bugs.gnu.org/14884)
+*** Gracefully handle poorly behaved HTTP servers (http://bugs.gnu.org/15733)
 
 * Changes in 0.5 (since 0.4)
 ** Package management
