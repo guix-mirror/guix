@@ -317,7 +317,12 @@ hook."
   (let ((pipe (remote-pipe machine OPEN_READ
                            `("guile" "-c" ,(object->string script)))))
     (get-string-all pipe)
-    (close-pipe pipe)))
+    (let ((status (close-pipe pipe)))
+      (unless (zero? status)
+        ;; Better be safe than sorry: if we ignore the error here, then FILE
+        ;; may be GC'd just before we start using it.
+        (leave (_ "failed to register GC root for '~a' on '~a' (status: ~a)~%")
+               file machine status)))))
 
 (define (remove-gc-root machine)
   "Remove from MACHINE the GC root previously installed with
