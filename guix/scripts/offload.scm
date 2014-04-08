@@ -324,12 +324,13 @@ hook."
         (leave (_ "failed to register GC root for '~a' on '~a' (status: ~a)~%")
                file machine status)))))
 
-(define (remove-gc-root machine)
-  "Remove from MACHINE the GC root previously installed with
+(define (remove-gc-roots machine)
+  "Remove from MACHINE the GC roots previously installed with
 'register-gc-root'."
   (define script
     `(begin
-       (use-modules (guix config))
+       (use-modules (guix config) (ice-9 ftw)
+                    (srfi srfi-1) (srfi srfi-26))
 
        (let ((root-directory (string-append %state-directory
                                             "/gcroots/tmp")))
@@ -337,8 +338,13 @@ hook."
           (delete-file
            (string-append root-directory "/" ,%gc-root-file)))
 
-         ;; This one is created with 'guix build -r'.
-         (false-if-exception (delete-file ,%gc-root-file)))))
+         ;; These ones were created with 'guix build -r' (there can be more
+         ;; than one in case of multiple-output derivations.)
+         (let ((roots (filter (cut string-prefix? ,%gc-root-file <>)
+                              (scandir "."))))
+           (for-each (lambda (file)
+                       (false-if-exception (delete-file file)))
+                     roots)))))
 
   (let ((pipe (remote-pipe machine OPEN_READ
                            `("guile" "-c" ,(object->string script)))))
@@ -405,12 +411,12 @@ MACHINE."
             ;; Likewise (see above.)
             (with-machine-lock machine 'download
               (retrieve-files outputs machine))
-            (false-if-exception (remove-gc-root machine))
+            (remove-gc-roots machine)
             (format (current-error-port)
                     "done with offloaded '~a'~%"
                     (derivation-file-name drv)))
           (begin
-            (false-if-exception (remove-gc-root machine))
+            (remove-gc-roots machine)
             (format (current-error-port)
                     "derivation '~a' offloaded to '~a' failed \
 with exit code ~a~%"
