@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -189,7 +189,10 @@ reconstruction capability.")
        ("pkg-config" ,pkg-config)
        ("which" ,which)))
     (arguments
-     `(#:tests? #f)) ; no check target
+     `(;; Parallel builds appear to be unsafe, see
+       ;; <http://hydra.gnu.org/build/49331/nixlog/1/raw>.
+       #:parallel-build? #f
+       #:tests? #f)) ; no check target
     (home-page "http://dvdisaster.net/en/index.html")
     (synopsis "error correcting codes for optical media images")
     (description "Optical media (CD,DVD,BD) keep their data only for a
