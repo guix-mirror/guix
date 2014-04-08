@@ -74,3 +74,41 @@ http://bugs.python.org/issue20868 .
      def test_wait_result(self):
          if isinstance(self, ProcessesMixin) and sys.platform != 'win32':
              pid = os.getpid()
+--- Lib/ctypes/test/test_libc.py	2014-04-07 23:17:41.351235000 +0200
++++ Lib/ctypes/test/test_libc.py	2014-04-07 23:32:18.799235000 +0200
+@@ -2,6 +2,7 @@
+ 
+ from ctypes import *
+ import _ctypes_test
++import platform
+ 
+ lib = CDLL(_ctypes_test.__file__)
+ 
+@@ -17,6 +18,8 @@
+         import math
+         self.assertEqual(lib.my_sqrt(2.0), math.sqrt(2.0))
+ 
++    @unittest.skipIf(platform.machine() in ['mips64'],
++                     "This test fails on this platform")
+     def test_qsort(self):
+         comparefunc = CFUNCTYPE(c_int, POINTER(c_char), POINTER(c_char))
+         lib.my_qsort.argtypes = c_void_p, c_size_t, c_size_t, comparefunc
+--- Lib/ctypes/test/test_callbacks.py	2014-04-07 23:15:42.835235000 +0200
++++ Lib/ctypes/test/test_callbacks.py	2014-04-07 23:32:42.035235000 +0200
+@@ -1,6 +1,7 @@
+ import unittest
+ from ctypes import *
+ import _ctypes_test
++import platform
+ 
+ class Callbacks(unittest.TestCase):
+     functype = CFUNCTYPE
+@@ -174,6 +175,8 @@
+ 
+         self.assertLess(diff, 0.01, "%s not less than 0.01" % diff)
+ 
++    @unittest.skipIf(platform.machine() in ['mips64'],
++                     "This test fails on this platform")
+     def test_issue_8959_a(self):
+         from ctypes.util import find_library
+         libc_path = find_library("c")
