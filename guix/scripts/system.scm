@@ -71,9 +71,12 @@
 (define (show-help)
   (display (_ "Usage: guix system [OPTION] ACTION FILE
 Build the operating system declared in FILE according to ACTION.\n"))
-  (display (_ "Currently the only valid value for ACTION is 'vm', which builds
-a virtual machine of the given operating system.\n"))
+  (display (_ "Currently the only valid values for ACTION are 'vm', which builds
+a virtual machine of the given operating system that shares the host's store,
+and 'vm-image', which builds a virtual machine image that stands alone.\n"))
   (show-build-options-help)
+  (display (_ "
+      --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -91,6 +94,10 @@ a virtual machine of the given operating system.\n"))
          (option '(#\V "version") #f #f
                  (lambda args
                    (show-version-and-exit "guix system")))
+         (option '("image-size") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'image-size (size->number arg)
+                               result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t result)))
@@ -102,7 +109,8 @@ a virtual machine of the given operating system.\n"))
     (substitutes? . #t)
     (build-hook? . #t)
     (max-silent-time . 3600)
-    (verbosity . 0)))
+    (verbosity . 0)
+    (image-size . ,(* 900 (expt 2 20)))))
 
 
 ;;;
@@ -123,21 +131,31 @@ a virtual machine of the given operating system.\n"))
                             (alist-cons 'argument arg result)))
                       (let ((action (string->symbol arg)))
                         (case action
-                          ((vm) (alist-cons 'action action result))
+                          ((vm)
+                           (alist-cons 'action action result))
+                          ((vm-image)
+                           (alist-cons 'action action result))
                           (else (leave (_ "~a: unknown action~%")
                                        action))))))
                 %default-options))
 
   (with-error-handling
-    (let* ((opts  (parse-options))
-           (file  (assoc-ref opts 'argument))
-           (os    (if file
-                      (read-operating-system file)
-                      (leave (_ "no configuration file specified~%"))))
-           (mdrv  (system-qemu-image/shared-store-script os))
-           (store (open-connection))
-           (dry?  (assoc-ref opts 'dry-run?))
-           (drv   (run-with-store store mdrv)))
+    (let* ((opts   (parse-options))
+           (file   (assoc-ref opts 'argument))
+           (action (assoc-ref opts 'action))
+           (os     (if file
+                       (read-operating-system file)
+                       (leave (_ "no configuration file specified~%"))))
+           (mdrv   (case action
+                     ((vm-image)
+                      (let ((size (assoc-ref opts 'image-size)))
+                        (system-qemu-image os
+                                           #:disk-image-size size)))
+                     ((vm)
+                      (system-qemu-image/shared-store-script os))))
+           (store  (open-connection))
+           (dry?   (assoc-ref opts 'dry-run?))
+           (drv    (run-with-store store mdrv)))
       (set-build-options-from-command-line store opts)
       (show-what-to-build store (list drv)
                           #:dry-run? dry?
