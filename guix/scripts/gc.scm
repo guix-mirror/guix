@@ -62,36 +62,6 @@ Invoke the garbage collector.\n"))
   (newline)
   (show-bug-report-information))
 
-(define (size->number str)
-  "Convert STR, a storage measurement representation such as \"1024\" or
-\"1MiB\", to a number of bytes.  Raise an error if STR could not be
-interpreted."
-  (define unit-pos
-    (string-rindex str char-set:digit))
-
-  (define unit
-    (and unit-pos (substring str (+ 1 unit-pos))))
-
-  (let* ((numstr (if unit-pos
-                     (substring str 0 (+ 1 unit-pos))
-                     str))
-         (num    (string->number numstr)))
-    (if num
-        (* num
-           (match unit
-             ("KiB" (expt 2 10))
-             ("MiB" (expt 2 20))
-             ("GiB" (expt 2 30))
-             ("TiB" (expt 2 40))
-             ("KB"  (expt 10 3))
-             ("MB"  (expt 10 6))
-             ("GB"  (expt 10 9))
-             ("TB"  (expt 10 12))
-             (""    1)
-             (_
-              (leave (_ "unknown unit: ~a~%") unit))))
-        (leave (_ "invalid number: ~a~%") numstr))))
-
 (define %options
   ;; Specification of the command-line options.
   (list (option '(#\h "help") #f #f

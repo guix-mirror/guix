@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -165,6 +165,29 @@ interface, and powerful string processing.")
 (test-equal "duration, char"
   #f
   (string->duration "d"))
+
+(test-equal "size->number, bytes"
+  42
+  (size->number "42"))
+
+(test-equal "size->number, MiB"
+  (* 42 (expt 2 20))
+  (size->number "42MiB"))
+
+(test-equal "size->number, GiB"
+  (* 3 (expt 2 30))
+  (size->number "3GiB"))
+
+(test-equal "size->number, 1.2GiB"
+  (inexact->exact (round (* 1.2 (expt 2 30))))
+  (size->number "1.2GiB"))
+
+(test-assert "size->number, invalid unit"
+  (catch 'quit
+    (lambda ()
+      (size->number "9X"))
+    (lambda args
+      #t)))
 
 (test-end "ui")
 

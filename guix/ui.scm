@@ -43,6 +43,7 @@
             show-version-and-exit
             show-bug-report-information
             string->number*
+            size->number
             show-what-to-build
             call-with-error-handling
             with-error-handling
@@ -159,6 +160,38 @@ General help using GNU software: <http://www.gnu.org/gethelp/>"))
   "Like `string->number', but error out with an error message on failure."
   (or (string->number str)
       (leave (_ "~a: invalid number~%") str)))
+
+(define (size->number str)
+  "Convert STR, a storage measurement representation such as \"1024\" or
+\"1MiB\", to a number of bytes.  Raise an error if STR could not be
+interpreted."
+  (define unit-pos
+    (string-rindex str char-set:digit))
+
+  (define unit
+    (and unit-pos (substring str (+ 1 unit-pos))))
+
+  (let* ((numstr (if unit-pos
+                     (substring str 0 (+ 1 unit-pos))
+                     str))
+         (num    (string->number numstr)))
+    (unless num
+      (leave (_ "invalid number: ~a~%") numstr))
+
+    ((compose inexact->exact round)
+     (* num
+        (match unit
+          ("KiB" (expt 2 10))
+          ("MiB" (expt 2 20))
+          ("GiB" (expt 2 30))
+          ("TiB" (expt 2 40))
+          ("KB"  (expt 10 3))
+          ("MB"  (expt 10 6))
+          ("GB"  (expt 10 9))
+          ("TB"  (expt 10 12))
+          (""    1)
+          (_
+           (leave (_ "unknown unit: ~a~%") unit)))))))
 
 (define (call-with-error-handling thunk)
   "Call THUNK within a user-friendly error handler."
