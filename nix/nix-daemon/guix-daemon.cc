@@ -257,8 +257,14 @@ main (int argc, char *argv[])
 
       /* Hackily help 'local-store.cc' find our 'guix-authenticate' program, which
 	 is known as 'OPENSSL_PATH' here.  */
-      std::string search_path (getenv ("PATH"));
-      search_path = settings.nixLibexecDir + ":" + search_path;
+      std::string search_path;
+      search_path = settings.nixLibexecDir;
+      if (getenv ("PATH") != NULL)
+	{
+	  search_path += ":";
+	  search_path += getenv ("PATH");
+	}
+
       setenv ("PATH", search_path.c_str (), 1);
 
       /* Use our substituter by default.  */
