@@ -1543,7 +1543,7 @@ The list of phases used for a particular package can be changed with the
 #:phases (alist-delete 'configure %standard-phases)
 @end example
 
-means that all the phases described above will be used, expect the
+means that all the phases described above will be used, except the
 @code{configure} phase.
 
 In addition, this build system ensures that the ``standard'' environment
