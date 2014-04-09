@@ -78,12 +78,14 @@
 
                                              (make-disk-image? #f)
                                              (references-graphs #f)
+                                             (memory-size 256)
                                              (disk-image-size
                                               (* 100 (expt 2 20))))
   "Evaluate EXP in a QEMU virtual machine running LINUX with INITRD (a
 derivation).  In the virtual machine, EXP has access to all of INPUTS from the
 store; it should put its output files in the `/xchg' directory, which is
-copied to the derivation's output when the VM terminates.
+copied to the derivation's output when the VM terminates.  The virtual machine
+runs with MEMORY-SIZE MiB of memory.
 
 When MAKE-DISK-IMAGE? is true, then create a QEMU disk image of
 DISK-IMAGE-SIZE bytes and return it.
@@ -157,6 +159,7 @@ made available under the /xchg CIFS share."
 
          (and (zero?
                (system* qemu "-enable-kvm" "-nographic" "-no-reboot"
+                        "-m" ,(number->string memory-size)
                         "-net" "nic,model=virtio"
                         "-virtfs"
                         ,(string-append "local,id=store_dev,path=" (%store-prefix)
