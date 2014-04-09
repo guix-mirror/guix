@@ -70,7 +70,7 @@
                                              (inputs '())
                                              (linux linux-libre)
                                              initrd
-                                             (qemu qemu/smb-shares)
+                                             (qemu qemu-headless)
                                              (env-vars '())
                                              (modules '())
                                              (guile-for-build
@@ -157,8 +157,13 @@ made available under the /xchg CIFS share."
 
          (and (zero?
                (system* qemu "-enable-kvm" "-nographic" "-no-reboot"
-                        "-net" "nic,model=e1000"
-                        "-net" (string-append "user,smb=" (getcwd))
+                        "-net" "nic,model=virtio"
+                        "-virtfs"
+                        ,(string-append "local,id=store_dev,path=" (%store-prefix)
+                                        ",security_model=none,mount_tag=store")
+                        "-virtfs"
+                        ,(string-append "local,id=xchg_dev,path=xchg"
+                                        ",security_model=none,mount_tag=xchg")
                         "-kernel" linux
                         "-initrd" initrd
                         "-append" (string-append "console=ttyS0 --load="
@@ -182,7 +187,9 @@ made available under the /xchg CIFS share."
        (coreutils -> (car (assoc-ref %final-inputs "coreutils")))
        (initrd       (if initrd                   ; use the default initrd?
                          (return initrd)
-                         (qemu-initrd #:guile-modules-in-chroot? #t)))
+                         (qemu-initrd #:guile-modules-in-chroot? #t
+                                      #:mounts `((9p "store" ,(%store-prefix))
+                                                 (9p "xchg" "/xchg")))))
        (inputs       (lower-inputs `(("qemu" ,qemu)
                                      ("linux" ,linux)
                                      ("initrd" ,initrd)
@@ -304,7 +311,7 @@ such as /etc files."
               (begin
                 (display "creating ext3 partition...\n")
                 (and (zero? (system* mkfs "-F" "/dev/sda1"))
-                     (let ((store (string-append "/fs" ,%store-directory)))
+                     (let ((store (string-append "/fs" ,(%store-prefix))))
                        (display "mounting partition...\n")
                        (mkdir "/fs")
                        (mount "/dev/sda1" "/fs" "ext3")
