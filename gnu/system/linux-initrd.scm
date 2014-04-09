@@ -243,6 +243,7 @@ to it are lost."
 
 (define (gnu-system-initrd)
   "Initrd for the GNU system itself, with nothing QEMU-specific."
-  (qemu-initrd #:guile-modules-in-chroot? #f))
+  (qemu-initrd #:guile-modules-in-chroot? #f
+               #:mounts '()))
 
 ;;; linux-initrd.scm ends here
