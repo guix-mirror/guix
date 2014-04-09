@@ -44,15 +44,14 @@
   ;; This is QEMU without GUI support.
   (package
     (name "qemu-headless")
-    (version "1.6.1")
+    (version "1.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "152jc18mjs543k8ggbcwgra8d0zw81z0lcc1r0iq4iqhm926ywzw"))
-             (patches (list (search-patch "qemu-make-4.0.patch")))))
+               "1x5y06zhp0gc97g1sb98vf7dkawg63xywv0mbnpfnbi20jh452fn"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
@@ -74,6 +73,7 @@
                       (system* "./configure"
                                (string-append "--cc=" (which "gcc"))
                                "--disable-debug-info" ; save build space
+                               "--enable-virtfs"      ; just to be sure
                                (string-append "--prefix=" out)
                                (string-append "--smbd=" samba
                                               "/sbin/smbd")))))
@@ -103,6 +103,8 @@
        ("pixman" ,pixman)
        ;; ("vde2" ,vde2)
        ("util-linux" ,util-linux)
+       ("libcap" ,libcap)           ; virtfs support requires libcap & libattr
+       ("libattr" ,attr)
        ;; ("pciutils" ,pciutils)
        ("alsa-lib" ,alsa-lib)
        ("zlib" ,zlib)
