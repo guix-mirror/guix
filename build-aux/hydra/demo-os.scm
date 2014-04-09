@@ -22,7 +22,7 @@
 ;;; machine images that we build.
 ;;;
 
-(use-modules (gnu packages emacs)
+(use-modules (gnu packages zile)
              (gnu packages xorg)
              (gnu packages base)
              (gnu packages admin)
@@ -31,6 +31,7 @@
              (gnu packages linux)
              (gnu packages less)
              (gnu packages tor)
+             (gnu packages package-management)
 
              (gnu system shadow)                  ; 'user-account'
              (gnu services base)
@@ -46,8 +47,8 @@
                (uid 1000) (gid 100)
                (comment "Guest of GNU")
                (home-directory "/home/guest"))))
- (services (cons* (slim-service #:auto-login? #f
-                                #:default-user "root")
+ (services (cons* (slim-service #:auto-login? #t
+                                #:default-user "guest")
 
                   ;; QEMU networking settings.
                   (static-networking-service "eth0" "10.0.2.10"
@@ -57,6 +58,5 @@
                   %base-services))
  (packages (list bash coreutils findutils grep sed
                  procps psmisc less
-                 guile-2.0 dmd util-linux inetutils
-                 xterm emacs
-                 tor)))
+                 guile-2.0 dmd guix util-linux inetutils
+                 xterm zile)))
