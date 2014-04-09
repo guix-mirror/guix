@@ -168,7 +168,11 @@
                         (display (string-append "CONFIG_NET_9P=m\n"
                                                 "CONFIG_NET_9P_VIRTIO=m\n"
                                                 "CONFIG_VIRTIO_BLK=m\n"
+                                                "CONFIG_SATA_SIS=y\n"
                                                 "CONFIG_VIRTIO_NET=m\n"
+                                                "CONFIG_SIS190=y\n"
+                                                ;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
+                                                "CONFIG_DEVPTS_MULTIPLE_INSTANCES=y\n"
                                                 "CONFIG_VIRTIO_PCI=m\n"
                                                 "CONFIG_VIRTIO_BALLOON=m\n"
                                                 "CONFIG_VIRTIO_MMIO=m\n"
