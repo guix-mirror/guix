@@ -339,8 +339,10 @@ protected from garbage collection."
   (let* ((template (string-append (%store-prefix) "/guix-XXXXXX"))
          (port     (mkstemp! template)))
     (close-port port)
+
+    ;; Make sure TEMPLATE is not collected while we populate it.
     (with-store store
-      (add-temp-root store template))
+      (add-indirect-root store template))
 
     ;; There's a small window during which the GC could delete the file.  Try
     ;; again if that happens.
