@@ -120,9 +120,9 @@
          (device-number 5 2))
   (chmod (scope "dev/ptmx") #o666)
 
+  ;; Create /dev/pts; it will be mounted later, at boot time.
   (unless (file-exists? (scope "dev/pts"))
     (mkdir (scope "dev/pts")))
-  (mount "none" (scope "dev/pts") "devpts")
 
   ;; Rendez-vous point for syslogd.
   (mknod (scope "dev/log") 'socket #o666 0)
@@ -341,6 +341,12 @@ to it are lost."
           (format #t "loading '~a'...\n" to-load)
           (chdir "/root")
           (chroot "/root")
+
+          ;; Obviously this has to be done each time we boot.  Do it from here
+          ;; so that statfs(2) returns DEVPTS_SUPER_MAGIC like libc's getpt(3)
+          ;; expects (and thus openpty(3) and its users, such as xterm.)
+          (mount "none" "/dev/pts" "devpts")
+
           ;; TODO: Remove /lib, /share, and /loader.go.
           (catch #t
             (lambda ()
