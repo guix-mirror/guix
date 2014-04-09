@@ -37,8 +37,45 @@ directory, we recommend that you start with a fresh install to /gnu/store.
 *** New X and SLiM services in (gnu services xorg)
 *** New (guix git-download) and (guix svn-download) for git/svn checkouts
 ** GNU distribution
-*** FIXME new packages
-*** FIXME package updates
+*** 91 new packages
+
+a2ps, asciidoc, aspell-dict-en, aspell-dict-eo, aspell-dict-es,
+aspell-dict-fr, aumix, bitlbee, bogofilter, boost, calcurse, clusterssh,
+corkscrew, cursynth, docbook-xml, docbook-xsl, elfutils, enscript, fftwf,
+fltk, fuse, gcc-toolchain, giflib, glade, gmime, gnome-desktop, gnubg, gnubik,
+gnumach-headers, gnunet, gnuplot, gnurl, gphoto2, gtkglext, guile-json,
+guile-reader-for-guile_2.0.11, gxmessage, hdf5, hurd-headers, inkscape, iotop,
+isc-dhcp, iso-codes, jnettop, libatomic-ops, libexif, libgphoto2, libmpcdec,
+libmpdclient, libotr, libpcap, libpeas, libpipeline, libtirpc, libwebsockets,
+ltrace, luajit, lynx, man-db, mc, mig, miniupnpc, moe, mpc123, mpd, ncdc,
+ncdu, ncmpc, neon, neon, octave, opus, paperkey, patchutils, perl-tk,
+perl-x11-protocol, pinentry, python2-element-tree, python2-pybugz, quilt,
+source-highlight, stalonetray, trueprint, ttf-dejavu, unionfs-fuse,
+unionfs-fuse-static, uucp, vera, windowmaker, xapian, xterm
+
+*** 90 package updates
+
+apl-1.3, autoconf-2.68, automake-1.14.1, bash-4.3, bash-light-4.3,
+bigloo-4.1a, binutils-2.24, binutils-static-stripped-tarball-2.24,
+coreutils-8.22, curl-7.35.0, ed-1.10, ffmpeg-2.1.4, file-5.18, freeipmi-1.4.1,
+gcc-4.8.2, gcc-4.8.2, gdb-7.7, gdbm-1.11, gettext-0.18.3.2, glib-2.39.1,
+glibc-2.19, glibc-stripped-tarball-2.19, global-6.2.12, glpk-4.54,
+gnu-pw-mgr-1.2, gnupg-1.4.16, gnutls-3.2.12, gp2c-0.0.8pl1, grep-2.18,
+gst-plugins-base-0.10.36, gstreamer-1.0.10, gtk+-3.10.1, gtkmm-2.24.2,
+guile-2.0.11, guile-ssh-0.6.0, guile-static-stripped-tarball-2.0.11,
+guile-wm-1.0, guile-xcb-1.3, guix-0.5, help2man-1.45.1, icu4c-52.1,
+imagemagick-6.8.8-10, inetutils-1.9.2, lapack-3.5.0, libcdio-0.92,
+libdrm-2.4.46, libextractor-1.3, libgc-7.2e, libgc-7.4.0, libgcrypt-1.6.1,
+libjpeg-9, libmicrohttpd-0.9.34, libssh-0.6.3, libtasn1-3.4, lightning-2.0.3,
+linux-libre-3.13.7, mpc-1.0.2, mutt-1.5.23, net-base-5.2, ocrad-0.23,
+openssh-6.6p1, openssl-1.0.1g, parallel-20140322, pari-gp-2.7.0, pspp-0.8.2,
+pulseaudio-5.0, python-2.7.6, python-3.3.5, python-wrapper-3.3.5,
+python2-pysqlite-2.6.3a, qemu-1.7.1, qemu-headless-1.7.1,
+qemu-with-multiple-smb-shares-1.7.1, qt-4.8.5, qt-5.2.0, readline-6.3,
+recutils-1.7, slim-1.3.6, sqlite-3.8.4.3, subversion-1.7.14, texinfo-4.13a,
+tor-0.2.4.21, tzdata-2014a, units-2.11, valgrind-3.9.0, vim-7.4, wget-1.15,
+xnee-3.18, xorriso-1.3.6.pl01, zile-2.4.11
+
 *** New ‘gcc-toolchain’ meta-package, makes it easy to install a GCC tool chain
 *** libc’s Info manual is now installed
 *** Binutils is built with --enable-deterministic-archives
