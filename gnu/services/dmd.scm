@@ -69,6 +69,9 @@ ETC (the name of a directory in the store) on startup."
          (rm-f "/var/guix/gcroots/etc-directory")
          (symlink ,etc "/var/guix/gcroots/etc-directory"))
 
+       ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
+       (setenv "PATH" "/run/current-system/bin")
+
        (format #t "starting services...~%")
        (for-each start ',(append-map service-provision services))))
 
