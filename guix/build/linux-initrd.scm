@@ -107,6 +107,7 @@
   ;; TTYs.
   (mknod (scope "dev/tty") 'char-special #o600
          (device-number 5 0))
+  (chmod (scope "dev/tty") #o666)
   (let loop ((n 0))
     (and (< n 50)
          (let ((name (format #f "dev/tty~a" n)))
@@ -117,6 +118,7 @@
   ;; Pseudo ttys.
   (mknod (scope "dev/ptmx") 'char-special #o666
          (device-number 5 2))
+  (chmod (scope "dev/ptmx") #o666)
 
   (unless (file-exists? (scope "dev/pts"))
     (mkdir (scope "dev/pts")))
@@ -126,11 +128,22 @@
   (mknod (scope "dev/log") 'socket #o666 0)
   (mknod (scope "dev/kmsg") 'char-special #o600 (device-number 1 11))
 
-  ;; Other useful nodes.
-  (mknod (scope "dev/null") 'char-special #o666 (device-number 1 3))
-  (mknod (scope "dev/zero") 'char-special #o666 (device-number 1 5))
-  (chmod (scope "dev/null") #o666)
-  (chmod (scope "dev/zero") #o666))
+  ;; Other useful nodes, notably relied on by guix-daemon.
+  (for-each (match-lambda
+             ((file major minor)
+              (mknod (scope file) 'char-special #o666
+                     (device-number major minor))
+              (chmod (scope file) #o666)))
+            '(("dev/null" 1 3)
+              ("dev/zero" 1 5)
+              ("dev/full" 1 7)
+              ("dev/random" 1 8)
+              ("dev/urandom" 1 9)))
+
+  (symlink "/proc/self/fd" (scope "dev/fd"))
+  (symlink "/proc/self/fd/0" (scope "dev/stdin"))
+  (symlink "/proc/self/fd/1" (scope "dev/stdout"))
+  (symlink "/proc/self/fd/2" (scope "dev/stderr")))
 
 (define %host-qemu-ipv4-address
   (inet-pton AF_INET "10.0.2.10"))
