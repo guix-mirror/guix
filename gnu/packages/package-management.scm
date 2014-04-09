@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -31,15 +31,14 @@
 (define-public guix
   (package
     (name "guix")
-    (version "0.5")
+    (version "0.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "15azhc3lb1m64545q8cs8dzcgjbd2wjxhl6nw0rq6lnvrxz2wjmv"))
-             (patches (list (search-patch "guix-test-networking.patch")))))
+               "01xw51wizhsk827w4xp79k2b6dxjaviw04r6rbrb85qdxnwg6k9n"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list

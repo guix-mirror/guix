@@ -66,8 +66,8 @@ ETC (the name of a directory in the store) on startup."
                               (not (member file '("." ".."))))))
 
          ;; Prevent ETC from being GC'd.
-         (rm-f "/var/nix/gcroots/etc-directory")
-         (symlink ,etc "/var/nix/gcroots/etc-directory"))
+         (rm-f "/var/guix/gcroots/etc-directory")
+         (symlink ,etc "/var/guix/gcroots/etc-directory"))
 
        (format #t "starting services...~%")
        (for-each start ',(append-map service-provision services))))

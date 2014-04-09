@@ -449,7 +449,7 @@ basic contents of the root file system of OS."
           ;; XXX: Deal with automatically allocated ids.
           (uid  (or (user-account-uid user) 0))
           (gid  (or (user-account-gid user) 0))
-          (root (string-append "/var/nix/profiles/per-user/"
+          (root (string-append "/var/guix/profiles/per-user/"
                                (user-account-name user))))
       `((directory ,root ,uid ,gid)
         (directory ,home ,uid ,gid))))
@@ -462,14 +462,14 @@ basic contents of the root file system of OS."
               (directory "/etc")
               (directory "/var/log")                     ; for dmd
               (directory "/var/run/nscd")
-              (directory "/var/nix/gcroots")
-              ("/var/nix/gcroots/system" -> ,os-dir)
+              (directory "/var/guix/gcroots")
+              ("/var/guix/gcroots/system" -> ,os-dir)
               (directory "/run")
               ("/run/current-system" -> ,profile)
               (directory "/bin")
               ("/bin/sh" -> "/run/current-system/bin/bash")
               (directory "/tmp")
-              (directory "/var/nix/profiles/per-user/root" 0 0)
+              (directory "/var/guix/profiles/per-user/root" 0 0)
 
               (directory "/root" 0 0)             ; an exception
               ,@(append-map user-directories
