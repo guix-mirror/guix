@@ -324,7 +324,8 @@ providing the system administrator with some help in common tasks.")
         "1rpgghf7n0zx0cdy8hibr41wvkm2qp1yvd8ab1rxr193l1jmgcir"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:configure-flags '("--disable-use-tty-group")
+     `(#:configure-flags '("--disable-use-tty-group"
+                           "--enable-ddate")
        #:phases (alist-cons-after
                  'install 'patch-chkdupexe
                  (lambda* (#:key outputs #:allow-other-keys)
