@@ -52,7 +52,7 @@ To do so:
   - Install the dependencies (see 'Requirements' above) and build tools using
     Guix:
 
-      guix package --install={autoconf,automake,bzip2,gcc,binutils,ld-wrapper,glibc,gettext,guile,libgcrypt,pkg-config,sqlite}
+      guix package --install={autoconf,automake,bzip2,gcc-toolchain,gettext,guile,libgcrypt,pkg-config,sqlite}
 
   - set the environment variables that Guix recommends you to set during the
     package installation process:
