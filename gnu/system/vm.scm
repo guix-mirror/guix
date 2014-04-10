@@ -508,13 +508,11 @@ with the host."
 (define* (system-qemu-image/shared-store-script
           os
           #:key
-          (qemu (package (inherit qemu)
-                  ;; FIXME/TODO: Use 9p instead of this hack.
-                  (source (package-source qemu/smb-shares))))
+          (qemu qemu)
           (graphic? #t))
   "Return a derivation that builds a script to run a virtual machine image of
 OS that shares its store with the host."
-  (let* ((initrd (qemu-initrd #:mounts `((cifs "/store" ,(%store-prefix)))
+  (let* ((initrd (qemu-initrd #:mounts `((9p "store" ,(%store-prefix)))
                               #:volatile-root? #t))
          (os     (operating-system (inherit os) (initrd initrd))))
     (define builder
@@ -531,9 +529,9 @@ OS that shares its store with the host."
                      (lambda (port)
                        (display
                         (string-append "#!" ,bash "
-# TODO: -virtfs local,path=XXX,security_model=none,mount_tag=store
 exec " ,qemu " -enable-kvm -no-reboot -net nic,model=virtio \
-  -net user,smb=$PWD \
+  -virtfs local,path=" ,(%store-prefix) ",security_model=none,mount_tag=store \
+  -net user \
   -kernel " ,kernel " -initrd "
   ,(string-append (derivation->output-path initrd) "/initrd") " \
 -append \"" ,(if graphic? "" "console=ttyS0 ")
