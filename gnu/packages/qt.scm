@@ -68,7 +68,7 @@ X11 (yet).")
 (define-public qt
   (package
     (name "qt")
-    (version "5.2.0")
+    (version "5.2.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.qt-project.org/official_releases/qt/"
@@ -78,7 +78,7 @@ X11 (yet).")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0cch2mjk33x1511sqvvbfcxixpj64cfhq7kgszd422qzl3x2m8q0"))))
+               "0kkqrxpd9gqb52a2zj09d7vhd4adczpjg32vjvll5wyzmh092m85"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)))
