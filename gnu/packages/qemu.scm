@@ -132,19 +132,6 @@ server and embedded PowerPC, and S390 guests.")
     ;; Many files are GPLv2+, but some are GPLv2-only---e.g., `memory.c'.
     (license gpl2)))
 
-(define-public qemu/smb-shares
-  ;; A patched QEMU where `-net smb' yields two shares instead of one: one for
-  ;; the store, and another one for exchanges with the host.
-
-  ;; TODO: Use 9p/-virtfs instead of this SMB hack:
-  ;; <http://wiki.qemu.org/Documentation/9psetup>.
-  (package (inherit qemu-headless)
-    (name "qemu-with-multiple-smb-shares")
-    (source (origin (inherit (package-source qemu-headless))
-              (patches
-               (cons (search-patch "qemu-multiple-smb-shares.patch")
-                     (origin-patches (package-source qemu-headless))))))))
-
 (define-public qemu
   ;; QEMU with GUI support.
   (package (inherit qemu-headless)
