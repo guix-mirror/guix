@@ -217,154 +217,21 @@ such as /etc files."
    (expression->derivation-in-linux-vm
     "qemu-image"
     `(let ()
-       (use-modules (ice-9 rdelim)
-                    (srfi srfi-1)
-                    (guix build utils)
-                    (guix build linux-initrd))
+       (use-modules (guix build vm)
+                    (guix build utils))
 
-       (let ((parted  (string-append (assoc-ref %build-inputs "parted")
-                                     "/sbin/parted"))
-             (mkfs    (string-append (assoc-ref %build-inputs "e2fsprogs")
-                                     "/sbin/mkfs.ext3"))
-             (grub    (string-append (assoc-ref %build-inputs "grub")
-                                     "/sbin/grub-install"))
-             (umount  (string-append (assoc-ref %build-inputs "util-linux")
-                                     "/bin/umount")) ; XXX: add to Guile
-             (grub.cfg ,grub-configuration))
+       (set-path-environment-variable "PATH" '("bin" "sbin")
+                                      (map cdr %build-inputs))
 
-         (define (read-reference-graph port)
-           ;; Return a list of store paths from the reference graph at PORT.
-           ;; The data at PORT is the format produced by #:references-graphs.
-           (let loop ((line   (read-line port))
-                      (result '()))
-             (cond ((eof-object? line)
-                    (delete-duplicates result))
-                   ((string-prefix? "/" line)
-                    (loop (read-line port)
-                          (cons line result)))
-                   (else
-                    (loop (read-line port)
-                          result)))))
-
-         (define (things-to-copy)
-           ;; Return the list of store files to copy to the image.
-           (define (graph-from-file file)
-             (call-with-input-file file
-               read-reference-graph))
-
-           ,(match inputs-to-copy
-              (((graph-files . _) ...)
-               `(let* ((graph-files ',(map (cut string-append "/xchg/" <>)
-                                           graph-files))
-                       (paths       (append-map graph-from-file graph-files)))
-                  (delete-duplicates paths)))
-              (#f ''())))
-
-         ;; GRUB is full of shell scripts.
-         (setenv "PATH"
-                 (string-append (dirname grub) ":"
-                                (assoc-ref %build-inputs "coreutils") "/bin:"
-                                (assoc-ref %build-inputs "findutils") "/bin:"
-                                (assoc-ref %build-inputs "sed") "/bin:"
-                                (assoc-ref %build-inputs "grep") "/bin:"
-                                (assoc-ref %build-inputs "gawk") "/bin"))
-
-         (display "creating partition table...\n")
-         (and (zero? (system* parted "/dev/sda" "mklabel" "msdos"
-                              "mkpart" "primary" "ext2" "1MiB"
-                              ,(format #f "~aB"
-                                       (- disk-image-size
-                                          (* 5 (expt 2 20))))))
-              (begin
-                (display "creating ext3 partition...\n")
-                (and (zero? (system* mkfs "-F" "/dev/sda1"))
-                     (let ((store (string-append "/fs" ,(%store-prefix))))
-                       (display "mounting partition...\n")
-                       (mkdir "/fs")
-                       (mount "/dev/sda1" "/fs" "ext3")
-                       (mkdir-p "/fs/boot/grub")
-                       (symlink grub.cfg "/fs/boot/grub/grub.cfg")
-
-                       ;; Populate the image's store.
-                       (mkdir-p store)
-                       (chmod store #o1775)
-                       (for-each (lambda (thing)
-                                   (copy-recursively thing
-                                                     (string-append "/fs"
-                                                                    thing)))
-                                 (things-to-copy))
-
-                       ;; Populate /dev.
-                       (make-essential-device-nodes #:root "/fs")
-
-                       ;; Optionally, register the inputs in the image's store.
-                       (let* ((guix     (assoc-ref %build-inputs "guix"))
-                              (register (and guix
-                                             (string-append guix
-                                                            "/sbin/guix-register"))))
-                         ,@(if initialize-store?
-                               (match inputs-to-copy
-                                 (((graph-files . _) ...)
-                                  (map (lambda (closure)
-                                         `(system* register "--prefix" "/fs"
-                                                   ,(string-append "/xchg/"
-                                                                   closure)))
-                                       graph-files)))
-                               '(#f)))
-
-                       ;; Evaluate the POPULATE directives.
-                       ,@(let loop ((directives populate)
-                                    (statements '()))
-                           (match directives
-                             (()
-                              (reverse statements))
-                             ((('directory name) rest ...)
-                              (loop rest
-                                    (cons `(mkdir-p ,(string-append "/fs" name))
-                                          statements)))
-                             ((('directory name uid gid) rest ...)
-                              (let ((dir (string-append "/fs" name)))
-                                (loop rest
-                                      (cons* `(chown ,dir ,uid ,gid)
-                                             `(mkdir-p ,dir)
-                                             statements))))
-                             (((new '-> old) rest ...)
-                              (loop rest
-                                    (cons `(symlink ,old
-                                                    ,(string-append "/fs" new))
-                                          statements)))))
-
-                       (and=> (assoc-ref %build-inputs "populate")
-                              (lambda (populate)
-                                (chdir "/fs")
-                                (primitive-load populate)
-                                (chdir "/")))
-
-                       (display "clearing file timestamps...\n")
-                       (for-each (lambda (file)
-                                   (let ((s (lstat file)))
-                                     ;; XXX: Guile uses libc's 'utime' function
-                                     ;; (not 'futime'), so the timestamp of
-                                     ;; symlinks cannot be changed, and there
-                                     ;; are symlinks here pointing to
-                                     ;; /gnu/store, which is the host,
-                                     ;; read-only store.
-                                     (unless (eq? (stat:type s) 'symlink)
-                                       (utime file 0 0 0 0))))
-                                 (find-files "/fs" ".*"))
-
-                       (and (zero?
-                             (system* grub "--no-floppy"
-                                      "--boot-directory" "/fs/boot"
-                                      "/dev/sda"))
-                            (begin
-                              (when (file-exists? "/fs/dev/pts")
-                                ;; Unmount devpts so /fs itself can be
-                                ;; unmounted (failing to do that leads to
-                                ;; EBUSY.)
-                                (system* umount "/fs/dev/pts"))
-                              (zero? (system* umount "/fs")))
-                            (reboot))))))))
+       (let ((graphs ',(match inputs-to-copy
+                         (((names . _) ...)
+                          names))))
+         (initialize-hard-disk #:grub.cfg ,grub-configuration
+                               #:closures-to-copy graphs
+                               #:disk-image-size ,disk-image-size
+                               #:initialize-store? ,initialize-store?
+                               #:directives ',populate)
+         (reboot)))
     #:system system
     #:inputs `(("parted" ,parted)
                ("grub" ,grub)
