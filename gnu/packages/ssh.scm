@@ -29,6 +29,10 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages ncurses)
+  #:autoload   (gnu packages protobuf) (protobuf)
+  #:autoload   (gnu packages boost) (boost)
   #:use-module (gnu packages which)
   #:use-module (gnu packages)
   #:use-module (guix packages)
@@ -302,3 +306,45 @@ At the moment only plain text authentication is supported, should you require
 to use it with your HTTP proxy.  Digest based authentication may be supported
 in future and NTLM based authentication is most likey never be supported.")
     (license license:gpl2+)))
+
+(define-public mosh
+  (package
+    (name "mosh")
+    (version "1.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://mosh.mit.edu/mosh-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0inzfmqrab3n97m7rrmhd4xh3hjz0xva2sfl5m06w11668r0skg7"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-after
+                 'install 'wrap
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; Make sure 'mosh' can find 'mosh-client' and
+                   ;; 'mosh-server'.
+                   (let* ((out (assoc-ref outputs "out"))
+                          (bin (string-append out "/bin")))
+                     (wrap-program (string-append bin "/mosh")
+                                   `("PATH" ":" prefix (,bin)))))
+                 %standard-phases)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("openssl" ,openssl)
+       ("perl" ,perl)
+       ("perl-io-tty" ,perl-io-tty)
+       ("zlib" ,zlib)
+       ("ncurses" ,ncurses)
+       ("protobuf" ,protobuf)
+       ("boost-headers" ,boost)))
+    (home-page "http://mosh.mit.edu/")
+    (synopsis "Remote shell tolerant to intermittent connectivity")
+    (description
+     "Remote terminal application that allows roaming, supports intermittent
+connectivity, and provides intelligent local echo and line editing of user
+keystrokes.  Mosh is a replacement for SSH.  It's more robust and responsive,
+especially over Wi-Fi, cellular, and long-distance links.")
+    (license license:gpl3+)))
