@@ -64,6 +64,26 @@
 ;;;
 ;;; Code:
 
+(define* (input->name+output tuple #:key (system (%current-system)))
+  "Return as a monadic value a name/file-name pair corresponding to TUPLE, an
+input tuple.  The output file name is when building for SYSTEM."
+  (with-monad %store-monad
+    (match tuple
+      ((input (? package? package))
+       (mlet %store-monad ((out (package-file package #:system system)))
+         (return `(,input . ,out))))
+      ((input (? package? package) sub-drv)
+       (mlet %store-monad ((out (package-file package
+                                              #:output sub-drv
+                                              #:system system)))
+         (return `(,input . ,out))))
+      ((input (? derivation? drv))
+       (return `(,input . ,(derivation->output-path drv))))
+      ((input (? derivation? drv) sub-drv)
+       (return `(,input . ,(derivation->output-path drv sub-drv))))
+      ((input (and (? string?) (? store-path?) file))
+       (return `(,input . ,file))))))
+
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
                                              (system (%current-system))
@@ -97,23 +117,7 @@ made available under the /xchg CIFS share."
   ;; `build-expression->derivation'.
 
   (define input-alist
-    (with-monad %store-monad
-      (map (match-lambda
-            ((input (? package? package))
-             (mlet %store-monad ((out (package-file package #:system system)))
-               (return `(,input . ,out))))
-            ((input (? package? package) sub-drv)
-             (mlet %store-monad ((out (package-file package
-                                                    #:output sub-drv
-                                                    #:system system)))
-               (return `(,input . ,out))))
-            ((input (? derivation? drv))
-             (return `(,input . ,(derivation->output-path drv))))
-            ((input (? derivation? drv) sub-drv)
-             (return `(,input . ,(derivation->output-path drv sub-drv))))
-            ((input (and (? string?) (? store-path?) file))
-             (return `(,input . ,file))))
-           inputs)))
+    (map input->name+output inputs))
 
   (define builder
     ;; Code that launches the VM that evaluates EXP.
@@ -192,25 +196,9 @@ POPULATE is a list of directives stating directories or symlinks to be created
 in the disk image partition.  It is evaluated once the image has been
 populated with INPUTS-TO-COPY.  It can be used to provide additional files,
 such as /etc files."
-  (define (input->name+derivation tuple)
-    (with-monad %store-monad
-      (match tuple
-        ((name (? package? package))
-         (mlet %store-monad ((drv (package->derivation package system)))
-           (return `(,name . ,(derivation->output-path drv)))))
-        ((name (? package? package) sub-drv)
-         (mlet %store-monad ((drv (package->derivation package system)))
-           (return `(,name . ,(derivation->output-path drv sub-drv)))))
-        ((name (? derivation? drv))
-         (return `(,name . ,(derivation->output-path drv))))
-        ((name (? derivation? drv) sub-drv)
-         (return `(,name . ,(derivation->output-path drv sub-drv))))
-        ((input (and (? string?) (? store-path?) file))
-         (return `(,input . ,file))))))
-
   (mlet %store-monad
       ((graph (sequence %store-monad
-                        (map input->name+derivation inputs-to-copy))))
+                        (map input->name+output inputs-to-copy))))
    (expression->derivation-in-linux-vm
     "qemu-image"
     `(let ()
