@@ -81,6 +81,9 @@ input tuple.  The output file name is when building for SYSTEM."
       ((input (and (? string?) (? store-path?) file))
        (return `(,input . ,file))))))
 
+;; An alias to circumvent name clashes.
+(define %imported-modules imported-modules)
+
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
                                              (system (%current-system))
@@ -89,7 +92,10 @@ input tuple.  The output file name is when building for SYSTEM."
                                              initrd
                                              (qemu qemu-headless)
                                              (env-vars '())
-                                             (modules '())
+                                             (imported-modules
+                                              '((guix build vm)
+                                                (guix build linux-initrd)
+                                                (guix build utils)))
                                              (guile-for-build
                                               (%guile-for-build))
 
@@ -107,11 +113,13 @@ runs with MEMORY-SIZE MiB of memory.
 When MAKE-DISK-IMAGE? is true, then create a QEMU disk image of
 DISK-IMAGE-SIZE bytes and return it.
 
+IMPORTED-MODULES is the set of modules imported in the execution environment
+of EXP.
+
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs, as for `derivation'.  The files containing the reference graphs are
 made available under the /xchg CIFS share."
-  ;; FIXME: Allow use of macros from other modules, as done in
-  ;; `build-expression->derivation'.
+  ;; FIXME: Add #:modules parameter, for the 'use-modules' form.
 
   (define input-alist
     (map input->name+output inputs))
@@ -126,7 +134,7 @@ made available under the /xchg CIFS share."
                                      "/bzImage"))
              (initrd  (string-append (assoc-ref %build-inputs "initrd")
                                      "/initrd"))
-             (builder (assoc-ref %build-inputs "builder"))
+             (loader  (assoc-ref %build-inputs "loader"))
              (graphs  ',(match references-graphs
                           (((graph-files . _) ...) graph-files)
                           (_ #f))))
@@ -134,7 +142,7 @@ made available under the /xchg CIFS share."
          (set-path-environment-variable "PATH" '("bin")
                                         (map cdr %build-inputs))
 
-         (load-in-linux-vm builder
+         (load-in-linux-vm loader
                            #:output (assoc-ref %outputs "out")
                            #:linux linux #:initrd initrd
                            #:memory-size ,memory-size
@@ -144,10 +152,18 @@ made available under the /xchg CIFS share."
 
   (mlet* %store-monad
       ((input-alist  (sequence %store-monad input-alist))
+       (module-dir   (%imported-modules imported-modules))
+       (compiled     (compiled-modules imported-modules))
        (exp* ->      `(let ((%build-inputs ',input-alist))
                         ,exp))
        (user-builder (text-file "builder-in-linux-vm"
                                 (object->string exp*)))
+       (loader       (text-file* "linux-vm-loader" ; XXX: use 'sexp-file'
+                                 "(begin (set! %load-path (cons \""
+                                 module-dir "\" %load-path)) "
+                                 "(set! %load-compiled-path (cons \""
+                                 compiled "\" %load-compiled-path))"
+                                 "(primitive-load \"" user-builder "\"))"))
        (coreutils -> (car (assoc-ref %final-inputs "coreutils")))
        (initrd       (if initrd                   ; use the default initrd?
                          (return initrd)
@@ -159,6 +175,7 @@ made available under the /xchg CIFS share."
                                      ("initrd" ,initrd)
                                      ("coreutils" ,coreutils)
                                      ("builder" ,user-builder)
+                                     ("loader" ,loader)
                                      ,@inputs))))
     (derivation-expression name builder
                            ;; TODO: Require the "kvm" feature.
@@ -168,7 +185,8 @@ made available under the /xchg CIFS share."
                            #:modules (delete-duplicates
                                       `((guix build utils)
                                         (guix build vm)
-                                        ,@modules))
+                                        (guix build linux-initrd)
+                                        ,@imported-modules))
                            #:guile-for-build guile-for-build
                            #:references-graphs references-graphs)))
 
@@ -367,9 +385,7 @@ such as /etc files."
                ,@inputs-to-copy)
     #:make-disk-image? #t
     #:disk-image-size disk-image-size
-    #:references-graphs graph
-    #:modules '((guix build utils)
-                (guix build linux-initrd)))))
+    #:references-graphs graph)))
 
 
 ;;;
