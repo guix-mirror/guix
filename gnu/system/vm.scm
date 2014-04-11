@@ -23,10 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix monads)
   #:use-module ((gnu packages base)
-                #:select (%final-inputs
-                          guile-final gcc-final glibc-final
-                          ld-wrapper binutils-final
-                          coreutils findutils grep sed tzdata))
+                #:select (%final-inputs))
   #:use-module (gnu packages guile)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages less)
