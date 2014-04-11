@@ -181,6 +181,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/pth.scm				\
   gnu/packages/pulseaudio.scm			\
   gnu/packages/pretty-print.scm			\
+  gnu/packages/protobuf.scm			\
   gnu/packages/python.scm			\
   gnu/packages/qemu.scm				\
   gnu/packages/qt.scm				\
