@@ -133,10 +133,13 @@ system.")
   (if (string=? system "x86_64-linux")
       (let* ((dir  (dirname (assoc-ref (current-source-location) 'filename)))
              (file (string-append dir "/demo-os.scm"))
-             (os   (read-operating-system file)))
+             (os   (read-operating-system file))
+             (size (* 1400 (expt 2 20))))         ; 1.4GiB
         (if (operating-system? os)
             (list (->job 'qemu-image
-                         (run-with-store store (system-qemu-image os))))
+                         (run-with-store store
+                           (system-qemu-image os
+                                              #:disk-image-size size))))
             '()))
       '()))
 
