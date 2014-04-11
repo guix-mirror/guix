@@ -69,6 +69,7 @@ MODULES =					\
   guix/build/pull.scm				\
   guix/build/rpath.scm				\
   guix/build/svn.scm				\
+  guix/build/vm.scm				\
   guix/packages.scm				\
   guix/snix.scm					\
   guix/scripts/download.scm			\

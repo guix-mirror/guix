@@ -119,67 +119,27 @@ made available under the /xchg CIFS share."
     ;; Code that launches the VM that evaluates EXP.
     `(let ()
        (use-modules (guix build utils)
-                    (srfi srfi-1)
-                    (ice-9 rdelim))
+                    (guix build vm))
 
-       (let ((out     (assoc-ref %outputs "out"))
-             (cu      (string-append (assoc-ref %build-inputs "coreutils")
-                                     "/bin"))
-             (qemu    (string-append (assoc-ref %build-inputs "qemu")
-                                     "/bin/qemu-system-"
-                                     (car (string-split ,system #\-))))
-             (img     (string-append (assoc-ref %build-inputs "qemu")
-                                     "/bin/qemu-img"))
-             (linux   (string-append (assoc-ref %build-inputs "linux")
+       (let ((linux   (string-append (assoc-ref %build-inputs "linux")
                                      "/bzImage"))
              (initrd  (string-append (assoc-ref %build-inputs "initrd")
                                      "/initrd"))
-             (builder (assoc-ref %build-inputs "builder")))
+             (builder (assoc-ref %build-inputs "builder"))
+             (graphs  ',(match references-graphs
+                          (((graph-files . _) ...) graph-files)
+                          (_ #f))))
 
-         ;; XXX: QEMU uses "rm -rf" when it's done to remove the temporary SMB
-         ;; directory, so it really needs `rm' in $PATH.
-         (setenv "PATH" cu)
+         (set-path-environment-variable "PATH" '("bin")
+                                        (map cdr %build-inputs))
 
-         ,(if make-disk-image?
-              `(zero? (system* img "create" "-f" "qcow2" "image.qcow2"
-                               ,(number->string disk-image-size)))
-              '(begin))
-
-         (mkdir "xchg")
-
-         ;; Copy the reference-graph files under xchg/ so EXP can access it.
-         (begin
-           ,@(match references-graphs
-               (((graph-files . _) ...)
-                (map (lambda (file)
-                       `(copy-file ,file
-                                   ,(string-append "xchg/" file)))
-                     graph-files))
-               (#f '())))
-
-         (and (zero?
-               (system* qemu "-enable-kvm" "-nographic" "-no-reboot"
-                        "-m" ,(number->string memory-size)
-                        "-net" "nic,model=virtio"
-                        "-virtfs"
-                        ,(string-append "local,id=store_dev,path=" (%store-prefix)
-                                        ",security_model=none,mount_tag=store")
-                        "-virtfs"
-                        ,(string-append "local,id=xchg_dev,path=xchg"
-                                        ",security_model=none,mount_tag=xchg")
-                        "-kernel" linux
-                        "-initrd" initrd
-                        "-append" (string-append "console=ttyS0 --load="
-                                                 builder)
-                        ,@(if make-disk-image?
-                              '("-hda" "image.qcow2")
-                              '())))
-              ,(if make-disk-image?
-                   '(copy-file "image.qcow2"      ; XXX: who mkdir'd OUT?
-                               out)
-                   '(begin
-                      (mkdir out)
-                      (copy-recursively "xchg" out)))))))
+         (load-in-linux-vm builder
+                           #:output (assoc-ref %outputs "out")
+                           #:linux linux #:initrd initrd
+                           #:memory-size ,memory-size
+                           #:make-disk-image? ,make-disk-image?
+                           #:disk-image-size ,disk-image-size
+                           #:references-graphs graphs))))
 
   (mlet* %store-monad
       ((input-alist  (sequence %store-monad input-alist))
@@ -206,6 +166,7 @@ made available under the /xchg CIFS share."
                            #:env-vars env-vars
                            #:modules (delete-duplicates
                                       `((guix build utils)
+                                        (guix build vm)
                                         ,@modules))
                            #:guile-for-build guile-for-build
                            #:references-graphs references-graphs)))
