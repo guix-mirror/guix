@@ -121,7 +121,7 @@
 download with a fixed hash (aka. `fetchurl')."
   (match drv
     (($ <derivation>
-        (($ <derivation-output> _ (? symbol?) (? string?))))
+        (("out" . ($ <derivation-output> _ (? symbol?) (? bytevector?)))))
      #t)
     (_ #f)))
 

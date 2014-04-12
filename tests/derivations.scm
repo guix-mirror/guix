@@ -159,6 +159,16 @@
          ;; the contents.
          (valid-path? %store (derivation->output-path drv)))))
 
+(test-assert "fixed-output-derivation?"
+  (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
+                                        "echo -n hello > $out" '()))
+         (hash       (sha256 (string->utf8 "hello")))
+         (drv        (derivation %store "fixed"
+                                 %bash `(,builder)
+                                 #:inputs `((,builder))
+                                 #:hash hash #:hash-algo 'sha256)))
+    (fixed-output-derivation? drv)))
+
 (test-assert "fixed-output derivation"
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
                                         "echo -n hello > $out" '()))
