@@ -333,16 +333,15 @@ held."
       (when lock?
         (unlock-store-file target)))))
 
-(define (temporary-store-directory)
-  "Return the file name of a temporary directory created in the store that is
+(define (temporary-store-file)
+  "Return the file name of a temporary file created in the store that is
 protected from garbage collection."
   (let* ((template (string-append (%store-prefix) "/guix-XXXXXX"))
          (port     (mkstemp! template)))
     (close-port port)
 
     ;; Make sure TEMPLATE is not collected while we populate it.
-    (with-store store
-      (add-indirect-root store template))
+    (add-permanent-root template)
 
     ;; There's a small window during which the GC could delete the file.  Try
     ;; again if that happens.
@@ -351,30 +350,25 @@ protected from garbage collection."
           ;; It's up to the caller to create that file or directory.
           (delete-file template)
           template)
-        (temporary-store-directory))))
+        (begin
+          (remove-permanent-root template)
+          (temporary-store-file)))))
 
-(define* (restore-file-set port
-                           #:key (verify-signature? #t) (lock? #t)
+(define-syntax-rule (with-temporary-store-file name body ...)
+  "Evaluate BODY with NAME bound to the file name of a temporary store item
+protected from GC."
+  (let ((name (temporary-store-file)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        body ...)
+      (lambda ()
+        (remove-permanent-root name)))))
+
+(define* (restore-one-item port
+                           #:key acl (verify-signature? #t) (lock? #t)
                            (log-port (current-error-port)))
-  "Restore the file set read from PORT to the store.  The format of the data
-on PORT must be as created by 'export-paths'---i.e., a series of Nar-formatted
-archives with interspersed meta-data joining them together, possibly with a
-digital signature at the end.  Log progress to LOG-PORT.  Return the list of
-files restored.
-
-When LOCK? is #f, assume locks for the files to be restored are already held.
-This is the case when the daemon calls a build hook.
-
-Note that this procedure accesses the store directly, so it's only meant to be
-used by the daemon's build hooks since they cannot call back to the daemon
-while the locks are held."
-  (define %export-magic
-    ;; Number used to identify genuine file set archives.
-    #x4558494e)
-
-  (define port*
-    ;; Keep that one around, for error conditions.
-    port)
+  "Restore one store item from PORT; return its file name on success."
 
   (define (assert-valid-signature signature hash file)
     ;; Bail out if SIGNATURE, which must be a string as produced by
@@ -416,56 +410,93 @@ s-expression"))
                  (&nar-signature-error
                   (signature signature) (file file) (port port))))))))
 
+  (define %export-magic
+    ;; Number used to identify genuine file set archives.
+    #x4558494e)
+
+  (define port*
+    ;; Keep that one around, for error conditions.
+    port)
+
+  (let-values (((port get-hash)
+                (open-sha256-input-port port)))
+    (with-temporary-store-file temp
+      (restore-file port temp)
+
+      (let ((magic (read-int port)))
+        (unless (= magic %export-magic)
+          (raise (condition
+                  (&message (message "corrupt file set archive"))
+                  (&nar-read-error
+                   (port port*) (file #f) (token #f))))))
+
+      (let ((file     (read-store-path port))
+            (refs     (read-store-path-list port))
+            (deriver  (read-string port))
+            (hash     (get-hash))
+            (has-sig? (= 1 (read-int port))))
+        (format log-port
+                (_ "importing file or directory '~a'...~%")
+                file)
+
+        (let ((sig (and has-sig? (read-string port))))
+          (when verify-signature?
+            (if sig
+                (begin
+                  (assert-valid-signature sig hash file)
+                  (format log-port
+                          (_ "found valid signature for '~a'~%")
+                          file)
+                  (finalize-store-file temp file
+                                       #:references refs
+                                       #:deriver deriver
+                                       #:lock? lock?))
+                (raise (condition
+                        (&message (message "imported file lacks \
+a signature"))
+                        (&nar-signature-error
+                         (port port*) (file file) (signature #f))))))
+          file)))))
+
+(define* (restore-file-set port
+                           #:key (verify-signature? #t) (lock? #t)
+                           (log-port (current-error-port)))
+  "Restore the file set read from PORT to the store.  The format of the data
+on PORT must be as created by 'export-paths'---i.e., a series of Nar-formatted
+archives with interspersed meta-data joining them together, possibly with a
+digital signature at the end.  Log progress to LOG-PORT.  Return the list of
+files restored.
+
+When LOCK? is #f, assume locks for the files to be restored are already held.
+This is the case when the daemon calls a build hook.
+
+Note that this procedure accesses the store directly, so it's only meant to be
+used by the daemon's build hooks since they cannot call back to the daemon
+while the locks are held."
+  (define acl
+    (current-acl))
+
   (let loop ((n     (read-long-long port))
              (files '()))
     (case n
       ((0)
        (reverse files))
       ((1)
-       (let-values (((port get-hash)
-                     (open-sha256-input-port port)))
-         (let ((temp (temporary-store-directory)))
-           (restore-file port temp)
-           (let ((magic (read-int port)))
-             (unless (= magic %export-magic)
-               (raise (condition
-                       (&message (message "corrupt file set archive"))
-                       (&nar-read-error
-                        (port port*) (file #f) (token #f))))))
-
-           (let ((file     (read-store-path port))
-                 (refs     (read-store-path-list port))
-                 (deriver  (read-string port))
-                 (hash     (get-hash))
-                 (has-sig? (= 1 (read-int port))))
-             (format log-port
-                     (_ "importing file or directory '~a'...~%")
-                     file)
-
-             (let ((sig (and has-sig? (read-string port))))
-               (when verify-signature?
-                 (if sig
-                     (begin
-                       (assert-valid-signature sig hash file)
-                       (format log-port
-                               (_ "found valid signature for '~a'~%")
-                               file)
-                       (finalize-store-file temp file
-                                            #:references refs
-                                            #:deriver deriver
-                                            #:lock? lock?)
-                       (loop (read-long-long port)
-                             (cons file files)))
-                     (raise (condition
-                             (&message (message "imported file lacks \
-a signature"))
-                             (&nar-signature-error
-                              (port port*) (file file) (signature #f)))))))))))
+       (let ((file
+              (restore-one-item port
+                                #:acl acl #:verify-signature? verify-signature?
+                                #:lock? lock? #:log-port log-port)))
+         (loop (read-long-long port)
+               (cons file files))))
       (else
        ;; Neither 0 nor 1.
        (raise (condition
                (&message (message "invalid inter-file archive mark"))
                (&nar-read-error
                 (port port) (file #f) (token #f))))))))
+
+;;; Local Variables:
+;;; eval: (put 'with-temporary-store-file 'scheme-indent-function 1)
+;;; End:
 
 ;;; nar.scm ends here
