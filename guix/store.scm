@@ -21,6 +21,7 @@
   #:use-module (guix utils)
   #:use-module (guix config)
   #:use-module (guix serialization)
+  #:autoload   (guix base32) (bytevector->base32-string)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
@@ -35,6 +36,7 @@
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 popen)
   #:export (%daemon-socket-file
+            %gc-roots-directory
 
             nix-server?
             nix-server-major-version
@@ -63,6 +65,8 @@
             build-derivations
             add-temp-root
             add-indirect-root
+            add-permanent-root
+            remove-permanent-root
 
             substitutable?
             substitutable-path
@@ -570,11 +574,39 @@ Return #t."
   boolean)
 
 (define-operation (add-indirect-root (string file-name))
-  "Make FILE-NAME an indirect root for the garbage collector; FILE-NAME
-can be anywhere on the file system, but it must be an absolute file
-name--it is the caller's responsibility to ensure that it is an absolute
-file name.  Return #t on success."
+  "Make the symlink FILE-NAME an indirect root for the garbage collector:
+whatever store item FILE-NAME points to will not be collected.  Return #t on
+success.
+
+FILE-NAME can be anywhere on the file system, but it must be an absolute file
+name--it is the caller's responsibility to ensure that it is an absolute file
+name."
   boolean)
+
+(define %gc-roots-directory
+  ;; The place where garbage collector roots (symlinks) are kept.
+  (string-append %state-directory "/gcroots"))
+
+(define (add-permanent-root target)
+  "Add a garbage collector root pointing to TARGET, an element of the store,
+preventing TARGET from even being collected.  This can also be used if TARGET
+does not exist yet.
+
+Raise an error if the caller does not have write access to the GC root
+directory."
+  (let* ((root (string-append %gc-roots-directory "/" (basename target))))
+    (catch 'system-error
+      (lambda ()
+        (symlink target root))
+      (lambda args
+        ;; If ROOT already exists, this is fine; otherwise, re-throw.
+        (unless (= EEXIST (system-error-errno args))
+          (apply throw args))))))
+
+(define (remove-permanent-root target)
+  "Remove the permanent garbage collector root pointing to TARGET.  Raise an
+error if there is no such root."
+  (delete-file (string-append %gc-roots-directory "/" (basename target))))
 
 (define references
   (operation (query-references (store-path path))

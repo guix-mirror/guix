@@ -147,6 +147,18 @@
 ;;          (valid-path? %store p1)
 ;;          (member (pk p2) (live-paths %store)))))
 
+(test-assert "permanent root"
+  (let* ((p  (with-store store
+               (let ((p (add-text-to-store store "random-text"
+                                           (random-text))))
+                 (add-permanent-root p)
+                 (add-permanent-root p)           ; should not throw
+                 p))))
+    (and (member p (live-paths %store))
+         (begin
+           (remove-permanent-root p)
+           (->bool (member p (dead-paths %store)))))))
+
 (test-assert "dead path can be explicitly collected"
   (let ((p (add-text-to-store %store "random-text"
                               (random-text) '())))
