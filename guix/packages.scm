@@ -317,7 +317,8 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
 
   (define (numeric-extension? file-name)
     ;; Return true if FILE-NAME ends with digits.
-    (string-every char-set:hex-digit (file-extension file-name)))
+    (and=> (file-extension file-name)
+           (cut string-every char-set:hex-digit <>)))
 
   (define (tarxz-name file-name)
     ;; Return a '.tar.xz' file name based on FILE-NAME.
