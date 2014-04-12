@@ -145,9 +145,11 @@ a server that supports the SSH-2 protocol.")
    (version "6.6p1")
    (source (origin
             (method url-fetch)
-            (uri (string-append
-                   "ftp://ftp.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/openssh-"
-                   version ".tar.gz"))
+            (uri (let ((tail (string-append name "-" version ".tar.gz")))
+                   (list (string-append "ftp://ftp.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
+                                        tail)
+                         (string-append "ftp://ftp2.fr.openbsd.org/pub/OpenBSD/OpenSSH/portable/"
+                                        tail))))
             (sha256 (base32
                      "1fq3w86q05y5nn6z878wm312k0svaprw8k007188fd259dkg1ha8"))))
    (build-system gnu-build-system)
