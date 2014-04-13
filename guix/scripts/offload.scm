@@ -474,7 +474,9 @@ success, #f otherwise."
                 (warning (_ "failed while exporting files to '~a': ~a~%")
                          (build-machine-name machine)
                          (strerror (system-error-errno args)))))))
-        #t))))
+
+        ;; Wait for the 'lsh' process to complete.
+        (zero? (close-pipe pipe))))))
 
 (define (retrieve-files files machine)
   "Retrieve FILES from MACHINE's store, and import them."
@@ -502,7 +504,8 @@ success, #f otherwise."
                                    #:log-port (current-error-port)
                                    #:lock? #f)))
 
-             #t)))))
+             ;; Wait for the 'lsh' process to complete.
+             (zero? (close-pipe pipe)))))))
 
 
 ;;;

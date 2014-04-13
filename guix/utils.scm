@@ -229,14 +229,12 @@ a symbol such as 'xz."
 
 (define (call-with-decompressed-port compression port proc)
   "Call PROC with a wrapper around PORT, a file port, that decompresses data
-read from PORT according to COMPRESSION, a symbol such as 'xz.  PORT is closed
-as soon as PROC's dynamic extent is entered."
+read from PORT according to COMPRESSION, a symbol such as 'xz."
   (let-values (((decompressed pids)
                 (decompressed-port compression port)))
     (dynamic-wind
       (const #f)
       (lambda ()
-        (close-port port)
         (proc decompressed))
       (lambda ()
         (close-port decompressed)
@@ -286,14 +284,12 @@ of PIDs to wait for."
 
 (define (call-with-compressed-output-port compression port proc)
   "Call PROC with a wrapper around PORT, a file port, that compresses data
-that goes to PORT according to COMPRESSION, a symbol such as 'xz.  PORT is
-closed as soon as PROC's dynamic extent is entered."
+that goes to PORT according to COMPRESSION, a symbol such as 'xz."
   (let-values (((compressed pids)
                 (compressed-output-port compression port)))
     (dynamic-wind
       (const #f)
       (lambda ()
-        (close-port port)
         (proc compressed))
       (lambda ()
         (close-port compressed)
