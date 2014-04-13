@@ -1002,6 +1002,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
            ((#:phases phases)
             `(alist-delete 'symlink-libgcc_eh ,phases)))))
 
+    ;; This time we want Texinfo, so we get the manual.
+    (native-inputs `(("texinfo" ,texinfo-boot0)
+                     ,@(package-native-inputs gcc-boot0)))
+
     (inputs `(("gmp-source" ,(package-source gmp))
               ("mpfr-source" ,(package-source mpfr))
               ("mpc-source" ,(package-source mpc))
