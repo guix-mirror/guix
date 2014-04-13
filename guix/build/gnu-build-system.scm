@@ -97,7 +97,11 @@ working directory."
       (begin
         (mkdir "source")
         (chdir "source")
-        (copy-recursively source ".")
+
+        ;; Preserve timestamps (set to the Epoch) on the copied tree so that
+        ;; things work deterministically.
+        (copy-recursively source "."
+                          #:keep-mtime? #t)
         #t)
       (and (zero? (system* "tar" "xvf" source))
            (chdir (first-subdirectory ".")))))

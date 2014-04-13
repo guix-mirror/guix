@@ -201,16 +201,7 @@ client and server, a telnet client and server, and an rsh client and server.")
                       (delete-file (string-append bin "/groups"))
                       (for-each delete-file (find-files man "^groups\\."))
                       #t))
-                  (alist-cons-after
-                   'unpack 'reset-timestamps
-                   (lambda _
-                     ;; FIXME: Reset the file timestamps here, until the
-                     ;; 'unpack' phase does it for us.  See
-                     ;; <https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00098.html>.
-                     (for-each (lambda (file)
-                                 (utime file 0 0 0))
-                               (find-files "." "")))
-                   %standard-phases)))))
+                  %standard-phases))))
 
     (inputs (if (string-suffix? "-linux"
                                 (or (%current-target-system)

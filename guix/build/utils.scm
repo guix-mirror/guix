@@ -134,9 +134,12 @@ return values of applying PROC to the port."
 (define* (copy-recursively source destination
                            #:key
                            (log (current-output-port))
-                           (follow-symlinks? #f))
+                           (follow-symlinks? #f)
+                           keep-mtime?)
   "Copy SOURCE directory to DESTINATION.  Follow symlinks if FOLLOW-SYMLINKS?
-is true; otherwise, just preserve them.  Write verbose output to the LOG port."
+is true; otherwise, just preserve them.  When KEEP-MTIME? is true, keep the
+modification time of the files in SOURCE on those of DESTINATION.  Write
+verbose output to the LOG port."
   (define strip-source
     (let ((len (string-length source)))
       (lambda (file)
@@ -152,10 +155,15 @@ is true; otherwise, just preserve them.  Write verbose output to the LOG port."
                            (let ((target (readlink file)))
                              (symlink target dest)))
                           (else
-                           (copy-file file dest)))))
+                           (copy-file file dest)
+                           (when keep-mtime?
+                             (set-file-time dest stat))))))
                     (lambda (dir stat result)     ; down
-                      (mkdir-p (string-append destination
-                                              (strip-source dir))))
+                      (let ((target (string-append destination
+                                                   (strip-source dir))))
+                        (mkdir-p target)
+                        (when keep-mtime?
+                          (set-file-time target stat))))
                     (lambda (dir stat result)     ; up
                       result)
                     (const #t)                    ; skip
