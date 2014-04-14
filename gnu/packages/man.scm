@@ -117,7 +117,7 @@ the traditional flat-text whatis databases.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://kernel/linux/docs/man-pages/man-pages-"
+                    "mirror://kernel.org/linux/docs/man-pages/man-pages-"
                     version ".tar.xz"))
               (sha256
                (base32
