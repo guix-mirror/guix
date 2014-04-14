@@ -143,7 +143,10 @@
   (symlink "/proc/self/fd" (scope "dev/fd"))
   (symlink "/proc/self/fd/0" (scope "dev/stdin"))
   (symlink "/proc/self/fd/1" (scope "dev/stdout"))
-  (symlink "/proc/self/fd/2" (scope "dev/stderr")))
+  (symlink "/proc/self/fd/2" (scope "dev/stderr"))
+
+  ;; File systems in user space (FUSE).
+  (mknod (scope "dev/fuse") 'char-special #o666 (device-number 10 229)))
 
 (define %host-qemu-ipv4-address
   (inet-pton AF_INET "10.0.2.10"))
@@ -212,7 +215,7 @@ the last argument of `mknod'."
                       (linux-modules '())
                       qemu-guest-networking?
                       guile-modules-in-chroot?
-                      volatile-root?
+                      volatile-root? unionfs
                       (mounts '()))
   "This procedure is meant to be called from an initrd.  Boot a system by
 first loading LINUX-MODULES, then setting up QEMU guest networking if
@@ -277,27 +280,20 @@ to it are lost."
           (lambda ()
             (if volatile-root?
                 (begin
-                  ;; XXX: For lack of a union file system...
                   (mkdir-p "/real-root")
                   (mount root "/real-root" "ext3" MS_RDONLY)
-                  (mount "none" "/root" "tmpfs")
+                  (mkdir-p "/rw-root")
+                  (mount "none" "/rw-root" "tmpfs")
 
-                  ;; XXX: 'copy-recursively' cannot deal with device nodes, so
-                  ;; explicitly avoid /dev.
-                  (for-each (lambda (file)
-                              (unless (string=? "dev" file)
-                                (copy-recursively (string-append "/real-root/"
-                                                                 file)
-                                                  (string-append "/root/"
-                                                                 file)
-                                                  #:log (%make-void-port
-                                                         "w"))))
-                            (scandir "/real-root"
-                                     (lambda (file)
-                                       (not (member file '("." ".."))))))
+                  ;; We want read-write /dev nodes.
+                  (make-essential-device-nodes #:root "/rw-root")
 
-                  ;; TODO: Unmount /real-root.
-                  )
+                  ;; Make /root a union of the tmpfs and the actual root.
+                  (unless (zero? (system* unionfs "-o"
+                                          "cow,allow_other,use_ino,dev"
+                                          "/rw-root=RW:/real-root=RO"
+                                          "/root"))
+                    (error "unionfs failed")))
                 (mount root "/root" "ext3")))
           (lambda args
             (format (current-error-port) "exception while mounting '~a': ~s~%"

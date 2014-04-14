@@ -21,12 +21,15 @@
   #:use-module (guix utils)
   #:use-module ((guix store)
                 #:select (%store-prefix))
+  #:use-module ((guix derivations)
+                #:select (derivation->output-path))
   #:use-module (gnu packages cpio)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
+  #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:export (expression->initrd
             qemu-initrd
@@ -49,12 +52,14 @@
                              (name "guile-initrd")
                              (system (%current-system))
                              (modules '())
+                             (inputs '())
                              (linux #f)
                              (linux-modules '()))
   "Return a package that contains a Linux initrd (a gzipped cpio archive)
 containing GUILE and that evaluates EXP upon booting.  LINUX-MODULES is a list
-of `.ko' file names to be copied from LINUX into the initrd.  MODULES is a
-list of Guile module names to be embedded in the initrd."
+of `.ko' file names to be copied from LINUX into the initrd.  INPUTS is a list
+of additional inputs to be copied in the initrd.  MODULES is a list of Guile
+module names to be embedded in the initrd."
 
   ;; General Linux overview in `Documentation/early-userspace/README' and
   ;; `Documentation/filesystems/ramfs-rootfs-initramfs.txt'.
@@ -63,7 +68,16 @@ list of Guile module names to be embedded in the initrd."
     ;; Return a regexp that matches STR exactly.
     (string-append "^" (regexp-quote str) "$"))
 
-  (define builder
+  (define (files-to-copy)
+    (mlet %store-monad ((inputs (lower-inputs inputs)))
+      (return (map (match-lambda
+                    ((_ drv)
+                     (derivation->output-path drv))
+                    ((_ drv sub-drv)
+                     (derivation->output-path drv sub-drv)))
+                   inputs))))
+
+  (define (builder to-copy)
     `(begin
        (use-modules (guix build utils)
                     (ice-9 pretty-print)
@@ -137,6 +151,18 @@ list of Guile module names to be embedded in the initrd."
                                  ,module module-dir))))
                     linux-modules))
 
+           ,@(if (null? to-copy)
+                 '()
+                 `((let ((store ,(string-append "." (%store-prefix))))
+                     (mkdir-p store)
+                     ;; XXX: Should we do export-references-graph?
+                     (for-each (lambda (input)
+                                 (let ((target
+                                        (string-append store "/"
+                                                       (basename input))))
+                                  (copy-recursively input target)))
+                               ',to-copy))))
+
            ;; Reset the timestamps of all the files that will make it in the
            ;; initrd.
            (for-each (cut utime <> 0 0 0 0)
@@ -184,8 +210,10 @@ list of Guile module names to be embedded in the initrd."
                     ("modules/compiled" ,compiled)
                     ,@(if linux
                           `(("linux" ,linux))
-                          '())))))
-   (derivation-expression name builder
+                          '())
+                    ,@inputs)))
+       (to-copy  (files-to-copy)))
+   (derivation-expression name (builder to-copy)
                           #:modules '((guix build utils))
                           #:inputs inputs)))
 
@@ -224,22 +252,31 @@ to it are lost."
             '())
       ,@(if (assoc-ref mounts '9p)
             virtio-9p-modules
+            '())
+      ,@(if volatile-root?
+            '("fuse.ko")
             '())))
 
-  (expression->initrd
-   `(begin
-      (use-modules (guix build linux-initrd))
+  (mlet %store-monad
+      ((unionfs (package-file unionfs-fuse/static "bin/unionfs")))
+    (expression->initrd
+     `(begin
+        (use-modules (guix build linux-initrd))
 
-      (boot-system #:mounts ',mounts
-                   #:linux-modules ',linux-modules
-                   #:qemu-guest-networking? #t
-                   #:guile-modules-in-chroot? ',guile-modules-in-chroot?
-                   #:volatile-root? ',volatile-root?))
-   #:name "qemu-initrd"
-   #:modules '((guix build utils)
-               (guix build linux-initrd))
-   #:linux linux-libre
-   #:linux-modules linux-modules))
+        (boot-system #:mounts ',mounts
+                     #:linux-modules ',linux-modules
+                     #:qemu-guest-networking? #t
+                     #:guile-modules-in-chroot? ',guile-modules-in-chroot?
+                     #:unionfs ,unionfs
+                     #:volatile-root? ',volatile-root?))
+     #:name "qemu-initrd"
+     #:modules '((guix build utils)
+                 (guix build linux-initrd))
+     #:linux linux-libre
+     #:linux-modules linux-modules
+     #:inputs (if volatile-root?
+                  `(("unionfs" ,unionfs-fuse/static))
+                  '()))))
 
 (define (gnu-system-initrd)
   "Initrd for the GNU system itself, with nothing QEMU-specific."
