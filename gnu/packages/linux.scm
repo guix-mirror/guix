@@ -962,6 +962,23 @@ space, using the FUSE library.  Mounting a union file system allows you to
 UnionFS-FUSE additionally supports copy-on-write.")
     (license bsd-3)))
 
+(define fuse-static
+  (package (inherit fuse)
+    (name "fuse-static")
+    (source (origin (inherit (package-source fuse))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Normally libfuse invokes mount(8) so that /etc/mtab is
+               ;; updated.  Change calls to 'mtab_needs_update' to 0 so that
+               ;; it doesn't do that, allowing us to remove the dependency on
+               ;; util-linux (something that is useful in initrds.)
+               '(substitute* '("lib/mount_util.c"
+                               "util/mount_util.c")
+                  (("mtab_needs_update[[:blank:]]*\\([a-z_]+\\)")
+                   "0")
+                  (("/bin/")
+                   "")))))))
+
 (define-public unionfs-fuse/static
   (package (inherit unionfs-fuse)
     (synopsis "User-space union file system (statically linked)")
@@ -976,4 +993,5 @@ UnionFS-FUSE additionally supports copy-on-write.")
                                   libs " dl)"))))))
     (arguments
      '(#:tests? #f
-       #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")))))
+       #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")))
+    (inputs `(("fuse" ,fuse-static)))))
