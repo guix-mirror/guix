@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -728,9 +729,13 @@ identifier SYSTEM."
                                           source)))
                              (list gmp mpfr mpc))
 
-                   ;; Create symlinks like `gmp' -> `gmp-5.0.5'.
+                   ;; Create symlinks like `gmp' -> `gmp-x.y.z'.
                    ,@(map (lambda (lib)
-                            `(symlink ,(package-full-name lib)
+                            ;; Drop trailing letters, as gmp-6.0.0a unpacks
+                            ;; into gmp-6.0.0.
+                            `(symlink ,(string-trim-right
+                                        (package-full-name lib)
+                                        char-set:letter)
                                       ,(package-name lib)))
                           (list gmp mpfr mpc))))
                (alist-cons-after
