@@ -102,6 +102,10 @@ a flexible and convenient way.")
        ("groff" ,groff)
        ("less" ,less)
        ("libpipeline" ,libpipeline)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "MANPATH")
+            (directories '("share/man")))))
     (home-page "http://man-db.nongnu.org/")
     (synopsis "Standard Unix documentation system")
     (description
