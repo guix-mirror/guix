@@ -44,6 +44,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages texinfo)
   #:use-module (gnu packages xorg))
 
 (define-public dmd
@@ -576,3 +577,46 @@ by bandwidth they use.")
 console window to allow commands to be interactively run on multiple servers
 over ssh connections.")
     (license gpl2+)))
+
+(define-public rottlog
+  (package
+    (name "rottlog")
+    (version "0.72.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/rottlog/rottlog-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0751mb9l2f0jrk3vj6q8ilanifd121dliwk0c34g8k0dlzsv3kd7"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile.in"
+                  (("-o \\$\\{LOG_OWN\\} -g \\$\\{LOG_GROUP\\}")
+                   ;; Don't try to chown root.
+                   "")
+                  (("mkdir -p \\$\\(ROTT_STATDIR\\)")
+                   ;; Don't attempt to create /var/lib/rottlog.
+                   "true")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list (string-append "ROTT_ETCDIR="
+                                              (assoc-ref %outputs "out")
+                                              "/etc")
+                               "--localstatedir=/var")
+       #:phases (alist-cons-after
+                 'install 'install-info
+                 (lambda _
+                   (zero? (system* "make" "install-info")))
+                 %standard-phases)))
+    (native-inputs `(("texinfo" ,texinfo)
+                     ("util-linux" ,util-linux))) ; for 'cal'
+    (home-page "http://www.gnu.org/software/rottlog/")
+    (synopsis "Log rotation and management")
+    (description
+     "GNU Rot[t]log is a program for managing log files.  It is used to
+automatically rotate out log files when they have reached a given size or
+according to a given schedule.  It can also be used to automatically compress
+and archive such logs.  Rot[t]log will mail reports of its activity to the
+system administrator.")
+    (license gpl3+)))
