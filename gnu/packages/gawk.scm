@@ -27,13 +27,13 @@
 (define-public gawk
   (package
    (name "gawk")
-   (version "4.1.1")
+   (version "4.1.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/gawk/gawk-" version
                                 ".tar.xz"))
             (sha256
-             (base32 "1nz83vpss8xv7m475sv4qhhj40g74nvcw0y9kwq9ds8wzfmcdm7g"))))
+             (base32 "0hin2hswbbd6kd6i4zzvgciwpl5fba8d2s524z8y5qagyz3x010q"))))
    (build-system gnu-build-system)
    (arguments
     `(#:parallel-tests? #f                ; test suite fails in parallel
