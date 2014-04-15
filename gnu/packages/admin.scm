@@ -40,6 +40,8 @@
                 #:select (tar))
   #:use-module ((gnu packages compression)
                 #:select (gzip))
+  #:use-module ((gnu packages openssl)
+                #:renamer (symbol-prefix-proc 'o:))
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
@@ -493,12 +495,9 @@ network statistics collection, security monitoring, network debugging, etc.")
                (base32
                 "15hb7zkzd66nag102qbv100hcnf7frglbkylmr8adwr8f5jkkaql"))))
     (build-system gnu-build-system)
-    (inputs `(("libpcap" ,libpcap)))
+    (inputs `(("libpcap" ,libpcap)
+              ("openssl" ,o:openssl)))
     (native-inputs `(("perl" ,perl)))        ; for tests
-    (arguments
-     ;; XXX: Temporarily disabled until
-     ;; <https://github.com/the-tcpdump-group/tcpdump/issues/381> is resolved.
-     '(#:tests? #f))
     (home-page "http://www.tcpdump.org/")
     (synopsis "Network packet analyzer")
     (description
