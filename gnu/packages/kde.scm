@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages kde)
-  #:use-module ((guix licenses) #:select (bsd-2 lgpl2.1 lgpl2.1+))
+  #:use-module ((guix licenses) #:select (bsd-2 lgpl2.0+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
@@ -102,3 +102,31 @@ objects and vice versa.  JSON arrays are mapped to QVariantList instances,
 while JSON objects are mapped to QVariantMap.")
     (license lgpl2.1+)))
 
+(define-public libdbusmenu-qt
+  (package
+    (name "libdbusmenu-qt")
+    (version "0.9.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://launchpad.net/" name "/trunk/"
+                                 version "/+download/"
+                                 name "-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "1v0ri5g9xw2z64ik0kx0ra01v8rpjn2kxprrxppkls1wvav1qv5f"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("qjson", qjson)
+       ("qt" ,qt-4)))
+    (arguments
+     `(#:tests? #f ; no check target
+       #:configure-flags
+        '("-DWITH_DOC=OFF"))) ; FIXME: drop once input doxygen is available
+    (home-page "https://launchpad.net/libdbusmenu-qt/")
+    (synopsis "Qt implementation of the DBusMenu protocol")
+    (description "The library provides a Qt implementation of the DBusMenu
+protocol.  The DBusMenu protocol makes it possible for applications to export
+and import their menus over DBus.")
+    (license lgpl2.0+)))
