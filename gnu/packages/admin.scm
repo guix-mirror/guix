@@ -480,6 +480,31 @@ network statistics collection, security monitoring, network debugging, etc.")
     ;; fad-*.c and a couple other files are BSD-4, but the rest is BSD-3.
     (license bsd-3)))
 
+(define-public tcpdump
+  (package
+    (name "tcpdump")
+    (version "4.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15hb7zkzd66nag102qbv100hcnf7frglbkylmr8adwr8f5jkkaql"))))
+    (build-system gnu-build-system)
+    (inputs `(("libpcap" ,libpcap)))
+    (native-inputs `(("perl" ,perl)))        ; for tests
+    (arguments
+     ;; XXX: Temporarily disabled until
+     ;; <https://github.com/the-tcpdump-group/tcpdump/issues/381> is resolved.
+     '(#:tests? #f))
+    (home-page "http://www.tcpdump.org/")
+    (synopsis "Network packet analyzer")
+    (description
+     "Tcpdump is a command-line tool to analyze network traffic passing
+through the network interface controller.")
+    (license bsd-3)))
+
 (define-public jnettop
   (package
     (name "jnettop")
