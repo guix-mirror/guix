@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages kde)
-  #:use-module ((guix licenses) #:select (bsd-2 lgpl2.1+))
+  #:use-module ((guix licenses) #:select (bsd-2 lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
@@ -78,3 +78,27 @@
     (synopsis "Qt 4 multimedia API")
     (description "KDE desktop environment")
     (license lgpl2.1+)))
+
+(define-public qjson
+  (package
+    (name "qjson")
+    (version "0.8.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/flavio/qjson/archive/"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "163fspi0xc705irv79qw861fmh68pjyla9vx3kqiq6xrdhb9834j"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qt" ,qt-4)))
+    (arguments
+     `(#:tests? #f)) ; no test target
+    (home-page "http://qjson.sourceforge.net/")
+    (synopsis "Qt-based library for handling JSON")
+    (description "QJson is a Qt-based library that maps JSON data to QVariant
+objects and vice versa.  JSON arrays are mapped to QVariantList instances,
+while JSON objects are mapped to QVariantMap.")
+    (license lgpl2.1+)))
+
