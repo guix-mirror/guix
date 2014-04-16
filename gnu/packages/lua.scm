@@ -30,13 +30,13 @@
 (define-public lua
   (package
     (name "lua")
-    (version "5.2.1")
+    (version "5.2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.lua.org/ftp/lua-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "1rbv2ysq5fdksz7xg07dnrkl8i0gnx855hg4z6b324vng6l4sc34"))))
+              (base32 "0b8034v1s82n4dg5rzcn12067ha3nxaylp2vdp8gg08kjsbzphhk"))))
     (build-system gnu-build-system)
     (inputs `(("readline", readline)))
     (arguments
