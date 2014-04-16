@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -45,7 +46,7 @@
        #:test-target "test"
        #:phases (alist-replace
                  'build
-                 (lambda _ (zero? (system* "make" "linux"))) ; XXX: Other OS.
+                 (lambda _ (zero? (system* "make" "CFLAGS=-fPIC" "linux")))
                  (alist-replace
                   'install
                   (lambda* (#:key outputs #:allow-other-keys)
