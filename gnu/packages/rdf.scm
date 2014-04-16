@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -72,7 +73,8 @@ HTML and JSON.")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1arffdwivig88kkx685pldr784njm0249k0rb1f1plwavlrw9zfx"))))
+               "1arffdwivig88kkx685pldr784njm0249k0rb1f1plwavlrw9zfx"))
+             (patches (list (search-patch "clucene-pkgconfig.patch")))))
     (build-system cmake-build-system)
     (inputs
      `(("boost" ,boost) ; could also use bundled copy
