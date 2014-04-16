@@ -22,14 +22,31 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages algebra)
+  #:use-module (gnu packages avahi)
+  #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages gl)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages libpng)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages lua)
+  #:use-module (gnu packages mp3)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages qt)
+  #:use-module (gnu packages sdl)
+  #:use-module (gnu packages ssh)
+  #:use-module (gnu packages version-control)
   #:use-module (gnu packages xiph)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages xorg)
   #:use-module (gnu packages yasm))
 
 (define-public ffmpeg
@@ -191,4 +208,72 @@
     (description "FFmpeg is a complete, cross-platform solution to record,
 convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
+    (license gpl2+)))
+
+(define-public vlc
+  (package
+    (name "vlc")
+    (version "2.1.4")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://download.videolan.org/pub/videolan/vlc/"
+                   version "/vlc-" version ".tar.xz"))
+             (sha256
+              (base32
+               "1lymhbb2bns73qivdaqanhggjjhyc9fwfgf5ikhng0a74msnqmiy"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("git" ,git) ; needed for a test
+       ("pkg-config" ,pkg-config)))
+    ;; FIXME: Add optional inputs once available.
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("avahi" ,avahi)
+       ("dbus" ,dbus)
+       ("flac" ,flac)
+       ("ffmpeg" ,ffmpeg)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("gnutls" ,gnutls)
+       ("libcddb" ,libcddb)
+       ("libgcrypt" ,libgcrypt)
+       ("libkate" ,libkate)
+       ("libmad" ,libmad)
+       ("libogg" ,libogg)
+       ("libpng" ,libpng)
+       ("libsamplerate" ,libsamplerate)
+       ("libssh2" ,libssh2)
+       ("libvorbis" ,libvorbis)
+       ("libtheora" ,libtheora)
+       ("libxext" ,libxext)
+       ("libxinerama" ,libxinerama)
+       ("libxml2" ,libxml2)
+       ("libxpm" ,libxpm)
+       ("lua" ,lua-5.1)
+       ("mesa" ,mesa)
+       ("opus" ,opus)
+       ("perl" ,perl)
+       ("pulseaudio" ,pulseaudio)
+       ("python" ,python-wrapper)
+       ("qt" ,qt-4)
+       ("sdl" ,sdl)
+       ("sdl-image" ,sdl-image)
+       ("speex" ,speex)
+       ("xcb-util-keysyms" ,xcb-util-keysyms)))
+    (arguments
+     `(#:configure-flags
+       `("--disable-a52" ; FIXME: reenable once available
+         "--disable-mmx" ; FIXME: may be enabled on x86_64
+         "--disable-sse" ; 1-4, no separate options available
+         "--disable-neon"
+         "--disable-altivec"
+         ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
+                         (assoc-ref %build-inputs "ffmpeg")
+                         "/lib")))) ; needed for the tests
+    (home-page "https://www.videolan.org/")
+    (synopsis "Audio and video framework")
+    (description "VLC is a cross-platform multimedia player and framework
+that plays most multimedia files as well as DVD, Audio CD, VCD, and various
+treaming protocols.")
     (license gpl2+)))
