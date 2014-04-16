@@ -307,7 +307,10 @@ on success."
                uri)
        #f)))
 
-  (setvbuf (current-output-port) _IOLBF)
+  ;; Make this unbuffered so 'progress-proc' works as expected.  _IOLBF means
+  ;; '\n', not '\r', so it's not appropriate here.
+  (setvbuf (current-output-port) _IONBF)
+
   (setvbuf (current-error-port) _IOLBF)
 
   (let try ((uri uri))
