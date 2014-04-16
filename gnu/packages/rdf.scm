@@ -17,11 +17,12 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages rdf)
-  #:use-module ((guix licenses) #:select (lgpl2.0+ lgpl2.1+))
+  #:use-module ((guix licenses) #:select (lgpl2.0+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages pkg-config)
@@ -59,6 +60,37 @@ XML.  The serialising syntaxes are RDF/XML (regular, abbreviated, XMP),
 Turtle 2013, N-Quads, N-Triples 1.1, Atom 1.0, RSS 1.0, GraphViz DOT,
 HTML and JSON.")
     (license lgpl2.1+))) ; or any choice of gpl2+ or asl2.0
+
+(define-public clucene
+  (package
+    (name "clucene")
+    (version "2.3.3.4")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/clucene/"
+                                 "clucene-core-unstable/2.3/clucene-core-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "1arffdwivig88kkx685pldr784njm0249k0rb1f1plwavlrw9zfx"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("boost" ,boost) ; could also use bundled copy
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:test-target "cl_test"
+       #:tests? #f)) ; Tests do not compile, as TestIndexSearcher.cpp uses
+                     ; undeclared usleep. After fixing this, one needs to run
+                     ; "make test" in addition to "make cl_test", then
+                     ; SimpleTest fails.
+                     ; Notice that the library appears to be unmaintained
+                     ; with no reaction to bug reports.
+    (home-page "http://clucene.sourceforge.net/")
+    (synopsis "C text indexing and searching library")
+    (description "CLucene is a high-performance, scalable, cross platform,
+full-featured indexing and searching API.  It is a port of the very popular
+Java Lucene text search engine API to C++.")
+    (license lgpl2.1)))
 
 (define-public soprano
   (package
