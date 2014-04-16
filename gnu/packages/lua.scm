@@ -67,6 +67,16 @@ automatic memory management with incremental garbage collection, making it ideal
 for configuration, scripting, and rapid prototyping.")
     (license x11)))
 
+(define-public lua-5.1
+  (package (inherit lua)
+    (version "5.1.5")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.lua.org/ftp/lua-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32 "0cskd4w0g6rdm2q8q3i4n1h3j8kylhs3rq8mxwl9vwlmlxbgqh16"))))))
+
 (define-public luajit
   (package
     (name "luajit")
