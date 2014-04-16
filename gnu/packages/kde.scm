@@ -21,10 +21,17 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages geeqie)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages rdf)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define-public automoc4
@@ -154,3 +161,47 @@ services such as querying information about persons and contents.  The
 library is used in KNewStuff3 as content provider.  In order to integrate
 with KDE's Plasma Desktop, a platform plugin exists in kdebase.")
     (license lgpl2.1+)))
+
+(define-public strigi
+  (package
+    (name "strigi")
+    (version "0.7.8")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.vandenoever.info/software/"
+                                 name "/"
+                                 name "-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "12grxzqwnvbyqw7q1gnz42lypadxmq89vk2qpxczmpmc4nk63r23"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    ;; FIXME: Add optional inputs XAttr, FAM, Log4cxx
+    (inputs
+     `(("clucene" ,clucene)
+       ("dbus" ,dbus)
+       ("exiv2" ,exiv2)
+       ("ffmpeg" ,ffmpeg)
+       ("libxml2" ,libxml2)
+       ("perl" ,perl)
+       ("python" ,python-wrapper)
+       ("qt" ,qt-4)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f)) ; FIXME: Test 23/25 ProcessInputStreamTest fails.
+    (home-page "http://www.vandenoever.info/software/strigi/")
+    (synopsis "Desktop search daemon")
+    (description "Strigi is a desktop search daemon with the following
+main features:
+very fast crawling;
+very small memory footprint;
+no hammering of the system;
+pluggable backend, currently clucene and hyperestraier, sqlite3 and xapian
+are in the works;
+communication between daemon and search program over an abstract interface,
+currently a simple socket;
+simple interface for implementing plugins for extracting information;
+calculation of sha1 for every file crawled
+(allows fast finding of duplicates).")
+    (license lgpl2.0+)))
