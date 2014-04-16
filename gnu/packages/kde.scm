@@ -130,3 +130,27 @@ while JSON objects are mapped to QVariantMap.")
 protocol.  The DBusMenu protocol makes it possible for applications to export
 and import their menus over DBus.")
     (license lgpl2.0+)))
+
+(define-public attica
+  (package
+    (name "attica")
+    (version "0.4.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.kde.org/stable/"
+                                 name "/"
+                                 name "-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "1y74gsyzi70dfr9d1f1b08k130rm3jaibsppg8dv5h3211vm771v"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qt" ,qt-4)))
+    (home-page "https://projects.kde.org/projects/kdesupport/attica")
+    (synopsis "Qt library for the Open Collaboration Services API")
+    (description "Attica is a Qt library that implements the Open
+Collaboration Services API version 1.6.  It grants easy access to the
+services such as querying information about persons and contents.  The
+library is used in KNewStuff3 as content provider.  In order to integrate
+with KDE's Plasma Desktop, a platform plugin exists in kdebase.")
+    (license lgpl2.1+)))
