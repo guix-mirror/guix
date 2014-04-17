@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -1427,10 +1427,11 @@ tracking.")
           (base32
             "15291ddhyr54sribwbg8hxx2psgzm5gh0pgkw5yrf3zgvdsa67sm"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+      `(("xf86dgaproto" ,xf86dgaproto)))
     (inputs
       `(("libx11" ,libx11)
-        ("libxext" ,libxext)
-        ("xf86dgaproto" ,xf86dgaproto)))
+        ("libxext" ,libxext)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
