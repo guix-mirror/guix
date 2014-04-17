@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages video)
-  #:use-module ((guix licenses) #:select (gpl2+))
+  #:use-module ((guix licenses) #:select (gpl2 gpl2+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -31,6 +31,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages libjpeg)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages lua)
@@ -277,3 +278,92 @@ audio/video codec library.")
 that plays most multimedia files as well as DVD, Audio CD, VCD, and various
 treaming protocols.")
     (license gpl2+)))
+
+(define-public mplayer
+  (package
+    (name "mplayer")
+    (version "1.1.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "http://www.mplayerhq.hu/MPlayer/releases/MPlayer-"
+                   version ".tar.xz"))
+             (sha256
+              (base32
+               "0xlcg7rszrwmw29wqr0plsw5d1rq0hb7vjsq7bmmfsly2z1wg3yf"))))
+    (build-system gnu-build-system)
+    ;; FIXME: Add additional inputs once available.
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("cdparanoia" ,cdparanoia)
+       ("fontconfig" ,fontconfig)
+       ("freetype" ,freetype)
+       ("lame" ,lame)
+;;        ("giflib" ,giflib) ; uses QuantizeBuffer, requires version >= 5
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtheora" ,libtheora)
+       ("libvorbis" ,libvorbis)
+       ("libx11" ,libx11)
+       ("libxxf86dga" ,libxxf86dga)
+       ("libxinerama" ,libxinerama)
+       ("libxv" ,libxv)
+       ("mesa" ,mesa)
+       ("perl" ,perl)
+       ("pulseaudio" ,pulseaudio)
+       ("python" ,python-wrapper)
+       ("sdl" ,sdl)
+       ("speex" ,speex)
+       ("yasm" ,yasm)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f ; no test target
+       #:phases
+         (alist-replace
+          'configure
+          ;; configure does not work followed by "SHELL=..." and
+          ;; "CONFIG_SHELL=..."; set environment variables instead
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out"))
+                  (libx11 (assoc-ref inputs "libx11")))
+              (substitute* "configure"
+                (("#! /bin/sh") (string-append "#!" (which "bash"))))
+              (setenv "SHELL" (which "bash"))
+              (setenv "CONFIG_SHELL" (which "bash"))
+              (zero? (system*
+                      "./configure"
+                      (string-append "--extra-cflags=-I"
+                                     libx11 "/include") ; to detect libx11
+                      "--disable-tremor-internal" ; forces external libvorbis
+                      (string-append "--prefix=" out)
+                      ;; drop special machine instructions not supported
+                      ;; on all instances of the target
+                      ,@(if (string-prefix? "x86_64"
+                                            (or (%current-target-system)
+                                                (%current-system)))
+                            '()
+                            '("--disable-3dnow"
+                              "--disable-3dnowext"
+                              "--disable-mmx"
+                              "--disable-mmxext"
+                              "--disable-sse"
+                              "--disable-sse2"))
+                      "--disable-ssse3"
+                      "--disable-altivec"
+                      "--disable-armv5te"
+                      "--disable-armv6"
+                      "--disable-armv6t2"
+                      "--disable-armvfp"
+                      "--disable-neon"
+                      "--disable-thumb"
+                      "--disable-iwmmxt"))))
+          %standard-phases)))
+    (home-page "http://www.mplayerhq.hu/design7/news.html")
+    (synopsis "Audio and video player")
+    (description "MPlayer is a movie player.  It plays most MPEG/VOB, AVI,
+Ogg/OGM, VIVO, ASF/WMA/WMV, QT/MOV/MP4, RealMedia, Matroska, NUT,
+NuppelVideo, FLI, YUV4MPEG, FILM, RoQ, PVA files.  One can watch VideoCD,
+SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
+    (license gpl2)))
