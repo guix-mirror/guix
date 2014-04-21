@@ -334,36 +334,29 @@ held."
         (unlock-store-file target)))))
 
 (define (temporary-store-file)
-  "Return the file name of a temporary file created in the store that is
-protected from garbage collection."
+  "Return the file name of a temporary file created in the store."
   (let* ((template (string-append (%store-prefix) "/guix-XXXXXX"))
          (port     (mkstemp! template)))
     (close-port port)
-
-    ;; Make sure TEMPLATE is not collected while we populate it.
-    (add-permanent-root template)
-
-    ;; There's a small window during which the GC could delete the file.  Try
-    ;; again if that happens.
-    (if (file-exists? template)
-        (begin
-          ;; It's up to the caller to create that file or directory.
-          (delete-file template)
-          template)
-        (begin
-          (remove-permanent-root template)
-          (temporary-store-file)))))
+    template))
 
 (define-syntax-rule (with-temporary-store-file name body ...)
   "Evaluate BODY with NAME bound to the file name of a temporary store item
 protected from GC."
-  (let ((name (temporary-store-file)))
-    (dynamic-wind
-      (const #t)
-      (lambda ()
-        body ...)
-      (lambda ()
-        (remove-permanent-root name)))))
+  (let loop ((name (temporary-store-file)))
+    (with-store store
+      ;; Add NAME to the current process' roots.  (Opening this connection to
+      ;; the daemon allows us to reuse its code that deals with the
+      ;; per-process roots file.)
+      (add-temp-root store name)
+
+      ;; There's a window during which GC could delete NAME.  Try again when
+      ;; that happens.
+      (if (file-exists? name)
+          (begin
+            (delete-file name)
+            body ...)
+          (loop (temporary-store-file))))))
 
 (define* (restore-one-item port
                            #:key acl (verify-signature? #t) (lock? #t)
