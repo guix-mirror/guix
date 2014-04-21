@@ -134,8 +134,13 @@ thrown along with 'gcry-error'."
          (proc (pointer->procedure int ptr `(* * ,size_t ,int))))
     (lambda (str)
       "Parse STR and return the corresponding gcrypt s-expression."
+
+      ;; When STR comes from 'canonical-sexp->string', it may contain
+      ;; characters that are really meant to be interpreted as bytes as in a C
+      ;; 'char *'.  Thus, convert STR to ISO-8859-1 so the byte values of the
+      ;; characters are preserved.
       (let* ((sexp (bytevector->pointer (make-bytevector (sizeof '*))))
-             (err  (proc sexp (string->pointer str) 0 1)))
+             (err  (proc sexp (string->pointer str "ISO-8859-1") 0 1)))
         (if (= 0 err)
             (pointer->canonical-sexp (dereference-pointer sexp))
             (throw 'gcry-error err))))))

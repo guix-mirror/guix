@@ -64,6 +64,9 @@
 
 (test-begin "pk-crypto")
 
+(test-assert "version"
+  (gcrypt-version))
+
 (let ((sexps '("(foo bar)"
 
                ;; In Libgcrypt 1.5.3 the following integer is rendered as
@@ -141,6 +144,27 @@
             (cut canonical-sexp-nth-data lst <>)
             1+
             0)))
+
+(let ((bv (base16-string->bytevector
+           "5eff0b55c9c5f5e87b4e34cd60a2d5654ca1eb78c7b3c67c3179fed1cff07b4c")))
+  (test-equal "hash corrupt due to restrictive locale encoding"
+    bv
+
+    ;; In Guix up to 0.6 included this test would fail because at some point
+    ;; the hash value would be cropped to ASCII.  In practice 'guix
+    ;; authenticate' would produce invalid signatures that would fail
+    ;; signature verification.
+    (let ((locale (setlocale LC_ALL)))
+     (dynamic-wind
+       (lambda ()
+         (setlocale LC_ALL "C"))
+       (lambda ()
+         (hash-data->bytevector
+          (string->canonical-sexp
+           (canonical-sexp->string
+            (bytevector->hash-data bv "sha256")))))
+       (lambda ()
+         (setlocale LC_ALL locale))))))
 
 (gc)
 
