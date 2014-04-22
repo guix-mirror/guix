@@ -153,7 +153,7 @@
     ;; In Guix up to 0.6 included this test would fail because at some point
     ;; the hash value would be cropped to ASCII.  In practice 'guix
     ;; authenticate' would produce invalid signatures that would fail
-    ;; signature verification.
+    ;; signature verification.  See <http://bugs.gnu.org/17312>.
     (let ((locale (setlocale LC_ALL)))
      (dynamic-wind
        (lambda ()

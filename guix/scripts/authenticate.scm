@@ -89,30 +89,39 @@ to stdout upon success."
 ;;;
 
 (define (guix-authenticate . args)
-  (match args
-    ;; As invoked by guix-daemon.
-    (("rsautl" "-sign" "-inkey" key "-in" hash-file)
-     (call-with-input-file hash-file
-       (lambda (port)
-         (sign-with-key key port))))
-    ;; As invoked by Nix/Crypto.pm (used by Hydra.)
-    (("rsautl" "-sign" "-inkey" key)
-     (sign-with-key key (current-input-port)))
-    ;; As invoked by guix-daemon.
-    (("rsautl" "-verify" "-inkey" _ "-pubin" "-in" signature-file)
-     (call-with-input-file signature-file
-       (lambda (port)
-         (validate-signature port))))
-    ;; As invoked by Nix/Crypto.pm (used by Hydra.)
-    (("rsautl" "-verify" "-inkey" _ "-pubin")
-     (validate-signature (current-input-port)))
-    (("--help")
-     (display (_ "Usage: guix authenticate OPTION...
+  ;; Signature sexps written to stdout may contain binary data, so force
+  ;; ISO-8859-1 encoding so that things are not mangled.  See
+  ;; <http://bugs.gnu.org/17312> for details.
+  (set-port-encoding! (current-output-port) "ISO-8859-1")
+  (set-port-conversion-strategy! (current-output-port) 'error)
+
+  ;; Same goes for input ports.
+  (with-fluids ((%default-port-encoding "ISO-8859-1")
+                (%default-port-conversion-strategy 'error))
+    (match args
+      ;; As invoked by guix-daemon.
+      (("rsautl" "-sign" "-inkey" key "-in" hash-file)
+       (call-with-input-file hash-file
+         (lambda (port)
+           (sign-with-key key port))))
+      ;; As invoked by Nix/Crypto.pm (used by Hydra.)
+      (("rsautl" "-sign" "-inkey" key)
+       (sign-with-key key (current-input-port)))
+      ;; As invoked by guix-daemon.
+      (("rsautl" "-verify" "-inkey" _ "-pubin" "-in" signature-file)
+       (call-with-input-file signature-file
+         (lambda (port)
+           (validate-signature port))))
+      ;; As invoked by Nix/Crypto.pm (used by Hydra.)
+      (("rsautl" "-verify" "-inkey" _ "-pubin")
+       (validate-signature (current-input-port)))
+      (("--help")
+       (display (_ "Usage: guix authenticate OPTION...
 Sign or verify the signature on the given file.  This tool is meant to
 be used internally by 'guix-daemon'.\n")))
-    (("--version")
-     (show-version-and-exit "guix authenticate"))
-    (else
-     (leave (_ "wrong arguments")))))
+      (("--version")
+       (show-version-and-exit "guix authenticate"))
+      (else
+       (leave (_ "wrong arguments"))))))
 
 ;;; authenticate.scm ends here
