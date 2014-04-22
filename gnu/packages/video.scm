@@ -301,6 +301,7 @@ treaming protocols.")
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("lame" ,lame)
+       ("libmpg123" ,mpg123)                      ; audio codec for MP3
 ;;        ("giflib" ,giflib) ; uses QuantizeBuffer, requires version >= 5
        ("libjpeg" ,libjpeg)
        ("libpng" ,libpng)
