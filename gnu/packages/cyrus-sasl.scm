@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -34,8 +34,12 @@
    (version "2.1.26")
    (source (origin
             (method url-fetch)
-            (uri (string-append "ftp://ftp.cyrusimap.org/cyrus-sasl/cyrus-sasl-" version
-                                ".tar.gz"))
+            (uri (list (string-append
+                        "http://cyrusimap.org/releases/cyrus-sasl-"
+                        version ".tar.gz")
+                       (string-append
+                        "ftp://ftp.cyrusimap.org/cyrus-sasl/cyrus-sasl-"
+                        version ".tar.gz")))
             (sha256 (base32
                      "1hvvbcsg21nlncbgs0cgn3iwlnb3vannzwsp6rwvnn9ba4v53g4g"))))
    (build-system gnu-build-system)
