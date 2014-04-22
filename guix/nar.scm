@@ -370,7 +370,7 @@ protected from GC."
     (let ((signature (catch 'gcry-error
                        (lambda ()
                          (string->canonical-sexp signature))
-                       (lambda (err . _)
+                       (lambda (key proc err)
                          (raise (condition
                                  (&message
                                   (message "signature is not a valid \

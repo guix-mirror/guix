@@ -143,7 +143,7 @@ thrown along with 'gcry-error'."
              (err  (proc sexp (string->pointer str "ISO-8859-1") 0 1)))
         (if (= 0 err)
             (pointer->canonical-sexp (dereference-pointer sexp))
-            (throw 'gcry-error err))))))
+            (throw 'gcry-error 'string->canonical-sexp err))))))
 
 (define-syntax GCRYSEXP_FMT_ADVANCED
   (identifier-syntax 3))
@@ -296,7 +296,7 @@ is 'private-key'.)"
                         (canonical-sexp->pointer secret-key))))
         (if (= 0 err)
             (pointer->canonical-sexp (dereference-pointer sig))
-            (throw 'gry-error err))))))
+            (throw 'gcry-error 'sign err))))))
 
 (define verify
   (let* ((ptr  (libgcrypt-func "gcry_pk_verify"))
@@ -318,7 +318,7 @@ s-expression like: (genkey (rsa (nbits 4:2048)))."
              (err (proc key (canonical-sexp->pointer params))))
         (if (zero? err)
             (pointer->canonical-sexp (dereference-pointer key))
-            (throw 'gcry-error err))))))
+            (throw 'gcry-error 'generate-key err))))))
 
 (define find-sexp-token
   (let* ((ptr  (libgcrypt-func "gcry_sexp_find_token"))
@@ -402,5 +402,14 @@ use pattern matching."
                 (error "unsupported sexp item type" item))))
 
        (write sexp)))))
+
+(define (gcrypt-error-printer port key args default-printer)
+  "Print the gcrypt error specified by ARGS."
+  (match args
+    ((proc err)
+     (format port "In procedure ~a: ~a: ~a"
+             proc (error-source err) (error-string err)))))
+
+(set-exception-printer! 'gcry-error gcrypt-error-printer)
 
 ;;; pk-crypto.scm ends here
