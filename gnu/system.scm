@@ -325,23 +325,29 @@ alias ll='ls -l'
                   #:timezone (operating-system-timezone os)
                   #:profile profile-drv)))
 
+(define (operating-system-boot-script os)
+  "Return the boot script for OS---i.e., the code started by the initrd once
+we're running in the final root."
+  (mlet* %store-monad
+      ((services (sequence %store-monad (operating-system-services os)))
+       (etc      (operating-system-etc-directory os))
+       (dmd-conf (dmd-configuration-file services
+                                         (derivation->output-path etc))))
+    ;; FIXME: Use 'sexp-file' or similar.
+    (text-file* "boot"
+                "(execl \"" dmd "/bin/dmd\" \"dmd\"
+                      \"--config\" \"" dmd-conf  "\")")))
+
 (define (operating-system-derivation os)
   "Return a derivation that builds OS."
   (mlet* %store-monad
-      ((bash-file (package-file bash "bin/bash"))
-       (dmd-file  (package-file (@ (gnu packages admin) dmd) "bin/dmd"))
-       (profile-drv (operating-system-profile-derivation os))
+      ((profile-drv (operating-system-profile-derivation os))
        (profile ->  (derivation->output-path profile-drv))
        (etc-drv     (operating-system-etc-directory os))
        (etc     ->  (derivation->output-path etc-drv))
        (services    (sequence %store-monad (operating-system-services os)))
-       (dmd-conf    (dmd-configuration-file services etc))
-
-
-       (boot     (text-file "boot"
-                            (object->string
-                             `(execl ,dmd-file "dmd"
-                                     "--config" ,dmd-conf))))
+       (boot-drv    (operating-system-boot-script os))
+       (boot    ->  (derivation->output-path boot-drv))
        (kernel  ->  (operating-system-kernel os))
        (kernel-dir  (package-file kernel))
        (initrd      (operating-system-initrd os))
@@ -364,12 +370,12 @@ alias ll='ls -l'
     (file-union `(("boot" ,boot)
                   ("kernel" ,kernel-dir)
                   ("initrd" ,initrd-file)
-                  ("dmd.conf" ,dmd-conf)
                   ("profile" ,profile)
                   ("grub.cfg" ,grub.cfg)
                   ("etc" ,etc)
                   ("system-inputs" ,(derivation->output-path extras)))
-                #:inputs `(("kernel" ,kernel)
+                #:inputs `(("boot" ,boot-drv)
+                           ("kernel" ,kernel)
                            ("initrd" ,initrd)
                            ("bash" ,bash)
                            ("profile" ,profile-drv)
