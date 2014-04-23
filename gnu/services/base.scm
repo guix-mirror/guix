@@ -186,6 +186,9 @@ This is the GNU operating system, welcome!\n\n")))
           (mingetty-service "tty6" #:motd motd)
           (syslog-service)
           (guix-service)
-          (nscd-service))))
+          (nscd-service)
+
+          ;; FIXME: Make this an activation-time thing instead of a service.
+          (host-name-service "gnu"))))
 
 ;;; base.scm ends here

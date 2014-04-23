@@ -292,42 +292,50 @@ alias ll='ls -l'
   (mlet %store-monad ((drv (operating-system-profile-derivation os)))
     (return (derivation->output-path drv))))
 
-(define (operating-system-derivation os)
-  "Return a derivation that builds OS."
+(define (operating-system-accounts os)
+  "Return the user accounts for OS, including an obligatory 'root' account."
+  (mlet %store-monad ((services (sequence %store-monad
+                                          (operating-system-services os))))
+    (return (cons (user-account
+                   (name "root")
+                   (password "")
+                   (uid 0) (gid 0)
+                   (comment "System administrator")
+                   (home-directory "/root"))
+                  (append (operating-system-users os)
+                          (append-map service-user-accounts
+                                      services))))))
+
+(define (operating-system-etc-directory os)
+  "Return that static part of the /etc directory of OS."
   (mlet* %store-monad
-      ((services (sequence %store-monad
-                           (cons (host-name-service
-                                  (operating-system-host-name os))
-                                 (operating-system-services os))))
+      ((services     (sequence %store-monad (operating-system-services os)))
        (pam-services ->
                      ;; Services known to PAM.
                      (delete-duplicates
                       (cons %pam-other-services
                             (append-map service-pam-services services))))
-
-       (bash-file (package-file bash "bin/bash"))
-       (dmd-file  (package-file (@ (gnu packages admin) dmd) "bin/dmd"))
-       (accounts -> (cons (user-account
-                            (name "root")
-                            (password "")
-                            (uid 0) (gid 0)
-                            (comment "System administrator")
-                            (home-directory "/root"))
-                          (append (operating-system-users os)
-                                  (append-map service-user-accounts
-                                              services))))
+       (accounts    (operating-system-accounts os))
+       (profile-drv (operating-system-profile-derivation os))
        (groups   -> (append (operating-system-groups os)
-                            (append-map service-user-groups services)))
+                            (append-map service-user-groups services))))
+   (etc-directory #:accounts accounts #:groups groups
+                  #:pam-services pam-services
+                  #:locale (operating-system-locale os)
+                  #:timezone (operating-system-timezone os)
+                  #:profile profile-drv)))
 
+(define (operating-system-derivation os)
+  "Return a derivation that builds OS."
+  (mlet* %store-monad
+      ((bash-file (package-file bash "bin/bash"))
+       (dmd-file  (package-file (@ (gnu packages admin) dmd) "bin/dmd"))
        (profile-drv (operating-system-profile-derivation os))
        (profile ->  (derivation->output-path profile-drv))
-       (etc-drv     (etc-directory #:accounts accounts #:groups groups
-                                   #:pam-services pam-services
-                                   #:locale (operating-system-locale os)
-                                   #:timezone (operating-system-timezone os)
-                                   #:profile profile-drv))
+       (etc-drv     (operating-system-etc-directory os))
        (etc     ->  (derivation->output-path etc-drv))
-       (dmd-conf  (dmd-configuration-file services etc))
+       (services    (sequence %store-monad (operating-system-services os)))
+       (dmd-conf    (dmd-configuration-file services etc))
 
 
        (boot     (text-file "boot"
@@ -349,6 +357,7 @@ alias ll='ls -l'
                                               ,(string-append "--load=" boot)))
                            (initrd initrd-file))))
        (grub.cfg (grub-configuration-file entries))
+       (accounts (operating-system-accounts os))
        (extras   (links (delete-duplicates
                          (append (append-map service-inputs services)
                                  (append-map user-account-inputs accounts))))))
