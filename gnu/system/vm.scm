@@ -341,18 +341,21 @@ with the host."
           (graphic? #t))
   "Return a derivation that builds a script to run a virtual machine image of
 OS that shares its store with the host."
-  (let* ((initrd (qemu-initrd #:mounts `((9p "store" ,(%store-prefix)))
-                              #:volatile-root? #t))
-         (os     (operating-system (inherit os) (initrd initrd))))
+  (define initrd
+    (qemu-initrd #:mounts `((9p "store" ,(%store-prefix)))
+                 #:volatile-root? #t))
+
+  (mlet* %store-monad
+      ((os ->  (operating-system (inherit os) (initrd initrd)))
+       (os-drv (operating-system-derivation os))
+       (initrd initrd)
+       (image  (system-qemu-image/shared-store os)))
     (define builder
-      (mlet %store-monad ((image  (system-qemu-image/shared-store os))
-                          (qemu   (package-file qemu
+      (mlet %store-monad ((qemu   (package-file qemu
                                                 "bin/qemu-system-x86_64"))
                           (bash   (package-file bash "bin/sh"))
                           (kernel (package-file (operating-system-kernel os)
-                                                "bzImage"))
-                          (initrd initrd)
-                          (os-drv (operating-system-derivation os)))
+                                                "bzImage")))
         (return `(let ((out (assoc-ref %outputs "out")))
                    (call-with-output-file out
                      (lambda (port)
@@ -371,17 +374,14 @@ exec " ,qemu " -enable-kvm -no-reboot -net nic,model=virtio \
                    (chmod out #o555)
                    #t))))
 
-    (mlet %store-monad ((image   (system-qemu-image/shared-store os))
-                        (initrd  initrd)
-                        (qemu    (package->derivation qemu))
+    (mlet %store-monad ((qemu    (package->derivation qemu))
                         (bash    (package->derivation bash))
-                        (os      (operating-system-derivation os))
                         (builder builder))
       (derivation-expression "run-vm.sh" builder
                              #:inputs `(("qemu" ,qemu)
                                         ("image" ,image)
                                         ("bash" ,bash)
                                         ("initrd" ,initrd)
-                                        ("os" ,os))))))
+                                        ("os" ,os-drv))))))
 
 ;;; vm.scm ends here
