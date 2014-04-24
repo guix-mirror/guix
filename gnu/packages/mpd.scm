@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,6 +27,7 @@
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
@@ -53,9 +55,7 @@
                (base32
                 "0csb9r3nlmbwpiryixjr5k33x3zqd61xjhwmlps3a6prck1n1xw2"))))
     (build-system gnu-build-system)
-    (arguments
-     ;; FIXME: Needs doxygen.
-     '(#:configure-flags '("--disable-documentation")))
+    (native-inputs `(("doxygen" ,doxygen)))
     (synopsis "Music Player Daemon client library")
     (description "A stable, documented, asynchronous API library for
 interfacing MPD in the C, C++ & Objective C languages.")
