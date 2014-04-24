@@ -24,6 +24,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
+  #:use-module (gnu packages graphviz)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages python))
@@ -42,16 +43,14 @@
              (patches (list (search-patch "doxygen-tmake.patch")
                             (search-patch "doxygen-test.patch")))))
     (build-system gnu-build-system)
-    ;; The presence of graphviz is checked, but it does not seem to influence
-    ;; the output: Even after adding it as an input, no reference to it is
-    ;; retained. It might be an option to add it as a propagated input,
-    ;; only so that it becomes installed in the user profile.
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
        ("libxml2" ,libxml2) ; provides xmllint for the tests
        ("perl" ,perl) ; for the tests
        ("python" ,python-2))) ; for creating the documentation
+    (propagated-inputs
+     `(("graphviz" ,graphviz)))
     (arguments
      `(#:test-target "test"
        #:phases
