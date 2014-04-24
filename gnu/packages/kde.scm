@@ -22,6 +22,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages geeqie)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages perl)
@@ -123,14 +124,13 @@ while JSON objects are mapped to QVariantMap.")
                "1v0ri5g9xw2z64ik0kx0ra01v8rpjn2kxprrxppkls1wvav1qv5f"))))
     (build-system cmake-build-system)
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("doxygen" ,doxygen) ; used for static documentation
+       ("pkg-config" ,pkg-config)
+       ("qjson", qjson))) ; used for the tests
     (inputs
-     `(("qjson", qjson)
-       ("qt" ,qt-4)))
+     `(("qt" ,qt-4)))
     (arguments
-     `(#:tests? #f ; no check target
-       #:configure-flags
-        '("-DWITH_DOC=OFF"))) ; FIXME: drop once input doxygen is available
+     `(#:tests? #f)) ; no check target
     (home-page "https://launchpad.net/libdbusmenu-qt/")
     (synopsis "Qt implementation of the DBusMenu protocol")
     (description "The library provides a Qt implementation of the DBusMenu
