@@ -26,6 +26,7 @@
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xml))
@@ -112,9 +113,10 @@ Java Lucene text search engine API to C++.")
               (base32
                "08gb5d8bgy7vc6qd6r1kkmmc5rli67dlglpjqjlahpnvs26r1cwl"))))
     (build-system cmake-build-system)
-    ;; FIXME: Add optional dependencies: Redland, odbci, clucene; doxygen
+    ;; FIXME: Add optional dependencies: Redland, odbci, clucene
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
     (inputs
      `(("qt" ,qt-4)
        ("raptor2" ,raptor2)))
