@@ -26,9 +26,13 @@
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages algebra)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages cmake)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages fltk)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gettext)
@@ -320,3 +324,45 @@ applications and it provides great support for visualizing results.  Work may
 be performed both at the interactive command-line as well as via script
 files.")
     (license license:gpl3+)))
+
+(define-public gmsh
+  (package
+    (name "gmsh")
+    (version "2.8.4")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "http://www.geuz.org/gmsh/src/gmsh-"
+                          version "-source.tgz"))
+      (sha256
+       (base32 "0jv2yvk28w86rx5mvjkb0w12ff2jxih7axnpvznpd295lg5jg7hr"))
+      (modules '((guix build utils)))
+      (snippet
+       ;; Remove non-free METIS code
+       '(delete-file-recursively "contrib/Metis"))))
+    (build-system cmake-build-system)
+    (native-inputs `(("patchelf" ,patchelf))) ;for augment-rpath
+    (propagated-inputs
+     `(("fltk" ,fltk)
+       ("gfortran" ,gfortran-4.8)
+       ("gmp" ,gmp)
+       ("hdf5-lib" ,hdf5 "lib")
+       ("hdf5-include" ,hdf5 "include")
+       ("lapack" ,lapack)
+       ("mesa" ,mesa)
+       ("libx11" ,libx11)
+       ("libxext" ,libxext)))
+    (arguments
+     `(#:configure-flags `("-DENABLE_METIS:BOOL=OFF"
+                           "-DENABLE_BUILD_SHARED:BOOL=ON"
+                           "-DENABLE_BUILD_DYNAMIC:BOOL=ON")))
+    (home-page "http://www.geuz.org/gmsh/")
+    (synopsis "3D finite element grid generator")
+    (description "Gmsh is a 3D finite element grid generator with a build-in
+CAD engine and post-processor. Its design goal is to provide a fast, light and
+user-friendly meshing tool with parametric input and advanced visualization
+capabilities. Gmsh is built around four modules: geometry, mesh, solver and
+post-processing. The specification of any input to these modules is done
+either interactively using the graphical user interface or in ASCII text files
+using Gmsh's own scripting language.")
+    (license license:gpl2+)))
