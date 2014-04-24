@@ -123,14 +123,14 @@ PARI is also available as a C library to allow for faster computations.")
 (define-public gp2c
   (package
    (name "gp2c")
-   (version "0.0.8pl1")
+   (version "0.0.9pl1")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://pari.math.u-bordeaux.fr/pub/pari/GP2C/gp2c-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "0r1xrshgx0db2snmacwvg5r99fhd9rpblcfs86pfsp23hnjxj9i0"))))
+                     "1p36060vwhn38j77r4c3jqyaslvhvgm6fdw2486k7krxk5ai7ph5"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (inputs `(("pari-gp" ,pari-gp)))
