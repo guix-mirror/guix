@@ -67,9 +67,14 @@ if test "x$guix_build_daemon" = "xyes"; then
   AC_CHECK_FUNCS([chroot unshare])
   AC_CHECK_HEADERS([sched.h sys/param.h sys/mount.h])
 
-  dnl Check for lutimes, optionally used for changing the mtime of
-  dnl symlinks.
-  AC_CHECK_FUNCS([lutimes])
+  dnl lutimes and lchown: used when canonicalizing store items.
+  dnl posix_fallocate: used when extracting archives.
+  dnl vfork: to speed up spawning of helper programs.
+  dnl sched_setaffinity: to improve RPC locality.
+  dnl statvfs: to detect disk-full conditions.
+  dnl strsignal: for error reporting.
+  AC_CHECK_FUNCS([lutimes lchown posix_fallocate vfork sched_setaffinity \
+     statvfs nanosleep strsignal])
 
   dnl Check whether the store optimiser can optimise symlinks.
   AC_MSG_CHECKING([whether it is possible to create a link to a symlink])
