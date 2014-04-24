@@ -61,6 +61,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ddrescue.scm			\
   gnu/packages/dictionaries.scm			\
   gnu/packages/docbook.scm			\
+  gnu/packages/doxygen.scm			\
   gnu/packages/dwm.scm				\
   gnu/packages/ed.scm				\
   gnu/packages/elf.scm				\
@@ -271,6 +272,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
   gnu/packages/patches/dmd-getpw.patch				\
   gnu/packages/patches/dmd-tests-longer-sleeps.patch		\
+  gnu/packages/patches/doxygen-test.patch			\
+  gnu/packages/patches/doxygen-tmake.patch			\
   gnu/packages/patches/emacs-configure-sh.patch			\
   gnu/packages/patches/findutils-absolute-paths.patch		\
   gnu/packages/patches/flac-fix-memcmp-not-declared.patch	\
