@@ -19,6 +19,7 @@
 (define-module (gnu system vm)
   #:use-module (guix config)
   #:use-module (guix store)
+  #:use-module (guix gexp)
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix monads)
@@ -158,12 +159,14 @@ made available under the /xchg CIFS share."
                         ,exp))
        (user-builder (text-file "builder-in-linux-vm"
                                 (object->string exp*)))
-       (loader       (text-file* "linux-vm-loader" ; XXX: use 'sexp-file'
-                                 "(begin (set! %load-path (cons \""
-                                 module-dir "\" %load-path)) "
-                                 "(set! %load-compiled-path (cons \""
-                                 compiled "\" %load-compiled-path))"
-                                 "(primitive-load \"" user-builder "\"))"))
+       (loader       (gexp->file "linux-vm-loader"
+                                 #~(begin
+                                     (set! %load-path
+                                           (cons #$module-dir %load-path))
+                                     (set! %load-compiled-path
+                                           (cons #$compiled
+                                                 %load-compiled-path))
+                                     (primitive-load #$user-builder))))
        (coreutils -> (car (assoc-ref %final-inputs "coreutils")))
        (initrd       (if initrd                   ; use the default initrd?
                          (return initrd)
@@ -351,37 +354,22 @@ OS that shares its store with the host."
        (initrd initrd)
        (image  (system-qemu-image/shared-store os)))
     (define builder
-      (mlet %store-monad ((qemu   (package-file qemu
-                                                "bin/qemu-system-x86_64"))
-                          (bash   (package-file bash "bin/sh"))
-                          (kernel (package-file (operating-system-kernel os)
-                                                "bzImage")))
-        (return `(let ((out (assoc-ref %outputs "out")))
-                   (call-with-output-file out
-                     (lambda (port)
-                       (display
-                        (string-append "#!" ,bash "
-exec " ,qemu " -enable-kvm -no-reboot -net nic,model=virtio \
-  -virtfs local,path=" ,(%store-prefix) ",security_model=none,mount_tag=store \
+      #~(call-with-output-file #$output
+          (lambda (port)
+            (display
+             (string-append "#!" #$bash "/bin/sh
+exec " #$qemu "/bin/qemu-system-x86_64 -enable-kvm -no-reboot -net nic,model=virtio \
+  -virtfs local,path=" #$(%store-prefix) ",security_model=none,mount_tag=store \
   -net user \
-  -kernel " ,kernel " -initrd "
-  ,(string-append (derivation->output-path initrd) "/initrd") " \
--append \"" ,(if graphic? "" "console=ttyS0 ")
-"--load=" ,(derivation->output-path os-drv) "/boot --root=/dev/vda1\" \
-  -drive file=" ,(derivation->output-path image)
+  -kernel " #$(operating-system-kernel os) "/bzImage \
+  -initrd " #$initrd "/initrd \
+-append \"" #$(if graphic? "" "console=ttyS0 ")
+  "--load=" #$os-drv "/boot --root=/dev/vda1\" \
+  -drive file=" #$image
   ",if=virtio,cache=writeback,werror=report,readonly\n")
-                        port)))
-                   (chmod out #o555)
-                   #t))))
+             port)
+            (chmod port #o555))))
 
-    (mlet %store-monad ((qemu    (package->derivation qemu))
-                        (bash    (package->derivation bash))
-                        (builder builder))
-      (derivation-expression "run-vm.sh" builder
-                             #:inputs `(("qemu" ,qemu)
-                                        ("image" ,image)
-                                        ("bash" ,bash)
-                                        ("initrd" ,initrd)
-                                        ("os" ,os-drv))))))
+    (gexp->derivation "run-vm.sh" builder)))
 
 ;;; vm.scm ends here

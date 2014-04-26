@@ -19,6 +19,7 @@
 (define-module (gnu system)
   #:use-module (guix store)
   #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix derivations)
@@ -333,10 +334,9 @@ we're running in the final root."
        (etc      (operating-system-etc-directory os))
        (dmd-conf (dmd-configuration-file services
                                          (derivation->output-path etc))))
-    ;; FIXME: Use 'sexp-file' or similar.
-    (text-file* "boot"
-                "(execl \"" dmd "/bin/dmd\" \"dmd\"
-                      \"--config\" \"" dmd-conf  "\")")))
+    (gexp->file "boot"
+                #~(execl (string-append #$dmd "/bin/dmd")
+                         "dmd" "--config" #$dmd-conf))))
 
 (define (operating-system-derivation os)
   "Return a derivation that builds OS."
