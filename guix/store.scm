@@ -839,6 +839,7 @@ be used internally by the daemon's build hook."
 This predicate is sometimes needed because files *under* a store path are not
 valid inputs."
   (and (store-path? path)
+       (not (string=? path (%store-prefix)))
        (let ((len (+ 1 (string-length (%store-prefix)))))
          (not (string-index (substring path len) #\/)))))
 

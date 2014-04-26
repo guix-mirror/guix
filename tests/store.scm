@@ -85,7 +85,8 @@
        (not (direct-store-path?
              (string-append
               (%store-prefix)
-              "/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7/bin/guile")))))
+              "/283gqy39v3g9dxjy26rynl0zls82fmcg-guile-2.0.7/bin/guile")))
+       (not (direct-store-path? (%store-prefix)))))
 
 (test-skip (if %store 0 13))
 
