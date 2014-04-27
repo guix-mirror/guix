@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Guy Grant <gzg@riseup.net>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,15 +76,8 @@
                       ;; "systemd".  Strip that.
                       "")))
 		 %standard-phases)
-       #:configure-flags '("-DUSE_PAM=yes" "-DUSE_CONSOLEKIT=no"
-
-                           ;; Don't build libslim.so, because then the build
-                           ;; system is unable to set the right RUNPATH on the
-                           ;; 'slim' binary.
-                           "-DBUILD_SHARED_LIBS=OFF"
-
-                           ;; Leave a valid RUNPATH upon install.
-                           "-DCMAKE_SKIP_BUILD_RPATH=ON")
+       #:configure-flags '("-DUSE_PAM=yes"
+                           "-DUSE_CONSOLEKIT=no")
        #:tests? #f))
     (home-page "http://slim.berlios.de/")
     (synopsis "Desktop-independent graphcal login manager for X11")

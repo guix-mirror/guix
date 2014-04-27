@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -53,39 +53,10 @@
                 "1jyaj9h1iglvn02hrvcchbx8ycjpj8b91h8mi459k7q5jp2xgd9b"))))
     (build-system cmake-build-system)
     (arguments
-     '(#:configure-flags '("-DWITH_GCRYPT=ON"
-
-                           ;; Leave a valid RUNPATH upon install.
-                           "-DCMAKE_SKIP_BUILD_RPATH=ON")
+     '(#:configure-flags '("-DWITH_GCRYPT=ON")
 
        ;; TODO: Add 'CMockery' and '-DWITH_TESTING=ON' for the test suite.
-       #:tests? #f
-
-       #:modules ((guix build cmake-build-system)
-                  (guix build utils)
-                  (guix build rpath))
-       #:imported-modules ((guix build gnu-build-system)
-                           (guix build cmake-build-system)
-                           (guix build utils)
-                           (guix build rpath))
-
-       #:phases (alist-cons-after
-                 'install 'augment-runpath
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   ;; libssh_threads.so NEEDs libssh.so, so add $libdir to its
-                   ;; RUNPATH.
-                   (define (dereference file)
-                     (let ((target (false-if-exception (readlink file))))
-                       (if target
-                           (dereference target)
-                           file)))
-
-                   (let* ((out (assoc-ref outputs "out"))
-                          (lib (string-append out "/lib")))
-                     (with-directory-excursion lib
-                       (augment-rpath (dereference "libssh_threads.so")
-                                      lib))))
-                 %standard-phases)))
+       #:tests? #f))
     (inputs `(("zlib" ,zlib)
                ;; Link against an older gcrypt, because libssh tries to access
                ;; fields of 'gcry_thread_cbs' that are now private:

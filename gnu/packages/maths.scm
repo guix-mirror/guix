@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;;
@@ -190,43 +190,14 @@ output in text, PostScript, PDF or HTML.")
     (inputs `(("fortran" ,gfortran-4.8)
               ("python" ,python-2)))
     (arguments
-     `(#:modules ((guix build cmake-build-system)
-                  (guix build utils)
-                  (guix build rpath)
-                  (srfi srfi-1))
-       #:imported-modules ((guix build cmake-build-system)
-                           (guix build gnu-build-system)
-                           (guix build utils)
-                           (guix build rpath))
-       #:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES")
+     `(#:configure-flags '("-DBUILD_SHARED_LIBS:BOOL=YES")
        #:phases (alist-cons-before
                  'check 'patch-python
                  (lambda* (#:key inputs #:allow-other-keys)
                    (let ((python (assoc-ref inputs "python")))
                      (substitute* "lapack_testing.py"
                        (("/usr/bin/env python") python))))
-                 (alist-cons-after
-                  'strip 'add-libs-to-runpath
-                  (lambda* (#:key inputs outputs #:allow-other-keys)
-                    (let* ((out     (assoc-ref outputs "out"))
-                           (fortran (assoc-ref inputs "fortran"))
-                           (libc    (assoc-ref inputs "libc"))
-                           (rpaths  `(,(string-append fortran "/lib64")
-                                      ,(string-append fortran "/lib")
-                                      ,(string-append libc "/lib")
-                                      ,(string-append out "/lib"))))
-                      ;; Set RUNPATH for all libraries
-                      (with-directory-excursion out
-                        (for-each
-                         (lambda (lib)
-                           (let ((lib-rpaths (file-rpath lib)))
-                             (for-each
-                              (lambda (dir)
-                                (or (member dir lib-rpaths)
-                                    (augment-rpath lib dir)))
-                              rpaths)))
-                         (find-files "lib" ".*so$")))))
-                  %standard-phases))))
+                  %standard-phases)))
     (synopsis "Library for numerical linear algebra")
     (description
      "LAPACK is a Fortran 90 library for solving the most commonly occurring
