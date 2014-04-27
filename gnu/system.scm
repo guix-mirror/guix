@@ -153,44 +153,21 @@ input tuples."
                            #:guile-for-build guile
                            #:local-build? #t)))
 
-(define* (file-union files
-                     #:key (inputs '()) (name "file-union"))
+(define* (file-union name files)
   "Return a derivation that builds a directory containing all of FILES.  Each
 item in FILES must be a list where the first element is the file name to use
-in the new directory, and the second element is the target file.
+in the new directory, and the second element is a gexp denoting the target
+file."
+  (define builder
+    #~(begin
+        (mkdir #$output)
+        (chdir #$output)
+        #$@(map (match-lambda
+                 ((target source)
+                  #~(symlink #$source #$target)))
+                files)))
 
-The subset of FILES corresponding to plain store files is automatically added
-as an inputs; additional inputs, such as derivations, are taken from INPUTS."
-  (mlet %store-monad ((inputs (lower-inputs inputs)))
-    (let* ((outputs (append-map (match-lambda
-                                 ((_ (? derivation? drv))
-                                  (list (derivation->output-path drv)))
-                                 ((_ (? derivation? drv) sub-drv ...)
-                                  (map (cut derivation->output-path drv <>)
-                                       sub-drv))
-                                 (_ '()))
-                                inputs))
-           (inputs   (append inputs
-                             (filter (match-lambda
-                                      ((_ file)
-                                       ;; Elements of FILES that are store
-                                       ;; files and that do not correspond to
-                                       ;; the output of INPUTS are considered
-                                       ;; inputs (still here?).
-                                       (and (direct-store-path? file)
-                                            (not (member file outputs)))))
-                                     files))))
-      (derivation-expression name
-                             `(let ((out (assoc-ref %outputs "out")))
-                                (mkdir out)
-                                (chdir out)
-                                ,@(map (match-lambda
-                                        ((name target)
-                                         `(symlink ,target ,name)))
-                                       files))
-
-                             #:inputs inputs
-                             #:local-build? #t))))
+  (gexp->derivation name builder))
 
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
@@ -200,10 +177,7 @@ as an inputs; additional inputs, such as derivations, are taken from INPUTS."
                         (profile "/var/run/current-system/profile"))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
-      ((services   (package-file net-base "etc/services"))
-       (protocols  (package-file net-base "etc/protocols"))
-       (rpc        (package-file net-base "etc/rpc"))
-       (passwd     (passwd-file accounts))
+      ((passwd     (passwd-file accounts))
        (shadow     (passwd-file accounts #:shadow? #t))
        (group      (group-file groups))
        (pam.d      (pam-services->directory pam-services))
@@ -236,30 +210,21 @@ export CPATH=$HOME/.guix-profile/include:" profile "/include
 export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
 alias ls='ls -p --color'
 alias ll='ls -l'
-"))
-
-       (tz-file  (package-file tzdata
-                               (string-append "share/zoneinfo/" timezone)))
-       (files -> `(("services" ,services)
-                   ("protocols" ,protocols)
-                   ("rpc" ,rpc)
-                   ("pam.d" ,(derivation->output-path pam.d))
-                   ("login.defs" ,login.defs)
-                   ("issue" ,issue)
-                   ("shells" ,shells)
-                   ("profile" ,(derivation->output-path bashrc))
-                   ("localtime" ,tz-file)
-                   ("passwd" ,(derivation->output-path passwd))
-                   ("shadow" ,(derivation->output-path shadow))
-                   ("group" ,group))))
-    (file-union files
-                #:inputs `(("net" ,net-base)
-                           ("pam.d" ,pam.d)
-                           ("passwd" ,passwd)
-                           ("shadow" ,shadow)
-                           ("bashrc" ,bashrc)
-                           ("tzdata" ,tzdata))
-                #:name "etc")))
+")))
+    (file-union "etc"
+                `(("services" ,#~(string-append #$net-base "/etc/services"))
+                  ("protocols" ,#~(string-append #$net-base "/etc/protocols"))
+                  ("rpc" ,#~(string-append #$net-base "/etc/rpc"))
+                  ("pam.d" ,#~#$pam.d)
+                  ("login.defs" ,#~#$login.defs)
+                  ("issue" ,#~#$issue)
+                  ("shells" ,#~#$shells)
+                  ("profile" ,#~#$bashrc)
+                  ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
+                                                 #$timezone))
+                  ("passwd" ,#~#$passwd)
+                  ("shadow" ,#~#$shadow)
+                  ("group" ,#~#$group)))))
 
 (define (operating-system-profile os)
   "Return a derivation that builds the default profile of OS."
@@ -314,15 +279,12 @@ we're running in the final root."
 (define (operating-system-derivation os)
   "Return a derivation that builds OS."
   (mlet* %store-monad
-      ((profile-drv (operating-system-profile os))
-       (profile ->  (derivation->output-path profile-drv))
-       (etc-drv     (operating-system-etc-directory os))
-       (etc     ->  (derivation->output-path etc-drv))
+      ((profile     (operating-system-profile os))
+       (etc         (operating-system-etc-directory os))
        (services    (sequence %store-monad (operating-system-services os)))
        (boot-drv    (operating-system-boot-script os))
        (boot    ->  (derivation->output-path boot-drv))
        (kernel  ->  (operating-system-kernel os))
-       (kernel-dir  (package-file kernel))
        (initrd      (operating-system-initrd os))
        (initrd-file -> (string-append (derivation->output-path initrd)
                                       "/initrd"))
@@ -336,18 +298,12 @@ we're running in the final root."
                                               ,(string-append "--load=" boot)))
                            (initrd initrd-file))))
        (grub.cfg (grub-configuration-file entries)))
-    (file-union `(("boot" ,boot)
-                  ("kernel" ,kernel-dir)
-                  ("initrd" ,initrd-file)
-                  ("profile" ,profile)
-                  ("grub.cfg" ,grub.cfg)
-                  ("etc" ,etc))
-                #:inputs `(("boot" ,boot-drv)
-                           ("kernel" ,kernel)
-                           ("initrd" ,initrd)
-                           ("bash" ,bash)
-                           ("profile" ,profile-drv)
-                           ("etc" ,etc-drv))
-                #:name "system")))
+    (file-union "system"
+                `(("boot" ,#~#$boot-drv)
+                  ("kernel" ,#~#$kernel)
+                  ("initrd" ,#~(string-append #$initrd "/initrd"))
+                  ("profile" ,#~#$profile)
+                  ("grub.cfg" ,#~#$grub.cfg)
+                  ("etc" ,#~#$etc)))))
 
 ;;; system.scm ends here
