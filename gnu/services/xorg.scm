@@ -87,77 +87,42 @@ Section \"Screen\"
   Device \"Device-vesa\"
 EndSection"))
 
-  (mlet %store-monad ((guile-bin   (package-file guile "bin/guile"))
-                      (xorg-bin    (package-file xorg-server "bin/X"))
-                      (dri         (package-file mesa "lib/dri"))
-                      (xkbcomp-bin (package-file xkbcomp "bin"))
-                      (xkb-dir     (package-file xkeyboard-config
-                                                 "share/X11/xkb"))
-                      (config      (xserver.conf)))
-    (define builder
+  (mlet %store-monad ((config (xserver.conf)))
+    (define script
       ;; Write a small wrapper around the X server.
-      `(let ((out (assoc-ref %outputs "out")))
-         (call-with-output-file out
-           (lambda (port)
-             (format port "#!~a --no-auto-compile~%!#~%" ,guile-bin)
-             (write '(begin
-                       (setenv "XORG_DRI_DRIVER_PATH" ,dri)
-                       (setenv "XKB_BINDIR" ,xkbcomp-bin)
+      #~(begin
+          (setenv "XORG_DRI_DRIVER_PATH" (string-append #$mesa "/lib/dri"))
+          (setenv "XKB_BINDIR" (string-append #$xkbcomp "/bin"))
 
-                       (apply execl
+          (apply execl (string-append #$xorg-server "/bin/X")
+                 "-ac" "-logverbose" "-verbose"
+                 "-xkbdir" (string-append #$xkeyboard-config "/share/X11/xkb")
+                 "-config" #$config
+                 "-nolisten" "tcp" "-terminate"
 
-                              ,xorg-bin "-ac" "-logverbose" "-verbose"
-                              "-xkbdir" ,xkb-dir
-                              "-config" ,(derivation->output-path config)
-                              "-nolisten" "tcp" "-terminate"
+                 ;; Note: SLiM and other display managers add the
+                 ;; '-auth' flag by themselves.
+                 (cdr (command-line)))))
 
-                              ;; Note: SLiM and other display managers add the
-                              ;; '-auth' flag by themselves.
-                              (cdr (command-line))))
-                    port)))
-         (chmod out #o555)
-         #t))
-
-    (mlet %store-monad ((inputs (lower-inputs
-                                 `(("xorg" ,xorg-server)
-                                   ("xkbcomp" ,xkbcomp)
-                                   ("xkeyboard-config" ,xkeyboard-config)
-                                   ("mesa" ,mesa)
-                                   ("guile" ,guile)
-                                   ("xorg.conf" ,config)))))
-      (derivation-expression "start-xorg" builder
-                             #:inputs inputs))))
+    (gexp->script "start-xorg" script)))
 
 (define* (xinitrc #:key
                   (guile guile-final)
                   (ratpoison ratpoison)
                   (windowmaker windowmaker))
   "Return a system-wide xinitrc script that starts the specified X session."
-  (mlet %store-monad ((guile-bin     (package-file guile "bin/guile"))
-                      (ratpoison-bin (package-file ratpoison "bin/ratpoison"))
-                      (wmaker-bin    (package-file windowmaker "bin/wmaker"))
-                      (inputs        (lower-inputs
-                                      `(("raptoison" ,ratpoison)
-                                        ("wmaker" ,windowmaker)))))
-    (define builder
-      `(let ((out (assoc-ref %outputs "out")))
-         (call-with-output-file out
-           (lambda (port)
-             (format port "#!~a --no-auto-compile~%!#~%" ,guile-bin)
-             (write '(begin
-                       (use-modules (ice-9 match))
+  (define builder
+    #~(begin
+        (use-modules (ice-9 match))
 
-                       ;; TODO: Check for ~/.xsession.
-                       (match (command-line)
-                         ((_ "ratpoison")
-                          (execl ,ratpoison-bin))
-                         (_
-                          (execl ,wmaker-bin))))
-                    port)))
-         (chmod out #o555)
-         #t))
+        ;; TODO: Check for ~/.xsession.
+        (match (command-line)
+          ((_ "ratpoison")
+           (execl (string-append #$ratpoison "/bin/ratpoison")))
+          (_
+           (execl (string-append #$windowmaker "/bin/wmaker"))))))
 
-    (derivation-expression "xinitrc" builder #:inputs inputs)))
+  (gexp->script "xinitrc" builder))
 
 (define* (slim-service #:key (slim slim)
                        (allow-empty-passwords? #t) auto-login?
