@@ -52,8 +52,8 @@
             operating-system-locale
             operating-system-services
 
-            operating-system-profile-directory
-            operating-system-derivation))
+            operating-system-derivation
+            operating-system-profile))
 
 ;;; Commentary:
 ;;;
@@ -282,16 +282,11 @@ alias ll='ls -l'
                            ("tzdata" ,tzdata))
                 #:name "etc")))
 
-(define (operating-system-profile-derivation os)
+(define (operating-system-profile os)
   "Return a derivation that builds the default profile of OS."
   ;; TODO: Replace with a real profile with a manifest.
   (union (operating-system-packages os)
          #:name "default-profile"))
-
-(define (operating-system-profile-directory os)
-  "Return the directory name of the default profile of OS."
-  (mlet %store-monad ((drv (operating-system-profile-derivation os)))
-    (return (derivation->output-path drv))))
 
 (define (operating-system-accounts os)
   "Return the user accounts for OS, including an obligatory 'root' account."
@@ -317,7 +312,7 @@ alias ll='ls -l'
                       (cons %pam-other-services
                             (append-map service-pam-services services))))
        (accounts    (operating-system-accounts os))
-       (profile-drv (operating-system-profile-derivation os))
+       (profile-drv (operating-system-profile os))
        (groups   -> (append (operating-system-groups os)
                             (append-map service-user-groups services))))
    (etc-directory #:accounts accounts #:groups groups
@@ -341,7 +336,7 @@ we're running in the final root."
 (define (operating-system-derivation os)
   "Return a derivation that builds OS."
   (mlet* %store-monad
-      ((profile-drv (operating-system-profile-derivation os))
+      ((profile-drv (operating-system-profile os))
        (profile ->  (derivation->output-path profile-drv))
        (etc-drv     (operating-system-etc-directory os))
        (etc     ->  (derivation->output-path etc-drv))

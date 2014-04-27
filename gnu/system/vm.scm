@@ -82,18 +82,14 @@ input tuple.  The output file name is when building for SYSTEM."
       ((input (and (? string?) (? store-path?) file))
        (return `(,input . ,file))))))
 
-;; An alias to circumvent name clashes.
-(define %imported-modules imported-modules)
-
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
                                              (system (%current-system))
-                                             (inputs '())
                                              (linux linux-libre)
                                              initrd
                                              (qemu qemu-headless)
                                              (env-vars '())
-                                             (imported-modules
+                                             (modules
                                               '((guix build vm)
                                                 (guix build linux-initrd)
                                                 (guix build utils)))
@@ -106,7 +102,7 @@ input tuple.  The output file name is when building for SYSTEM."
                                              (disk-image-size
                                               (* 100 (expt 2 20))))
   "Evaluate EXP in a QEMU virtual machine running LINUX with INITRD (a
-derivation).  In the virtual machine, EXP has access to all of INPUTS from the
+derivation).  In the virtual machine, EXP has access to all its inputs from the
 store; it should put its output files in the `/xchg' directory, which is
 copied to the derivation's output when the VM terminates.  The virtual machine
 runs with MEMORY-SIZE MiB of memory.
@@ -114,51 +110,15 @@ runs with MEMORY-SIZE MiB of memory.
 When MAKE-DISK-IMAGE? is true, then create a QEMU disk image of
 DISK-IMAGE-SIZE bytes and return it.
 
-IMPORTED-MODULES is the set of modules imported in the execution environment
-of EXP.
+MODULES is the set of modules imported in the execution environment of EXP.
 
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs, as for `derivation'.  The files containing the reference graphs are
 made available under the /xchg CIFS share."
-  ;; FIXME: Add #:modules parameter, for the 'use-modules' form.
-
-  (define input-alist
-    (map input->name+output inputs))
-
-  (define builder
-    ;; Code that launches the VM that evaluates EXP.
-    `(let ()
-       (use-modules (guix build utils)
-                    (guix build vm))
-
-       (let ((linux   (string-append (assoc-ref %build-inputs "linux")
-                                     "/bzImage"))
-             (initrd  (string-append (assoc-ref %build-inputs "initrd")
-                                     "/initrd"))
-             (loader  (assoc-ref %build-inputs "loader"))
-             (graphs  ',(match references-graphs
-                          (((graph-files . _) ...) graph-files)
-                          (_ #f))))
-
-         (set-path-environment-variable "PATH" '("bin")
-                                        (map cdr %build-inputs))
-
-         (load-in-linux-vm loader
-                           #:output (assoc-ref %outputs "out")
-                           #:linux linux #:initrd initrd
-                           #:memory-size ,memory-size
-                           #:make-disk-image? ,make-disk-image?
-                           #:disk-image-size ,disk-image-size
-                           #:references-graphs graphs))))
-
   (mlet* %store-monad
-      ((input-alist  (sequence %store-monad input-alist))
-       (module-dir   (%imported-modules imported-modules))
-       (compiled     (compiled-modules imported-modules))
-       (exp* ->      `(let ((%build-inputs ',input-alist))
-                        ,exp))
-       (user-builder (text-file "builder-in-linux-vm"
-                                (object->string exp*)))
+      ((module-dir   (imported-modules modules))
+       (compiled     (compiled-modules modules))
+       (user-builder (gexp->file "builder-in-linux-vm" exp))
        (loader       (gexp->file "linux-vm-loader"
                                  #~(begin
                                      (set! %load-path
@@ -172,35 +132,50 @@ made available under the /xchg CIFS share."
                          (return initrd)
                          (qemu-initrd #:guile-modules-in-chroot? #t
                                       #:mounts `((9p "store" ,(%store-prefix))
-                                                 (9p "xchg" "/xchg")))))
-       (inputs       (lower-inputs `(("qemu" ,qemu)
-                                     ("linux" ,linux)
-                                     ("initrd" ,initrd)
-                                     ("coreutils" ,coreutils)
-                                     ("builder" ,user-builder)
-                                     ("loader" ,loader)
-                                     ,@inputs))))
-    (derivation-expression name builder
-                           ;; TODO: Require the "kvm" feature.
-                           #:system system
-                           #:inputs inputs
-                           #:env-vars env-vars
-                           #:modules (delete-duplicates
-                                      `((guix build utils)
-                                        (guix build vm)
-                                        (guix build linux-initrd)
-                                        ,@imported-modules))
-                           #:guile-for-build guile-for-build
-                           #:references-graphs references-graphs)))
+                                                 (9p "xchg" "/xchg"))))))
+
+    (define builder
+      ;; Code that launches the VM that evaluates EXP.
+      #~(begin
+          (use-modules (guix build utils)
+                       (guix build vm))
+
+          (let ((inputs  '#$(list qemu coreutils))
+                (linux   (string-append #$linux "/bzImage"))
+                (initrd  (string-append #$initrd "/initrd"))
+                (loader  #$loader)
+                (graphs  '#$(match references-graphs
+                              (((graph-files . _) ...) graph-files)
+                              (_ #f))))
+
+            (set-path-environment-variable "PATH" '("bin") inputs)
+
+            (load-in-linux-vm loader
+                              #:output #$output
+                              #:linux linux #:initrd initrd
+                              #:memory-size #$memory-size
+                              #:make-disk-image? #$make-disk-image?
+                              #:disk-image-size #$disk-image-size
+                              #:references-graphs graphs))))
+
+    (gexp->derivation name builder
+                      ;; TODO: Require the "kvm" feature.
+                      #:system system
+                      #:env-vars env-vars
+                      #:modules `((guix build utils)
+                                  (guix build vm)
+                                  (guix build linux-initrd))
+                      #:guile-for-build guile-for-build
+                      #:references-graphs references-graphs)))
 
 (define* (qemu-image #:key
                      (name "qemu-image")
                      (system (%current-system))
+                     (qemu qemu-headless)
                      (disk-image-size (* 100 (expt 2 20)))
                      grub-configuration
                      (initialize-store? #f)
                      (populate #f)
-                     (inputs '())
                      (inputs-to-copy '()))
   "Return a bootable, stand-alone QEMU image.  The returned image is a full
 disk image, with a GRUB installation that uses GRUB-CONFIGURATION as its
@@ -218,41 +193,37 @@ such as /etc files."
       ((graph (sequence %store-monad
                         (map input->name+output inputs-to-copy))))
    (expression->derivation-in-linux-vm
-    "qemu-image"
-    `(let ()
-       (use-modules (guix build vm)
-                    (guix build utils))
+    name
+    #~(begin
+        (use-modules (guix build vm)
+                     (guix build utils))
 
-       (set-path-environment-variable "PATH" '("bin" "sbin")
-                                      (map cdr %build-inputs))
+        (let ((inputs
+               '#$(append (list qemu parted grub e2fsprogs util-linux)
+                          (map (compose car (cut assoc-ref %final-inputs <>))
+                               '("sed" "grep" "coreutils" "findutils" "gawk"))
+                          (if initialize-store? (list guix) '())))
 
-       (let ((graphs ',(match inputs-to-copy
-                         (((names . _) ...)
-                          names))))
-         (initialize-hard-disk #:grub.cfg ,grub-configuration
-                               #:closures-to-copy graphs
-                               #:disk-image-size ,disk-image-size
-                               #:initialize-store? ,initialize-store?
-                               #:directives ',populate)
-         (reboot)))
+              ;; This variable is unused but allows us to add INPUTS-TO-COPY
+              ;; as inputs.
+              (to-copy
+                '#$(map (match-lambda
+                         ((name thing) thing)
+                         ((name thing output) `(,thing ,output)))
+                        inputs-to-copy)))
+
+          (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+
+          (let ((graphs '#$(match inputs-to-copy
+                             (((names . _) ...)
+                              names))))
+            (initialize-hard-disk #:grub.cfg #$grub-configuration
+                                  #:closures-to-copy graphs
+                                  #:disk-image-size #$disk-image-size
+                                  #:initialize-store? #$initialize-store?
+                                  #:directives '#$populate)
+            (reboot))))
     #:system system
-    #:inputs `(("parted" ,parted)
-               ("grub" ,grub)
-               ("e2fsprogs" ,e2fsprogs)
-
-               ;; For shell scripts.
-               ("sed" ,(car (assoc-ref %final-inputs "sed")))
-               ("grep" ,(car (assoc-ref %final-inputs "grep")))
-               ("coreutils" ,(car (assoc-ref %final-inputs "coreutils")))
-               ("findutils" ,(car (assoc-ref %final-inputs "findutils")))
-               ("gawk" ,(car (assoc-ref %final-inputs "gawk")))
-               ("util-linux" ,util-linux)
-
-               ,@(if initialize-store?
-                     `(("guix" ,guix))
-                     '())
-
-               ,@inputs-to-copy)
     #:make-disk-image? #t
     #:disk-image-size disk-image-size
     #:references-graphs graph)))
@@ -283,29 +254,28 @@ basic contents of the root file system of OS."
           (gid  (or (user-account-gid user) 0))
           (root (string-append "/var/guix/profiles/per-user/"
                                (user-account-name user))))
-      `((directory ,root ,uid ,gid)
-        (directory ,home ,uid ,gid))))
+      #~((directory #$root #$uid #$gid)
+         (directory #$home #$uid #$gid))))
 
   (mlet* %store-monad ((os-drv    (operating-system-derivation os))
-                       (os-dir -> (derivation->output-path os-drv))
                        (build-gid (operating-system-build-gid os))
-                       (profile   (operating-system-profile-directory os)))
-    (return `((directory ,(%store-prefix) 0 ,(or build-gid 0))
-              (directory "/etc")
-              (directory "/var/log")                     ; for dmd
-              (directory "/var/run/nscd")
-              (directory "/var/guix/gcroots")
-              ("/var/guix/gcroots/system" -> ,os-dir)
-              (directory "/run")
-              ("/run/current-system" -> ,profile)
-              (directory "/bin")
-              ("/bin/sh" -> "/run/current-system/bin/bash")
-              (directory "/tmp")
-              (directory "/var/guix/profiles/per-user/root" 0 0)
+                       (profile   (operating-system-profile os)))
+    (return #~((directory #$(%store-prefix) 0 #$(or build-gid 0))
+               (directory "/etc")
+               (directory "/var/log")                     ; for dmd
+               (directory "/var/run/nscd")
+               (directory "/var/guix/gcroots")
+               ("/var/guix/gcroots/system" -> #$os-drv)
+               (directory "/run")
+               ("/run/current-system" -> #$profile)
+               (directory "/bin")
+               ("/bin/sh" -> "/run/current-system/bin/bash")
+               (directory "/tmp")
+               (directory "/var/guix/profiles/per-user/root" 0 0)
 
-              (directory "/root" 0 0)             ; an exception
-              ,@(append-map user-directories
-                            (operating-system-users os))))))
+               (directory "/root" 0 0)             ; an exception
+               #$@(append-map user-directories
+                              (operating-system-users os))))))
 
 (define* (system-qemu-image os
                             #:key (disk-image-size (* 900 (expt 2 20))))
