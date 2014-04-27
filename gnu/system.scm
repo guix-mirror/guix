@@ -120,38 +120,23 @@
   "Return a derivation that builds the union of INPUTS.  INPUTS is a list of
 input tuples."
   (define builder
-    '(begin
-       (use-modules (guix build union))
+    #~(begin
+        (use-modules (guix build union))
 
-       (setvbuf (current-output-port) _IOLBF)
-       (setvbuf (current-error-port) _IOLBF)
+        (define inputs '#$inputs)
 
-       (let ((output (assoc-ref %outputs "out"))
-             (inputs (map cdr %build-inputs)))
-         (format #t "building union `~a' with ~a packages...~%"
-                 output (length inputs))
-         (union-build output inputs))))
+        (setvbuf (current-output-port) _IOLBF)
+        (setvbuf (current-error-port) _IOLBF)
 
-  (mlet %store-monad
-      ((inputs (sequence %store-monad
-                         (map (match-lambda
-                               ((or ((? package? p)) (? package? p))
-                                (mlet %store-monad
-                                    ((drv (package->derivation p system)))
-                                  (return `(,name ,drv))))
-                               (((? package? p) output)
-                                (mlet %store-monad
-                                    ((drv (package->derivation p system)))
-                                  (return `(,name ,drv ,output))))
-                               (x
-                                (return x)))
-                              inputs))))
-    (derivation-expression name builder
-                           #:system system
-                           #:inputs inputs
-                           #:modules '((guix build union))
-                           #:guile-for-build guile
-                           #:local-build? #t)))
+        (format #t "building union `~a' with ~a packages...~%"
+                #$output (length inputs))
+        (union-build #$output inputs)))
+
+  (gexp->derivation name builder
+                    #:system system
+                    #:modules '((guix build union))
+                    #:guile-for-build guile
+                    #:local-build? #t))
 
 (define* (file-union name files)
   "Return a derivation that builds a directory containing all of FILES.  Each
