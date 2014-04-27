@@ -1868,11 +1868,12 @@ Consider this ``normal'' procedure:
 
 Using @code{(guix monads)}, it may be rewritten as a monadic function:
 
+@c FIXME: Find a better example, one that uses 'mlet'.
 @example
 (define (sh-symlink)
   ;; Same, but return a monadic value.
-  (mlet %store-monad ((sh (package-file bash "bin")))
-    (derivation-expression "sh" `(symlink ,sh %output))))
+  (gexp->derivation "sh"
+                    #~(symlink (string-append #$bash "/bin/bash") #$output)))
 @end example
 
 There are two things to note in the second version: the @code{store}
@@ -1971,15 +1972,6 @@ preventing them from being garbage-collected during its lifetime.
 value in the absolute file name of @var{file} within the @var{output}
 directory of @var{package}.  When @var{file} is omitted, return the name
 of the @var{output} directory of @var{package}.
-@end deffn
-
-@deffn {Monadic Procedure} derivation-expression @var{name} @var{exp} @
-       [#:system (%current-system)] [#:inputs '()] @
-       [#:outputs '("out")] [#:hash #f] @
-       [#:hash-algo #f] [#:env-vars '()] [#:modules '()] @
-       [#:references-graphs #f] [#:guile-for-build #f]
-Monadic version of @code{build-expression->derivation}
-(@pxref{Derivations}).
 @end deffn
 
 @deffn {Monadic Procedure} package->derivation @var{package} [@var{system}]

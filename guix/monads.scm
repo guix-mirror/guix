@@ -57,9 +57,7 @@
             text-file*
             package-file
             package->derivation
-            built-derivations
-            derivation-expression
-            lower-inputs)
+            built-derivations)
   #:replace (imported-modules
              compiled-modules))
 
@@ -356,6 +354,7 @@ and store file names; the resulting store file holds references to all these."
        (lambda (port)
          (display ,(computed-text text inputs) port))))
 
+  ;; TODO: Rewrite using 'gexp->derivation'.
   (mlet %store-monad ((inputs (lower-inputs inputs)))
     (derivation-expression name (builder inputs)
                            #:inputs inputs)))
@@ -376,7 +375,7 @@ OUTPUT directory of PACKAGE."
 (define (lower-inputs inputs)
   "Turn any package from INPUTS into a derivation; return the corresponding
 input list as a monadic value."
-  ;; XXX: Should probably be in (guix packages).
+  ;; XXX: This procedure is bound to disappear with 'derivation-expression'.
   (with-monad %store-monad
     (sequence %store-monad
               (map (match-lambda
@@ -390,6 +389,7 @@ input list as a monadic value."
                    inputs))))
 
 (define derivation-expression
+  ;; XXX: This procedure is superseded by 'gexp->derivation'.
   (store-lift build-expression->derivation))
 
 (define package->derivation

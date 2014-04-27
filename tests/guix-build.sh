@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -75,7 +75,8 @@ then false; else true; fi
 
 # Invoking a monadic procedure.
 guix build -e "(begin
-                 (use-modules (guix monads) (guix utils))
+                 (use-modules (guix gexp))
                  (lambda ()
-                   (derivation-expression \"test\" '(mkdir %output))))" \
+                   (gexp->derivation \"test\"
+                                     (gexp (mkdir (ungexp output))))))" \
    --dry-run

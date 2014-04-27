@@ -241,7 +241,7 @@ interpreted."
                         str args)))))
     (catch #t
       (lambda ()
-        (eval exp the-scm-module))
+        (eval exp the-root-module))
       (lambda args
         (leave (_ "failed to evaluate expression `~a': ~s~%")
                exp args)))))

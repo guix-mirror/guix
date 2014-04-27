@@ -66,10 +66,9 @@
 (define raw-derivation
   (store-lift derivation))
 
-(define (lower-inputs* inputs)
+(define (lower-inputs inputs)
   "Turn any package from INPUTS into a derivation; return the corresponding
 input list as a monadic value."
-  ;; XXX: This is like 'lower-inputs' but without the "name" part in tuples.
   (with-monad %store-monad
     (sequence %store-monad
               (map (match-lambda
@@ -101,7 +100,7 @@ The other arguments are as for 'derivation'."
   (define %modules modules)
   (define outputs (gexp-outputs exp))
 
-  (mlet* %store-monad ((inputs   (lower-inputs* (gexp-inputs exp)))
+  (mlet* %store-monad ((inputs   (lower-inputs (gexp-inputs exp)))
                        (sexp     (gexp->sexp exp #:outputs outputs))
                        (builder  (text-file (string-append name "-builder")
                                             (object->string sexp)))

@@ -108,6 +108,9 @@
                       guile)))
     #:guile-for-build (package-derivation %store %bootstrap-guile)))
 
+(define derivation-expression
+  (@@ (guix monads) derivation-expression))
+
 (test-assert "mlet* + derivation-expression"
   (run-with-store %store
     (mlet* %store-monad ((guile  (package-file %bootstrap-guile "bin/guile"))
