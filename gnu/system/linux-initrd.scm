@@ -18,6 +18,7 @@
 
 (define-module (gnu system linux-initrd)
   #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module ((guix store)
                 #:select (%store-prefix))
@@ -52,14 +53,14 @@
                              (name "guile-initrd")
                              (system (%current-system))
                              (modules '())
-                             (inputs '())
+                             (to-copy '())
                              (linux #f)
                              (linux-modules '()))
   "Return a package that contains a Linux initrd (a gzipped cpio archive)
 containing GUILE and that evaluates EXP upon booting.  LINUX-MODULES is a list
-of `.ko' file names to be copied from LINUX into the initrd.  INPUTS is a list
-of additional inputs to be copied in the initrd.  MODULES is a list of Guile
-module names to be embedded in the initrd."
+of `.ko' file names to be copied from LINUX into the initrd.  TO-COPY is a
+list of additional derivations or packages to copy to the initrd.  MODULES is
+a list of Guile module names to be embedded in the initrd."
 
   ;; General Linux overview in `Documentation/early-userspace/README' and
   ;; `Documentation/filesystems/ramfs-rootfs-initramfs.txt'.
@@ -68,154 +69,129 @@ module names to be embedded in the initrd."
     ;; Return a regexp that matches STR exactly.
     (string-append "^" (regexp-quote str) "$"))
 
-  (define (files-to-copy)
-    (mlet %store-monad ((inputs (lower-inputs inputs)))
-      (return (map (match-lambda
-                    ((_ drv)
-                     (derivation->output-path drv))
-                    ((_ drv sub-drv)
-                     (derivation->output-path drv sub-drv)))
-                   inputs))))
+  (mlet* %store-monad ((source   (imported-modules modules))
+                       (compiled (compiled-modules modules)))
+    (define builder
+      ;; TODO: Move most of this code to (guix build linux-initrd).
+      #~(begin
+          (use-modules (guix build utils)
+                       (ice-9 pretty-print)
+                       (ice-9 popen)
+                       (ice-9 match)
+                       (ice-9 ftw)
+                       (srfi srfi-26)
+                       (system base compile)
+                       (rnrs bytevectors)
+                       ((system foreign) #:select (sizeof)))
 
-  (define (builder to-copy)
-    `(begin
-       (use-modules (guix build utils)
-                    (ice-9 pretty-print)
-                    (ice-9 popen)
-                    (ice-9 match)
-                    (ice-9 ftw)
-                    (srfi srfi-26)
-                    (system base compile)
-                    (rnrs bytevectors)
-                    ((system foreign) #:select (sizeof)))
+          (let ((cpio    (string-append #$cpio "/bin/cpio"))
+                (gzip    (string-append #$gzip "/bin/gzip"))
+                (modules #$source)
+                (gos     #$compiled)
+                (scm-dir (string-append "share/guile/" (effective-version)))
+                (go-dir  (format #f ".cache/guile/ccache/~a-~a-~a-~a"
+                                 (effective-version)
+                                 (if (eq? (native-endianness) (endianness little))
+                                     "LE"
+                                     "BE")
+                                 (sizeof '*)
+                                 (effective-version))))
+            (mkdir #$output)
+            (mkdir "contents")
+            (with-directory-excursion "contents"
+              (copy-recursively #$guile ".")
+              (call-with-output-file "init"
+                (lambda (p)
+                  (format p "#!/bin/guile -ds~%!#~%" #$guile)
+                  (pretty-print '#$exp p)))
+              (chmod "init" #o555)
+              (chmod "bin/guile" #o555)
 
-       (let ((guile   (assoc-ref %build-inputs "guile"))
-             (cpio    (string-append (assoc-ref %build-inputs "cpio")
-                                     "/bin/cpio"))
-             (gzip    (string-append (assoc-ref %build-inputs "gzip")
-                                     "/bin/gzip"))
-             (modules (assoc-ref %build-inputs "modules"))
-             (gos     (assoc-ref %build-inputs "modules/compiled"))
-             (scm-dir (string-append "share/guile/" (effective-version)))
-             (go-dir  (format #f ".cache/guile/ccache/~a-~a-~a-~a"
-                              (effective-version)
-                              (if (eq? (native-endianness) (endianness little))
-                                  "LE"
-                                  "BE")
-                              (sizeof '*)
-                              (effective-version)))
-             (out     (assoc-ref %outputs "out")))
-         (mkdir out)
-         (mkdir "contents")
-         (with-directory-excursion "contents"
-           (copy-recursively guile ".")
-           (call-with-output-file "init"
-             (lambda (p)
-               (format p "#!/bin/guile -ds~%!#~%" guile)
-               (pretty-print ',exp p)))
-           (chmod "init" #o555)
-           (chmod "bin/guile" #o555)
+              ;; Copy Guile modules.
+              (chmod scm-dir #o777)
+              (copy-recursively modules scm-dir
+                                #:follow-symlinks? #t)
+              (copy-recursively gos (string-append "lib/guile/"
+                                                   (effective-version) "/ccache")
+                                #:follow-symlinks? #t)
 
-           ;; Copy Guile modules.
-           (chmod scm-dir #o777)
-           (copy-recursively modules scm-dir
-                             #:follow-symlinks? #t)
-           (copy-recursively gos (string-append "lib/guile/"
-                                                (effective-version) "/ccache")
-                             #:follow-symlinks? #t)
+              ;; Compile `init'.
+              (mkdir-p go-dir)
+              (set! %load-path (cons modules %load-path))
+              (set! %load-compiled-path (cons gos %load-compiled-path))
+              (compile-file "init"
+                            #:opts %auto-compilation-options
+                            #:output-file (string-append go-dir "/init.go"))
 
-           ;; Compile `init'.
-           (mkdir-p go-dir)
-           (set! %load-path (cons modules %load-path))
-           (set! %load-compiled-path (cons gos %load-compiled-path))
-           (compile-file "init"
-                         #:opts %auto-compilation-options
-                         #:output-file (string-append go-dir "/init.go"))
+              ;; Copy Linux modules.
+              (let* ((linux      #$linux)
+                     (module-dir (and linux
+                                      (string-append linux "/lib/modules"))))
+                (mkdir "modules")
+                #$@(map (lambda (module)
+                          #~(match (find-files module-dir
+                                               #$(string->regexp module))
+                              ((file)
+                               (format #t "copying '~a'...~%" file)
+                               (copy-file file (string-append "modules/"
+                                                              #$module)))
+                              (()
+                               (error "module not found" #$module module-dir))
+                              ((_ ...)
+                               (error "several modules by that name"
+                                      #$module module-dir))))
+                        linux-modules))
 
-           ;; Copy Linux modules.
-           (let* ((linux      (assoc-ref %build-inputs "linux"))
-                  (module-dir (and linux
-                                   (string-append linux "/lib/modules"))))
-             (mkdir "modules")
-             ,@(map (lambda (module)
-                      `(match (find-files module-dir
-                                          ,(string->regexp module))
-                         ((file)
-                          (format #t "copying '~a'...~%" file)
-                          (copy-file file (string-append "modules/"
-                                                         ,module)))
-                         (()
-                          (error "module not found" ,module module-dir))
-                         ((_ ...)
-                          (error "several modules by that name"
-                                 ,module module-dir))))
-                    linux-modules))
+              (let ((store   #$(string-append "." (%store-prefix)))
+                    (to-copy '#$to-copy))
+                (unless (null? to-copy)
+                  (mkdir-p store))
+                ;; XXX: Should we do export-references-graph?
+                (for-each (lambda (input)
+                            (let ((target
+                                   (string-append store "/"
+                                                  (basename input))))
+                              (copy-recursively input target)))
+                          to-copy))
 
-           ,@(if (null? to-copy)
-                 '()
-                 `((let ((store ,(string-append "." (%store-prefix))))
-                     (mkdir-p store)
-                     ;; XXX: Should we do export-references-graph?
-                     (for-each (lambda (input)
-                                 (let ((target
-                                        (string-append store "/"
-                                                       (basename input))))
-                                  (copy-recursively input target)))
-                               ',to-copy))))
+              ;; Reset the timestamps of all the files that will make it in the
+              ;; initrd.
+              (for-each (cut utime <> 0 0 0 0)
+                        (find-files "." ".*"))
 
-           ;; Reset the timestamps of all the files that will make it in the
-           ;; initrd.
-           (for-each (cut utime <> 0 0 0 0)
-                     (find-files "." ".*"))
+              (system* cpio "--version")
+              (let ((pipe (open-pipe* OPEN_WRITE cpio "-o"
+                                      "-O" (string-append #$output "/initrd")
+                                      "-H" "newc" "--null")))
+                (define print0
+                  (let ((len (string-length "./")))
+                    (lambda (file)
+                      (format pipe "~a\0" (string-drop file len)))))
 
-           (system* cpio "--version")
-           (let ((pipe (open-pipe* OPEN_WRITE cpio "-o"
-                                   "-O" (string-append out "/initrd")
-                                   "-H" "newc" "--null")))
-             (define print0
-               (let ((len (string-length "./")))
-                 (lambda (file)
-                   (format pipe "~a\0" (string-drop file len)))))
+                ;; Note: as per `ramfs-rootfs-initramfs.txt', always add
+                ;; directory entries before the files that are inside of it: "The
+                ;; Linux kernel cpio extractor won't create files in a directory
+                ;; that doesn't exist, so the directory entries must go before
+                ;; the files that go in those directories."
+                (file-system-fold (const #t)
+                                  (lambda (file stat result) ; leaf
+                                    (print0 file))
+                                  (lambda (dir stat result) ; down
+                                    (unless (string=? dir ".")
+                                      (print0 dir)))
+                                  (const #f)         ; up
+                                  (const #f)         ; skip
+                                  (const #f)
+                                  #f
+                                  ".")
 
-             ;; Note: as per `ramfs-rootfs-initramfs.txt', always add
-             ;; directory entries before the files that are inside of it: "The
-             ;; Linux kernel cpio extractor won't create files in a directory
-             ;; that doesn't exist, so the directory entries must go before
-             ;; the files that go in those directories."
-             (file-system-fold (const #t)
-                               (lambda (file stat result) ; leaf
-                                 (print0 file))
-                               (lambda (dir stat result) ; down
-                                 (unless (string=? dir ".")
-                                   (print0 dir)))
-                               (const #f)         ; up
-                               (const #f)         ; skip
-                               (const #f)
-                               #f
-                               ".")
+                (and (zero? (close-pipe pipe))
+                     (with-directory-excursion #$output
+                       (and (zero? (system* gzip "--best" "initrd"))
+                            (rename-file "initrd.gz" "initrd")))))))))
 
-             (and (zero? (close-pipe pipe))
-                  (with-directory-excursion out
-                    (and (zero? (system* gzip "--best" "initrd"))
-                         (rename-file "initrd.gz" "initrd")))))))))
-
-  (mlet* %store-monad
-      ((source   (imported-modules modules))
-       (compiled (compiled-modules modules))
-       (inputs   (lower-inputs
-                  `(("guile" ,guile)
-                    ("cpio" ,cpio)
-                    ("gzip" ,gzip)
-                    ("modules" ,source)
-                    ("modules/compiled" ,compiled)
-                    ,@(if linux
-                          `(("linux" ,linux))
-                          '())
-                    ,@inputs)))
-       (to-copy  (files-to-copy)))
-   (derivation-expression name (builder to-copy)
-                          #:modules '((guix build utils))
-                          #:inputs inputs)))
+   (gexp->derivation name builder
+                     #:modules '((guix build utils)))))
 
 (define* (qemu-initrd #:key
                       guile-modules-in-chroot?
@@ -257,26 +233,26 @@ to it are lost."
             '("fuse.ko")
             '())))
 
-  (mlet %store-monad
-      ((unionfs (package-file unionfs-fuse/static "bin/unionfs")))
-    (expression->initrd
-     `(begin
-        (use-modules (guix build linux-initrd))
+  (expression->initrd
+   #~(begin
+       (use-modules (guix build linux-initrd)
+                    (srfi srfi-26))
 
-        (boot-system #:mounts ',mounts
-                     #:linux-modules ',linux-modules
-                     #:qemu-guest-networking? #t
-                     #:guile-modules-in-chroot? ',guile-modules-in-chroot?
-                     #:unionfs ,unionfs
-                     #:volatile-root? ',volatile-root?))
-     #:name "qemu-initrd"
-     #:modules '((guix build utils)
-                 (guix build linux-initrd))
-     #:linux linux-libre
-     #:linux-modules linux-modules
-     #:inputs (if volatile-root?
-                  `(("unionfs" ,unionfs-fuse/static))
-                  '()))))
+       (boot-system #:mounts '#$mounts
+                    #:linux-modules '#$linux-modules
+                    #:qemu-guest-networking? #t
+                    #:guile-modules-in-chroot? '#$guile-modules-in-chroot?
+                    #:unionfs (and=> #$(and volatile-root? unionfs-fuse/static)
+                                     (cut string-append <> "/bin/unionfs"))
+                    #:volatile-root? '#$volatile-root?))
+   #:name "qemu-initrd"
+   #:modules '((guix build utils)
+               (guix build linux-initrd))
+   #:to-copy (if volatile-root?
+                 (list unionfs-fuse/static)
+                 '())
+   #:linux linux-libre
+   #:linux-modules linux-modules))
 
 (define (gnu-system-initrd)
   "Initrd for the GNU system itself, with nothing QEMU-specific."
