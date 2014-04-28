@@ -98,12 +98,7 @@ Java Lucene text search engine API to C++.")
 (define-public soprano
   (package
     (name "soprano")
-    (version "2.9.3")
-    ;; 2.9.4 requires clucene, see
-    ;; http://www.mailinglistarchive.com/html/lfs-book@linuxfromscratch.org/2013-10/msg00285.html
-    ;; The stable clucene-0.9.21b fails one of its tests;
-    ;; in the unstable clucene-2.3.3.4 the binary cl_test is not found.
-    ;; In any case, the library seems to be unmaintained.
+    (version "2.9.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/soprano/Soprano/"
@@ -111,14 +106,16 @@ Java Lucene text search engine API to C++.")
                                 "soprano-" version ".tar.bz2"))
              (sha256
               (base32
-               "08gb5d8bgy7vc6qd6r1kkmmc5rli67dlglpjqjlahpnvs26r1cwl"))))
+               "1rg0x7yg0a1cbnxz7kqk52580wla8jbnj4d4r3j7l7g7ajyny1k4"))))
     (build-system cmake-build-system)
-    ;; FIXME: Add optional dependencies: Redland, odbci, clucene
+    ;; FIXME: Add optional dependencies: Redland, odbci.
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("qt" ,qt-4)
+     `(("clucene" ,clucene) ; is not yet "fully found", but sufficiently
+                            ; so to allow for compilation...
+       ("qt" ,qt-4)
        ("raptor2" ,raptor2)))
     (home-page "http://soprano.sourceforge.net/")
     (synopsis "RDF data library for Qt")
