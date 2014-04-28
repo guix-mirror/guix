@@ -6,6 +6,7 @@
  (scheme-mode
   .
   ((indent-tabs-mode . nil)
+   (eval . (put 'eval-when 'scheme-indent-function 1))
    (eval . (put 'test-assert 'scheme-indent-function 1))
    (eval . (put 'test-equal 'scheme-indent-function 1))
    (eval . (put 'test-eq 'scheme-indent-function 1))
@@ -31,7 +32,13 @@
    (eval . (put 'with-monad 'scheme-indent-function 1))
    (eval . (put 'mlet* 'scheme-indent-function 2))
    (eval . (put 'mlet 'scheme-indent-function 2))
-   (eval . (put 'run-with-store 'scheme-indent-function 1))))
+   (eval . (put 'run-with-store 'scheme-indent-function 1))
+
+   ;; Recognize '~' and '$', as used for gexps, as quotation symbols.  This
+   ;; notably allows '(' in Paredit to not insert a space when the preceding
+   ;; symbol is one of these.
+   (eval . (modify-syntax-entry ?~ "'"))
+   (eval . (modify-syntax-entry ?$ "'"))))
  (emacs-lisp-mode . ((indent-tabs-mode . nil)))
  (texinfo-mode    . ((indent-tabs-mode . nil)
                      (fill-column . 72))))

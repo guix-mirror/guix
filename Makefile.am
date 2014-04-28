@@ -37,6 +37,7 @@ MODULES =					\
   guix/download.scm				\
   guix/git-download.scm				\
   guix/monads.scm				\
+  guix/gexp.scm					\
   guix/profiles.scm				\
   guix/serialization.scm			\
   guix/nar.scm					\
@@ -139,6 +140,7 @@ SCM_TESTS =					\
   tests/snix.scm				\
   tests/store.scm				\
   tests/monads.scm				\
+  tests/gexp.scm				\
   tests/nar.scm					\
   tests/union.scm				\
   tests/profiles.scm

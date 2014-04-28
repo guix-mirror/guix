@@ -1305,6 +1305,7 @@ package definitions.
 * The Store::                   Manipulating the package store.
 * Derivations::                 Low-level interface to package derivations.
 * The Store Monad::             Purely functional interface to the store.
+* G-Expressions::               Manipulating build expressions.
 @end menu
 
 @node Defining Packages
@@ -1762,13 +1763,21 @@ to a Bash executable in the store:
                            "echo hello world > $out\n" '())))
   (derivation store "foo"
               bash `("-e" ,builder)
+              #:inputs `((,bash) (,builder))
               #:env-vars '(("HOME" . "/homeless"))))
 @result{} #<derivation /gnu/store/@dots{}-foo.drv => /gnu/store/@dots{}-foo>
 @end lisp
 
-As can be guessed, this primitive is cumbersome to use directly.  An
-improved variant is @code{build-expression->derivation}, which allows
-the caller to directly pass a Guile expression as the build script:
+As can be guessed, this primitive is cumbersome to use directly.  A
+better approach is to write build scripts in Scheme, of course!  The
+best course of action for that is to write the build code as a
+``G-expression'', and to pass it to @code{gexp->derivation}.  For more
+information, @ref{G-Expressions}.
+
+Once upon a time, @code{gexp->derivation} did not exist and constructing
+derivations with build code written in Scheme was achieved with
+@code{build-expression->derivation}, documented below.  This procedure
+is now deprecated in favor of the much nicer @code{gexp->derivation}.
 
 @deffn {Scheme Procedure} build-expression->derivation @var{store} @
        @var{name} @var{exp} @
@@ -1816,20 +1825,6 @@ containing one file:
 @result{} #<derivation /gnu/store/@dots{}-goo.drv => @dots{}>
 @end lisp
 
-@cindex strata of code
-Remember that the build expression passed to
-@code{build-expression->derivation} is run by a separate Guile process
-than the one that calls @code{build-expression->derivation}: it is run
-by a Guile process launched by the daemon, typically in a chroot.  So,
-while there is a single language for both the @dfn{host} and the build
-side, there are really two @dfn{strata} of code: the host-side, and the
-build-side code@footnote{The term @dfn{stratum} in this context was
-coined by Manuel Serrano et al. in the context of their work on Hop.}.
-This distinction is important to keep in mind, notably when using
-higher-level constructs such as @var{gnu-build-system} (@pxref{Defining
-Packages}).  For this reason, Guix modules that are meant to be used in
-the build stratum are kept in the @code{(guix build @dots{})} name
-space.
 
 @node The Store Monad
 @section The Store Monad
@@ -1991,6 +1986,196 @@ Monadic version of @code{build-expression->derivation}
 Monadic version of @code{package-derivation} (@pxref{Defining
 Packages}).
 @end deffn
+
+
+@node G-Expressions
+@section G-Expressions
+
+@cindex G-expression
+@cindex build code quoting
+So we have ``derivations'', which represent a sequence of build actions
+to be performed to produce an item in the store (@pxref{Derivations}).
+Those build actions are performed when asking the daemon to actually
+build the derivations; they are run by the daemon in a container
+(@pxref{Invoking guix-daemon}).
+
+@cindex strata of code
+It should come as no surprise that we like to write those build actions
+in Scheme.  When we do that, we end up with two @dfn{strata} of Scheme
+code@footnote{The term @dfn{stratum} in this context was coined by
+Manuel Serrano et al.@: in the context of their work on Hop.}: the
+``host code''---code that defines packages, talks to the daemon,
+etc.---and the ``build code''---code that actually performs build
+actions, such as making directories, invoking @command{make}, etc.
+
+To describe a derivation and its build actions, one typically needs to
+embed build code inside host code.  It boils down to manipulating build
+code as data, and Scheme's homoiconicity---code has a direct
+representation as data---comes in handy for that.  But we need more than
+Scheme's normal @code{quasiquote} mechanism to construct build
+expressions.
+
+The @code{(guix gexp)} module implements @dfn{G-expressions}, a form of
+S-expressions adapted to build expressions.  G-expressions, or
+@dfn{gexps}, consist essentially in three syntactic forms: @code{gexp},
+@code{ungexp}, and @code{ungexp-splicing} (or simply: @code{#~},
+@code{#$}, and @code{#$@@}), which are comparable respectively to
+@code{quasiquote}, @code{unquote}, and @code{unquote-splicing}
+(@pxref{Expression Syntax, @code{quasiquote},, guile, GNU Guile
+Reference Manual}).  However, there are major differences:
+
+@itemize
+@item
+Gexps are meant to be written to a file and run or manipulated by other
+processes.
+
+@item
+When a package or derivation is unquoted inside a gexp, the result is as
+if its output file name had been introduced.
+
+@item
+Gexps carry information about the packages or derivations they refer to,
+and these dependencies are automatically added as inputs to the build
+processes that use them.
+@end itemize
+
+To illustrate the idea, here is an example of a gexp:
+
+@example
+(define build-exp
+  #~(begin
+      (mkdir #$output)
+      (chdir #$output)
+      (symlink (string-append #$coreutils "/bin/ls") 
+               "list-files")))
+@end example
+
+This gexp can be passed to @code{gexp->derivation}; we obtain a
+derivation that builds a directory containing exactly one symlink to
+@file{/gnu/store/@dots{}-coreutils-8.22/bin/ls}:
+
+@example
+(gexp->derivation "the-thing" build-exp)
+@end example
+
+As one would expect, the @code{"/gnu/store/@dots{}-coreutils"} string is
+substituted to the reference to the @var{coreutils} package in the
+actual build code, and @var{coreutils} is automatically made an input to
+the derivation.  Likewise, @code{#$output} (equivalent to @code{(ungexp
+output)}) is replaced by a string containing the derivation's output
+directory name.  The syntactic form to construct gexps is summarized
+below.
+
+@deffn {Scheme Syntax} #~@var{exp}
+@deffnx {Scheme Syntax} (gexp @var{exp})
+Return a G-expression containing @var{exp}.  @var{exp} may contain one
+or more of the following forms:
+
+@table @code
+@item #$@var{obj}
+@itemx (ungexp @var{obj})
+Introduce a reference to @var{obj}.  @var{obj} may be a package or a
+derivation, in which case the @code{ungexp} form is replaced by its
+output file name---e.g., @code{"/gnu/store/@dots{}-coreutils-8.22}.
+
+If @var{obj} is a list, it is traversed and any package or derivation
+references are substituted similarly.
+
+If @var{obj} is another gexp, its contents are inserted and its
+dependencies are added to those of the containing gexp.
+
+If @var{obj} is another kind of object, it is inserted as is.
+
+@item #$@var{package-or-derivation}:@var{output}
+@itemx (ungexp @var{package-or-derivation} @var{output})
+This is like the form above, but referring explicitly to the
+@var{output} of @var{package-or-derivation}---this is useful when
+@var{package-or-derivation} produces multiple outputs (@pxref{Packages
+with Multiple Outputs}).
+
+@item #$output[:@var{output}]
+@itemx (ungexp output [@var{output}])
+Insert a reference to derivation output @var{output}, or to the main
+output when @var{output} is omitted.
+
+This only makes sense for gexps passed to @code{gexp->derivation}.
+
+@item #$@@@var{lst}
+@itemx (ungexp-splicing @var{lst})
+Like the above, but splices the contents of @var{lst} inside the
+containing list.
+
+@end table
+
+G-expressions created by @code{gexp} or @code{#~} are run-time objects
+of the @code{gexp?} type (see below.)
+@end deffn
+
+@deffn {Scheme Procedure} gexp? @var{obj}
+Return @code{#t} if @var{obj} is a G-expression.
+@end deffn
+
+G-expressions are meant to be written to disk, either as code building
+some derivation, or as plain files in the store.  The monadic procedures
+below allow you to do that (@pxref{The Store Monad}, for more
+information about monads.)
+
+@deffn {Monadic Procedure} gexp->derivation @var{name} @var{exp} @
+       [#:system (%current-system)] [#:inputs '()] @
+       [#:hash #f] [#:hash-algo #f] @
+       [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
+       [#:references-graphs #f] [#:local-build? #f] @
+       [#:guile-for-build #f]
+Return a derivation @var{name} that runs @var{exp} (a gexp) with
+@var{guile-for-build} (a derivation) on @var{system}.
+
+Make @var{modules} available in the evaluation context of @var{EXP};
+@var{MODULES} is a list of names of Guile modules from the current
+search path to be copied in the store, compiled, and made available in
+the load path during the execution of @var{exp}---e.g., @code{((guix
+build utils) (guix build gnu-build-system))}.
+
+The other arguments are as for @code{derivation}.
+@end deffn
+
+@deffn {Monadic Procedure} gexp->script @var{name} @var{exp}
+Return an executable script @var{name} that runs @var{exp} using
+@var{guile} with @var{modules} in its search path.
+
+The example below builds a script that simply invokes the @command{ls}
+command:
+
+@example
+(use-modules (guix gexp) (gnu packages base))
+
+(gexp->script "list-files"
+              #~(execl (string-append #$coreutils "/bin/ls")
+                       "ls"))
+@end example
+
+When ``running'' it through the store (@pxref{The Store Monad,
+@code{run-with-store}}), we obtain a derivation that procedures an
+executable file @file{/gnu/store/@dots{}-list-files} along these lines:
+
+@example
+#!/gnu/store/@dots{}-guile-2.0.11/bin/guile -ds
+!#
+(execl (string-append "/gnu/store/@dots{}-coreutils-8.22"/bin/ls")
+       "ls")
+@end example
+@end deffn
+
+@deffn {Monadic Procedure} gexp->file @var{name} @var{exp}
+Return a derivation that builds a file @var{name} containing @var{exp}.
+
+The resulting file holds references to all the dependencies of @var{exp}
+or a subset thereof.
+@end deffn
+
+Of course, in addition to gexps embedded in ``host'' code, there are
+also modules containing build tools.  To make it clear that they are
+meant to be used in the build stratum, these modules are kept in the
+@code{(guix build @dots{})} name space.
 
 
 @c *********************************************************************
