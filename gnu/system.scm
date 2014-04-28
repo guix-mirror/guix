@@ -282,26 +282,25 @@ we're running in the final root."
       ((profile     (operating-system-profile os))
        (etc         (operating-system-etc-directory os))
        (services    (sequence %store-monad (operating-system-services os)))
-       (boot-drv    (operating-system-boot-script os))
-       (boot    ->  (derivation->output-path boot-drv))
+       (boot        (operating-system-boot-script os))
        (kernel  ->  (operating-system-kernel os))
        (initrd      (operating-system-initrd os))
-       (initrd-file -> (string-append (derivation->output-path initrd)
-                                      "/initrd"))
+       (initrd-file -> #~(string-append #$initrd "/initrd"))
        (entries ->  (list (menu-entry
                            (label (string-append
                                    "GNU system with "
                                    (package-full-name kernel)
                                    " (technology preview)"))
                            (linux kernel)
-                           (linux-arguments `("--root=/dev/sda1"
-                                              ,(string-append "--load=" boot)))
+                           (linux-arguments
+                            (list "--root=/dev/sda1"
+                                  #~(string-append "--load=" #$boot)))
                            (initrd initrd-file))))
        (grub.cfg (grub-configuration-file entries)))
     (file-union "system"
-                `(("boot" ,#~#$boot-drv)
+                `(("boot" ,#~#$boot)
                   ("kernel" ,#~#$kernel)
-                  ("initrd" ,#~(string-append #$initrd "/initrd"))
+                  ("initrd" ,initrd-file)
                   ("profile" ,#~#$profile)
                   ("grub.cfg" ,#~#$grub.cfg)
                   ("etc" ,#~#$etc)))))

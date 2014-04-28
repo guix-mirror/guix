@@ -22,6 +22,7 @@
   #:use-module (guix derivations)
   #:use-module (guix records)
   #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:export (menu-entry
@@ -40,45 +41,39 @@
   (label           menu-entry-label)
   (linux           menu-entry-linux)
   (linux-arguments menu-entry-linux-arguments
-                   (default '()))
-  (initrd          menu-entry-initrd))            ; file name of the initrd
+                   (default '()))          ; list of string-valued gexps
+  (initrd          menu-entry-initrd))     ; file name of the initrd as a gexp
 
 (define* (grub-configuration-file entries
                                   #:key (default-entry 1) (timeout 5)
                                   (system (%current-system)))
   "Return the GRUB configuration file for ENTRIES, a list of
 <menu-entry> objects, defaulting to DEFAULT-ENTRY and with the given TIMEOUT."
-  (define (prologue kernel)
-    (format #f "
-set default=~a
-set timeout=~a
-search.file ~a~%"
-            default-entry timeout kernel))
-
-  (define (bzImage)
-    (any (match-lambda
-          (($ <menu-entry> _ linux)
-           (package-file linux "bzImage"
-                         #:system system)))
-         entries))
-
-  (define entry->text
+  (define entry->gexp
     (match-lambda
      (($ <menu-entry> label linux arguments initrd)
-      (mlet %store-monad ((linux  (package-file linux "bzImage"
-                                                #:system system)))
-        (return (format #f "menuentry ~s {
-  linux ~a ~a
+      #~(format port "menuentry ~s {
+  linux ~a/bzImage ~a
   initrd ~a
 }~%"
-                        label
-                        linux (string-join arguments) initrd))))))
+                #$label
+                #$linux (string-join (list #$@arguments))
+                #$initrd))))
 
-  (mlet %store-monad ((kernel (bzImage))
-                      (body   (sequence %store-monad
-                                        (map entry->text entries))))
-    (text-file "grub.cfg"
-               (string-append (prologue kernel)
-                              (string-concatenate body)))))
+  (define builder
+    #~(call-with-output-file #$output
+        (lambda (port)
+          (format port "
+set default=~a
+set timeout=~a
+search.file ~a/bzImage~%"
+                  #$default-entry #$timeout
+                  #$(any (match-lambda
+                          (($ <menu-entry> _ linux)
+                           linux))
+                         entries))
+          #$@(map entry->gexp entries))))
+
+  (gexp->derivation "grub.cfg" builder))
 
 ;;; grub.scm ends here
