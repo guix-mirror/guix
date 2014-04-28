@@ -192,29 +192,6 @@ as an inputs; additional inputs, such as derivations, are taken from INPUTS."
                              #:inputs inputs
                              #:local-build? #t))))
 
-(define (links inputs)
-  "Return a directory with symbolic links to all of INPUTS.  This is
-essentially useful when one wants to keep references to all of INPUTS, be they
-directories or regular files."
-  (define builder
-    '(begin
-       (use-modules (srfi srfi-1))
-
-       (let ((out (assoc-ref %outputs "out")))
-         (mkdir out)
-         (chdir out)
-         (fold (lambda (file number)
-                 (symlink file (number->string number))
-                 (+ 1 number))
-               0
-               (map cdr %build-inputs))
-         #t)))
-
-  (mlet %store-monad ((inputs (lower-inputs inputs)))
-    (derivation-expression "links" builder
-                           #:inputs inputs
-                           #:local-build? #t)))
-
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
                         (accounts '())
@@ -272,12 +249,14 @@ alias ll='ls -l'
                    ("shells" ,shells)
                    ("profile" ,(derivation->output-path bashrc))
                    ("localtime" ,tz-file)
-                   ("passwd" ,passwd)
-                   ("shadow" ,shadow)
+                   ("passwd" ,(derivation->output-path passwd))
+                   ("shadow" ,(derivation->output-path shadow))
                    ("group" ,group))))
     (file-union files
                 #:inputs `(("net" ,net-base)
                            ("pam.d" ,pam.d)
+                           ("passwd" ,passwd)
+                           ("shadow" ,shadow)
                            ("bashrc" ,bashrc)
                            ("tzdata" ,tzdata))
                 #:name "etc")))
@@ -327,8 +306,7 @@ we're running in the final root."
   (mlet* %store-monad
       ((services (sequence %store-monad (operating-system-services os)))
        (etc      (operating-system-etc-directory os))
-       (dmd-conf (dmd-configuration-file services
-                                         (derivation->output-path etc))))
+       (dmd-conf (dmd-configuration-file services etc)))
     (gexp->file "boot"
                 #~(execl (string-append #$dmd "/bin/dmd")
                          "dmd" "--config" #$dmd-conf))))
@@ -357,25 +335,19 @@ we're running in the final root."
                            (linux-arguments `("--root=/dev/sda1"
                                               ,(string-append "--load=" boot)))
                            (initrd initrd-file))))
-       (grub.cfg (grub-configuration-file entries))
-       (accounts (operating-system-accounts os))
-       (extras   (links (delete-duplicates
-                         (append (append-map service-inputs services)
-                                 (append-map user-account-inputs accounts))))))
+       (grub.cfg (grub-configuration-file entries)))
     (file-union `(("boot" ,boot)
                   ("kernel" ,kernel-dir)
                   ("initrd" ,initrd-file)
                   ("profile" ,profile)
                   ("grub.cfg" ,grub.cfg)
-                  ("etc" ,etc)
-                  ("system-inputs" ,(derivation->output-path extras)))
+                  ("etc" ,etc))
                 #:inputs `(("boot" ,boot-drv)
                            ("kernel" ,kernel)
                            ("initrd" ,initrd)
                            ("bash" ,bash)
                            ("profile" ,profile-drv)
-                           ("etc" ,etc-drv)
-                           ("system-inputs" ,extras))
+                           ("etc" ,etc-drv))
                 #:name "system")))
 
 ;;; system.scm ends here

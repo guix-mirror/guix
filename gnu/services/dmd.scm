@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services dmd)
+  #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (gnu services)
   #:use-module (ice-9 match)
@@ -31,50 +32,50 @@
 
 (define (dmd-configuration-file services etc)
   "Return the dmd configuration file for SERVICES, that initializes /etc from
-ETC (the name of a directory in the store) on startup."
+ETC (the derivation that builds the /etc directory) on startup."
   (define config
-    `(begin
-       (use-modules (ice-9 ftw))
+    #~(begin
+        (use-modules (ice-9 ftw))
 
-       (register-services
-        ,@(map (lambda (service)
-                `(make <service>
-                   #:docstring ',(service-documentation service)
-                   #:provides ',(service-provision service)
-                   #:requires ',(service-requirement service)
-                   #:respawn? ',(service-respawn? service)
-                   #:start ,(service-start service)
-                   #:stop ,(service-stop service)))
-               services))
+        (register-services
+         #$@(map (lambda (service)
+                   #~(make <service>
+                       #:docstring '#$(service-documentation service)
+                       #:provides '#$(service-provision service)
+                       #:requires '#$(service-requirement service)
+                       #:respawn? '#$(service-respawn? service)
+                       #:start #$(service-start service)
+                       #:stop #$(service-stop service)))
+                 services))
 
-       ;; /etc is a mixture of static and dynamic settings.  Here is where we
-       ;; initialize it from the static part.
-       (format #t "populating /etc from ~a...~%" ,etc)
-       (let ((rm-f (lambda (f)
-                     (false-if-exception (delete-file f)))))
-         (rm-f "/etc/static")
-         (symlink ,etc "/etc/static")
-         (for-each (lambda (file)
-                     ;; TODO: Handle 'shadow' specially so that changed
-                     ;; password aren't lost.
-                     (let ((target (string-append "/etc/" file))
-                           (source (string-append "/etc/static/" file)))
-                       (rm-f target)
-                       (symlink source target)))
-                   (scandir ,etc
-                            (lambda (file)
-                              (not (member file '("." ".."))))))
+        ;; /etc is a mixture of static and dynamic settings.  Here is where we
+        ;; initialize it from the static part.
+        (format #t "populating /etc from ~a...~%" #$etc)
+        (let ((rm-f (lambda (f)
+                      (false-if-exception (delete-file f)))))
+          (rm-f "/etc/static")
+          (symlink #$etc "/etc/static")
+          (for-each (lambda (file)
+                      ;; TODO: Handle 'shadow' specially so that changed
+                      ;; password aren't lost.
+                      (let ((target (string-append "/etc/" file))
+                            (source (string-append "/etc/static/" file)))
+                        (rm-f target)
+                        (symlink source target)))
+                    (scandir #$etc
+                             (lambda (file)
+                               (not (member file '("." ".."))))))
 
-         ;; Prevent ETC from being GC'd.
-         (rm-f "/var/guix/gcroots/etc-directory")
-         (symlink ,etc "/var/guix/gcroots/etc-directory"))
+          ;; Prevent ETC from being GC'd.
+          (rm-f "/var/guix/gcroots/etc-directory")
+          (symlink #$etc "/var/guix/gcroots/etc-directory"))
 
-       ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
-       (setenv "PATH" "/run/current-system/bin")
+        ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
+        (setenv "PATH" "/run/current-system/bin")
 
-       (format #t "starting services...~%")
-       (for-each start ',(append-map service-provision services))))
+        (format #t "starting services...~%")
+        (for-each start '#$(append-map service-provision services))))
 
-  (text-file "dmd.conf" (object->string config)))
+  (gexp->file "dmd.conf" config))
 
 ;;; dmd.scm ends here

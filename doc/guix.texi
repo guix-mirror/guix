@@ -3224,29 +3224,26 @@ like:
 
 @lisp
 (define (nscd-service)
-  (mlet %store-monad ((nscd (package-file glibc "sbin/nscd")))
+  (with-monad %store-monad
     (return (service
              (documentation "Run libc's name service cache daemon.")
              (provision '(nscd))
-             (start `(make-forkexec-constructor ,nscd "-f" "/dev/null"
-                                                "--foreground"))
-             (stop  `(make-kill-destructor))
-
-             (respawn? #f)
-             (inputs `(("glibc" ,glibc)))))))
+             (start #~(make-forkexec-constructor
+                       (string-append #$glibc "/sbin/nscd")
+                       "-f" "/dev/null" "--foreground"))
+             (stop #~(make-kill-destructor))
+             (respawn? #f)))))
 @end lisp
 
 @noindent
-The @code{inputs} field specifies that this service depends on the
-@var{glibc} package---the package that contains the @command{nscd}
-program.  The @code{start} and @code{stop} fields are expressions that
-make use of dmd's facilities to start and stop processes (@pxref{Service
-De- and Constructors,,, dmd, GNU dmd Manual}).  The @code{provision}
-field specifies the name under which this service is known to dmd, and
-@code{documentation} specifies on-line documentation.  Thus, the
-commands @command{deco start ncsd}, @command{deco stop nscd}, and
-@command{deco doc nscd} will do what you would expect (@pxref{Invoking
-deco,,, dmd, GNU dmd Manual}).
+The @code{start} and @code{stop} fields are G-expressions
+(@pxref{G-Expressions}).  They refer to dmd's facilities to start and
+stop processes (@pxref{Service De- and Constructors,,, dmd, GNU dmd
+Manual}).  The @code{provision} field specifies the name under which
+this service is known to dmd, and @code{documentation} specifies on-line
+documentation.  Thus, the commands @command{deco start ncsd},
+@command{deco stop nscd}, and @command{deco doc nscd} will do what you
+would expect (@pxref{Invoking deco,,, dmd, GNU dmd Manual}).
 
 
 @c *********************************************************************

@@ -24,6 +24,7 @@
   #:use-module ((gnu packages base)
                 #:select (glibc-final))
   #:use-module (gnu packages package-management)
+  #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -48,8 +49,8 @@
     (return (service
              (documentation "Initialize the machine's host name.")
              (provision '(host-name))
-             (start `(lambda _
-                       (sethostname ,name)))
+             (start #~(lambda _
+                        (sethostname #$name)))
              (respawn? #f)))))
 
 (define* (mingetty-service tty
@@ -57,8 +58,7 @@
                            (motd (text-file "motd" "Welcome.\n"))
                            (allow-empty-passwords? #t))
   "Return a service to run mingetty on TTY."
-  (mlet %store-monad ((mingetty-bin (package-file mingetty "sbin/mingetty"))
-                      (motd         motd))
+  (mlet %store-monad ((motd motd))
     (return
      (service
       (documentation (string-append "Run mingetty on " tty "."))
@@ -68,10 +68,10 @@
       ;; service to be done.
       (requirement '(host-name))
 
-      (start  `(make-forkexec-constructor ,mingetty-bin "--noclear" ,tty))
-      (stop   `(make-kill-destructor))
-      (inputs `(("mingetty" ,mingetty)
-                ("motd" ,motd)))
+      (start  #~(make-forkexec-constructor
+                 (string-append #$mingetty "/sbin/mingetty")
+                 "--noclear" #$tty))
+      (stop   #~(make-kill-destructor))
 
       (pam-services
        ;; Let 'login' be known to PAM.  All the mingetty services will have
@@ -83,16 +83,17 @@
 
 (define* (nscd-service #:key (glibc glibc-final))
   "Return a service that runs libc's name service cache daemon (nscd)."
-  (mlet %store-monad ((nscd (package-file glibc "sbin/nscd")))
+  (with-monad %store-monad
     (return (service
              (documentation "Run libc's name service cache daemon (nscd).")
              (provision '(nscd))
-             (start `(make-forkexec-constructor ,nscd "-f" "/dev/null"
-                                                "--foreground"))
-             (stop  `(make-kill-destructor))
+             (start
+              #~(make-forkexec-constructor (string-append #$glibc "/sbin/nscd")
+                                           "-f" "/dev/null"
+                                           "--foreground"))
+             (stop #~(make-kill-destructor))
 
-             (respawn? #f)
-             (inputs `(("glibc" ,glibc)))))))
+             (respawn? #f)))))
 
 (define (syslog-service)
   "Return a service that runs 'syslogd' with reasonable default settings."
@@ -120,17 +121,17 @@
 ")
 
   (mlet %store-monad
-      ((syslog.conf (text-file "syslog.conf" contents))
-       (syslogd     (package-file inetutils "libexec/syslogd")))
+      ((syslog.conf (text-file "syslog.conf" contents)))
     (return
      (service
       (documentation "Run the syslog daemon (syslogd).")
       (provision '(syslogd))
-      (start `(make-forkexec-constructor ,syslogd "--no-detach"
-                                         "--rcfile" ,syslog.conf))
-      (stop  `(make-kill-destructor))
-      (inputs `(("inetutils" ,inetutils)
-                ("syslog.conf" ,syslog.conf)))))))
+      (start
+       #~(make-forkexec-constructor (string-append #$inetutils
+                                                   "/libexec/syslogd")
+                                    "--no-detach"
+                                    "--rcfile" #$syslog.conf))
+      (stop #~(make-kill-destructor))))))
 
 (define* (guix-build-accounts count #:key
                               (first-uid 30001)
@@ -148,8 +149,7 @@ starting at FIRST-UID, and under GID."
                        (gid gid)
                        (comment (format #f "Guix Build User ~2d" n))
                        (home-directory "/var/empty")
-                       (shell (package-file shadow "sbin/nologin"))
-                       (inputs `(("shadow" ,shadow)))))
+                       (shell #~(string-append #$shadow "/sbin/nologin"))))
                     1+
                     1))))
 
@@ -157,16 +157,16 @@ starting at FIRST-UID, and under GID."
                        (build-user-gid 30000) (build-accounts 10))
   "Return a service that runs the build daemon from GUIX, and has
 BUILD-ACCOUNTS user accounts available under BUILD-USER-GID."
-  (mlet %store-monad ((daemon   (package-file guix "bin/guix-daemon"))
-                      (accounts (guix-build-accounts build-accounts
+  (mlet %store-monad ((accounts (guix-build-accounts build-accounts
                                                      #:gid build-user-gid)))
     (return (service
              (provision '(guix-daemon))
-             (start `(make-forkexec-constructor ,daemon
-                                                "--build-users-group"
-                                                ,builder-group))
-             (stop  `(make-kill-destructor))
-             (inputs `(("guix" ,guix)))
+             (start
+              #~(make-forkexec-constructor (string-append #$guix
+                                                          "/bin/guix-daemon")
+                                           "--build-users-group"
+                                           #$builder-group))
+             (stop #~(make-kill-destructor))
              (user-accounts accounts)
              (user-groups (list (user-group
                                  (name builder-group)

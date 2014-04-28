@@ -27,6 +27,7 @@
   #:use-module (gnu packages gnustep)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages bash)
+  #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (guix derivations)
   #:export (xorg-start-command
@@ -190,9 +191,7 @@ reboot_cmd " dmd "/sbin/reboot
       (string-append "auto_login yes\ndefault_user " default-user)
       ""))))
 
-  (mlet %store-monad ((slim-bin (package-file slim "bin/slim"))
-                      (bash-bin (package-file bash "bin/bash"))
-                      (slim.cfg (slim.cfg)))
+  (mlet %store-monad ((slim.cfg (slim.cfg)))
     (return
      (service
       (documentation "Xorg display server")
@@ -200,15 +199,11 @@ reboot_cmd " dmd "/sbin/reboot
       (requirement '(host-name))
       (start
        ;; XXX: Work around the inability to specify env. vars. directly.
-       `(make-forkexec-constructor
-         ,bash-bin "-c"
-         ,(string-append "SLIM_CFGFILE=" (derivation->output-path slim.cfg)
-                         " " slim-bin
-                         " -nodaemon")))
-      (stop  `(make-kill-destructor))
-      (inputs `(("slim" ,slim)
-                ("slim.cfg" ,slim.cfg)
-                ("bash" ,bash)))
+       #~(make-forkexec-constructor
+          (string-append #$bash "/bin/sh") "-c"
+          (string-append "SLIM_CFGFILE=" #$slim.cfg
+                         " " #$slim "/bin/slim" " -nodaemon")))
+      (stop #~(make-kill-destructor))
       (respawn? #t)
       (pam-services
        ;; Tell PAM about 'slim'.
