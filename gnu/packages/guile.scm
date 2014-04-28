@@ -271,18 +271,18 @@ library.")
 (define-public mcron
   (package
     (name "mcron")
-    (version "1.0.6")
+    (version "1.0.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mcron/mcron-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0yvrfzzdy2m7fbqkr61fw01wd9r2jpnbyabxhcsfivgxywknl0fy"))
+               "1d214fmhsn3kvpnwxnqwfpy6gr5c5dbz2mx3sijhxi070vkfibxc"))
              (patches (list (search-patch "mcron-install.patch")))))
     (build-system gnu-build-system)
-    (inputs
-     `(("ed" ,ed) ("which" ,which) ("guile" ,guile-1.8)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("ed" ,ed) ("which" ,which) ("guile" ,guile-2.0)))
     (home-page "http://www.gnu.org/software/mcron/")
     (synopsis "Run jobs at scheduled times")
     (description
