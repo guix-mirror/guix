@@ -106,15 +106,15 @@ Java Lucene text search engine API to C++.")
                                 "soprano-" version ".tar.bz2"))
              (sha256
               (base32
-               "1rg0x7yg0a1cbnxz7kqk52580wla8jbnj4d4r3j7l7g7ajyny1k4"))))
+               "1rg0x7yg0a1cbnxz7kqk52580wla8jbnj4d4r3j7l7g7ajyny1k4"))
+             (patches (list (search-patch "soprano-find-clucene.patch")))))
     (build-system cmake-build-system)
     ;; FIXME: Add optional dependencies: Redland, odbci.
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
     (inputs
-     `(("clucene" ,clucene) ; is not yet "fully found", but sufficiently
-                            ; so to allow for compilation...
+     `(("clucene" ,clucene)
        ("qt" ,qt-4)
        ("raptor2" ,raptor2)))
     (home-page "http://soprano.sourceforge.net/")

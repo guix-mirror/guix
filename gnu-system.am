@@ -335,6 +335,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/slim-session.patch			\
   gnu/packages/patches/slim-config.patch			\
   gnu/packages/patches/slim-sigusr1.patch			\
+  gnu/packages/patches/soprano-find-clucene.patch		\
   gnu/packages/patches/source-highlight-regexrange-test.patch	\
   gnu/packages/patches/sqlite-large-page-size-fix.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
