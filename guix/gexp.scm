@@ -101,7 +101,7 @@ The other arguments are as for 'derivation'."
   (define outputs (gexp-outputs exp))
 
   (mlet* %store-monad ((inputs   (lower-inputs (gexp-inputs exp)))
-                       (sexp     (gexp->sexp exp #:outputs outputs))
+                       (sexp     (gexp->sexp exp))
                        (builder  (text-file (string-append name "-builder")
                                             (object->string sexp)))
                        (modules  (if (pair? %modules)
@@ -179,7 +179,7 @@ The other arguments are as for 'derivation'."
               '()
               (gexp-references exp)))
 
-(define* (gexp->sexp exp #:key (outputs '()))
+(define* (gexp->sexp exp)
   "Return (monadically) the sexp corresponding to EXP for the given OUTPUT,
 and in the current monad setting (system type, etc.)"
   (define (reference->sexp ref)
@@ -190,13 +190,12 @@ and in the current monad setting (system type, etc.)"
         (((? package? p) (? string? output))
          (package-file p #:output output))
         (($ <output-ref> output)
-         (match (member output outputs)
-           (#f
-            (error "no such output" output))
-           (_
-            (return `((@ (guile) getenv) ,output)))))
+         ;; Output file names are not known in advance but the daemon defines
+         ;; an environment variable for each of them at build time, so use
+         ;; that trick.
+         (return `((@ (guile) getenv) ,output)))
         ((? gexp? exp)
-         (gexp->sexp exp #:outputs outputs))
+         (gexp->sexp exp))
         (((? string? str))
          (return (if (direct-store-path? str) str ref)))
         ((refs ...)
