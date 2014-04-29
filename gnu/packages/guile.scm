@@ -247,7 +247,8 @@ many readers as needed).")
     (inputs `(("ncurses" ,ncurses)
               ("guile" ,guile-2.0)))
     (arguments
-     '(#:configure-flags (list (string-append "--with-guilesitedir="
+     '(#:configure-flags (list "--with-ncursesw"  ; Unicode support
+                               (string-append "--with-guilesitedir="
                                               (assoc-ref %outputs "out")
                                               "/share/guile/site/2.0"))
        #:phases (alist-cons-after
