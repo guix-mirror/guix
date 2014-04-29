@@ -435,6 +435,14 @@ that form."
                  port)
      (display ")" port))))
 
+(define derivation->string
+  (memoize
+   (lambda (drv)
+     "Return the external representation of DRV as a string."
+     (with-fluids ((%default-port-encoding "UTF-8"))
+       (call-with-output-string
+        (cut write-derivation drv <>))))))
+
 (define* (derivation->output-path drv #:optional (output "out"))
   "Return the store path of its output OUTPUT."
   (let ((outputs (derivation-outputs drv)))
@@ -517,9 +525,7 @@ in SIZE bytes."
          ;; the SHA256 port's `write' method gets called for every single
          ;; character.
          (sha256
-          (with-fluids ((%default-port-encoding "UTF-8"))
-            (string->utf8 (call-with-output-string
-                           (cut write-derivation drv <>)))))))))))
+          (string->utf8 (derivation->string drv)))))))))
 
 (define (store-path type hash name)               ; makeStorePath
   "Return the store path for NAME/HASH/TYPE."
@@ -685,8 +691,7 @@ derivations where the costs of data transfers would outweigh the benefits."
          (drv        (add-output-paths drv-masked)))
 
     (let ((file (add-text-to-store store (string-append name ".drv")
-                                   (call-with-output-string
-                                    (cut write-derivation drv <>))
+                                   (derivation->string drv)
                                    (map derivation-input-path
                                         inputs))))
       (set-file-name drv file))))
