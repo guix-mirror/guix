@@ -366,3 +366,92 @@ mesh, solver and post-processing.  The specification of any input to these
 modules is done either interactively using the graphical user interface or in
 ASCII text files using Gmsh's own scripting language.")
     (license license:gpl2+)))
+
+(define-public petsc
+  (package
+    (name "petsc")
+    (version "3.4.4")
+    (source
+     (origin
+      (method url-fetch)
+      ;; The *-lite-* tarball does not contain the *large* documentation
+      (uri (string-append "http://ftp.mcs.anl.gov/pub/petsc/release-snapshots/"
+                          "petsc-lite-" version ".tar.gz"))
+      (sha256
+       (base32 "0v5dg6dhdjpi5ianvd4mm6hsvxzv1bsxwnh9f9myag0a0d9xk9iv"))
+      (patches
+       (list (search-patch "petsc-fix-threadcomm.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("python" ,python-2)
+       ("perl" ,perl)))
+    (inputs
+     `(("gfortran" ,gfortran-4.8)
+       ("lapack" ,lapack)
+       ;; leaving out hdf5 and fftw, as petsc expects them to be built with mpi
+       ;; leaving out opengl, as configuration seems to only be for mac
+       ))
+    (arguments
+     `(#:test-target "test"
+       #:parallel-build? #f
+       #:configure-flags
+       `("--with-mpi=0"
+         "--with-openmp=1")
+       #:phases
+       (alist-replace
+        'configure
+        ;; PETSc's configure script is actually a python script, so we can't
+        ;; run it with bash.
+        (lambda* (#:key outputs (configure-flags '())
+                  #:allow-other-keys)
+          (let* ((prefix (assoc-ref outputs "out"))
+                 (flags `(,(string-append "--prefix=" prefix)
+                          ,@configure-flags)))
+            (format #t "build directory: ~s~%" (getcwd))
+            (format #t "configure flags: ~s~%" flags)
+            (zero? (apply system* "./configure" flags))))
+        (alist-cons-after
+         'install 'clean-local-references
+         ;; Try to keep installed files from leaking build directory names.
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let ((out     (assoc-ref outputs "out"))
+                 (fortran (assoc-ref inputs  "gfortran")))
+             (substitute* (map (lambda (file)
+                                 (string-append out "/" file))
+                               '("conf/petscvariables"
+                                 "conf/PETScConfig.cmake"
+                                 "include/petscconf.h"
+                                 "include/petscmachineinfo.h"))
+               (((getcwd)) out))
+             ;; Make compiler references point to the store
+             (substitute* (string-append out "/conf/petscvariables")
+               (("= g(cc|\\+\\+|fortran)" _ suffix)
+                (string-append "= " fortran "/bin/g" suffix)))
+             ;; PETSc installs some build logs, which aren't necessary.
+             (for-each (lambda (file)
+                         (delete-file (string-append out "/" file)))
+                       '("conf/configure.log"
+                         "conf/make.log"
+                         "conf/test.log"
+                         "conf/RDict.db"
+                         ;; Once installed, should uninstall with Guix
+                         "conf/uninstall.py"))))
+         %standard-phases))))
+    (home-page "http://www.mcs.anl.gov/petsc")
+    (synopsis "Library to solve ODEs and algebraic equations")
+    (description "PETSc, pronounced PET-see (the S is silent), is a suite of
+data structures and routines for the scalable (parallel) solution of
+scientific applications modeled by partial differential equations.")
+    (license (license:bsd-style
+              "http://www.mcs.anl.gov/petsc/documentation/copyright.html"))))
+
+(define-public petsc-complex
+  (package (inherit petsc)
+    (name "petsc-complex")
+    (arguments
+     (substitute-keyword-arguments (package-arguments petsc)
+       ((#:configure-flags cf)
+        `(cons "--with-scalar-type=complex" ,cf))))
+    (description
+     (string-append (package-description petsc)
+                    "  Complex scalar type version."))))
