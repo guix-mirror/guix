@@ -47,6 +47,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages xorg))
 
 (define-public dmd
@@ -619,3 +620,54 @@ according to a given schedule.  It can also be used to automatically compress
 and archive such logs.  Rot[t]log will mail reports of its activity to the
 system administrator.")
     (license gpl3+)))
+
+(define-public sudo
+  (package
+    (name "sudo")
+    (version "1.8.10p2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (list (string-append "http://www.sudo.ws/sudo/dist/sudo-"
+                                    version ".tar.gz")
+                     (string-append "ftp://ftp.sudo.ws/pub/sudo/OLD/sudo-"
+                                    version ".tar.gz")))
+              (sha256
+               (base32
+                "1wbrygz584abmywklq0b4xhqn3s1bjk3rrladslr5nycdpdvhv5s"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--with-logpath=/var/log/sudo.log")
+       #:phases (alist-cons-before
+                 'configure 'pre-configure
+                 (lambda _
+                   (substitute* "configure"
+                     ;; Refer to the right executables.
+                     (("/usr/bin/mv") (which "mv"))
+                     (("/usr/bin/sh") (which "sh")))
+                   (substitute* (find-files "." "Makefile\\.in")
+                     (("-O [[:graph:]]+ -G [[:graph:]]+")
+                      ;; Allow installation as non-root.
+                      "")
+                     (("^install: (.*)install-sudoers(.*)" _ before after)
+                      ;; Don't try to create /etc/sudoers.
+                      (string-append "install: " before after "\n"))))
+                 %standard-phases)
+
+       ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
+       ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
+       #:tests? #f))
+    (inputs
+     `(("groff" ,groff)
+       ("linux-pam" ,linux-pam)
+       ("coreutils" ,coreutils)))
+    (home-page "http://www.sudo.ws/")
+    (synopsis "Run commands as root")
+    (description
+     "Sudo (su \"do\") allows a system administrator to delegate authority to
+give certain users (or groups of users) the ability to run some (or all)
+commands as root or another user while providing an audit trail of the
+commands and their arguments.")
+
+    ;; See <http://www.sudo.ws/sudo/license.html>.
+    (license x11)))
