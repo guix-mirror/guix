@@ -29,8 +29,8 @@
   #:export (pam-service
             pam-entry
             pam-services->directory
-            %pam-other-services
-            unix-pam-service))
+            unix-pam-service
+            base-pam-services))
 
 ;;; Commentary:
 ;;;
@@ -151,5 +151,12 @@ should be the name of a file used as the message-of-the-day."
                              (arguments
                               (list #~(string-append "motd=" #$motd)))))
                       (list unix))))))))
+
+(define* (base-pam-services #:key allow-empty-passwords?)
+  "Return the list of basic PAM services everyone would want."
+  (list %pam-other-services
+        (unix-pam-service "su" #:allow-empty-passwords? allow-empty-passwords?)
+        (unix-pam-service "passwd"
+                          #:allow-empty-passwords? allow-empty-passwords?)))
 
 ;;; linux.scm ends here

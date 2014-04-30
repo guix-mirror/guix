@@ -34,6 +34,7 @@
              (gnu packages package-management)
 
              (gnu system shadow)                  ; 'user-account'
+             (gnu system linux)                   ; 'base-pam-services'
              (gnu services base)
              (gnu services networking)
              (gnu services xorg))
@@ -56,6 +57,9 @@
                                              #:gateway "10.0.2.2")
 
                   %base-services))
+ (pam-services
+  ;; Explicitly allow for empty passwords.
+  (base-pam-services #:allow-empty-passwords? #t))
  (packages (list bash coreutils findutils grep sed
                  procps psmisc less
                  guile-2.0 dmd guix util-linux inetutils

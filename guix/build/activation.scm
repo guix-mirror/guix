@@ -17,8 +17,10 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build activation)
+  #:use-module (guix build utils)
   #:use-module (ice-9 ftw)
-  #:export (activate-etc))
+  #:export (activate-etc
+            activate-setuid-programs))
 
 ;;; Commentary:
 ;;;
@@ -59,5 +61,37 @@
     ;; Prevent ETC from being GC'd.
     (rm-f "/var/guix/gcroots/etc-directory")
     (symlink etc "/var/guix/gcroots/etc-directory")))
+
+(define %setuid-directory
+  ;; Place where setuid programs are stored.
+  "/run/setuid-programs")
+
+(define (activate-setuid-programs programs)
+  "Turn PROGRAMS, a list of file names, into setuid programs stored under
+%SETUID-DIRECTORY."
+  (define (make-setuid-program prog)
+    (let ((target (string-append %setuid-directory
+                                 "/" (basename prog))))
+      (catch 'system-error
+        (lambda ()
+          (link prog target))
+        (lambda args
+          ;; Perhaps PROG and TARGET live in a different file system, so copy
+          ;; PROG.
+          (copy-file prog target)))
+      (chown target 0 0)
+      (chmod target #o6555)))
+
+  (format #t "setting up setuid programs in '~a'...~%"
+          %setuid-directory)
+  (if (file-exists? %setuid-directory)
+      (for-each delete-file
+                (scandir %setuid-directory
+                         (lambda (file)
+                           (not (member file '("." ".."))))
+                         string<?))
+      (mkdir-p %setuid-directory))
+
+  (for-each make-setuid-program programs))
 
 ;;; activation.scm ends here

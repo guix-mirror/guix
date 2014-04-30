@@ -106,7 +106,12 @@
   (locale   operating-system-locale)              ; string
 
   (services operating-system-services             ; list of monadic services
-            (default %base-services)))
+            (default %base-services))
+
+  (pam-services operating-system-pam-services     ; list of PAM services
+                (default (base-pam-services)))
+  (setuid-programs operating-system-setuid-programs
+                   (default %setuid-programs)))   ; list of string-valued gexps
 
 
 
@@ -191,6 +196,7 @@ export TZ=\"" timezone "\"
 export TZDIR=\"" tzdata "/share/zoneinfo\"
 
 export PATH=$HOME/.guix-profile/bin:" profile "/bin:" profile "/sbin
+export PATH=/run/setuid-programs:$PATH
 export CPATH=$HOME/.guix-profile/include:" profile "/include
 export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
 alias ls='ls -p --color'
@@ -238,8 +244,8 @@ alias ll='ls -l'
        (pam-services ->
                      ;; Services known to PAM.
                      (delete-duplicates
-                      (cons %pam-other-services
-                            (append-map service-pam-services services))))
+                      (append (operating-system-pam-services os)
+                              (append-map service-pam-services services))))
        (accounts    (operating-system-accounts os))
        (profile-drv (operating-system-profile os))
        (groups   -> (append (operating-system-groups os)
@@ -250,15 +256,29 @@ alias ll='ls -l'
                   #:timezone (operating-system-timezone os)
                   #:profile profile-drv)))
 
+(define %setuid-programs
+  ;; Default set of setuid-root programs.
+  (let ((shadow (@ (gnu packages admin) shadow)))
+    (list #~(string-append #$shadow "/bin/passwd")
+          #~(string-append #$shadow "/bin/su")
+          #~(string-append #$inetutils "/bin/ping"))))
+
 (define (operating-system-boot-script os)
   "Return the boot script for OS---i.e., the code started by the initrd once
 we're running in the final root."
+  (define %modules
+    '((guix build activation)
+      (guix build utils)))
+
   (mlet* %store-monad
       ((services (sequence %store-monad (operating-system-services os)))
        (etc      (operating-system-etc-directory os))
-       (modules  (imported-modules '((guix build activation))))
-       (compiled (compiled-modules '((guix build activation))))
+       (modules  (imported-modules %modules))
+       (compiled (compiled-modules %modules))
        (dmd-conf (dmd-configuration-file services)))
+    (define setuid-progs
+      (operating-system-setuid-programs os))
+
     (gexp->file "boot"
                 #~(begin
                     (eval-when (expand load eval)
@@ -271,6 +291,9 @@ we're running in the final root."
 
                     ;; Populate /etc.
                     (activate-etc #$etc)
+
+                    ;; Activate setuid programs.
+                    (activate-setuid-programs (list #$@setuid-progs))
 
                     ;; Start dmd.
                     (execl (string-append #$dmd "/bin/dmd")
