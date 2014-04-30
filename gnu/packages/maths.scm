@@ -358,11 +358,11 @@ files.")
                            "-DENABLE_BUILD_DYNAMIC:BOOL=ON")))
     (home-page "http://www.geuz.org/gmsh/")
     (synopsis "3D finite element grid generator")
-    (description "Gmsh is a 3D finite element grid generator with a build-in
-CAD engine and post-processor. Its design goal is to provide a fast, light and
-user-friendly meshing tool with parametric input and advanced visualization
-capabilities. Gmsh is built around four modules: geometry, mesh, solver and
-post-processing. The specification of any input to these modules is done
-either interactively using the graphical user interface or in ASCII text files
-using Gmsh's own scripting language.")
+    (description "Gmsh is a 3D finite element grid generator with a built-in
+CAD engine and post-processor.  Its design goal is to provide a fast, light
+and user-friendly meshing tool with parametric input and advanced
+visualization capabilities.  Gmsh is built around four modules: geometry,
+mesh, solver and post-processing.  The specification of any input to these
+modules is done either interactively using the graphical user interface or in
+ASCII text files using Gmsh's own scripting language.")
     (license license:gpl2+)))
