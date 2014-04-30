@@ -290,7 +290,7 @@ to it are lost."
 
                   ;; Make /root a union of the tmpfs and the actual root.
                   (unless (zero? (system* unionfs "-o"
-                                          "cow,allow_other,use_ino,dev"
+                                          "cow,allow_other,use_ino,suid,dev"
                                           "/rw-root=RW:/real-root=RO"
                                           "/root"))
                     (error "unionfs failed")))
