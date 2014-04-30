@@ -26,6 +26,7 @@
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (gexp
@@ -55,6 +56,15 @@
   gexp?
   (references gexp-references)                    ; ((DRV-OR-PKG OUTPUT) ...)
   (proc       gexp-proc))                         ; procedure
+
+(define (write-gexp gexp port)
+  "Write GEXP on PORT."
+  (display "#<gexp " port)
+  (write (apply (gexp-proc gexp) (gexp-references gexp)) port)
+  (format port " ~a>"
+          (number->string (object-address gexp) 16)))
+
+(set-record-type-printer! <gexp> write-gexp)
 
 ;; Reference to one of the derivation's outputs, for gexps used in
 ;; derivations.
