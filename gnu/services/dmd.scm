@@ -30,9 +30,8 @@
 ;;;
 ;;; Code:
 
-(define (dmd-configuration-file services etc)
-  "Return the dmd configuration file for SERVICES, that initializes /etc from
-ETC (the derivation that builds the /etc directory) on startup."
+(define (dmd-configuration-file services)
+  "Return the dmd configuration file for SERVICES."
   (define config
     #~(begin
         (use-modules (ice-9 ftw))
@@ -47,28 +46,6 @@ ETC (the derivation that builds the /etc directory) on startup."
                        #:start #$(service-start service)
                        #:stop #$(service-stop service)))
                  services))
-
-        ;; /etc is a mixture of static and dynamic settings.  Here is where we
-        ;; initialize it from the static part.
-        (format #t "populating /etc from ~a...~%" #$etc)
-        (let ((rm-f (lambda (f)
-                      (false-if-exception (delete-file f)))))
-          (rm-f "/etc/static")
-          (symlink #$etc "/etc/static")
-          (for-each (lambda (file)
-                      ;; TODO: Handle 'shadow' specially so that changed
-                      ;; password aren't lost.
-                      (let ((target (string-append "/etc/" file))
-                            (source (string-append "/etc/static/" file)))
-                        (rm-f target)
-                        (symlink source target)))
-                    (scandir #$etc
-                             (lambda (file)
-                               (not (member file '("." ".."))))))
-
-          ;; Prevent ETC from being GC'd.
-          (rm-f "/var/guix/gcroots/etc-directory")
-          (symlink #$etc "/var/guix/gcroots/etc-directory"))
 
         ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
         (setenv "PATH" "/run/current-system/bin")

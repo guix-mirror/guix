@@ -256,10 +256,25 @@ we're running in the final root."
   (mlet* %store-monad
       ((services (sequence %store-monad (operating-system-services os)))
        (etc      (operating-system-etc-directory os))
-       (dmd-conf (dmd-configuration-file services etc)))
+       (modules  (imported-modules '((guix build activation))))
+       (compiled (compiled-modules '((guix build activation))))
+       (dmd-conf (dmd-configuration-file services)))
     (gexp->file "boot"
-                #~(execl (string-append #$dmd "/bin/dmd")
-                         "dmd" "--config" #$dmd-conf))))
+                #~(begin
+                    (eval-when (expand load eval)
+                      ;; Make sure 'use-modules' below succeeds.
+                      (set! %load-path (cons #$modules %load-path))
+                      (set! %load-compiled-path
+                            (cons #$compiled %load-compiled-path)))
+
+                    (use-modules (guix build activation))
+
+                    ;; Populate /etc.
+                    (activate-etc #$etc)
+
+                    ;; Start dmd.
+                    (execl (string-append #$dmd "/bin/dmd")
+                           "dmd" "--config" #$dmd-conf)))))
 
 (define (operating-system-derivation os)
   "Return a derivation that builds OS."
