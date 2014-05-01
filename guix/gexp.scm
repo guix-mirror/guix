@@ -85,6 +85,9 @@ input list as a monadic value."
                     (((? package? package) sub-drv ...)
                      (mlet %store-monad ((drv (package->derivation package)))
                        (return `(,drv ,@sub-drv))))
+                    (((? origin? origin) sub-drv ...)
+                     (mlet %store-monad ((drv (origin->derivation origin)))
+                       (return `(,drv ,@sub-drv))))
                     (input
                      (return input)))
                    inputs))))
@@ -158,6 +161,8 @@ The other arguments are as for 'derivation'."
        (cons ref result))
       (((? package?) (? string?))
        (cons ref result))
+      (((? origin?) (? string?))
+       (cons ref result))
       ((? gexp? exp)
        (append (gexp-inputs exp) result))
       (((? string? file))
@@ -199,6 +204,9 @@ and in the current monad setting (system type, etc.)"
          (return (derivation->output-path drv output)))
         (((? package? p) (? string? output))
          (package-file p #:output output))
+        (((? origin? o) (? string? output))
+         (mlet %store-monad ((drv (origin->derivation o)))
+           (return (derivation->output-path drv output))))
         (($ <output-ref> output)
          ;; Output file names are not known in advance but the daemon defines
          ;; an environment variable for each of them at build time, so use
@@ -224,9 +232,13 @@ package/derivation references."
   (match ref
     ((? package? p)
      `(,p "out"))
+    ((? origin? o)
+     `(,o "out"))
     ((? derivation? d)
      `(,d "out"))
     (((? package?) (? string?))
+     ref)
+    (((? origin?) (? string?))
      ref)
     (((? derivation?) (? string?))
      ref)

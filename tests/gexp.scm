@@ -21,8 +21,7 @@
   #:use-module (guix monads)
   #:use-module (guix gexp)
   #:use-module (guix derivations)
-  #:use-module ((guix packages)
-                #:select (package-derivation %current-system))
+  #:use-module (guix packages)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
@@ -81,6 +80,17 @@
             (eq? p coreutils)))
          (equal? `(display ,(derivation->output-path
                              (package-derivation %store coreutils)))
+                 (gexp->sexp* exp)))))
+
+(test-assert "one input origin"
+  (let ((exp (gexp (display (ungexp (package-source coreutils))))))
+    (and (gexp? exp)
+         (match (gexp-inputs exp)
+           (((o "out"))
+            (eq? o (package-source coreutils))))
+         (equal? `(display ,(derivation->output-path
+                             (package-source-derivation
+                              %store (package-source coreutils))))
                  (gexp->sexp* exp)))))
 
 (test-assert "same input twice"

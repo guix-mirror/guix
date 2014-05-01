@@ -56,6 +56,7 @@
             text-file
             text-file*
             package-file
+            origin->derivation
             package->derivation
             built-derivations)
   #:replace (imported-modules
@@ -394,6 +395,9 @@ input list as a monadic value."
 
 (define package->derivation
   (store-lift package-derivation))
+
+(define origin->derivation
+  (store-lift package-source-derivation))
 
 (define imported-modules
   (store-lift (@ (guix derivations) imported-modules)))
