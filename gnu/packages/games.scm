@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
+;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages sdl)
   #:use-module (guix build-system gnu))
 
 (define-public gnubg
@@ -93,4 +95,66 @@ each of its faces have a uniform color.  The game is customizable, allowing
 you to set the size of the cube (the default is 3x3) or to change the colors.
  You may even apply photos to the faces instead of colors.  The game is
 scriptable with Guile.")
+    (license gpl3+)))
+
+(define-public abbaye
+  (package
+    (name "abbaye")
+    (version "1.13")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://abbaye-for-linux.googlecode.com/files/abbaye-for-linux-src-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1wgvckgqa2084rbskxif58wbb83xbas8s1i8s7d57xbj08ryq8rk"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:modules ((ice-9 match)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:phases (alist-cons-after
+                 'set-paths 'set-sdl-paths
+                 (lambda* (#:key inputs outputs (search-paths '()) #:allow-other-keys)
+                   (define input-directories
+                     (match inputs
+                       (((_ . dir) ...)
+                        dir)))
+                   ;; This package does not use pkg-config, so modify CPATH
+                   ;; variable to point to include/SDL for SDL header files.
+                   (set-path-environment-variable "CPATH"
+                                                  '("include/SDL")
+                                                  input-directories))
+                 (alist-cons-after
+                  'patch-source-shebangs 'patch-makefile
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    ;; Replace /usr with package output directory.
+                    (for-each (lambda (file)
+                                (substitute* file
+                                  (("/usr") (assoc-ref outputs "out"))))
+                              '("makefile" "src/pantallas.c" "src/comun.h")))
+                  (alist-cons-before
+                   'install 'make-install-dirs
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((prefix (assoc-ref outputs "out")))
+                       ;; Create directories that the makefile assumes exist.
+                       (mkdir-p (string-append prefix "/bin"))
+                       (mkdir-p (string-append prefix "/share/applications"))))
+                   ;; No configure script.
+                   (alist-delete 'configure %standard-phases))))
+       #:tests? #f)) ;; No check target.
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("sdl" ,sdl)
+              ("sdl-gfx" ,sdl-gfx)
+              ("sdl-image" ,sdl-image)
+              ("sdl-mixer" ,sdl-mixer)
+              ("sdl-ttf" ,sdl-ttf)))
+    (home-page "http://code.google.com/p/abbaye-for-linux/")
+    (synopsis "GNU/Linux port of the indie game \"l'Abbaye des Morts\"")
+    (description "L'Abbaye des Morts is a 2D platform game set in 13th century
+France.  The Cathars, who preach about good Christian beliefs, were being
+expelled by the Catholic Church out of the Languedoc region in France.  One of
+them, called Jean Raymond, found an old church in which to hide, not knowing
+that beneath its ruins lay buried an ancient evil.")
     (license gpl3+)))
