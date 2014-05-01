@@ -44,14 +44,14 @@
   ;; This is QEMU without GUI support.
   (package
     (name "qemu-headless")
-    (version "1.7.1")
+    (version "2.0.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://wiki.qemu-project.org/download/qemu-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "1x5y06zhp0gc97g1sb98vf7dkawg63xywv0mbnpfnbi20jh452fn"))))
+               "0frsahiw56jr4cqr9m6s383lyj4ar9hfs2wp3y4yr76krah1mk30"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
