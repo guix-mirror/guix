@@ -48,6 +48,15 @@
                (uid 1000) (gid 100)
                (comment "Guest of GNU")
                (home-directory "/home/guest"))))
+ (groups (list (user-group (name "root") (id 0))
+               (user-group
+                (name "wheel")
+                (id 1)
+                (members '("guest")))             ; allow 'guest' to use sudo
+               (user-group
+                (name "users")
+                (id 100)
+                (members '("guest")))))
  (services (cons* (slim-service #:auto-login? #t
                                 #:default-user "guest")
 

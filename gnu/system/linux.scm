@@ -157,6 +157,8 @@ should be the name of a file used as the message-of-the-day."
   (list %pam-other-services
         (unix-pam-service "su" #:allow-empty-passwords? allow-empty-passwords?)
         (unix-pam-service "passwd"
+                          #:allow-empty-passwords? allow-empty-passwords?)
+        (unix-pam-service "sudo"
                           #:allow-empty-passwords? allow-empty-passwords?)))
 
 ;;; linux.scm ends here

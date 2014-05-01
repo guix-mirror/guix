@@ -85,11 +85,7 @@
   (groups operating-system-groups                 ; list of user groups
           (default (list (user-group
                           (name "root")
-                          (id 0))
-                         (user-group
-                          (name "users")
-                          (id 100)
-                          (members '("guest"))))))
+                          (id 0)))))
 
   (packages operating-system-packages             ; list of (PACKAGE OUTPUT...)
             (default (list coreutils              ; or just PACKAGE
@@ -111,8 +107,10 @@
   (pam-services operating-system-pam-services     ; list of PAM services
                 (default (base-pam-services)))
   (setuid-programs operating-system-setuid-programs
-                   (default %setuid-programs)))   ; list of string-valued gexps
+                   (default %setuid-programs))    ; list of string-valued gexps
 
+  (sudoers operating-system-sudoers               ; /etc/sudoers contents
+           (default %sudoers-specification)))
 
 
 ;;;
@@ -164,13 +162,15 @@ file."
                         (accounts '())
                         (groups '())
                         (pam-services '())
-                        (profile "/var/run/current-system/profile"))
+                        (profile "/var/run/current-system/profile")
+                        (sudoers ""))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
       ((passwd     (passwd-file accounts))
        (shadow     (passwd-file accounts #:shadow? #t))
        (group      (group-file groups))
        (pam.d      (pam-services->directory pam-services))
+       (sudoers    (text-file "sudoers" sudoers))
        (login.defs (text-file "login.defs" "# Empty for now.\n"))
        (shells     (text-file "shells"            ; used by xterm and others
                               "\
@@ -215,7 +215,9 @@ alias ll='ls -l'
                                                  #$timezone))
                   ("passwd" ,#~#$passwd)
                   ("shadow" ,#~#$shadow)
-                  ("group" ,#~#$group)))))
+                  ("group" ,#~#$group)
+
+                  ("sudoers" ,#~#$sudoers)))))
 
 (define (operating-system-profile os)
   "Return a derivation that builds the default profile of OS."
@@ -254,6 +256,7 @@ alias ll='ls -l'
                   #:pam-services pam-services
                   #:locale (operating-system-locale os)
                   #:timezone (operating-system-timezone os)
+                  #:sudoers (operating-system-sudoers os)
                   #:profile profile-drv)))
 
 (define %setuid-programs
@@ -261,7 +264,16 @@ alias ll='ls -l'
   (let ((shadow (@ (gnu packages admin) shadow)))
     (list #~(string-append #$shadow "/bin/passwd")
           #~(string-append #$shadow "/bin/su")
-          #~(string-append #$inetutils "/bin/ping"))))
+          #~(string-append #$inetutils "/bin/ping")
+          #~(string-append #$sudo "/bin/sudo"))))
+
+(define %sudoers-specification
+  ;; Default /etc/sudoers contents: 'root' and all members of the 'wheel'
+  ;; group can do anything.  See
+  ;; <http://www.sudo.ws/sudo/man/1.8.10/sudoers.man.html>.
+  ;; TODO: Add a declarative API.
+  "root ALL=(ALL) ALL
+%wheel ALL=(ALL) ALL\n")
 
 (define (operating-system-boot-script os)
   "Return the boot script for OS---i.e., the code started by the initrd once
