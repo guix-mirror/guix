@@ -154,6 +154,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/moe.scm				\
   gnu/packages/mpd.scm				\
   gnu/packages/mp3.scm				\
+  gnu/packages/mpi.scm				\
   gnu/packages/multiprecision.scm		\
   gnu/packages/mtools.scm			\
   gnu/packages/mysql.scm			\
