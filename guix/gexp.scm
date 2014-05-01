@@ -129,9 +129,8 @@ The other arguments are as for 'derivation'."
                                      (return #f)))
                        (guile    (if guile-for-build
                                      (return guile-for-build)
-                                     (package->derivation
-                                      (@ (gnu packages base) guile-final)
-                                      system))))
+                                     (package->derivation (default-guile)
+                                                          system))))
     (raw-derivation name
                     (string-append (derivation->output-path guile)
                                    "/bin/guile")
@@ -336,9 +335,14 @@ package/derivation references."
 ;;; Convenience procedures.
 ;;;
 
+(define (default-guile)
+  ;; Lazily resolve 'guile-final'.  This module must not refer to (gnu …)
+  ;; modules directly, to avoid circular dependencies, hence this hack.
+  (module-ref (resolve-interface '(gnu packages base))
+              'guile-final))
+
 (define* (gexp->script name exp
-                       #:key (modules '())
-                       (guile (@ (gnu packages base) guile-final)))
+                       #:key (modules '()) (guile (default-guile)))
   "Return an executable script NAME that runs EXP using GUILE with MODULES in
 its search path."
   (mlet %store-monad ((modules  (imported-modules modules))

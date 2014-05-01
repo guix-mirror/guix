@@ -414,10 +414,15 @@ input list as a monadic value."
                          (system (%current-system)))
   "Run MVAL, a monadic value in the store monad, in STORE, an open store
 connection."
+  (define (default-guile)
+    ;; Lazily resolve 'guile-final'.  This module must not refer to (gnu …)
+    ;; modules directly, to avoid circular dependencies, hence this hack.
+    (module-ref (resolve-interface '(gnu packages base))
+                'guile-final))
+
   (parameterize ((%guile-for-build (or guile-for-build
                                        (package-derivation store
-                                                           (@ (gnu packages base)
-                                                              guile-final)
+                                                           (default-guile)
                                                            system)))
                  (%current-system system))
     (mval store)))
