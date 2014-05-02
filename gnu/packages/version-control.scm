@@ -21,7 +21,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages version-control)
-  #:use-module ((guix licenses) #:select (asl2.0 gpl1+ gpl2 gpl2+ gpl3+))
+  #:use-module ((guix licenses)
+                #:select (asl2.0 gpl1+ gpl2 gpl2+ gpl3+ x11-style))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -413,3 +414,24 @@ when a file change has been described in the ChangeLog but the file has not
 been added to the VC.  vc-chlog scans changed files and generates
 standards-compliant ChangeLog entries based on the changes that it detects.")
     (license gpl3+)))
+
+(define-public diffstat
+  (package
+    (name "diffstat")
+    (version "1.58")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://invisible-island.net/diffstat/diffstat-"
+                    version ".tgz"))
+              (sha256
+               (base32
+                "14rpf5c05ff30f6vn6pn6pzy0k4g4is5im656ahsxff3k58i7mgs"))))
+    (build-system gnu-build-system)
+    (home-page "http://invisible-island.net/diffstat/")
+    (synopsis "Make histograms from the output of 'diff'")
+    (description
+     "diffstat reads the output of 'diff' and displays a histogram of the
+insertions, deletions, and modifications per-file.  It is useful for reviewing
+large, complex patch files.")
+    (license (x11-style "file://COPYING"))))
