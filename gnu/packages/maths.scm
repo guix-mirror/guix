@@ -49,6 +49,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages tcsh)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages xml))
@@ -455,3 +456,85 @@ scientific applications modeled by partial differential equations.")
     (description
      (string-append (package-description petsc)
                     "  Complex scalar type version."))))
+
+(define-public superlu
+  (package
+    (name "superlu")
+    (version "4.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
+                           "superlu_" version ".tar.gz"))
+       (sha256
+        (base32 "10b785s9s4x0m9q7ihap09275pq4km3k2hk76jiwdfdr5qr2168n"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("tcsh" ,tcsh)))
+    (inputs
+     `(("lapack" ,lapack)
+       ("gfortran" ,gfortran-4.8)))
+    (arguments
+     `(#:parallel-build? #f
+       #:tests? #f                      ;tests are run as part of `make all`
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (call-with-output-file "make.inc"
+            (lambda (port)
+              (format port "
+PLAT        =
+SuperLUroot = ~a
+SUPERLULIB  = ~a/lib/libsuperlu.a
+TMGLIB      = libtmglib.a
+BLASDEF     = -DUSE_VENDOR_BLAS
+BLASLIB     = -L~a/lib -lblas
+LIBS        = $(SUPERLULIB) $(BLASLIB)
+ARCH        = ar
+ARCHFLAGS   = cr
+RANLIB      = ranlib
+CC          = gcc
+PIC         = -fPIC
+CFLAGS      = -O3 -DPRNTlevel=0 $(PIC)
+NOOPTS      = -O0 $(PIC)
+FORTRAN     = gfortran
+FFLAGS      = -O2 $(PIC)
+LOADER      = $(CC)
+CDEFS       = -DAdd_"
+                      (getcwd)
+                      (assoc-ref outputs "out")
+                      (assoc-ref inputs "lapack")))))
+        (alist-cons-before
+         'build 'create-install-directories
+         (lambda* (#:key outputs #:allow-other-keys)
+           (for-each
+            (lambda (dir)
+              (mkdir-p (string-append (assoc-ref outputs "out")
+                                      "/" dir)))
+            '("lib" "include")))
+         (alist-replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            ;; Library is placed in lib during the build phase.  Copy over
+            ;; headers to include.
+            (let* ((out    (assoc-ref outputs "out"))
+                   (incdir (string-append out "/include")))
+              (for-each (lambda (file)
+                          (let ((base (basename file)))
+                            (format #t "installing `~a' to `~a'~%"
+                                    base incdir)
+                            (copy-file file
+                                       (string-append incdir "/" base))))
+                        (find-files "SRC" ".*\\.h$"))))
+          %standard-phases)))))
+    (home-page "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/")
+    (synopsis "Supernodal direct solver for sparse linear systems")
+    (description
+     "SuperLU is a general purpose library for the direct solution of large,
+sparse, nonsymmetric systems of linear equations on high performance machines.
+The library is written in C and is callable from either C or Fortran.  The
+library routines perform an LU decomposition with partial pivoting and
+triangular system solves through forward and back substitution.  The library
+also provides threshold-based ILU factorization preconditioners.")
+    (license license:bsd-3)))
