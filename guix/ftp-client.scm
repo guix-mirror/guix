@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -73,7 +73,8 @@
         (throw 'ftp-error port command code message))))
 
 (define (%ftp-login user pass port)
-  (let ((command (string-append "USER " user (string #\newline))))
+  (let ((command (string-append "USER " user
+                                (string #\return) (string #\newline))))
     (display command port)
     (let-values (((code message) (%ftp-listen port)))
       (case code
