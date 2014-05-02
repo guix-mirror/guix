@@ -389,6 +389,7 @@ ASCII text files using Gmsh's own scripting language.")
     (inputs
      `(("gfortran" ,gfortran-4.8)
        ("lapack" ,lapack)
+       ("superlu" ,superlu)
        ;; leaving out hdf5 and fftw, as petsc expects them to be built with mpi
        ;; leaving out opengl, as configuration seems to only be for mac
        ))
@@ -397,7 +398,12 @@ ASCII text files using Gmsh's own scripting language.")
        #:parallel-build? #f
        #:configure-flags
        `("--with-mpi=0"
-         "--with-openmp=1")
+         "--with-openmp=1"
+         "--with-superlu=1"
+         ,(string-append "--with-superlu-include="
+                         (assoc-ref %build-inputs "superlu") "/include")
+         ,(string-append "--with-superlu-lib="
+                         (assoc-ref %build-inputs "superlu") "/lib/libsuperlu.a"))
        #:phases
        (alist-replace
         'configure
