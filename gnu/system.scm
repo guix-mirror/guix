@@ -51,9 +51,20 @@
             operating-system-timezone
             operating-system-locale
             operating-system-services
+            operating-system-file-systems
 
             operating-system-derivation
-            operating-system-profile))
+            operating-system-profile
+
+            <file-system>
+            file-system
+            file-system?
+            file-system-device
+            file-system-mount-point
+            file-system-type
+            file-system-needed-for-boot?
+            file-system-flags
+            file-system-options))
 
 ;;; Commentary:
 ;;;
@@ -72,8 +83,8 @@
               (default grub))
   (bootloader-entries operating-system-bootloader-entries ; list
                       (default '()))
-  (initrd operating-system-initrd                 ; monadic derivation
-          (default (gnu-system-initrd)))
+  (initrd operating-system-initrd                 ; (list fs) -> M derivation
+          (default qemu-initrd))
 
   (host-name operating-system-host-name)          ; string
 
@@ -111,6 +122,22 @@
 
   (sudoers operating-system-sudoers               ; /etc/sudoers contents
            (default %sudoers-specification)))
+
+;; File system declaration.
+(define-record-type* <file-system> file-system
+  make-file-system
+  file-system?
+  (device           file-system-device)           ; string
+  (mount-point      file-system-mount-point)      ; string
+  (type             file-system-type)             ; string
+  (flags            file-system-flags             ; list of symbols
+                    (default '()))
+  (options          file-system-options           ; string or #f
+                    (default #f))
+  (needed-for-boot? file-system-needed-for-boot?  ; Boolean
+                    (default #f))
+  (check?           file-system-check?            ; Boolean
+                    (default #t)))
 
 
 ;;;
@@ -311,16 +338,30 @@ we're running in the final root."
                     (execl (string-append #$dmd "/bin/dmd")
                            "dmd" "--config" #$dmd-conf)))))
 
+(define (operating-system-root-file-system os)
+  "Return the root file system of OS."
+  (find (match-lambda
+         (($ <file-system> _ "/") #t)
+         (_ #f))
+        (operating-system-file-systems os)))
+
 (define (operating-system-derivation os)
   "Return a derivation that builds OS."
+  (define boot-file-systems
+    (filter (match-lambda
+             (($ <file-system> device mount-point type _ _ boot?)
+              (and boot? (not (string=? mount-point "/")))))
+            (operating-system-file-systems os)))
+
   (mlet* %store-monad
       ((profile     (operating-system-profile os))
        (etc         (operating-system-etc-directory os))
        (services    (sequence %store-monad (operating-system-services os)))
        (boot        (operating-system-boot-script os))
        (kernel  ->  (operating-system-kernel os))
-       (initrd      (operating-system-initrd os))
+       (initrd      ((operating-system-initrd os) boot-file-systems))
        (initrd-file -> #~(string-append #$initrd "/initrd"))
+       (root-fs ->  (operating-system-root-file-system os))
        (entries ->  (list (menu-entry
                            (label (string-append
                                    "GNU system with "
@@ -328,7 +369,8 @@ we're running in the final root."
                                    " (technology preview)"))
                            (linux kernel)
                            (linux-arguments
-                            (list "--root=/dev/sda1"
+                            (list (string-append "--root="
+                                                 (file-system-device root-fs))
                                   #~(string-append "--load=" #$boot)))
                            (initrd initrd-file))))
        (grub.cfg (grub-configuration-file entries)))

@@ -30,8 +30,7 @@
             linux-command-line
             make-essential-device-nodes
             configure-qemu-networking
-            mount-qemu-smb-share
-            mount-qemu-9p
+            mount-file-system
             bind-mount
             load-linux-module*
             device-number
@@ -170,33 +169,12 @@ networking values.)  Return #t if INTERFACE is up, #f otherwise."
 
     (logand (network-interface-flags sock interface) IFF_UP)))
 
-(define (mount-qemu-smb-share share mount-point)
-  "Mount QEMU's CIFS/SMB SHARE at MOUNT-POINT.
-
-Vanilla QEMU's `-smb' option just exports a /qemu share, whereas our
-`qemu-with-multiple-smb-shares' package exports the /xchg and /store shares
- (the latter allows the store to be shared between the host and guest.)"
-
-  (format #t "mounting QEMU's SMB share `~a'...\n" share)
-  (let ((server "10.0.2.4"))
-    (mount (string-append "//" server share) mount-point "cifs" 0
-           (string->pointer "guest,sec=none"))))
-
-(define (mount-qemu-9p source mount-point)
-  "Mount QEMU's 9p file system from SOURCE at MOUNT-POINT.
-
-This uses the 'virtio' transport, which requires the various virtio Linux
-modules to be loaded."
-
-  (format #t "mounting QEMU's 9p share '~a'...\n" source)
-  (let ((server "10.0.2.4"))
-    (mount source mount-point "9p" 0
-           (string->pointer "trans=virtio"))))
+;; Linux mount flags, from libc's <sys/mount.h>.
+(define MS_RDONLY 1)
+(define MS_BIND 4096)
 
 (define (bind-mount source target)
   "Bind-mount SOURCE at TARGET."
-  (define MS_BIND 4096)                           ; from libc's <sys/mount.h>
-
   (mount source target "" MS_BIND))
 
 (define (load-linux-module* file)
@@ -211,11 +189,67 @@ modules to be loaded."
 the last argument of `mknod'."
   (+ (* major 256) minor))
 
+(define* (mount-root-file-system root type
+                                 #:key volatile-root? unionfs)
+  "Mount the root file system of type TYPE at device ROOT.  If VOLATILE-ROOT?
+is true, mount ROOT read-only and make it a union with a writable tmpfs using
+UNIONFS."
+  (catch #t
+    (lambda ()
+      (if volatile-root?
+          (begin
+            (mkdir-p "/real-root")
+            (mount root "/real-root" type MS_RDONLY)
+            (mkdir-p "/rw-root")
+            (mount "none" "/rw-root" "tmpfs")
+
+            ;; We want read-write /dev nodes.
+            (make-essential-device-nodes #:root "/rw-root")
+
+            ;; Make /root a union of the tmpfs and the actual root.
+            (unless (zero? (system* unionfs "-o"
+                                    "cow,allow_other,use_ino,suid,dev"
+                                    "/rw-root=RW:/real-root=RO"
+                                    "/root"))
+              (error "unionfs failed")))
+          (mount root "/root" "ext3")))
+    (lambda args
+      (format (current-error-port) "exception while mounting '~a': ~s~%"
+              root args)
+      (start-repl))))
+
+(define* (mount-file-system spec #:key (root "/root"))
+  "Mount the file system described by SPEC under ROOT.  SPEC must have the
+form:
+
+  (DEVICE MOUNT-POINT TYPE (FLAGS ...) OPTIONS)
+
+DEVICE, MOUNT-POINT, and TYPE must be strings; OPTIONS can be a string or #f;
+FLAGS must be a list of symbols."
+  (define flags->bit-mask
+    (match-lambda
+     (('read-only rest ...)
+      (or MS_RDONLY (flags->bit-mask rest)))
+     (('bind-mount rest ...)
+      (or MS_BIND (flags->bit-mask rest)))
+     (()
+      0)))
+
+  (match spec
+    ((source mount-point type (flags ...) options)
+     (let ((mount-point (string-append root "/" mount-point)))
+       (mkdir-p mount-point)
+       (mount source mount-point type (flags->bit-mask flags)
+              (if options
+                  (string->pointer options)
+                  %null-pointer))))))
+
 (define* (boot-system #:key
                       (linux-modules '())
                       qemu-guest-networking?
                       guile-modules-in-chroot?
                       volatile-root? unionfs
+                      (root-fs-type "ext3")
                       (mounts '()))
   "This procedure is meant to be called from an initrd.  Boot a system by
 first loading LINUX-MODULES, then setting up QEMU guest networking if
@@ -223,9 +257,7 @@ QEMU-GUEST-NETWORKING? is true, mounting the file systems specified in MOUNTS,
 and finally booting into the new root if any.  The initrd supports kernel
 command-line options '--load', '--root', and '--repl'.
 
-MOUNTS must be a list of elements of the form:
-
-  (FILE-SYSTEM-TYPE SOURCE TARGET)
+MOUNTS must be a list suitable for 'mount-file-system'.
 
 When GUILE-MODULES-IN-CHROOT? is true, make core Guile modules available in
 the new root.
@@ -240,8 +272,6 @@ to it are lost."
           (let ((target (readlink file)))
             (resolve (string-append "/root" target)))
           file)))
-
-  (define MS_RDONLY 1)
 
   (display "Welcome, this is GNU's early boot Guile.\n")
   (display "Use '--repl' for an initrd REPL.\n\n")
@@ -276,29 +306,9 @@ to it are lost."
     (unless (file-exists? "/root")
       (mkdir "/root"))
     (if root
-        (catch #t
-          (lambda ()
-            (if volatile-root?
-                (begin
-                  (mkdir-p "/real-root")
-                  (mount root "/real-root" "ext3" MS_RDONLY)
-                  (mkdir-p "/rw-root")
-                  (mount "none" "/rw-root" "tmpfs")
-
-                  ;; We want read-write /dev nodes.
-                  (make-essential-device-nodes #:root "/rw-root")
-
-                  ;; Make /root a union of the tmpfs and the actual root.
-                  (unless (zero? (system* unionfs "-o"
-                                          "cow,allow_other,use_ino,suid,dev"
-                                          "/rw-root=RW:/real-root=RO"
-                                          "/root"))
-                    (error "unionfs failed")))
-                (mount root "/root" "ext3")))
-          (lambda args
-            (format (current-error-port) "exception while mounting '~a': ~s~%"
-                    root args)
-            (start-repl)))
+        (mount-root-file-system root root-fs-type
+                                #:volatile-root? volatile-root?
+                                #:unionfs unionfs)
         (mount "none" "/root" "tmpfs"))
 
     (mount-essential-file-systems #:root "/root")
@@ -308,16 +318,7 @@ to it are lost."
       (make-essential-device-nodes #:root "/root"))
 
     ;; Mount the specified file systems.
-    (for-each (match-lambda
-               (('cifs source target)
-                (let ((target (string-append "/root/" target)))
-                  (mkdir-p target)
-                  (mount-qemu-smb-share source target)))
-               (('9p source target)
-                (let ((target (string-append "/root/" target)))
-                  (mkdir-p target)
-                  (mount-qemu-9p source target))))
-              mounts)
+    (for-each mount-file-system mounts)
 
     (when guile-modules-in-chroot?
       ;; Copy the directories that contain .scm and .go files so that the

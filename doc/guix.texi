@@ -3088,6 +3088,10 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
    (host-name "komputilo")
    (timezone "Europe/Paris")
    (locale "fr_FR.UTF-8")
+   (file-systems (list (file-system
+                         (device "/dev/disk/by-label/root")
+                         (mount-point "/")
+                         (type "ext3"))))
    (users (list (user-account
                  (name "alice")
                  (password "")

@@ -82,6 +82,22 @@ input tuple.  The output file name is when building for SYSTEM."
       ((input (and (? string?) (? store-path?) file))
        (return `(,input . ,file))))))
 
+(define %linux-vm-file-systems
+  ;; File systems mounted for 'derivation-in-linux-vm'.  The store and /xchg
+  ;; directory are shared with the host over 9p.
+  (list (file-system
+          (mount-point (%store-prefix))
+          (device "store")
+          (type "9p")
+          (needed-for-boot? #t)
+          (options "trans=virtio"))
+        (file-system
+          (mount-point "/xchg")
+          (device "xchg")
+          (type "9p")
+          (needed-for-boot? #t)
+          (options "trans=virtio"))))
+
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
                                              (system (%current-system))
@@ -130,9 +146,8 @@ made available under the /xchg CIFS share."
        (coreutils -> (car (assoc-ref %final-inputs "coreutils")))
        (initrd       (if initrd                   ; use the default initrd?
                          (return initrd)
-                         (qemu-initrd #:guile-modules-in-chroot? #t
-                                      #:mounts `((9p "store" ,(%store-prefix))
-                                                 (9p "xchg" "/xchg"))))))
+                         (qemu-initrd %linux-vm-file-systems
+                                      #:guile-modules-in-chroot? #t))))
 
     (define builder
       ;; Code that launches the VM that evaluates EXP.
@@ -292,6 +307,22 @@ system as described by OS."
                  #:initialize-store? #t
                  #:inputs-to-copy `(("system" ,os-drv)))))
 
+(define (virtualized-operating-system os)
+  "Return an operating system based on OS suitable for use in a virtualized
+environment with the store shared with the host."
+  (operating-system (inherit os)
+    (initrd (cut qemu-initrd <> #:volatile-root? #t))
+    (file-systems (list (file-system
+                          (mount-point "/")
+                          (device "/dev/vda1")
+                          (type "ext3"))
+                        (file-system
+                          (mount-point (%store-prefix))
+                          (device "store")
+                          (type "9p")
+                          (needed-for-boot? #t)
+                          (options "trans=virtio"))))))
+
 (define* (system-qemu-image/shared-store
           os
           #:key (disk-image-size (* 15 (expt 2 20))))
@@ -314,14 +345,9 @@ with the host."
           (graphic? #t))
   "Return a derivation that builds a script to run a virtual machine image of
 OS that shares its store with the host."
-  (define initrd
-    (qemu-initrd #:mounts `((9p "store" ,(%store-prefix)))
-                 #:volatile-root? #t))
-
   (mlet* %store-monad
-      ((os ->  (operating-system (inherit os) (initrd initrd)))
+      ((os ->  (virtualized-operating-system os))
        (os-drv (operating-system-derivation os))
-       (initrd initrd)
        (image  (system-qemu-image/shared-store os)))
     (define builder
       #~(call-with-output-file #$output
@@ -332,7 +358,7 @@ exec " #$qemu "/bin/qemu-system-x86_64 -enable-kvm -no-reboot -net nic,model=vir
   -virtfs local,path=" #$(%store-prefix) ",security_model=none,mount_tag=store \
   -net user \
   -kernel " #$(operating-system-kernel os) "/bzImage \
-  -initrd " #$initrd "/initrd \
+  -initrd " #$os-drv "/initrd \
 -append \"" #$(if graphic? "" "console=ttyS0 ")
   "--load=" #$os-drv "/boot --root=/dev/vda1\" \
   -drive file=" #$image

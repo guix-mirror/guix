@@ -30,11 +30,12 @@
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
+  #:use-module (gnu system)                       ; for 'file-system'
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (srfi srfi-1)
   #:export (expression->initrd
-            qemu-initrd
-            gnu-system-initrd))
+            qemu-initrd))
 
 
 ;;; Commentary:
@@ -193,24 +194,29 @@ a list of Guile module names to be embedded in the initrd."
    (gexp->derivation name builder
                      #:modules '((guix build utils)))))
 
-(define* (qemu-initrd #:key
-                      guile-modules-in-chroot?
-                      volatile-root?
-                      (mounts `((cifs "/store" ,(%store-prefix))
-                                (cifs "/xchg" "/xchg"))))
-  "Return a monadic derivation that builds an initrd for use in a QEMU guest
-where the store is shared with the host.  MOUNTS is a list of file systems to
-be mounted atop the root file system, where each item has the form:
+(define (file-system->spec fs)
+  "Return a list corresponding to file-system FS that can be passed to the
+initrd code."
+  (match fs
+    (($ <file-system> device mount-point type flags options)
+     (list device mount-point type flags options))))
 
-    (FILE-SYSTEM-TYPE SOURCE TARGET)
+(define* (qemu-initrd file-systems
+                      #:key
+                      guile-modules-in-chroot?
+                      volatile-root?)
+  "Return a monadic derivation that builds an initrd for use in a QEMU guest
+where the store is shared with the host.  FILE-SYSTEMS is a list of
+file-systems to be mounted by the initrd, possibly in addition to the root
+file system specified on the kernel command line via '--root'.
+
+When VOLATILE-ROOT? is true, the root file system is writable but any changes
+to it are lost.
 
 When GUILE-MODULES-IN-CHROOT? is true, make core Guile modules available in
 the new root.  This is necessary is the file specified as '--load' needs
 access to these modules (which is the case if it wants to even just print an
-exception and backtrace!).
-
-When VOLATILE-ROOT? is true, the root file system is writable but any changes
-to it are lost."
+exception and backtrace!)."
   (define cifs-modules
     ;; Modules needed to mount CIFS file systems.
     '("md4.ko" "ecb.ko" "cifs.ko"))
@@ -219,14 +225,18 @@ to it are lost."
     ;; Modules for the 9p paravirtualized file system.
     '("9pnet.ko" "9p.ko" "9pnet_virtio.ko"))
 
+  (define (file-system-type-predicate type)
+    (lambda (fs)
+      (string=? (file-system-type fs) type)))
+
   (define linux-modules
     ;; Modules added to the initrd and loaded from the initrd.
     `("virtio.ko" "virtio_ring.ko" "virtio_pci.ko"
       "virtio_balloon.ko" "virtio_blk.ko" "virtio_net.ko"
-      ,@(if (assoc-ref mounts 'cifs)
+      ,@(if (find (file-system-type-predicate "cifs") file-systems)
             cifs-modules
             '())
-      ,@(if (assoc-ref mounts '9p)
+      ,@(if (find (file-system-type-predicate "9p") file-systems)
             virtio-9p-modules
             '())
       ,@(if volatile-root?
@@ -238,7 +248,7 @@ to it are lost."
        (use-modules (guix build linux-initrd)
                     (srfi srfi-26))
 
-       (boot-system #:mounts '#$mounts
+       (boot-system #:mounts '#$(map file-system->spec file-systems)
                     #:linux-modules '#$linux-modules
                     #:qemu-guest-networking? #t
                     #:guile-modules-in-chroot? '#$guile-modules-in-chroot?
@@ -253,10 +263,5 @@ to it are lost."
                  '())
    #:linux linux-libre
    #:linux-modules linux-modules))
-
-(define (gnu-system-initrd)
-  "Initrd for the GNU system itself, with nothing QEMU-specific."
-  (qemu-initrd #:guile-modules-in-chroot? #f
-               #:mounts '()))
 
 ;;; linux-initrd.scm ends here
