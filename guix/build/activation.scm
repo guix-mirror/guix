@@ -19,6 +19,7 @@
 (define-module (guix build activation)
   #:use-module (guix build utils)
   #:use-module (ice-9 ftw)
+  #:use-module (srfi srfi-26)
   #:export (activate-etc
             activate-setuid-programs))
 
@@ -85,7 +86,8 @@
   (format #t "setting up setuid programs in '~a'...~%"
           %setuid-directory)
   (if (file-exists? %setuid-directory)
-      (for-each delete-file
+      (for-each (compose delete-file
+                         (cut string-append %setuid-directory "/" <>))
                 (scandir %setuid-directory
                          (lambda (file)
                            (not (member file '("." ".."))))
