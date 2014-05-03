@@ -2050,7 +2050,7 @@ derivation that builds a directory containing exactly one symlink to
 (gexp->derivation "the-thing" build-exp)
 @end example
 
-As one would expect, the @code{"/gnu/store/@dots{}-coreutils"} string is
+As one would expect, the @code{"/gnu/store/@dots{}-coreutils-8.22"} string is
 substituted to the reference to the @var{coreutils} package in the
 actual build code, and @var{coreutils} is automatically made an input to
 the derivation.  Likewise, @code{#$output} (equivalent to @code{(ungexp
@@ -2127,7 +2127,7 @@ search path to be copied in the store, compiled, and made available in
 the load path during the execution of @var{exp}---e.g., @code{((guix
 build utils) (guix build gnu-build-system))}.
 
-The other arguments are as for @code{derivation}.
+The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn
 
 @deffn {Monadic Procedure} gexp->script @var{name} @var{exp}
@@ -2146,7 +2146,7 @@ command:
 @end example
 
 When ``running'' it through the store (@pxref{The Store Monad,
-@code{run-with-store}}), we obtain a derivation that procedures an
+@code{run-with-store}}), we obtain a derivation that produces an
 executable file @file{/gnu/store/@dots{}-list-files} along these lines:
 
 @example
