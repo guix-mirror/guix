@@ -296,19 +296,28 @@ basic contents of the root file system of OS."
                               (operating-system-users os))))))
 
 (define* (system-qemu-image os
-                            #:key (disk-image-size (* 900 (expt 2 20))))
-  "Return the derivation of a QEMU image of DISK-IMAGE-SIZE bytes of the GNU
-system as described by OS."
-  (mlet* %store-monad
-      ((os-drv      (operating-system-derivation os))
-       (os-dir   -> (derivation->output-path os-drv))
-       (grub.cfg -> (string-append os-dir "/grub.cfg"))
-       (populate    (operating-system-default-contents os)))
-    (qemu-image  #:grub-configuration grub.cfg
-                 #:populate populate
-                 #:disk-image-size disk-image-size
-                 #:initialize-store? #t
-                 #:inputs-to-copy `(("system" ,os-drv)))))
+                            #:key
+                            (file-system-type "ext4")
+                            (disk-image-size (* 900 (expt 2 20))))
+  "Return the derivation of a freestanding QEMU image of DISK-IMAGE-SIZE bytes
+of the GNU system as described by OS."
+  (let ((os (operating-system (inherit os)
+              ;; The mounted file systems are under our control.
+              (file-systems (list (file-system
+                                    (mount-point "/")
+                                    (device "/dev/sda1")
+                                    (type file-system-type)))))))
+    (mlet* %store-monad
+        ((os-drv      (operating-system-derivation os))
+         (os-dir   -> (derivation->output-path os-drv))
+         (grub.cfg -> (string-append os-dir "/grub.cfg"))
+         (populate    (operating-system-default-contents os)))
+      (qemu-image  #:grub-configuration grub.cfg
+                   #:populate populate
+                   #:disk-image-size disk-image-size
+                   #:file-system-type file-system-type
+                   #:initialize-store? #t
+                   #:inputs-to-copy `(("system" ,os-drv))))))
 
 (define (virtualized-operating-system os)
   "Return an operating system based on OS suitable for use in a virtualized
