@@ -42,7 +42,8 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial))
 
 (define-public (system->linux-architecture arch)
   "Return the Linux architecture name for ARCH, a Guix system name such as
@@ -465,6 +466,48 @@ slabtop, and skill.")
     (license (list gpl2                           ; programs
                    lgpl2.0                        ; libext2fs
                    x11))))                        ; libuuid
+
+(define-public e2fsprogs/static
+  (package (inherit e2fsprogs)
+    (name "e2fsprogs-static")
+    (arguments
+     `(#:configure-flags '("LDFLAGS=-static")
+       ,@(package-arguments e2fsprogs)))
+    (synopsis
+     "Statically-linked version of the ext2/ext3/ext4 file system tools")))
+
+(define-public e2fsck/static
+  (package
+    (name "e2fsck-static")
+    (version (package-version e2fsprogs/static))
+    (build-system trivial-build-system)
+    (source #f)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 ftw)
+                      (srfi srfi-26))
+
+         (let ((source (string-append (assoc-ref %build-inputs "e2fsprogs")
+                                      "/sbin"))
+               (bin    (string-append (assoc-ref %outputs "out") "/sbin")))
+           (mkdir-p bin)
+           (with-directory-excursion bin
+             (for-each (lambda (file)
+                         (copy-file (string-append source "/" file)
+                                    file)
+                         (remove-store-references file)
+                         (chmod file #o555))
+                       (scandir source (cut string-prefix? "fsck." <>))))))))
+    (inputs `(("e2fsprogs" ,e2fsprogs/static)))
+    (synopsis "Statically-linked fsck.* commands from e2fsprogs")
+    (description
+     "This package provides statically-linked command of fsck.ext[234] taken
+from the e2fsprogs package.  It is meant to be used in initrds.")
+    (home-page (package-home-page e2fsprogs/static))
+    (license (package-license e2fsprogs/static))))
 
 (define-public strace
   (package
