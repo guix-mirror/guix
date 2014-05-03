@@ -349,8 +349,10 @@ we're running in the final root."
   "Return a derivation that builds OS."
   (define boot-file-systems
     (filter (match-lambda
-             (($ <file-system> device mount-point type _ _ boot?)
-              (and boot? (not (string=? mount-point "/")))))
+             (($ <file-system> device "/")
+              #t)
+             (($ <file-system> device mount-point type flags options boot?)
+              boot?))
             (operating-system-file-systems os)))
 
   (mlet* %store-monad

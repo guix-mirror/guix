@@ -190,7 +190,7 @@ the last argument of `mknod'."
   (+ (* major 256) minor))
 
 (define* (mount-root-file-system root type
-                                 #:key volatile-root? unionfs)
+                                 #:key volatile-root? (unionfs "unionfs"))
   "Mount the root file system of type TYPE at device ROOT.  If VOLATILE-ROOT?
 is true, mount ROOT read-only and make it a union with a writable tmpfs using
 UNIONFS."
@@ -212,20 +212,45 @@ UNIONFS."
                                     "/rw-root=RW:/real-root=RO"
                                     "/root"))
               (error "unionfs failed")))
-          (mount root "/root" type)))
+          (begin
+            (check-file-system root type)
+            (mount root "/root" type))))
     (lambda args
       (format (current-error-port) "exception while mounting '~a': ~s~%"
               root args)
       (start-repl))))
 
+(define (check-file-system device type)
+  "Run a file system check of TYPE on DEVICE."
+  (define fsck
+    (string-append "fsck." type))
+
+  (let ((status (system* fsck "-v" "-p" device)))
+    (match (status:exit-val status)
+      (0
+       #t)
+      (1
+       (format (current-error-port) "'~a' corrected errors on ~a; continuing~%"
+               fsck device))
+      (2
+       (format (current-error-port) "'~a' corrected errors on ~a; rebooting~%"
+               fsck device)
+       (sleep 3)
+       (reboot))
+      (code
+       (format (current-error-port) "'~a' exited with code ~a on ~a; spawning REPL~%"
+               fsck code device)
+       (start-repl)))))
+
 (define* (mount-file-system spec #:key (root "/root"))
   "Mount the file system described by SPEC under ROOT.  SPEC must have the
 form:
 
-  (DEVICE MOUNT-POINT TYPE (FLAGS ...) OPTIONS)
+  (DEVICE MOUNT-POINT TYPE (FLAGS ...) OPTIONS CHECK?)
 
 DEVICE, MOUNT-POINT, and TYPE must be strings; OPTIONS can be a string or #f;
-FLAGS must be a list of symbols."
+FLAGS must be a list of symbols.  CHECK? is a Boolean indicating whether to
+run a file system check."
   (define flags->bit-mask
     (match-lambda
      (('read-only rest ...)
@@ -236,8 +261,10 @@ FLAGS must be a list of symbols."
       0)))
 
   (match spec
-    ((source mount-point type (flags ...) options)
+    ((source mount-point type (flags ...) options check?)
      (let ((mount-point (string-append root "/" mount-point)))
+       (when check?
+         (check-file-system source type))
        (mkdir-p mount-point)
        (mount source mount-point type (flags->bit-mask flags)
               (if options
@@ -248,8 +275,7 @@ FLAGS must be a list of symbols."
                       (linux-modules '())
                       qemu-guest-networking?
                       guile-modules-in-chroot?
-                      volatile-root? unionfs
-                      (root-fs-type "ext4")
+                      volatile-root?
                       (mounts '()))
   "This procedure is meant to be called from an initrd.  Boot a system by
 first loading LINUX-MODULES, then setting up QEMU guest networking if
@@ -257,8 +283,8 @@ QEMU-GUEST-NETWORKING? is true, mounting the file systems specified in MOUNTS,
 and finally booting into the new root if any.  The initrd supports kernel
 command-line options '--load', '--root', and '--repl'.
 
-Mount the root file system, of type ROOT-FS-TYPE, specified by the '--root'
-command-line argument, if any.
+Mount the root file system, specified by the '--root' command-line argument,
+if any.
 
 MOUNTS must be a list suitable for 'mount-file-system'.
 
@@ -275,6 +301,18 @@ to it are lost."
           (let ((target (readlink file)))
             (resolve (string-append "/root" target)))
           file)))
+
+  (define root-mount-point?
+    (match-lambda
+     ((device "/" _ ...) #t)
+     (_ #f)))
+
+  (define root-fs-type
+    (or (any (match-lambda
+              ((device "/" type _ ...) type)
+              (_ #f))
+             mounts)
+        "ext4"))
 
   (display "Welcome, this is GNU's early boot Guile.\n")
   (display "Use '--repl' for an initrd REPL.\n\n")
@@ -310,8 +348,7 @@ to it are lost."
       (mkdir "/root"))
     (if root
         (mount-root-file-system root root-fs-type
-                                #:volatile-root? volatile-root?
-                                #:unionfs unionfs)
+                                #:volatile-root? volatile-root?)
         (mount "none" "/root" "tmpfs"))
 
     (mount-essential-file-systems #:root "/root")
@@ -321,7 +358,8 @@ to it are lost."
       (make-essential-device-nodes #:root "/root"))
 
     ;; Mount the specified file systems.
-    (for-each mount-file-system mounts)
+    (for-each mount-file-system
+              (remove root-mount-point? mounts))
 
     (when guile-modules-in-chroot?
       ;; Copy the directories that contain .scm and .go files so that the

@@ -90,13 +90,15 @@ input tuple.  The output file name is when building for SYSTEM."
           (device "store")
           (type "9p")
           (needed-for-boot? #t)
-          (options "trans=virtio"))
+          (options "trans=virtio")
+          (check? #f))
         (file-system
           (mount-point "/xchg")
           (device "xchg")
           (type "9p")
           (needed-for-boot? #t)
-          (options "trans=virtio"))))
+          (options "trans=virtio")
+          (check? #f))))
 
 (define* (expression->derivation-in-linux-vm name exp
                                              #:key
@@ -333,7 +335,8 @@ environment with the store shared with the host."
                           (device "store")
                           (type "9p")
                           (needed-for-boot? #t)
-                          (options "trans=virtio"))))))
+                          (options "trans=virtio")
+                          (check? #f))))))
 
 (define* (system-qemu-image/shared-store
           os

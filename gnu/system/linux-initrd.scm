@@ -198,8 +198,8 @@ a list of Guile module names to be embedded in the initrd."
   "Return a list corresponding to file-system FS that can be passed to the
 initrd code."
   (match fs
-    (($ <file-system> device mount-point type flags options)
-     (list device mount-point type flags options))))
+    (($ <file-system> device mount-point type flags options _ check?)
+     (list device mount-point type flags options check?))))
 
 (define* (qemu-initrd file-systems
                       #:key
@@ -243,24 +243,37 @@ exception and backtrace!)."
             '("fuse.ko")
             '())))
 
+  (define helper-packages
+    ;; Packages to be copied on the initrd.
+    `(,@(if (find (lambda (fs)
+                    (string-prefix? "ext" (file-system-type fs)))
+                  file-systems)
+            (list e2fsck/static)
+            '())
+      ,@(if volatile-root?
+            (list unionfs-fuse/static)
+            '())))
+
   (expression->initrd
    #~(begin
        (use-modules (guix build linux-initrd)
+                    (guix build utils)
                     (srfi srfi-26))
+
+       (with-output-to-port (%make-void-port "w")
+         (lambda ()
+           (set-path-environment-variable "PATH" '("bin" "sbin")
+                                          '#$helper-packages)))
 
        (boot-system #:mounts '#$(map file-system->spec file-systems)
                     #:linux-modules '#$linux-modules
                     #:qemu-guest-networking? #t
                     #:guile-modules-in-chroot? '#$guile-modules-in-chroot?
-                    #:unionfs (and=> #$(and volatile-root? unionfs-fuse/static)
-                                     (cut string-append <> "/bin/unionfs"))
                     #:volatile-root? '#$volatile-root?))
    #:name "qemu-initrd"
    #:modules '((guix build utils)
                (guix build linux-initrd))
-   #:to-copy (if volatile-root?
-                 (list unionfs-fuse/static)
-                 '())
+   #:to-copy helper-packages
    #:linux linux-libre
    #:linux-modules linux-modules))
 
