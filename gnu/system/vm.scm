@@ -188,13 +188,15 @@ made available under the /xchg CIFS share."
                      (system (%current-system))
                      (qemu qemu-headless)
                      (disk-image-size (* 100 (expt 2 20)))
+                     (file-system-type "ext4")
                      grub-configuration
                      (initialize-store? #f)
                      (populate #f)
                      (inputs-to-copy '()))
-  "Return a bootable, stand-alone QEMU image.  The returned image is a full
-disk image, with a GRUB installation that uses GRUB-CONFIGURATION as its
-configuration file (GRUB-CONFIGURATION must be the name of a file in the VM.)
+  "Return a bootable, stand-alone QEMU image, with a root partition of type
+FILE-SYSTEM-TYPE.  The returned image is a full disk image, with a GRUB
+installation that uses GRUB-CONFIGURATION as its configuration
+file (GRUB-CONFIGURATION must be the name of a file in the VM.)
 
 INPUTS-TO-COPY is a list of inputs (as for packages) whose closure is copied
 into the image being built.  When INITIALIZE-STORE? is true, initialize the
@@ -235,6 +237,7 @@ such as /etc files."
             (initialize-hard-disk #:grub.cfg #$grub-configuration
                                   #:closures-to-copy graphs
                                   #:disk-image-size #$disk-image-size
+                                  #:file-system-type #$file-system-type
                                   #:initialize-store? #$initialize-store?
                                   #:directives '#$populate)
             (reboot))))
@@ -315,7 +318,7 @@ environment with the store shared with the host."
     (file-systems (list (file-system
                           (mount-point "/")
                           (device "/dev/vda1")
-                          (type "ext3"))
+                          (type "ext4"))
                         (file-system
                           (mount-point (%store-prefix))
                           (device "store")

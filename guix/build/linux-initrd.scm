@@ -212,7 +212,7 @@ UNIONFS."
                                     "/rw-root=RW:/real-root=RO"
                                     "/root"))
               (error "unionfs failed")))
-          (mount root "/root" "ext3")))
+          (mount root "/root" type)))
     (lambda args
       (format (current-error-port) "exception while mounting '~a': ~s~%"
               root args)
@@ -249,13 +249,16 @@ FLAGS must be a list of symbols."
                       qemu-guest-networking?
                       guile-modules-in-chroot?
                       volatile-root? unionfs
-                      (root-fs-type "ext3")
+                      (root-fs-type "ext4")
                       (mounts '()))
   "This procedure is meant to be called from an initrd.  Boot a system by
 first loading LINUX-MODULES, then setting up QEMU guest networking if
 QEMU-GUEST-NETWORKING? is true, mounting the file systems specified in MOUNTS,
 and finally booting into the new root if any.  The initrd supports kernel
 command-line options '--load', '--root', and '--repl'.
+
+Mount the root file system, of type ROOT-FS-TYPE, specified by the '--root'
+command-line argument, if any.
 
 MOUNTS must be a list suitable for 'mount-file-system'.
 

@@ -183,7 +183,7 @@ as created and modified at the Epoch."
 (define* (initialize-hard-disk #:key
                                grub.cfg
                                disk-image-size
-                               (mkfs "mkfs.ext3")
+                               (file-system-type "ext4")
                                initialize-store?
                                (closures-to-copy '())
                                (directives '()))
@@ -192,13 +192,14 @@ as created and modified at the Epoch."
                                       (- disk-image-size (* 5 (expt 2 20))))
     (error "failed to create partition table"))
 
-  (display "creating ext3 partition...\n")
-  (unless (zero? (system* mkfs "-F" "/dev/sda1"))
+  (format #t "creating ~a partition...\n" file-system-type)
+  (unless (zero? (system* (string-append "mkfs." file-system-type)
+                          "-F" "/dev/sda1"))
     (error "failed to create partition"))
 
   (display "mounting partition...\n")
   (mkdir "/fs")
-  (mount "/dev/sda1" "/fs" "ext3")
+  (mount "/dev/sda1" "/fs" file-system-type)
 
   (when (pair? closures-to-copy)
     ;; Populate the store.
