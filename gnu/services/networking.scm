@@ -73,7 +73,7 @@ true, it must be a string specifying the default network gateway."
                             #t))))
       (stop #~(lambda _
                 ;; Return #f is successfully stopped.
-                (not (and (system* (string-append #$inetutils "/sbin/ifconfig")
+                (not (and (system* (string-append #$inetutils "/bin/ifconfig")
                                    #$interface "down")
                           (system* (string-append #$net-tools "/sbin/route")
                                    "del" "-net" "default")))))
