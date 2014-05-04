@@ -62,6 +62,15 @@
     (mkdir (scope "sys")))
   (mount "none" (scope "sys") "sysfs"))
 
+(define (move-essential-file-systems root)
+  "Move currently mounted essential file systems to ROOT."
+  (for-each (lambda (dir)
+              (let ((target (string-append root dir)))
+                (unless (file-exists? target)
+                  (mkdir target))
+                (mount dir target "" MS_MOVE)))
+            '("/proc" "/sys")))
+
 (define (linux-command-line)
   "Return the Linux kernel command line as a list of strings."
   (string-tokenize
@@ -172,6 +181,7 @@ networking values.)  Return #t if INTERFACE is up, #f otherwise."
 ;; Linux mount flags, from libc's <sys/mount.h>.
 (define MS_RDONLY 1)
 (define MS_BIND 4096)
+(define MS_MOVE 8192)
 
 (define (bind-mount source target)
   "Bind-mount SOURCE at TARGET."
@@ -271,6 +281,15 @@ run a file system check."
                   (string->pointer options)
                   %null-pointer))))))
 
+(define (switch-root root)
+  "Switch to ROOT as the root file system, in a way similar to what
+util-linux' switch_root(8) does."
+  (move-essential-file-systems root)
+  (chdir root)
+  ;; TODO: Delete files from the old root.
+  (mount root "/" "" MS_MOVE)
+  (chroot "."))
+
 (define* (boot-system #:key
                       (linux-modules '())
                       qemu-guest-networking?
@@ -351,8 +370,6 @@ to it are lost."
                                 #:volatile-root? volatile-root?)
         (mount "none" "/root" "tmpfs"))
 
-    (mount-essential-file-systems #:root "/root")
-
     (unless (file-exists? "/root/dev")
       (mkdir "/root/dev")
       (make-essential-device-nodes #:root "/root"))
@@ -377,8 +394,7 @@ to it are lost."
     (if to-load
         (begin
           (format #t "loading '~a'...\n" to-load)
-          (chdir "/root")
-          (chroot "/root")
+          (switch-root "/root")
 
           ;; Obviously this has to be done each time we boot.  Do it from here
           ;; so that statfs(2) returns DEVPTS_SUPER_MAGIC like libc's getpt(3)
