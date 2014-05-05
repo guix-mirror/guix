@@ -176,7 +176,7 @@ network to check in GNU's database."
 
        (let ((url  (and=> (package-source package) origin-uri))
              (name (package-name package)))
-         (case (and url (mirror-type url))
+         (case (and (string? url) (mirror-type url))
            ((gnu) #t)
            ((non-gnu) #f)
            (else
