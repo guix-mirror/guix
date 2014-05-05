@@ -557,3 +557,35 @@ XML/CSS rendering engine.")
 
     ;; LGPLv2.1-only.
     (license license:lgpl2.1)))
+
+(define-public libgsf
+  (package
+    (name "libgsf")
+    (version "1.14.30")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/libgsf/1.14/libgsf-"
+                                  version ".tar.xz"))
+              (sha256
+               (base32
+                "0w2v1a9sxsymd1mcy4mwsz4r6za9iwq69rj86nb939p41d4c6j6b"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("python" ,python)
+       ("zlib" ,zlib)
+       ("bzip2" ,bzip2)))
+    (propagated-inputs
+     `(("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)
+       ("libxml2" ,libxml2)))
+    (home-page "http://www.gnome.org/projects/libgsf")
+    (synopsis "GNOME's Structured File Library")
+    (description
+     "Libgsf aims to provide an efficient extensible I/O abstraction for
+dealing with different structured file formats.")
+
+    ;; LGPLv2.1-only.
+    (license license:lgpl2.1)))
