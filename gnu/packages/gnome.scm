@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,7 +18,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages gnome)
-  #:use-module ((guix licenses) #:select (gpl2 gpl2+ lgpl2.0+ lgpl2.1+ lgpl3))
+  #:use-module ((guix licenses)
+                #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -36,6 +38,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages xorg))
 
 (define-public brasero
@@ -75,7 +78,7 @@
     (description "Brasero is an application to burn CD/DVD for the Gnome
 Desktop.  It is designed to be as simple as possible and has some unique
 features to enable users to create their discs easily and quickly.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public gnome-desktop
   (package
@@ -116,7 +119,7 @@ stability. Documentation for the API is available with gtk-doc.
 
 The gnome-about program helps find which version of GNOME is installed.")
     ; Some bits under the LGPL.
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public gnome-doc-utils
   (package
@@ -146,7 +149,7 @@ The gnome-about program helps find which version of GNOME is installed.")
      "Gnome-doc-utils is a collection of documentation utilities for the
 Gnome project.  It includes xml2po tool which makes it easier to translate
 and keep up to date translations of documentation.")
-    (license gpl2+))) ; xslt under lgpl
+    (license license:gpl2+))) ; xslt under lgpl
 
 (define-public libgnome-keyring
   (package
@@ -177,7 +180,7 @@ and keep up to date translations of documentation.")
      "Client library to access passwords from the GNOME keyring.")
 
     ;; Though a couple of files are LGPLv2.1+.
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public evince
   (package
@@ -242,7 +245,7 @@ and keep up to date translations of documentation.")
 currently supports PDF, PostScript, DjVu, TIFF and DVI.  The goal
 of Evince is to replace the multiple document viewers that exist
 on the GNOME Desktop with a single simple application.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public gsettings-desktop-schemas
   (package
@@ -269,7 +272,7 @@ on the GNOME Desktop with a single simple application.")
     (description
      "Gsettings-desktop-schemas contains a collection of GSettings schemas
 for settings shared by various components of the GNOME desktop.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public icon-naming-utils
   (package
@@ -294,7 +297,7 @@ for settings shared by various components of the GNOME desktop.")
      "To help with the transition to the Freedesktop Icon Naming
 Specification, the icon naming utility maps the icon names used by the
 GNOME and KDE desktops to the icon names proposed in the specification.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public gnome-icon-theme
   (package
@@ -321,7 +324,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
      "GNOME icon theme")
     (description
      "Icons for the GNOME desktop.")
-    (license lgpl3))) ; or Creative Commons BY-SA 3.0
+    (license license:lgpl3))) ; or Creative Commons BY-SA 3.0
 
 (define-public shared-mime-info
   (package
@@ -352,7 +355,7 @@ and the update-mime-database command used to extend it.  It requires glib2 to
 be installed for building the update command.  Additionally, it uses intltool
 for translations, though this is only a dependency for the maintainers.  This
 database is translated at Transifex.")
-    (license gpl2+)))
+    (license license:gpl2+)))
 
 (define-public hicolor-icon-theme
   (package
@@ -374,7 +377,7 @@ database is translated at Transifex.")
      "Freedesktop icon theme")
     (description
      "Freedesktop icon theme.")
-    (license gpl2)))
+    (license license:gpl2)))
 
 (define-public libnotify
   (package
@@ -405,7 +408,7 @@ database is translated at Transifex.")
 notification daemon, as defined in the Desktop Notifications spec. These
 notifications can be used to inform the user about an event or display
 some form of information without getting in the user's way.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public libpeas
   (package
@@ -469,7 +472,7 @@ set of features including, but not limited to: multiple extension points; on
 demand (lazy) programming language support for C, Python and JS; simplicity of
 the API")
 
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
 
 (define-public gtkglext
   (package
@@ -495,7 +498,7 @@ the API")
     (description "GtkGLExt is an OpenGL extension to GTK+. It provides
 additional GDK objects which support OpenGL rendering in GTK+ and GtkWidget
 API add-ons to make GTK+ widgets OpenGL-capable.")
-    (license lgpl2.1+)))
+    (license license:lgpl2.1+)))
 
 (define-public glade3
   (package
@@ -522,4 +525,35 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
     (description "Glade is a rapid application development (RAD) tool to
 enable quick & easy development of user interfaces for the GTK+ toolkit and
 the GNOME desktop environment.")
-    (license lgpl2.0+)))
+    (license license:lgpl2.0+)))
+
+(define-public libcroco
+  (package
+    (name "libcroco")
+    (version "0.6.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/libcroco/0.6/libcroco-"
+                    version
+                    ".tar.xz"))
+              (sha256
+               (base32
+                "0w453f3nnkbkrly7spx5lx5pf6mwynzmd5qhszprq8amij2invpa"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("libxml2" ,libxml2)
+       ("zlib" ,zlib)))
+    (home-page "https://github.com/GNOME/libcroco")
+    (synopsis "CSS2 parsing and manipulation library")
+    (description
+     "Libcroco is a standalone CSS2 parsing and manipulation library.
+The parser provides a low level event driven SAC-like API and a CSS object
+model like API.  Libcroco provides a CSS2 selection engine and an experimental
+XML/CSS rendering engine.")
+
+    ;; LGPLv2.1-only.
+    (license license:lgpl2.1)))
