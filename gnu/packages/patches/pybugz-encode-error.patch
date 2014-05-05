@@ -1,0 +1,17 @@
+In case of 'AttributeError', 'value' is None, so do not try to
+access it.
+Submitted upstream.
+
+--- pybugz-0.6.11/bugz.py	2006-09-02 14:35:37.000000000 +0200
++++ pybugz-0.6.11/bugz.py	2014-05-05 16:02:20.000000000 +0200
+@@ -1249,9 +1254,9 @@ class PrettyBugz(Bugz):
+         for field, name in FIELDS + MORE_FIELDS:
+             try:
+                 value = result.find('//%s' % field).text
++                print '%-12s: %s' % (name, value.encode(self.enc))
+             except AttributeError:
+                 continue
+-            print '%-12s: %s' % (name, value.encode(self.enc))
+ 
+         # Print out the cc'ed people
+         cced = result.findall('.//cc')

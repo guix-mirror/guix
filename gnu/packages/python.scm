@@ -578,7 +578,10 @@ commands.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "17ni00p08gp5lkxlrrcnvi3x09fmajnlbz4da03qcgl9q21ym4jd"))))
+                "17ni00p08gp5lkxlrrcnvi3x09fmajnlbz4da03qcgl9q21ym4jd"))
+              (patches (map search-patch
+                            (list "pybugz-stty.patch"
+                                  "pybugz-encode-error.patch")))))
     (build-system python-build-system)
     (arguments
      `(#:python ,python-2                         ; SyntaxError with Python 3
