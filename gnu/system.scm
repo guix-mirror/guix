@@ -334,6 +334,15 @@ we're running in the final root."
                     ;; Activate setuid programs.
                     (activate-setuid-programs (list #$@setuid-progs))
 
+                    ;; Close any remaining open file descriptors to be on the
+                    ;; safe side.  This must be the very last thing we do,
+                    ;; because Guile has internal FDs such as 'sleep_pipe'
+                    ;; that need to be alive.
+                    (let loop ((fd 3))
+                      (when (< fd 1024)
+                        (false-if-exception (close-fdes fd))
+                        (loop (+ 1 fd))))
+
                     ;; Start dmd.
                     (execl (string-append #$dmd "/bin/dmd")
                            "dmd" "--config" #$dmd-conf)))))

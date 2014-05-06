@@ -286,9 +286,51 @@ run a file system check."
 util-linux' switch_root(8) does."
   (move-essential-file-systems root)
   (chdir root)
-  ;; TODO: Delete files from the old root.
+
+  ;; Since we're about to 'rm -rf /', try to make sure we're on an initrd.
+  ;; TODO: Use 'statfs' to check the fs type, like klibc does.
+  (when (or (not (file-exists? "/init")) (directory-exists? "/home"))
+    (format (current-error-port)
+            "The root file system is probably not an initrd; \
+bailing out.~%root contents: ~s~%" (scandir "/"))
+    (force-output (current-error-port))
+    (exit 1))
+
+  ;; Delete files from the old root, without crossing mount points (assuming
+  ;; there are no mount points in sub-directories.)  That means we're leaving
+  ;; the empty ROOT directory behind us, but that's OK.
+  (let ((root-device (stat:dev (stat "/"))))
+    (for-each (lambda (file)
+                (unless (member file '("." ".."))
+                  (let* ((file   (string-append "/" file))
+                         (device (stat:dev (lstat file))))
+                    (when (= device root-device)
+                      (delete-file-recursively file)))))
+              (scandir "/")))
+
+  ;; Make ROOT the new root.
   (mount root "/" "" MS_MOVE)
-  (chroot "."))
+  (chroot ".")
+  (chdir "/")
+
+  (when (file-exists? "/dev/console")
+    ;; Close the standard file descriptors since they refer to the old
+    ;; /dev/console.
+    (for-each close-fdes '(0 1 2))
+
+    ;; Reopen them.
+    (let ((in  (open-file "/dev/console" "rbl"))
+          (out (open-file "/dev/console" "wbl")))
+      (dup2 (fileno in) 0)
+      (dup2 (fileno out) 1)
+      (dup2 (fileno out) 2)
+
+      ;; Safely close IN and OUT.
+      (for-each (lambda (port)
+                  (if (memv (fileno port) '(0 1 2))
+                      (set-port-revealed! port 1)
+                      (close-port port)))
+                (list in out)))))
 
 (define* (boot-system #:key
                       (linux-modules '())
@@ -393,8 +435,8 @@ to it are lost."
 
     (if to-load
         (begin
-          (format #t "loading '~a'...\n" to-load)
           (switch-root "/root")
+          (format #t "loading '~a'...\n" to-load)
 
           ;; Obviously this has to be done each time we boot.  Do it from here
           ;; so that statfs(2) returns DEVPTS_SUPER_MAGIC like libc's getpt(3)
