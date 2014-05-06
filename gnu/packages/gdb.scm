@@ -57,7 +57,11 @@
        ("readline" ,readline)
        ("ncurses" ,ncurses)
        ("python" ,python-wrapper)
-       ("dejagnu" ,dejagnu)))
+       ("dejagnu" ,dejagnu)
+
+       ;; Allow use of XML-formatted syscall information.  This enables 'catch
+       ;; syscall' and similar commands.
+       ("libxml2" ,libxml2)))
     (native-inputs
       `(("texinfo" ,texinfo)))
     (home-page "http://www.gnu.org/software/gdb/")
