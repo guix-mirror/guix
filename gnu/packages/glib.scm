@@ -160,6 +160,17 @@ shared NFS home directories.")
       ;; In 'gio/tests', 'gdbus-test-codegen-generated.h' is #included in a
       ;; file that gets compiled possibly before it has been fully generated.
       #:parallel-tests? #f))
+
+   (native-search-paths
+    ;; This variable is not really "owned" by GLib, but several related
+    ;; packages refer to it: gobject-introspection's tools use it as a search
+    ;; path for .gir files, and it's also a search path for schemas produced
+    ;; by 'glib-compile-schemas'.
+    (list (search-path-specification
+           (variable "XDG_DATA_DIRS")
+           (directories '("share")))))
+   (search-paths native-search-paths)
+
    (synopsis "Thread-safe general utility library; basis of GTK+ and GNOME")
    (description
     "GLib provides data structure handling for C, portability wrappers,

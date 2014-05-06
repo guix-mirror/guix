@@ -424,36 +424,6 @@ some form of information without getting in the user's way.")
        (base32
         "13fzyzv6c0cfdj83z1s16lv8k997wpnzyzr0wfwcfkcmvz64g1q0"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:modules ((guix build gnome)
-                  (guix build gnu-build-system)
-                  (guix build utils))
-       #:imported-modules ((guix build gnome)
-                           (guix build gnu-build-system)
-                           (guix build utils))
-       #:phases
-        (alist-replace
-         'configure
-         (lambda* (#:key inputs #:allow-other-keys #:rest args)
-          (let ((configure (assoc-ref %standard-phases 'configure)))
-           (substitute* "libpeas-gtk/Makefile.in"
-            (("--add-include-path")
-             (string-append
-               " --add-include-path=" (gir-directory inputs "atk")
-               " --add-include-path=" (gir-directory inputs "gdk-pixbuf")
-               " --add-include-path=" (gir-directory inputs "gtk+")
-               " --add-include-path=" (gir-directory inputs "pango")
-               " --add-include-path")))
-           (substitute* "libpeas-gtk/Makefile.in"
-            (("--includedir=\\$\\(top_builddir")
-             (string-append
-              " --includedir=" (gir-directory inputs "atk")
-              " --includedir=" (gir-directory inputs "gdk-pixbuf")
-              " --includedir=" (gir-directory inputs "gtk+")
-              " --includedir=" (gir-directory inputs "pango")
-              " --includedir=$(top_builddir")))
-           (apply configure args)))
-         %standard-phases)))
     (inputs
      `(("atk" ,atk)
        ("gdk-pixbuf" ,gdk-pixbuf)
@@ -605,28 +575,10 @@ dealing with different structured file formats.")
                 "071959yjb2i1bja7ciy4bmpnd6fn2is9jjqsvvvnsqwl69j9n128"))))
     (build-system gnu-build-system)
     (arguments
-     `(#:modules ((guix build gnome)
-                  (guix build gnu-build-system)
-                  (guix build utils))
-       #:imported-modules ((guix build gnome)
-                           (guix build gnu-build-system)
-                           (guix build utils))
-       #:phases
+     `(#:phases
        (alist-cons-before
         'configure 'augment-gir-search-path
         (lambda* (#:key inputs #:allow-other-keys)
-          (substitute* (find-files "." "Makefile\\.in")
-            (("INTROSPECTION_SCANNER_ARGS = ")
-             (string-append "INTROSPECTION_SCANNER_ARGS = "
-                            "--add-include-path="
-                            (gir-directory inputs "gdk-pixbuf")
-                            " "))
-            (("INTROSPECTION_COMPILER_ARGS = ")
-             (string-append "INTROSPECTION_COMPILER_ARGS = "
-                            "--includedir="
-                            (gir-directory inputs "gdk-pixbuf")
-                            " ")))
-
           (substitute* "gdk-pixbuf-loader/Makefile.in"
             ;; By default the gdk-pixbuf loader is installed under
             ;; gdk-pixbuf's prefix.  Work around that.

@@ -375,13 +375,7 @@ application suites.")
       ("python-wrapper" ,python-wrapper)
       ("xorg-server" ,xorg-server)))
    (arguments
-    `(#:modules ((guix build gnome)
-                 (guix build gnu-build-system)
-                 (guix build utils))
-      #:imported-modules ((guix build gnome)
-                          (guix build gnu-build-system)
-                          (guix build utils))
-      #:phases
+    `(#:phases
       (alist-replace
        'configure
        (lambda* (#:key inputs #:allow-other-keys #:rest args)
@@ -392,32 +386,8 @@ application suites.")
            ;; directory.
            ;; See the manual page for dbus-uuidgen to correct this issue.
            (substitute* "testsuite/Makefile.in"
-            (("SUBDIRS = gdk gtk a11y css reftests") "SUBDIRS = gdk"))
-
-	   ;; We need to tell GIR where it can find some of the required .gir
-           ;; files.
-           (substitute* "gdk/Makefile.in"
-            (("--add-include-path=../gdk")
-             (string-append
-              "--add-include-path=../gdk"
-              " --add-include-path=" (gir-directory inputs "gdk-pixbuf")
-              " --add-include-path=" (gir-directory inputs "pango")))
-            (("--includedir=\\.")
-             (string-append "--includedir=."
-              " --includedir=" (gir-directory inputs "gdk-pixbuf")
-              " --includedir=" (gir-directory inputs "pango"))))
-
-           (substitute* "gtk/Makefile.in"
-            (("--add-include-path=../gdk")
-             (string-append "--add-include-path=../gdk"
-              " --add-include-path=" (gir-directory inputs "atk")
-              " --add-include-path=" (gir-directory inputs "gdk-pixbuf")
-              " --add-include-path=" (gir-directory inputs "pango")))
-            (("--includedir=../gdk")
-             (string-append "--includedir=../gdk"
-              " --includedir=" (gir-directory inputs "atk")
-              " --includedir=" (gir-directory inputs "gdk-pixbuf")
-              " --includedir=" (gir-directory inputs "pango"))))
+             (("SUBDIRS = gdk gtk a11y css reftests")
+              "SUBDIRS = gdk"))
            (apply configure args)))
        %standard-phases)))))
 
