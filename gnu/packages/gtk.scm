@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,9 +53,10 @@
              (base32
               "1c2hbg66wfvibsz2ia0ri48yr62751fn950i97c53j3b0fjifsb3"))))
    (build-system gnu-build-system)
-   (inputs `(("glib" ,glib)
-             ("gobject-introspection" ,gobject-introspection)))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs `(("glib" ,glib)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+      ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME accessibility toolkit")
    (description
     "ATK provides the set of accessibility interfaces that are implemented
@@ -156,10 +157,10 @@ affine transformation (scale, rotation, shear, etc.)")
     `(("cairo" ,cairo)
       ("harfbuzz" ,harfbuzz)))
    (inputs
-    `(("gobject-introspection" ,gobject-introspection)
-      ("zlib" ,zlib)))
+    `(("zlib" ,zlib)))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    `(("pkg-config" ,pkg-config)
+      ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME text and font handling library")
    (description
     "Pango is the core text and font handling library used in GNOME
@@ -236,12 +237,12 @@ printing and other features typical of a source code editor.")
    (build-system gnu-build-system)
    (inputs
     `(("glib" ,glib)
-      ("gobject-introspection", gobject-introspection)
       ("libjpeg" ,libjpeg)
       ("libpng" ,libpng)
       ("libtiff" ,libtiff)))
    (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection", gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME image loading and manipulation library")
    (description
     "GdkPixbuf is a library for image loading and manipulation developed
@@ -366,11 +367,11 @@ application suites.")
       ("libxinerama" ,libxinerama)
       ("pango" ,pango)))
    (inputs
-    `(("gobject-introspection" ,gobject-introspection)
-      ("libxml2" ,libxml2)))
+    `(("libxml2" ,libxml2)))
    (native-inputs
-     `(("perl" ,perl)
+    `(("perl" ,perl)
       ("pkg-config" ,pkg-config)
+      ("gobject-introspection" ,gobject-introspection)
       ("python-wrapper" ,python-wrapper)
       ("xorg-server" ,xorg-server)))
    (arguments
