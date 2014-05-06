@@ -589,3 +589,71 @@ dealing with different structured file formats.")
 
     ;; LGPLv2.1-only.
     (license license:lgpl2.1)))
+
+(define-public librsvg
+  (package
+    (name "librsvg")
+    (version "2.40.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/librsvg/2.40/librsvg-"
+                    version ".tar.xz"))
+              (sha256
+               (base32
+                "071959yjb2i1bja7ciy4bmpnd6fn2is9jjqsvvvnsqwl69j9n128"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:modules ((guix build gnome)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:imported-modules ((guix build gnome)
+                           (guix build gnu-build-system)
+                           (guix build utils))
+       #:phases
+       (alist-cons-before
+        'configure 'augment-gir-search-path
+        (lambda* (#:key inputs #:allow-other-keys)
+          (substitute* (find-files "." "Makefile\\.in")
+            (("INTROSPECTION_SCANNER_ARGS = ")
+             (string-append "INTROSPECTION_SCANNER_ARGS = "
+                            "--add-include-path="
+                            (gir-directory inputs "gdk-pixbuf")
+                            " "))
+            (("INTROSPECTION_COMPILER_ARGS = ")
+             (string-append "INTROSPECTION_COMPILER_ARGS = "
+                            "--includedir="
+                            (gir-directory inputs "gdk-pixbuf")
+                            " ")))
+
+          (substitute* "gdk-pixbuf-loader/Makefile.in"
+            ;; By default the gdk-pixbuf loader is installed under
+            ;; gdk-pixbuf's prefix.  Work around that.
+            (("gdk_pixbuf_moduledir = .*$")
+             (string-append "gdk_pixbuf_moduledir = "
+                            "$(prefix)/lib/gdk-pixbuf-2.0/2.0.10/"
+                             "loaders\n"))
+            ;; Likewise, create a separate 'loaders.cache' file.
+            (("gdk_pixbuf_cache_file = .*$")
+             "gdk_pixbuf_cache_file = $(gdk_pixbuf_moduledir).cache\n")))
+        %standard-phases)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
+    (inputs
+     `(("pango" ,pango)
+       ("libcroco" ,libcroco)
+       ("bzip2" ,bzip2)
+       ("libgsf" ,libgsf)
+       ("libxml2" ,libxml2)))
+    (propagated-inputs
+     ;; librsvg-2.0.pc refers to all of that.
+     `(("cairo" ,cairo)
+       ("gdk-pixbuf" ,gdk-pixbuf)
+       ("glib" ,glib)))
+    (home-page "https://wiki.gnome.org/LibRsvg")
+    (synopsis "Render SVG files using Cairo")
+    (description
+     "librsvg is a C library to render SVG files using the Cairo 2D graphics
+library.")
+    (license license:lgpl2.0+)))
