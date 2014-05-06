@@ -38,6 +38,7 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages texinfo)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -441,7 +442,8 @@ slabtop, and skill.")
                "0ibkkvp6kan0hn0d1anq4n2md70j5gcm7mwna515w82xwyr02rfw"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("texinfo" ,texinfo)))    ; for the libext2fs Info manual
     (arguments
      '(#:phases (alist-cons-before
                  'configure 'patch-shells
