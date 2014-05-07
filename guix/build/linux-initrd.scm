@@ -228,7 +228,9 @@ UNIONFS."
     (lambda args
       (format (current-error-port) "exception while mounting '~a': ~s~%"
               root args)
-      (start-repl))))
+      (start-repl)))
+
+  (copy-file "/proc/mounts" "/root/etc/mtab"))
 
 (define (check-file-system device type)
   "Run a file system check of TYPE on DEVICE."
@@ -279,7 +281,14 @@ run a file system check."
        (mount source mount-point type (flags->bit-mask flags)
               (if options
                   (string->pointer options)
-                  %null-pointer))))))
+                  %null-pointer))
+
+       ;; Update /etc/mtab.
+       (mkdir-p (string-append root "/etc"))
+       (let ((port (open-output-file (string-append root "/etc/mtab"))))
+         (format port "~a ~a ~a ~a 0 0~%"
+                 source mount-point type options)
+         (close-port port))))))
 
 (define (switch-root root)
   "Switch to ROOT as the root file system, in a way similar to what
