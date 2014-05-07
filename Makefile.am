@@ -59,7 +59,6 @@ MODULES =					\
   guix/build/download.scm			\
   guix/build/cmake-build-system.scm		\
   guix/build/git.scm				\
-  guix/build/gnome.scm				\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
   guix/build/linux-initrd.scm			\
