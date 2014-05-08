@@ -420,32 +420,40 @@ ASCII text files using Gmsh's own scripting language.")
             (format #t "configure flags: ~s~%" flags)
             (zero? (apply system* "./configure" flags))))
         (alist-cons-after
-         'install 'clean-local-references
-         ;; Try to keep installed files from leaking build directory names.
+         'configure 'clean-local-references
+         ;; Try to keep build directory names from leaking into compiled code
          (lambda* (#:key inputs outputs #:allow-other-keys)
-           (let ((out     (assoc-ref outputs "out"))
-                 (fortran (assoc-ref inputs  "gfortran")))
-             (substitute* (map (lambda (file)
-                                 (string-append out "/" file))
-                               '("conf/petscvariables"
-                                 "conf/PETScConfig.cmake"
-                                 "include/petscconf.h"
-                                 "include/petscmachineinfo.h"))
-               (((getcwd)) out))
-             ;; Make compiler references point to the store
-             (substitute* (string-append out "/conf/petscvariables")
-               (("= g(cc|\\+\\+|fortran)" _ suffix)
-                (string-append "= " fortran "/bin/g" suffix)))
-             ;; PETSc installs some build logs, which aren't necessary.
-             (for-each (lambda (file)
-                         (delete-file (string-append out "/" file)))
-                       '("conf/configure.log"
-                         "conf/make.log"
-                         "conf/test.log"
-                         "conf/RDict.db"
-                         ;; Once installed, should uninstall with Guix
-                         "conf/uninstall.py"))))
-         %standard-phases))))
+           (let ((out (assoc-ref outputs "out")))
+             (substitute* (find-files "." "^petsc(conf|machineinfo).h$")
+               (((getcwd)) out))))
+         (alist-cons-after
+          'install 'clean-install
+          ;; Try to keep installed files from leaking build directory names.
+          (lambda* (#:key inputs outputs #:allow-other-keys)
+            (let ((out     (assoc-ref outputs "out"))
+                  (fortran (assoc-ref inputs  "gfortran")))
+              (substitute* (map (lambda (file)
+                                  (string-append out "/" file))
+                                '("conf/petscvariables"
+                                  "conf/PETScConfig.cmake"))
+                (((getcwd)) out))
+              ;; Make compiler references point to the store
+              (substitute* (string-append out "/conf/petscvariables")
+                (("= g(cc|\\+\\+|fortran)" _ suffix)
+                 (string-append "= " fortran "/bin/g" suffix)))
+              ;; PETSc installs some build logs, which aren't necessary.
+              (for-each (lambda (file)
+                          (let ((f (string-append out "/" file)))
+                            (when (file-exists? f)
+                              (delete-file f))))
+                        '("conf/configure.log"
+                          "conf/make.log"
+                          "conf/test.log"
+                          "conf/error.log"
+                          "conf/RDict.db"
+                          ;; Once installed, should uninstall with Guix
+                          "conf/uninstall.py"))))
+          %standard-phases)))))
     (home-page "http://www.mcs.anl.gov/petsc")
     (synopsis "Library to solve ODEs and algebraic equations")
     (description "PETSc, pronounced PET-see (the S is silent), is a suite of
