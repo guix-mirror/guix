@@ -31,6 +31,11 @@
                     #:key (git-command "git"))
   "Fetch COMMIT from URL into DIRECTORY.  COMMIT must be a valid Git commit
 identifier.  Return #t on success, #f otherwise."
+
+  ;; Disable TLS certificate verification.  The hash of the checkout is known
+  ;; in advance anyway.
+  (setenv "GIT_SSL_NO_VERIFY" "true")
+
   (and (zero? (system* git-command "clone" url directory))
        (with-directory-excursion directory
          (system* git-command "tag" "-l")
