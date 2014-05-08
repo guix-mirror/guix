@@ -324,22 +324,15 @@ bailing out.~%root contents: ~s~%" (scandir "/"))
 
   (when (file-exists? "/dev/console")
     ;; Close the standard file descriptors since they refer to the old
-    ;; /dev/console.
-    (for-each close-fdes '(0 1 2))
+    ;; /dev/console, and reopen them.
+    (let ((console (open-file "/dev/console" "r+b0")))
+      (for-each close-fdes '(0 1 2))
 
-    ;; Reopen them.
-    (let ((in  (open-file "/dev/console" "rbl"))
-          (out (open-file "/dev/console" "wbl")))
-      (dup2 (fileno in) 0)
-      (dup2 (fileno out) 1)
-      (dup2 (fileno out) 2)
+      (dup2 (fileno console) 0)
+      (dup2 (fileno console) 1)
+      (dup2 (fileno console) 2)
 
-      ;; Safely close IN and OUT.
-      (for-each (lambda (port)
-                  (if (memv (fileno port) '(0 1 2))
-                      (set-port-revealed! port 1)
-                      (close-port port)))
-                (list in out)))))
+      (close-port console))))
 
 (define* (boot-system #:key
                       (linux-modules '())
