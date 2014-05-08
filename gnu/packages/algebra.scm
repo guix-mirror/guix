@@ -21,6 +21,7 @@
 (define-module (gnu packages algebra)
   #:use-module (gnu packages)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages flex)
@@ -206,7 +207,7 @@ syntax is similar to that of C, so basic usage is familiar.  It also includes
                "10h9mzjxnwlsjziah4lri85scc05rlajz39nqf3mbh4vja8dw34g"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-shared" "--enable-openmp")
+     '(#:configure-flags '("--enable-shared" "--enable-openmp" "--enable-mpi")
        #:phases (alist-cons-before
                  'build 'no-native
                  (lambda _
@@ -218,6 +219,7 @@ syntax is similar to that of C, so basic usage is familiar.  It also includes
                      (("-mtune=native") "")))
                  %standard-phases)))
     (native-inputs `(("perl" ,perl)))
+    (inputs `(("openmpi" ,openmpi)))
     (home-page "http://fftw.org")
     (synopsis "Computing the discrete Fourier transform")
     (description
