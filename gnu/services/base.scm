@@ -22,14 +22,17 @@
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages base)
-                #:select (glibc-final))
+                #:select (glibc-final %final-inputs))
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages package-management)
   #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 format)
-  #:export (host-name-service
+  #:export (root-file-system-service
+            user-processes-service
+            host-name-service
             mingetty-service
             nscd-service
             syslog-service
@@ -42,6 +45,81 @@
 ;;; use.
 ;;;
 ;;; Code:
+
+(define (root-file-system-service)
+  "Return a service whose sole purpose is to re-mount read-only the root file
+system upon shutdown (aka. cleanly \"umounting\" root.)
+
+This service must be the root of the service dependency graph so that its
+'stop' action is invoked when dmd is the only process left."
+  (define coreutils
+    (car (assoc-ref %final-inputs "coreutils")))
+
+  (with-monad %store-monad
+    (return
+     (service
+      (documentation "Take care of the root file system.")
+      (provision '(root-file-system))
+      (start #~(const #t))
+      (stop #~(lambda _
+                ;; Return #f if successfully stopped.
+                (system* (string-append #$coreutils "/bin/sync"))
+
+                (call-with-blocked-asyncs
+                 (lambda ()
+                   (let ((null (%make-void-port "w")))
+                     ;; Close 'dmd.log'.
+                     (display "closing log\n")
+                     ;; XXX: Ideally we'd use 'stop-logging', but that one
+                     ;; doesn't actually close the port as of dmd 0.1.
+                     (close-port (@@ (dmd comm) log-output-port))
+                     (set! (@@ (dmd comm) log-output-port) null)
+
+                     ;; Redirect the default output ports..
+                     (set-current-output-port null)
+                     (set-current-error-port null)
+
+                     ;; Close /dev/console.
+                     (for-each close-fdes '(0 1 2))
+
+                     ;; At this points, there are no open files left, so the
+                     ;; root file system can be re-mounted read-only.
+                     (not (zero?
+                           (system* (string-append #$util-linux "/bin/mount")
+                                    "-n" "-o" "remount,ro"
+                                    "-t" "dummy" "dummy" "/"))))))))
+      (respawn? #f)))))
+
+(define* (user-processes-service #:key (grace-delay 2))
+  "Return the service that is responsible for terminating all the processes so
+that the root file system can be re-mounted read-only, just before
+rebooting/halting.  Processes still running GRACE-DELAY seconds after SIGTERM
+has been sent are terminated with SIGKILL.
+
+All the services that spawn processes must depend on this one so that they are
+stopped before 'kill' is called."
+  (with-monad %store-monad
+    (return (service
+             (documentation "When stopped, terminate all user processes.")
+             (provision '(user-processes))
+             (requirement '(root-file-system))
+             (start #~(const #t))
+             (stop #~(lambda _
+                       ;; When this happens, all the processes have been
+                       ;; killed, including 'deco', so DMD-OUTPUT-PORT and
+                       ;; thus CURRENT-OUTPUT-PORT are dangling.
+                       (call-with-output-file "/dev/console"
+                         (lambda (port)
+                           (display "sending all processes the TERM signal\n"
+                                    port)))
+
+                       (kill -1 SIGTERM)
+                       (sleep #$grace-delay)
+                       (kill -1 SIGKILL)
+
+                       (display "all processes have been terminated\n")
+                       #f))
+             (respawn? #f)))))
 
 (define (host-name-service name)
   "Return a service that sets the host name to NAME."
@@ -66,7 +144,7 @@
 
       ;; Since the login prompt shows the host name, wait for the 'host-name'
       ;; service to be done.
-      (requirement '(host-name))
+      (requirement '(user-processes host-name))
 
       (start  #~(make-forkexec-constructor
                  (string-append #$mingetty "/sbin/mingetty")
@@ -87,6 +165,7 @@
     (return (service
              (documentation "Run libc's name service cache daemon (nscd).")
              (provision '(nscd))
+             (requirement '(user-processes))
              (start
               #~(make-forkexec-constructor (string-append #$glibc "/sbin/nscd")
                                            "-f" "/dev/null"
@@ -126,6 +205,7 @@
      (service
       (documentation "Run the syslog daemon (syslogd).")
       (provision '(syslogd))
+      (requirement '(user-processes))
       (start
        #~(make-forkexec-constructor (string-append #$inetutils
                                                    "/libexec/syslogd")
@@ -161,6 +241,7 @@ BUILD-ACCOUNTS user accounts available under BUILD-USER-GID."
                                                      #:gid build-user-gid)))
     (return (service
              (provision '(guix-daemon))
+             (requirement '(user-processes))
              (start
               #~(make-forkexec-constructor (string-append #$guix
                                                           "/bin/guix-daemon")
@@ -189,6 +270,10 @@ This is the GNU operating system, welcome!\n\n")))
           (nscd-service)
 
           ;; FIXME: Make this an activation-time thing instead of a service.
-          (host-name-service "gnu"))))
+          (host-name-service "gnu")
+
+          ;; The "root" services.
+          (user-processes-service)
+          (root-file-system-service))))
 
 ;;; base.scm ends here

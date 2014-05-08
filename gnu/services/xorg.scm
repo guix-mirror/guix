@@ -161,7 +161,7 @@ reboot_cmd " dmd "/sbin/reboot
      (service
       (documentation "Xorg display server")
       (provision '(xorg-server))
-      (requirement '(host-name))
+      (requirement '(user-processes host-name))
       (start
        ;; XXX: Work around the inability to specify env. vars. directly.
        #~(make-forkexec-constructor
