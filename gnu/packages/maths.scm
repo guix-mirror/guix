@@ -45,6 +45,7 @@
   #:use-module (gnu packages less)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages perl)
@@ -472,6 +473,40 @@ scientific applications modeled by partial differential equations.")
     (description
      (string-append (package-description petsc)
                     "  Complex scalar type version."))))
+
+(define-public petsc-openmpi
+  (package (inherit petsc)
+    (name "petsc-openmpi")
+    (inputs
+     `(("openmpi" ,openmpi)
+       ,@(package-inputs petsc)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments petsc)
+       ((#:configure-flags cf)
+        ``("--with-mpiexec=mpirun"
+           ,(string-append "--with-mpi-dir="
+                           (assoc-ref %build-inputs "openmpi"))
+           ,@(delete "--with-mpi=0" ,cf)))))
+    (description
+     (string-append (package-description petsc)
+                    "  With OpenMPI parallelism support."))))
+
+(define-public petsc-complex-openmpi
+  (package (inherit petsc-complex)
+    (name "petsc-complex-openmpi")
+    (inputs
+     `(("openmpi" ,openmpi)
+       ,@(package-inputs petsc-complex)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments petsc-complex)
+       ((#:configure-flags cf)
+        ``("--with-mpiexec=mpirun"
+           ,(string-append "--with-mpi-dir="
+                           (assoc-ref %build-inputs "openmpi"))
+           ,@(delete "--with-mpi=0" ,cf)))))
+    (description
+     (string-append (package-description petsc-complex)
+                    "  With OpenMPI parallelism support."))))
 
 (define-public superlu
   (package
