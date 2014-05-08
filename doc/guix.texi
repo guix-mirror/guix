@@ -1995,10 +1995,14 @@ build the derivations; they are run by the daemon in a container
 It should come as no surprise that we like to write those build actions
 in Scheme.  When we do that, we end up with two @dfn{strata} of Scheme
 code@footnote{The term @dfn{stratum} in this context was coined by
-Manuel Serrano et al.@: in the context of their work on Hop.}: the
-``host code''---code that defines packages, talks to the daemon,
-etc.---and the ``build code''---code that actually performs build
-actions, such as making directories, invoking @command{make}, etc.
+Manuel Serrano et al.@: in the context of their work on Hop.  Oleg
+Kiselyov, who has written insightful
+@url{http://okmij.org/ftp/meta-programming/#meta-scheme, essays and code
+on this topic}, refers to this kind of code generation as
+@dfn{staging}.}: the ``host code''---code that defines packages, talks
+to the daemon, etc.---and the ``build code''---code that actually
+performs build actions, such as making directories, invoking
+@command{make}, etc.
 
 To describe a derivation and its build actions, one typically needs to
 embed build code inside host code.  It boils down to manipulating build
