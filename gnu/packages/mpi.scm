@@ -32,7 +32,7 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.open-mpi.org/softawre/ompi/v"
+      (uri (string-append "http://www.open-mpi.org/software/ompi/v"
                           (string-join (take (string-split version #\.) 2)
                                        ".")
                           "/downloads/openmpi-" version ".tar.bz2"))
