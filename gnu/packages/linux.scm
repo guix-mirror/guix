@@ -1031,3 +1031,59 @@ UnionFS-FUSE additionally supports copy-on-write.")
      '(#:tests? #f
        #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")))
     (inputs `(("fuse" ,fuse-static)))))
+
+(define-public numactl
+  (package
+    (name "numactl")
+    (version "2.0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://oss.sgi.com/www/projects/libnuma/download/numactl-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "073myxlyyhgxh1w3r757ajixb7s2k69czc3r0g12c3scq7k3784w"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; There's no 'configure' script, just a raw makefile.
+                   (substitute* "Makefile"
+                     (("^prefix := .*$")
+                      (string-append "prefix := " (assoc-ref outputs "out")
+                                     "\n"))
+                     (("^libdir := .*$")
+                      ;; By default the thing tries to install under
+                      ;; $prefix/lib64 when on a 64-bit platform.
+                      (string-append "libdir := $(prefix)/lib\n"))))
+                 %standard-phases)
+
+       #:make-flags (list
+                     ;; By default the thing tries to use 'cc'.
+                     "CC=gcc"
+
+                     ;; Make sure programs have an RPATH so they can find
+                     ;; libnuma.so.
+                     (string-append "LDLIBS=-Wl,-rpath="
+                                    (assoc-ref %outputs "out") "/lib"))
+
+       ;; There's a 'test' target, but it requires NUMA support in the kernel
+       ;; to run, which we can't assume to have.
+       #:tests? #f))
+    (home-page "http://oss.sgi.com/projects/libnuma/")
+    (synopsis "Tools for non-uniform memory access (NUMA) machines")
+    (description
+     "NUMA stands for Non-Uniform Memory Access, in other words a system whose
+memory is not all in one place.  The numactl program allows you to run your
+application program on specific CPU's and memory nodes.  It does this by
+supplying a NUMA memory policy to the operating system before running your
+program.
+
+The package contains other commands, such as numademo, numastat and memhog.
+The numademo command provides a quick overview of NUMA performance on your
+system.")
+    (license (list gpl2                           ; programs
+                   lgpl2.1))))                    ; library
