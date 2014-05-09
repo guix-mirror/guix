@@ -40,6 +40,7 @@
   #:export (operating-system
             operating-system?
             operating-system-services
+            operating-system-user-services
             operating-system-packages
             operating-system-bootloader-entries
             operating-system-host-name
@@ -50,7 +51,6 @@
             operating-system-packages
             operating-system-timezone
             operating-system-locale
-            operating-system-services
             operating-system-file-systems
 
             operating-system-derivation
@@ -112,7 +112,7 @@
   (timezone operating-system-timezone)            ; string
   (locale   operating-system-locale)              ; string
 
-  (services operating-system-services             ; list of monadic services
+  (services operating-system-user-services        ; list of monadic services
             (default %base-services))
 
   (pam-services operating-system-pam-services     ; list of PAM services
@@ -184,6 +184,24 @@ file."
 
   (gexp->derivation name builder))
 
+(define (essential-services os)
+  "Return the list of essential services for OS.  These are special services
+that implement part of what's declared in OS are responsible for low-level
+bookkeeping."
+  (mlet %store-monad ((procs     (user-processes-service))
+                      (root-fs   (root-file-system-service))
+                      (host-name (host-name-service
+                                  (operating-system-host-name os))))
+    (return (list host-name procs root-fs))))
+
+(define (operating-system-services os)
+  "Return all the services of OS, including \"internal\" services that do not
+explicitly appear in OS."
+  (mlet %store-monad
+      ((user      (sequence %store-monad (operating-system-user-services os)))
+       (essential (essential-services os)))
+    (return (append essential user))))
+
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
                         (accounts '())
@@ -254,8 +272,7 @@ alias ll='ls -l'
 
 (define (operating-system-accounts os)
   "Return the user accounts for OS, including an obligatory 'root' account."
-  (mlet %store-monad ((services (sequence %store-monad
-                                          (operating-system-services os))))
+  (mlet %store-monad ((services (operating-system-services os)))
     (return (cons (user-account
                    (name "root")
                    (password "")
@@ -269,7 +286,7 @@ alias ll='ls -l'
 (define (operating-system-etc-directory os)
   "Return that static part of the /etc directory of OS."
   (mlet* %store-monad
-      ((services     (sequence %store-monad (operating-system-services os)))
+      ((services     (operating-system-services os))
        (pam-services ->
                      ;; Services known to PAM.
                      (delete-duplicates
@@ -310,7 +327,7 @@ we're running in the final root."
       (guix build utils)))
 
   (mlet* %store-monad
-      ((services (sequence %store-monad (operating-system-services os)))
+      ((services (operating-system-services os))
        (etc      (operating-system-etc-directory os))
        (modules  (imported-modules %modules))
        (compiled (compiled-modules %modules))
@@ -367,7 +384,7 @@ we're running in the final root."
   (mlet* %store-monad
       ((profile     (operating-system-profile os))
        (etc         (operating-system-etc-directory os))
-       (services    (sequence %store-monad (operating-system-services os)))
+       (services    (operating-system-services os))
        (boot        (operating-system-boot-script os))
        (kernel  ->  (operating-system-kernel os))
        (initrd      ((operating-system-initrd os) boot-file-systems))
