@@ -207,7 +207,7 @@ syntax is similar to that of C, so basic usage is familiar.  It also includes
                "10h9mzjxnwlsjziah4lri85scc05rlajz39nqf3mbh4vja8dw34g"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--enable-shared" "--enable-openmp" "--enable-mpi")
+     '(#:configure-flags '("--enable-shared" "--enable-openmp")
        #:phases (alist-cons-before
                  'build 'no-native
                  (lambda _
@@ -219,7 +219,6 @@ syntax is similar to that of C, so basic usage is familiar.  It also includes
                      (("-mtune=native") "")))
                  %standard-phases)))
     (native-inputs `(("perl" ,perl)))
-    (inputs `(("openmpi" ,openmpi)))
     (home-page "http://fftw.org")
     (synopsis "Computing the discrete Fourier transform")
     (description
@@ -239,3 +238,17 @@ cosine/ sine transforms or DCT/DST).")
     (description
      (string-append (package-description fftw)
                     "  Single-precision version."))))
+
+(define-public fftw-openmpi
+  (package (inherit fftw)
+    (name "fftw-openmpi")
+    (inputs
+     `(("openmpi" ,openmpi)
+       ,@(package-inputs fftw)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments fftw)
+       ((#:configure-flags cf)
+        `(cons "--enable-mpi" ,cf))))
+    (description
+     (string-append (package-description fftw)
+                    "  With OpenMPI parallelism support."))))
