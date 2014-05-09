@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,12 +19,65 @@
 
 (define-module (gnu packages mpi)
   #:use-module (guix packages)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses)
+                #:hide (expat))
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages pciutils)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages gtk)
+  #:use-module (gnu packages xml)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pkg-config)
   #:use-module (srfi srfi-1))
+
+(define-public hwloc
+  (package
+    (name "hwloc")
+    (version "1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.open-mpi.org/software/hwloc/v"
+                                  version "/downloads/hwloc-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0zjgiili2a8v63s8ly3a8qp8ibxv1jw3zbgm7diic3w1qgqiza14"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; Enable libpci support, which effectively makes hwloc GPLv2+.
+     '(#:configure-flags '("--enable-libpci")))
+    (inputs
+     `(("numactl" ,numactl)
+       ("libx11" ,libx11)
+       ("cairo" ,cairo)
+       ("ncurses" ,ncurses)
+       ("expat" ,expat)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (propagated-inputs
+     ;; 'hwloc.pc' refers to libpci, hence the propagation.
+     `(("pciutils" ,pciutils)))
+    (home-page "http://www.open-mpi.org/projects/hwloc/")
+    (synopsis "Abstraction of hardware architectures")
+    (description
+     "hwloc provides a portable abstraction (across OS,
+versions, architectures, ...) of the hierarchical topology of modern
+architectures, including NUMA memory nodes, sockets, shared caches, cores and
+simultaneous multithreading.  It also gathers various attributes such as cache
+and memory information.  It primarily aims at helping high-performance
+computing applications with gathering information about the hardware so as to
+exploit it accordingly and efficiently.
+
+hwloc may display the topology in multiple convenient formats.  It also offers
+a powerful programming interface to gather information about the hardware,
+bind processes, and much more.")
+
+    ;; But see above about linking against libpci.
+    (license bsd-3)))
 
 (define-public openmpi
   (package
@@ -40,6 +94,7 @@
        (base32
         "13z1q69f3qwmmhpglarfjminfy2yw4rfqr9jydjk5507q3mjf50p"))))
     (build-system gnu-build-system)
+    ;; TODO: Use our hwloc instead of the bundled one.
     (propagated-inputs
      `(("gfortran" ,gfortran-4.8)))
     (arguments
