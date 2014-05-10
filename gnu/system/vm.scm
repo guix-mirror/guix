@@ -255,14 +255,14 @@ such as /etc files."
 
 (define (operating-system-build-gid os)
   "Return as a monadic value the group id for build users of OS, or #f."
-  (anym %store-monad
-        (lambda (service)
-          (and (equal? '(guix-daemon)
-                       (service-provision service))
-               (match (service-user-groups service)
-                 ((group)
-                  (user-group-id group)))))
-        (operating-system-services os)))
+  (mlet %store-monad ((services (operating-system-services os)))
+    (return (any (lambda (service)
+                   (and (equal? '(guix-daemon)
+                                (service-provision service))
+                        (match (service-user-groups service)
+                          ((group)
+                           (user-group-id group)))))
+                 services))))
 
 (define (operating-system-default-contents os)
   "Return a list of directives suitable for 'system-qemu-image' describing the
