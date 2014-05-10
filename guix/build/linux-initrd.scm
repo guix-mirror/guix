@@ -285,7 +285,7 @@ run a file system check."
 
        ;; Update /etc/mtab.
        (mkdir-p (string-append root "/etc"))
-       (let ((port (open-output-file (string-append root "/etc/mtab"))))
+       (let ((port (open-file (string-append root "/etc/mtab") "a")))
          (format port "~a ~a ~a ~a 0 0~%"
                  source mount-point type options)
          (close-port port))))))
