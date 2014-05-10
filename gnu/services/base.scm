@@ -22,8 +22,7 @@
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages base)
-                #:select (glibc-final %final-inputs))
-  #:use-module (gnu packages linux)
+                #:select (glibc-final))
   #:use-module (gnu packages package-management)
   #:use-module (guix gexp)
   #:use-module (guix monads)
@@ -52,9 +51,6 @@ system upon shutdown (aka. cleanly \"umounting\" root.)
 
 This service must be the root of the service dependency graph so that its
 'stop' action is invoked when dmd is the only process left."
-  (define coreutils
-    (car (assoc-ref %final-inputs "coreutils")))
-
   (with-monad %store-monad
     (return
      (service
@@ -63,7 +59,7 @@ This service must be the root of the service dependency graph so that its
       (start #~(const #t))
       (stop #~(lambda _
                 ;; Return #f if successfully stopped.
-                (system* (string-append #$coreutils "/bin/sync"))
+                (sync)
 
                 (call-with-blocked-asyncs
                  (lambda ()
@@ -82,12 +78,13 @@ This service must be the root of the service dependency graph so that its
                      ;; Close /dev/console.
                      (for-each close-fdes '(0 1 2))
 
-                     ;; At this points, there are no open files left, so the
+                     ;; At this point, there are no open files left, so the
                      ;; root file system can be re-mounted read-only.
-                     (not (zero?
-                           (system* (string-append #$util-linux "/bin/mount")
-                                    "-n" "-o" "remount,ro"
-                                    "-t" "dummy" "dummy" "/"))))))))
+                     (mount #f "/" #f
+                            (logior MS_REMOUNT MS_RDONLY)
+                            #:update-mtab? #f)
+
+                     #f)))))
       (respawn? #f)))))
 
 (define* (user-processes-service #:key (grace-delay 2))

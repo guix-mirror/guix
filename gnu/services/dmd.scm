@@ -32,27 +32,39 @@
 
 (define (dmd-configuration-file services)
   "Return the dmd configuration file for SERVICES."
-  (define config
-    #~(begin
-        (use-modules (ice-9 ftw))
+  (define modules
+    ;; Extra modules visible to dmd.conf.
+    '((guix build syscalls)))
 
-        (register-services
-         #$@(map (lambda (service)
-                   #~(make <service>
-                       #:docstring '#$(service-documentation service)
-                       #:provides '#$(service-provision service)
-                       #:requires '#$(service-requirement service)
-                       #:respawn? '#$(service-respawn? service)
-                       #:start #$(service-start service)
-                       #:stop #$(service-stop service)))
-                 services))
+  (mlet %store-monad ((modules  (imported-modules modules))
+                      (compiled (compiled-modules modules)))
+    (define config
+      #~(begin
+          (eval-when (expand load eval)
+            (set! %load-path (cons #$modules %load-path))
+            (set! %load-compiled-path
+                  (cons #$compiled %load-compiled-path)))
 
-        ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
-        (setenv "PATH" "/run/current-system/bin")
+          (use-modules (ice-9 ftw)
+                       (guix build syscalls))
 
-        (format #t "starting services...~%")
-        (for-each start '#$(append-map service-provision services))))
+          (register-services
+           #$@(map (lambda (service)
+                     #~(make <service>
+                         #:docstring '#$(service-documentation service)
+                         #:provides '#$(service-provision service)
+                         #:requires '#$(service-requirement service)
+                         #:respawn? '#$(service-respawn? service)
+                         #:start #$(service-start service)
+                         #:stop #$(service-stop service)))
+                   services))
 
-  (gexp->file "dmd.conf" config))
+          ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
+          (setenv "PATH" "/run/current-system/bin")
+
+          (format #t "starting services...~%")
+          (for-each start '#$(append-map service-provision services))))
+
+    (gexp->file "dmd.conf" config)))
 
 ;;; dmd.scm ends here
