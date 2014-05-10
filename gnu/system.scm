@@ -184,15 +184,35 @@ file."
 
   (gexp->derivation name builder))
 
+(define (other-file-system-services os)
+  "Return file system services for the file systems of OS that are not marked
+as 'needed-for-boot'."
+  (define file-systems
+    (remove (lambda (fs)
+              (or (file-system-needed-for-boot? fs)
+                  (string=? "/" (file-system-mount-point fs))))
+            (operating-system-file-systems os)))
+
+  (sequence %store-monad
+            (map (match-lambda
+                  (($ <file-system> device target type flags opts #f check?)
+                   (file-system-service device target type
+                                        #:check? check?
+                                        #:options opts)))
+                 file-systems)))
+
 (define (essential-services os)
   "Return the list of essential services for OS.  These are special services
 that implement part of what's declared in OS are responsible for low-level
 bookkeeping."
-  (mlet %store-monad ((procs     (user-processes-service))
-                      (root-fs   (root-file-system-service))
-                      (host-name (host-name-service
-                                  (operating-system-host-name os))))
-    (return (list host-name procs root-fs))))
+  (mlet* %store-monad ((root-fs   (root-file-system-service))
+                       (other-fs  (other-file-system-services os))
+                       (procs     (user-processes-service
+                                   (map (compose first service-provision)
+                                        other-fs)))
+                       (host-name (host-name-service
+                                   (operating-system-host-name os))))
+    (return (cons* host-name procs root-fs other-fs))))
 
 (define (operating-system-services os)
   "Return all the services of OS, including \"internal\" services that do not

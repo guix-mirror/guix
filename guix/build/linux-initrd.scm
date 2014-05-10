@@ -30,6 +30,7 @@
             linux-command-line
             make-essential-device-nodes
             configure-qemu-networking
+            check-file-system
             mount-file-system
             bind-mount
             load-linux-module*

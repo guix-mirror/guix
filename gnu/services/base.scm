@@ -30,6 +30,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 format)
   #:export (root-file-system-service
+            file-system-service
             user-processes-service
             host-name-service
             mingetty-service
@@ -87,11 +88,36 @@ This service must be the root of the service dependency graph so that its
                      #f)))))
       (respawn? #f)))))
 
-(define* (user-processes-service #:key (grace-delay 2))
+(define* (file-system-service device target type
+                              #:key (check? #t) options)
+  "Return a service that mounts DEVICE on TARGET as a file system TYPE with
+OPTIONS.  When CHECK? is true, check the file system before mounting it."
+  (with-monad %store-monad
+    (return
+     (service
+      (provision (list (symbol-append 'file-system- (string->symbol target))))
+      (requirement '(root-file-system))
+      (documentation "Check, mount, and unmount the given file system.")
+      (start #~(lambda args
+                 #$(if check?
+                       #~(check-file-system #$device #$type)
+                       #~#t)
+                 (mount #$device #$target #$type 0 #$options)
+                 #t))
+      (stop #~(lambda args
+                ;; Normally there are no processes left at this point, so
+                ;; TARGET can be safely unmounted.
+                (umount #$target)
+                #f))))))
+
+(define* (user-processes-service requirements #:key (grace-delay 2))
   "Return the service that is responsible for terminating all the processes so
 that the root file system can be re-mounted read-only, just before
 rebooting/halting.  Processes still running GRACE-DELAY seconds after SIGTERM
 has been sent are terminated with SIGKILL.
+
+The returned service will depend on 'root-file-system' and on all the services
+listed in REQUIREMENTS.
 
 All the services that spawn processes must depend on this one so that they are
 stopped before 'kill' is called."
@@ -99,7 +125,7 @@ stopped before 'kill' is called."
     (return (service
              (documentation "When stopped, terminate all user processes.")
              (provision '(user-processes))
-             (requirement '(root-file-system))
+             (requirement (cons 'root-file-system requirements))
              (start #~(const #t))
              (stop #~(lambda _
                        ;; When this happens, all the processes have been

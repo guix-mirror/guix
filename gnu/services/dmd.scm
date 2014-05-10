@@ -34,7 +34,9 @@
   "Return the dmd configuration file for SERVICES."
   (define modules
     ;; Extra modules visible to dmd.conf.
-    '((guix build syscalls)))
+    '((guix build syscalls)
+      (guix build linux-initrd)
+      (guix build utils)))
 
   (mlet %store-monad ((modules  (imported-modules modules))
                       (compiled (compiled-modules modules)))
@@ -46,7 +48,9 @@
                   (cons #$compiled %load-compiled-path)))
 
           (use-modules (ice-9 ftw)
-                       (guix build syscalls))
+                       (guix build syscalls)
+                       ((guix build linux-initrd)
+                        #:select (check-file-system)))
 
           (register-services
            #$@(map (lambda (service)
