@@ -71,6 +71,7 @@ MODULES =					\
   guix/build/svn.scm				\
   guix/build/vm.scm				\
   guix/build/activation.scm			\
+  guix/build/syscalls.scm			\
   guix/packages.scm				\
   guix/snix.scm					\
   guix/scripts/download.scm			\
@@ -143,7 +144,8 @@ SCM_TESTS =					\
   tests/gexp.scm				\
   tests/nar.scm					\
   tests/union.scm				\
-  tests/profiles.scm
+  tests/profiles.scm				\
+  tests/syscalls.scm
 
 SH_TESTS =					\
   tests/guix-build.sh				\
