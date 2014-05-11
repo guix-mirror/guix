@@ -45,7 +45,8 @@
  (locale "en_US.UTF-8")
  (users (list (user-account
                (name "guest")
-               (uid 1000) (gid 100)
+               (group "wheel")
+               (password "")
                (comment "Guest of GNU")
                (home-directory "/home/guest"))))
  (groups (list (user-group (name "root") (id 0))

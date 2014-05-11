@@ -30,9 +30,10 @@
   #:export (user-account
             user-account?
             user-account-name
-            user-account-pass
+            user-account-password
             user-account-uid
-            user-account-gid
+            user-account-group
+            user-account-supplementary-groups
             user-account-comment
             user-account-home-directory
             user-account-shell
@@ -42,11 +43,7 @@
             user-group-name
             user-group-password
             user-group-id
-            user-group-members
-
-            passwd-file
-            group-file
-            guix-build-accounts))
+            user-group-members))
 
 ;;; Commentary:
 ;;;
@@ -58,9 +55,11 @@
   user-account make-user-account
   user-account?
   (name           user-account-name)
-  (password       user-account-pass (default ""))
-  (uid            user-account-uid)
-  (gid            user-account-gid)
+  (password       user-account-password (default #f))
+  (uid            user-account-uid (default #f))
+  (group          user-account-group)             ; number | string
+  (supplementary-groups user-account-supplementary-groups
+                        (default '()))            ; list of strings
   (comment        user-account-comment (default ""))
   (home-directory user-account-home-directory)
   (shell          user-account-shell              ; gexp
@@ -71,47 +70,7 @@
   user-group?
   (name           user-group-name)
   (password       user-group-password (default #f))
-  (id             user-group-id)
+  (id             user-group-id (default #f))
   (members        user-group-members (default '())))
-
-(define (group-file groups)
-  "Return a /etc/group file for GROUPS, a list of <user-group> objects."
-  (define contents
-    (let loop ((groups groups)
-               (result '()))
-      (match groups
-        ((($ <user-group> name _ gid (users ...)) rest ...)
-         ;; XXX: Ignore the group password.
-         (loop rest
-               (cons (string-append name "::" (number->string gid)
-                                    ":" (string-join users ","))
-                     result)))
-        (()
-         (string-join (reverse result) "\n" 'suffix)))))
-
-  (text-file "group" contents))
-
-(define* (passwd-file accounts #:key shadow?)
-  "Return a password file for ACCOUNTS, a list of <user-account> objects.  If
-SHADOW? is true, then it is a /etc/shadow file, otherwise it is a /etc/passwd
-file."
-  ;; XXX: The resulting file is world-readable, so beware when SHADOW? is #t!
-  (define account-exp
-    (match-lambda
-     (($ <user-account> name pass uid gid comment home-dir shell)
-      (if shadow?                                 ; XXX: use (crypt PASS …)?
-          #~(format #t "~a::::::::~%" #$name)
-          #~(format #t "~a:x:~a:~a:~a:~a:~a~%"
-                    #$name #$(number->string uid) #$(number->string gid)
-                    #$comment #$home-dir #$shell)))))
-
-  (define builder
-    #~(begin
-        (with-output-to-file #$output
-          (lambda ()
-            #$@(map account-exp accounts)
-            #t))))
-
-  (gexp->derivation (if shadow? "shadow" "passwd") builder))
 
 ;;; shadow.scm ends here

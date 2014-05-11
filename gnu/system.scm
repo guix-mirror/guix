@@ -224,17 +224,12 @@ explicitly appear in OS."
 
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
-                        (accounts '())
-                        (groups '())
                         (pam-services '())
                         (profile "/var/run/current-system/profile")
                         (sudoers ""))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
-      ((passwd     (passwd-file accounts))
-       (shadow     (passwd-file accounts #:shadow? #t))
-       (group      (group-file groups))
-       (pam.d      (pam-services->directory pam-services))
+      ((pam.d      (pam-services->directory pam-services))
        (sudoers    (text-file "sudoers" sudoers))
        (login.defs (text-file "login.defs" "# Empty for now.\n"))
        (shells     (text-file "shells"            ; used by xterm and others
@@ -278,10 +273,6 @@ alias ll='ls -l'
                   ("profile" ,#~#$bashrc)
                   ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
                                                  #$timezone))
-                  ("passwd" ,#~#$passwd)
-                  ("shadow" ,#~#$shadow)
-                  ("group" ,#~#$group)
-
                   ("sudoers" ,#~#$sudoers)))))
 
 (define (operating-system-profile os)
@@ -290,18 +281,28 @@ alias ll='ls -l'
   (union (operating-system-packages os)
          #:name "default-profile"))
 
+(define %root-account
+  ;; Default root account.
+  (user-account
+   (name "root")
+   (password "")
+   (uid 0) (group "root")
+   (comment "System administrator")
+   (home-directory "/root")))
+
 (define (operating-system-accounts os)
   "Return the user accounts for OS, including an obligatory 'root' account."
+  (define users
+    ;; Make sure there's a root account.
+    (if (find (lambda (user)
+                (and=> (user-account-uid user) zero?))
+              (operating-system-users os))
+        (operating-system-users os)
+        (cons %root-account (operating-system-users os))))
+
   (mlet %store-monad ((services (operating-system-services os)))
-    (return (cons (user-account
-                   (name "root")
-                   (password "")
-                   (uid 0) (gid 0)
-                   (comment "System administrator")
-                   (home-directory "/root"))
-                  (append (operating-system-users os)
-                          (append-map service-user-accounts
-                                      services))))))
+    (return (append users
+                    (append-map service-user-accounts services)))))
 
 (define (operating-system-etc-directory os)
   "Return that static part of the /etc directory of OS."
@@ -312,12 +313,8 @@ alias ll='ls -l'
                      (delete-duplicates
                       (append (operating-system-pam-services os)
                               (append-map service-pam-services services))))
-       (accounts    (operating-system-accounts os))
-       (profile-drv (operating-system-profile os))
-       (groups   -> (append (operating-system-groups os)
-                            (append-map service-user-groups services))))
-   (etc-directory #:accounts accounts #:groups groups
-                  #:pam-services pam-services
+       (profile-drv (operating-system-profile os)))
+   (etc-directory #:pam-services pam-services
                   #:locale (operating-system-locale os)
                   #:timezone (operating-system-timezone os)
                   #:sudoers (operating-system-sudoers os)
@@ -339,6 +336,25 @@ alias ll='ls -l'
   "root ALL=(ALL) ALL
 %wheel ALL=(ALL) ALL\n")
 
+(define (user-group->gexp group)
+  "Turn GROUP, a <user-group> object, into a list-valued gexp suitable for
+'active-groups'."
+  #~(list #$(user-group-name group)
+          #$(user-group-password group)
+          #$(user-group-id group)))
+
+(define (user-account->gexp account)
+  "Turn ACCOUNT, a <user-account> object, into a list-valued gexp suitable for
+'activate-users'."
+  #~`(#$(user-account-name account)
+      #$(user-account-uid account)
+      #$(user-account-group account)
+      #$(user-account-supplementary-groups account)
+      #$(user-account-comment account)
+      #$(user-account-home-directory account)
+      ,#$(user-account-shell account)             ; this one is a gexp
+      #$(user-account-password account)))
+
 (define (operating-system-boot-script os)
   "Return the boot script for OS---i.e., the code started by the initrd once
 we're running in the final root."
@@ -346,14 +362,24 @@ we're running in the final root."
     '((guix build activation)
       (guix build utils)))
 
-  (mlet* %store-monad
-      ((services (operating-system-services os))
-       (etc      (operating-system-etc-directory os))
-       (modules  (imported-modules %modules))
-       (compiled (compiled-modules %modules))
-       (dmd-conf (dmd-configuration-file services)))
+  (mlet* %store-monad ((services (operating-system-services os))
+                       (etc      (operating-system-etc-directory os))
+                       (modules  (imported-modules %modules))
+                       (compiled (compiled-modules %modules))
+                       (dmd-conf (dmd-configuration-file services))
+                       (accounts (operating-system-accounts os)))
     (define setuid-progs
       (operating-system-setuid-programs os))
+
+    (define user-specs
+      (map user-account->gexp accounts))
+
+    (define groups
+      (append (operating-system-groups os)
+              (append-map service-user-groups services)))
+
+    (define group-specs
+      (map user-group->gexp groups))
 
     (gexp->file "boot"
                 #~(begin
@@ -367,6 +393,13 @@ we're running in the final root."
 
                     ;; Populate /etc.
                     (activate-etc #$etc)
+
+                    ;; Add users and user groups.
+                    (setenv "PATH"
+                            (string-append #$(@ (gnu packages admin) shadow)
+                                           "/sbin"))
+                    (activate-users+groups (list #$@user-specs)
+                                           (list #$@group-specs))
 
                     ;; Activate setuid programs.
                     (activate-setuid-programs (list #$@setuid-progs))

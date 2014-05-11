@@ -154,11 +154,13 @@ should be the name of a file used as the message-of-the-day."
 
 (define* (base-pam-services #:key allow-empty-passwords?)
   "Return the list of basic PAM services everyone would want."
-  (list %pam-other-services
-        (unix-pam-service "su" #:allow-empty-passwords? allow-empty-passwords?)
-        (unix-pam-service "passwd"
-                          #:allow-empty-passwords? allow-empty-passwords?)
-        (unix-pam-service "sudo"
-                          #:allow-empty-passwords? allow-empty-passwords?)))
+  (cons %pam-other-services
+        (map (cut unix-pam-service <>
+                  #:allow-empty-passwords? allow-empty-passwords?)
+             '("su" "passwd" "sudo"
+               "useradd" "userdel" "usermod"
+               "groupadd" "groupdel" "groupmod"
+               ;; TODO: Add other Shadow programs?
+               ))))
 
 ;;; linux.scm ends here

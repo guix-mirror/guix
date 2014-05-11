@@ -267,16 +267,6 @@ such as /etc files."
 (define (operating-system-default-contents os)
   "Return a list of directives suitable for 'system-qemu-image' describing the
 basic contents of the root file system of OS."
-  (define (user-directories user)
-    (let ((home (user-account-home-directory user))
-          ;; XXX: Deal with automatically allocated ids.
-          (uid  (or (user-account-uid user) 0))
-          (gid  (or (user-account-gid user) 0))
-          (root (string-append "/var/guix/profiles/per-user/"
-                               (user-account-name user))))
-      #~((directory #$root #$uid #$gid)
-         (directory #$home #$uid #$gid))))
-
   (mlet* %store-monad ((os-drv    (operating-system-derivation os))
                        (build-gid (operating-system-build-gid os))
                        (profile   (operating-system-profile os)))
@@ -293,9 +283,8 @@ basic contents of the root file system of OS."
                (directory "/tmp")
                (directory "/var/guix/profiles/per-user/root" 0 0)
 
-               (directory "/root" 0 0)             ; an exception
-               #$@(append-map user-directories
-                              (operating-system-users os))))))
+               (directory "/root" 0 0)            ; an exception
+               (directory "/home" 0 0)))))
 
 (define* (system-qemu-image os
                             #:key

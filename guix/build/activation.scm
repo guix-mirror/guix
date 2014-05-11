@@ -19,8 +19,11 @@
 (define-module (guix build activation)
   #:use-module (guix build utils)
   #:use-module (ice-9 ftw)
+  #:use-module (ice-9 match)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
-  #:export (activate-etc
+  #:export (activate-users+groups
+            activate-etc
             activate-setuid-programs))
 
 ;;; Commentary:
@@ -30,6 +33,98 @@
 ;;; 'operating-system' configuration becomes active.
 ;;;
 ;;; Code:
+
+(define* (add-group name #:key gid password
+                    (log-port (current-error-port)))
+  "Add NAME as a user group, with the given numeric GID if specified."
+  ;; Use 'groupadd' from the Shadow package.
+  (format log-port "adding group '~a'...~%" name)
+  (let ((args `(,@(if gid `("-g" ,(number->string gid)) '())
+                ,@(if password `("-p" ,password) '())
+                ,name)))
+    (zero? (apply system* "groupadd" args))))
+
+(define* (add-user name group
+                   #:key uid comment home shell password
+                   (supplementary-groups '())
+                   (log-port (current-error-port)))
+  "Create an account for user NAME part of GROUP, with the specified
+properties.  Return #t on success."
+  (format log-port "adding user '~a'...~%" name)
+
+  (if (and uid (zero? uid))
+
+      ;; 'useradd' fails with "Cannot determine your user name" if the root
+      ;; account doesn't exist.  Thus, for bootstrapping purposes, create that
+      ;; one manually.
+      (begin
+        (call-with-output-file "/etc/shadow"
+          (cut format <> "~a::::::::~%" name))
+        (call-with-output-file "/etc/passwd"
+          (cut format <> "~a:x:~a:~a:~a:~a:~a~%"
+               name "0" "0" comment home shell))
+        (chmod "/etc/shadow" #o600)
+        #t)
+
+      ;; Use 'useradd' from the Shadow package.
+      (let ((args `(,@(if uid `("-u" ,(number->string uid)) '())
+                    "-g" ,(if (number? group) (number->string group) group)
+                    ,@(if (pair? supplementary-groups)
+                          `("-G" ,(string-join supplementary-groups ","))
+                          '())
+                    ,@(if comment `("-c" ,comment) '())
+                    ,@(if home `("-d" ,home "--create-home") '())
+                    ,@(if shell `("-s" ,shell) '())
+                    ,@(if password `("-p" ,password) '())
+                    ,name)))
+        (zero? (apply system* "useradd" args)))))
+
+(define (activate-users+groups users groups)
+  "Make sure the accounts listed in USERS and the user groups listed in GROUPS
+are all available.
+
+Each item in USERS is a list of all the characteristics of a user account;
+each item in GROUPS is a tuple with the group name, group password or #f, and
+numeric gid or #f."
+  (define (touch file)
+    (call-with-output-file file (const #t)))
+
+  (define activate-user
+    (match-lambda
+     ((name uid group supplementary-groups comment home shell password)
+      (unless (false-if-exception (getpwnam name))
+        (let ((profile-dir (string-append "/var/guix/profiles/per-user/"
+                                          name)))
+          (add-user name group
+                    #:uid uid
+                    #:supplementary-groups supplementary-groups
+                    #:comment comment
+                    #:home home
+                    #:shell shell
+                    #:password password)
+
+          ;; Create the profile directory for the new account.
+          (let ((pw (getpwnam name)))
+            (mkdir-p profile-dir)
+            (chown profile-dir (passwd:uid pw) (passwd:gid pw))))))))
+
+  ;; 'groupadd' aborts if the file doesn't already exist.
+  (touch "/etc/group")
+
+  ;; Create the root account so we can use 'useradd' and 'groupadd'.
+  (activate-user (find (match-lambda
+                        ((name (? zero?) _ ...) #t)
+                        (_ #f))
+                       users))
+
+  ;; Then create the groups.
+  (for-each (match-lambda
+             ((name password gid)
+              (add-group name #:gid gid #:password password)))
+            groups)
+
+  ;; Finally create the other user accounts.
+  (for-each activate-user users))
 
 (define (activate-etc etc)
   "Install ETC, a directory in the store, as the source of static files for

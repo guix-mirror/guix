@@ -237,8 +237,8 @@ stopped before 'kill' is called."
       (stop #~(make-kill-destructor))))))
 
 (define* (guix-build-accounts count #:key
+                              (group "guixbuild")
                               (first-uid 30001)
-                              (gid 30000)
                               (shadow shadow))
   "Return a list of COUNT user accounts for Guix build users, with UIDs
 starting at FIRST-UID, and under GID."
@@ -247,9 +247,8 @@ starting at FIRST-UID, and under GID."
                     (lambda (n)
                       (user-account
                        (name (format #f "guixbuilder~2,'0d" n))
-                       (password "!")
                        (uid (+ first-uid n -1))
-                       (gid gid)
+                       (group group)
                        (comment (format #f "Guix Build User ~2d" n))
                        (home-directory "/var/empty")
                        (shell #~(string-append #$shadow "/sbin/nologin"))))
@@ -257,11 +256,11 @@ starting at FIRST-UID, and under GID."
                     1))))
 
 (define* (guix-service #:key (guix guix) (builder-group "guixbuild")
-                       (build-user-gid 30000) (build-accounts 10))
+                       (build-accounts 10))
   "Return a service that runs the build daemon from GUIX, and has
 BUILD-ACCOUNTS user accounts available under BUILD-USER-GID."
   (mlet %store-monad ((accounts (guix-build-accounts build-accounts
-                                                     #:gid build-user-gid)))
+                                                     #:group builder-group)))
     (return (service
              (provision '(guix-daemon))
              (requirement '(user-processes))
@@ -274,7 +273,6 @@ BUILD-ACCOUNTS user accounts available under BUILD-USER-GID."
              (user-accounts accounts)
              (user-groups (list (user-group
                                  (name builder-group)
-                                 (id build-user-gid)
                                  (members (map user-account-name
                                                user-accounts)))))))))
 
