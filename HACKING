@@ -159,7 +159,8 @@ patches include fixing typos, etc.)
 For patches that just add a new package, and a simple one, it’s OK to commit,
 if you’re confident (which means you successfully built it in a chroot setup,
 and have done a reasonable copyright and license auditing.)  Likewise for
-package upgrades.  We have a mailing list for commit notifications
+package upgrades, except upgrades that trigger a lot of rebuilds (for example,
+upgrading GnuTLS or GLib.)  We have a mailing list for commit notifications
 (guix-commits@gnu.org), so people can notice.  Before pushing your changes,
 make sure to run ‘git pull --rebase’.
 
