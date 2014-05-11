@@ -147,7 +147,7 @@ authfile /var/run/slim.auth
 
 # The login command.  '%session' is replaced by the chosen session name, one
 # of the names specified in the 'sessions' setting: 'wmaker', 'xfce', etc.
-login_cmd  exec " xinitrc "%session
+login_cmd  exec " xinitrc " %session
 sessions   wmaker,ratpoison
 
 halt_cmd " dmd "/sbin/halt
