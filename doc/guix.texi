@@ -11,7 +11,7 @@
 
 @copying
 Copyright @copyright{} 2012, 2013, 2014 Ludovic Courtès@*
-Copyright @copyright{} 2013 Andreas Enge@*
+Copyright @copyright{} 2013, 2014 Andreas Enge@*
 Copyright @copyright{} 2013 Nikita Karetnikov
 
 Permission is granted to copy, distribute and/or modify this document
@@ -2751,6 +2751,7 @@ needed is to review and apply the patch.
 * Package Naming::       What's in a name?
 * Version Numbers::      When the name is not enough.
 * Python Modules::       Taming the snake.
+* Perl Modules::         Little pearls.
 @end menu
 
 @node Software Freedom
@@ -2796,8 +2797,8 @@ Both are usually the same and correspond to the lowercase conversion of the
 project name chosen upstream.  For instance, the GNUnet project is packaged
 as @code{gnunet}.  We do not add @code{lib} prefixes for library packages,
 unless these are already part of the official project name.  But see
-@ref{Python Modules} for special rules concerning modules for
-the Python language.
+@pxref{Python Modules} and @ref{Perl Modules} for special rules concerning
+modules for the Python and Perl languages.
 
 
 @node Version Numbers
@@ -2859,6 +2860,19 @@ for instance, the module python-dateutil is packaged under the names
 @code{python-dateutil} and @code{python2-dateutil}.
 
 
+@node Perl Modules
+@subsection Perl Modules
+
+Perl programs standing for themselves are named as any other package,
+using the lowercase upstream name.
+For Perl packages containing a single class, we use the lowercase class name,
+replace all occurrences of @code{::} by dashes and prepend the prefix
+@code{perl-}.
+So the class @code{XML::Parser} becomes @code{perl-xml-parser}.
+Modules containing several classes keep their lowercase upstream name and
+are also prepended by @code{perl-}.  Such modules tend to have the word
+@code{perl} somewhere in their name, which gets dropped in favor of the
+prefix.  For instance, @code{libwww-perl} becomes @code{perl-libwww}.
 
 
 
