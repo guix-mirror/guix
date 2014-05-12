@@ -51,16 +51,16 @@
      ;; Enable libpci support, which effectively makes hwloc GPLv2+.
      '(#:configure-flags '("--enable-libpci")))
     (inputs
-     `(("numactl" ,numactl)
-       ("libx11" ,libx11)
+     `(("libx11" ,libx11)
        ("cairo" ,cairo)
        ("ncurses" ,ncurses)
        ("expat" ,expat)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (propagated-inputs
-     ;; 'hwloc.pc' refers to libpci, hence the propagation.
-     `(("pciutils" ,pciutils)))
+     ;; 'hwloc.pc' refers to libpci and libnuma, hence the propagation.
+     `(("numactl" ,numactl)
+       ("pciutils" ,pciutils)))
     (home-page "http://www.open-mpi.org/projects/hwloc/")
     (synopsis "Abstraction of hardware architectures")
     (description
@@ -94,11 +94,14 @@ bind processes, and much more.")
        (base32
         "13z1q69f3qwmmhpglarfjminfy2yw4rfqr9jydjk5507q3mjf50p"))))
     (build-system gnu-build-system)
-    ;; TODO: Use our hwloc instead of the bundled one.
+    (inputs
+     `(("hwloc" ,hwloc)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (propagated-inputs
      `(("gfortran" ,gfortran-4.8)))
     (arguments
-     `(#:configure-flags '("--enable-static"
+     `(#:configure-flags `("--enable-static"
                            "--enable-oshmem"
                            ;; Thread support causes some applications to hang
                            ;; "--enable-event-thread-support"
@@ -106,7 +109,9 @@ bind processes, and much more.")
                            ;; "--enable-orte-progress-threads"
                            ;; "--enable-mpi-thread-multiple"
                            "--enable-mpi-ext=all"
-                           "--with-devel-headers")))
+                           "--with-devel-headers"
+                           ,(string-append "--with-hwloc="
+                                           (assoc-ref %build-inputs "hwloc")))))
     (home-page "http://www.open-mpi.org")
     (synopsis "MPI-2 implementation")
     (description
