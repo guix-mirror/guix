@@ -26,6 +26,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages guile-wm)
   #:use-module (gnu packages package-management)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
@@ -97,6 +98,9 @@
           (default (list (user-group
                           (name "root")
                           (id 0)))))
+
+  (skeletons operating-system-skeletons           ; list of name/monadic value
+             (default (default-skeletons)))
 
   (packages operating-system-packages             ; list of (PACKAGE OUTPUT...)
             (default (list coreutils              ; or just PACKAGE
@@ -184,6 +188,11 @@ file."
 
   (gexp->derivation name builder))
 
+
+;;;
+;;; Services.
+;;;
+
 (define (other-file-system-services os)
   "Return file system services for the file systems of OS that are not marked
 as 'needed-for-boot'."
@@ -222,8 +231,54 @@ explicitly appear in OS."
        (essential (essential-services os)))
     (return (append essential user))))
 
+
+;;;
+;;; /etc.
+;;;
+
+(define (default-skeletons)
+  "Return the default skeleton files for /etc/skel.  These files are copied by
+'useradd' in the home directory of newly created user accounts."
+  (define copy-guile-wm
+    #~(begin
+        (use-modules (guix build utils))
+        (copy-file (car (find-files #$guile-wm "wm-init-sample.scm"))
+                   #$output)))
+
+  (mlet %store-monad ((bashrc (text-file "bashrc" "\
+# Allow non-login shells such as an xterm to get things right.
+test -f /etc/profile && source /etc/profile\n"))
+                      (guile-wm (gexp->derivation "guile-wm" copy-guile-wm
+                                                  #:modules
+                                                  '((guix build utils))))
+                      (xdefaults (text-file "Xdefaults" "\
+XTerm*utf8: always
+XTerm*metaSendsEscape: true\n")))
+    (return `((".bashrc" ,bashrc)
+              (".Xdefaults" ,xdefaults)
+              (".guile-wm" ,guile-wm)))))
+
+(define (skeleton-directory skeletons)
+  "Return a directory containing SKELETONS, a list of name/derivation pairs."
+  (gexp->derivation "skel"
+                    #~(begin
+                        (use-modules (ice-9 match))
+
+                        (mkdir #$output)
+                        (chdir #$output)
+
+                        ;; Note: copy the skeletons instead of symlinking
+                        ;; them like 'file-union' does, because 'useradd'
+                        ;; would just copy the symlinks as is.
+                        (for-each (match-lambda
+                                   ((target source)
+                                    (copy-file source target)))
+                                  '#$skeletons)
+                        #t)))
+
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
+                        (skeletons '())
                         (pam-services '())
                         (profile "/var/run/current-system/profile")
                         (sudoers ""))
@@ -261,7 +316,8 @@ export CPATH=$HOME/.guix-profile/include:" profile "/include
 export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
 alias ls='ls -p --color'
 alias ll='ls -l'
-")))
+"))
+       (skel      (skeleton-directory skeletons)))
     (file-union "etc"
                 `(("services" ,#~(string-append #$net-base "/etc/services"))
                   ("protocols" ,#~(string-append #$net-base "/etc/protocols"))
@@ -269,6 +325,7 @@ alias ll='ls -l'
                   ("pam.d" ,#~#$pam.d)
                   ("login.defs" ,#~#$login.defs)
                   ("issue" ,#~#$issue)
+                  ("skel" ,#~#$skel)
                   ("shells" ,#~#$shells)
                   ("profile" ,#~#$bashrc)
                   ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
@@ -313,8 +370,10 @@ alias ll='ls -l'
                      (delete-duplicates
                       (append (operating-system-pam-services os)
                               (append-map service-pam-services services))))
-       (profile-drv (operating-system-profile os)))
+       (profile-drv (operating-system-profile os))
+       (skeletons   (operating-system-skeletons os)))
    (etc-directory #:pam-services pam-services
+                  #:skeletons skeletons
                   #:locale (operating-system-locale os)
                   #:timezone (operating-system-timezone os)
                   #:sudoers (operating-system-sudoers os)
