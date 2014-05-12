@@ -325,6 +325,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/patchelf-page-size.patch			\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
+  gnu/packages/patches/perl-tk-x11-discover.patch		\
   gnu/packages/patches/petsc-fix-threadcomm.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\

@@ -1,0 +1,14 @@
+On non-x86_64 systems, this conditional can cause a specified X11 build value
+to be overwritten to null, causing x11 discovery to fail.
+
+--- a/myConfig	2014-05-12 11:16:48.152719722 -0500
++++ b/myConfig	2014-05-12 11:16:24.704719113 -0500
+@@ -350,7 +350,7 @@
+   #
+   # Prefer 64bit libraries on certain architectures
+   #
+-  unless (defined $xlib and $Config{'archname'} =~ m/x86_64/)
++  unless (defined $xlib or not $Config{'archname'} =~ m/x86_64/)
+     {
+       $xlib64 = &lX11(0, chooseX11(</usr/X11*/lib64>));
+     }
