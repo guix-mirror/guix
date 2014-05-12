@@ -85,6 +85,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gettext.scm			\
   gnu/packages/ghostscript.scm			\
   gnu/packages/giflib.scm			\
+  gnu/packages/gimp.scm				\
   gnu/packages/gkrellm.scm			\
   gnu/packages/gl.scm				\
   gnu/packages/glib.scm				\
