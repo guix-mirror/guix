@@ -828,6 +828,17 @@ name: libgc
 version: 7.2alpha6
 @end example
 
+Similarly, to show the name of all the packages available under the
+terms of the GNU@tie{}LGPL version 3:
+
+@example
+$ guix package -s "" | recsel -p name -e 'license ~ "LGPL 3"'
+name: elfutils
+
+name: gmp
+@dots{}
+@end example
+
 @item --list-installed[=@var{regexp}]
 @itemx -I [@var{regexp}]
 List the currently installed packages in the specified profile, with the
