@@ -253,10 +253,14 @@ test -f /etc/profile && source /etc/profile\n"))
                                                   '((guix build utils))))
                       (xdefaults (text-file "Xdefaults" "\
 XTerm*utf8: always
-XTerm*metaSendsEscape: true\n")))
+XTerm*metaSendsEscape: true\n"))
+                      (gdbinit   (text-file "gdbinit" "\
+# Tell GDB where to look for separate debugging files.
+set debug-file-directory ~/.guix-profile/lib/debug\n")))
     (return `((".bashrc" ,bashrc)
               (".Xdefaults" ,xdefaults)
-              (".guile-wm" ,guile-wm)))))
+              (".guile-wm" ,guile-wm)
+              (".gdbinit" ,gdbinit)))))
 
 (define (skeleton-directory skeletons)
   "Return a directory containing SKELETONS, a list of name/derivation pairs."
