@@ -365,6 +365,7 @@ exec " #$qemu "/bin/qemu-system-x86_64 -enable-kvm -no-reboot -net nic,model=vir
   -initrd " #$os-drv "/initrd \
 -append \"" #$(if graphic? "" "console=ttyS0 ")
   "--load=" #$os-drv "/boot --root=/dev/vda1\" \
+  -serial stdio \
   -drive file=" #$image
   ",if=virtio,cache=writeback,werror=report,readonly\n")
              port)
