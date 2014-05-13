@@ -26,7 +26,6 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages admin)
-  #:use-module (gnu packages guile-wm)
   #:use-module (gnu packages package-management)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
@@ -235,50 +234,6 @@ explicitly appear in OS."
 ;;;
 ;;; /etc.
 ;;;
-
-(define (default-skeletons)
-  "Return the default skeleton files for /etc/skel.  These files are copied by
-'useradd' in the home directory of newly created user accounts."
-  (define copy-guile-wm
-    #~(begin
-        (use-modules (guix build utils))
-        (copy-file (car (find-files #$guile-wm "wm-init-sample.scm"))
-                   #$output)))
-
-  (mlet %store-monad ((bashrc (text-file "bashrc" "\
-# Allow non-login shells such as an xterm to get things right.
-test -f /etc/profile && source /etc/profile\n"))
-                      (guile-wm (gexp->derivation "guile-wm" copy-guile-wm
-                                                  #:modules
-                                                  '((guix build utils))))
-                      (xdefaults (text-file "Xdefaults" "\
-XTerm*utf8: always
-XTerm*metaSendsEscape: true\n"))
-                      (gdbinit   (text-file "gdbinit" "\
-# Tell GDB where to look for separate debugging files.
-set debug-file-directory ~/.guix-profile/lib/debug\n")))
-    (return `((".bashrc" ,bashrc)
-              (".Xdefaults" ,xdefaults)
-              (".guile-wm" ,guile-wm)
-              (".gdbinit" ,gdbinit)))))
-
-(define (skeleton-directory skeletons)
-  "Return a directory containing SKELETONS, a list of name/derivation pairs."
-  (gexp->derivation "skel"
-                    #~(begin
-                        (use-modules (ice-9 match))
-
-                        (mkdir #$output)
-                        (chdir #$output)
-
-                        ;; Note: copy the skeletons instead of symlinking
-                        ;; them like 'file-union' does, because 'useradd'
-                        ;; would just copy the symlinks as is.
-                        (for-each (match-lambda
-                                   ((target source)
-                                    (copy-file source target)))
-                                  '#$skeletons)
-                        #t)))
 
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
