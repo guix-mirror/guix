@@ -2604,6 +2604,7 @@ to join!  @ref{Contributing}, for information about how you can help.
 @node Installing Debugging Files
 @section Installing Debugging Files
 
+@cindex debugging files
 Program binaries, as produced by the GCC compilers for instance, are
 typically written in the ELF format, with a section containing
 @dfn{debugging information}.  Debugging information is what allows the
@@ -2634,7 +2635,7 @@ installs the debugging information for the GNU C Library and for GNU
 Guile:
 
 @example
-guix package -i glibc:debug -i guile:debug
+guix package -i glibc:debug guile:debug
 @end example
 
 GDB must then be told to look for debug files in the user's profile, by
@@ -2649,9 +2650,16 @@ GDB}):
 From there on, GDB will pick up debugging information from the
 @code{.debug} files under @file{~/.guix-profile/lib/debug}.
 
+In addition, you will most likely want GDB to be able to show the source
+code being debugged.  To do that, you will have to unpack the source
+code of the package of interest (obtained with @code{guix build
+--source}, @pxref{Invoking guix build}), and to point GDB to that source
+directory using the @code{directory} command (@pxref{Source Path,
+@code{directory},, gdb, Debugging with GDB}).
+
 @c XXX: keep me up-to-date
 The @code{debug} output mechanism in Guix is implemented by the
-@code{gnu-build-system} (@pxref{Defining Packages}).  Currently, it is
+@code{gnu-build-system} (@pxref{Build Systems}).  Currently, it is
 opt-in---debugging information is available only for those packages
 whose definition explicitly declares a @code{debug} output.  This may be
 changed to opt-out in the future, if our build farm servers can handle
