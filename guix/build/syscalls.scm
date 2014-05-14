@@ -22,13 +22,15 @@
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 rdelim)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 ftw)
   #:export (errno
             MS_RDONLY
             MS_REMOUNT
             MS_BIND
             MS_MOVE
             mount
-            umount))
+            umount
+            processes))
 
 ;;; Commentary:
 ;;;
@@ -152,5 +154,30 @@ constants from <sys/mount.h>."
                  (list err)))
         (when update-mtab?
           (remove-from-mtab target))))))
+
+(define (kernel? pid)
+  "Return #t if PID designates a \"kernel thread\" rather than a normal
+user-land process."
+  (let ((stat (call-with-input-file (format #f "/proc/~a/stat" pid)
+                (compose string-tokenize read-string))))
+    ;; See proc.txt in Linux's documentation for the list of fields.
+    (match stat
+      ((pid tcomm state ppid pgrp sid tty_nr tty_pgrp flags min_flt
+            cmin_flt maj_flt cmaj_flt utime stime cutime cstime
+            priority nice num_thread it_real_value start_time
+            vsize rss rsslim
+            (= string->number start_code) (= string->number end_code) _ ...)
+       ;; Got this obscure trick from sysvinit's 'killall5' program.
+       (and (zero? start_code) (zero? end_code))))))
+
+(define (processes)
+  "Return the list of live processes."
+  (sort (filter-map (lambda (file)
+                      (let ((pid (string->number file)))
+                        (and pid
+                             (not (kernel? pid))
+                             pid)))
+                    (scandir "/proc"))
+        <))
 
 ;;; syscalls.scm ends here
