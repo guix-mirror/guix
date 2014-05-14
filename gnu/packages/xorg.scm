@@ -4735,14 +4735,14 @@ icccm: Both client and window-manager helpers for ICCCM.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "303")
+    (version "304")
     (source (origin
               (method url-fetch)
-              (uri                                ; XXX: constant URL!
-               "http://invisible-island.net/datafiles/release/xterm.tar.gz")
+              (uri (string-append "ftp://ftp.invisible-island.net/xterm/"
+                                  "xterm-" version ".tgz"))
               (sha256
                (base32
-                "0n7hay16aam9kfn642ri0wj5yzilbjm3l8znxc2p5dx9pn3rkwla"))))
+                "19yp5phfzzgydc2yqka4p69ygvfzsd2aa98hbw086xyjlws3kbyk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-256-color"
