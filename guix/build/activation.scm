@@ -73,7 +73,11 @@ properties.  Return #t on success."
                           `("-G" ,(string-join supplementary-groups ","))
                           '())
                     ,@(if comment `("-c" ,comment) '())
-                    ,@(if home `("-d" ,home "--create-home") '())
+                    ,@(if home
+                          (if (file-exists? home)
+                              `("-d" ,home)     ; avoid warning from 'useradd'
+                              `("-d" ,home "--create-home"))
+                          '())
                     ,@(if shell `("-s" ,shell) '())
                     ,@(if password `("-p" ,password) '())
                     ,name)))
