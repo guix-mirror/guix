@@ -43,6 +43,11 @@
  (host-name "gnu")
  (timezone "Europe/Paris")
  (locale "en_US.UTF-8")
+ (file-systems
+  ;; We don't provide a file system for /, but that's OK because the VM build
+  ;; code will automatically declare the / file system for us.
+  (list %fuse-control-file-system
+        %binary-format-file-system))
  (users (list (user-account
                (name "guest")
                (group "wheel")

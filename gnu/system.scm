@@ -64,7 +64,10 @@
             file-system-type
             file-system-needed-for-boot?
             file-system-flags
-            file-system-options))
+            file-system-options
+
+            %fuse-control-file-system
+            %binary-format-file-system))
 
 ;;; Commentary:
 ;;;
@@ -126,6 +129,11 @@
   (sudoers operating-system-sudoers               ; /etc/sudoers contents
            (default %sudoers-specification)))
 
+
+;;;
+;;; File systems.
+;;;
+
 ;; File system declaration.
 (define-record-type* <file-system> file-system
   make-file-system
@@ -141,6 +149,22 @@
                     (default #f))
   (check?           file-system-check?            ; Boolean
                     (default #t)))
+
+(define %fuse-control-file-system
+  ;; Control file system for Linux' file systems in user-space (FUSE).
+  (file-system
+    (device "fusectl")
+    (mount-point "/sys/fs/fuse/connections")
+    (type "fusectl")
+    (check? #f)))
+
+(define %binary-format-file-system
+  ;; Support for arbitrary executable binary format.
+  (file-system
+    (device "binfmt_misc")
+    (mount-point "/proc/sys/fs/binfmt_misc")
+    (type "binfmt_misc")
+    (check? #f)))
 
 
 ;;;
