@@ -292,12 +292,23 @@ basic contents of the root file system of OS."
                             (disk-image-size (* 900 (expt 2 20))))
   "Return the derivation of a freestanding QEMU image of DISK-IMAGE-SIZE bytes
 of the GNU system as described by OS."
+  (define file-systems-to-keep
+    ;; Keep only file systems other than root and not normally bound to real
+    ;; devices.
+    (remove (lambda (fs)
+              (let ((target (file-system-mount-point fs))
+                    (source (file-system-device fs)))
+                (or (string=? target "/")
+                    (string-prefix? "/dev/" source))))
+            (operating-system-file-systems os)))
+
   (let ((os (operating-system (inherit os)
-              ;; The mounted file systems are under our control.
-              (file-systems (list (file-system
+              ;; Force our own root file system.
+              (file-systems (cons (file-system
                                     (mount-point "/")
                                     (device "/dev/sda1")
-                                    (type file-system-type)))))))
+                                    (type file-system-type))
+                                  file-systems-to-keep)))))
     (mlet* %store-monad
         ((os-drv      (operating-system-derivation os))
          (os-dir   -> (derivation->output-path os-drv))
@@ -315,17 +326,27 @@ of the GNU system as described by OS."
 environment with the store shared with the host."
   (operating-system (inherit os)
     (initrd (cut qemu-initrd <> #:volatile-root? #t))
-    (file-systems (list (file-system
-                          (mount-point "/")
-                          (device "/dev/vda1")
-                          (type "ext4"))
-                        (file-system
-                          (mount-point (%store-prefix))
-                          (device "store")
-                          (type "9p")
-                          (needed-for-boot? #t)
-                          (options "trans=virtio")
-                          (check? #f))))))
+    (file-systems (cons* (file-system
+                           (mount-point "/")
+                           (device "/dev/vda1")
+                           (type "ext4"))
+                         (file-system
+                           (mount-point (%store-prefix))
+                           (device "store")
+                           (type "9p")
+                           (needed-for-boot? #t)
+                           (options "trans=virtio")
+                           (check? #f))
+
+                         ;; Remove file systems that conflict with those
+                         ;; above, or that are normally bound to real devices.
+                         (remove (lambda (fs)
+                                   (let ((target (file-system-mount-point fs))
+                                         (source (file-system-device fs)))
+                                     (or (string=? target (%store-prefix))
+                                         (string=? target "/")
+                                         (string-prefix? "/dev/" source))))
+                                 (operating-system-file-systems os))))))
 
 (define* (system-qemu-image/shared-store
           os
