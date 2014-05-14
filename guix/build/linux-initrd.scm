@@ -200,11 +200,30 @@ networking values.)  Return #t if INTERFACE is up, #f otherwise."
 the last argument of `mknod'."
   (+ (* major 256) minor))
 
+(define (pidof program)
+  "Return the PID of the first presumed instance of PROGRAM."
+  (let ((program (basename program)))
+    (find (lambda (pid)
+            (let ((exe (format #f "/proc/~a/exe" pid)))
+              (and=> (false-if-exception (readlink exe))
+                     (compose (cut string=? program <>) basename))))
+          (filter-map string->number (scandir "/proc")))))
+
 (define* (mount-root-file-system root type
                                  #:key volatile-root? (unionfs "unionfs"))
   "Mount the root file system of type TYPE at device ROOT.  If VOLATILE-ROOT?
 is true, mount ROOT read-only and make it a union with a writable tmpfs using
 UNIONFS."
+  (define (mark-as-not-killable pid)
+    ;; Tell the 'user-processes' dmd service that PID must be kept alive when
+    ;; shutting down.
+    (mkdir-p "/root/etc/dmd")
+    (let ((port (open-file "/root/etc/dmd/do-not-kill" "a")))
+      (chmod port #o600)
+      (write pid port)
+      (newline port)
+      (close-port port)))
+
   (catch #t
     (lambda ()
       (if volatile-root?
@@ -222,7 +241,12 @@ UNIONFS."
                                     "cow,allow_other,use_ino,suid,dev"
                                     "/rw-root=RW:/real-root=RO"
                                     "/root"))
-              (error "unionfs failed")))
+              (error "unionfs failed"))
+
+            ;; Make sure unionfs remains alive till the end.  Because
+            ;; 'fuse_daemonize' doesn't tell the PID of the forked daemon, we
+            ;; have to resort to 'pidof' here.
+            (mark-as-not-killable (pidof unionfs)))
           (begin
             (check-file-system root type)
             (mount root "/root" type))))

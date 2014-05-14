@@ -110,6 +110,11 @@ OPTIONS.  When CHECK? is true, check the file system before mounting it."
                 (umount #$target)
                 #f))))))
 
+(define %do-not-kill-file
+  ;; Name of the file listing PIDs of processes that must survive when halting
+  ;; the system.  Typical example is user-space file systems.
+  "/etc/dmd/do-not-kill")
+
 (define* (user-processes-service requirements #:key (grace-delay 2))
   "Return the service that is responsible for terminating all the processes so
 that the root file system can be re-mounted read-only, just before
@@ -128,6 +133,25 @@ stopped before 'kill' is called."
              (requirement (cons 'root-file-system requirements))
              (start #~(const #t))
              (stop #~(lambda _
+                       (define (kill-except omit signal)
+                         ;; Kill all the processes with SIGNAL except those
+                         ;; listed in OMIT and the current process.
+                         (let ((omit (cons (getpid) omit)))
+                           (for-each (lambda (pid)
+                                       (unless (memv pid omit)
+                                         (false-if-exception
+                                          (kill pid signal))))
+                                     (processes))))
+
+                       (define omitted-pids
+                         ;; List of PIDs that must not be killed.
+                         (if (file-exists? #$%do-not-kill-file)
+                             (map string->number
+                                  (call-with-input-file #$%do-not-kill-file
+                                    (compose string-tokenize
+                                             (@ (ice-9 rdelim) read-string))))
+                             '()))
+
                        ;; When this happens, all the processes have been
                        ;; killed, including 'deco', so DMD-OUTPUT-PORT and
                        ;; thus CURRENT-OUTPUT-PORT are dangling.
@@ -136,9 +160,21 @@ stopped before 'kill' is called."
                            (display "sending all processes the TERM signal\n"
                                     port)))
 
-                       (kill -1 SIGTERM)
-                       (sleep #$grace-delay)
-                       (kill -1 SIGKILL)
+                       (if (null? omitted-pids)
+                           (begin
+                             ;; Easy: terminate all of them.
+                             (kill -1 SIGTERM)
+                             (sleep #$grace-delay)
+                             (kill -1 SIGKILL))
+                           (begin
+                             ;; Kill them all except OMITTED-PIDS.  XXX: We
+                             ;; would like to (kill -1 SIGSTOP) to get a fixed
+                             ;; list of processes, like 'killall5' does, but
+                             ;; that seems unreliable.
+                             (kill-except omitted-pids SIGTERM)
+                             (sleep #$grace-delay)
+                             (kill-except omitted-pids SIGKILL)
+                             (delete-file #$%do-not-kill-file)))
 
                        (display "all processes have been terminated\n")
                        #f))
