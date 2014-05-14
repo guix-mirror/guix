@@ -124,6 +124,10 @@
                   (device-number 4 n))
            (loop (+ 1 n)))))
 
+  ;; Serial line.
+  (mknod (scope "dev/ttyS0") 'char-special #o660
+         (device-number 4 64))
+
   ;; Pseudo ttys.
   (mknod (scope "dev/ptmx") 'char-special #o666
          (device-number 5 2))
