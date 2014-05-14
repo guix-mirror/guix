@@ -1153,10 +1153,11 @@ tracking.")
           (base32
             "07bzi6xwlhq36f60qfspjbz0qjj7zcgayi1vp4ihgx34kib1vhck"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libice" ,libice))) ; SMlib.h includes ICElib.h
     (inputs
       `(("xtrans" ,xtrans)
-        ("util-linux" ,util-linux)
-        ("libice" ,libice)))
+        ("util-linux" ,util-linux)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
