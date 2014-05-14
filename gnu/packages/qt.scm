@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -163,7 +163,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                "0f51dbgn1dcck8pqimls2qyf1pfmsmyknh767cvw87c3d218ywpb"))
              (patches (list (search-patch "qt4-tests.patch")))))
     (inputs `(,@(alist-delete "libjpeg" (package-inputs qt))
-              ("libjepg" ,libjpeg-8)))
+              ("libjepg" ,libjpeg-8)
+              ("libsm" ,libsm)))
     (arguments
      `(#:phases
          (alist-replace
