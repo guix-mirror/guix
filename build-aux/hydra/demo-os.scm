@@ -46,7 +46,7 @@
  (file-systems
   ;; We don't provide a file system for /, but that's OK because the VM build
   ;; code will automatically declare the / file system for us.
-  (list %fuse-control-file-system
+  (list ;; %fuse-control-file-system   ; needs fuse.ko
         %binary-format-file-system))
  (users (list (user-account
                (name "guest")
