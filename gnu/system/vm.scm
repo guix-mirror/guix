@@ -192,25 +192,26 @@ made available under the /xchg CIFS share."
                      (disk-image-size (* 100 (expt 2 20)))
                      (file-system-type "ext4")
                      grub-configuration
-                     (initialize-store? #f)
+                     (register-closures? #t)
                      (populate #f)
-                     (inputs-to-copy '()))
+                     (inputs '())
+                     copy-inputs?)
   "Return a bootable, stand-alone QEMU image, with a root partition of type
 FILE-SYSTEM-TYPE.  The returned image is a full disk image, with a GRUB
 installation that uses GRUB-CONFIGURATION as its configuration
 file (GRUB-CONFIGURATION must be the name of a file in the VM.)
 
-INPUTS-TO-COPY is a list of inputs (as for packages) whose closure is copied
-into the image being built.  When INITIALIZE-STORE? is true, initialize the
-store database in the image so that Guix can be used in the image.
+INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
+all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
+register INPUTS in the store database of the image so that Guix can be used in
+the image.
 
 POPULATE is a list of directives stating directories or symlinks to be created
 in the disk image partition.  It is evaluated once the image has been
 populated with INPUTS-TO-COPY.  It can be used to provide additional files,
 such as /etc files."
   (mlet %store-monad
-      ((graph (sequence %store-monad
-                        (map input->name+output inputs-to-copy))))
+      ((graph (sequence %store-monad (map input->name+output inputs))))
    (expression->derivation-in-linux-vm
     name
     #~(begin
@@ -221,26 +222,27 @@ such as /etc files."
                '#$(append (list qemu parted grub e2fsprogs util-linux)
                           (map (compose car (cut assoc-ref %final-inputs <>))
                                '("sed" "grep" "coreutils" "findutils" "gawk"))
-                          (if initialize-store? (list guix) '())))
+                          (if register-closures? (list guix) '())))
 
               ;; This variable is unused but allows us to add INPUTS-TO-COPY
               ;; as inputs.
-              (to-copy
+              (to-register
                 '#$(map (match-lambda
                          ((name thing) thing)
                          ((name thing output) `(,thing ,output)))
-                        inputs-to-copy)))
+                        inputs)))
 
           (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
 
-          (let ((graphs '#$(match inputs-to-copy
+          (let ((graphs '#$(match inputs
                              (((names . _) ...)
                               names))))
             (initialize-hard-disk #:grub.cfg #$grub-configuration
-                                  #:closures-to-copy graphs
+                                  #:closures graphs
+                                  #:copy-closures? #$copy-inputs?
+                                  #:register-closures? #$register-closures?
                                   #:disk-image-size #$disk-image-size
                                   #:file-system-type #$file-system-type
-                                  #:initialize-store? #$initialize-store?
                                   #:directives '#$populate)
             (reboot))))
     #:system system
@@ -318,8 +320,8 @@ of the GNU system as described by OS."
                    #:populate populate
                    #:disk-image-size disk-image-size
                    #:file-system-type file-system-type
-                   #:initialize-store? #t
-                   #:inputs-to-copy `(("system" ,os-drv))))))
+                   #:inputs `(("system" ,os-drv))
+                   #:copy-inputs? #t))))
 
 (define (virtualized-operating-system os)
   "Return an operating system based on OS suitable for use in a virtualized
@@ -358,10 +360,14 @@ with the host."
        (os-dir   -> (derivation->output-path os-drv))
        (grub.cfg -> (string-append os-dir "/grub.cfg"))
        (populate    (operating-system-default-contents os)))
-    ;; TODO: Initialize the database so Guix can be used in the guest.
     (qemu-image #:grub-configuration grub.cfg
                 #:populate populate
-                #:disk-image-size disk-image-size)))
+                #:disk-image-size disk-image-size
+                #:inputs `(("system" ,os-drv))
+
+                ;; XXX: Passing #t here is too slow, so let it off by default.
+                #:register-closures? #f
+                #:copy-inputs? #f)))
 
 (define* (system-qemu-image/shared-store-script
           os

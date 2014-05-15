@@ -180,13 +180,36 @@ as created and modified at the Epoch."
                   (utime file 0 0 0 0))))
             (find-files directory "")))
 
+(define (register-closure store closure)
+  "Register CLOSURE in STORE, where STORE is the directory name of the target
+store and CLOSURE is the name of a file containing a reference graph as used
+by 'guix-register'."
+  (let ((status (system* "guix-register" "--prefix" store
+                         closure)))
+    (unless (zero? status)
+      (error "failed to register store items" closure))))
+
+(define MS_BIND 4096)                             ; <sys/mounts.h> again!
+
 (define* (initialize-hard-disk #:key
                                grub.cfg
                                disk-image-size
                                (file-system-type "ext4")
-                               initialize-store?
-                               (closures-to-copy '())
+                               (closures '())
+                               copy-closures?
+                               (register-closures? #t)
                                (directives '()))
+  "Initialize /dev/sda, a disk of DISK-IMAGE-SIZE bytes, with a
+FILE-SYSTEM-TYPE partition, and with GRUB installed.  If REGISTER-CLOSURES? is
+true, register all of CLOSURES is the partition's store.  If COPY-CLOSURES? is
+true, copy all of CLOSURES to the partition.  Lastly, apply DIRECTIVES to
+further populate the partition."
+  (define target-directory
+    "/fs")
+
+  (define target-store
+    (string-append target-directory (%store-directory)))
+
   (unless (initialize-partition-table "/dev/sda"
                                       #:partition-size
                                       (- disk-image-size (* 5 (expt 2 20))))
@@ -198,36 +221,43 @@ as created and modified at the Epoch."
     (error "failed to create partition"))
 
   (display "mounting partition...\n")
-  (mkdir "/fs")
-  (mount "/dev/sda1" "/fs" file-system-type)
+  (mkdir target-directory)
+  (mount "/dev/sda1" target-directory file-system-type)
 
-  (when (pair? closures-to-copy)
+  (when copy-closures?
     ;; Populate the store.
-    (populate-store (map (cut string-append "/xchg/" <>)
-                         closures-to-copy)
-                    "/fs"))
+    (populate-store (map (cut string-append "/xchg/" <>) closures)
+                    target-directory))
 
   ;; Populate /dev.
-  (make-essential-device-nodes #:root "/fs")
+  (make-essential-device-nodes #:root target-directory)
 
   ;; Optionally, register the inputs in the image's store.
-  (when initialize-store?
+  (when register-closures?
+    (unless copy-closures?
+      ;; XXX: 'guix-register' wants to palpate the things it registers, so
+      ;; bind-mount the store on the target.
+      (mkdir-p target-store)
+      (mount (%store-directory) target-store "" MS_BIND))
+
+    (display "registering closures...\n")
     (for-each (lambda (closure)
-                (let ((status (system* "guix-register" "--prefix" "/fs"
-                                       (string-append "/xchg/" closure))))
-                  (unless (zero? status)
-                    (error "failed to register store items" closure))))
-              closures-to-copy))
+                (register-closure target-directory
+                                  (string-append "/xchg/" closure)))
+              closures)
+    (unless copy-closures?
+      (system* "umount" target-store)))
 
   ;; Evaluate the POPULATE directives.
-  (for-each (cut evaluate-populate-directive <> "/fs")
+  (display "populating...\n")
+  (for-each (cut evaluate-populate-directive <> target-directory)
             directives)
 
-  (unless (install-grub grub.cfg "/dev/sda" "/fs")
+  (unless (install-grub grub.cfg "/dev/sda" target-directory)
     (error "failed to install GRUB"))
 
-  (reset-timestamps "/fs")
+  (reset-timestamps target-directory)
 
-  (zero? (system* "umount" "/fs")))
+  (zero? (system* "umount" target-directory)))
 
 ;;; vm.scm ends here
