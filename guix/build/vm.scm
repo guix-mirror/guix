@@ -19,6 +19,7 @@
 (define-module (guix build vm)
   #:use-module (guix build utils)
   #:use-module (guix build linux-initrd)
+  #:use-module (guix build install)
   #:use-module (ice-9 match)
   #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-1)
@@ -124,15 +125,6 @@ partition of PARTITION-SIZE MiB.  Return #t on success."
                   "mkpart" "primary" "ext2" "1MiB"
                   (format #f "~aB" partition-size))))
 
-(define* (install-grub grub.cfg device mount-point)
-  "Install GRUB with GRUB.CFG on DEVICE, which is assumed to be mounted on
-MOUNT-POINT.  Return #t on success."
-  (mkdir-p (string-append mount-point "/boot/grub"))
-  (symlink grub.cfg (string-append mount-point "/boot/grub/grub.cfg"))
-  (zero? (system* "grub-install" "--no-floppy"
-                  "--boot-directory" (string-append mount-point "/boot")
-                  device)))
-
 (define* (populate-store reference-graphs target)
   "Populate the store under directory TARGET with the items specified in
 REFERENCE-GRAPHS, a list of reference-graph files."
@@ -152,42 +144,6 @@ REFERENCE-GRAPHS, a list of reference-graph files."
               (copy-recursively thing
                                 (string-append target thing)))
             (things-to-copy)))
-
-(define (evaluate-populate-directive directive target)
-  "Evaluate DIRECTIVE, an sexp describing a file or directory to create under
-directory TARGET."
-  (match directive
-    (('directory name)
-     (mkdir-p (string-append target name)))
-    (('directory name uid gid)
-     (let ((dir (string-append target name)))
-       (mkdir-p dir)
-       (chown dir uid gid)))
-    ((new '-> old)
-     (symlink old (string-append target new)))))
-
-(define (reset-timestamps directory)
-  "Reset the timestamps of all the files under DIRECTORY, so that they appear
-as created and modified at the Epoch."
-  (display "clearing file timestamps...\n")
-  (for-each (lambda (file)
-              (let ((s (lstat file)))
-                ;; XXX: Guile uses libc's 'utime' function (not 'futime'), so
-                ;; the timestamp of symlinks cannot be changed, and there are
-                ;; symlinks here pointing to /gnu/store, which is the host,
-                ;; read-only store.
-                (unless (eq? (stat:type s) 'symlink)
-                  (utime file 0 0 0 0))))
-            (find-files directory "")))
-
-(define (register-closure store closure)
-  "Register CLOSURE in STORE, where STORE is the directory name of the target
-store and CLOSURE is the name of a file containing a reference graph as used
-by 'guix-register'."
-  (let ((status (system* "guix-register" "--prefix" store
-                         closure)))
-    (unless (zero? status)
-      (error "failed to register store items" closure))))
 
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
 

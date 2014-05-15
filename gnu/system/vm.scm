@@ -109,6 +109,7 @@ input tuple.  The output file name is when building for SYSTEM."
                                              (env-vars '())
                                              (modules
                                               '((guix build vm)
+                                                (guix build install)
                                                 (guix build linux-initrd)
                                                 (guix build utils)))
                                              (guile-for-build
@@ -179,9 +180,7 @@ made available under the /xchg CIFS share."
                       ;; TODO: Require the "kvm" feature.
                       #:system system
                       #:env-vars env-vars
-                      #:modules `((guix build utils)
-                                  (guix build vm)
-                                  (guix build linux-initrd))
+                      #:modules modules
                       #:guile-for-build guile-for-build
                       #:references-graphs references-graphs)))
 

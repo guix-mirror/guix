@@ -70,6 +70,7 @@ MODULES =					\
   guix/build/rpath.scm				\
   guix/build/svn.scm				\
   guix/build/vm.scm				\
+  guix/build/install.scm			\
   guix/build/activation.scm			\
   guix/build/syscalls.scm			\
   guix/packages.scm				\
