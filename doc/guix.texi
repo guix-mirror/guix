@@ -3204,6 +3204,11 @@ operating system is instantiate.  Currently the following values are
 supported:
 
 @table @code
+@item build
+Build the operating system's derivation, which includes all the
+configuration files and programs needed to boot and run the system.
+This action does not actually install anything.
+
 @item vm
 @cindex virtual machine
 Build a virtual machine that contain the operating system declared in

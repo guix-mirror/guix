@@ -24,6 +24,7 @@
   #:use-module (guix utils)
   #:use-module (guix monads)
   #:use-module (guix scripts build)
+  #:use-module (gnu system)
   #:use-module (gnu system vm)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-37)
@@ -71,9 +72,15 @@
 (define (show-help)
   (display (_ "Usage: guix system [OPTION] ACTION FILE
 Build the operating system declared in FILE according to ACTION.\n"))
-  (display (_ "Currently the only valid values for ACTION are 'vm', which builds
-a virtual machine of the given operating system that shares the host's store,
-and 'vm-image', which builds a virtual machine image that stands alone.\n"))
+  (newline)
+  (display (_ "The valid values for ACTION are:\n"))
+  (display (_ "\
+  - 'build', build the operating system without installing anything\n"))
+  (display (_ "\
+  - 'vm', build a virtual machine image that shares the host's store\n"))
+  (display (_ "\
+  - 'vm-image', build a freestanding virtual machine image.\n"))
+
   (show-build-options-help)
   (display (_ "
       --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
@@ -131,9 +138,7 @@ and 'vm-image', which builds a virtual machine image that stands alone.\n"))
                             (alist-cons 'argument arg result)))
                       (let ((action (string->symbol arg)))
                         (case action
-                          ((vm)
-                           (alist-cons 'action action result))
-                          ((vm-image)
+                          ((build vm vm-image)
                            (alist-cons 'action action result))
                           (else (leave (_ "~a: unknown action~%")
                                        action))))))
@@ -147,6 +152,8 @@ and 'vm-image', which builds a virtual machine image that stands alone.\n"))
                        (read-operating-system file)
                        (leave (_ "no configuration file specified~%"))))
            (mdrv   (case action
+                     ((build)
+                      (operating-system-derivation os))
                      ((vm-image)
                       (let ((size (assoc-ref opts 'image-size)))
                         (system-qemu-image os
