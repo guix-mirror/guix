@@ -44,9 +44,13 @@
  (timezone "Europe/Paris")
  (locale "en_US.UTF-8")
  (file-systems
-  ;; We don't provide a file system for /, but that's OK because the VM build
+  ;; We provide a dummy file system for /, but that's OK because the VM build
   ;; code will automatically declare the / file system for us.
-  (list ;; %fuse-control-file-system   ; needs fuse.ko
+  (list (file-system
+          (mount-point "/")
+          (device "dummy")
+          (type "dummy"))
+        ;; %fuse-control-file-system   ; needs fuse.ko
         %binary-format-file-system))
  (users (list (user-account
                (name "guest")
