@@ -1,7 +1,7 @@
 #!@GUILE@ -ds
 !#
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -109,9 +109,27 @@ or the empty list."
 
 (define (lsof-roots)
   "Return the list of roots as found by calling `lsof'."
-  (catch 'system
+  (define parent (getpid))
+
+  (catch 'system-error
     (lambda ()
-      (let ((pipe (open-pipe* OPEN_READ "lsof" "-n" "-w" "-F" "n")))
+      (let ((pipe (catch 'system-error
+                    (lambda ()
+                      (open-pipe* OPEN_READ "lsof" "-n" "-w" "-F" "n"))
+                    (lambda args
+                      ;; In Guile 2.0.5, when (ice-9 popen) was still written
+                      ;; in Scheme, 'open-pipe*' would leave the child process
+                      ;; behind it when 'execlp' failed (that was mostly
+                      ;; harmless though, because the uncaught exception would
+                      ;; cause it to terminate after printing a backtrace.)
+                      ;; Make sure that doesn't happen.
+                      (if (= (getpid) parent)
+                          (apply throw args)
+                          (begin
+                            (format (current-error-port)
+                                    "failed to execute 'lsof': ~a~%"
+                                    (strerror (system-error-errno args)))
+                            (primitive-exit 1)))))))
         (define %file-rx
           (make-regexp "^n/(.*)$"))
 
