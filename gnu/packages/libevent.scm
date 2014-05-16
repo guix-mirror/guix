@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,7 +23,9 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages which)
-  #:use-module (gnu packages python))
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages pkg-config))
 
 (define-public libevent
   (package
@@ -58,3 +60,44 @@ network servers.  An application just needs to call event_dispatch() and
 then add or remove events dynamically without having to change the event
 loop.")
     (license bsd-3)))
+
+(define-public libuv
+  (package
+    (name "libuv")
+    (version "0.11.25")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/joyent/libuv/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1ys2wlypdbv59yywn91d5vl329z50mi7ivi3fj5rjm4mr9g3wnmr"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'configure 'autogen
+                 (lambda _
+                   ;; Fashionable people don't run 'make dist' these days, so
+                   ;; we need to do that ourselves.
+                   (zero? (system* "./autogen.sh")))
+                 %standard-phases)
+
+       ;; XXX: Some tests want /dev/tty, attempt to make connections, etc.
+       #:tests? #f))
+    (native-inputs `(("autoconf" ,(autoconf-wrapper))
+                     ("automake" ,automake)
+                     ("libtool" ,libtool "bin")
+
+                     ;; libuv.pc is installed only when pkg-config is found.
+                     ("pkg-config" ,pkg-config)))
+    (home-page "https://github.com/joyent/libuv")
+    (synopsis "Library for asynchronous I/O")
+    (description
+     "libuv is a multi-platform support library with a focus on asynchronous
+I/O.  Among other things, it supports event loops via epoll, kqueue, and
+similar IOCP, and event ports, asynchronous TCP/UDP sockets, asynchronous DNS
+resolution, asynchronous file system operations, and threading primitives.")
+
+    ;; A few files fall under other non-copyleft licenses; see 'LICENSE' for
+    ;; details.
+    (license x11)))
