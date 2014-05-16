@@ -797,17 +797,21 @@ signing them if SIGN? is true."
               (loop tail)))))))
 
 (define* (register-path path
-                        #:key (references '()) deriver)
+                        #:key (references '()) deriver store)
   "Register PATH as a valid store file, with REFERENCES as its list of
-references, and DERIVER as its deriver (.drv that led to it.)  Return #t on
-success.
+references, and DERIVER as its deriver (.drv that led to it.)  If STORE is not
+#f, it must be a string denoting the directory name of the new store to
+initialize.  Return #t on success.
 
 Use with care as it directly modifies the store!  This is primarily meant to
 be used internally by the daemon's build hook."
   ;; Currently this is implemented by calling out to the fine C++ blob.
   (catch 'system-error
     (lambda ()
-      (let ((pipe (open-pipe* OPEN_WRITE %guix-register-program)))
+      (let ((pipe (apply open-pipe* OPEN_WRITE %guix-register-program
+                         (if store
+                             `("--prefix" ,store)
+                             '()))))
         (and pipe
              (begin
                (format pipe "~a~%~a~%~a~%"
