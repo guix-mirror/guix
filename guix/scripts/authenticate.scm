@@ -81,6 +81,13 @@ to stdout upon success."
                    (canonical-sexp->string subject)))
         (leave (_ "error: corrupt signature data: ~a~%")
                (canonical-sexp->string signature)))))
+
+(define %default-port-conversion-strategy
+  ;; This fluid is in Guile > 2.0.5.
+  (if (defined? '%default-port-conversion-strategy)
+      (@ (guile) %default-port-conversion-strategy)
+      (make-fluid #f)))
+
 
 ;;;
 ;;; Entry point with 'openssl'-compatible interface.  We support this
