@@ -28,6 +28,7 @@
   #:use-module (guix build utils)
   #:export (mount-essential-file-systems
             linux-command-line
+            find-long-option
             make-essential-device-nodes
             configure-qemu-networking
             check-file-system
@@ -77,6 +78,15 @@
   (string-tokenize
    (call-with-input-file "/proc/cmdline"
      get-string-all)))
+
+(define (find-long-option option arguments)
+  "Find OPTION among ARGUMENTS, where OPTION is something like \"--load\".
+Return the value associated with OPTION, or #f on failure."
+  (let ((opt (string-append option "=")))
+    (and=> (find (cut string-prefix? opt <>)
+                 arguments)
+           (lambda (arg)
+             (substring arg (+ 1 (string-index arg #\=)))))))
 
 (define* (make-essential-device-nodes #:key (root "/"))
   "Make essential device nodes under ROOT/dev."
@@ -411,14 +421,8 @@ to it are lost."
 
   (mount-essential-file-systems)
   (let* ((args    (linux-command-line))
-         (option  (lambda (opt)
-                    (let ((opt (string-append opt "=")))
-                      (and=> (find (cut string-prefix? opt <>)
-                                   args)
-                             (lambda (arg)
-                               (substring arg (+ 1 (string-index arg #\=))))))))
-         (to-load (option "--load"))
-         (root    (option "--root")))
+         (to-load (find-long-option "--load" args))
+         (root    (find-long-option "--root" args)))
 
     (when (member "--repl" args)
       (start-repl))
