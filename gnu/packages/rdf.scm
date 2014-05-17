@@ -23,6 +23,7 @@
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bdb)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
@@ -138,7 +139,31 @@ syntaxes.  The supported query languages are SPARQL Query 1.0,
 SPARQL Query 1.1, SPARQL Update 1.1 (no executing) and the Experimental
 SPARQL extensions (LAQRS).  Rasqal can write binding query results in the
 SPARQL XML, SPARQL JSON, CSV, TSV, HTML, ASCII tables, RDF/XML and
-Turtle/N3 and read them in SPARQL XML, RDF/XML and Turtle/N3. ")
+Turtle/N3 and read them in SPARQL XML, RDF/XML and Turtle/N3.")
+    (license lgpl2.1+))) ; or any choice of gpl2+ or asl2.0
+
+(define-public redland
+  (package
+    (name "redland")
+    (version "1.0.17")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.librdf.org/source/" name
+                                 "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "109n0kp39p966dpiasad2bb7q66rwbcb9avjvimw28chnpvlf66y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl) ; needed for installation
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bdb" ,bdb)
+       ("rasqal" ,rasqal)))
+    (home-page "http://librdf.org/")
+    (synopsis "RDF library")
+    (description "The Redland RDF Library (librdf) provides the RDF API
+and triple stores.")
     (license lgpl2.1+))) ; or any choice of gpl2+ or asl2.0
 
 (define-public soprano
