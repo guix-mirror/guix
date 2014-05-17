@@ -116,19 +116,39 @@ AC_ARG_WITH([libgcrypt-prefix],
     yes|no)
       LIBGCRYPT="libgcrypt"
       LIBGCRYPT_PREFIX="no"
+      LIBGCRYPT_LIBDIR="no"
       ;;
     *)
       LIBGCRYPT="$withval/lib/libgcrypt"
       LIBGCRYPT_PREFIX="$withval"
+      LIBGCRYPT_LIBDIR="$withval/lib"
       ;;
    esac],
   [LIBGCRYPT="libgcrypt"])
+
+AC_ARG_WITH([libgcrypt-libdir],
+  [AS_HELP_STRING([--with-libgcrypt-libdir=DIR],
+     [search for GNU libgcrypt's shared library in DIR])],
+  [case "$withval" in
+    yes|no)
+      LIBGCRYPT="libgcrypt"
+      LIBGCRYPT_LIBDIR="no"
+      ;;
+    *)
+      LIBGCRYPT="$withval/libgcrypt"
+      LIBGCRYPT_LIBDIR="$withval"
+      ;;
+   esac],
+  [if test "x$LIBGCRYPT" = x; then
+      LIBGCRYPT="libgcrypt"
+   fi])
 
 dnl Library name suitable for `dynamic-link'.
 AC_MSG_CHECKING([for libgcrypt shared library name])
 AC_MSG_RESULT([$LIBGCRYPT])
 AC_SUBST([LIBGCRYPT])
 AC_SUBST([LIBGCRYPT_PREFIX])
+AC_SUBST([LIBGCRYPT_LIBDIR])
 
 GUIX_ASSERT_LIBGCRYPT_USABLE
 

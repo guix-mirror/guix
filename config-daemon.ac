@@ -38,13 +38,21 @@ if test "x$guix_build_daemon" = "xyes"; then
   case "$LIBGCRYPT_PREFIX" in
     no)
       LIBGCRYPT_CFLAGS=""
-      LIBGCRYPT_LIBS=""
       ;;
     *)
       LIBGCRYPT_CFLAGS="-I$LIBGCRYPT_PREFIX/include"
-      LIBGCRYPT_LIBS="-L$LIBGCRYPT_PREFIX/lib -lgcrypt"
       ;;
   esac
+
+  case "$LIBGCRYPT_LIBDIR" in
+    no)
+      LIBGCRYPT_LIBS="-lgcrypt"
+      ;;
+   *)
+      LIBGCRYPT_LIBS="-L$LIBGCRYPT_LIBDIR -lgcrypt"
+      ;;
+  esac
+
   AC_SUBST([LIBGCRYPT_CFLAGS])
   AC_SUBST([LIBGCRYPT_LIBS])
 
