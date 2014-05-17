@@ -456,7 +456,7 @@ ASCII text files using Gmsh's own scripting language.")
                           "conf/uninstall.py"))))
           %standard-phases)))))
     (home-page "http://www.mcs.anl.gov/petsc")
-    (synopsis "Library to solve ODEs and algebraic equations")
+    (synopsis "Library to solve PDEs")
     (description "PETSc, pronounced PET-see (the S is silent), is a suite of
 data structures and routines for the scalable (parallel) solution of
 scientific applications modeled by partial differential equations.")
@@ -470,9 +470,7 @@ scientific applications modeled by partial differential equations.")
      (substitute-keyword-arguments (package-arguments petsc)
        ((#:configure-flags cf)
         `(cons "--with-scalar-type=complex" ,cf))))
-    (description
-     (string-append (package-description petsc)
-                    "  Complex scalar type version."))))
+    (synopsis "Library to solve PDEs (with complex scalars)")))
 
 (define-public petsc-openmpi
   (package (inherit petsc)
@@ -487,9 +485,7 @@ scientific applications modeled by partial differential equations.")
            ,(string-append "--with-mpi-dir="
                            (assoc-ref %build-inputs "openmpi"))
            ,@(delete "--with-mpi=0" ,cf)))))
-    (description
-     (string-append (package-description petsc)
-                    "  With OpenMPI parallelism support."))))
+    (synopsis "Library to solve PDEs (with MPI support)")))
 
 (define-public petsc-complex-openmpi
   (package (inherit petsc-complex)
@@ -504,9 +500,7 @@ scientific applications modeled by partial differential equations.")
            ,(string-append "--with-mpi-dir="
                            (assoc-ref %build-inputs "openmpi"))
            ,@(delete "--with-mpi=0" ,cf)))))
-    (description
-     (string-append (package-description petsc-complex)
-                    "  With OpenMPI parallelism support."))))
+    (synopsis "Library to solve PDEs (with complex scalars and MPI support)")))
 
 (define-public superlu
   (package
