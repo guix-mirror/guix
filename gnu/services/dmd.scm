@@ -64,7 +64,7 @@
                    services))
 
           ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
-          (setenv "PATH" "/run/current-system/bin")
+          (setenv "PATH" "/run/current-system/profile/bin")
 
           (format #t "starting services...~%")
           (for-each start '#$(append-map service-provision services))))

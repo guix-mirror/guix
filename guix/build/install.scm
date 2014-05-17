@@ -19,9 +19,10 @@
 (define-module (guix build install)
   #:use-module (guix build utils)
   #:use-module (guix build install)
+  #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (install-grub
-            evaluate-populate-directive
+            populate-root-file-system
             reset-timestamps
             register-closure))
 
@@ -46,15 +47,44 @@ MOUNT-POINT.  Return #t on success."
 (define (evaluate-populate-directive directive target)
   "Evaluate DIRECTIVE, an sexp describing a file or directory to create under
 directory TARGET."
-  (match directive
-    (('directory name)
-     (mkdir-p (string-append target name)))
-    (('directory name uid gid)
-     (let ((dir (string-append target name)))
-       (mkdir-p dir)
-       (chown dir uid gid)))
-    ((new '-> old)
-     (symlink old (string-append target new)))))
+  (let loop ((directive directive))
+    (match directive
+      (('directory name)
+       (mkdir-p (string-append target name)))
+      (('directory name uid gid)
+       (let ((dir (string-append target name)))
+         (mkdir-p dir)
+         (chown dir uid gid)))
+      (('directory name uid gid mode)
+       (loop `(directory ,name ,uid ,gid))
+       (chmod (string-append target name) mode))
+      ((new '-> old)
+       (symlink old (string-append target new))))))
+
+(define (directives store)
+  "Return a list of directives to populate the root file system that will host
+STORE."
+  `((directory ,store 0 0)
+    (directory "/etc")
+    (directory "/var/log")                          ; for dmd
+    (directory "/var/run/nscd")
+    (directory "/var/guix/gcroots")
+    (directory "/run")
+    ("/var/guix/gcroots/booted-system" -> "/run/booted-system")
+    ("/var/guix/gcroots/current-system" -> "/run/current-system")
+    (directory "/bin")
+    ("/bin/sh" -> "/run/current-system/profile/bin/bash")
+    (directory "/tmp" 0 0 #o1777)                 ; sticky bit
+    (directory "/var/guix/profiles/per-user/root" 0 0)
+
+    (directory "/root" 0 0)                       ; an exception
+    (directory "/home" 0 0)))
+
+(define (populate-root-file-system target)
+  "Make the essential non-store files and directories on TARGET.  This
+includes /etc, /var, /run, /bin/sh, etc."
+  (for-each (cut evaluate-populate-directive <> target)
+            (directives (%store-directory))))
 
 (define (reset-timestamps directory)
   "Reset the timestamps of all the files under DIRECTORY, so that they appear

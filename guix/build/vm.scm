@@ -206,8 +206,7 @@ further populate the partition."
 
   ;; Evaluate the POPULATE directives.
   (display "populating...\n")
-  (for-each (cut evaluate-populate-directive <> target-directory)
-            directives)
+  (populate-root-file-system target-directory)
 
   (unless (install-grub grub.cfg "/dev/sda" target-directory)
     (error "failed to install GRUB"))

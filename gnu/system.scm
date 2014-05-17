@@ -55,6 +55,7 @@
 
             operating-system-derivation
             operating-system-profile
+            operating-system-grub.cfg
 
             <file-system>
             file-system
@@ -263,7 +264,7 @@ explicitly appear in OS."
                         (locale "C") (timezone "Europe/Paris")
                         (skeletons '())
                         (pam-services '())
-                        (profile "/var/run/current-system/profile")
+                        (profile "/run/current-system/profile")
                         (sudoers ""))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
@@ -273,8 +274,8 @@ explicitly appear in OS."
        (shells     (text-file "shells"            ; used by xterm and others
                               "\
 /bin/sh
-/run/current-system/bin/sh
-/run/current-system/bin/bash\n"))
+/run/current-system/profile/bin/sh
+/run/current-system/profile/bin/bash\n"))
        (issue      (text-file "issue" "
 This is an alpha preview of the GNU system.  Welcome.
 
@@ -293,8 +294,8 @@ export LC_ALL=\"" locale "\"
 export TZ=\"" timezone "\"
 export TZDIR=\"" tzdata "/share/zoneinfo\"
 
-export PATH=$HOME/.guix-profile/bin:" profile "/bin:" profile "/sbin
-export PATH=/run/setuid-programs:$PATH
+export PATH=/run/setuid-programs:/run/current-system/profile/sbin
+export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin:$PATH
 export CPATH=$HOME/.guix-profile/include:" profile "/include
 export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
 alias ls='ls -p --color'
@@ -402,7 +403,8 @@ alias ll='ls -l'
 we're running in the final root."
   (define %modules
     '((guix build activation)
-      (guix build utils)))
+      (guix build utils)
+      (guix build linux-initrd)))
 
   (mlet* %store-monad ((services (operating-system-services os))
                        (etc      (operating-system-etc-directory os))
@@ -446,6 +448,9 @@ we're running in the final root."
                     ;; Activate setuid programs.
                     (activate-setuid-programs (list #$@setuid-progs))
 
+                    ;; Set up /run/current-system.
+                    (activate-current-system #:boot? #t)
+
                     ;; Close any remaining open file descriptors to be on the
                     ;; safe side.  This must be the very last thing we do,
                     ;; because Guile has internal FDs such as 'sleep_pipe'
@@ -466,8 +471,8 @@ we're running in the final root."
          (_ #f))
         (operating-system-file-systems os)))
 
-(define (operating-system-derivation os)
-  "Return a derivation that builds OS."
+(define (operating-system-initrd-file os)
+  "Return a gexp denoting the initrd file of OS."
   (define boot-file-systems
     (filter (match-lambda
              (($ <file-system> device "/")
@@ -476,15 +481,16 @@ we're running in the final root."
               boot?))
             (operating-system-file-systems os)))
 
+  (mlet %store-monad
+      ((initrd ((operating-system-initrd os) boot-file-systems)))
+    (return #~(string-append #$initrd "/initrd"))))
+
+(define (operating-system-grub.cfg os)
+  "Return the GRUB configuration file for OS."
   (mlet* %store-monad
-      ((profile     (operating-system-profile os))
-       (etc         (operating-system-etc-directory os))
-       (services    (operating-system-services os))
-       (boot        (operating-system-boot-script os))
-       (kernel  ->  (operating-system-kernel os))
-       (initrd      ((operating-system-initrd os) boot-file-systems))
-       (initrd-file -> #~(string-append #$initrd "/initrd"))
+      ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
+       (kernel ->   (operating-system-kernel os))
        (entries ->  (list (menu-entry
                            (label (string-append
                                    "GNU system with "
@@ -494,15 +500,25 @@ we're running in the final root."
                            (linux-arguments
                             (list (string-append "--root="
                                                  (file-system-device root-fs))
-                                  #~(string-append "--load=" #$boot)))
-                           (initrd initrd-file))))
-       (grub.cfg (grub-configuration-file entries)))
+                                  #~(string-append "--system=" #$system)
+                                  #~(string-append "--load=" #$system
+                                                   "/boot")))
+                           (initrd #~(string-append #$system "/initrd"))))))
+    (grub-configuration-file entries)))
+
+(define (operating-system-derivation os)
+  "Return a derivation that builds OS."
+  (mlet* %store-monad
+      ((profile     (operating-system-profile os))
+       (etc         (operating-system-etc-directory os))
+       (boot        (operating-system-boot-script os))
+       (kernel  ->  (operating-system-kernel os))
+       (initrd      (operating-system-initrd-file os)))
     (file-union "system"
                 `(("boot" ,#~#$boot)
                   ("kernel" ,#~#$kernel)
-                  ("initrd" ,initrd-file)
+                  ("initrd" ,initrd)
                   ("profile" ,#~#$profile)
-                  ("grub.cfg" ,#~#$grub.cfg)
                   ("etc" ,#~#$etc)))))
 
 ;;; system.scm ends here

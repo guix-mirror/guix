@@ -18,13 +18,15 @@
 
 (define-module (guix build activation)
   #:use-module (guix build utils)
+  #:use-module (guix build linux-initrd)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (activate-users+groups
             activate-etc
-            activate-setuid-programs))
+            activate-setuid-programs
+            activate-current-system))
 
 ;;; Commentary:
 ;;;
@@ -194,5 +196,34 @@ numeric gid or #f."
       (mkdir-p %setuid-directory))
 
   (for-each make-setuid-program programs))
+
+(define %booted-system
+  ;; The system we booted in (a symlink.)
+  "/run/booted-system")
+
+(define %current-system
+  ;; The system that is current (a symlink.)  This is not necessarily the same
+  ;; as %BOOTED-SYSTEM, for instance because we can re-build a new system
+  ;; configuration and activate it, without rebooting.
+  "/run/current-system")
+
+(define (boot-time-system)
+  "Return the '--system' argument passed on the kernel command line."
+  (find-long-option "--system" (linux-command-line)))
+
+(define* (activate-current-system #:optional (system (boot-time-system))
+                                  #:key boot?)
+  "Atomically make SYSTEM the current system.  When BOOT? is true, also make
+it the booted system."
+  (format #t "making '~a' the current system...~%" system)
+  (when boot?
+    (when (file-exists? %booted-system)
+      (delete-file %booted-system))
+    (symlink system %booted-system))
+
+  ;; Atomically make SYSTEM current.
+  (let ((new (string-append %current-system ".new")))
+    (symlink system new)
+    (rename-file new %current-system)))
 
 ;;; activation.scm ends here

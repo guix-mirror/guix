@@ -139,7 +139,7 @@ When AUTO-LOGIN? is true, log in automatically as DEFAULT-USER."
     (mlet %store-monad ((startx  (or startx (xorg-start-command)))
                         (xinitrc (xinitrc)))
       (text-file* "slim.cfg"  "
-default_path /run/current-system/bin
+default_path /run/current-system/profile/bin
 default_xserver " startx "
 xserver_arguments :0 vt7
 xauth_path " xauth "/bin/xauth

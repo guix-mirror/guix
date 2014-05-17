@@ -192,7 +192,6 @@ made available under the /xchg CIFS share."
                      (file-system-type "ext4")
                      grub-configuration
                      (register-closures? #t)
-                     (populate #f)
                      (inputs '())
                      copy-inputs?)
   "Return a bootable, stand-alone QEMU image, with a root partition of type
@@ -203,12 +202,7 @@ file (GRUB-CONFIGURATION must be the name of a file in the VM.)
 INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
 all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
 register INPUTS in the store database of the image so that Guix can be used in
-the image.
-
-POPULATE is a list of directives stating directories or symlinks to be created
-in the disk image partition.  It is evaluated once the image has been
-populated with INPUTS-TO-COPY.  It can be used to provide additional files,
-such as /etc files."
+the image."
   (mlet %store-monad
       ((graph (sequence %store-monad (map input->name+output inputs))))
    (expression->derivation-in-linux-vm
@@ -241,8 +235,7 @@ such as /etc files."
                                   #:copy-closures? #$copy-inputs?
                                   #:register-closures? #$register-closures?
                                   #:disk-image-size #$disk-image-size
-                                  #:file-system-type #$file-system-type
-                                  #:directives '#$populate)
+                                  #:file-system-type #$file-system-type)
             (reboot))))
     #:system system
     #:make-disk-image? #t
@@ -253,39 +246,6 @@ such as /etc files."
 ;;;
 ;;; Stand-alone VM image.
 ;;;
-
-(define (operating-system-build-gid os)
-  "Return as a monadic value the group id for build users of OS, or #f."
-  (mlet %store-monad ((services (operating-system-services os)))
-    (return (any (lambda (service)
-                   (and (equal? '(guix-daemon)
-                                (service-provision service))
-                        (match (service-user-groups service)
-                          ((group)
-                           (user-group-id group)))))
-                 services))))
-
-(define (operating-system-default-contents os)
-  "Return a list of directives suitable for 'system-qemu-image' describing the
-basic contents of the root file system of OS."
-  (mlet* %store-monad ((os-drv    (operating-system-derivation os))
-                       (build-gid (operating-system-build-gid os))
-                       (profile   (operating-system-profile os)))
-    (return #~((directory #$(%store-prefix) 0 #$(or build-gid 0))
-               (directory "/etc")
-               (directory "/var/log")                     ; for dmd
-               (directory "/var/run/nscd")
-               (directory "/var/guix/gcroots")
-               ("/var/guix/gcroots/system" -> #$os-drv)
-               (directory "/run")
-               ("/run/current-system" -> #$profile)
-               (directory "/bin")
-               ("/bin/sh" -> "/run/current-system/bin/bash")
-               (directory "/tmp")
-               (directory "/var/guix/profiles/per-user/root" 0 0)
-
-               (directory "/root" 0 0)            ; an exception
-               (directory "/home" 0 0)))))
 
 (define* (system-qemu-image os
                             #:key
@@ -312,14 +272,12 @@ of the GNU system as described by OS."
                                   file-systems-to-keep)))))
     (mlet* %store-monad
         ((os-drv      (operating-system-derivation os))
-         (os-dir   -> (derivation->output-path os-drv))
-         (grub.cfg -> (string-append os-dir "/grub.cfg"))
-         (populate    (operating-system-default-contents os)))
+         (grub.cfg    (operating-system-grub.cfg os)))
       (qemu-image  #:grub-configuration grub.cfg
-                   #:populate populate
                    #:disk-image-size disk-image-size
                    #:file-system-type file-system-type
-                   #:inputs `(("system" ,os-drv))
+                   #:inputs `(("system" ,os-drv)
+                              ("grub.cfg" ,grub.cfg))
                    #:copy-inputs? #t))))
 
 (define (virtualized-operating-system os)
@@ -356,11 +314,8 @@ environment with the store shared with the host."
 with the host."
   (mlet* %store-monad
       ((os-drv      (operating-system-derivation os))
-       (os-dir   -> (derivation->output-path os-drv))
-       (grub.cfg -> (string-append os-dir "/grub.cfg"))
-       (populate    (operating-system-default-contents os)))
+       (grub.cfg    (operating-system-grub.cfg os)))
     (qemu-image #:grub-configuration grub.cfg
-                #:populate populate
                 #:disk-image-size disk-image-size
                 #:inputs `(("system" ,os-drv))
 
@@ -390,7 +345,7 @@ exec " #$qemu "/bin/qemu-system-x86_64 -enable-kvm -no-reboot -net nic,model=vir
   -kernel " #$(operating-system-kernel os) "/bzImage \
   -initrd " #$os-drv "/initrd \
 -append \"" #$(if graphic? "" "console=ttyS0 ")
-  "--load=" #$os-drv "/boot --root=/dev/vda1\" \
+  "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1\" \
   -serial stdio \
   -drive file=" #$image
   ",if=virtio,cache=writeback,werror=report,readonly\n")
