@@ -27,6 +27,11 @@
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xml))
@@ -94,6 +99,46 @@ HTML and JSON.")
 full-featured indexing and searching API.  It is a port of the very popular
 Java Lucene text search engine API to C++.")
     (license lgpl2.1)))
+
+(define-public rasqal
+  (package
+    (name "rasqal")
+    (version "0.9.32")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.librdf.org/source/" name
+                                 "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "13rfprkk7d74065c7bafyshajwa6lshj7m9l741zlz9viqhh7fpf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("perl-xml-dom" ,perl-xml-dom) ; for the tests
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)
+       ("libxml2" ,libxml2)
+       ("mpfr" ,mpfr)
+       ("pcre" ,pcre)
+       ("raptor2" ,raptor2)
+       ("util-linux" ,util-linux)))
+    (arguments
+     `(#:parallel-tests? #f
+       ; test failure reported upstream, see
+       ; http://bugs.librdf.org/mantis/view.php?id=571
+       #:tests? #f))
+    (home-page "http://librdf.org/rasqal/")
+    (synopsis "RDF query library")
+    (description "Rasqal is a C library that handles Resource Description
+Framework (RDF) query language syntaxes, query construction and execution
+of queries returning results as bindings, boolean, RDF graphs/triples or
+syntaxes.  The supported query languages are SPARQL Query 1.0,
+SPARQL Query 1.1, SPARQL Update 1.1 (no executing) and the Experimental
+SPARQL extensions (LAQRS).  Rasqal can write binding query results in the
+SPARQL XML, SPARQL JSON, CSV, TSV, HTML, ASCII tables, RDF/XML and
+Turtle/N3 and read them in SPARQL XML, RDF/XML and Turtle/N3. ")
+    (license lgpl2.1+))) ; or any choice of gpl2+ or asl2.0
 
 (define-public soprano
   (package
