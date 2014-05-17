@@ -180,14 +180,14 @@ and triple stores.")
                "1rg0x7yg0a1cbnxz7kqk52580wla8jbnj4d4r3j7l7g7ajyny1k4"))
              (patches (list (search-patch "soprano-find-clucene.patch")))))
     (build-system cmake-build-system)
-    ;; FIXME: Add optional dependencies: Redland, odbci.
     (native-inputs
      `(("doxygen" ,doxygen)
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("clucene" ,clucene)
        ("qt" ,qt-4)
-       ("raptor2" ,raptor2)))
+       ("rasqal" ,rasqal)
+       ("redland" ,redland)))
     (home-page "http://soprano.sourceforge.net/")
     (synopsis "RDF data library for Qt")
     (description "Soprano (formerly known as QRDF) is a library which
