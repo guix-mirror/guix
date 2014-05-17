@@ -121,8 +121,9 @@ Java Lucene text search engine API to C++.")
        ("libxml2" ,libxml2)
        ("mpfr" ,mpfr)
        ("pcre" ,pcre)
-       ("raptor2" ,raptor2)
        ("util-linux" ,util-linux)))
+    (propagated-inputs
+     `(("raptor2" ,raptor2))) ; stipulated by rasqal.pc
     (arguments
      `(#:parallel-tests? #f
        ; test failure reported upstream, see
