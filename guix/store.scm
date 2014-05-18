@@ -797,10 +797,10 @@ signing them if SIGN? is true."
               (loop tail)))))))
 
 (define* (register-path path
-                        #:key (references '()) deriver store)
+                        #:key (references '()) deriver prefix)
   "Register PATH as a valid store file, with REFERENCES as its list of
-references, and DERIVER as its deriver (.drv that led to it.)  If STORE is not
-#f, it must be a string denoting the directory name of the new store to
+references, and DERIVER as its deriver (.drv that led to it.)  If PREFIX is
+not #f, it must be the name of the directory containing the new store to
 initialize.  Return #t on success.
 
 Use with care as it directly modifies the store!  This is primarily meant to
@@ -809,8 +809,8 @@ be used internally by the daemon's build hook."
   (catch 'system-error
     (lambda ()
       (let ((pipe (apply open-pipe* OPEN_WRITE %guix-register-program
-                         (if store
-                             `("--prefix" ,store)
+                         (if prefix
+                             `("--prefix" ,prefix)
                              '()))))
         (and pipe
              (begin
