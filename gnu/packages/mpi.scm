@@ -32,6 +32,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages valgrind)
   #:use-module (srfi srfi-1))
 
 (define-public hwloc
@@ -95,11 +96,11 @@ bind processes, and much more.")
         "13z1q69f3qwmmhpglarfjminfy2yw4rfqr9jydjk5507q3mjf50p"))))
     (build-system gnu-build-system)
     (inputs
-     `(("hwloc" ,hwloc)))
+     `(("hwloc" ,hwloc)
+       ("gfortran" ,gfortran-4.8)
+       ("valgrind" ,valgrind)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
-    (propagated-inputs
-     `(("gfortran" ,gfortran-4.8)))
     (arguments
      `(#:configure-flags `("--enable-static"
                            "--enable-oshmem"
@@ -110,6 +111,10 @@ bind processes, and much more.")
                            ;; "--enable-mpi-thread-multiple"
                            "--enable-mpi-ext=all"
                            "--with-devel-headers"
+                           "--enable-debug"
+                           "--enable-memchecker"
+                           ,(string-append "--with-valgrind="
+                                           (assoc-ref %build-inputs "valgrind"))
                            ,(string-append "--with-hwloc="
                                            (assoc-ref %build-inputs "hwloc")))))
     (home-page "http://www.open-mpi.org")
