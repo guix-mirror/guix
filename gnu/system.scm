@@ -39,10 +39,11 @@
   #:use-module (srfi srfi-26)
   #:export (operating-system
             operating-system?
+
+            operating-system-bootloader
             operating-system-services
             operating-system-user-services
             operating-system-packages
-            operating-system-bootloader-entries
             operating-system-host-name
             operating-system-kernel
             operating-system-initrd
@@ -83,10 +84,8 @@
   operating-system?
   (kernel operating-system-kernel                 ; package
           (default linux-libre))
-  (bootloader operating-system-bootloader         ; package
-              (default grub))
-  (bootloader-entries operating-system-bootloader-entries ; list
-                      (default '()))
+  (bootloader operating-system-bootloader)        ; <grub-configuration>
+
   (initrd operating-system-initrd                 ; (list fs) -> M derivation
           (default qemu-initrd))
 
@@ -504,7 +503,7 @@ we're running in the final root."
                                   #~(string-append "--load=" #$system
                                                    "/boot")))
                            (initrd #~(string-append #$system "/initrd"))))))
-    (grub-configuration-file entries)))
+    (grub-configuration-file (operating-system-bootloader os) entries)))
 
 (define (operating-system-derivation os)
   "Return a derivation that builds OS."

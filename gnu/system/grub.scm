@@ -25,8 +25,13 @@
   #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
-  #:export (menu-entry
+  #:export (grub-configuration
+            grub-configuration?
+            grub-configuration-device
+
+            menu-entry
             menu-entry?
+
             grub-configuration-file))
 
 ;;; Commentary:
@@ -34,6 +39,19 @@
 ;;; Configuration of GNU GRUB.
 ;;;
 ;;; Code:
+
+(define-record-type* <grub-configuration>
+  grub-configuration make-grub-configuration
+  grub-configuration?
+  (grub            grub-configuration-grub           ; package
+                   (default (@ (gnu packages grub) grub)))
+  (device          grub-configuration-device)        ; string
+  (menu-entries    grub-configuration-menu-entries   ; list
+                   (default '()))
+  (default-entry   grub-configuration-default-entry  ; integer
+                   (default 1))
+  (timeout         grub-configuration-timeout        ; integer
+                   (default 5)))
 
 (define-record-type* <menu-entry>
   menu-entry make-menu-entry
@@ -44,11 +62,13 @@
                    (default '()))          ; list of string-valued gexps
   (initrd          menu-entry-initrd))     ; file name of the initrd as a gexp
 
-(define* (grub-configuration-file entries
-                                  #:key (default-entry 1) (timeout 5)
-                                  (system (%current-system)))
-  "Return the GRUB configuration file for ENTRIES, a list of
-<menu-entry> objects, defaulting to DEFAULT-ENTRY and with the given TIMEOUT."
+(define* (grub-configuration-file config entries
+                                  #:key (system (%current-system)))
+  "Return the GRUB configuration file corresponding to CONFIG, a
+<grub-configuration> object."
+  (define all-entries
+    (append entries (grub-configuration-menu-entries config)))
+
   (define entry->gexp
     (match-lambda
      (($ <menu-entry> label linux arguments initrd)
@@ -67,12 +87,13 @@
 set default=~a
 set timeout=~a
 search.file ~a/bzImage~%"
-                  #$default-entry #$timeout
+                  #$(grub-configuration-default-entry config)
+                  #$(grub-configuration-timeout config)
                   #$(any (match-lambda
                           (($ <menu-entry> _ linux)
                            linux))
-                         entries))
-          #$@(map entry->gexp entries))))
+                         all-entries))
+          #$@(map entry->gexp all-entries))))
 
   (gexp->derivation "grub.cfg" builder))
 

@@ -33,6 +33,7 @@
              (gnu packages tor)
              (gnu packages package-management)
 
+             (gnu system grub)                    ; 'grub-configuration'
              (gnu system shadow)                  ; 'user-account'
              (gnu system linux)                   ; 'base-pam-services'
              (gnu services base)
@@ -43,6 +44,8 @@
  (host-name "gnu")
  (timezone "Europe/Paris")
  (locale "en_US.UTF-8")
+ (bootloader (grub-configuration
+              (device "/dev/sda")))
  (file-systems
   ;; We provide a dummy file system for /, but that's OK because the VM build
   ;; code will automatically declare the / file system for us.
