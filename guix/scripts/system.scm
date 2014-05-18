@@ -19,14 +19,18 @@
 (define-module (guix scripts system)
   #:use-module (guix ui)
   #:use-module (guix store)
+  #:use-module (guix gexp)
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix monads)
   #:use-module (guix scripts build)
+  #:use-module (guix build utils)
+  #:use-module (guix build install)
   #:use-module (gnu system)
   #:use-module (gnu system vm)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (guix-system
@@ -64,6 +68,38 @@
          (leave (_ "failed to load machine file '~a': ~s~%")
                 file args))))))
 
+(define* (install store os-dir target
+                  #:key (log-port (current-output-port)))
+  "Copy OS-DIR and its dependencies to directory TARGET.  TARGET must be an
+absolute directory name since that's what 'guix-register' expects."
+  (define to-copy
+    (let ((lst (delete-duplicates (cons os-dir (references store os-dir))
+                                  string=?)))
+      (topologically-sorted store lst)))
+
+  ;; Copy items to the new store.
+  (for-each (lambda (item)
+              (let ((dest (string-append target item))
+                    (refs (references store item)))
+                (format log-port "copying '~a'...~%" item)
+                (copy-recursively item dest
+                                  #:log (%make-void-port "w"))
+
+                ;; Register ITEM; as a side-effect, it resets timestamps, etc.
+                (unless (register-path item
+                                       #:prefix target
+                                       #:references refs)
+                  (leave (_ "failed to register '~a' under '~a'~%")
+                         item target))))
+            to-copy)
+
+  ;; Create a bunch of additional files.
+  (format log-port "populating '~a'...~%" target)
+  (populate-root-file-system target)
+
+  ;; TODO: Install GRUB.
+  )
+
 
 ;;;
 ;;; Options.
@@ -79,7 +115,9 @@ Build the operating system declared in FILE according to ACTION.\n"))
   (display (_ "\
   - 'vm', build a virtual machine image that shares the host's store\n"))
   (display (_ "\
-  - 'vm-image', build a freestanding virtual machine image.\n"))
+  - 'vm-image', build a freestanding virtual machine image\n"))
+  (display (_ "\
+  - 'init', initialize a root file system to run GNU.\n"))
 
   (show-build-options-help)
   (display (_ "
@@ -132,27 +170,50 @@ Build the operating system declared in FILE according to ACTION.\n"))
                   (leave (_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (if (assoc-ref result 'action)
-                      (let ((previous (assoc-ref result 'argument)))
-                        (if previous
-                            (leave (_ "~a: extraneous argument~%") previous)
-                            (alist-cons 'argument arg result)))
+                      (alist-cons 'argument arg result)
                       (let ((action (string->symbol arg)))
                         (case action
-                          ((build vm vm-image)
+                          ((build vm vm-image init)
                            (alist-cons 'action action result))
                           (else (leave (_ "~a: unknown action~%")
                                        action))))))
                 %default-options))
 
+  (define (match-pair car)
+    ;; Return a procedure that matches a pair with CAR.
+    (match-lambda
+     ((head . tail)
+      (and (eq? car head) tail))
+     (_ #f)))
+
+  (define (option-arguments opts)
+    ;; Extract the plain arguments from OPTS.
+    (let* ((args   (reverse (filter-map (match-pair 'argument) opts)))
+           (count  (length args))
+           (action (assoc-ref opts 'action)))
+      (define (fail)
+        (leave (_ "wrong number of arguments for action '~a'~%")
+               action))
+
+      (case action
+        ((build vm vm-image)
+         (unless (= count 1)
+           (fail)))
+        ((init)
+         (unless (= count 2)
+           (fail))))
+      args))
+
   (with-error-handling
     (let* ((opts   (parse-options))
-           (file   (assoc-ref opts 'argument))
+           (args   (option-arguments opts))
+           (file   (first args))
            (action (assoc-ref opts 'action))
            (os     (if file
                        (read-operating-system file)
                        (leave (_ "no configuration file specified~%"))))
            (mdrv   (case action
-                     ((build)
+                     ((build init)
                       (operating-system-derivation os))
                      ((vm-image)
                       (let ((size (assoc-ref opts 'image-size)))
@@ -171,4 +232,12 @@ Build the operating system declared in FILE according to ACTION.\n"))
       (unless dry?
         (build-derivations store (list drv))
         (display (derivation->output-path drv))
-        (newline)))))
+        (newline)
+
+        (when (eq? action 'init)
+          (let ((target (second args)))
+            (format #t (_ "initializing operating system under '~a'...~%")
+                    target)
+
+            (install store (derivation->output-path drv)
+                     (canonicalize-path target))))))))

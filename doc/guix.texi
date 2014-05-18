@@ -3209,6 +3209,21 @@ Build the operating system's derivation, which includes all the
 configuration files and programs needed to boot and run the system.
 This action does not actually install anything.
 
+@item init
+Populate the given directory with all the files necessary to run the
+operating system specified in @var{file}.  This is useful for first-time
+installations of the GNU system.  For instance:
+
+@example
+guix system init my-os-config.scm /mnt
+@end example
+
+copies to @file{/mnt} all the store items required by the configuration
+specified in @file{my-os-config.scm}.  This includes configuration
+files, packages, and so on.  It also creates other essential files
+needed for the system to operate correctly---e.g., the @file{/etc},
+@file{/var}, and @file{/run} directories, and the @file{/bin/sh} file.
+
 @item vm
 @cindex virtual machine
 Build a virtual machine that contain the operating system declared in
