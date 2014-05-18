@@ -103,7 +103,7 @@ as created and modified at the Epoch."
 (define (register-closure store closure)
   "Register CLOSURE in STORE, where STORE is the directory name of the target
 store and CLOSURE is the name of a file containing a reference graph as used
-by 'guix-register'."
+by 'guix-register'.  As a side effect, this resets timestamps on store files."
   (let ((status (system* "guix-register" "--prefix" store
                          closure)))
     (unless (zero? status)

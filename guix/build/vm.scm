@@ -211,7 +211,10 @@ further populate the partition."
   (unless (install-grub grub.cfg "/dev/sda" target-directory)
     (error "failed to install GRUB"))
 
-  (reset-timestamps target-directory)
+  ;; 'guix-register' resets timestamps and everything, so no need to do it
+  ;; once more in that case.
+  (unless register-closures?
+    (reset-timestamps target-directory))
 
   (zero? (system* "umount" target-directory)))
 
