@@ -666,3 +666,33 @@ domains ranging from structural mechanics to operating systems or
 bio-chemistry.")
     ;; See LICENSE_en.txt
     (license license:cecill-c)))
+
+(define-public pt-scotch
+  (package (inherit scotch)
+    (name "pt-scotch")
+    (propagated-inputs
+     `(("openmpi" ,openmpi)))           ;Headers include MPI headers
+    (arguments
+     (substitute-keyword-arguments (package-arguments scotch)
+       ((#:phases scotch-phases)
+        `(alist-replace
+          'build
+          ;; TODO: Would like to add parallelism here
+          (lambda _
+            (and
+             (zero? (system* "make" "ptscotch"))
+             ;; Install the serial metis compatibility library
+             (zero? (system* "make" "-C" "libscotchmetis" "install"))))
+          (alist-replace
+           'check
+           (lambda _ (zero? (system* "make" "ptcheck")))
+           (alist-replace
+            'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              (let ((out (assoc-ref outputs "out")))
+                (mkdir out)
+                (zero? (system* "make"
+                                (string-append "prefix=" out)
+                                "install"))))
+            ,scotch-phases))))))
+    (synopsis "Programs and libraries for graph algorithms (with MPI)")))
