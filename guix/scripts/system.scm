@@ -70,6 +70,22 @@
          (leave (_ "failed to load machine file '~a': ~s~%")
                 file args))))))
 
+(define* (copy-closure store item target
+                       #:key (log-port (current-error-port)))
+  "Copy ITEM to the store under root directory TARGET and register it."
+  (let ((dest (string-append target item))
+        (refs (references store item)))
+    (format log-port "copying '~a'...~%" item)
+    (copy-recursively item dest
+                      #:log (%make-void-port "w"))
+
+    ;; Register ITEM; as a side-effect, it resets timestamps, etc.
+    (unless (register-path item
+                           #:prefix target
+                           #:references refs)
+      (leave (_ "failed to register '~a' under '~a'~%")
+             item target))))
+
 (define* (install store os-dir target
                   #:key (log-port (current-output-port))
                   grub? grub.cfg device)
@@ -83,19 +99,7 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
       (topologically-sorted store lst)))
 
   ;; Copy items to the new store.
-  (for-each (lambda (item)
-              (let ((dest (string-append target item))
-                    (refs (references store item)))
-                (format log-port "copying '~a'...~%" item)
-                (copy-recursively item dest
-                                  #:log (%make-void-port "w"))
-
-                ;; Register ITEM; as a side-effect, it resets timestamps, etc.
-                (unless (register-path item
-                                       #:prefix target
-                                       #:references refs)
-                  (leave (_ "failed to register '~a' under '~a'~%")
-                         item target))))
+  (for-each (cut copy-closure store <> target #:log-port log-port)
             to-copy)
 
   ;; Create a bunch of additional files.
