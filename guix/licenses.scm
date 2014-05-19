@@ -26,6 +26,7 @@
             boost1.0
             bsd-2 bsd-3 bsd-4 bsd-style
             cddl1.0
+            cecill-c
             cpl1.0
             epl1.0
             expat
@@ -111,6 +112,11 @@ which may be a file:// URI pointing the package's tree."
   (license "CDDL 1.0"
            "http://directory.fsf.org/wiki/License:CDDLv1.0"
            "https://www.gnu.org/licenses/license-list#CDDL"))
+
+(define cecill-c
+  (license "CeCILL-C"
+           "http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html"
+           "https://www.gnu.org/licenses/license-list.html#CeCILL"))
 
 (define cpl1.0
   (license "CPL 1.0"
