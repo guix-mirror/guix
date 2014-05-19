@@ -19,6 +19,8 @@
 
 (define-module (test-ui)
   #:use-module (guix ui)
+  #:use-module (guix store)
+  #:use-module (guix derivations)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-64))
@@ -188,6 +190,16 @@ interface, and powerful string processing.")
       (size->number "9X"))
     (lambda args
       #t)))
+
+(test-equal "show-what-to-build, zero outputs"
+  ""
+  (with-store store
+    (let ((drv (derivation store "zero" "/bin/sh" '()
+                           #:outputs '())))
+      (with-error-to-string
+       (lambda ()
+         ;; This should print nothing.
+         (show-what-to-build store (list drv)))))))
 
 (test-end "ui")
 
