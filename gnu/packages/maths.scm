@@ -589,3 +589,80 @@ library routines perform an LU decomposition with partial pivoting and
 triangular system solves through forward and back substitution.  The library
 also provides threshold-based ILU factorization preconditioners.")
     (license license:bsd-3)))
+
+(define-public scotch
+  (package
+    (name "scotch")
+    (version "6.0.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://gforge.inria.fr/frs/download.php/31831/"
+                          "scotch_" version ".tar.gz"))
+      (sha256
+       (base32 "0yfqf9lk7chb3h42777x42x4adx0v3n0b41q0cdqrdmscp4iczp5"))
+      (patches (list (search-patch "scotch-test-threading.patch")))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)
+       ("flex" ,flex)
+       ("bison" ,bison)))
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'unpack 'chdir-to-src
+        (lambda _ (chdir "src"))
+        (alist-replace
+         'configure
+         (lambda _
+           (call-with-output-file "Makefile.inc"
+             (lambda (port)
+               (format port "
+EXE =
+LIB = .a
+OBJ = .o
+MAKE = make
+AR = ar
+ARFLAGS = -ruv
+CCS = gcc
+CCP = mpicc
+CCD = gcc
+CPPFLAGS =~{ -D~a~}
+CFLAGS = -O2 -g $(CPPFLAGS)
+LDFLAGS = -lz -lm -lrt -lpthread
+CP = cp
+LEX = flex -Pscotchyy -olex.yy.c
+LN = ln
+MKDIR = mkdir
+MV = mv
+RANLIB = ranlib
+YACC = bison -pscotchyy -y -b y
+"
+                       '("COMMON_FILE_COMPRESS_GZ"
+                         "COMMON_PTHREAD"
+                         "COMMON_RANDOM_FIXED_SEED"
+                         ;; TODO: Define once our MPI supports
+                         ;; MPI_THREAD_MULTIPLE
+                         ;; "SCOTCH_PTHREAD"
+                         ;; "SCOTCH_PTHREAD_NUMBER=2"
+                         "restrict=__restrict")))))
+         (alist-replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (mkdir out)
+              (zero? (system* "make"
+                              (string-append "prefix=" out)
+                              "install"))))
+          %standard-phases)))))
+    (home-page "http://www.labri.fr/perso/pelegrin/scotch/")
+    (synopsis "Programs and libraries for graph algorithms")
+    (description "SCOTCH is a set of programs and libraries which implement
+the static mapping and sparse matrix reordering algorithms developed within
+the SCOTCH project.  Its purpose is to apply graph theory, with a divide and
+conquer approach, to scientific computing problems such as graph and mesh
+partitioning, static mapping, and sparse matrix ordering, in application
+domains ranging from structural mechanics to operating systems or
+bio-chemistry.")
+    ;; See LICENSE_en.txt
+    (license license:cecill-c)))
