@@ -121,7 +121,7 @@ The data at PORT is the format produced by #:references-graphs."
   "Create on DEVICE a partition table of type LABEL-TYPE, with a single
 partition of PARTITION-SIZE MiB.  Return #t on success."
   (display "creating partition table...\n")
-  (zero? (system* "parted" "/dev/sda" "mklabel" label-type
+  (zero? (system* "parted" device "mklabel" label-type
                   "mkpart" "primary" "ext2" "1MiB"
                   (format #f "~aB" partition-size))))
 
@@ -147,7 +147,8 @@ REFERENCE-GRAPHS, a list of reference-graph files."
 
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
 
-(define* (initialize-hard-disk #:key
+(define* (initialize-hard-disk device
+                               #:key
                                grub.cfg
                                disk-image-size
                                (file-system-type "ext4")
@@ -155,7 +156,7 @@ REFERENCE-GRAPHS, a list of reference-graph files."
                                copy-closures?
                                (register-closures? #t)
                                (directives '()))
-  "Initialize /dev/sda, a disk of DISK-IMAGE-SIZE bytes, with a
+  "Initialize DEVICE, a disk of DISK-IMAGE-SIZE bytes, with a
 FILE-SYSTEM-TYPE partition, and with GRUB installed.  If REGISTER-CLOSURES? is
 true, register all of CLOSURES is the partition's store.  If COPY-CLOSURES? is
 true, copy all of CLOSURES to the partition.  Lastly, apply DIRECTIVES to
@@ -166,19 +167,22 @@ further populate the partition."
   (define target-store
     (string-append target-directory (%store-directory)))
 
-  (unless (initialize-partition-table "/dev/sda"
+  (define partition
+    (string-append device 1))
+
+  (unless (initialize-partition-table device
                                       #:partition-size
                                       (- disk-image-size (* 5 (expt 2 20))))
     (error "failed to create partition table"))
 
   (format #t "creating ~a partition...\n" file-system-type)
   (unless (zero? (system* (string-append "mkfs." file-system-type)
-                          "-F" "/dev/sda1"))
+                          "-F" partition))
     (error "failed to create partition"))
 
   (display "mounting partition...\n")
   (mkdir target-directory)
-  (mount "/dev/sda1" target-directory file-system-type)
+  (mount partition target-directory file-system-type)
 
   (when copy-closures?
     ;; Populate the store.
@@ -208,7 +212,7 @@ further populate the partition."
   (display "populating...\n")
   (populate-root-file-system target-directory)
 
-  (unless (install-grub grub.cfg "/dev/sda" target-directory)
+  (unless (install-grub grub.cfg device target-directory)
     (error "failed to install GRUB"))
 
   ;; 'guix-register' resets timestamps and everything, so no need to do it

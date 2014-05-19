@@ -230,7 +230,8 @@ the image."
           (let ((graphs '#$(match inputs
                              (((names . _) ...)
                               names))))
-            (initialize-hard-disk #:grub.cfg #$grub-configuration
+            (initialize-hard-disk "/dev/sda"
+                                  #:grub.cfg #$grub-configuration
                                   #:closures graphs
                                   #:copy-closures? #$copy-inputs?
                                   #:register-closures? #$register-closures?
