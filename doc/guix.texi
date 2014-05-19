@@ -3125,6 +3125,8 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
    (host-name "komputilo")
    (timezone "Europe/Paris")
    (locale "fr_FR.UTF-8")
+   (bootloader (grub-configuration
+                 (device "/dev/sda")))
    (file-systems (list (file-system
                          (device "/dev/disk/by-label/root")
                          (mount-point "/")
