@@ -39,6 +39,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages check)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -1087,3 +1088,40 @@ The numademo command provides a quick overview of NUMA performance on your
 system.")
     (license (list gpl2                           ; programs
                    lgpl2.1))))                    ; library
+
+(define-public kbd
+  (package
+    (name "kbd")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/linux/utils/kbd/kbd-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0c34b0za2v0934acvgnva0vaqpghmmhz4zh7k0m9jd4mbc91byqm"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'build 'pre-build
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((gzip  (assoc-ref %build-inputs "gzip"))
+                         (bzip2 (assoc-ref %build-inputs "bzip2")))
+                     (substitute* "src/libkeymap/findfile.c"
+                       (("gzip")
+                        (string-append gzip "/bin/gzip"))
+                       (("bzip2")
+                        (string-append bzip2 "/bin/bzip2")))))
+                 %standard-phases)))
+    (inputs `(("check" ,check)
+              ("gzip" ,guix:gzip)
+              ("bzip2" ,guix:bzip2)
+              ("pam" ,linux-pam)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "ftp://ftp.kernel.org/pub/linux/utils/kbd/")
+    (synopsis "Linux keyboard utilities and keyboard maps")
+    (description
+     "This package contains keytable files and keyboard utilities compatible
+for systems using the Linux kernel.  This includes commands such as
+'loadkeys', 'setfont', 'kbdinfo', and 'chvt'.")
+    (license gpl2+)))
