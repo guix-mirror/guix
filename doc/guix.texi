@@ -3224,6 +3224,9 @@ files, packages, and so on.  It also creates other essential files
 needed for the system to operate correctly---e.g., the @file{/etc},
 @file{/var}, and @file{/run} directories, and the @file{/bin/sh} file.
 
+This command also installs GRUB on the device specified in
+@file{my-os-config}, unless the @option{--no-grub} option was passed.
+
 @item vm
 @cindex virtual machine
 Build a virtual machine that contain the operating system declared in
