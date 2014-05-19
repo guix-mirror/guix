@@ -590,6 +590,107 @@ triangular system solves through forward and back substitution.  The library
 also provides threshold-based ILU factorization preconditioners.")
     (license license:bsd-3)))
 
+(define-public superlu-dist
+  (package
+    (name "superlu-dist")
+    (version "3.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://crd-legacy.lbl.gov/~xiaoye/SuperLU/"
+                           "superlu_dist_" version ".tar.gz"))
+       (sha256
+        (base32 "1hnak09yxxp026blq8zhrl7685yip16svwngh1wysqxf8z48vzfj"))
+       (patches (list (search-patch "superlu-dist-scotchmetis.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("tcsh" ,tcsh)))
+    (inputs
+     `(("gfortran" ,gfortran-4.8)))
+    (propagated-inputs
+     `(("openmpi" ,openmpi)             ;headers include MPI heades
+       ("lapack" ,lapack)               ;required to link with output library
+       ("pt-scotch" ,pt-scotch)))       ;same
+    (arguments
+     `(#:parallel-build? #f             ;race conditions using ar
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (call-with-output-file "make.inc"
+            (lambda (port)
+              (format port "
+PLAT        =
+DSuperLUroot = ~a
+DSUPERLULIB  = ~a/lib/libsuperlu_dist.a
+BLASDEF     = -DUSE_VENDOR_BLAS
+BLASLIB     = -L~a/lib -lblas
+PARMETISLIB = -L~a/lib \
+              -lptscotchparmetis -lptscotch -lptscotcherr -lptscotcherrexit \
+              -lscotch -lscotcherr -lscotcherrexit
+METISLIB    = -L~:*~a/lib \
+              -lscotchmetis -lscotch -lscotcherr -lscotcherrexit
+LIBS        = $(DSUPERLULIB) $(PARMETISLIB) $(METISLIB) $(BLASLIB)
+ARCH        = ar
+ARCHFLAGS   = cr
+RANLIB      = ranlib
+CC          = mpicc
+PIC         = -fPIC
+CFLAGS      = -O3 -g -DPRNTlevel=0 $(PIC)
+NOOPTS      = -O0 -g $(PIC)
+FORTRAN     = mpifort
+FFLAGS      = -O2 -g $(PIC)
+LOADER      = $(CC)
+CDEFS       = -DAdd_"
+                      (getcwd)
+                      (assoc-ref outputs "out")
+                      (assoc-ref inputs "lapack")
+                      (assoc-ref inputs "pt-scotch")))))
+        (alist-cons-after
+         'unpack 'remove-broken-symlinks
+         (lambda _
+           (for-each delete-file
+                     (find-files "MAKE_INC" "\\.#make\\..*")))
+         (alist-cons-before
+          'build 'create-install-directories
+          (lambda* (#:key outputs #:allow-other-keys)
+            (for-each
+             (lambda (dir)
+               (mkdir-p (string-append (assoc-ref outputs "out")
+                                       "/" dir)))
+             '("lib" "include")))
+          (alist-replace
+           'check
+           (lambda _
+             (with-directory-excursion "EXAMPLE"
+               (and
+                (zero? (system* "mpirun" "-n" "2"
+                                "./pddrive" "-r" "1" "-c" "2" "g20.rua"))
+                (zero? (system* "mpirun" "-n" "2"
+                                "./pzdrive" "-r" "1" "-c" "2" "cg20.cua")))))
+           (alist-replace
+            'install
+            (lambda* (#:key outputs #:allow-other-keys)
+              ;; Library is placed in lib during the build phase.  Copy over
+              ;; headers to include.
+              (let* ((out    (assoc-ref outputs "out"))
+                     (incdir (string-append out "/include")))
+                (for-each (lambda (file)
+                            (let ((base (basename file)))
+                              (format #t "installing `~a' to `~a'~%"
+                                      base incdir)
+                              (copy-file file
+                                         (string-append incdir "/" base))))
+                          (find-files "SRC" ".*\\.h$"))))
+            %standard-phases)))))))
+    (home-page (package-home-page superlu))
+    (synopsis "Parallel supernodal direct solver")
+    (description
+     "SuperLU_DIST is a parallel extension to the serial SuperLU library.
+It is targeted for distributed memory parallel machines.  SuperLU_DIST is
+implemented in ANSI C, and MPI for communications.")
+    (license license:bsd-3)))
+
 (define-public scotch
   (package
     (name "scotch")
