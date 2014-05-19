@@ -98,9 +98,11 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
                                   string=?)))
       (topologically-sorted store lst)))
 
-  ;; Copy items to the new store.
-  (for-each (cut copy-closure store <> target #:log-port log-port)
-            to-copy)
+  (if (string=? target "/")
+      (warning (_ "initializing the current root file system~%"))
+      ;; Copy items to the new store.
+      (for-each (cut copy-closure store <> target #:log-port log-port)
+                to-copy))
 
   ;; Create a bunch of additional files.
   (format log-port "populating '~a'...~%" target)
