@@ -32,6 +32,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
@@ -44,6 +45,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (srfi srfi-1))
 
 (define-public mailutils
@@ -251,6 +253,32 @@ Extension (MIME).")
  (non-spam) by a statistical analysis of the message's header and
 content (body).  The program is able to learn from the user's classifications
 and corrections.  It is based on a Bayesian filter.")
+    (license gpl2)))
+
+(define-public offlineimap
+  (package
+    (name "offlineimap")
+    (version "6.5.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "00k84qagph3xnxss6rkxm61x07ngz8fvffx4z9jyw5baf3cdd32p"))))
+    (build-system python-build-system)
+    (native-inputs `(("python" ,python-2)))
+    (arguments
+     ;; The setup.py script expects python-2.
+     `(#:python ,python-2
+      ;; Tests require a modifiable IMAP account.
+       #:tests? #f))
+    (home-page "http://www.offlineimap.org")
+    (synopsis "Synch emails between two repositories")
+    (description
+     "OfflineImap synchronizes emails between two repositories, so that you
+can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
+repository and Maildir/IMAP as LOCAL repository.")
     (license gpl2)))
 
 ;;; mail.scm ends here
