@@ -178,25 +178,30 @@ verbose output to the LOG port."
                         stat
                         lstat)))
 
-(define (delete-file-recursively dir)
-  "Delete DIR recursively, like `rm -rf', without following symlinks.  Report
-but ignore errors."
-  (file-system-fold (const #t)                    ; enter?
-                    (lambda (file stat result)    ; leaf
-                      (delete-file file))
-                    (const #t)                    ; down
-                    (lambda (dir stat result)     ; up
-                      (rmdir dir))
-                    (const #t)                    ; skip
-                    (lambda (file stat errno result)
-                      (format (current-error-port)
-                              "warning: failed to delete ~a: ~a~%"
-                              file (strerror errno)))
-                    #t
-                    dir
+(define* (delete-file-recursively dir
+                                  #:key follow-mounts?)
+  "Delete DIR recursively, like `rm -rf', without following symlinks.  Don't
+follow mount points either, unless FOLLOW-MOUNTS? is true.  Report but ignore
+errors."
+  (let ((dev (stat:dev (lstat dir))))
+    (file-system-fold (lambda (dir stat result)    ; enter?
+                        (or follow-mounts?
+                            (= dev (stat:dev stat))))
+                      (lambda (file stat result)   ; leaf
+                        (delete-file file))
+                      (const #t)                   ; down
+                      (lambda (dir stat result)    ; up
+                        (rmdir dir))
+                      (const #t)                   ; skip
+                      (lambda (file stat errno result)
+                        (format (current-error-port)
+                                "warning: failed to delete ~a: ~a~%"
+                                file (strerror errno)))
+                      #t
+                      dir
 
-                    ;; Don't follow symlinks.
-                    lstat))
+                      ;; Don't follow symlinks.
+                      lstat)))
 
 (define (find-files dir regexp)
   "Return the lexicographically sorted list of files under DIR whose basename
