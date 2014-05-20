@@ -168,7 +168,7 @@ further populate the partition."
     (string-append target-directory (%store-directory)))
 
   (define partition
-    (string-append device 1))
+    (string-append device "1"))
 
   (unless (initialize-partition-table device
                                       #:partition-size
