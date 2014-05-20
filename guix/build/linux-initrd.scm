@@ -483,9 +483,11 @@ to it are lost."
             (lambda ()
               (primitive-load to-load))
             (lambda args
+              (start-repl))
+            (lambda args
               (format (current-error-port) "'~a' raised an exception: ~s~%"
                       to-load args)
-              (start-repl)))
+              (display-backtrace (make-stack #t) (current-error-port))))
           (format (current-error-port)
                   "boot program '~a' terminated, rebooting~%"
                   to-load)
