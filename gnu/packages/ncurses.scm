@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -52,7 +52,6 @@
               (("cross_compiling:=no")
                "cross_compiling:=yes"))))
         (post-install-phase
-         ;; FIXME: The `tic' binary lacks a RUNPATH; fix it.
          '(lambda* (#:key outputs #:allow-other-keys)
             (let ((out (assoc-ref outputs "out")))
               ;; When building a wide-character (Unicode) build, create backward
@@ -104,6 +103,11 @@
           ;; in PREFIX/share/man.
           ,(string-append "--mandir=" (assoc-ref %outputs "out")
                           "/share/man")
+
+          ;; Make sure programs like 'tic', 'reset', and 'clear' have a
+          ;; correct RUNPATH.
+          ,(string-append "LDFLAGS=-Wl,-rpath=" (assoc-ref %outputs "out")
+                          "/lib")
 
           ;; C++ bindings fail to build on
           ;; `i386-pc-solaris2.11' with GCC 3.4.3:
