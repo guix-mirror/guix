@@ -20,6 +20,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages acl)
+  #:use-module (gnu packages which)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -49,3 +50,29 @@ by sending only the differences between the source files and the existing
 files in the destination.")
    (license gpl3+)
    (home-page "http://rsync.samba.org/")))
+
+(define-public librsync
+  (package
+    (name "librsync")
+    (version "0.9.7")
+       (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/projects/librsync/librsync/"
+                                version "/librsync-" version ".tar.gz"))
+            (sha256
+             (base32
+              "1mj1pj99mgf1a59q9f2mxjli2fzxpnf55233pc1klxk2arhf8cv6"))))
+   (build-system gnu-build-system)
+   (native-inputs
+    `(("which" ,which)
+      ("perl" ,perl)))
+   (arguments '(#:configure-flags '("--enable-shared")))
+   (home-page "http://librsync.sourceforge.net/")
+   (synopsis "Implementation of the rsync remote-delta algorithm")
+   (description
+    "Librsync is a free software library that implements the rsync
+remote-delta algorithm.  This algorithm allows efficient remote updates of a
+file, without requiring the old and new versions to both be present at the
+sending end. The library uses a \"streaming\" design similar to that of zlib
+with the aim of allowing it to be embedded into many different applications.")
+   (license lgpl2.1+)))
