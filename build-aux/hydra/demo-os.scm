@@ -36,6 +36,8 @@
              (gnu system grub)                    ; 'grub-configuration'
              (gnu system shadow)                  ; 'user-account'
              (gnu system linux)                   ; 'base-pam-services'
+             (gnu system file-systems)            ; 'file-systems'
+
              (gnu services base)
              (gnu services networking)
              (gnu services xorg))

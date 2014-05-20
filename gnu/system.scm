@@ -34,6 +34,7 @@
   #:use-module (gnu system shadow)
   #:use-module (gnu system linux)
   #:use-module (gnu system linux-initrd)
+  #:use-module (gnu system file-systems)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -56,20 +57,7 @@
 
             operating-system-derivation
             operating-system-profile
-            operating-system-grub.cfg
-
-            <file-system>
-            file-system
-            file-system?
-            file-system-device
-            file-system-mount-point
-            file-system-type
-            file-system-needed-for-boot?
-            file-system-flags
-            file-system-options
-
-            %fuse-control-file-system
-            %binary-format-file-system))
+            operating-system-grub.cfg))
 
 ;;; Commentary:
 ;;;
@@ -128,43 +116,6 @@
 
   (sudoers operating-system-sudoers               ; /etc/sudoers contents
            (default %sudoers-specification)))
-
-
-;;;
-;;; File systems.
-;;;
-
-;; File system declaration.
-(define-record-type* <file-system> file-system
-  make-file-system
-  file-system?
-  (device           file-system-device)           ; string
-  (mount-point      file-system-mount-point)      ; string
-  (type             file-system-type)             ; string
-  (flags            file-system-flags             ; list of symbols
-                    (default '()))
-  (options          file-system-options           ; string or #f
-                    (default #f))
-  (needed-for-boot? file-system-needed-for-boot?  ; Boolean
-                    (default #f))
-  (check?           file-system-check?            ; Boolean
-                    (default #t)))
-
-(define %fuse-control-file-system
-  ;; Control file system for Linux' file systems in user-space (FUSE).
-  (file-system
-    (device "fusectl")
-    (mount-point "/sys/fs/fuse/connections")
-    (type "fusectl")
-    (check? #f)))
-
-(define %binary-format-file-system
-  ;; Support for arbitrary executable binary format.
-  (file-system
-    (device "binfmt_misc")
-    (mount-point "/proc/sys/fs/binfmt_misc")
-    (type "binfmt_misc")
-    (check? #f)))
 
 
 ;;;

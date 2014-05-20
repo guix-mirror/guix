@@ -248,6 +248,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/services/xorg.scm				\
 						\
   gnu/system.scm				\
+  gnu/system/file-systems.scm			\
   gnu/system/grub.scm				\
   gnu/system/linux.scm				\
   gnu/system/linux-initrd.scm			\

@@ -30,7 +30,7 @@
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages make-bootstrap)
                 #:select (%guile-static-stripped))
-  #:use-module (gnu system)                       ; for 'file-system'
+  #:use-module (gnu system file-systems)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)

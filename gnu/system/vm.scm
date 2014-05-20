@@ -42,6 +42,7 @@
   #:use-module (gnu system linux)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu system grub)
+  #:use-module (gnu system file-systems)
   #:use-module (gnu system)
   #:use-module (gnu services)
 
