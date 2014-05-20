@@ -43,6 +43,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/boost.scm			\
   gnu/packages/bootstrap.scm			\
   gnu/packages/calcurse.scm			\
+  gnu/packages/ccache.scm			\
   gnu/packages/cdrom.scm			\
   gnu/packages/cflow.scm			\
   gnu/packages/check.scm			\
@@ -264,6 +265,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
   gnu/packages/patches/bitlbee-fix-tests.patch			\
   gnu/packages/patches/bitlbee-memset-fix.patch			\
+  gnu/packages/patches/ccache-stdc-predef-test.patch		\
   gnu/packages/patches/cdparanoia-fpic.patch			\
   gnu/packages/patches/clucene-pkgconfig.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\

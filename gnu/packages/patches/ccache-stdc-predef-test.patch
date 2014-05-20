@@ -1,0 +1,157 @@
+This patch is a combination of the following commits::
+
+  https://git.samba.org/?p=ccache.git;a=commit;h=b5d63f81c1a83fd4c50b769a96a04f581b7db70c
+  https://git.samba.org/?p=ccache.git;a=commit;h=a11f5688748ecb49f590b3f4bc0e9b3458f9a56f
+  https://git.samba.org/?p=ccache.git;a=commit;h=5a9322c56ed0cd16255966e99077843aae57ab3e
+
+from the general discussion at
+http://comments.gmane.org/gmane.comp.compilers.ccache/1089
+
+--- a/test.sh
++++ b/test.sh
+@@ -562,6 +562,12 @@
+ EOF
+     backdate test1.h test2.h test3.h
+ 
++    $COMPILER -c -Wp,-MD,expected.d test.c
++    expected_d_content=`cat expected.d`
++
++    $COMPILER -c -Wp,-MMD,expected_mmd.d test.c
++    expected_mmd_d_content=`cat expected_mmd.d`
++
+     ##################################################################
+     # First compilation is a miss.
+     testname="first compilation"
+@@ -677,7 +683,7 @@
+     checkstat 'cache hit (direct)' 0
+     checkstat 'cache hit (preprocessed)' 0
+     checkstat 'cache miss' 1
+-    checkfile other.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile other.d "$expected_d_content"
+ 
+     rm -f other.d
+ 
+@@ -685,7 +691,7 @@
+     checkstat 'cache hit (direct)' 1
+     checkstat 'cache hit (preprocessed)' 0
+     checkstat 'cache miss' 1
+-    checkfile other.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile other.d "$expected_d_content"
+ 
+     rm -f other.d
+ 
+@@ -698,7 +704,7 @@
+     checkstat 'cache hit (direct)' 0
+     checkstat 'cache hit (preprocessed)' 0
+     checkstat 'cache miss' 1
+-    checkfile other.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile other.d "$expected_mmd_d_content"
+ 
+     rm -f other.d
+ 
+@@ -706,7 +712,7 @@
+     checkstat 'cache hit (direct)' 1
+     checkstat 'cache hit (preprocessed)' 0
+     checkstat 'cache miss' 1
+-    checkfile other.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile other.d "$expected_mmd_d_content"
+ 
+     rm -f other.d
+ 
+@@ -760,7 +766,7 @@
+     checkstat 'cache hit (direct)' 0
+     checkstat 'cache hit (preprocessed)' 0
+     checkstat 'cache miss' 1
+-    checkfile test.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile test.d "$expected_d_content"
+ 
+     rm -f test.d
+ 
+@@ -768,7 +774,7 @@
+     checkstat 'cache hit (direct)' 1
+     checkstat 'cache hit (preprocessed)' 0
+     checkstat 'cache miss' 1
+-    checkfile test.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile test.d "$expected_d_content"
+ 
+     ##################################################################
+     # Check the scenario of running a ccache with direct mode on a cache
+@@ -780,7 +786,7 @@
+     checkstat 'cache hit (direct)' 0
+     checkstat 'cache hit (preprocessed)' 0
+     checkstat 'cache miss' 1
+-    checkfile test.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile test.d "$expected_d_content"
+ 
+     rm -f test.d
+ 
+@@ -788,7 +794,7 @@
+     checkstat 'cache hit (direct)' 0
+     checkstat 'cache hit (preprocessed)' 1
+     checkstat 'cache miss' 1
+-    checkfile test.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile test.d "$expected_d_content"
+ 
+     rm -f test.d
+ 
+@@ -796,7 +802,7 @@
+     checkstat 'cache hit (direct)' 0
+     checkstat 'cache hit (preprocessed)' 2
+     checkstat 'cache miss' 1
+-    checkfile test.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile test.d "$expected_d_content"
+ 
+     rm -f test.d
+ 
+@@ -804,7 +810,7 @@
+     checkstat 'cache hit (direct)' 1
+     checkstat 'cache hit (preprocessed)' 2
+     checkstat 'cache miss' 1
+-    checkfile test.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile test.d "$expected_d_content"
+ 
+     ##################################################################
+     # Check that -MF works.
+@@ -815,7 +821,7 @@
+     checkstat 'cache hit (direct)' 0
+     checkstat 'cache hit (preprocessed)' 0
+     checkstat 'cache miss' 1
+-    checkfile other.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile other.d "$expected_d_content"
+ 
+     rm -f other.d
+ 
+@@ -823,7 +829,7 @@
+     checkstat 'cache hit (direct)' 1
+     checkstat 'cache hit (preprocessed)' 0
+     checkstat 'cache miss' 1
+-    checkfile other.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile other.d "$expected_d_content"
+ 
+     ##################################################################
+     # Check that a missing .d file in the cache is handled correctly.
+@@ -835,13 +841,13 @@
+     checkstat 'cache hit (direct)' 0
+     checkstat 'cache hit (preprocessed)' 0
+     checkstat 'cache miss' 1
+-    checkfile other.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile other.d "$expected_d_content"
+ 
+     $CCACHE $COMPILER -c -MD test.c
+     checkstat 'cache hit (direct)' 1
+     checkstat 'cache hit (preprocessed)' 0
+     checkstat 'cache miss' 1
+-    checkfile other.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile other.d "$expected_d_content"
+ 
+     find $CCACHE_DIR -name '*.d' -exec rm -f '{}' \;
+ 
+@@ -849,7 +855,7 @@
+     checkstat 'cache hit (direct)' 1
+     checkstat 'cache hit (preprocessed)' 1
+     checkstat 'cache miss' 1
+-    checkfile other.d "test.o: test.c test1.h test3.h test2.h"
++    checkfile other.d "$expected_d_content"
+ 
+     ##################################################################
+     # Check that stderr from both the preprocessor and the compiler is emitted
