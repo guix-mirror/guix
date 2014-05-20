@@ -283,7 +283,7 @@ and corrections.  It is based on a Bayesian filter.")
      "OfflineImap synchronizes emails between two repositories, so that you
 can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
 repository and Maildir/IMAP as LOCAL repository.")
-    (license gpl2)))
+    (license gpl2+)))
 
 (define-public mu
   (package
