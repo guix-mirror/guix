@@ -37,7 +37,7 @@
 
 (define* (install-grub grub.cfg device mount-point)
   "Install GRUB with GRUB.CFG on DEVICE, which is assumed to be mounted on
-MOUNT-POINT.  Return #t on success."
+MOUNT-POINT."
   (let* ((target (string-append mount-point "/boot/grub/grub.cfg"))
          (pivot  (string-append target ".new")))
     (mkdir-p (dirname target))
@@ -47,9 +47,11 @@ MOUNT-POINT.  Return #t on success."
     (copy-file grub.cfg pivot)
     (rename-file pivot target)
 
-    (zero? (system* "grub-install" "--no-floppy"
-                    "--boot-directory" (string-append mount-point "/boot")
-                    device))))
+    (unless (zero? (system* "grub-install" "--no-floppy"
+                            "--boot-directory"
+                            (string-append mount-point "/boot")
+                            device))
+      (error "failed to install GRUB"))))
 
 (define (evaluate-populate-directive directive target)
   "Evaluate DIRECTIVE, an sexp describing a file or directory to create under

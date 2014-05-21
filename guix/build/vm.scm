@@ -25,6 +25,9 @@
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (load-in-linux-vm
+            format-partition
+            initialize-root-partition
+            initialize-partition-table
             initialize-hard-disk))
 
 ;;; Commentary:
@@ -113,16 +116,20 @@ The data at PORT is the format produced by #:references-graphs."
            (loop (read-line port)
                  result)))))
 
-(define* (initialize-partition-table device
+(define* (initialize-partition-table device partition-size
                                      #:key
                                      (label-type "msdos")
-                                     partition-size)
+                                     (offset (expt 2 20)))
   "Create on DEVICE a partition table of type LABEL-TYPE, with a single
-partition of PARTITION-SIZE MiB.  Return #t on success."
-  (display "creating partition table...\n")
-  (zero? (system* "parted" device "mklabel" label-type
-                  "mkpart" "primary" "ext2" "1MiB"
-                  (format #f "~aB" partition-size))))
+partition of PARTITION-SIZE bytes starting at OFFSET bytes.  Return #t on
+success."
+  (format #t "creating partition table with a ~a B partition...\n"
+          partition-size)
+  (unless (zero? (system* "parted" device "mklabel" label-type
+                          "mkpart" "primary" "ext2"
+                          (format #f "~aB" offset)
+                          (format #f "~aB" partition-size)))
+    (error "failed to create partition table")))
 
 (define* (populate-store reference-graphs target)
   "Populate the store under directory TARGET with the items specified in
@@ -146,42 +153,18 @@ REFERENCE-GRAPHS, a list of reference-graph files."
 
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
 
-(define* (initialize-hard-disk device
-                               #:key
-                               grub.cfg
-                               disk-image-size
-                               (file-system-type "ext4")
-                               (closures '())
-                               copy-closures?
-                               (register-closures? #t)
-                               (directives '()))
-  "Initialize DEVICE, a disk of DISK-IMAGE-SIZE bytes, with a
-FILE-SYSTEM-TYPE partition, and with GRUB installed.  If REGISTER-CLOSURES? is
-true, register all of CLOSURES is the partition's store.  If COPY-CLOSURES? is
-true, copy all of CLOSURES to the partition.  Lastly, apply DIRECTIVES to
-further populate the partition."
-  (define target-directory
-    "/fs")
+(define (format-partition partition type)
+  "Create a file system TYPE on PARTITION."
+  (format #t "creating ~a partition...\n" type)
+  (unless (zero? (system* (string-append "mkfs." type) "-F" partition))
+    (error "failed to create partition")))
 
+(define* (initialize-root-partition target-directory
+                                    #:key copy-closures? register-closures?
+                                    closures)
+  "Initialize the root partition mounted at TARGET-DIRECTORY."
   (define target-store
     (string-append target-directory (%store-directory)))
-
-  (define partition
-    (string-append device "1"))
-
-  (unless (initialize-partition-table device
-                                      #:partition-size
-                                      (- disk-image-size (* 5 (expt 2 20))))
-    (error "failed to create partition table"))
-
-  (format #t "creating ~a partition...\n" file-system-type)
-  (unless (zero? (system* (string-append "mkfs." file-system-type)
-                          "-F" partition))
-    (error "failed to create partition"))
-
-  (display "mounting partition...\n")
-  (mkdir target-directory)
-  (mount partition target-directory file-system-type)
 
   (when copy-closures?
     ;; Populate the store.
@@ -207,12 +190,43 @@ further populate the partition."
     (unless copy-closures?
       (system* "umount" target-store)))
 
-  ;; Evaluate the POPULATE directives.
+  ;; Add the non-store directories and files.
   (display "populating...\n")
-  (populate-root-file-system target-directory)
+  (populate-root-file-system target-directory))
 
-  (unless (install-grub grub.cfg device target-directory)
-    (error "failed to install GRUB"))
+(define* (initialize-hard-disk device
+                               #:key
+                               grub.cfg
+                               disk-image-size
+                               (file-system-type "ext4")
+                               (closures '())
+                               copy-closures?
+                               (register-closures? #t))
+  "Initialize DEVICE, a disk of DISK-IMAGE-SIZE bytes, with a
+FILE-SYSTEM-TYPE partition, and with GRUB installed.  If REGISTER-CLOSURES? is
+true, register all of CLOSURES is the partition's store.  If COPY-CLOSURES? is
+true, copy all of CLOSURES to the partition."
+  (define target-directory
+    "/fs")
+
+  (define partition
+    (string-append device "1"))
+
+  (initialize-partition-table device
+                              (- disk-image-size (* 5 (expt 2 20))))
+
+  (format-partition partition file-system-type)
+
+  (display "mounting partition...\n")
+  (mkdir target-directory)
+  (mount partition target-directory file-system-type)
+
+  (initialize-root-partition target-directory
+                             #:copy-closures? copy-closures?
+                             #:register-closures? register-closures?
+                             #:closures closures)
+
+  (install-grub grub.cfg device target-directory)
 
   ;; 'guix-register' resets timestamps and everything, so no need to do it
   ;; once more in that case.
