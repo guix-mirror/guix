@@ -671,3 +671,63 @@ commands and their arguments.")
 
     ;; See <http://www.sudo.ws/sudo/license.html>.
     (license x11)))
+
+(define-public wpa-supplicant
+  (package
+    (name "wpa-supplicant")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://hostap.epitest.fi/releases/wpa_supplicant-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "0xxjw7lslvql1ykfbwmbhdrnjsjljf59fbwf837418s97dz2wqwi"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (chdir "wpa_supplicant")
+                   (copy-file "defconfig" ".config")
+                   (let ((port (open-file ".config" "al")))
+                     (display "
+      CONFIG_DEBUG_SYSLOG=y
+      CONFIG_CTRL_IFACE_DBUS=y
+      CONFIG_CTRL_IFACE_DBUS_NEW=y
+      CONFIG_CTRL_IFACE_DBUS_INTRO=y
+      CONFIG_DRIVER_NL80211=y
+      CFLAGS += $(shell pkg-config libnl-3.0 --cflags)
+      CONFIG_LIBNL32=y
+      CONFIG_READLINE=y\n" port)
+                     (close-port port)))
+                 %standard-phases)
+
+      #:make-flags (list "CC=gcc"
+                         (string-append "BINDIR=" (assoc-ref %outputs "out")
+                                        "/sbin")
+                         (string-append "LIBDIR=" (assoc-ref %outputs "out")
+                                        "/lib"))
+      #:tests? #f))
+    (inputs
+     `(("readline" ,readline)
+       ("libnl" ,libnl)
+       ("dbus" ,dbus)
+       ("openssl" ,o:openssl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://hostap.epitest.fi/wpa_supplicant/")
+    (synopsis "Connecting to WPA and WPA2-protected wireless networks")
+    (description
+     "wpa_supplicant is a WPA Supplicant with support for WPA and WPA2 (IEEE
+802.11i / RSN).  Supplicant is the IEEE 802.1X/WPA component that is used in
+the client stations.  It implements key negotiation with a WPA Authenticator
+and it controls the roaming and IEEE 802.11 authentication/association of the
+WLAN driver.
+
+This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
+
+    ;; In practice, this is linked against Readline, which makes it GPLv3+.
+    (license bsd-3)))
