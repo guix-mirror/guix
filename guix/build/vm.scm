@@ -94,8 +94,7 @@ the #:references-graphs parameter of 'derivation'."
     (error "qemu failed" qemu))
 
   (if make-disk-image?
-      (copy-file "image.qcow2"            ; XXX: who mkdir'd OUTPUT?
-                 output)
+      (copy-file "image.qcow2" output)
       (begin
         (mkdir output)
         (copy-recursively "xchg" output))))
