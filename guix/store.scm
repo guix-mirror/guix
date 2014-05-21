@@ -370,6 +370,12 @@ to OUT, using chunks of BUFFER-SIZE bytes."
                                        (min (- len total) buffer-size)
                                        buffer-size)))))))
 
+(define %newlines
+  ;; Newline characters triggering a flush of 'current-build-output-port'.
+  ;; Unlike Guile's _IOLBF, we flush upon #\return so that progress reports
+  ;; that use that trick are correctly displayed.
+  (char-set #\newline #\return))
+
 (define* (process-stderr server #:optional user-port)
   "Read standard output and standard error from SERVER, writing it to
 CURRENT-BUILD-OUTPUT-PORT.  Return #t when SERVER is done sending data, and
@@ -412,6 +418,8 @@ encoding conversion errors."
            ;; Log a string.
            (let ((s (read-latin1-string p)))
              (display s (current-build-output-port))
+             (when (string-any %newlines s)
+               (flush-output-port (current-build-output-port)))
              #f))
           ((= k %stderr-error)
            ;; Report an error.
