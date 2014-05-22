@@ -124,7 +124,9 @@ AC_ARG_WITH([libgcrypt-prefix],
       LIBGCRYPT_LIBDIR="$withval/lib"
       ;;
    esac],
-  [LIBGCRYPT="libgcrypt"])
+  [LIBGCRYPT="libgcrypt"
+   LIBGCRYPT_PREFIX="no"
+   LIBGCRYPT_LIBDIR="no"])
 
 AC_ARG_WITH([libgcrypt-libdir],
   [AS_HELP_STRING([--with-libgcrypt-libdir=DIR],
@@ -141,6 +143,9 @@ AC_ARG_WITH([libgcrypt-libdir],
    esac],
   [if test "x$LIBGCRYPT" = x; then
       LIBGCRYPT="libgcrypt"
+   fi
+   if test "x$LIBGCRYPT_LIBDIR" = x; then
+      LIBGCRYPT_LIBDIR="no"
    fi])
 
 dnl Library name suitable for `dynamic-link'.
