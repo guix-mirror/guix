@@ -96,7 +96,8 @@ the #:references-graphs parameter of 'derivation'."
                   "-append" (string-append "console=ttyS0 --load="
                                            builder)
                   (if make-disk-image?
-                      `("-hda" ,image-file)
+                      `("-drive" ,(string-append "file=" image-file
+                                                 ",if=virtio"))
                       '())))
     (error "qemu failed" qemu))
 

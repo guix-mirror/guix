@@ -236,7 +236,7 @@ the image."
           (let ((graphs '#$(match inputs
                              (((names . _) ...)
                               names))))
-            (initialize-hard-disk "/dev/sda"
+            (initialize-hard-disk "/dev/vda"
                                   #:grub.cfg #$grub-configuration
                                   #:closures graphs
                                   #:copy-closures? #$copy-inputs?
