@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -157,13 +157,30 @@
        "ftp://ftp.nara.wide.ad.jp/pub/CPAN/"
        "http://mirrors.163.com/cpan/"
        "ftp://cpan.mirror.ac.za/")
-      (imagemagick       ; from http://www.imagemagick.org/script/download.php
+      (imagemagick
+       ;; from http://www.imagemagick.org/script/download.php
+       ;; (without mirrors that are unavailable or not up to date)
+       ;; mirrors keeping old versions at the top level
+       "ftp://ftp.sunet.se/pub/multimedia/graphics/ImageMagick/"
+       "ftp://sunsite.icm.edu.pl/packages/ImageMagick/"
+       ;; mirrors moving old versions to "legacy"
+       "http://mirrors-au.go-parts.com/mirrors/ImageMagick/"
+       "ftp://mirror.aarnet.edu.au/pub/imagemagick/"
        "http://mirror.checkdomain.de/imagemagick/"
-       "ftp://gd.tuwien.ac.at/pub/graphics/ImageMagick/"
-       "http://www.imagemagick.org/download"
-       "ftp://mirror.searchdaimon.com/ImageMagick"
+       "ftp://ftp.kddlabs.co.jp/graphics/ImageMagick/"
+       "ftp://ftp.u-aizu.ac.jp/pub/graphics/image/ImageMagick/imagemagick.org/"
+       "ftp://ftp.nluug.nl/pub/ImageMagick/"
+       "http://ftp.surfnet.nl/pub/ImageMagick/"
+       "http://mirror.searchdaimon.com/ImageMagick"
+       "ftp://ftp.tpnet.pl/pub/graphics/ImageMagick/"
+       "http://mirrors-ru.go-parts.com/mirrors/ImageMagick/"
        "http://mirror.is.co.za/pub/imagemagick/"
-       "ftp://mirror.aarnet.edu.au/pub/imagemagick/")
+       "http://mirrors-uk.go-parts.com/mirrors/ImageMagick/"
+       "http://mirrors-usa.go-parts.com/mirrors/ImageMagick/"
+       "ftp://ftp.fifi.org/pub/ImageMagick/"
+       "http://www.imagemagick.org/download/"
+       ;; one legacy location as a last resort
+       "http://www.imagemagick.org/download/legacy/")
       (debian
        "http://ftp.de.debian.org/debian/"
        "http://ftp.fr.debian.org/debian/"
