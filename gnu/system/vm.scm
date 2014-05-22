@@ -54,7 +54,8 @@
             qemu-image
             system-qemu-image
             system-qemu-image/shared-store
-            system-qemu-image/shared-store-script))
+            system-qemu-image/shared-store-script
+            system-disk-image))
 
 
 ;;; Commentary:
@@ -252,8 +253,43 @@ the image."
 
 
 ;;;
-;;; Stand-alone VM image.
+;;; VM and disk images.
 ;;;
+
+(define* (system-disk-image os
+                            #:key
+                            (file-system-type "ext4")
+                            (disk-image-size (* 900 (expt 2 20)))
+                            (volatile? #t))
+  "Return the derivation of a disk image of DISK-IMAGE-SIZE bytes of the
+system described by OS.  Said image can be copied on a USB stick as is.  When
+VOLATILE? is true, the root file system is made volatile; this is useful
+to USB sticks meant to be read-only."
+  (define file-systems-to-keep
+    (remove (lambda (fs)
+              (string=? (file-system-mount-point fs) "/"))
+            (operating-system-file-systems os)))
+
+  (let ((os (operating-system (inherit os)
+              (initrd (cut qemu-initrd <> #:volatile-root? volatile?))
+
+              ;; Force our own root file system.
+              (file-systems (cons (file-system
+                                    (mount-point "/")
+                                    (device "/dev/sda1")
+                                    (type file-system-type))
+                                  file-systems-to-keep)))))
+
+    (mlet* %store-monad ((os-drv   (operating-system-derivation os))
+                         (grub.cfg (operating-system-grub.cfg os)))
+      (qemu-image #:grub-configuration grub.cfg
+                  #:disk-image-size disk-image-size
+                  #:disk-image-format "raw"
+                  #:file-system-type file-system-type
+                  #:copy-inputs? #t
+                  #:register-closures? #t
+                  #:inputs `(("system" ,os-drv)
+                             ("grub.cfg" ,grub.cfg))))))
 
 (define* (system-qemu-image os
                             #:key
