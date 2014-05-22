@@ -168,6 +168,14 @@ Return the value associated with OPTION, or #f on failure."
   (symlink "/proc/self/fd/1" (scope "dev/stdout"))
   (symlink "/proc/self/fd/2" (scope "dev/stderr"))
 
+  ;; Loopback devices.
+  (let loop ((i 0))
+    (when (< i 8)
+      (mknod (scope (string-append "dev/loop" (number->string i)))
+             'block-special #o660
+             (device-number 7 i))
+      (loop (+ 1 i))))
+
   ;; File systems in user space (FUSE).
   (mknod (scope "dev/fuse") 'char-special #o666 (device-number 10 229)))
 
