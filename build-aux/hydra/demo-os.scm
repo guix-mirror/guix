@@ -22,9 +22,10 @@
 ;;; machine images that we build.
 ;;;
 
-(use-modules (gnu packages zile)
+(use-modules (gnu)
+
+             (gnu packages zile)
              (gnu packages xorg)
-             (gnu packages base)
              (gnu packages admin)
              (gnu packages guile)
              (gnu packages bash)
@@ -33,12 +34,6 @@
              (gnu packages tor)
              (gnu packages package-management)
 
-             (gnu system grub)                    ; 'grub-configuration'
-             (gnu system shadow)                  ; 'user-account'
-             (gnu system linux)                   ; 'base-pam-services'
-             (gnu system file-systems)            ; 'file-systems'
-
-             (gnu services base)
              (gnu services networking)
              (gnu services xorg))
 

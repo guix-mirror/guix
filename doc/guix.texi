@@ -3109,9 +3109,8 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
 
 @findex operating-system
 @lisp
-(use-modules (gnu services base)   ; for '%base-services'
+(use-modules (gnu)   ; for 'user-account', '%base-services', etc.
              (gnu services ssh)    ; for 'lsh-service'
-             (gnu system shadow)   ; for 'user-account'
              (gnu packages base)   ; Coreutils, grep, etc.
              (gnu packages bash)   ; Bash
              (gnu packages admin)  ; dmd, Inetutils

@@ -22,6 +22,7 @@
 # binaries.
 
 GNU_SYSTEM_MODULES =				\
+  gnu.scm					\
   gnu/packages.scm				\
   gnu/packages/acct.scm				\
   gnu/packages/acl.scm				\
