@@ -50,6 +50,7 @@
                            (qemu (qemu-command)) (memory-size 512)
                            linux initrd
                            make-disk-image? (disk-image-size 100)
+                           (disk-image-format "qcow2")
                            (references-graphs '()))
   "Run BUILDER, a Scheme file, into a VM running LINUX with INITRD, and copy
 the result to OUTPUT.
@@ -60,9 +61,12 @@ it via /dev/hda.
 
 REFERENCES-GRAPHS can specify a list of reference-graph files as produced by
 the #:references-graphs parameter of 'derivation'."
+  (define image-file
+    (string-append "image." disk-image-format))
 
   (when make-disk-image?
-    (unless (zero? (system* "qemu-img" "create" "-f" "qcow2" "image.qcow2"
+    (unless (zero? (system* "qemu-img" "create" "-f" disk-image-format
+                            image-file
                             (number->string disk-image-size)))
       (error "qemu-img failed")))
 
@@ -92,12 +96,12 @@ the #:references-graphs parameter of 'derivation'."
                   "-append" (string-append "console=ttyS0 --load="
                                            builder)
                   (if make-disk-image?
-                      '("-hda" "image.qcow2")
+                      `("-hda" ,image-file)
                       '())))
     (error "qemu failed" qemu))
 
   (if make-disk-image?
-      (copy-file "image.qcow2" output)
+      (copy-file image-file output)
       (begin
         (mkdir output)
         (copy-recursively "xchg" output))))

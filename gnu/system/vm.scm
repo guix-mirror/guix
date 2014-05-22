@@ -119,6 +119,7 @@ input tuple.  The output file name is when building for SYSTEM."
                                              (make-disk-image? #f)
                                              (references-graphs #f)
                                              (memory-size 256)
+                                             (disk-image-format "qcow2")
                                              (disk-image-size
                                               (* 100 (expt 2 20))))
   "Evaluate EXP in a QEMU virtual machine running LINUX with INITRD (a
@@ -127,8 +128,9 @@ store; it should put its output files in the `/xchg' directory, which is
 copied to the derivation's output when the VM terminates.  The virtual machine
 runs with MEMORY-SIZE MiB of memory.
 
-When MAKE-DISK-IMAGE? is true, then create a QEMU disk image of
-DISK-IMAGE-SIZE bytes and return it.
+When MAKE-DISK-IMAGE? is true, then create a QEMU disk image of type
+DISK-IMAGE-FORMAT (e.g., 'qcow2' or 'raw'), of DISK-IMAGE-SIZE bytes and
+return it.
 
 MODULES is the set of modules imported in the execution environment of EXP.
 
@@ -174,6 +176,7 @@ made available under the /xchg CIFS share."
                               #:linux linux #:initrd initrd
                               #:memory-size #$memory-size
                               #:make-disk-image? #$make-disk-image?
+                              #:disk-image-format #$disk-image-format
                               #:disk-image-size #$disk-image-size
                               #:references-graphs graphs))))
 
@@ -190,15 +193,17 @@ made available under the /xchg CIFS share."
                      (system (%current-system))
                      (qemu qemu-headless)
                      (disk-image-size (* 100 (expt 2 20)))
+                     (disk-image-format "qcow2")
                      (file-system-type "ext4")
                      grub-configuration
                      (register-closures? #t)
                      (inputs '())
                      copy-inputs?)
-  "Return a bootable, stand-alone QEMU image, with a root partition of type
-FILE-SYSTEM-TYPE.  The returned image is a full disk image, with a GRUB
-installation that uses GRUB-CONFIGURATION as its configuration
-file (GRUB-CONFIGURATION must be the name of a file in the VM.)
+  "Return a bootable, stand-alone QEMU image of type DISK-IMAGE-FORMAT (e.g.,
+'qcow2' or 'raw'), with a root partition of type FILE-SYSTEM-TYPE.  The
+returned image is a full disk image, with a GRUB installation that uses
+GRUB-CONFIGURATION as its configuration file (GRUB-CONFIGURATION must be the
+name of a file in the VM.)
 
 INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
 all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
@@ -242,6 +247,7 @@ the image."
     #:system system
     #:make-disk-image? #t
     #:disk-image-size disk-image-size
+    #:disk-image-format disk-image-format
     #:references-graphs graph)))
 
 
