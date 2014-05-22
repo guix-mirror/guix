@@ -3236,9 +3236,23 @@ Build a virtual machine that contain the operating system declared in
 The VM shares its store with the host system.
 
 @item vm-image
-Return a virtual machine image of the operating system declared in
-@var{file} that stands alone.  Use the @option{--image-size} option to
-specify the size of the image.
+@itemx disk-image
+Return a virtual machine or disk image of the operating system declared
+in @var{file} that stands alone.  Use the @option{--image-size} option
+to specify the size of the image.
+
+When using @code{vm-image}, the returned image is in qcow2 format, which
+the QEMU emulator can efficiently use.
+
+When using @code{disk-image}, a raw disk image is produced; it can be
+copied as is to a USB stick, for instance.  Assuming @code{/dev/sdc} is
+the device corresponding to a USB stick, one can copy the image on it
+using the following command:
+
+@example
+# dd if=$(guix system disk-image my-os.scm) of=/dev/sdc
+@end example
+
 @end table
 
 @var{options} can contain any of the common build options provided by

@@ -129,6 +129,8 @@ Build the operating system declared in FILE according to ACTION.\n"))
   (display (_ "\
   - 'vm-image', build a freestanding virtual machine image\n"))
   (display (_ "\
+  - 'disk-image', build a disk image, suitable for a USB stick\n"))
+  (display (_ "\
   - 'init', initialize a root file system to run GNU.\n"))
 
   (show-build-options-help)
@@ -191,7 +193,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
                       (alist-cons 'argument arg result)
                       (let ((action (string->symbol arg)))
                         (case action
-                          ((build vm vm-image init)
+                          ((build vm vm-image disk-image init)
                            (alist-cons 'action action result))
                           (else (leave (_ "~a: unknown action~%")
                                        action))))))
@@ -214,7 +216,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
                action))
 
       (case action
-        ((build vm vm-image)
+        ((build vm vm-image disk-image)
          (unless (= count 1)
            (fail)))
         ((init)
@@ -238,7 +240,11 @@ Build the operating system declared in FILE according to ACTION.\n"))
                           (system-qemu-image os
                                              #:disk-image-size size)))
                        ((vm)
-                        (system-qemu-image/shared-store-script os))))
+                        (system-qemu-image/shared-store-script os))
+                       ((disk-image)
+                        (let ((size (assoc-ref opts 'image-size)))
+                          (system-disk-image os
+                                             #:disk-image-size size)))))
            (store    (open-connection))
            (dry?     (assoc-ref opts 'dry-run?))
            (drv      (run-with-store store mdrv))
