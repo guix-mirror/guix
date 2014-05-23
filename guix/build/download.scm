@@ -167,8 +167,6 @@ which is not available during bootstrap."
 
           ;; Buffer input and output on this port.
           (setvbuf s _IOFBF)
-          ;; Enlarge the receive buffer.
-          (setsockopt s SOL_SOCKET SO_RCVBUF (* 12 1024))
 
           (if (eq? 'https (uri-scheme uri))
               (tls-wrap s)
