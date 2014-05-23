@@ -271,7 +271,11 @@ to USB sticks meant to be read-only."
             (operating-system-file-systems os)))
 
   (let ((os (operating-system (inherit os)
-              (initrd (cut qemu-initrd <> #:volatile-root? volatile?))
+              ;; Since this is meant to be used on real hardware, don't set up
+              ;; QEMU networking.
+              (initrd (cut qemu-initrd <>
+                           #:volatile-root? volatile?
+                           #:qemu-networking? #f))
 
               ;; Force our own root file system.
               (file-systems (cons (file-system

@@ -204,11 +204,15 @@ initrd code."
 (define* (qemu-initrd file-systems
                       #:key
                       guile-modules-in-chroot?
+                      (qemu-networking? #t)
                       volatile-root?)
   "Return a monadic derivation that builds an initrd for use in a QEMU guest
 where the store is shared with the host.  FILE-SYSTEMS is a list of
 file-systems to be mounted by the initrd, possibly in addition to the root
 file system specified on the kernel command line via '--root'.
+
+When QEMU-NETWORKING? is true, set up networking with the standard QEMU
+parameters.
 
 When VOLATILE-ROOT? is true, the root file system is writable but any changes
 to it are lost.
@@ -267,7 +271,7 @@ exception and backtrace!)."
 
        (boot-system #:mounts '#$(map file-system->spec file-systems)
                     #:linux-modules '#$linux-modules
-                    #:qemu-guest-networking? #t
+                    #:qemu-guest-networking? #$qemu-networking?
                     #:guile-modules-in-chroot? '#$guile-modules-in-chroot?
                     #:volatile-root? '#$volatile-root?))
    #:name "qemu-initrd"
