@@ -291,16 +291,6 @@ operate, should the disk become full.  Return a server object."
         (a (make-socket-address PF_UNIX file)))
 
     (catch 'system-error
-      (lambda ()
-        ;; Enlarge the receive buffer.
-        (setsockopt s SOL_SOCKET SO_RCVBUF (* 12 1024)))
-      (lambda args
-        ;; On the Hurd, the pflocal server's implementation of `socket_setopt'
-        ;; always returns ENOPROTOOPT.  Ignore it.
-        (unless (= (system-error-errno args) ENOPROTOOPT)
-          (apply throw args))))
-
-    (catch 'system-error
       (cut connect s a)
       (lambda args
         ;; Translate the error to something user-friendly.
