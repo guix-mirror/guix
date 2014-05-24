@@ -357,7 +357,14 @@ etc."
       (guix build utils)
       (guix build linux-initrd)))
 
+  (define (service-activations services)
+    ;; Return the activation scripts for SERVICES.
+    (let ((gexps (filter-map service-activate services)))
+      (sequence %store-monad (map (cut gexp->file "activate-service.scm" <>)
+                                  gexps))))
+
   (mlet* %store-monad ((services (operating-system-services os))
+                       (actions  (service-activations services))
                        (etc      (operating-system-etc-directory os))
                        (modules  (imported-modules %modules))
                        (compiled (compiled-modules %modules))
@@ -397,6 +404,10 @@ etc."
 
                     ;; Activate setuid programs.
                     (activate-setuid-programs (list #$@setuid-progs))
+
+                    ;; Run the services' activation snippets.
+                    ;; TODO: Use 'load-compiled'.
+                    (for-each primitive-load '#$actions)
 
                     ;; Set up /run/current-system.
                     (activate-current-system)))))

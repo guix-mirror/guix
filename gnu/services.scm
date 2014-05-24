@@ -26,6 +26,7 @@
             service-respawn?
             service-start
             service-stop
+            service-activate
             service-user-accounts
             service-user-groups
             service-pam-services))
@@ -54,6 +55,8 @@
   (user-groups   service-user-groups              ; list of <user-groups>
                  (default '()))
   (pam-services  service-pam-services             ; list of <pam-service>
-                 (default '())))
+                 (default '()))
+  (activate      service-activate                 ; gexp
+                 (default #f)))
 
 ;;; services.scm ends here.
