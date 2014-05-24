@@ -78,6 +78,7 @@ STORE."
     (directory "/var/log")                          ; for dmd
     (directory "/var/run/nscd")
     (directory "/var/guix/gcroots")
+    (directory "/var/empty")                        ; for no-login accounts
     (directory "/run")
     ("/var/guix/gcroots/booted-system" -> "/run/booted-system")
     ("/var/guix/gcroots/current-system" -> "/run/current-system")
