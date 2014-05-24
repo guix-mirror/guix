@@ -348,9 +348,10 @@ alias ll='ls -l'
       ,#$(user-account-shell account)             ; this one is a gexp
       #$(user-account-password account)))
 
-(define (operating-system-boot-script os)
-  "Return the boot script for OS---i.e., the code started by the initrd once
-we're running in the final root."
+(define (operating-system-activation-script os)
+  "Return the activation script for OS---i.e., the code that \"activates\" the
+stateful part of OS, including user accounts and groups, special directories,
+etc."
   (define %modules
     '((guix build activation)
       (guix build utils)
@@ -360,7 +361,6 @@ we're running in the final root."
                        (etc      (operating-system-etc-directory os))
                        (modules  (imported-modules %modules))
                        (compiled (compiled-modules %modules))
-                       (dmd-conf (dmd-configuration-file services))
                        (accounts (operating-system-accounts os)))
     (define setuid-progs
       (operating-system-setuid-programs os))
@@ -399,7 +399,24 @@ we're running in the final root."
                     (activate-setuid-programs (list #$@setuid-progs))
 
                     ;; Set up /run/current-system.
-                    (activate-current-system #:boot? #t)
+                    (activate-current-system)))))
+
+(define (operating-system-boot-script os)
+  "Return the boot script for OS---i.e., the code started by the initrd once
+we're running in the final root."
+  (mlet* %store-monad ((services (operating-system-services os))
+                       (activate (operating-system-activation-script os))
+                       (dmd-conf (dmd-configuration-file services)))
+    (gexp->file "boot"
+                #~(begin
+                    ;; Activate the system.
+                    ;; TODO: Use 'load-compiled'.
+                    (primitive-load #$activate)
+
+                    ;; Keep track of the booted system.
+                    (false-if-exception (delete-file "/run/booted-system"))
+                    (symlink (readlink "/run/current-system")
+                             "/run/booted-system")
 
                     ;; Close any remaining open file descriptors to be on the
                     ;; safe side.  This must be the very last thing we do,
