@@ -225,6 +225,11 @@ stopped before 'kill' is called."
              (documentation "Run libc's name service cache daemon (nscd).")
              (provision '(nscd))
              (requirement '(user-processes))
+
+             (activate #~(begin
+                           (use-modules (guix build utils))
+                           (mkdir-p "/var/run/nscd")))
+
              (start
               #~(make-forkexec-constructor (string-append #$glibc "/sbin/nscd")
                                            "-f" "/dev/null"

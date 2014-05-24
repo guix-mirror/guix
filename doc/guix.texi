@@ -3299,6 +3299,9 @@ like:
     (return (service
              (documentation "Run libc's name service cache daemon.")
              (provision '(nscd))
+             (activate #~(begin
+                           (use-modules (guix build utils))
+                           (mkdir-p "/var/run/nscd")))
              (start #~(make-forkexec-constructor
                        (string-append #$glibc "/sbin/nscd")
                        "-f" "/dev/null" "--foreground"))
@@ -3307,12 +3310,16 @@ like:
 @end lisp
 
 @noindent
-The @code{start} and @code{stop} fields are G-expressions
-(@pxref{G-Expressions}).  They refer to dmd's facilities to start and
-stop processes (@pxref{Service De- and Constructors,,, dmd, GNU dmd
-Manual}).  The @code{provision} field specifies the name under which
-this service is known to dmd, and @code{documentation} specifies on-line
-documentation.  Thus, the commands @command{deco start ncsd},
+The @code{activate}, @code{start}, and @code{stop} fields are G-expressions
+(@pxref{G-Expressions}).  The @code{activate} field contains a script to
+run at ``activation'' time; it makes sure that the @file{/var/run/nscd}
+directory exists before @command{nscd} is started.
+
+The @code{start} and @code{stop} fields refer to dmd's facilities to
+start and stop processes (@pxref{Service De- and Constructors,,, dmd,
+GNU dmd Manual}).  The @code{provision} field specifies the name under
+which this service is known to dmd, and @code{documentation} specifies
+on-line documentation.  Thus, the commands @command{deco start ncsd},
 @command{deco stop nscd}, and @command{deco doc nscd} will do what you
 would expect (@pxref{Invoking deco,,, dmd, GNU dmd Manual}).
 
