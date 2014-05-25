@@ -43,11 +43,13 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages less)
+  #:use-module (gnu packages gnome)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pcre)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -791,3 +793,36 @@ bio-chemistry.")
                                 "install"))))
             ,scotch-phases))))))
     (synopsis "Programs and libraries for graph algorithms (with MPI)")))
+
+(define-public gsegrafix
+  (package
+    (name "gsegrafix")
+    (version "1.0.6")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/" name "/" name "-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "1b13hvx063zv970y750bx41wpx6hwd5ngjhbdrna8w8yy5kmxcda"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags '("LDFLAGS=-lm")))
+    (inputs
+     `(("libgnomecanvas" ,libgnomecanvas)
+       ("libbonoboui" ,libbonoboui)
+       ("libgnomeui" ,libgnomeui)
+       ("libgnomeprintui" ,libgnomeprintui)
+       ("popt" ,popt)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://www.gnu.org/software/gsegrafix/")
+    (synopsis "GNOME application to create scientific and engineering plots")
+    (description  "GSEGrafix is an application which produces high-quality graphical
+plots for science and engineering.  Plots are specified via simple ASCII
+parameter files and data files and are presented in an anti-aliased GNOME
+canvas.  The program supports rectangular two-dimensional plots, histograms,
+polar-axis plots and three-dimensional plots.  Plots can be printed or saved
+to BMP, JPEG or PNG image formats.")
+    (license license:gpl3+)))

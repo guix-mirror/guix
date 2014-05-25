@@ -169,6 +169,33 @@ used throughout the world.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/pango/")))
 
+(define-public pangox-compat
+  (package
+    (name "pangox-compat")
+    (version "0.0.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
+                   version
+                   ".tar.xz"))
+             (sha256
+              (base32
+               "0ip0ziys6mrqqmz4n71ays0kf5cs1xflj1gfpvs4fgy2nsrr482m"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)
+       ("pango" ,pango)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://developer.gnome.org/pango")
+    (synopsis "functions now obsolete in pango")
+    (description  "Pangox was a X backend to pango.  It is now obsolete and no
+longer provided by recent pango releases.  pangox-compat provides the
+functions which were removed.")
+    (license license:lgpl2.0+)))
+
 
 (define-public gtksourceview
   (package

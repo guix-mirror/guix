@@ -24,14 +24,18 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages bison)
+  #:use-module (gnu packages flex)  
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages pdf)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages iso-codes)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libjpeg)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -610,3 +614,479 @@ dealing with different structured file formats.")
      "librsvg is a C library to render SVG files using the Cairo 2D graphics
 library.")
     (license license:lgpl2.0+)))
+
+(define-public libidl
+  (package
+    (name "libidl")
+    (version "0.8.14")
+    (source (origin
+              (method url-fetch)
+              (uri (let ((upstream-name "libIDL"))
+		     (string-append
+		      "mirror://gnome/sources/" upstream-name "/" (string-take version 3) "/" upstream-name "-"
+		      version
+		      ".tar.bz2")))
+              (sha256
+               (base32
+                "08129my8s9fbrk0vqvnmx6ph4nid744g5vbwphzkaik51664vln5"))))
+    (build-system gnu-build-system)
+    (inputs `(("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("flex", flex)
+       ("bison" ,bison)))
+    (home-page "http://freecode.com/projects/libidl")
+    (synopsis "Create trees of CORBA Interface Definition Language files")
+    (description  "libidl is a library for creating trees of CORBA Interface
+Definition Language (idl) files, which is a specification for defining
+portable interfaces. libidl was initially written for orbit (the orb from the
+GNOME project, and the primary means of libidl distribution). However, the
+functionality was designed to be as reusable and portable as possible.") 
+    (license license:lgpl2.0+)))
+
+
+(define-public orbit2
+  (package
+    (name "orbit2")
+    (version "2.14.19")
+    (source (origin
+              (method url-fetch)
+              (uri (let ((upstream-name "ORBit2")) 
+		     (string-append
+		      "mirror://gnome/sources/" upstream-name "/" (string-take version 4) "/" upstream-name "-"
+		      version
+		      ".tar.bz2")))
+              (sha256
+               (base32 "0l3mhpyym9m5iz09fz0rgiqxl2ym6kpkwpsp1xrr4aa80nlh1jam"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; The programmer kindly gives us a hook to turn off deprecation warnings ...
+     `(#:configure-flags '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
+                         ;; ... which they then completly ignore !!
+                         #:phases
+                         (alist-cons-before
+                          'configure 'ignore-deprecations
+                          (lambda _
+                            (substitute* "linc2/src/Makefile.in"
+                              (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
+                          %standard-phases)))
+    (inputs `(("glib" ,glib)
+              ("libidl" ,libidl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://projects.gnome.org/orbit2/")
+    (synopsis "CORBA 2.4-compliant Object Request Broker")
+    (description  "orbit2 is a CORBA 2.4-compliant Object Request Broker (orb)
+featuring mature C, C++ and Python bindings.") 
+    ;; Licence notice is unclear.  The Web page simply say "GPL" without giving a version.
+    ;; SOME of the code files have licence notices for GPLv2+
+    ;; The tarball contains files of the text of GPLv2 and LGPLv2
+    (license license:gpl2+))) 
+
+
+(define-public libbonobo
+  (package
+    (name "libbonobo")
+    (version "2.32.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" (string-take version 4) "/" name "-"
+                    version
+                    ".tar.bz2"))
+              (sha256
+               (base32 "0swp4kk6x7hy1rvd1f9jba31lvfc6qvafkvbpg9h0r34fzrd8q4i"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; The programmer kindly gives us a hook to turn off deprecation warnings ...
+     `(#:configure-flags '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
+                         ;; ... which they then completly ignore !!
+                         #:phases
+                         (alist-cons-before
+                          'configure 'ignore-deprecations
+                          (lambda _
+                            (substitute* "activation-server/Makefile.in"
+                              (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
+                          %standard-phases)))
+    (inputs `(("popt" ,popt)
+              ("libxml2" ,libxml2)))
+    ;; The following are Required by the .pc file
+    (propagated-inputs  
+     `(("glib" ,glib)
+       ("orbit2" ,orbit2)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)
+       ("flex" ,flex)
+       ("bison" ,bison)))
+    (home-page "https://developer.gnome.org/libbonobo/")
+    (synopsis "Framework for creating reusable components for use in GNOME applications")
+    (description "Bonobo is a framework for creating reusable components for
+use in GNOME applications, built on top of CORBA.") 
+    ;; Licence not explicitly stated.  Source files contain no licence notices.
+    ;; Tarball contains text of both GPLv2 and LGPLv2
+    ;; GPLv2 covers both conditions
+    (license license:gpl2+)))
+
+
+(define-public gconf
+  (package
+    (name "gconf")
+    (version "3.2.6")
+    (source (origin
+              (method url-fetch)
+	      (uri 
+	       (let ((upstream-name "GConf"))
+		 (string-append
+		  "mirror://gnome/sources/" upstream-name "/" (string-take version 3)  "/" upstream-name "-"
+		  version
+		  ".tar.xz")))
+              (sha256
+               (base32 "0k3q9nh53yhc9qxf1zaicz4sk8p3kzq4ndjdsgpaa2db0ccbj4hr"))))
+    (build-system gnu-build-system)
+    (inputs `(("glib" ,glib)
+              ("dbus" ,dbus)
+              ("dbus-glib" ,dbus-glib)
+              ("libxml2" ,libxml2)))
+    (propagated-inputs `(("orbit2" ,orbit2))) ; referred to in the .pc file
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://projects.gnome.org/gconf/")
+    (synopsis "store application preferences")
+    (description  "gconf is a system for storing application preferences. It
+is intended for user preferences; not arbitrary data storage.") 
+    (license license:lgpl2.0+))) 
+
+
+(define-public gnome-mime-data
+  (package
+    (name "gnome-mime-data")
+    (version "2.18.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" (string-take version 4)  "/" name "-"
+                    version
+                    ".tar.bz2"))
+              (sha256
+               (base32
+                "1mvg8glb2a40yilmyabmb7fkbzlqd3i3d31kbkabqnq86xdnn69p"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("intltool" ,intltool)))
+    (home-page "http://www.gnome.org")
+    (synopsis "base MIME and Application database for GNOME")
+    (description  "GNOME Mime Data is a module which contains the base MIME
+and Application database for GNOME.  The data stored by this module is
+designed to be accessed through the MIME functions in GnomeVFS.")
+    (license license:gpl2+)))
+
+
+(define-public gnome-vfs
+  (package
+    (name "gnome-vfs")
+    (version "2.24.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" (string-take version 4)  "/" name "-"
+                    version
+                    ".tar.bz2"))
+              (sha256
+               (base32 "1ajg8jb8k3snxc7rrgczlh8daxkjidmcv3zr9w809sq4p2sn9pk2"))))
+    (build-system gnu-build-system)
+    (arguments
+     ;; The programmer kindly gives us a hook to turn off deprecation warnings ...
+     `(#:configure-flags '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
+                         ;; ... which they then completly ignore !!
+                         #:phases
+                         (alist-cons-before
+                          'configure 'ignore-deprecations
+                          (lambda _
+                            (begin
+                              (substitute* "libgnomevfs/Makefile.in"
+                                (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))
+                              (substitute* "daemon/Makefile.in"
+                                (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS"))))
+                          %standard-phases)))
+    (inputs `(("glib" ,glib)
+              ("libxml2" ,libxml2)
+              ("dbus-glib" ,dbus-glib)
+              ("dbus" ,dbus)
+              ("gconf" ,gconf)
+              ("gnome-mime-data" ,gnome-mime-data)
+              ("zlib" ,zlib)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://developer.gnome.org/gnome-vfs/")
+    (synopsis "access files and folders in GNOME applications")
+    (description  "GnomeVFS is the core library used to access files and
+folders in GNOME applications. It provides a file system abstraction which
+allows applications to access local and remote files with a single consistent API.")
+    (license license:lgpl2.0+)))
+
+
+
+(define-public libgnome
+  (package
+    (name "libgnome")
+    (version "2.32.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
+                    version
+                    ".tar.bz2"))
+              (sha256
+               (base32
+                "197pnq8y0knqjhm2fg4j6hbqqm3qfzfnd0irhwxpk1b4hqb3kimj"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'configure 'enable-deprecated
+        (lambda _ 
+          (substitute* "libgnome/Makefile.in"
+            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
+        %standard-phases)))
+    (inputs `(("popt" ,popt)
+              ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    ;; The following are listed as Required in the .pc file
+    ;; (except for libcanberra -- which seems to be oversight on the part
+    ;; of the upstream developers -- anything that links against libgnome,
+    ;; must also link against libcanberra
+    (propagated-inputs
+     `(("libcanberra" ,libcanberra)
+       ("libbonobo" ,libbonobo)
+       ("gconf" ,gconf)
+       ("gnome-vfs" ,gnome-vfs)
+       ("glib" ,glib)))
+    (home-page "https://developer.gnome.org/libgnome/")
+    (synopsis "Useful routines for building applications")
+    (description  "The libgnome library provides a number of useful routines
+for building modern applications, including session management, activation of
+files and URIs, and displaying help.")
+    (license license:lgpl2.0+)))
+
+
+(define-public libart-lgpl
+  (package
+    (name "libart-lgpl")
+    (version "2.3.9")
+    (source (origin
+              (method url-fetch)
+              (uri (let ((upstream-name "libart_lgpl"))
+                     (string-append
+                      "mirror://gnome/sources/" upstream-name "/" 
+                      (string-take version 3) "/" upstream-name "-" version
+                      ".tar.bz2")))
+              (sha256
+               (base32
+                "072r4svs4hjf2f4gxzx02n3f970kdv9fpx54r2m8bd42fjyyawrw"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://people.gnome.org/~mathieu/libart")
+    (synopsis "2D drawing library")
+    (description  "Libart is a 2D drawing library intended as a 
+high-quality vector-based 2D library with antialiasing and alpha composition.")
+    (license license:lgpl2.0+)))
+
+
+
+(define-public libgnomecanvas
+  (package
+    (name "libgnomecanvas")
+    (version "2.30.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" (string-take version 4)  "/" name "-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "1nhnq4lfkk8ljkdafscwaggx0h95mq0rxnd7zgqyq0xb6kkqbjm8"))))
+    (build-system gnu-build-system)
+    ;; Mentioned as Required in the .pc file
+    (propagated-inputs `(("libart-lgpl" ,libart-lgpl)
+                         ("gtk+" ,gtk+-2)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://developer.gnome.org/libgnomecanvas/")
+    (synopsis "Flexible widget for creating interactive structured graphics")
+    (description  "The GnomeCanvas widget provides a flexible widget for
+creating interactive structured graphics.")
+    (license license:lgpl2.0+)))
+
+(define-public libgnomeui
+  (package
+    (name "libgnomeui")
+    (version "2.24.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" (string-take version 4)  "/" name "-"
+                    version
+                    ".tar.bz2"))
+              (sha256
+               (base32
+                "03rwbli76crkjl6gp422wrc9lqpl174k56cp9i96b7l8jlj2yddf"))))
+    (build-system gnu-build-system)
+    ;; Mentioned as Required in the .pc file
+    (propagated-inputs `(("libgnome" ,libgnome)
+                         ("libgnome-keyring" ,libgnome-keyring)))
+    (inputs `(("libgnomecanvas" ,libgnomecanvas)
+              ("libbonoboui" ,libbonoboui)
+              ("libjpeg" ,libjpeg)
+              ("popt" ,popt)
+              ("libbonobo" ,libbonobo)
+              ("libxml2" ,libxml2)
+              ("libglade" ,libglade)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://developer.gnome.org/libgnomeui/")
+    (synopsis "Additional widgets for applications")
+    (description  "The libgnomeui library provides additional widgets for
+applications. Many of the widgets from libgnomeui have already been ported to GTK+.")
+    (license license:lgpl2.0+)))
+
+(define-public libglade
+  (package
+    (name "libglade")
+    (version "2.6.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
+                    version
+                    ".tar.bz2"))
+              (sha256
+               (base32
+                "1v2x2s04jry4gpabws92i0wq2ghd47yr5n9nhgnkd7c38xv1wdk4"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+-2" ,gtk+-2)
+       ("libxml2" ,libxml2)
+       ("python" ,python))) ;; needed for the optional libglade-convert program
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "https://developer.gnome.org/libglade")
+    (synopsis "load glade interfaces and access the glade built widgets")
+    (description  "libglade is a library that provides interfaces for loading
+graphical interfaces described in glade files and for accessing the
+widgets built in the loading process.")
+    (license license:gpl2+))) ; This is correct.  GPL not LGPL
+
+(define-public libgnomeprint
+  (package
+    (name "libgnomeprint")
+    (version "2.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
+                    version
+                    ".tar.bz2"))
+              (sha256
+               (base32
+                "129ka3nn8gx9dlfry17ib79azxk45wzfv5rgqzw6dwx2b5ns8phm"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("popt" ,popt)
+       ("libart-lgpl" ,libart-lgpl)
+       ("gtk+" ,gtk+-2)
+       ("libxml2" ,libxml2))) 
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://projects.gnome.org/gnome-print/home/faq.html")
+    (synopsis "printing framework for GNOME")
+    (description  "Gnome-print is a high-quality printing framework for GNOME.")
+    (license license:lgpl2.0+)))
+
+
+(define-public libgnomeprintui
+  (package
+    (name "libgnomeprintui")
+    (version "2.8.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
+                    version
+                    ".tar.bz2"))
+              (sha256
+               (base32
+                "1ivipk7r61rg90p9kp889j28xlyyj6466ypvwa4jvnrcllnaajsw"))))
+    (build-system gnu-build-system)
+    ;; Mentioned as Required in the .pc file
+    (propagated-inputs `(("libgnomeprint" ,libgnomeprint)))
+    (inputs `(("gtk+" ,gtk+-2)
+              ("glib" ,glib)
+              ("gnome-icon-theme" ,gnome-icon-theme)
+              ("libgnomecanvas" ,libgnomecanvas)
+              ("libxml2" ,libxml2))) 
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://projects.gnome.org/gnome-print/home/faq.html")
+    (synopsis "Printing framework for GNOME")
+    (description  "Gnome-print is a high-quality printing framework for GNOME.")
+    (license license:lgpl2.0+)))
+
+
+(define-public libbonoboui
+  (package
+    (name "libbonoboui")
+    (version "2.24.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
+                    version
+                    ".tar.bz2"))
+              (sha256
+               (base32
+                "1kbgqh7bw0fdx4f1a1aqwpff7gp5mwhbaz60c6c98bc4djng5dgs"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'check 'start-xserver
+        (lambda* (#:key inputs #:allow-other-keys)
+          (let ((xorg-server (assoc-ref inputs "xorg-server"))
+                (disp ":1"))
+            
+            (setenv "HOME" (getcwd))
+            (setenv "DISPLAY" disp)
+            ;; There must be a running X server and make check doesn't start one.
+            ;; Therefore we must do it.
+            (zero? (system (format #f "~a/bin/Xvfb ~a &" xorg-server disp)))))
+        %standard-phases)))
+    ;; Mentioned as Required by the .pc file
+    (propagated-inputs `(("libxml2" ,libxml2)))
+    (inputs
+     `(("popt" ,popt)
+       ("pangox-compat" ,pangox-compat)
+       ("libgnome" ,libgnome)
+       ("libgnomecanvas" ,libgnomecanvas)
+       ("libglade" ,libglade)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("xorg-server" ,xorg-server) ; For running the tests
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://developer.gnome.org/libbonoboui/")
+    (synopsis "Some user interface controls using Bonobo")
+    (description  "The Bonobo UI library provides a number of user interface
+controls using the Bonobo component framework.")
+    (license license:lgpl2.0+)))
+
