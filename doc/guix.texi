@@ -2812,12 +2812,15 @@ the string in the @code{name} field of a package definition.  This name
 is used by package management commands such as
 @command{guix package} and @command{guix build}.
 
-Both are usually the same and correspond to the lowercase conversion of the
-project name chosen upstream.  For instance, the GNUnet project is packaged
-as @code{gnunet}.  We do not add @code{lib} prefixes for library packages,
-unless these are already part of the official project name.  But see
-@pxref{Python Modules} and @ref{Perl Modules} for special rules concerning
-modules for the Python and Perl languages.
+Both are usually the same and correspond to the lowercase conversion of
+the project name chosen upstream, with underscores replaced with
+hyphens.  For instance, GNUnet is available as @code{gnunet}, and
+SDL_net as @code{sdl-net}.
+
+We do not add @code{lib} prefixes for library packages, unless these are
+already part of the official project name.  But see @pxref{Python
+Modules} and @ref{Perl Modules} for special rules concerning modules for
+the Python and Perl languages.
 
 
 @node Version Numbers
