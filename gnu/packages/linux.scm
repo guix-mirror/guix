@@ -1125,3 +1125,23 @@ system.")
 for systems using the Linux kernel.  This includes commands such as
 'loadkeys', 'setfont', 'kbdinfo', and 'chvt'.")
     (license gpl2+)))
+
+(define-public inotify-tools
+  (package
+    (name "inotify-tools")
+    (version "3.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/inotify-tools/inotify-tools/"
+                    version "/inotify-tools-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0icl4bx041axd5dvhg89kilfkysjj86hjakc7bk8n49cxjn4cha6"))))
+    (build-system gnu-build-system)
+    (home-page "http://inotify-tools.sourceforge.net/")
+    (synopsis "Monitor file accesses")
+    (description
+     "The inotify-tools packages provides a C library and command-line tools
+to use Linux' inotify mechanism, which allows file accesses to be monitored.")
+    (license gpl2+)))
