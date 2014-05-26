@@ -245,7 +245,9 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/zip.scm				\
 						\
   gnu/services.scm				\
+  gnu/services/avahi.scm			\
   gnu/services/base.scm				\
+  gnu/services/dbus.scm				\
   gnu/services/dmd.scm				\
   gnu/services/networking.scm			\
   gnu/services/xorg.scm				\
