@@ -317,6 +317,31 @@ API for locking files.")
 (define-public python2-lockfile
   (package-with-python2 python-lockfile))
 
+(define-public python-mock
+  (package
+    (name "python-mock")
+    (version "1.0.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/m/mock/"
+                           "mock-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0kzlsbki6q0awf89rc287f3aj8x431lrajf160a70z0ikhnxsfdq"))))
+    (build-system python-build-system)
+    (arguments '(#:test-target "check"))
+    (home-page "http://code.google.com/m/mock/")
+    (synopsis "A Python Mocking and Patching Library for Testing")
+    (description
+     "Mock is a library for testing in Python.  It allows you to replace parts
+of your system under test with mock objects and make assertions about how they
+have been used.")
+    (license expat)))
+
+(define-public python2-mock
+  (package-with-python2 python-mock))
+
 
 (define-public python-setuptools
   (package
