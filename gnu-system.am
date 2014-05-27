@@ -279,6 +279,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/coreutils-dummy-man.patch		\
   gnu/packages/patches/coreutils-skip-nohup.patch		\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
+  gnu/packages/patches/cssc-gets-undeclared.patch               \
+  gnu/packages/patches/cssc-missing-include.patch               \
   gnu/packages/patches/curl-fix-test172.patch			\
   gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
