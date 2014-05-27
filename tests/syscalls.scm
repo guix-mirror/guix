@@ -33,13 +33,14 @@
       #f)
     (compose system-error-errno list)))
 
-(test-equal "umount, ENOENT"
-  ENOENT
+(test-assert "umount, ENOENT/EPERM"
   (catch 'system-error
     (lambda ()
       (umount "/does-not-exist")
       #f)
-    (compose system-error-errno list)))
+    (lambda args
+      ;; Both return values have been encountered in the wild.
+      (memv (system-error-errno args) (list EPERM ENOENT)))))
 
 (test-end)
 
