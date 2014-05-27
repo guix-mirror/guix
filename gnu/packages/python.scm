@@ -21,7 +21,7 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (bsd-3 bsd-style psfl x11 x11-style
+                #:select (bsd-3 bsd-style expat psfl x11 x11-style
                           gpl2 gpl2+ lgpl2.1+))
   #:use-module ((guix licenses) #:select (zlib)
                                 #:renamer (symbol-prefix-proc 'license:))
@@ -292,6 +292,30 @@ etc. ")
 
 (define-public python2-babel
   (package-with-python2 python-babel))
+
+(define-public python-lockfile
+  (package
+    (name "python-lockfile")
+    (version "0.9.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://pypi.python.org/packages/source/l/lockfile/"
+                           "lockfile-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0iwif7i84gwpvrnpv4brshdk8j6l77smvknm8k3bg77mj6f5ini3"))))
+    (build-system python-build-system)
+    (arguments '(#:test-target "check"))
+    (home-page "http://code.google.com/p/pylockfile/")
+    (synopsis "Platform-independent file locking module")
+    (description
+     "The lockfile package exports a LockFile class which provides a simple
+API for locking files.")
+    (license expat)))
+
+(define-public python2-lockfile
+  (package-with-python2 python-lockfile))
 
 
 (define-public python-setuptools
