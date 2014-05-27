@@ -45,6 +45,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/bison.scm			\
   gnu/packages/boost.scm			\
   gnu/packages/bootstrap.scm			\
+  gnu/packages/busybox.scm			\
   gnu/packages/calcurse.scm			\
   gnu/packages/ccache.scm			\
   gnu/packages/cdrom.scm			\
