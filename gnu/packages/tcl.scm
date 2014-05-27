@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system perl)
+  #:use-module (gnu packages)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages libjpeg)
   #:use-module (gnu packages perl)
@@ -177,7 +178,8 @@ X11 GUIs.")
                    version ".tar.gz"))
              (sha256
               (base32
-               "0jarvplhfvnm0shhdm2a5zczlnk9mkf8jvfjiwyhjrr3cy1gl0w0"))))
+               "0jarvplhfvnm0shhdm2a5zczlnk9mkf8jvfjiwyhjrr3cy1gl0w0"))
+             (patches (list (search-patch "perl-tk-x11-discover.patch")))))
     (build-system perl-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libx11" ,libx11)

@@ -1,6 +1,6 @@
 # GNU Guix --- Functional package management for GNU
 # Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-# Copyright © 2013 Andreas Enge <andreas@enge.fr>
+# Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 # Copyright © 2013, 2014 Mark H Weaver <mhw@netris.org>
 #
 # This file is part of GNU Guix.
@@ -22,6 +22,7 @@
 # binaries.
 
 GNU_SYSTEM_MODULES =				\
+  gnu.scm					\
   gnu/packages.scm				\
   gnu/packages/acct.scm				\
   gnu/packages/acl.scm				\
@@ -35,14 +36,17 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/autogen.scm			\
   gnu/packages/autotools.scm			\
   gnu/packages/avahi.scm			\
+  gnu/packages/backup.scm			\
   gnu/packages/base.scm				\
   gnu/packages/bash.scm				\
   gnu/packages/bdb.scm				\
   gnu/packages/bdw-gc.scm			\
+  gnu/packages/bittorrent.scm			\
   gnu/packages/bison.scm			\
   gnu/packages/boost.scm			\
   gnu/packages/bootstrap.scm			\
   gnu/packages/calcurse.scm			\
+  gnu/packages/ccache.scm			\
   gnu/packages/cdrom.scm			\
   gnu/packages/cflow.scm			\
   gnu/packages/check.scm			\
@@ -61,6 +65,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ddrescue.scm			\
   gnu/packages/dictionaries.scm			\
   gnu/packages/docbook.scm			\
+  gnu/packages/doxygen.scm			\
   gnu/packages/dwm.scm				\
   gnu/packages/ed.scm				\
   gnu/packages/elf.scm				\
@@ -72,6 +77,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/fonts.scm			\
   gnu/packages/fontutils.scm			\
   gnu/packages/freeipmi.scm			\
+  gnu/packages/ftp.scm				\
   gnu/packages/games.scm			\
   gnu/packages/gawk.scm				\
   gnu/packages/gcal.scm				\
@@ -83,6 +89,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/gettext.scm			\
   gnu/packages/ghostscript.scm			\
   gnu/packages/giflib.scm			\
+  gnu/packages/gimp.scm				\
   gnu/packages/gkrellm.scm			\
   gnu/packages/gl.scm				\
   gnu/packages/glib.scm				\
@@ -147,11 +154,13 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/make-bootstrap.scm		\
   gnu/packages/maths.scm			\
   gnu/packages/mc.scm				\
+  gnu/packages/mcrypt.scm			\
   gnu/packages/messaging.scm			\
   gnu/packages/mit-krb5.scm			\
   gnu/packages/moe.scm				\
   gnu/packages/mpd.scm				\
   gnu/packages/mp3.scm				\
+  gnu/packages/mpi.scm				\
   gnu/packages/multiprecision.scm		\
   gnu/packages/mtools.scm			\
   gnu/packages/mysql.scm			\
@@ -170,6 +179,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/parallel.scm			\
   gnu/packages/parted.scm			\
   gnu/packages/patchutils.scm			\
+  gnu/packages/pciutils.scm			\
   gnu/packages/pcre.scm				\
   gnu/packages/pdf.scm				\
   gnu/packages/pem.scm				\
@@ -236,12 +246,15 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/zip.scm				\
 						\
   gnu/services.scm				\
+  gnu/services/avahi.scm			\
   gnu/services/base.scm				\
+  gnu/services/dbus.scm				\
   gnu/services/dmd.scm				\
   gnu/services/networking.scm			\
   gnu/services/xorg.scm				\
 						\
   gnu/system.scm				\
+  gnu/system/file-systems.scm			\
   gnu/system/grub.scm				\
   gnu/system/linux.scm				\
   gnu/system/linux-initrd.scm			\
@@ -259,7 +272,9 @@ dist_patch_DATA =						\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
   gnu/packages/patches/bitlbee-fix-tests.patch			\
   gnu/packages/patches/bitlbee-memset-fix.patch			\
+  gnu/packages/patches/ccache-stdc-predef-test.patch		\
   gnu/packages/patches/cdparanoia-fpic.patch			\
+  gnu/packages/patches/clucene-pkgconfig.patch			\
   gnu/packages/patches/cmake-fix-tests.patch			\
   gnu/packages/patches/coreutils-dummy-man.patch		\
   gnu/packages/patches/coreutils-skip-nohup.patch		\
@@ -269,6 +284,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
   gnu/packages/patches/dmd-getpw.patch				\
   gnu/packages/patches/dmd-tests-longer-sleeps.patch		\
+  gnu/packages/patches/doxygen-test.patch			\
+  gnu/packages/patches/doxygen-tmake.patch			\
   gnu/packages/patches/emacs-configure-sh.patch			\
   gnu/packages/patches/findutils-absolute-paths.patch		\
   gnu/packages/patches/flac-fix-memcmp-not-declared.patch	\
@@ -311,13 +328,20 @@ dist_patch_DATA =						\
   gnu/packages/patches/make-impure-dirs.patch			\
   gnu/packages/patches/mc-fix-ncurses-build.patch		\
   gnu/packages/patches/mcron-install.patch			\
+  gnu/packages/patches/mhash-keygen-test-segfault.patch		\
   gnu/packages/patches/mit-krb5-init-fix.patch			\
   gnu/packages/patches/mpc123-initialize-ao.patch		\
+  gnu/packages/patches/openssl-CVE-2010-5298.patch		\
+  gnu/packages/patches/openssl-extension-checking-fixes.patch	\
   gnu/packages/patches/patchelf-page-size.patch			\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
+  gnu/packages/patches/perl-tk-x11-discover.patch		\
+  gnu/packages/patches/petsc-fix-threadcomm.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\
+  gnu/packages/patches/pybugz-encode-error.patch		\
+  gnu/packages/patches/pybugz-stty.patch			\
   gnu/packages/patches/python-fix-tests.patch			\
   gnu/packages/patches/python-libffi-mips-n32-fix.patch		\
   gnu/packages/patches/qt4-tests.patch				\
@@ -325,11 +349,14 @@ dist_patch_DATA =						\
   gnu/packages/patches/readline-link-ncurses.patch		\
   gnu/packages/patches/ripperx-libm.patch			\
   gnu/packages/patches/scheme48-tests.patch			\
+  gnu/packages/patches/scotch-test-threading.patch		\
   gnu/packages/patches/slim-session.patch			\
   gnu/packages/patches/slim-config.patch			\
   gnu/packages/patches/slim-sigusr1.patch			\
+  gnu/packages/patches/soprano-find-clucene.patch		\
   gnu/packages/patches/source-highlight-regexrange-test.patch	\
   gnu/packages/patches/sqlite-large-page-size-fix.patch		\
+  gnu/packages/patches/superlu-dist-scotchmetis.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
   gnu/packages/patches/valgrind-glibc.patch			\

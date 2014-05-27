@@ -1,0 +1,15 @@
+Fix "error: unknown type name 'cpu_set_t'".  Patch submitted upstream
+http://lists.mcs.anl.gov/pipermail/petsc-dev/2014-May/015345.html
+
+--- a/src/sys/threadcomm/impls/openmp/tcopenmp.c	2014-03-13 21:47:22.000000000 -0500
++++ b/src/sys/threadcomm/impls/openmp/tcopenmp.c	2014-04-02 14:44:57.185170151 -0500
+@@ -1,6 +1,9 @@
+ #define PETSC_DESIRE_FEATURE_TEST_MACROS
+ #include <../src/sys/threadcomm/impls/openmp/tcopenmpimpl.h>
+ #include <omp.h>
++#if defined(PETSC_HAVE_SCHED_CPU_SET_T)
++#include <sched.h>
++#endif
+ 
+ PetscErrorCode PetscThreadCommGetRank_OpenMP(PetscInt *trank)
+ {

@@ -22,9 +22,10 @@
 ;;; machine images that we build.
 ;;;
 
-(use-modules (gnu packages zile)
+(use-modules (gnu)
+
+             (gnu packages zile)
              (gnu packages xorg)
-             (gnu packages base)
              (gnu packages admin)
              (gnu packages guile)
              (gnu packages bash)
@@ -33,8 +34,6 @@
              (gnu packages tor)
              (gnu packages package-management)
 
-             (gnu system shadow)                  ; 'user-account'
-             (gnu services base)
              (gnu services networking)
              (gnu services xorg))
 
@@ -42,11 +41,32 @@
  (host-name "gnu")
  (timezone "Europe/Paris")
  (locale "en_US.UTF-8")
+ (bootloader (grub-configuration
+              (device "/dev/sda")))
+ (file-systems
+  ;; We provide a dummy file system for /, but that's OK because the VM build
+  ;; code will automatically declare the / file system for us.
+  (list (file-system
+          (mount-point "/")
+          (device "dummy")
+          (type "dummy"))
+        ;; %fuse-control-file-system   ; needs fuse.ko
+        %binary-format-file-system))
  (users (list (user-account
                (name "guest")
-               (uid 1000) (gid 100)
+               (group "wheel")
+               (password "")
                (comment "Guest of GNU")
                (home-directory "/home/guest"))))
+ (groups (list (user-group (name "root") (id 0))
+               (user-group
+                (name "wheel")
+                (id 1)
+                (members '("guest")))             ; allow 'guest' to use sudo
+               (user-group
+                (name "users")
+                (id 100)
+                (members '("guest")))))
  (services (cons* (slim-service #:auto-login? #t
                                 #:default-user "guest")
 
@@ -56,6 +76,9 @@
                                              #:gateway "10.0.2.2")
 
                   %base-services))
+ (pam-services
+  ;; Explicitly allow for empty passwords.
+  (base-pam-services #:allow-empty-passwords? #t))
  (packages (list bash coreutils findutils grep sed
                  procps psmisc less
                  guile-2.0 dmd guix util-linux inetutils

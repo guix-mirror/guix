@@ -28,10 +28,11 @@
   #:use-module (guix build utils)
   #:export (mount-essential-file-systems
             linux-command-line
+            find-long-option
             make-essential-device-nodes
             configure-qemu-networking
-            mount-qemu-smb-share
-            mount-qemu-9p
+            check-file-system
+            mount-file-system
             bind-mount
             load-linux-module*
             device-number
@@ -63,11 +64,29 @@
     (mkdir (scope "sys")))
   (mount "none" (scope "sys") "sysfs"))
 
+(define (move-essential-file-systems root)
+  "Move currently mounted essential file systems to ROOT."
+  (for-each (lambda (dir)
+              (let ((target (string-append root dir)))
+                (unless (file-exists? target)
+                  (mkdir target))
+                (mount dir target "" MS_MOVE)))
+            '("/proc" "/sys")))
+
 (define (linux-command-line)
   "Return the Linux kernel command line as a list of strings."
   (string-tokenize
    (call-with-input-file "/proc/cmdline"
      get-string-all)))
+
+(define (find-long-option option arguments)
+  "Find OPTION among ARGUMENTS, where OPTION is something like \"--load\".
+Return the value associated with OPTION, or #f on failure."
+  (let ((opt (string-append option "=")))
+    (and=> (find (cut string-prefix? opt <>)
+                 arguments)
+           (lambda (arg)
+             (substring arg (+ 1 (string-index arg #\=)))))))
 
 (define* (make-essential-device-nodes #:key (root "/"))
   "Make essential device nodes under ROOT/dev."
@@ -115,6 +134,10 @@
                   (device-number 4 n))
            (loop (+ 1 n)))))
 
+  ;; Serial line.
+  (mknod (scope "dev/ttyS0") 'char-special #o660
+         (device-number 4 64))
+
   ;; Pseudo ttys.
   (mknod (scope "dev/ptmx") 'char-special #o666
          (device-number 5 2))
@@ -143,7 +166,18 @@
   (symlink "/proc/self/fd" (scope "dev/fd"))
   (symlink "/proc/self/fd/0" (scope "dev/stdin"))
   (symlink "/proc/self/fd/1" (scope "dev/stdout"))
-  (symlink "/proc/self/fd/2" (scope "dev/stderr")))
+  (symlink "/proc/self/fd/2" (scope "dev/stderr"))
+
+  ;; Loopback devices.
+  (let loop ((i 0))
+    (when (< i 8)
+      (mknod (scope (string-append "dev/loop" (number->string i)))
+             'block-special #o660
+             (device-number 7 i))
+      (loop (+ 1 i))))
+
+  ;; File systems in user space (FUSE).
+  (mknod (scope "dev/fuse") 'char-special #o666 (device-number 10 229)))
 
 (define %host-qemu-ipv4-address
   (inet-pton AF_INET "10.0.2.10"))
@@ -167,33 +201,13 @@ networking values.)  Return #t if INTERFACE is up, #f otherwise."
 
     (logand (network-interface-flags sock interface) IFF_UP)))
 
-(define (mount-qemu-smb-share share mount-point)
-  "Mount QEMU's CIFS/SMB SHARE at MOUNT-POINT.
-
-Vanilla QEMU's `-smb' option just exports a /qemu share, whereas our
-`qemu-with-multiple-smb-shares' package exports the /xchg and /store shares
- (the latter allows the store to be shared between the host and guest.)"
-
-  (format #t "mounting QEMU's SMB share `~a'...\n" share)
-  (let ((server "10.0.2.4"))
-    (mount (string-append "//" server share) mount-point "cifs" 0
-           (string->pointer "guest,sec=none"))))
-
-(define (mount-qemu-9p source mount-point)
-  "Mount QEMU's 9p file system from SOURCE at MOUNT-POINT.
-
-This uses the 'virtio' transport, which requires the various virtio Linux
-modules to be loaded."
-
-  (format #t "mounting QEMU's 9p share '~a'...\n" source)
-  (let ((server "10.0.2.4"))
-    (mount source mount-point "9p" 0
-           (string->pointer "trans=virtio"))))
+;; Linux mount flags, from libc's <sys/mount.h>.
+(define MS_RDONLY 1)
+(define MS_BIND 4096)
+(define MS_MOVE 8192)
 
 (define (bind-mount source target)
   "Bind-mount SOURCE at TARGET."
-  (define MS_BIND 4096)                           ; from libc's <sys/mount.h>
-
   (mount source target "" MS_BIND))
 
 (define (load-linux-module* file)
@@ -208,6 +222,165 @@ modules to be loaded."
 the last argument of `mknod'."
   (+ (* major 256) minor))
 
+(define (pidof program)
+  "Return the PID of the first presumed instance of PROGRAM."
+  (let ((program (basename program)))
+    (find (lambda (pid)
+            (let ((exe (format #f "/proc/~a/exe" pid)))
+              (and=> (false-if-exception (readlink exe))
+                     (compose (cut string=? program <>) basename))))
+          (filter-map string->number (scandir "/proc")))))
+
+(define* (mount-root-file-system root type
+                                 #:key volatile-root? (unionfs "unionfs"))
+  "Mount the root file system of type TYPE at device ROOT.  If VOLATILE-ROOT?
+is true, mount ROOT read-only and make it a union with a writable tmpfs using
+UNIONFS."
+  (define (mark-as-not-killable pid)
+    ;; Tell the 'user-processes' dmd service that PID must be kept alive when
+    ;; shutting down.
+    (mkdir-p "/root/etc/dmd")
+    (let ((port (open-file "/root/etc/dmd/do-not-kill" "a")))
+      (chmod port #o600)
+      (write pid port)
+      (newline port)
+      (close-port port)))
+
+  (catch #t
+    (lambda ()
+      (if volatile-root?
+          (begin
+            (mkdir-p "/real-root")
+            (mount root "/real-root" type MS_RDONLY)
+            (mkdir-p "/rw-root")
+            (mount "none" "/rw-root" "tmpfs")
+
+            ;; We want read-write /dev nodes.
+            (make-essential-device-nodes #:root "/rw-root")
+
+            ;; Make /root a union of the tmpfs and the actual root.
+            (unless (zero? (system* unionfs "-o"
+                                    "cow,allow_other,use_ino,suid,dev"
+                                    "/rw-root=RW:/real-root=RO"
+                                    "/root"))
+              (error "unionfs failed"))
+
+            ;; Make sure unionfs remains alive till the end.  Because
+            ;; 'fuse_daemonize' doesn't tell the PID of the forked daemon, we
+            ;; have to resort to 'pidof' here.
+            (mark-as-not-killable (pidof unionfs)))
+          (begin
+            (check-file-system root type)
+            (mount root "/root" type))))
+    (lambda args
+      (format (current-error-port) "exception while mounting '~a': ~s~%"
+              root args)
+      (start-repl)))
+
+  (copy-file "/proc/mounts" "/root/etc/mtab"))
+
+(define (check-file-system device type)
+  "Run a file system check of TYPE on DEVICE."
+  (define fsck
+    (string-append "fsck." type))
+
+  (let ((status (system* fsck "-v" "-p" device)))
+    (match (status:exit-val status)
+      (0
+       #t)
+      (1
+       (format (current-error-port) "'~a' corrected errors on ~a; continuing~%"
+               fsck device))
+      (2
+       (format (current-error-port) "'~a' corrected errors on ~a; rebooting~%"
+               fsck device)
+       (sleep 3)
+       (reboot))
+      (code
+       (format (current-error-port) "'~a' exited with code ~a on ~a; spawning REPL~%"
+               fsck code device)
+       (start-repl)))))
+
+(define* (mount-file-system spec #:key (root "/root"))
+  "Mount the file system described by SPEC under ROOT.  SPEC must have the
+form:
+
+  (DEVICE MOUNT-POINT TYPE (FLAGS ...) OPTIONS CHECK?)
+
+DEVICE, MOUNT-POINT, and TYPE must be strings; OPTIONS can be a string or #f;
+FLAGS must be a list of symbols.  CHECK? is a Boolean indicating whether to
+run a file system check."
+  (define flags->bit-mask
+    (match-lambda
+     (('read-only rest ...)
+      (or MS_RDONLY (flags->bit-mask rest)))
+     (('bind-mount rest ...)
+      (or MS_BIND (flags->bit-mask rest)))
+     (()
+      0)))
+
+  (match spec
+    ((source mount-point type (flags ...) options check?)
+     (let ((mount-point (string-append root "/" mount-point)))
+       (when check?
+         (check-file-system source type))
+       (mkdir-p mount-point)
+       (mount source mount-point type (flags->bit-mask flags)
+              (if options
+                  (string->pointer options)
+                  %null-pointer))
+
+       ;; Update /etc/mtab.
+       (mkdir-p (string-append root "/etc"))
+       (let ((port (open-file (string-append root "/etc/mtab") "a")))
+         (format port "~a ~a ~a ~a 0 0~%"
+                 source mount-point type options)
+         (close-port port))))))
+
+(define (switch-root root)
+  "Switch to ROOT as the root file system, in a way similar to what
+util-linux' switch_root(8) does."
+  (move-essential-file-systems root)
+  (chdir root)
+
+  ;; Since we're about to 'rm -rf /', try to make sure we're on an initrd.
+  ;; TODO: Use 'statfs' to check the fs type, like klibc does.
+  (when (or (not (file-exists? "/init")) (directory-exists? "/home"))
+    (format (current-error-port)
+            "The root file system is probably not an initrd; \
+bailing out.~%root contents: ~s~%" (scandir "/"))
+    (force-output (current-error-port))
+    (exit 1))
+
+  ;; Delete files from the old root, without crossing mount points (assuming
+  ;; there are no mount points in sub-directories.)  That means we're leaving
+  ;; the empty ROOT directory behind us, but that's OK.
+  (let ((root-device (stat:dev (stat "/"))))
+    (for-each (lambda (file)
+                (unless (member file '("." ".."))
+                  (let* ((file   (string-append "/" file))
+                         (device (stat:dev (lstat file))))
+                    (when (= device root-device)
+                      (delete-file-recursively file)))))
+              (scandir "/")))
+
+  ;; Make ROOT the new root.
+  (mount root "/" "" MS_MOVE)
+  (chroot ".")
+  (chdir "/")
+
+  (when (file-exists? "/dev/console")
+    ;; Close the standard file descriptors since they refer to the old
+    ;; /dev/console, and reopen them.
+    (let ((console (open-file "/dev/console" "r+b0")))
+      (for-each close-fdes '(0 1 2))
+
+      (dup2 (fileno console) 0)
+      (dup2 (fileno console) 1)
+      (dup2 (fileno console) 2)
+
+      (close-port console))))
+
 (define* (boot-system #:key
                       (linux-modules '())
                       qemu-guest-networking?
@@ -220,9 +393,10 @@ QEMU-GUEST-NETWORKING? is true, mounting the file systems specified in MOUNTS,
 and finally booting into the new root if any.  The initrd supports kernel
 command-line options '--load', '--root', and '--repl'.
 
-MOUNTS must be a list of elements of the form:
+Mount the root file system, specified by the '--root' command-line argument,
+if any.
 
-  (FILE-SYSTEM-TYPE SOURCE TARGET)
+MOUNTS must be a list suitable for 'mount-file-system'.
 
 When GUILE-MODULES-IN-CHROOT? is true, make core Guile modules available in
 the new root.
@@ -238,21 +412,25 @@ to it are lost."
             (resolve (string-append "/root" target)))
           file)))
 
-  (define MS_RDONLY 1)
+  (define root-mount-point?
+    (match-lambda
+     ((device "/" _ ...) #t)
+     (_ #f)))
+
+  (define root-fs-type
+    (or (any (match-lambda
+              ((device "/" type _ ...) type)
+              (_ #f))
+             mounts)
+        "ext4"))
 
   (display "Welcome, this is GNU's early boot Guile.\n")
   (display "Use '--repl' for an initrd REPL.\n\n")
 
   (mount-essential-file-systems)
   (let* ((args    (linux-command-line))
-         (option  (lambda (opt)
-                    (let ((opt (string-append opt "=")))
-                      (and=> (find (cut string-prefix? opt <>)
-                                   args)
-                             (lambda (arg)
-                               (substring arg (+ 1 (string-index arg #\=))))))))
-         (to-load (option "--load"))
-         (root    (option "--root")))
+         (to-load (find-long-option "--load" args))
+         (root    (find-long-option "--root" args)))
 
     (when (member "--repl" args)
       (start-repl))
@@ -273,55 +451,17 @@ to it are lost."
     (unless (file-exists? "/root")
       (mkdir "/root"))
     (if root
-        (catch #t
-          (lambda ()
-            (if volatile-root?
-                (begin
-                  ;; XXX: For lack of a union file system...
-                  (mkdir-p "/real-root")
-                  (mount root "/real-root" "ext3" MS_RDONLY)
-                  (mount "none" "/root" "tmpfs")
-
-                  ;; XXX: 'copy-recursively' cannot deal with device nodes, so
-                  ;; explicitly avoid /dev.
-                  (for-each (lambda (file)
-                              (unless (string=? "dev" file)
-                                (copy-recursively (string-append "/real-root/"
-                                                                 file)
-                                                  (string-append "/root/"
-                                                                 file)
-                                                  #:log (%make-void-port
-                                                         "w"))))
-                            (scandir "/real-root"
-                                     (lambda (file)
-                                       (not (member file '("." ".."))))))
-
-                  ;; TODO: Unmount /real-root.
-                  )
-                (mount root "/root" "ext3")))
-          (lambda args
-            (format (current-error-port) "exception while mounting '~a': ~s~%"
-                    root args)
-            (start-repl)))
+        (mount-root-file-system root root-fs-type
+                                #:volatile-root? volatile-root?)
         (mount "none" "/root" "tmpfs"))
-
-    (mount-essential-file-systems #:root "/root")
 
     (unless (file-exists? "/root/dev")
       (mkdir "/root/dev")
       (make-essential-device-nodes #:root "/root"))
 
     ;; Mount the specified file systems.
-    (for-each (match-lambda
-               (('cifs source target)
-                (let ((target (string-append "/root/" target)))
-                  (mkdir-p target)
-                  (mount-qemu-smb-share source target)))
-               (('9p source target)
-                (let ((target (string-append "/root/" target)))
-                  (mkdir-p target)
-                  (mount-qemu-9p source target))))
-              mounts)
+    (for-each mount-file-system
+              (remove root-mount-point? mounts))
 
     (when guile-modules-in-chroot?
       ;; Copy the directories that contain .scm and .go files so that the
@@ -338,9 +478,8 @@ to it are lost."
 
     (if to-load
         (begin
+          (switch-root "/root")
           (format #t "loading '~a'...\n" to-load)
-          (chdir "/root")
-          (chroot "/root")
 
           ;; Obviously this has to be done each time we boot.  Do it from here
           ;; so that statfs(2) returns DEVPTS_SUPER_MAGIC like libc's getpt(3)
@@ -352,9 +491,11 @@ to it are lost."
             (lambda ()
               (primitive-load to-load))
             (lambda args
+              (start-repl))
+            (lambda args
               (format (current-error-port) "'~a' raised an exception: ~s~%"
                       to-load args)
-              (start-repl)))
+              (display-backtrace (make-stack #t) (current-error-port))))
           (format (current-error-port)
                   "boot program '~a' terminated, rebooting~%"
                   to-load)

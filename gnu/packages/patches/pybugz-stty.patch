@@ -1,0 +1,19 @@
+Gracefully deal with 'stty size' failures.
+Submitted upstream.
+
+--- pybugz-0.6.11/bugz.py	2006-09-02 14:35:37.000000000 +0200
++++ pybugz-0.6.11/bugz.py	2014-05-05 15:17:03.000000000 +0200
+@@ -288,7 +288,12 @@ def get_cols():
+     stty = which('stty')
+     if stty:
+         row_cols = commands.getoutput("%s size" % stty)
+-        rows, cols = map(int, row_cols.split())
++        try:
++            rows, cols = map(int, row_cols.split())
++        except:
++            # In some cases 'stty size' will just fail with
++            # "Inappropriate ioctl for device".
++            cols = DEFAULT_NUM_COLS
+         return cols
+     else:
+         return DEFAULT_NUM_COLS

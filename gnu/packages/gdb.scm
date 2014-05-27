@@ -33,14 +33,14 @@
 (define-public gdb
   (package
     (name "gdb")
-    (version "7.7")
+    (version "7.7.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "08vcb97j1b7vxwq6088wb6s3g3bm8iwikd922y0xsgbbxv3d2104"))))
+               "199sn1p0gzli6icp9dcvrphdvyi7hm4cc9zhziq0q6vg81h55g8d"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; FIXME "make check" fails on single-processor systems.
@@ -57,7 +57,11 @@
        ("readline" ,readline)
        ("ncurses" ,ncurses)
        ("python" ,python-wrapper)
-       ("dejagnu" ,dejagnu)))
+       ("dejagnu" ,dejagnu)
+
+       ;; Allow use of XML-formatted syscall information.  This enables 'catch
+       ;; syscall' and similar commands.
+       ("libxml2" ,libxml2)))
     (native-inputs
       `(("texinfo" ,texinfo)))
     (home-page "http://www.gnu.org/software/gdb/")

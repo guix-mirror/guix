@@ -252,7 +252,7 @@ failure."
                 (catch 'gcry-error
                   (lambda ()
                     (string->canonical-sexp signature))
-                  (lambda (err . rest)
+                  (lambda (key proc err)
                     (leave (_ "signature is not a valid \
 s-expression: ~s~%")
                            signature))))))))

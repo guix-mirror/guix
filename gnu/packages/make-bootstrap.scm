@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -40,7 +40,9 @@
             %glibc-bootstrap-tarball
             %gcc-bootstrap-tarball
             %guile-bootstrap-tarball
-            %bootstrap-tarballs))
+            %bootstrap-tarballs
+
+            %guile-static-stripped))
 
 ;;; Commentary:
 ;;;

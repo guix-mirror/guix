@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Sree Harsha Totakura <sreeharsha@totakura.in>
@@ -25,6 +25,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages doxygen)
   #:use-module (gnu packages libpng)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -231,12 +232,13 @@ meaning that audio is compressed in FLAC without any loss in quality.")
              (base32
               "0s3vr2nxfxlf1k75iqpp4l78yf4gil3f0v778kvlngbchvaq23n4"))))
    (build-system gnu-build-system)
-   ;; FIXME: Add optional inputs doxygen (for documentation) and liboggz
+   (native-inputs `(("doxygen" ,doxygen)
+                    ("pkg-config" ,pkg-config)))
+   ;; FIXME: Add optional input liboggz
    (inputs `(("bison" ,bison)
              ("libogg" ,libogg)
              ("libpng" ,libpng)
-             ("pkg-config" ,pkg-config)
-             ("python" ,python-wrapper)
+("python" ,python-wrapper)
              ("zlib" ,zlib)))
    (synopsis "kate, a karaoke and text codec for embedding in ogg")
    (description

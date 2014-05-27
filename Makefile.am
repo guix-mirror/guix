@@ -37,6 +37,7 @@ MODULES =					\
   guix/download.scm				\
   guix/git-download.scm				\
   guix/monads.scm				\
+  guix/gexp.scm					\
   guix/profiles.scm				\
   guix/serialization.scm			\
   guix/nar.scm					\
@@ -58,7 +59,6 @@ MODULES =					\
   guix/build/download.scm			\
   guix/build/cmake-build-system.scm		\
   guix/build/git.scm				\
-  guix/build/gnome.scm				\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
   guix/build/linux-initrd.scm			\
@@ -70,6 +70,9 @@ MODULES =					\
   guix/build/rpath.scm				\
   guix/build/svn.scm				\
   guix/build/vm.scm				\
+  guix/build/install.scm			\
+  guix/build/activation.scm			\
+  guix/build/syscalls.scm			\
   guix/packages.scm				\
   guix/snix.scm					\
   guix/scripts/download.scm			\
@@ -139,9 +142,11 @@ SCM_TESTS =					\
   tests/snix.scm				\
   tests/store.scm				\
   tests/monads.scm				\
+  tests/gexp.scm				\
   tests/nar.scm					\
   tests/union.scm				\
-  tests/profiles.scm
+  tests/profiles.scm				\
+  tests/syscalls.scm
 
 SH_TESTS =					\
   tests/guix-build.sh				\
@@ -254,6 +259,7 @@ endif BUILD_DAEMON
 ACLOCAL_AMFLAGS = -I m4
 AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --with-libgcrypt-prefix="$(LIBGCRYPT_PREFIX)"	\
+  --with-libgcrypt-libdir="$(LIBGCRYPT_LIBDIR)"	\
   --with-nix-prefix="$(NIX_PREFIX)"		\
   --enable-daemon
 

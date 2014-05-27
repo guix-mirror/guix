@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services dmd)
+  #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (gnu services)
   #:use-module (ice-9 match)
@@ -29,52 +30,45 @@
 ;;;
 ;;; Code:
 
-(define (dmd-configuration-file services etc)
-  "Return the dmd configuration file for SERVICES, that initializes /etc from
-ETC (the name of a directory in the store) on startup."
-  (define config
-    `(begin
-       (use-modules (ice-9 ftw))
+(define (dmd-configuration-file services)
+  "Return the dmd configuration file for SERVICES."
+  (define modules
+    ;; Extra modules visible to dmd.conf.
+    '((guix build syscalls)
+      (guix build linux-initrd)
+      (guix build utils)))
 
-       (register-services
-        ,@(map (lambda (service)
-                `(make <service>
-                   #:docstring ',(service-documentation service)
-                   #:provides ',(service-provision service)
-                   #:requires ',(service-requirement service)
-                   #:respawn? ',(service-respawn? service)
-                   #:start ,(service-start service)
-                   #:stop ,(service-stop service)))
-               services))
+  (mlet %store-monad ((modules  (imported-modules modules))
+                      (compiled (compiled-modules modules)))
+    (define config
+      #~(begin
+          (eval-when (expand load eval)
+            (set! %load-path (cons #$modules %load-path))
+            (set! %load-compiled-path
+                  (cons #$compiled %load-compiled-path)))
 
-       ;; /etc is a mixture of static and dynamic settings.  Here is where we
-       ;; initialize it from the static part.
-       (format #t "populating /etc from ~a...~%" ,etc)
-       (let ((rm-f (lambda (f)
-                     (false-if-exception (delete-file f)))))
-         (rm-f "/etc/static")
-         (symlink ,etc "/etc/static")
-         (for-each (lambda (file)
-                     ;; TODO: Handle 'shadow' specially so that changed
-                     ;; password aren't lost.
-                     (let ((target (string-append "/etc/" file))
-                           (source (string-append "/etc/static/" file)))
-                       (rm-f target)
-                       (symlink source target)))
-                   (scandir ,etc
-                            (lambda (file)
-                              (not (member file '("." ".."))))))
+          (use-modules (ice-9 ftw)
+                       (guix build syscalls)
+                       ((guix build linux-initrd)
+                        #:select (check-file-system)))
 
-         ;; Prevent ETC from being GC'd.
-         (rm-f "/var/guix/gcroots/etc-directory")
-         (symlink ,etc "/var/guix/gcroots/etc-directory"))
+          (register-services
+           #$@(map (lambda (service)
+                     #~(make <service>
+                         #:docstring '#$(service-documentation service)
+                         #:provides '#$(service-provision service)
+                         #:requires '#$(service-requirement service)
+                         #:respawn? '#$(service-respawn? service)
+                         #:start #$(service-start service)
+                         #:stop #$(service-stop service)))
+                   services))
 
-       ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
-       (setenv "PATH" "/run/current-system/bin")
+          ;; guix-daemon 0.6 aborts if 'PATH' is undefined, so work around it.
+          (setenv "PATH" "/run/current-system/profile/bin")
 
-       (format #t "starting services...~%")
-       (for-each start ',(append-map service-provision services))))
+          (format #t "starting services...~%")
+          (for-each start '#$(append-map service-provision services))))
 
-  (text-file "dmd.conf" (object->string config)))
+    (gexp->file "dmd.conf" config)))
 
 ;;; dmd.scm ends here

@@ -102,6 +102,10 @@ a flexible and convenient way.")
        ("groff" ,groff)
        ("less" ,less)
        ("libpipeline" ,libpipeline)))
+    (native-search-paths
+     (list (search-path-specification
+            (variable "MANPATH")
+            (directories '("share/man")))))
     (home-page "http://man-db.nongnu.org/")
     (synopsis "Standard Unix documentation system")
     (description
@@ -117,7 +121,7 @@ the traditional flat-text whatis databases.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://kernel/linux/docs/man-pages/man-pages-"
+                    "mirror://kernel.org/linux/docs/man-pages/man-pages-"
                     version ".tar.xz"))
               (sha256
                (base32

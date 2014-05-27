@@ -164,10 +164,12 @@
 (false-if-exception (delete-file temp-file))
 (test-assert "compressed-output-port + decompressed-port"
   (let* ((file (search-path %load-path "guix/derivations.scm"))
-         (data (call-with-input-file file get-bytevector-all)))
-    (call-with-compressed-output-port 'xz (open-file temp-file "w0b")
+         (data (call-with-input-file file get-bytevector-all))
+         (port (open-file temp-file "w0b")))
+    (call-with-compressed-output-port 'xz port
       (lambda (compressed)
         (put-bytevector compressed data)))
+    (close-port port)
 
     (bytevector=? data
                   (call-with-decompressed-port 'xz (open-file temp-file "r0b")

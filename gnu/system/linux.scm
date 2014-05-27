@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +21,7 @@
   #:use-module (guix records)
   #:use-module (guix derivations)
   #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -28,8 +29,8 @@
   #:export (pam-service
             pam-entry
             pam-services->directory
-            %pam-other-services
-            unix-pam-service))
+            unix-pam-service
+            base-pam-services))
 
 ;;; Commentary:
 ;;;
@@ -58,58 +59,56 @@
 (define-record-type* <pam-entry> pam-entry
   make-pam-entry
   pam-entry?
-  (control    pam-entry-control)                  ; string
-  (module     pam-entry-module)                   ; file name
-  (arguments  pam-entry-arguments                 ; list of strings
+  (control    pam-entry-control)         ; string
+  (module     pam-entry-module)          ; file name
+  (arguments  pam-entry-arguments        ; list of string-valued g-expressions
               (default '())))
 
 (define (pam-service->configuration service)
-  "Return the configuration string for SERVICE, to be dumped in
-/etc/pam.d/NAME, where NAME is the name of SERVICE."
-  (define (entry->string type entry)
+  "Return the derivation building the configuration file for SERVICE, to be
+dumped in /etc/pam.d/NAME, where NAME is the name of SERVICE."
+  (define (entry->gexp type entry)
     (match entry
       (($ <pam-entry> control module (arguments ...))
-       (string-append type "  "
-                      control " " module " "
-                      (string-join arguments)
-                      "\n"))))
+       #~(format #t "~a ~a ~a ~a~%"
+                 #$type #$control #$module
+                 (string-join (list #$@arguments))))))
 
   (match service
     (($ <pam-service> name account auth password session)
-     (string-concatenate
-      (append (map (cut entry->string "account" <>) account)
-              (map (cut entry->string "auth" <>) auth)
-              (map (cut entry->string "password" <>) password)
-              (map (cut entry->string "session" <>) session))))))
+     (define builder
+       #~(begin
+           (with-output-to-file #$output
+             (lambda ()
+               #$@(append (map (cut entry->gexp "account" <>) account)
+                          (map (cut entry->gexp "auth" <>) auth)
+                          (map (cut entry->gexp "password" <>) password)
+                          (map (cut entry->gexp "session" <>) session))
+               #t))))
+
+     (gexp->derivation name builder))))
 
 (define (pam-services->directory services)
   "Return the derivation to build the configuration directory to be used as
 /etc/pam.d for SERVICES."
   (mlet %store-monad
       ((names -> (map pam-service-name services))
-       (files (mapm %store-monad
-                    (match-lambda
-                     ((and service ($ <pam-service> name))
-                      (let ((config (pam-service->configuration service)))
-                        (text-file (string-append name ".pam") config))))
-
-                    ;; XXX: Eventually, SERVICES may be a list of monadic
-                    ;; values instead of plain values.
-                    (map return services))))
+       (files (sequence %store-monad
+                        (map pam-service->configuration
+                             ;; XXX: Eventually, SERVICES may be a list of
+                             ;; monadic values instead of plain values.
+                             services))))
     (define builder
-      '(begin
-         (use-modules (ice-9 match))
+      #~(begin
+          (use-modules (ice-9 match))
 
-         (let ((out (assoc-ref %outputs "out")))
-           (mkdir out)
-           (for-each (match-lambda
-                      ((name . file)
-                       (symlink file (string-append out "/" name))))
-                     %build-inputs)
-           #t)))
+          (mkdir #$output)
+          (for-each (match-lambda
+                     ((name file)
+                      (symlink file (string-append #$output "/" name))))
+                    '#$(zip names files))))
 
-    (derivation-expression "pam.d" builder
-                           #:inputs (zip names files))))
+    (gexp->derivation "pam.d" builder)))
 
 (define %pam-other-services
   ;; The "other" PAM configuration, which denies everything (see
@@ -149,7 +148,19 @@ should be the name of a file used as the message-of-the-day."
                             (pam-entry
                              (control "optional")
                              (module "pam_motd.so")
-                             (arguments (list (string-append "motd=" motd)))))
+                             (arguments
+                              (list #~(string-append "motd=" #$motd)))))
                       (list unix))))))))
+
+(define* (base-pam-services #:key allow-empty-passwords?)
+  "Return the list of basic PAM services everyone would want."
+  (cons %pam-other-services
+        (map (cut unix-pam-service <>
+                  #:allow-empty-passwords? allow-empty-passwords?)
+             '("su" "passwd" "sudo"
+               "useradd" "userdel" "usermod"
+               "groupadd" "groupdel" "groupmod"
+               ;; TODO: Add other Shadow programs?
+               ))))
 
 ;;; linux.scm ends here

@@ -30,6 +30,9 @@
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xiph)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module ((gnu packages linux)
+                #:select (alsa-lib))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -185,6 +188,30 @@ automatic silence split, that can be used also to adjust cddb/cue splitpoints.
 This package contains the binary.")
    (license license:gpl2+)
    (home-page "http://mp3splt.sourceforge.net/mp3splt_page/home.php")))
+
+(define-public mpg123
+  (package
+    (name "mpg123")
+    (version "1.19.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/mpg123/mpg123-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "06xhd68mj9yp0r6l771aq0d7xgnl402a3wm2mvhxmd3w3ph29446"))))
+    (build-system gnu-build-system)
+    (arguments '(#:configure-flags '("--with-default-audio=pulse")))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("pulseaudio" ,pulseaudio)
+              ("alsa-lib" ,alsa-lib)))
+    (home-page "http://www.mpg123.org/")
+    (synopsis "Console MP3 player and decoder library")
+    (description
+     "mpg123 is a real time MPEG 1.0/2.0/2.5 audio player/decoder for layers
+1,2 and 3 (MPEG 1.0 layer 3 aka MP3 most commonly tested).  It comes with a
+command-line tool as well as a C library, libmpg123.")
+    (license license:lgpl2.1)))
 
 (define-public mpg321
   (package

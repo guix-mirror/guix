@@ -106,14 +106,14 @@ matching a regular expression.")
 (define-public perl-io-tty
   (package
     (name "perl-io-tty")
-    (version "1.10")
+    (version "1.11")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://cpan/authors/id/T/TO/TODDR/IO-Tty-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1cgqyv1zg8857inlnfczrrgpqr0r6mmqv29b7jlmxv47s4df59ii"))))
+                "0lgd9xcbi4gf4gw1ka6fj94my3w1f3k1zamb4pfln0qxz45zlxx4"))))
     (build-system perl-build-system)
     (home-page "http://search.cpan.org/~toddr/IO-Tty/")
     (synopsis "Perl interface to pseudo ttys")

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -53,9 +53,10 @@
              (base32
               "1c2hbg66wfvibsz2ia0ri48yr62751fn950i97c53j3b0fjifsb3"))))
    (build-system gnu-build-system)
-   (inputs `(("glib" ,glib)
-             ("gobject-introspection" ,gobject-introspection)))
-   (native-inputs `(("pkg-config" ,pkg-config)))
+   (inputs `(("glib" ,glib)))
+   (native-inputs
+    `(("pkg-config" ,pkg-config)
+      ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME accessibility toolkit")
    (description
     "ATK provides the set of accessibility interfaces that are implemented
@@ -156,10 +157,10 @@ affine transformation (scale, rotation, shear, etc.)")
     `(("cairo" ,cairo)
       ("harfbuzz" ,harfbuzz)))
    (inputs
-    `(("gobject-introspection" ,gobject-introspection)
-      ("zlib" ,zlib)))
+    `(("zlib" ,zlib)))
    (native-inputs
-    `(("pkg-config" ,pkg-config)))
+    `(("pkg-config" ,pkg-config)
+      ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME text and font handling library")
    (description
     "Pango is the core text and font handling library used in GNOME
@@ -167,6 +168,33 @@ applications. It has extensive support for the different writing systems
 used throughout the world.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/pango/")))
+
+(define-public pangox-compat
+  (package
+    (name "pangox-compat")
+    (version "0.0.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
+                   version
+                   ".tar.xz"))
+             (sha256
+              (base32
+               "0ip0ziys6mrqqmz4n71ays0kf5cs1xflj1gfpvs4fgy2nsrr482m"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("glib" ,glib)
+       ("pango" ,pango)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://developer.gnome.org/pango")
+    (synopsis "functions now obsolete in pango")
+    (description  "Pangox was a X backend to pango.  It is now obsolete and no
+longer provided by recent pango releases.  pangox-compat provides the
+functions which were removed.")
+    (license license:lgpl2.0+)))
 
 
 (define-public gtksourceview
@@ -236,12 +264,12 @@ printing and other features typical of a source code editor.")
    (build-system gnu-build-system)
    (inputs
     `(("glib" ,glib)
-      ("gobject-introspection", gobject-introspection)
       ("libjpeg" ,libjpeg)
       ("libpng" ,libpng)
       ("libtiff" ,libtiff)))
    (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("pkg-config" ,pkg-config)
+       ("gobject-introspection", gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME image loading and manipulation library")
    (description
     "GdkPixbuf is a library for image loading and manipulation developed
@@ -366,21 +394,15 @@ application suites.")
       ("libxinerama" ,libxinerama)
       ("pango" ,pango)))
    (inputs
-    `(("gobject-introspection" ,gobject-introspection)
-      ("libxml2" ,libxml2)))
+    `(("libxml2" ,libxml2)))
    (native-inputs
-     `(("perl" ,perl)
+    `(("perl" ,perl)
       ("pkg-config" ,pkg-config)
+      ("gobject-introspection" ,gobject-introspection)
       ("python-wrapper" ,python-wrapper)
       ("xorg-server" ,xorg-server)))
    (arguments
-    `(#:modules ((guix build gnome)
-                 (guix build gnu-build-system)
-                 (guix build utils))
-      #:imported-modules ((guix build gnome)
-                          (guix build gnu-build-system)
-                          (guix build utils))
-      #:phases
+    `(#:phases
       (alist-replace
        'configure
        (lambda* (#:key inputs #:allow-other-keys #:rest args)
@@ -391,32 +413,8 @@ application suites.")
            ;; directory.
            ;; See the manual page for dbus-uuidgen to correct this issue.
            (substitute* "testsuite/Makefile.in"
-            (("SUBDIRS = gdk gtk a11y css reftests") "SUBDIRS = gdk"))
-
-	   ;; We need to tell GIR where it can find some of the required .gir
-           ;; files.
-           (substitute* "gdk/Makefile.in"
-            (("--add-include-path=../gdk")
-             (string-append
-              "--add-include-path=../gdk"
-              " --add-include-path=" (gir-directory inputs "gdk-pixbuf")
-              " --add-include-path=" (gir-directory inputs "pango")))
-            (("--includedir=\\.")
-             (string-append "--includedir=."
-              " --includedir=" (gir-directory inputs "gdk-pixbuf")
-              " --includedir=" (gir-directory inputs "pango"))))
-
-           (substitute* "gtk/Makefile.in"
-            (("--add-include-path=../gdk")
-             (string-append "--add-include-path=../gdk"
-              " --add-include-path=" (gir-directory inputs "atk")
-              " --add-include-path=" (gir-directory inputs "gdk-pixbuf")
-              " --add-include-path=" (gir-directory inputs "pango")))
-            (("--includedir=../gdk")
-             (string-append "--includedir=../gdk"
-              " --includedir=" (gir-directory inputs "atk")
-              " --includedir=" (gir-directory inputs "gdk-pixbuf")
-              " --includedir=" (gir-directory inputs "pango"))))
+             (("SUBDIRS = gdk gtk a11y css reftests")
+              "SUBDIRS = gdk"))
            (apply configure args)))
        %standard-phases)))))
 

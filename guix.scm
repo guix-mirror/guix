@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -26,8 +26,10 @@
       '(base32
         build-system
         derivations
-        ftp-client
         download
+        ftp-client
+        gexp
+        monads
         packages
         store
         utils))

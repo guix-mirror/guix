@@ -40,10 +40,14 @@
                 #:select (tar))
   #:use-module ((gnu packages compression)
                 #:select (gzip))
+  #:use-module ((gnu packages openssl)
+                #:renamer (symbol-prefix-proc 'o:))
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages groff)
   #:use-module (gnu packages xorg))
 
 (define-public dmd
@@ -471,6 +475,28 @@ network statistics collection, security monitoring, network debugging, etc.")
     ;; fad-*.c and a couple other files are BSD-4, but the rest is BSD-3.
     (license bsd-3)))
 
+(define-public tcpdump
+  (package
+    (name "tcpdump")
+    (version "4.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.tcpdump.org/release/tcpdump-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "15hb7zkzd66nag102qbv100hcnf7frglbkylmr8adwr8f5jkkaql"))))
+    (build-system gnu-build-system)
+    (inputs `(("libpcap" ,libpcap)
+              ("openssl" ,o:openssl)))
+    (native-inputs `(("perl" ,perl)))        ; for tests
+    (home-page "http://www.tcpdump.org/")
+    (synopsis "Network packet analyzer")
+    (description
+     "Tcpdump is a command-line tool to analyze network traffic passing
+through the network interface controller.")
+    (license bsd-3)))
+
 (define-public jnettop
   (package
     (name "jnettop")
@@ -542,3 +568,157 @@ by bandwidth they use.")
 console window to allow commands to be interactively run on multiple servers
 over ssh connections.")
     (license gpl2+)))
+
+(define-public rottlog
+  (package
+    (name "rottlog")
+    (version "0.72.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/rottlog/rottlog-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0751mb9l2f0jrk3vj6q8ilanifd121dliwk0c34g8k0dlzsv3kd7"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "Makefile.in"
+                  (("-o \\$\\{LOG_OWN\\} -g \\$\\{LOG_GROUP\\}")
+                   ;; Don't try to chown root.
+                   "")
+                  (("mkdir -p \\$\\(ROTT_STATDIR\\)")
+                   ;; Don't attempt to create /var/lib/rottlog.
+                   "true")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags (list (string-append "ROTT_ETCDIR="
+                                              (assoc-ref %outputs "out")
+                                              "/etc")
+                               "--localstatedir=/var")
+       #:phases (alist-cons-after
+                 'install 'install-info
+                 (lambda _
+                   (zero? (system* "make" "install-info")))
+                 %standard-phases)))
+    (native-inputs `(("texinfo" ,texinfo)
+                     ("util-linux" ,util-linux))) ; for 'cal'
+    (home-page "http://www.gnu.org/software/rottlog/")
+    (synopsis "Log rotation and management")
+    (description
+     "GNU Rot[t]log is a program for managing log files.  It is used to
+automatically rotate out log files when they have reached a given size or
+according to a given schedule.  It can also be used to automatically compress
+and archive such logs.  Rot[t]log will mail reports of its activity to the
+system administrator.")
+    (license gpl3+)))
+
+(define-public sudo
+  (package
+    (name "sudo")
+    (version "1.8.10p2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (list (string-append "http://www.sudo.ws/sudo/dist/sudo-"
+                                    version ".tar.gz")
+                     (string-append "ftp://ftp.sudo.ws/pub/sudo/OLD/sudo-"
+                                    version ".tar.gz")))
+              (sha256
+               (base32
+                "1wbrygz584abmywklq0b4xhqn3s1bjk3rrladslr5nycdpdvhv5s"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags '("--with-logpath=/var/log/sudo.log")
+       #:phases (alist-cons-before
+                 'configure 'pre-configure
+                 (lambda _
+                   (substitute* "configure"
+                     ;; Refer to the right executables.
+                     (("/usr/bin/mv") (which "mv"))
+                     (("/usr/bin/sh") (which "sh")))
+                   (substitute* (find-files "." "Makefile\\.in")
+                     (("-O [[:graph:]]+ -G [[:graph:]]+")
+                      ;; Allow installation as non-root.
+                      "")
+                     (("^install: (.*)install-sudoers(.*)" _ before after)
+                      ;; Don't try to create /etc/sudoers.
+                      (string-append "install: " before after "\n"))))
+                 %standard-phases)
+
+       ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
+       ;; the chroot's /etc/passwd doesn't have it.  Turn off the tests.
+       #:tests? #f))
+    (inputs
+     `(("groff" ,groff)
+       ("linux-pam" ,linux-pam)
+       ("coreutils" ,coreutils)))
+    (home-page "http://www.sudo.ws/")
+    (synopsis "Run commands as root")
+    (description
+     "Sudo (su \"do\") allows a system administrator to delegate authority to
+give certain users (or groups of users) the ability to run some (or all)
+commands as root or another user while providing an audit trail of the
+commands and their arguments.")
+
+    ;; See <http://www.sudo.ws/sudo/license.html>.
+    (license x11)))
+
+(define-public wpa-supplicant
+  (package
+    (name "wpa-supplicant")
+    (version "2.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://hostap.epitest.fi/releases/wpa_supplicant-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "0xxjw7lslvql1ykfbwmbhdrnjsjljf59fbwf837418s97dz2wqwi"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (chdir "wpa_supplicant")
+                   (copy-file "defconfig" ".config")
+                   (let ((port (open-file ".config" "al")))
+                     (display "
+      CONFIG_DEBUG_SYSLOG=y
+      CONFIG_CTRL_IFACE_DBUS=y
+      CONFIG_CTRL_IFACE_DBUS_NEW=y
+      CONFIG_CTRL_IFACE_DBUS_INTRO=y
+      CONFIG_DRIVER_NL80211=y
+      CFLAGS += $(shell pkg-config libnl-3.0 --cflags)
+      CONFIG_LIBNL32=y
+      CONFIG_READLINE=y\n" port)
+                     (close-port port)))
+                 %standard-phases)
+
+      #:make-flags (list "CC=gcc"
+                         (string-append "BINDIR=" (assoc-ref %outputs "out")
+                                        "/sbin")
+                         (string-append "LIBDIR=" (assoc-ref %outputs "out")
+                                        "/lib"))
+      #:tests? #f))
+    (inputs
+     `(("readline" ,readline)
+       ("libnl" ,libnl)
+       ("dbus" ,dbus)
+       ("openssl" ,o:openssl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://hostap.epitest.fi/wpa_supplicant/")
+    (synopsis "Connecting to WPA and WPA2-protected wireless networks")
+    (description
+     "wpa_supplicant is a WPA Supplicant with support for WPA and WPA2 (IEEE
+802.11i / RSN).  Supplicant is the IEEE 802.1X/WPA component that is used in
+the client stations.  It implements key negotiation with a WPA Authenticator
+and it controls the roaming and IEEE 802.11 authentication/association of the
+WLAN driver.
+
+This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
+
+    ;; In practice, this is linked against Readline, which makes it GPLv3+.
+    (license bsd-3)))

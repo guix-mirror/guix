@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -48,6 +49,10 @@
 
     (let ((args `(,srcdir
                   ,(string-append "-DCMAKE_INSTALL_PREFIX=" out)
+                  ;; add input libraries to rpath
+                  "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"
+                  ;; add (other) libraries of the project itself to rpath
+                  ,(string-append "-DCMAKE_INSTALL_RPATH=" out "/lib")
                   ,@configure-flags)))
       (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
       (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))

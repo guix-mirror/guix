@@ -1,0 +1,15 @@
+Search for clucene include file in the clucene include directory.
+
+diff -u -r soprano-2.9.4.orig/cmake/modules/FindCLucene.cmake soprano-2.9.4/cmake/modules/FindCLucene.cmake
+--- soprano-2.9.4.orig/cmake/modules/FindCLucene.cmake	2013-10-09 19:22:28.000000000 +0200
++++ soprano-2.9.4/cmake/modules/FindCLucene.cmake	2014-04-28 20:08:11.000000000 +0200
+@@ -77,7 +77,8 @@
+ 
+ get_filename_component(TRIAL_LIBRARY_DIR ${CLUCENE_LIBRARY} PATH)
+ find_path(CLUCENE_LIBRARY_DIR
+-  NAMES CLucene/clucene-config.h PATHS ${TRIAL_LIBRARY_DIR} ${TRIAL_LIBRARY_PATHS} ${TRIAL_INCLUDE_PATHS} NO_DEFAULT_PATH)
++  NAMES CLucene/clucene-config.h PATHS ${TRIAL_LIBRARY_DIR} ${TRIAL_LIBRARY_PATHS} ${TRIAL_INCLUDE_PATHS} ${CLUCENE_INCLUDE_DIR} NO_DEFAULT_PATH)
++message (STATUS "XXX ${CLUCENE_LIBRARY_DIR}")
+ if(CLUCENE_LIBRARY_DIR)
+   message(STATUS "Found CLucene library dir: ${CLUCENE_LIBRARY_DIR}")
+   file(READ ${CLUCENE_LIBRARY_DIR}/CLucene/clucene-config.h CLCONTENT)

@@ -21,6 +21,7 @@
 (define-module (gnu packages algebra)
   #:use-module (gnu packages)
   #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages mpi)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages flex)
@@ -123,14 +124,14 @@ PARI is also available as a C library to allow for faster computations.")
 (define-public gp2c
   (package
    (name "gp2c")
-   (version "0.0.8pl1")
+   (version "0.0.9pl1")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://pari.math.u-bordeaux.fr/pub/pari/GP2C/gp2c-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "0r1xrshgx0db2snmacwvg5r99fhd9rpblcfs86pfsp23hnjxj9i0"))))
+                     "1p36060vwhn38j77r4c3jqyaslvhvgm6fdw2486k7krxk5ai7ph5"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (inputs `(("pari-gp" ,pari-gp)))
@@ -196,14 +197,14 @@ syntax is similar to that of C, so basic usage is familiar.  It also includes
 (define-public fftw
   (package
     (name "fftw")
-    (version "3.3.3")
+    (version "3.3.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://ftp.fftw.org/pub/fftw/fftw-"
                                  version".tar.gz"))
              (sha256
               (base32
-               "1wwp9b2va7vkq3ay7a9jk22nr4x5q6m37rzqy2j8y3d11c5grkc5"))))
+               "10h9mzjxnwlsjziah4lri85scc05rlajz39nqf3mbh4vja8dw34g"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-shared" "--enable-openmp")
@@ -237,3 +238,17 @@ cosine/ sine transforms or DCT/DST).")
     (description
      (string-append (package-description fftw)
                     "  Single-precision version."))))
+
+(define-public fftw-openmpi
+  (package (inherit fftw)
+    (name "fftw-openmpi")
+    (inputs
+     `(("openmpi" ,openmpi)
+       ,@(package-inputs fftw)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments fftw)
+       ((#:configure-flags cf)
+        `(cons "--enable-mpi" ,cf))))
+    (description
+     (string-append (package-description fftw)
+                    "  With OpenMPI parallelism support."))))

@@ -20,9 +20,12 @@
 (define-module (gnu packages mail)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages dejagnu)
+  #:use-module (gnu packages emacs)
   #:use-module (gnu packages gdbm)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages guile)
@@ -32,7 +35,9 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages search)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages glib)
@@ -44,6 +49,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (srfi srfi-1))
 
 (define-public mailutils
@@ -252,5 +258,72 @@ Extension (MIME).")
 content (body).  The program is able to learn from the user's classifications
 and corrections.  It is based on a Bayesian filter.")
     (license gpl2)))
+
+(define-public offlineimap
+  (package
+    (name "offlineimap")
+    (version "6.5.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/OfflineIMAP/offlineimap/"
+                                  "archive/v" version ".tar.gz"))
+              (sha256
+               (base32
+                "00k84qagph3xnxss6rkxm61x07ngz8fvffx4z9jyw5baf3cdd32p"))))
+    (build-system python-build-system)
+    (native-inputs `(("python" ,python-2)))
+    (arguments
+     ;; The setup.py script expects python-2.
+     `(#:python ,python-2
+      ;; Tests require a modifiable IMAP account.
+       #:tests? #f))
+    (home-page "http://www.offlineimap.org")
+    (synopsis "Synch emails between two repositories")
+    (description
+     "OfflineImap synchronizes emails between two repositories, so that you
+can read the same mailbox from multiple computers.  It supports IMAP as REMOTE
+repository and Maildir/IMAP as LOCAL repository.")
+    (license gpl2+)))
+
+(define-public mu
+  (package
+    (name "mu")
+    (version "0.9.9.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://mu0.googlecode.com/files/mu-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1hwkliyb8fjrz5sw9fcisssig0jkdxzhccw0ld0l9a10q1l9mqhp"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("texinfo" ,texinfo)))
+    ;; TODO: Add webkit and gtk to build the mug GUI.
+    (inputs
+     `(("xapian" ,xapian)
+       ("emacs" ,emacs)
+       ("guile" ,guile-2.0)
+       ("glib" ,glib)
+       ("gmime" ,gmime)
+       ("tzdata" ,tzdata)))             ;for mu/test/test-mu-query.c
+    (arguments
+     '(#:phases (alist-cons-before
+                 'check 'check-tz-setup
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; For mu/test/test-mu-query.c
+                   (setenv "TZDIR"
+                           (string-append (assoc-ref inputs "tzdata")
+                                          "/share/zoneinfo")))
+                 %standard-phases)))
+    (home-page "http://www.djcbsoftware.nl/code/mu/")
+    (synopsis "Quickly find emails")
+    (description
+     "Mu is a tool for dealing with e-mail messages stored in the
+Maildir-format.  Mu's purpose in life is to help you to quickly find the
+messages you need; in addition, it allows you to view messages, extract
+attachments, create new maildirs, and so on.")
+    (license gpl3+)))
 
 ;;; mail.scm ends here

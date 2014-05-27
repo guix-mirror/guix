@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,25 +17,23 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu system shadow)
-  #:use-module (guix store)
   #:use-module (guix records)
-  #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module ((gnu packages admin)
                 #:select (shadow))
   #:use-module (gnu packages bash)
-  #:use-module (srfi srfi-1)
-  #:use-module (ice-9 match)
+  #:use-module (gnu packages guile-wm)
   #:export (user-account
             user-account?
             user-account-name
-            user-account-pass
+            user-account-password
             user-account-uid
-            user-account-gid
+            user-account-group
+            user-account-supplementary-groups
             user-account-comment
             user-account-home-directory
             user-account-shell
-            user-account-inputs
 
             user-group
             user-group?
@@ -44,9 +42,8 @@
             user-group-id
             user-group-members
 
-            passwd-file
-            group-file
-            guix-build-accounts))
+            default-skeletons
+            skeleton-directory))
 
 ;;; Commentary:
 ;;;
@@ -58,68 +55,66 @@
   user-account make-user-account
   user-account?
   (name           user-account-name)
-  (password       user-account-pass (default ""))
-  (uid            user-account-uid)
-  (gid            user-account-gid)
+  (password       user-account-password (default #f))
+  (uid            user-account-uid (default #f))
+  (group          user-account-group)             ; number | string
+  (supplementary-groups user-account-supplementary-groups
+                        (default '()))            ; list of strings
   (comment        user-account-comment (default ""))
   (home-directory user-account-home-directory)
-  (shell          user-account-shell              ; monadic value
-                  (default (package-file bash "bin/bash")))
-  (inputs         user-account-inputs (default `(("bash" ,bash)))))
+  (shell          user-account-shell              ; gexp
+                  (default #~(string-append #$bash "/bin/bash"))))
 
 (define-record-type* <user-group>
   user-group make-user-group
   user-group?
   (name           user-group-name)
   (password       user-group-password (default #f))
-  (id             user-group-id)
+  (id             user-group-id (default #f))
   (members        user-group-members (default '())))
 
-(define (group-file groups)
-  "Return a /etc/group file for GROUPS, a list of <user-group> objects."
-  (define contents
-    (let loop ((groups groups)
-               (result '()))
-      (match groups
-        ((($ <user-group> name _ gid (users ...)) rest ...)
-         ;; XXX: Ignore the group password.
-         (loop rest
-               (cons (string-append name "::" (number->string gid)
-                                    ":" (string-join users ","))
-                     result)))
-        (()
-         (string-join (reverse result) "\n" 'suffix)))))
+(define (default-skeletons)
+  "Return the default skeleton files for /etc/skel.  These files are copied by
+'useradd' in the home directory of newly created user accounts."
+  (define copy-guile-wm
+    #~(begin
+        (use-modules (guix build utils))
+        (copy-file (car (find-files #$guile-wm "wm-init-sample.scm"))
+                   #$output)))
 
-  (text-file "group" contents))
+  (mlet %store-monad ((bashrc (text-file "bashrc" "\
+# Allow non-login shells such as an xterm to get things right.
+test -f /etc/profile && source /etc/profile\n"))
+                      (guile-wm (gexp->derivation "guile-wm" copy-guile-wm
+                                                  #:modules
+                                                  '((guix build utils))))
+                      (xdefaults (text-file "Xdefaults" "\
+XTerm*utf8: always
+XTerm*metaSendsEscape: true\n"))
+                      (gdbinit   (text-file "gdbinit" "\
+# Tell GDB where to look for separate debugging files.
+set debug-file-directory ~/.guix-profile/lib/debug\n")))
+    (return `((".bashrc" ,bashrc)
+              (".Xdefaults" ,xdefaults)
+              (".guile-wm" ,guile-wm)
+              (".gdbinit" ,gdbinit)))))
 
-(define* (passwd-file accounts #:key shadow?)
-  "Return a password file for ACCOUNTS, a list of <user-account> objects.  If
-SHADOW? is true, then it is a /etc/shadow file, otherwise it is a /etc/passwd
-file."
-  ;; XXX: The resulting file is world-readable, so beware when SHADOW? is #t!
-  (define (contents)
-    (with-monad %store-monad
-      (let loop ((accounts accounts)
-                 (result   '()))
-        (match accounts
-          ((($ <user-account> name pass uid gid comment home-dir mshell)
-            rest ...)
-           (mlet %store-monad ((shell mshell))
-             (loop rest
-                   (cons (if shadow?
-                             (string-append name
-                                            ":"    ; XXX: use (crypt PASS …)?
-                                            ":::::::")
-                             (string-append name
-                                            ":" "x"
-                                            ":" (number->string uid)
-                                            ":" (number->string gid)
-                                            ":" comment ":" home-dir ":" shell))
-                         result))))
-          (()
-           (return (string-join (reverse result) "\n" 'suffix)))))))
+(define (skeleton-directory skeletons)
+  "Return a directory containing SKELETONS, a list of name/derivation pairs."
+  (gexp->derivation "skel"
+                    #~(begin
+                        (use-modules (ice-9 match))
 
-  (mlet %store-monad ((contents (contents)))
-    (text-file (if shadow? "shadow" "passwd") contents)))
+                        (mkdir #$output)
+                        (chdir #$output)
+
+                        ;; Note: copy the skeletons instead of symlinking
+                        ;; them like 'file-union' does, because 'useradd'
+                        ;; would just copy the symlinks as is.
+                        (for-each (match-lambda
+                                   ((target source)
+                                    (copy-file source target)))
+                                  '#$skeletons)
+                        #t)))
 
 ;;; shadow.scm ends here

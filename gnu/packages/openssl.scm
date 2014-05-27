@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,7 +35,10 @@
                                 ".tar.gz"))
             (sha256
              (base32
-              "0a70qdqccg16nw4bbawa6pjvzn05vfp5wkwg6jl0grch7f683jsk"))))
+              "0a70qdqccg16nw4bbawa6pjvzn05vfp5wkwg6jl0grch7f683jsk"))
+            (patches
+             (list (search-patch "openssl-CVE-2010-5298.patch")
+                   (search-patch "openssl-extension-checking-fixes.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments

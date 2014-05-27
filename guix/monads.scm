@@ -56,10 +56,9 @@
             text-file
             text-file*
             package-file
+            origin->derivation
             package->derivation
-            built-derivations
-            derivation-expression
-            lower-inputs)
+            built-derivations)
   #:replace (imported-modules
              compiled-modules))
 
@@ -356,6 +355,7 @@ and store file names; the resulting store file holds references to all these."
        (lambda (port)
          (display ,(computed-text text inputs) port))))
 
+  ;; TODO: Rewrite using 'gexp->derivation'.
   (mlet %store-monad ((inputs (lower-inputs inputs)))
     (derivation-expression name (builder inputs)
                            #:inputs inputs)))
@@ -376,7 +376,7 @@ OUTPUT directory of PACKAGE."
 (define (lower-inputs inputs)
   "Turn any package from INPUTS into a derivation; return the corresponding
 input list as a monadic value."
-  ;; XXX: Should probably be in (guix packages).
+  ;; XXX: This procedure is bound to disappear with 'derivation-expression'.
   (with-monad %store-monad
     (sequence %store-monad
               (map (match-lambda
@@ -390,10 +390,14 @@ input list as a monadic value."
                    inputs))))
 
 (define derivation-expression
+  ;; XXX: This procedure is superseded by 'gexp->derivation'.
   (store-lift build-expression->derivation))
 
 (define package->derivation
   (store-lift package-derivation))
+
+(define origin->derivation
+  (store-lift package-source-derivation))
 
 (define imported-modules
   (store-lift (@ (guix derivations) imported-modules)))
@@ -410,10 +414,15 @@ input list as a monadic value."
                          (system (%current-system)))
   "Run MVAL, a monadic value in the store monad, in STORE, an open store
 connection."
+  (define (default-guile)
+    ;; Lazily resolve 'guile-final'.  This module must not refer to (gnu …)
+    ;; modules directly, to avoid circular dependencies, hence this hack.
+    (module-ref (resolve-interface '(gnu packages base))
+                'guile-final))
+
   (parameterize ((%guile-for-build (or guile-for-build
                                        (package-derivation store
-                                                           (@ (gnu packages base)
-                                                              guile-final)
+                                                           (default-guile)
                                                            system)))
                  (%current-system system))
     (mval store)))

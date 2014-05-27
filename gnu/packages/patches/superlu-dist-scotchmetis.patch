@@ -1,0 +1,21 @@
+The METIS interface from Scotch may segfault if passed NULL to indicate a
+default parameter, so use the older calling style.
+
+--- a/SRC/get_perm_c.c	2014-05-16 23:38:30.070835316 -0500
++++ b/SRC/get_perm_c.c	2014-05-16 23:39:04.582836211 -0500
+@@ -70,11 +70,13 @@
+ #else
+ 
+     /* Earlier version 3.x.x */
+-    /* METIS_NodeND(&nm, b_colptr, b_rowind, &numflag, metis_options,
+-       perm, iperm);*/
++    METIS_NodeND(&nm, b_colptr, b_rowind, &numflag, metis_options,
++                 perm, iperm);
+ 
+     /* Latest version 4.x.x */
++#if 0
+     METIS_NodeND(&nm, b_colptr, b_rowind, NULL, NULL, perm, iperm);
++#endif
+ 
+     /*check_perm_dist("metis perm",  n, perm);*/
+ #endif

@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,6 +23,8 @@
   #:use-module (guix packages)
   #:use-module ((guix store) #:select (derivation-path? add-to-store))
   #:use-module ((guix build download) #:renamer (symbol-prefix-proc 'build:))
+  #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (guix utils)
   #:use-module (web uri)
   #:use-module (srfi srfi-1)
@@ -155,23 +157,39 @@
        "ftp://ftp.nara.wide.ad.jp/pub/CPAN/"
        "http://mirrors.163.com/cpan/"
        "ftp://cpan.mirror.ac.za/")
-      (imagemagick       ; from http://www.imagemagick.org/script/download.php
+      (imagemagick
+       ;; from http://www.imagemagick.org/script/download.php
+       ;; (without mirrors that are unavailable or not up to date)
+       ;; mirrors keeping old versions at the top level
+       "ftp://ftp.sunet.se/pub/multimedia/graphics/ImageMagick/"
+       "ftp://sunsite.icm.edu.pl/packages/ImageMagick/"
+       ;; mirrors moving old versions to "legacy"
+       "http://mirrors-au.go-parts.com/mirrors/ImageMagick/"
+       "ftp://mirror.aarnet.edu.au/pub/imagemagick/"
        "http://mirror.checkdomain.de/imagemagick/"
-       "ftp://gd.tuwien.ac.at/pub/graphics/ImageMagick/"
-       "http://www.imagemagick.org/download"
-       "ftp://mirror.searchdaimon.com/ImageMagick"
+       "ftp://ftp.kddlabs.co.jp/graphics/ImageMagick/"
+       "ftp://ftp.u-aizu.ac.jp/pub/graphics/image/ImageMagick/imagemagick.org/"
+       "ftp://ftp.nluug.nl/pub/ImageMagick/"
+       "http://ftp.surfnet.nl/pub/ImageMagick/"
+       "http://mirror.searchdaimon.com/ImageMagick"
+       "ftp://ftp.tpnet.pl/pub/graphics/ImageMagick/"
+       "http://mirrors-ru.go-parts.com/mirrors/ImageMagick/"
        "http://mirror.is.co.za/pub/imagemagick/"
-       "ftp://mirror.aarnet.edu.au/pub/imagemagick/")
+       "http://mirrors-uk.go-parts.com/mirrors/ImageMagick/"
+       "http://mirrors-usa.go-parts.com/mirrors/ImageMagick/"
+       "ftp://ftp.fifi.org/pub/ImageMagick/"
+       "http://www.imagemagick.org/download/"
+       ;; one legacy location as a last resort
+       "http://www.imagemagick.org/download/legacy/")
       (debian
        "http://ftp.de.debian.org/debian/"
        "http://ftp.fr.debian.org/debian/"
        "http://ftp.debian.org/debian/"))))
 
-(define (gnutls-derivation store system)
-  "Return the GnuTLS derivation for SYSTEM."
-  (let* ((module (resolve-interface '(gnu packages gnutls)))
-         (gnutls (module-ref module 'gnutls)))
-    (package-derivation store gnutls system)))
+(define (gnutls-package)
+  "Return the GnuTLS package for SYSTEM."
+  (let ((module (resolve-interface '(gnu packages gnutls))))
+    (module-ref module 'gnutls)))
 
 (define* (url-fetch store url hash-algo hash
                     #:optional name
@@ -186,22 +204,13 @@ different file name.
 When one of the URL starts with mirror://, then its host part is
 interpreted as the name of a mirror scheme, taken from MIRRORS; MIRRORS
 must be a list of symbol/URL-list pairs."
-  (define builder
-    `(begin
-       (use-modules (guix build download))
-       (url-fetch ',url %output
-                  #:mirrors ',mirrors)))
-
   (define guile-for-build
-    (match guile
-      ((? package?)
-       (package-derivation store guile system))
-      ((and (? string?) (? derivation-path?))
-       guile)
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages base)))
-              (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system)))))
+    (package-derivation store
+                        (or guile
+                            (let ((distro
+                                   (resolve-interface '(gnu packages base))))
+                              (module-ref distro 'guile-final)))
+                        system))
 
   (define file-name
     (match url
@@ -219,34 +228,36 @@ must be a list of symbol/URL-list pairs."
         ((url ...)
          (any https? url)))))
 
-  (let* ((gnutls-drv (if need-gnutls?
-                         (gnutls-derivation store system)
-                         (values #f #f)))
-         (gnutls     (and gnutls-drv
-                          (derivation->output-path gnutls-drv "out")))
-         (env-vars   (if gnutls
-                         (let ((dir (string-append gnutls "/share/guile/site")))
-                           ;; XXX: `GUILE_LOAD_COMPILED_PATH' is overridden
-                           ;; by `build-expression->derivation', so we can't
-                           ;; set it here.
-                           `(("GUILE_LOAD_PATH" . ,dir)))
-                         '())))
-    (build-expression->derivation store (or name file-name) builder
-                                  #:system system
-                                  #:inputs (if gnutls-drv
-                                               `(("gnutls" ,gnutls-drv))
-                                               '())
-                                  #:hash-algo hash-algo
-                                  #:hash hash
-                                  #:modules '((guix build download)
-                                              (guix build utils)
-                                              (guix ftp-client))
-                                  #:guile-for-build guile-for-build
-                                  #:env-vars env-vars
+  (define builder
+    #~(begin
+        #$(if need-gnutls?
 
-                                  ;; In general, offloading downloads is not a
-                                  ;; good idea.
-                                  #:local-build? #t)))
+              ;; Add GnuTLS to the inputs and to the load path.
+              #~(eval-when (load expand eval)
+                  (set! %load-path
+                        (cons (string-append #$(gnutls-package)
+                                             "/share/guile/site")
+                              %load-path)))
+              #~#t)
+
+        (use-modules (guix build download))
+        (url-fetch '#$url #$output
+                   #:mirrors '#$mirrors)))
+
+  (run-with-store store
+    (gexp->derivation (or name file-name) builder
+                      #:system system
+                      #:hash-algo hash-algo
+                      #:hash hash
+                      #:modules '((guix build download)
+                                  (guix build utils)
+                                  (guix ftp-client))
+                      #:guile-for-build guile-for-build
+
+                      ;; In general, offloading downloads is not a good idea.
+                      #:local-build? #t)
+    #:guile-for-build guile-for-build
+    #:system system))
 
 (define* (download-to-store store url #:optional (name (basename url))
                             #:key (log (current-error-port)))

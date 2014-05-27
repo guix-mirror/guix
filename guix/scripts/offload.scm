@@ -443,9 +443,11 @@ success, #f otherwise."
                           "-i" (build-machine-private-key machine)
                           (build-machine-name machine)
                           "guix" "archive" "--missing")
-                    (open-input-string files))))
+                    (open-input-string files)))
+                  ((result)
+                   (get-string-all missing)))
       (for-each waitpid pids)
-      (string-tokenize (get-string-all missing))))
+      (string-tokenize result)))
 
   (with-store store
     (guard (c ((nix-protocol-error? c)
@@ -472,7 +474,9 @@ success, #f otherwise."
                 (warning (_ "failed while exporting files to '~a': ~a~%")
                          (build-machine-name machine)
                          (strerror (system-error-errno args)))))))
-        #t))))
+
+        ;; Wait for the 'lsh' process to complete.
+        (zero? (close-pipe pipe))))))
 
 (define (retrieve-files files machine)
   "Retrieve FILES from MACHINE's store, and import them."
@@ -500,7 +504,8 @@ success, #f otherwise."
                                    #:log-port (current-error-port)
                                    #:lock? #f)))
 
-             #t)))))
+             ;; Wait for the 'lsh' process to complete.
+             (zero? (close-pipe pipe)))))))
 
 
 ;;;

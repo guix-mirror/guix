@@ -26,7 +26,7 @@
             service-respawn?
             service-start
             service-stop
-            service-inputs
+            service-activate
             service-user-accounts
             service-user-groups
             service-pam-services))
@@ -47,16 +47,16 @@
                  (default '()))
   (respawn?      service-respawn?                 ; Boolean
                  (default #t))
-  (start         service-start)                   ; expression
-  (stop          service-stop                     ; expression
+  (start         service-start)                   ; g-expression
+  (stop          service-stop                     ; g-expression
                  (default #f))
-  (inputs        service-inputs                   ; list of inputs
-                 (default '()))
   (user-accounts service-user-accounts            ; list of <user-account>
                  (default '()))
   (user-groups   service-user-groups              ; list of <user-groups>
                  (default '()))
   (pam-services  service-pam-services             ; list of <pam-service>
-                 (default '())))
+                 (default '()))
+  (activate      service-activate                 ; gexp
+                 (default #f)))
 
 ;;; services.scm ends here.

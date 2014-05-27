@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,14 +17,22 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages kde)
-  #:use-module ((guix licenses) #:select (bsd-2 lgpl2.1+))
+  #:use-module ((guix licenses) #:select (bsd-2 lgpl2.0+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages geeqie)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages qt)
+  #:use-module (gnu packages rdf)
+  #:use-module (gnu packages video)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages xorg))
 
 (define-public automoc4
@@ -78,3 +86,122 @@
     (synopsis "Qt 4 multimedia API")
     (description "KDE desktop environment")
     (license lgpl2.1+)))
+
+(define-public qjson
+  (package
+    (name "qjson")
+    (version "0.8.1")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/flavio/qjson/archive/"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "163fspi0xc705irv79qw861fmh68pjyla9vx3kqiq6xrdhb9834j"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qt" ,qt-4)))
+    (arguments
+     `(#:tests? #f)) ; no test target
+    (home-page "http://qjson.sourceforge.net/")
+    (synopsis "Qt-based library for handling JSON")
+    (description "QJson is a Qt-based library that maps JSON data to QVariant
+objects and vice versa.  JSON arrays are mapped to QVariantList instances,
+while JSON objects are mapped to QVariantMap.")
+    (license lgpl2.1+)))
+
+(define-public libdbusmenu-qt
+  (package
+    (name "libdbusmenu-qt")
+    (version "0.9.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://launchpad.net/" name "/trunk/"
+                                 version "/+download/"
+                                 name "-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "1v0ri5g9xw2z64ik0kx0ra01v8rpjn2kxprrxppkls1wvav1qv5f"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("doxygen" ,doxygen) ; used for static documentation
+       ("pkg-config" ,pkg-config)
+       ("qjson", qjson))) ; used for the tests
+    (inputs
+     `(("qt" ,qt-4)))
+    (arguments
+     `(#:tests? #f)) ; no check target
+    (home-page "https://launchpad.net/libdbusmenu-qt/")
+    (synopsis "Qt implementation of the DBusMenu protocol")
+    (description "The library provides a Qt implementation of the DBusMenu
+protocol.  The DBusMenu protocol makes it possible for applications to export
+and import their menus over DBus.")
+    (license lgpl2.0+)))
+
+(define-public attica
+  (package
+    (name "attica")
+    (version "0.4.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.kde.org/stable/"
+                                 name "/"
+                                 name "-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "1y74gsyzi70dfr9d1f1b08k130rm3jaibsppg8dv5h3211vm771v"))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("qt" ,qt-4)))
+    (home-page "https://projects.kde.org/projects/kdesupport/attica")
+    (synopsis "Qt library for the Open Collaboration Services API")
+    (description "Attica is a Qt library that implements the Open
+Collaboration Services API version 1.6.  It grants easy access to the
+services such as querying information about persons and contents.  The
+library is used in KNewStuff3 as content provider.  In order to integrate
+with KDE's Plasma Desktop, a platform plugin exists in kdebase.")
+    (license lgpl2.1+)))
+
+(define-public strigi
+  (package
+    (name "strigi")
+    (version "0.7.8")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.vandenoever.info/software/"
+                                 name "/"
+                                 name "-" version ".tar.bz2"))
+             (sha256
+              (base32
+               "12grxzqwnvbyqw7q1gnz42lypadxmq89vk2qpxczmpmc4nk63r23"))))
+    (build-system cmake-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    ;; FIXME: Add optional inputs XAttr, FAM, Log4cxx
+    (inputs
+     `(("clucene" ,clucene)
+       ("dbus" ,dbus)
+       ("exiv2" ,exiv2)
+       ("ffmpeg" ,ffmpeg)
+       ("libxml2" ,libxml2)
+       ("perl" ,perl)
+       ("python" ,python-wrapper)
+       ("qt" ,qt-4)
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:tests? #f)) ; FIXME: Test 23/25 ProcessInputStreamTest fails.
+    (home-page "http://www.vandenoever.info/software/strigi/")
+    (synopsis "Desktop search daemon")
+    (description "Strigi is a desktop search daemon with the following
+main features:
+very fast crawling;
+very small memory footprint;
+no hammering of the system;
+pluggable backend, currently clucene and hyperestraier, sqlite3 and xapian
+are in the works;
+communication between daemon and search program over an abstract interface,
+currently a simple socket;
+simple interface for implementing plugins for extracting information;
+calculation of sha1 for every file crawled
+(allows fast finding of duplicates).")
+    (license lgpl2.0+)))

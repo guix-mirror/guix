@@ -63,32 +63,6 @@ create a new ‘dir’.
       ("i3" ,p3)))
 #+END_SRC
 
-* MAYBE use HOP-like escapes to refer to inputs in build-side code
-
-Instead of doing things like:
-
-#+BEGIN_SRC scheme
-  (inputs `(("foo" ,foo)))
-  (arguments '(#:configure-flags
-               (list (string-append "--with-foo="
-                                    (assoc-ref %build-inputs "foo")))))
-#+END_SRC
-
-Allow things like:
-
-#+BEGIN_SRC scheme
-  (inputs (list foo))
-  (arguments ~(#:configure-flags
-               (list (string-append "--with-foo=" $foo))))
-  
-#+END_SRC
-
-... where '~' is 'build-quote' and '$' is 'build-unquote'.  Better yet,
-automatically compute the list of references of an expression passed to
-'derivation-expression'.
-
-Use a [[http://dorophone.blogspot.fr/2011/09/scheme-syntax-is-monad.html][monad]] for the syntax.
-
 * synchronize non-GNU package descriptions with the [[http://directory.fsf.org][FSD]]
 
 Meta-data for GNU packages, including descriptions and synopses, can be

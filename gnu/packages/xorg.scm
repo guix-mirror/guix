@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -1153,10 +1153,11 @@ tracking.")
           (base32
             "07bzi6xwlhq36f60qfspjbz0qjj7zcgayi1vp4ihgx34kib1vhck"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+      `(("libice" ,libice))) ; SMlib.h includes ICElib.h
     (inputs
       `(("xtrans" ,xtrans)
-        ("util-linux" ,util-linux)
-        ("libice" ,libice)))
+        ("util-linux" ,util-linux)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -1427,10 +1428,11 @@ tracking.")
           (base32
             "15291ddhyr54sribwbg8hxx2psgzm5gh0pgkw5yrf3zgvdsa67sm"))))
     (build-system gnu-build-system)
+    (propagated-inputs
+      `(("xf86dgaproto" ,xf86dgaproto)))
     (inputs
       `(("libx11" ,libx11)
-        ("libxext" ,libxext)
-        ("xf86dgaproto" ,xf86dgaproto)))
+        ("libxext" ,libxext)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
@@ -4733,14 +4735,14 @@ icccm: Both client and window-manager helpers for ICCCM.")
 (define-public xterm
   (package
     (name "xterm")
-    (version "303")
+    (version "304")
     (source (origin
               (method url-fetch)
-              (uri                                ; XXX: constant URL!
-               "http://invisible-island.net/datafiles/release/xterm.tar.gz")
+              (uri (string-append "ftp://ftp.invisible-island.net/xterm/"
+                                  "xterm-" version ".tgz"))
               (sha256
                (base32
-                "0n7hay16aam9kfn642ri0wj5yzilbjm3l8znxc2p5dx9pn3rkwla"))))
+                "19yp5phfzzgydc2yqka4p69ygvfzsd2aa98hbw086xyjlws3kbyk"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--enable-wide-chars" "--enable-256-color"

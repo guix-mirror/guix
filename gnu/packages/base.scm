@@ -1184,4 +1184,7 @@ and binaries, plus debugging symbols in the 'debug' output), and Binutils.")
 (define-public gcc-toolchain-4.8
   (gcc-toolchain gcc-final))
 
+(define-public gcc-toolchain-4.9
+  (gcc-toolchain gcc-4.9))
+
 ;;; base.scm ends here

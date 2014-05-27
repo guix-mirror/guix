@@ -167,13 +167,22 @@
      (lambda (package)
        "Return true if PACKAGE is a GNU package.  This procedure may access the
 network to check in GNU's database."
-       ;; TODO: Find a way to determine that a package is non-GNU without going
-       ;; through the network.
+       (define (mirror-type url)
+         (let ((uri (string->uri url)))
+           (and (eq? (uri-scheme uri) 'mirror)
+                (if (member (uri-host uri) '("gnu" "gnupg" "gcc"))
+                    'gnu
+                    'non-gnu))))
+
        (let ((url  (and=> (package-source package) origin-uri))
              (name (package-name package)))
-         (or (and (string? url) (string-prefix? "mirror://gnu" url))
-             (and (member name (map gnu-package-name (official-gnu-packages)))
-                  #t)))))))
+         (case (and (string? url) (mirror-type url))
+           ((gnu) #t)
+           ((non-gnu) #f)
+           (else
+            ;; Last resort: resort to the network.
+            (and (member name (map gnu-package-name (official-gnu-packages)))
+                 #t))))))))
 
 
 ;;;

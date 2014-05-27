@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Raimon Grau <raimonster@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,13 +30,13 @@
 (define-public lua
   (package
     (name "lua")
-    (version "5.2.1")
+    (version "5.2.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://www.lua.org/ftp/lua-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "1rbv2ysq5fdksz7xg07dnrkl8i0gnx855hg4z6b324vng6l4sc34"))))
+              (base32 "0b8034v1s82n4dg5rzcn12067ha3nxaylp2vdp8gg08kjsbzphhk"))))
     (build-system gnu-build-system)
     (inputs `(("readline", readline)))
     (arguments
@@ -45,7 +46,7 @@
        #:test-target "test"
        #:phases (alist-replace
                  'build
-                 (lambda _ (zero? (system* "make" "linux"))) ; XXX: Other OS.
+                 (lambda _ (zero? (system* "make" "CFLAGS=-fPIC" "linux")))
                  (alist-replace
                   'install
                   (lambda* (#:key outputs #:allow-other-keys)
@@ -65,6 +66,16 @@ runs by interpreting bytecode for a register-based virtual machine, and has
 automatic memory management with incremental garbage collection, making it ideal
 for configuration, scripting, and rapid prototyping.")
     (license x11)))
+
+(define-public lua-5.1
+  (package (inherit lua)
+    (version "5.1.5")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.lua.org/ftp/lua-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32 "0cskd4w0g6rdm2q8q3i4n1h3j8kylhs3rq8mxwl9vwlmlxbgqh16"))))))
 
 (define-public luajit
   (package

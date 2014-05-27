@@ -241,7 +241,7 @@ interpreted."
                         str args)))))
     (catch #t
       (lambda ()
-        (eval exp the-scm-module))
+        (eval exp the-root-module))
       (lambda args
         (leave (_ "failed to evaluate expression `~a': ~s~%")
                exp args)))))
@@ -261,6 +261,14 @@ error."
 derivations listed in DRV.  Return #t if there's something to build, #f
 otherwise.  When USE-SUBSTITUTES?, check and report what is prerequisites are
 available for download."
+  (define (built-or-substitutable? drv)
+    (let ((out (derivation->output-path drv)))
+      ;; If DRV has zero outputs, OUT is #f.
+      (or (not out)
+          (or (valid-path? store out)
+              (and use-substitutes?
+                   (has-substitutes? store out))))))
+
   (let*-values (((build download)
                  (fold2 (lambda (drv build download)
                           (let-values (((b d)
@@ -275,14 +283,7 @@ available for download."
                 ((build)                          ; add the DRV themselves
                  (delete-duplicates
                   (append (map derivation-file-name
-                               (remove (lambda (drv)
-                                         (let ((out (derivation->output-path
-                                                     drv)))
-                                           (or (valid-path? store out)
-                                               (and use-substitutes?
-                                                    (has-substitutes? store
-                                                                      out)))))
-                                       drv))
+                               (remove built-or-substitutable? drv))
                           (map derivation-input-path build))))
                 ((download)                   ; add the references of DOWNLOAD
                  (if use-substitutes?

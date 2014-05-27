@@ -1,0 +1,139 @@
+* These tests assume threading support, even when the library is compiled
+  without it.  Protect these checks.
+
+* Tests should not require keyboard interaction.
+
+--- a/src/check/test_scotch_dgraph_band.c	2012-09-27 10:46:42.000000000 -0500
++++ b/src/check/test_scotch_dgraph_band.c	2014-05-13 14:36:07.479270243 -0500
+@@ -99,10 +99,12 @@
+     errorPrint ("main: Cannot initialize (1)");
+     exit       (1);
+   }
++#ifdef SCOTCH_PTHREAD
+   if (thrdlvlreqval > thrdlvlproval) {
+     errorPrint ("main: Cannot initialize (2)");
+     exit       (1);
+   }
++#endif
+ 
+   if (argc != 2) {
+     errorPrint ("main: invalid number of parameters");
+@@ -115,12 +117,14 @@
+ 
+   fprintf (stderr, "Proc %2d of %2d, pid %d\n", proclocnum, procglbnbr, getpid ());
+ 
++#ifdef SCOTCH_DEBUG_CHECK2
+   if (proclocnum == 0) {                          /* Synchronize on keybord input */
+     char           c;
+ 
+     printf ("Waiting for key press...\n");
+     scanf ("%c", &c);
+   }
++#endif /* SCOTCH_DEBUG_CHECK2 */
+ 
+   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
+     errorPrint ("main: cannot communicate");
+--- a/src/check/test_scotch_dgraph_grow.c	2012-11-30 12:19:33.000000000 -0600
++++ b/src/check/test_scotch_dgraph_grow.c	2014-05-13 14:35:31.307269303 -0500
+@@ -103,10 +103,12 @@
+     errorPrint ("main: Cannot initialize (1)");
+     exit       (1);
+   }
++#ifdef SCOTCH_PTHREAD
+   if (thrdlvlreqval > thrdlvlproval) {
+     errorPrint ("main: Cannot initialize (2)");
+     exit       (1);
+   }
++#endif
+ 
+   if (argc != 2) {
+     errorPrint ("main: invalid number of parameters");
+@@ -119,12 +121,14 @@
+ 
+   fprintf (stderr, "Proc %2d of %2d, pid %d\n", proclocnum, procglbnbr, getpid ());
+ 
++#ifdef SCOTCH_DEBUG_CHECK2
+   if (proclocnum == 0) {                          /* Synchronize on keybord input */
+     char           c;
+ 
+     printf ("Waiting for key press...\n");
+     scanf ("%c", &c);
+   }
++#endif /* SCOTCH_DEBUG_CHECK2 */
+ 
+   if (MPI_Barrier (proccomm) != MPI_SUCCESS) {    /* Synchronize for debug */
+     errorPrint ("main: cannot communicate");
+--- a/src/check/test_scotch_dgraph_redist.c	2012-09-26 11:42:27.000000000 -0500
++++ b/src/check/test_scotch_dgraph_redist.c	2014-05-13 14:34:30.323267722 -0500
+@@ -98,10 +98,12 @@
+     errorPrint ("main: Cannot initialize (1)");
+     exit       (1);
+   }
++#ifdef SCOTCH_PTHREAD
+   if (thrdlvlreqval > thrdlvlproval) {
+     errorPrint ("main: Cannot initialize (2)");
+     exit       (1);
+   }
++#endif
+ 
+   if (argc != 2) {
+     errorPrint ("main: invalid number of parameters");
+@@ -114,7 +116,6 @@
+ 
+   fprintf (stderr, "Proc %2d of %2d, pid %d\n", proclocnum, procglbnbr, getpid ());
+ 
+-#define SCOTCH_DEBUG_CHECK2
+ #ifdef SCOTCH_DEBUG_CHECK2
+   if (proclocnum == 0) {                          /* Synchronize on keybord input */
+     char           c;
+--- /tmp/nix-build-scotch-6.0.0.drv-9/scotch_6.0.0/src/check/test_common_thread.c	2012-11-30 11:05:23.000000000 -0600
++++ scotch_6.0.0/src/check/test_common_thread.c	2014-05-13 17:26:27.159535244 -0500
+@@ -90,7 +90,7 @@
+ /*                       */
+ /*************************/
+ 
+-#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
++#ifdef SCOTCH_PTHREAD
+ 
+ static
+ void
+@@ -161,7 +161,7 @@
+   return (o);
+ }
+ 
+-#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
++#endif /* SCOTCH_PTHREAD */
+ 
+ /*********************/
+ /*                   */
+@@ -175,14 +175,14 @@
+ char *              argv[])
+ {
+   TestThreadGroup       groudat;
+-#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
++#ifdef SCOTCH_PTHREAD
+   TestThread * restrict thrdtab;
+   int                   thrdnbr;
+-#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
++#endif /* SCOTCH_PTHREAD */
+ 
+   SCOTCH_errorProg (argv[0]);
+ 
+-#if ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD))
++#ifdef SCOTCH_PTHREAD
+   thrdnbr = SCOTCH_PTHREAD_NUMBER;
+ 
+   groudat.redusum = COMPVAL (thrdnbr);
+@@ -197,9 +197,9 @@
+     errorPrint ("main: cannot launch or run threads");
+     return     (1);
+   }
+-#else /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
+-  printf ("Scotch not compiled with either COMMON_PTHREAD or SCOTCH_PTHREAD\n");
+-#endif /* ((defined COMMON_PTHREAD) || (defined SCOTCH_PTHREAD)) */
++#else /* not SCOTCH_PTHREAD */
++  printf ("Scotch not compiled with SCOTCH_PTHREAD\n");
++#endif /* not SCOTCH_PTHREAD */
+ 
+   return (0);
+ }

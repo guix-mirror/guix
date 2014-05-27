@@ -19,13 +19,20 @@
 (define-module (guix scripts system)
   #:use-module (guix ui)
   #:use-module (guix store)
+  #:use-module (guix gexp)
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix monads)
   #:use-module (guix scripts build)
+  #:use-module (guix build utils)
+  #:use-module (guix build install)
+  #:use-module (gnu system)
   #:use-module (gnu system vm)
+  #:use-module (gnu system grub)
+  #:use-module (gnu packages grub)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (ice-9 match)
   #:export (guix-system
@@ -63,6 +70,48 @@
          (leave (_ "failed to load machine file '~a': ~s~%")
                 file args))))))
 
+(define* (copy-closure store item target
+                       #:key (log-port (current-error-port)))
+  "Copy ITEM to the store under root directory TARGET and register it."
+  (let ((dest (string-append target item))
+        (refs (references store item)))
+    (format log-port "copying '~a'...~%" item)
+    (copy-recursively item dest
+                      #:log (%make-void-port "w"))
+
+    ;; Register ITEM; as a side-effect, it resets timestamps, etc.
+    (unless (register-path item
+                           #:prefix target
+                           #:references refs)
+      (leave (_ "failed to register '~a' under '~a'~%")
+             item target))))
+
+(define* (install store os-dir target
+                  #:key (log-port (current-output-port))
+                  grub? grub.cfg device)
+  "Copy OS-DIR and its dependencies to directory TARGET.  TARGET must be an
+absolute directory name since that's what 'guix-register' expects.
+
+When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
+  (define to-copy
+    (let ((lst (delete-duplicates (cons os-dir (references store os-dir))
+                                  string=?)))
+      (topologically-sorted store lst)))
+
+  (if (string=? target "/")
+      (warning (_ "initializing the current root file system~%"))
+      ;; Copy items to the new store.
+      (for-each (cut copy-closure store <> target #:log-port log-port)
+                to-copy))
+
+  ;; Create a bunch of additional files.
+  (format log-port "populating '~a'...~%" target)
+  (populate-root-file-system target)
+
+  (when grub?
+    (unless (install-grub grub.cfg device target)
+      (leave (_ "failed to install GRUB on device '~a'~%") device))))
+
 
 ;;;
 ;;; Options.
@@ -71,12 +120,24 @@
 (define (show-help)
   (display (_ "Usage: guix system [OPTION] ACTION FILE
 Build the operating system declared in FILE according to ACTION.\n"))
-  (display (_ "Currently the only valid values for ACTION are 'vm', which builds
-a virtual machine of the given operating system that shares the host's store,
-and 'vm-image', which builds a virtual machine image that stands alone.\n"))
+  (newline)
+  (display (_ "The valid values for ACTION are:\n"))
+  (display (_ "\
+  - 'build', build the operating system without installing anything\n"))
+  (display (_ "\
+  - 'vm', build a virtual machine image that shares the host's store\n"))
+  (display (_ "\
+  - 'vm-image', build a freestanding virtual machine image\n"))
+  (display (_ "\
+  - 'disk-image', build a disk image, suitable for a USB stick\n"))
+  (display (_ "\
+  - 'init', initialize a root file system to run GNU.\n"))
+
   (show-build-options-help)
   (display (_ "
       --image-size=SIZE  for 'vm-image', produce an image of SIZE"))
+  (display (_ "
+      --no-grub          for 'init', do not install GRUB"))
   (newline)
   (display (_ "
   -h, --help             display this help and exit"))
@@ -98,6 +159,9 @@ and 'vm-image', which builds a virtual machine image that stands alone.\n"))
                  (lambda (opt name arg result)
                    (alist-cons 'image-size (size->number arg)
                                result)))
+         (option '("no-grub") #f #f
+                 (lambda (opt name arg result)
+                   (alist-delete 'install-grub? result)))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t result)))
@@ -110,7 +174,8 @@ and 'vm-image', which builds a virtual machine image that stands alone.\n"))
     (build-hook? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)
-    (image-size . ,(* 900 (expt 2 20)))))
+    (image-size . ,(* 900 (expt 2 20)))
+    (install-grub? . #t)))
 
 
 ;;;
@@ -125,43 +190,96 @@ and 'vm-image', which builds a virtual machine image that stands alone.\n"))
                   (leave (_ "~A: unrecognized option~%") name))
                 (lambda (arg result)
                   (if (assoc-ref result 'action)
-                      (let ((previous (assoc-ref result 'argument)))
-                        (if previous
-                            (leave (_ "~a: extraneous argument~%") previous)
-                            (alist-cons 'argument arg result)))
+                      (alist-cons 'argument arg result)
                       (let ((action (string->symbol arg)))
                         (case action
-                          ((vm)
-                           (alist-cons 'action action result))
-                          ((vm-image)
+                          ((build vm vm-image disk-image init)
                            (alist-cons 'action action result))
                           (else (leave (_ "~a: unknown action~%")
                                        action))))))
                 %default-options))
 
+  (define (match-pair car)
+    ;; Return a procedure that matches a pair with CAR.
+    (match-lambda
+     ((head . tail)
+      (and (eq? car head) tail))
+     (_ #f)))
+
+  (define (option-arguments opts)
+    ;; Extract the plain arguments from OPTS.
+    (let* ((args   (reverse (filter-map (match-pair 'argument) opts)))
+           (count  (length args))
+           (action (assoc-ref opts 'action)))
+      (define (fail)
+        (leave (_ "wrong number of arguments for action '~a'~%")
+               action))
+
+      (case action
+        ((build vm vm-image disk-image)
+         (unless (= count 1)
+           (fail)))
+        ((init)
+         (unless (= count 2)
+           (fail))))
+      args))
+
   (with-error-handling
-    (let* ((opts   (parse-options))
-           (file   (assoc-ref opts 'argument))
-           (action (assoc-ref opts 'action))
-           (os     (if file
-                       (read-operating-system file)
-                       (leave (_ "no configuration file specified~%"))))
-           (mdrv   (case action
-                     ((vm-image)
-                      (let ((size (assoc-ref opts 'image-size)))
-                        (system-qemu-image os
-                                           #:disk-image-size size)))
-                     ((vm)
-                      (system-qemu-image/shared-store-script os))))
-           (store  (open-connection))
-           (dry?   (assoc-ref opts 'dry-run?))
-           (drv    (run-with-store store mdrv)))
+    (let* ((opts     (parse-options))
+           (args     (option-arguments opts))
+           (file     (first args))
+           (action   (assoc-ref opts 'action))
+           (os       (if file
+                         (read-operating-system file)
+                         (leave (_ "no configuration file specified~%"))))
+           (mdrv     (case action
+                       ((build init)
+                        (operating-system-derivation os))
+                       ((vm-image)
+                        (let ((size (assoc-ref opts 'image-size)))
+                          (system-qemu-image os
+                                             #:disk-image-size size)))
+                       ((vm)
+                        (system-qemu-image/shared-store-script os))
+                       ((disk-image)
+                        (let ((size (assoc-ref opts 'image-size)))
+                          (system-disk-image os
+                                             #:disk-image-size size)))))
+           (store    (open-connection))
+           (dry?     (assoc-ref opts 'dry-run?))
+           (drv      (run-with-store store mdrv))
+           (grub?    (assoc-ref opts 'install-grub?))
+           (grub.cfg (run-with-store store
+                       (operating-system-grub.cfg os)))
+           (grub     (package-derivation store grub))
+           (drv-lst  (if grub?
+                         (list drv grub grub.cfg)
+                         (list drv))))
       (set-build-options-from-command-line store opts)
-      (show-what-to-build store (list drv)
+      (show-what-to-build store drv-lst
                           #:dry-run? dry?
                           #:use-substitutes? (assoc-ref opts 'substitutes?))
 
       (unless dry?
-        (build-derivations store (list drv))
+        (build-derivations store drv-lst)
         (display (derivation->output-path drv))
-        (newline)))))
+        (newline)
+
+        (when (eq? action 'init)
+          (let* ((target (second args))
+                 (device (grub-configuration-device
+                          (operating-system-bootloader os))))
+            (format #t (_ "initializing operating system under '~a'...~%")
+                    target)
+
+            (when grub
+              (let ((prefix (derivation->output-path grub)))
+                (setenv "PATH"
+                        (string-append  prefix "/bin:" prefix "/sbin:"
+                                        (getenv "PATH")))))
+
+            (install store (derivation->output-path drv)
+                     (canonicalize-path target)
+                     #:grub? grub?
+                     #:grub.cfg (derivation->output-path grub.cfg)
+                     #:device device)))))))

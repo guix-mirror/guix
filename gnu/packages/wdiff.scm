@@ -28,7 +28,7 @@
 (define-public wdiff
   (package
     (name "wdiff")
-    (version "1.2.1")
+    (version "1.2.2")
     (source
      (origin
       (method url-fetch)
@@ -36,7 +36,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1gb5hpiyikada9bwz63q3g96zs383iskiir0xsqynqnvq1vd4n41"))))
+        "0sxgg0ms5lhi4aqqvz1rj4s77yi9wymfm3l3gbjfd1qchy66kzrl"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases (alist-cons-before

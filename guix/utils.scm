@@ -28,6 +28,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module ((rnrs io ports) #:select (put-bytevector))
   #:use-module ((guix build utils) #:select (dump-port))
+  #:use-module ((guix build syscalls) #:select (errno))
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 format)
   #:autoload   (ice-9 popen)  (open-pipe*)
@@ -229,14 +230,12 @@ a symbol such as 'xz."
 
 (define (call-with-decompressed-port compression port proc)
   "Call PROC with a wrapper around PORT, a file port, that decompresses data
-read from PORT according to COMPRESSION, a symbol such as 'xz.  PORT is closed
-as soon as PROC's dynamic extent is entered."
+read from PORT according to COMPRESSION, a symbol such as 'xz."
   (let-values (((decompressed pids)
                 (decompressed-port compression port)))
     (dynamic-wind
       (const #f)
       (lambda ()
-        (close-port port)
         (proc decompressed))
       (lambda ()
         (close-port decompressed)
@@ -286,14 +285,12 @@ of PIDs to wait for."
 
 (define (call-with-compressed-output-port compression port proc)
   "Call PROC with a wrapper around PORT, a file port, that compresses data
-that goes to PORT according to COMPRESSION, a symbol such as 'xz.  PORT is
-closed as soon as PROC's dynamic extent is entered."
+that goes to PORT according to COMPRESSION, a symbol such as 'xz."
   (let-values (((compressed pids)
                 (compressed-output-port compression port)))
     (dynamic-wind
       (const #f)
       (lambda ()
-        (close-port port)
         (proc compressed))
       (lambda ()
         (close-port compressed)
@@ -369,38 +366,6 @@ closed as soon as PROC's dynamic extent is entered."
          ((string-contains %host-type "hppa")  #(1 2 3))    ; hppa-*-linux-gnu
          ((string-contains %host-type "linux") #(0 1 2))    ; *-linux-gnu
          (else                                 #(1 2 3))))) ; *-gnu*
-
-(define %libc-errno-pointer
-  ;; Glibc's 'errno' pointer.
-  (let ((errno-loc (dynamic-func "__errno_location" (dynamic-link))))
-    (and errno-loc
-         (let ((proc (pointer->procedure '* errno-loc '())))
-           (proc)))))
-
-(define errno
-  (if %libc-errno-pointer
-      (let ((bv (pointer->bytevector %libc-errno-pointer (sizeof int))))
-        (lambda ()
-          "Return the current errno."
-          ;; XXX: We assume that nothing changes 'errno' while we're doing all this.
-          ;; In particular, that means that no async must be running here.
-
-          ;; Use one of the fixed-size native-ref procedures because they are
-          ;; optimized down to a single VM instruction, which reduces the risk
-          ;; that we fiddle with 'errno' (needed on Guile 2.0.5, libc 2.11.)
-          (let-syntax ((ref (lambda (s)
-                              (syntax-case s ()
-                                ((_ bv)
-                                 (case (sizeof int)
-                                   ((4)
-                                    #'(bytevector-s32-native-ref bv 0))
-                                   ((8)
-                                    #'(bytevector-s64-native-ref bv 0))
-                                   (else
-                                    (error "unsupported 'int' size"
-                                           (sizeof int)))))))))
-            (ref bv))))
-      (lambda () 0)))
 
 (define fcntl-flock
   (let* ((ptr  (dynamic-func "fcntl" (dynamic-link)))

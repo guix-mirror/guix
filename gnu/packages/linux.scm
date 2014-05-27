@@ -38,11 +38,14 @@
   #:use-module (gnu packages attr)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages check)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
-  #:use-module (guix build-system python))
+  #:use-module (guix build-system python)
+  #:use-module (guix build-system trivial))
 
 (define-public (system->linux-architecture arch)
   "Return the Linux architecture name for ARCH, a Guix system name such as
@@ -440,7 +443,8 @@ slabtop, and skill.")
                "0ibkkvp6kan0hn0d1anq4n2md70j5gcm7mwna515w82xwyr02rfw"))))
     (build-system gnu-build-system)
     (inputs `(("util-linux" ,util-linux)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("texinfo" ,texinfo)))    ; for the libext2fs Info manual
     (arguments
      '(#:phases (alist-cons-before
                  'configure 'patch-shells
@@ -465,6 +469,39 @@ slabtop, and skill.")
     (license (list gpl2                           ; programs
                    lgpl2.0                        ; libext2fs
                    x11))))                        ; libuuid
+
+(define-public e2fsck/static
+  (package
+    (name "e2fsck-static")
+    (version (package-version e2fsprogs))
+    (build-system trivial-build-system)
+    (source #f)
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils)
+                      (ice-9 ftw)
+                      (srfi srfi-26))
+
+         (let ((source (string-append (assoc-ref %build-inputs "e2fsprogs")
+                                      "/sbin"))
+               (bin    (string-append (assoc-ref %outputs "out") "/sbin")))
+           (mkdir-p bin)
+           (with-directory-excursion bin
+             (for-each (lambda (file)
+                         (copy-file (string-append source "/" file)
+                                    file)
+                         (remove-store-references file)
+                         (chmod file #o555))
+                       (scandir source (cut string-prefix? "fsck." <>))))))))
+    (inputs `(("e2fsprogs" ,(static-package e2fsprogs))))
+    (synopsis "Statically-linked fsck.* commands from e2fsprogs")
+    (description
+     "This package provides statically-linked command of fsck.ext[234] taken
+from the e2fsprogs package.  It is meant to be used in initrds.")
+    (home-page (package-home-page e2fsprogs))
+    (license (package-license e2fsprogs))))
 
 (define-public strace
   (package
@@ -962,6 +999,23 @@ space, using the FUSE library.  Mounting a union file system allows you to
 UnionFS-FUSE additionally supports copy-on-write.")
     (license bsd-3)))
 
+(define fuse-static
+  (package (inherit fuse)
+    (name "fuse-static")
+    (source (origin (inherit (package-source fuse))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Normally libfuse invokes mount(8) so that /etc/mtab is
+               ;; updated.  Change calls to 'mtab_needs_update' to 0 so that
+               ;; it doesn't do that, allowing us to remove the dependency on
+               ;; util-linux (something that is useful in initrds.)
+               '(substitute* '("lib/mount_util.c"
+                               "util/mount_util.c")
+                  (("mtab_needs_update[[:blank:]]*\\([a-z_]+\\)")
+                   "0")
+                  (("/bin/")
+                   "")))))))
+
 (define-public unionfs-fuse/static
   (package (inherit unionfs-fuse)
     (synopsis "User-space union file system (statically linked)")
@@ -976,4 +1030,118 @@ UnionFS-FUSE additionally supports copy-on-write.")
                                   libs " dl)"))))))
     (arguments
      '(#:tests? #f
-       #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")))))
+       #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")))
+    (inputs `(("fuse" ,fuse-static)))))
+
+(define-public numactl
+  (package
+    (name "numactl")
+    (version "2.0.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://oss.sgi.com/www/projects/libnuma/download/numactl-"
+                    version
+                    ".tar.gz"))
+              (sha256
+               (base32
+                "073myxlyyhgxh1w3r757ajixb7s2k69czc3r0g12c3scq7k3784w"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; There's no 'configure' script, just a raw makefile.
+                   (substitute* "Makefile"
+                     (("^prefix := .*$")
+                      (string-append "prefix := " (assoc-ref outputs "out")
+                                     "\n"))
+                     (("^libdir := .*$")
+                      ;; By default the thing tries to install under
+                      ;; $prefix/lib64 when on a 64-bit platform.
+                      (string-append "libdir := $(prefix)/lib\n"))))
+                 %standard-phases)
+
+       #:make-flags (list
+                     ;; By default the thing tries to use 'cc'.
+                     "CC=gcc"
+
+                     ;; Make sure programs have an RPATH so they can find
+                     ;; libnuma.so.
+                     (string-append "LDLIBS=-Wl,-rpath="
+                                    (assoc-ref %outputs "out") "/lib"))
+
+       ;; There's a 'test' target, but it requires NUMA support in the kernel
+       ;; to run, which we can't assume to have.
+       #:tests? #f))
+    (home-page "http://oss.sgi.com/projects/libnuma/")
+    (synopsis "Tools for non-uniform memory access (NUMA) machines")
+    (description
+     "NUMA stands for Non-Uniform Memory Access, in other words a system whose
+memory is not all in one place.  The numactl program allows you to run your
+application program on specific CPU's and memory nodes.  It does this by
+supplying a NUMA memory policy to the operating system before running your
+program.
+
+The package contains other commands, such as numademo, numastat and memhog.
+The numademo command provides a quick overview of NUMA performance on your
+system.")
+    (license (list gpl2                           ; programs
+                   lgpl2.1))))                    ; library
+
+(define-public kbd
+  (package
+    (name "kbd")
+    (version "2.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/linux/utils/kbd/kbd-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0c34b0za2v0934acvgnva0vaqpghmmhz4zh7k0m9jd4mbc91byqm"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'build 'pre-build
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((gzip  (assoc-ref %build-inputs "gzip"))
+                         (bzip2 (assoc-ref %build-inputs "bzip2")))
+                     (substitute* "src/libkeymap/findfile.c"
+                       (("gzip")
+                        (string-append gzip "/bin/gzip"))
+                       (("bzip2")
+                        (string-append bzip2 "/bin/bzip2")))))
+                 %standard-phases)))
+    (inputs `(("check" ,check)
+              ("gzip" ,guix:gzip)
+              ("bzip2" ,guix:bzip2)
+              ("pam" ,linux-pam)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (home-page "ftp://ftp.kernel.org/pub/linux/utils/kbd/")
+    (synopsis "Linux keyboard utilities and keyboard maps")
+    (description
+     "This package contains keytable files and keyboard utilities compatible
+for systems using the Linux kernel.  This includes commands such as
+'loadkeys', 'setfont', 'kbdinfo', and 'chvt'.")
+    (license gpl2+)))
+
+(define-public inotify-tools
+  (package
+    (name "inotify-tools")
+    (version "3.13")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/inotify-tools/inotify-tools/"
+                    version "/inotify-tools-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0icl4bx041axd5dvhg89kilfkysjj86hjakc7bk8n49cxjn4cha6"))))
+    (build-system gnu-build-system)
+    (home-page "http://inotify-tools.sourceforge.net/")
+    (synopsis "Monitor file accesses")
+    (description
+     "The inotify-tools packages provides a C library and command-line tools
+to use Linux' inotify mechanism, which allows file accesses to be monitored.")
+    (license gpl2+)))

@@ -162,7 +162,19 @@ closed it will also close PORT, unless the KEEP-ALIVE? is true."
 (define* (open-socket-for-uri uri #:key (buffered? #t))
   "Return an open port for URI.  When BUFFERED? is false, the returned port is
 unbuffered."
+  (define rmem-max
+    ;; The maximum size for a receive buffer on Linux, see socket(7).
+    "/proc/sys/net/core/rmem_max")
+
+  (define buffer-size
+    (if (file-exists? rmem-max)
+        (call-with-input-file rmem-max read)
+        126976))                   ; the default for Linux, per 'rmem_default'
+
   (let ((s ((@ (web client) open-socket-for-uri) uri)))
+    ;; Work around <http://bugs.gnu.org/15368> by restoring a decent
+    ;; buffer size.
+    (setsockopt s SOL_SOCKET SO_RCVBUF buffer-size)
     (unless buffered?
       (setvbuf s _IONBF))
     s))

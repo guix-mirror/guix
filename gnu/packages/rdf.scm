@@ -17,13 +17,22 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages rdf)
-  #:use-module ((guix licenses) #:select (lgpl2.0+ lgpl2.1+))
+  #:use-module ((guix licenses) #:select (lgpl2.0+ lgpl2.1 lgpl2.1+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages bdb)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
+  #:use-module (gnu packages doxygen)
+  #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages linux)
+  #:use-module (gnu packages multiprecision)
+  #:use-module (gnu packages pcre)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages xml))
@@ -60,15 +69,107 @@ Turtle 2013, N-Quads, N-Triples 1.1, Atom 1.0, RSS 1.0, GraphViz DOT,
 HTML and JSON.")
     (license lgpl2.1+))) ; or any choice of gpl2+ or asl2.0
 
+(define-public clucene
+  (package
+    (name "clucene")
+    (version "2.3.3.4")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://sourceforge/clucene/"
+                                 "clucene-core-unstable/2.3/clucene-core-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "1arffdwivig88kkx685pldr784njm0249k0rb1f1plwavlrw9zfx"))
+             (patches (list (search-patch "clucene-pkgconfig.patch")))))
+    (build-system cmake-build-system)
+    (inputs
+     `(("boost" ,boost) ; could also use bundled copy
+       ("zlib" ,zlib)))
+    (arguments
+     `(#:test-target "cl_test"
+       #:tests? #f)) ; Tests do not compile, as TestIndexSearcher.cpp uses
+                     ; undeclared usleep. After fixing this, one needs to run
+                     ; "make test" in addition to "make cl_test", then
+                     ; SimpleTest fails.
+                     ; Notice that the library appears to be unmaintained
+                     ; with no reaction to bug reports.
+    (home-page "http://clucene.sourceforge.net/")
+    (synopsis "C text indexing and searching library")
+    (description "CLucene is a high-performance, scalable, cross platform,
+full-featured indexing and searching API.  It is a port of the very popular
+Java Lucene text search engine API to C++.")
+    (license lgpl2.1)))
+
+(define-public rasqal
+  (package
+    (name "rasqal")
+    (version "0.9.32")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.librdf.org/source/" name
+                                 "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "13rfprkk7d74065c7bafyshajwa6lshj7m9l741zlz9viqhh7fpf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl)
+       ("perl-xml-dom" ,perl-xml-dom) ; for the tests
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("libgcrypt" ,libgcrypt)
+       ("libxml2" ,libxml2)
+       ("mpfr" ,mpfr)
+       ("pcre" ,pcre)
+       ("util-linux" ,util-linux)))
+    (propagated-inputs
+     `(("raptor2" ,raptor2))) ; stipulated by rasqal.pc
+    (arguments
+     `(#:parallel-tests? #f
+       ; test failure reported upstream, see
+       ; http://bugs.librdf.org/mantis/view.php?id=571
+       #:tests? #f))
+    (home-page "http://librdf.org/rasqal/")
+    (synopsis "RDF query library")
+    (description "Rasqal is a C library that handles Resource Description
+Framework (RDF) query language syntaxes, query construction and execution
+of queries returning results as bindings, boolean, RDF graphs/triples or
+syntaxes.  The supported query languages are SPARQL Query 1.0,
+SPARQL Query 1.1, SPARQL Update 1.1 (no executing) and the Experimental
+SPARQL extensions (LAQRS).  Rasqal can write binding query results in the
+SPARQL XML, SPARQL JSON, CSV, TSV, HTML, ASCII tables, RDF/XML and
+Turtle/N3 and read them in SPARQL XML, RDF/XML and Turtle/N3.")
+    (license lgpl2.1+))) ; or any choice of gpl2+ or asl2.0
+
+(define-public redland
+  (package
+    (name "redland")
+    (version "1.0.17")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.librdf.org/source/" name
+                                 "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "109n0kp39p966dpiasad2bb7q66rwbcb9avjvimw28chnpvlf66y"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("perl" ,perl) ; needed for installation
+       ("pkg-config" ,pkg-config)))
+    (inputs
+     `(("bdb" ,bdb)
+       ("rasqal" ,rasqal)))
+    (home-page "http://librdf.org/")
+    (synopsis "RDF library")
+    (description "The Redland RDF Library (librdf) provides the RDF API
+and triple stores.")
+    (license lgpl2.1+))) ; or any choice of gpl2+ or asl2.0
+
 (define-public soprano
   (package
     (name "soprano")
-    (version "2.9.3")
-    ;; 2.9.4 requires clucene, see
-    ;; http://www.mailinglistarchive.com/html/lfs-book@linuxfromscratch.org/2013-10/msg00285.html
-    ;; The stable clucene-0.9.21b fails one of its tests;
-    ;; in the unstable clucene-2.3.3.4 the binary cl_test is not found.
-    ;; In any case, the library seems to be unmaintained.
+    (version "2.9.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/soprano/Soprano/"
@@ -76,14 +177,17 @@ HTML and JSON.")
                                 "soprano-" version ".tar.bz2"))
              (sha256
               (base32
-               "08gb5d8bgy7vc6qd6r1kkmmc5rli67dlglpjqjlahpnvs26r1cwl"))))
+               "1rg0x7yg0a1cbnxz7kqk52580wla8jbnj4d4r3j7l7g7ajyny1k4"))
+             (patches (list (search-patch "soprano-find-clucene.patch")))))
     (build-system cmake-build-system)
-    ;; FIXME: Add optional dependencies: Redland, odbci, clucene; doxygen
     (native-inputs
-     `(("pkg-config" ,pkg-config)))
+     `(("doxygen" ,doxygen)
+       ("pkg-config" ,pkg-config)))
     (inputs
-     `(("qt" ,qt-4)
-       ("raptor2" ,raptor2)))
+     `(("clucene" ,clucene)
+       ("qt" ,qt-4)
+       ("rasqal" ,rasqal)
+       ("redland" ,redland)))
     (home-page "http://soprano.sourceforge.net/")
     (synopsis "RDF data library for Qt")
     (description "Soprano (formerly known as QRDF) is a library which

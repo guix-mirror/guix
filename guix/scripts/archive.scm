@@ -123,7 +123,7 @@ Export/import one or more packages from/to the store.\n"))
                               (string->canonical-sexp
                                (or arg %key-generation-parameters))))
                          (alist-cons 'generate-key params result)))
-                     (lambda (key err)
+                     (lambda (key proc err)
                        (leave (_ "invalid key generation parameters: ~a: ~a~%")
                               (error-source err)
                               (error-string err))))))
@@ -248,7 +248,7 @@ this may take time...~%"))
   (let* ((pair   (catch 'gcry-error
                    (lambda ()
                      (generate-key parameters))
-                   (lambda (key err)
+                   (lambda (key proc err)
                      (leave (_ "key generation failed: ~a: ~a~%")
                             (error-source err)
                             (error-string err)))))
@@ -275,7 +275,7 @@ the input port."
     (catch 'gcry-error
       (lambda ()
         (string->canonical-sexp (get-string-all (current-input-port))))
-      (lambda (key err)
+      (lambda (key proc err)
         (leave (_ "failed to read public key: ~a: ~a~%")
                (error-source err) (error-string err)))))
 

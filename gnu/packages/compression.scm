@@ -238,6 +238,29 @@ LZO is written in ANSI C.  Both the source code and the compressed data
 format are designed to be portable across platforms.")
     (license license:gpl2+)))
 
+(define-public lzop
+  (package
+    (name "lzop")
+    (version "1.03")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.lzop.org/download/lzop-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1jdjvc4yjndf7ihmlcsyln2rbnbaxa86q4jskmkmm7ylfy65nhn1"))))
+    (build-system gnu-build-system)
+    (inputs `(("lzo" ,lzo)))
+    (home-page "http://www.lzop.org/")
+    (synopsis "Compress or expand files")
+    (description
+     "Lzop is a file compressor which is very similar to gzip.  Lzop uses the
+LZO data compression library for compression services, and its main advantages
+over gzip are much higher compression and decompression speed (at the cost of
+some compression ratio).")
+    (license license:gpl2+)))
+
 (define-public lzip
   (package
     (name "lzip")
