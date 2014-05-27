@@ -57,7 +57,7 @@ files in the destination.")
     (version "0.9.7")
        (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://sourceforge/projects/librsync/librsync/"
+            (uri (string-append "mirror://sourceforge/librsync/librsync/"
                                 version "/librsync-" version ".tar.gz"))
             (sha256
              (base32
