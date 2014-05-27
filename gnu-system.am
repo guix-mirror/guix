@@ -36,6 +36,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/autogen.scm			\
   gnu/packages/autotools.scm			\
   gnu/packages/avahi.scm			\
+  gnu/packages/backup.scm			\
   gnu/packages/base.scm				\
   gnu/packages/bash.scm				\
   gnu/packages/bdb.scm				\
