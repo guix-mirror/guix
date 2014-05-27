@@ -397,11 +397,13 @@ encoding conversion errors."
            #f)
           ((= k %stderr-read)
            ;; Read a byte stream from USER-PORT.
+           ;; Note: Avoid 'get-bytevector-n' to work around
+           ;; <http://bugs.gnu.org/17591> in Guile up to 2.0.11.
            (let* ((max-len (read-int p))
-                  (data    (get-bytevector-n user-port max-len))
-                  (len     (bytevector-length data)))
+                  (data    (make-bytevector max-len))
+                  (len     (get-bytevector-n! user-port data 0 max-len)))
              (write-int len p)
-             (put-bytevector p data)
+             (put-bytevector p data 0 len)
              (write-padding len p)
              #f))
           ((= k %stderr-next)
