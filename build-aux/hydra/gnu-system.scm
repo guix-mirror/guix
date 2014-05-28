@@ -147,7 +147,8 @@ system.")
   "Return Hydra jobs."
   (define systems
     ;; Systems we want to build for.
-    '("x86_64-linux" "i686-linux"))
+    '("x86_64-linux" "i686-linux"
+      "mips64el-linux"))
 
   (define subset
     (match (assoc-ref arguments 'subset)
