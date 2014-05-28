@@ -34,6 +34,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages xml)
@@ -1032,6 +1033,32 @@ UnionFS-FUSE additionally supports copy-on-write.")
      '(#:tests? #f
        #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")))
     (inputs `(("fuse" ,fuse-static)))))
+
+(define-public sshfs-fuse
+  (package
+    (name "sshfs-fuse")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/fuse/sshfs-fuse-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0gp6qr33l2p0964j0kds0dfmvyyf5lpgsn11daf0n5fhwm9185z9"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("fuse" ,fuse)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://fuse.sourceforge.net/sshfs.html")
+    (synopsis "Mount remote file systems over SSH")
+    (description
+     "This is a file system client based on the SSH File Transfer Protocol.
+Since most SSH servers already support this protocol it is very easy to set
+up: on the server side there's nothing to do; on the client side mounting the
+file system is as easy as logging into the server with an SSH client.")
+    (license gpl2+)))
 
 (define-public numactl
   (package
