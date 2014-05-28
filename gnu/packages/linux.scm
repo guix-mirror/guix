@@ -962,7 +962,15 @@ processes currently causing I/O.")
                                     "/bin/" maybe-u "mount")))
                   (substitute* '("util/mount.fuse.c")
                     (("/bin/sh")
-                     (which "sh"))))
+                     (which "sh")))
+
+                  ;; This hack leads libfuse to search for 'fusermount' in
+                  ;; $PATH, where it may find a setuid-root binary, instead of
+                  ;; trying solely $out/sbin/fusermount and failing because
+                  ;; it's not setuid.
+                  (substitute* "lib/Makefile"
+                    (("-DFUSERMOUNT_DIR=[[:graph:]]+")
+                     "-DFUSERMOUNT_DIR=\\\"/var/empty\\\"")))
                 %standard-phases)))
     (home-page "http://fuse.sourceforge.net/")
     (synopsis "Support file systems implemented in user space")
