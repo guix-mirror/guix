@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +25,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages nettle)
+  #:use-module (gnu packages xml)
   #:use-module (gnu packages which))
 
 (define-public zlib
@@ -315,3 +318,57 @@ archives that can be readily emailed.  A shell archive is a file that can be
 processed by a Bourne-type shell to unpack the original collection of files. 
 This package is mostly for compatibility and historical interest.")
     (license license:gpl3+)))
+
+(define-public libarchive
+  (package
+    (name "libarchive")
+    (version "3.1.2")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://libarchive.org/downloads/libarchive-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0pixqnrcf35dnqgv0lp7qlcw7k13620qkhgxr288v7p4iz6ym1zb"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("zlib" ,zlib)
+       ("nettle" ,nettle)
+       ("lzo" ,lzo)
+       ("bzip2" ,bzip2)
+       ("libxml2" ,libxml2)
+       ("xz" ,xz)))
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'build 'patch-pwd
+        (lambda _
+          (substitute* "Makefile"
+            (("/bin/pwd") (which "pwd"))))
+        (alist-replace
+         'check
+         (lambda _
+           ;; XXX: The test_owner_parse, test_read_disk, and
+           ;; test_write_disk_lookup tests expect user 'root' to exist, but
+           ;; the chroot's /etc/passwd doesn't have it.  Turn off those tests.
+           ;;
+           ;; The tests allow one to disable tests matching a globbing pattern.
+           (and (zero? (system* "make"
+                                "libarchive_test" "bsdcpio_test" "bsdtar_test"))
+                ;; XXX: This glob disables too much.
+                (zero? (system* "./libarchive_test" "^test_*_disk*"))
+                (zero? (system* "./bsdcpio_test" "^test_owner_parse"))
+                (zero? (system* "./bsdtar_test"))))
+         %standard-phases))))
+    (home-page "http://libarchive.org/")
+    (synopsis "Multi-format archive and compression library")
+    (description
+     "Libarchive provides a flexible interface for reading and writing
+archives in various formats such as tar and cpio.  Libarchive also supports
+reading and writing archives compressed using various compression filters such
+as gzip and bzip2.  The library is inherently stream-oriented; readers
+serially iterate through the archive, writers serially add things to the
+archive. In particular, note that there is currently no built-in support for
+random access nor for in-place modification.")
+    (license license:bsd-2)))
