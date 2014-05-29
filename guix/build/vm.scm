@@ -158,10 +158,16 @@ REFERENCE-GRAPHS, a list of reference-graph files."
 
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
 
-(define (format-partition partition type)
-  "Create a file system TYPE on PARTITION."
+(define* (format-partition partition type
+                           #:key label)
+  "Create a file system TYPE on PARTITION.  If LABEL is true, use that as the
+volume name."
   (format #t "creating ~a partition...\n" type)
-  (unless (zero? (system* (string-append "mkfs." type) "-F" partition))
+  (unless (zero? (apply system* (string-append "mkfs." type)
+                        "-F" partition
+                        (if label
+                            `("-L" ,label)
+                            '())))
     (error "failed to create partition")))
 
 (define* (initialize-root-partition target-directory
@@ -204,13 +210,15 @@ REFERENCE-GRAPHS, a list of reference-graph files."
                                grub.cfg
                                disk-image-size
                                (file-system-type "ext4")
+                               file-system-label
                                (closures '())
                                copy-closures?
                                (register-closures? #t))
-  "Initialize DEVICE, a disk of DISK-IMAGE-SIZE bytes, with a
-FILE-SYSTEM-TYPE partition, and with GRUB installed.  If REGISTER-CLOSURES? is
-true, register all of CLOSURES is the partition's store.  If COPY-CLOSURES? is
-true, copy all of CLOSURES to the partition."
+  "Initialize DEVICE, a disk of DISK-IMAGE-SIZE bytes, with a FILE-SYSTEM-TYPE
+partition with (optionally) FILE-SYSTEM-LABEL as its volume name, and with
+GRUB installed.  If REGISTER-CLOSURES? is true, register all of CLOSURES is
+the partition's store.  If COPY-CLOSURES? is true, copy all of CLOSURES to the
+partition."
   (define target-directory
     "/fs")
 
@@ -220,7 +228,8 @@ true, copy all of CLOSURES to the partition."
   (initialize-partition-table device
                               (- disk-image-size (* 5 (expt 2 20))))
 
-  (format-partition partition file-system-type)
+  (format-partition partition file-system-type
+                    #:label file-system-label)
 
   (display "mounting partition...\n")
   (mkdir target-directory)

@@ -196,15 +196,17 @@ made available under the /xchg CIFS share."
                      (disk-image-size (* 100 (expt 2 20)))
                      (disk-image-format "qcow2")
                      (file-system-type "ext4")
+                     file-system-label
                      grub-configuration
                      (register-closures? #t)
                      (inputs '())
                      copy-inputs?)
   "Return a bootable, stand-alone QEMU image of type DISK-IMAGE-FORMAT (e.g.,
-'qcow2' or 'raw'), with a root partition of type FILE-SYSTEM-TYPE.  The
-returned image is a full disk image, with a GRUB installation that uses
-GRUB-CONFIGURATION as its configuration file (GRUB-CONFIGURATION must be the
-name of a file in the VM.)
+'qcow2' or 'raw'), with a root partition of type FILE-SYSTEM-TYPE.
+Optionally, FILE-SYSTEM-LABEL can be specified as the volume name for the root
+partition.  The returned image is a full disk image, with a GRUB installation
+that uses GRUB-CONFIGURATION as its configuration file (GRUB-CONFIGURATION
+must be the name of a file in the VM.)
 
 INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
 all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
@@ -243,7 +245,8 @@ the image."
                                   #:copy-closures? #$copy-inputs?
                                   #:register-closures? #$register-closures?
                                   #:disk-image-size #$disk-image-size
-                                  #:file-system-type #$file-system-type)
+                                  #:file-system-type #$file-system-type
+                                  #:file-system-label #$file-system-label)
             (reboot))))
     #:system system
     #:make-disk-image? #t
