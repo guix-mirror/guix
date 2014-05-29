@@ -152,3 +152,35 @@ Rdup itself does not backup anything, it only print a list of absolute
 filenames to standard output.  Auxiliary scripts are needed that act on this
 list and implement the backup strategy.")
     (license gpl3+)))
+
+(define-public btar
+  (package
+    (name "btar")
+    (version "1.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://vicerveza.homeunix.net/~viric/soft/btar/"
+                           "btar-" version ".tar.gz"))
+       (sha256
+        (base32
+         "0miklk4bqblpyzh1bni4x6lqn88fa8fjn15x1k1n8bxkx60nlymd"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("librsync" ,librsync)))
+    (arguments
+     `(#:make-flags `(,(string-append "PREFIX=" (assoc-ref %outputs "out"))
+                      "CC=gcc")
+       #:tests? #f                      ;test input not distributed
+       #:phases
+       (alist-delete
+        'configure                      ;no configure phase
+        %standard-phases)))
+    (home-page "http://viric.name/cgi-bin/btar/doc/trunk/doc/home.wiki")
+    (synopsis "Tar-compatible archiver")
+    (description
+     "Btar is a tar-compatible archiver which allows arbitrary compression and
+ciphering, redundancy, differential backup, indexed extraction, multicore
+compression, input and output serialisation, and tolerance to partial archive
+errors.")
+    (license gpl3+)))
