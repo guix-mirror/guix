@@ -837,7 +837,8 @@ allows applications to access local and remote files with a single consistent AP
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
+                    "mirror://gnome/sources/" name "/"
+                    (string-take version 4)  "/" name "-"
                     version
                     ".tar.bz2"))
               (sha256
