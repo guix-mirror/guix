@@ -25,9 +25,12 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages mcrypt)
+  #:use-module (gnu packages nettle)
+  #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages rsync)
@@ -110,3 +113,42 @@ backup scheduling is done by means of a cron job.  It supports an
 include/exclude mechanism, remote backups, encrypted backups and split
 backups (called chunks) to allow easy burning to CD/DVD.")
     (license gpl2)))
+
+(define-public rdup
+  (package
+    (name "rdup")
+    (version "1.1.14")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://archive.miek.nl/projects/rdup/rdup-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0aklwd9v7ix0m4ayl762sil685f42cwljzx3jz5skrnjaq32npmj"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("dejagnu" ,dejagnu)))
+    (inputs
+     `(("glib" ,glib)
+       ("pcre" ,pcre)
+       ("libarchive" ,libarchive)
+       ("nettle" ,nettle)))
+    (arguments
+     `(#:parallel-build? #f             ;race conditions
+       #:phases (alist-cons-before
+                 'build 'remove-Werror
+                 ;; rdup uses a deprecated function from libarchive
+                 (lambda _
+                   (substitute* "GNUmakefile"
+                     (("^(CFLAGS=.*)-Werror" _ front) front)))
+                 %standard-phases)))
+    (home-page "http://archive.miek.nl/projects/rdup/index.html")
+    (synopsis "Provide a list of files to backup")
+    (description
+     "Rdup is a utility inspired by rsync and the plan9 way of doing backups.
+Rdup itself does not backup anything, it only print a list of absolute
+filenames to standard output.  Auxiliary scripts are needed that act on this
+list and implement the backup strategy.")
+    (license gpl3+)))
