@@ -26,6 +26,7 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages package-management)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
@@ -319,7 +320,8 @@ alias ll='ls -l'
     (list #~(string-append #$shadow "/bin/passwd")
           #~(string-append #$shadow "/bin/su")
           #~(string-append #$inetutils "/bin/ping")
-          #~(string-append #$sudo "/bin/sudo"))))
+          #~(string-append #$sudo "/bin/sudo")
+          #~(string-append #$fuse "/bin/fusermount"))))
 
 (define %sudoers-specification
   ;; Default /etc/sudoers contents: 'root' and all members of the 'wheel'
