@@ -166,12 +166,22 @@ system.")
       (and (string-prefix? "i686-" system)
            (string-suffix? "64" target)))
 
+    (define (same? target)
+      ;; Return true if SYSTEM and TARGET are the same thing.  This is so we
+      ;; don't try to cross-compile to 'mips64el-linux-gnu' from
+      ;; 'mips64el-linux'.
+      (string-contains target system))
+
+    (define (either proc1 proc2)
+      (lambda (x)
+        (or (proc1 x) (proc2 x))))
+
     (append-map (lambda (target)
                   (map (lambda (package)
                          (package-cross-job store (job-name package)
                                             package target system))
                        %packages-to-cross-build))
-                (remove from-32-to-64? %cross-targets)))
+                (remove (either from-32-to-64? same?) %cross-targets)))
 
   ;; Return one job for each package, except bootstrap packages.
   (let ((base-packages (delete-duplicates
