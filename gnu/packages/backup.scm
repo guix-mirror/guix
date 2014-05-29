@@ -20,11 +20,18 @@
   #:use-module (guix packages)
   #:use-module (guix licenses)
   #:use-module (guix download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
-  #:use-module (gnu packages python)
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages mcrypt)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages rsync)
+  #:use-module (gnu packages ssh)
   #:use-module (srfi srfi-1))
 
 (define-public duplicity
@@ -69,3 +76,37 @@ parts of files that have changed since the last backup.  Because duplicity
 uses GnuPG to encrypt and/or sign these archives, they will be safe from
 spying and/or modification by the server.")
     (license gpl2+)))
+
+(define-public hdup
+  (package
+    (name "hdup")
+    (version "2.0.14")
+    (source
+     (origin
+      (method url-fetch)
+      ;; Source tarballs are not versioned
+      (uri "http://archive.miek.nl/projects/hdup2/hdup.tar.bz2")
+      (sha256
+       (base32
+        "02bnczg01cyhajmm4rhbnc0ja0dd9ikv9fwv28asxh1rlx9yr0b7"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("glib" ,glib)
+       ("tar" ,tar)
+       ("lzop" ,lzop)
+       ("mcrypt" ,mcrypt)
+       ("openssh" ,openssh)
+       ("gnupg" ,gnupg-1)))
+    (arguments
+     `(#:configure-flags
+       `(,(string-append "--sbindir=" (assoc-ref %outputs "out") "/bin"))
+       #:tests? #f))
+    (home-page "http://archive.miek.nl/projects/hdup/index.html")
+    (synopsis "Simple incremental backup tool")
+    (description
+     "Hdup2 is a backup utilty, its aim is to make backup really simple.  The
+backup scheduling is done by means of a cron job.  It supports an
+include/exclude mechanism, remote backups, encrypted backups and split
+backups (called chunks) to allow easy burning to CD/DVD.")
+    (license gpl2)))
