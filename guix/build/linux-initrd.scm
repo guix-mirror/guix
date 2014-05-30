@@ -18,12 +18,14 @@
 
 (define-module (guix build linux-initrd)
   #:use-module (rnrs io ports)
+  #:use-module (rnrs bytevectors)
   #:use-module (system foreign)
   #:autoload   (system repl repl) (start-repl)
   #:autoload   (system base compile) (compile-file)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 rdelim)
   #:use-module (ice-9 ftw)
   #:use-module (guix build utils)
   #:export (mount-essential-file-systems
@@ -31,9 +33,15 @@
             find-long-option
             make-essential-device-nodes
             configure-qemu-networking
+
+            disk-partitions
+            partition-label-predicate
+            find-partition-by-label
+
             check-file-system
             mount-file-system
             bind-mount
+
             load-linux-module*
             device-number
             boot-system))
@@ -87,6 +95,107 @@ Return the value associated with OPTION, or #f on failure."
                  arguments)
            (lambda (arg)
              (substring arg (+ 1 (string-index arg #\=)))))))
+
+(define-syntax %ext2-endianness
+  ;; Endianness of ext2 file systems.
+  (identifier-syntax (endianness little)))
+
+;; Offset in bytes of interesting parts of an ext2 superblock.  See
+;; <http://www.nongnu.org/ext2-doc/ext2.html#DEF-SUPERBLOCK>.
+;; TODO: Use "packed structs" from Guile-OpenGL or similar.
+(define-syntax %ext2-sblock-magic       (identifier-syntax 56))
+(define-syntax %ext2-sblock-creator-os  (identifier-syntax 72))
+(define-syntax %ext2-sblock-uuid        (identifier-syntax 104))
+(define-syntax %ext2-sblock-volume-name (identifier-syntax 120))
+
+(define (read-ext2-superblock device)
+  "Return the raw contents of DEVICE's ext2 superblock as a bytevector, or #f
+if DEVICE does not contain an ext2 file system."
+  (define %ext2-magic
+    ;; The magic bytes that identify an ext2 file system.
+    #xef53)
+
+  (call-with-input-file device
+    (lambda (port)
+      (seek port 1024 SEEK_SET)
+      (let* ((block (get-bytevector-n port 264))
+             (magic (bytevector-u16-ref block %ext2-sblock-magic
+                                        %ext2-endianness)))
+        (and (= magic %ext2-magic)
+             block)))))
+
+(define (ext2-superblock-uuid sblock)
+  "Return the UUID of ext2 superblock SBLOCK as a 16-byte bytevector."
+  (let ((uuid (make-bytevector 16)))
+    (bytevector-copy! sblock %ext2-sblock-uuid uuid 0 16)
+    uuid))
+
+(define (ext2-superblock-volume-name sblock)
+  "Return the volume name of SBLOCK as a string of at most 16 characters, or
+#f if SBLOCK has no volume name."
+  (let ((bv (make-bytevector 16)))
+    (bytevector-copy! sblock %ext2-sblock-volume-name bv 0 16)
+
+    ;; This is a Latin-1, nul-terminated string.
+    (let ((bytes (take-while (negate zero?) (bytevector->u8-list bv))))
+      (if (null? bytes)
+          #f
+          (list->string (map integer->char bytes))))))
+
+(define (disk-partitions)
+  "Return the list of device names corresponding to valid disk partitions."
+  (define (partition? major minor)
+    (let ((marker (format #f "/sys/dev/block/~a:~a/partition" major minor)))
+      (catch 'system-error
+        (lambda ()
+          (not (zero? (call-with-input-file marker read))))
+        (lambda args
+          (if (= ENOENT (system-error-errno args))
+              #f
+              (apply throw args))))))
+
+  (call-with-input-file "/proc/partitions"
+    (lambda (port)
+      ;; Skip the two header lines.
+      (read-line port)
+      (read-line port)
+
+      ;; Read each subsequent line, and extract the last space-separated
+      ;; field.
+      (let loop ((parts '()))
+        (let ((line  (read-line port)))
+          (if (eof-object? line)
+              (reverse parts)
+              (match (string-tokenize line)
+                (((= string->number major) (= string->number minor)
+                  blocks name)
+                 (if (partition? major minor)
+                     (loop (cons name parts))
+                     (loop parts))))))))))
+
+(define (partition-label-predicate label)
+  "Return a procedure that, when applied to a partition name such as \"sda1\",
+return #t if that partition's volume name is LABEL."
+  (lambda (part)
+    (let* ((device (string-append "/dev/" part))
+           (sblock (read-ext2-superblock device)))
+      (and sblock
+           (string=? (ext2-superblock-volume-name sblock)
+                     label)))))
+
+(define (find-partition-by-label label)
+  "Return the first partition found whose volume name is LABEL, or #f if none
+were found."
+  (and=> (find (partition-label-predicate label)
+               (disk-partitions))
+         (cut string-append "/dev/" <>)))
+
+(define (canonicalize-device-spec spec)
+  "Given SPEC, a string such as \"/dev/sda1\" or \"my-root-part\", return the
+corresponding device name."
+  (if (string-prefix? "/" spec)
+      spec
+      (or (find-partition-by-label spec) spec)))
 
 (define* (make-essential-device-nodes #:key (root "/"))
   "Make essential device nodes under ROOT/dev."
@@ -321,7 +430,8 @@ run a file system check."
 
   (match spec
     ((source mount-point type (flags ...) options check?)
-     (let ((mount-point (string-append root "/" mount-point)))
+     (let ((source      (canonicalize-device-spec source))
+           (mount-point (string-append root "/" mount-point)))
        (when check?
          (check-file-system source type))
        (mkdir-p mount-point)
@@ -381,6 +491,7 @@ bailing out.~%root contents: ~s~%" (scandir "/"))
 
       (close-port console))))
 
+
 (define* (boot-system #:key
                       (linux-modules '())
                       qemu-guest-networking?
@@ -451,7 +562,8 @@ to it are lost."
     (unless (file-exists? "/root")
       (mkdir "/root"))
     (if root
-        (mount-root-file-system root root-fs-type
+        (mount-root-file-system (canonicalize-device-spec root)
+                                root-fs-type
                                 #:volatile-root? volatile-root?)
         (mount "none" "/root" "tmpfs"))
 

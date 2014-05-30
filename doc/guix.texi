@@ -3130,7 +3130,7 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
    (bootloader (grub-configuration
                  (device "/dev/sda")))
    (file-systems (list (file-system
-                         (device "/dev/disk/by-label/root")
+                         (device "/dev/sda1") ; or partition label
                          (mount-point "/")
                          (type "ext3"))))
    (users (list (user-account
