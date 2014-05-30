@@ -268,6 +268,12 @@ the image."
 system described by OS.  Said image can be copied on a USB stick as is.  When
 VOLATILE? is true, the root file system is made volatile; this is useful
 to USB sticks meant to be read-only."
+  (define root-label
+    ;; Volume name of the root file system.  Since we don't know which device
+    ;; will hold it, we use the volume name to find it (using the UUID would
+    ;; be even better, but somewhat less convenient.)
+    "gnu-disk-image")
+
   (define file-systems-to-keep
     (remove (lambda (fs)
               (string=? (file-system-mount-point fs) "/"))
@@ -283,7 +289,7 @@ to USB sticks meant to be read-only."
               ;; Force our own root file system.
               (file-systems (cons (file-system
                                     (mount-point "/")
-                                    (device "/dev/sda1")
+                                    (device root-label)
                                     (type file-system-type))
                                   file-systems-to-keep)))))
 
@@ -293,6 +299,7 @@ to USB sticks meant to be read-only."
                   #:disk-image-size disk-image-size
                   #:disk-image-format "raw"
                   #:file-system-type file-system-type
+                  #:file-system-label root-label
                   #:copy-inputs? #t
                   #:register-closures? #t
                   #:inputs `(("system" ,os-drv)
