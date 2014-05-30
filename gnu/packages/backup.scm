@@ -184,3 +184,40 @@ ciphering, redundancy, differential backup, indexed extraction, multicore
 compression, input and output serialisation, and tolerance to partial archive
 errors.")
     (license gpl3+)))
+
+(define-public rdiff-backup
+  (package
+    (name "rdiff-backup")
+    (version "1.2.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://savannah/rdiff-backup/rdiff-backup-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "1nwmmh816f96h0ff1jxk95ad38ilbhbdl5dgibx1d4cl81dsi48d"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python2-setuptools" ,python2-setuptools)))
+    (inputs
+     `(("python" ,python-2)
+       ("librsync" ,librsync)))
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f))
+    (home-page "http://www.nongnu.org/rdiff-backup/")
+    (synopsis "Local/remote mirroring+incremental backup")
+    (description
+     "Rdiff-backup backs up one directory to another, possibly over a network.
+The target directory ends up a copy of the source directory, but extra reverse
+diffs are stored in a special subdirectory of that target directory, so you
+can still recover files lost some time ago.  The idea is to combine the best
+features of a mirror and an incremental backup.  Rdiff-backup also preserves
+subdirectories, hard links, dev files, permissions, uid/gid ownership,
+modification times, extended attributes, acls, and resource forks.  Also,
+rdiff-backup can operate in a bandwidth efficient manner over a pipe, like
+rsync.  Thus you can use rdiff-backup and ssh to securely back a hard drive up
+to a remote location, and only the differences will be transmitted.  Finally,
+rdiff-backup is easy to use and settings have sensical defaults.")
+    (license gpl2+)))
