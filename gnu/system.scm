@@ -51,6 +51,7 @@
             operating-system-initrd
             operating-system-users
             operating-system-groups
+            operating-system-issue
             operating-system-packages
             operating-system-timezone
             operating-system-locale
@@ -92,6 +93,8 @@
 
   (skeletons operating-system-skeletons           ; list of name/monadic value
              (default (default-skeletons)))
+  (issue operating-system-issue                   ; string
+         (default %default-issue))
 
   (packages operating-system-packages             ; list of (PACKAGE OUTPUT...)
             (default (list coreutils              ; or just PACKAGE
@@ -211,8 +214,14 @@ explicitly appear in OS."
 ;;; /etc.
 ;;;
 
+(define %default-issue
+  ;; Default contents for /etc/issue.
+  "
+This is the GNU system.  Welcome.\n")
+
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
+                        (issue "Hello!\n")
                         (skeletons '())
                         (pam-services '())
                         (profile "/run/current-system/profile")
@@ -227,15 +236,7 @@ explicitly appear in OS."
 /bin/sh
 /run/current-system/profile/bin/sh
 /run/current-system/profile/bin/bash\n"))
-       (issue      (text-file "issue" "
-This is an alpha preview of the GNU system.  Welcome.
-
-This image features the GNU Guix package manager, which was used to
-build it (http://www.gnu.org/software/guix/).  The init system is
-GNU dmd (http://www.gnu.org/software/dmd/).
-
-You can log in as 'guest' or 'root' with no password.
-"))
+       (issue      (text-file "issue" issue))
 
        ;; TODO: Generate bashrc from packages' search-paths.
        (bashrc    (text-file* "bashrc"  "
@@ -309,6 +310,7 @@ alias ll='ls -l'
        (skeletons   (operating-system-skeletons os)))
    (etc-directory #:pam-services pam-services
                   #:skeletons skeletons
+                  #:issue (operating-system-issue os)
                   #:locale (operating-system-locale os)
                   #:timezone (operating-system-timezone os)
                   #:sudoers (operating-system-sudoers os)
