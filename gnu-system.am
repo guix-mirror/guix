@@ -256,6 +256,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/system.scm				\
   gnu/system/file-systems.scm			\
   gnu/system/grub.scm				\
+  gnu/system/install.scm			\
   gnu/system/linux.scm				\
   gnu/system/linux-initrd.scm			\
   gnu/system/shadow.scm				\
