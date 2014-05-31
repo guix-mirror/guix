@@ -180,8 +180,9 @@ return #t if that partition's volume name is LABEL."
     (let* ((device (string-append "/dev/" part))
            (sblock (read-ext2-superblock device)))
       (and sblock
-           (string=? (ext2-superblock-volume-name sblock)
-                     label)))))
+           (let ((volume (ext2-superblock-volume-name sblock)))
+             (and volume
+                  (string=? volume label)))))))
 
 (define (find-partition-by-label label)
   "Return the first partition found whose volume name is LABEL, or #f if none
