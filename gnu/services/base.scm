@@ -274,11 +274,11 @@ the \"message of the day\"."
 
   ;; Snippet adapted from the GNU inetutils manual.
   (define contents "
-     # Log all kernel messages, authentication messages of
+     # Log all error messages, authentication messages of
      # level notice or higher and anything of level err or
      # higher to the console.
      # Don't log private authentication messages!
-     *.err;kern.*;auth.notice;authpriv.none  /dev/console
+     *.err;auth.notice;authpriv.none         /dev/console
 
      # Log anything (except mail) of level info or higher.
      # Don't log private authentication messages!
