@@ -178,7 +178,20 @@ if DEVICE does not contain an ext2 file system."
 return #t if that partition's volume name is LABEL."
   (lambda (part)
     (let* ((device (string-append "/dev/" part))
-           (sblock (read-ext2-superblock device)))
+           (sblock (catch 'system-error
+                     (lambda ()
+                       (read-ext2-superblock device))
+                     (lambda args
+                       ;; When running on the hand-made /dev,
+                       ;; 'disk-partitions' could return partitions for which
+                       ;; we have no /dev node.  Handle that gracefully.
+                       (if (= ENOENT (system-error-errno args))
+                           (begin
+                             (format (current-error-port)
+                                     "warning: device '~a' not found~%"
+                                     device)
+                             #f)
+                           (apply throw args))))))
       (and sblock
            (let ((volume (ext2-superblock-volume-name sblock)))
              (and volume
