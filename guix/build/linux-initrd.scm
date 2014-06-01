@@ -259,6 +259,12 @@ with the given MAJOR number, starting with MINOR."
   (mknod (scope "dev/input/mouse0") 'char-special #o640 (device-number 13 32))
   (mknod (scope "dev/input/event0") 'char-special #o640 (device-number 13 64))
 
+  ;; System console.  This node is magically created by the kernel on the
+  ;; initrd's root, so don't try to create it in that case.
+  (unless (string=? root "/")
+    (mknod (scope "dev/console") 'char-special #o600
+           (device-number 5 1)))
+
   ;; TTYs.
   (mknod (scope "dev/tty") 'char-special #o600
          (device-number 5 0))
