@@ -1737,7 +1737,7 @@ a derivation is the @code{derivation} procedure:
   @var{args} [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
   [#:recursive? #f] [#:inputs '()] [#:env-vars '()] @
   [#:system (%current-system)] [#:references-graphs #f] @
-  [#:local-build? #f]
+  [#:allowed-references #f] [#:local-build? #f]
 Build a derivation with the given arguments, and return the resulting
 @code{<derivation>} object.
 
@@ -1752,6 +1752,9 @@ When @var{references-graphs} is true, it must be a list of file
 name/store path pairs.  In that case, the reference graph of each store
 path is exported in the build environment in the corresponding file, in
 a simple text format.
+
+When @var{allowed-references} is true, it must be a list of store items
+or outputs that the derivation's output may refer to.
 
 When @var{local-build?} is true, declare that the derivation is not a
 good candidate for offloading and should rather be built locally
