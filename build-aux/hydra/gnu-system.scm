@@ -150,7 +150,7 @@ system.")
                    (run-with-store store
                      (system-disk-image installation-os
                                         #:disk-image-size
-                                        (* 700 MiB)))))
+                                        (* 630 MiB)))))
       '()))
 
 (define (hydra-jobs store arguments)
