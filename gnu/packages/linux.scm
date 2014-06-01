@@ -317,15 +317,15 @@ providing the system administrator with some help in common tasks.")
   (package
     (name "util-linux")
     (version "2.21")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://kernel.org/linux/utils/"
-                          name "/v" version "/"
-                          name "-" version ".2" ".tar.xz"))
-      (sha256
-       (base32
-        "1rpgghf7n0zx0cdy8hibr41wvkm2qp1yvd8ab1rxr193l1jmgcir"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/linux/utils/"
+                                  name "/v" version "/"
+                                  name "-" version ".2" ".tar.xz"))
+              (sha256
+               (base32
+                "1rpgghf7n0zx0cdy8hibr41wvkm2qp1yvd8ab1rxr193l1jmgcir"))
+              (patches (list (search-patch "util-linux-perl.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-use-tty-group"

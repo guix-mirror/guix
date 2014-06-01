@@ -1,0 +1,15 @@
+Use this common trick that exploits similarities between sh and Perl syntax
+to avoid a hard dependency on Perl.  Instead, this script will work only
+when 'perl' is available in $PATH.
+
+--- util-linux-2.21.2/misc-utils/chkdupexe.pl	2012-05-15 13:51:45.000000000 +0200
++++ util-linux-2.21.2/misc-utils/chkdupexe.pl	2014-06-01 22:46:06.000000000 +0200
+@@ -1,5 +1,6 @@
+-#!@PERL@ -w
+-#
++eval '(exit $?0)' && eval 'exec perl -wS "$0" ${1+"$@"}'
++  & eval 'exec perl -wS "$0" $argv:q'
++    if 0;
+ # chkdupexe version 2.1.1
+ #
+ # Simple script to look for and list duplicate executables and dangling
