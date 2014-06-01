@@ -20,11 +20,14 @@
   #:use-module (guix licenses)
   #:use-module (guix download)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages autotools))
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (guix git-download))
 
 (define-public gnumach-headers
   (package
@@ -127,4 +130,66 @@ communication.")
     (description
      "This package provides C headers of the GNU Hurd, used to build the GNU C
 Library and other user programs.")
+    (license gpl2+)))
+
+(define-public hurd-minimal
+  (package
+    (name "hurd-minimal")
+    (version "0.5")
+    (source
+     (origin
+       (method git-fetch)
+       (uri (git-reference
+             (url "git://git.savannah.gnu.org/hurd/hurd")
+             (commit "a5ca1de1eb575294dbc865a2c4ff643efc117ef4")))
+       (sha256
+        (base32
+         "17vqdlpy1ifw4ijhc3ydkp8p5d406c7aq4ghpmg4a1h1wlwy32kr"))
+       (file-name (string-append name "-" version))
+       (patches (list (search-patch "hurd-minimal.patch")))))
+    (build-system gnu-build-system)
+    (inputs `(("glibc-hurd-headers" ,glibc/hurd-headers)))
+    (native-inputs
+     `(("autoconf" ,autoconf-wrapper)
+       ("mig" ,mig)))
+
+    (arguments
+     `(#:phases (alist-replace
+                 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     ;; We need to copy libihash.a to the output directory manually,
+                     ;; since there is no target for that in the makefile.
+                     (mkdir-p (string-append out "/include"))
+                     (copy-file "libihash/ihash.h"
+                                (string-append out "/include/ihash.h"))
+                     (mkdir-p (string-append out "/lib"))
+                     (copy-file "libihash/libihash.a"
+                                (string-append out "/lib/libihash.a"))
+                     #t))
+                 (alist-replace
+                  'build
+                  (lambda _
+                    (zero? (system* "make" "-Clibihash" "libihash.a")))
+                  (alist-cons-before
+                   'configure 'bootstrap
+                   (lambda _
+                     (zero? (system* "autoreconf" "-vfi")))
+                   %standard-phases)))
+       #:configure-flags '(;; Pretend we're on GNU/Hurd; 'configure' wants
+                           ;; that.
+                           "--host=i686-pc-gnu"
+
+                           ;; Reduce set of dependencies.
+                           "--disable-ncursesw"
+                           "--disable-test"
+                           "--without-libbz2"
+                           "--without-libz"
+                           "--without-parted")
+       #:tests? #f))
+    (home-page "http://www.gnu.org/software/hurd/hurd.html")
+    (synopsis "GNU Hurd libraries")
+    (description
+     "This package provides libihash, needed to build the GNU C 
+Library for GNU/Hurd")
     (license gpl2+)))

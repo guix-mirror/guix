@@ -1,0 +1,21 @@
+We need to disable linking with glibc in order to build 
+libihash, which is a dependency of glibc.
+After the flag AC_NO_EXECUTABLES is passed, linking is 
+not allowed so we disable those tests.
+
+diff --git a/configure.ac b/configure.ac
+index f8856db..a381219 100644
+--- a/configure.ac
++++ b/configure.ac
+@@ -297,9 +297,9 @@ AC_SUBST([XKB_BASE])
+ AC_DEFINE_UNQUOTED([X11_PREFIX], "$X11_PREFIX")
+ AC_SUBST([X11_KEYSYMDEF_H])
+ 
+-# Check for Sun RPC headers and library.
++# Check only for Sun RPC headers. We do not need the library yet.
+ AC_CHECK_HEADER([rpc/types.h], [HAVE_SUN_RPC=yes], [HAVE_SUN_RPC=no])
+-AC_SEARCH_LIBS([clnt_create], [], [:], [HAVE_SUN_RPC=no])
++# AC_SEARCH_LIBS([clnt_create], [], [:], [HAVE_SUN_RPC=no])
+ AC_SUBST([HAVE_SUN_RPC])
+ 
+ if test -f ./$ac_unique_file; then
