@@ -211,6 +211,16 @@ corresponding device name."
       spec
       (or (find-partition-by-label spec) spec)))
 
+(define* (make-disk-device-nodes base major #:optional (minor 0))
+  "Make the block device nodes around BASE (something like \"/root/dev/sda\")
+with the given MAJOR number, starting with MINOR."
+  (mknod base 'block-special #o644 (device-number major minor))
+  (let loop ((i 1))
+    (when (< i 6)
+      (mknod (string-append base (number->string i))
+             'block-special #o644 (device-number major (+ minor i)))
+      (loop (+ i 1)))))
+
 (define* (make-essential-device-nodes #:key (root "/"))
   "Make essential device nodes under ROOT/dev."
   ;; The hand-made udev!
@@ -226,14 +236,17 @@ corresponding device name."
     (mkdir (scope "dev")))
 
   ;; Make the device nodes for SCSI disks.
-  (mknod (scope "dev/sda") 'block-special #o644 (device-number 8 0))
-  (mknod (scope "dev/sda1") 'block-special #o644 (device-number 8 1))
-  (mknod (scope "dev/sda2") 'block-special #o644 (device-number 8 2))
+  (make-disk-device-nodes (scope "dev/sda") 8)
+  (make-disk-device-nodes (scope "dev/sdb") 8 16)
+  (make-disk-device-nodes (scope "dev/sdc") 8 32)
+  (make-disk-device-nodes (scope "dev/sdd") 8 48)
+
+  ;; SCSI CD-ROM devices (aka. "/dev/sr0" etc.).
+  (mknod (scope "dev/scd0") 'block-special #o644 (device-number 11 0))
+  (mknod (scope "dev/scd1") 'block-special #o644 (device-number 11 1))
 
   ;; The virtio (para-virtualized) block devices, as supported by QEMU/KVM.
-  (mknod (scope "dev/vda") 'block-special #o644 (device-number 252 0))
-  (mknod (scope "dev/vda1") 'block-special #o644 (device-number 252 1))
-  (mknod (scope "dev/vda2") 'block-special #o644 (device-number 252 2))
+  (make-disk-device-nodes (scope "dev/vda") 252)
 
   ;; Memory (used by Xorg's VESA driver.)
   (mknod (scope "dev/mem") 'char-special #o640 (device-number 1 1))
