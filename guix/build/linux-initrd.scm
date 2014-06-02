@@ -204,12 +204,50 @@ were found."
                (disk-partitions))
          (cut string-append "/dev/" <>)))
 
-(define (canonicalize-device-spec spec)
-  "Given SPEC, a string such as \"/dev/sda1\" or \"my-root-part\", return the
-corresponding device name."
-  (if (string-prefix? "/" spec)
-      spec
-      (or (find-partition-by-label spec) spec)))
+(define* (canonicalize-device-spec spec #:optional (title 'any))
+  "Return the device name corresponding to SPEC.  TITLE is a symbol, one of
+the following:
+
+  • 'device', in which case SPEC is known to designate a device node--e.g.,
+     \"/dev/sda1\";
+  • 'label', in which case SPEC is known to designate a partition label--e.g.,
+     \"my-root-part\";
+  • 'any', in which case SPEC can be anything.
+"
+  (define max-trials
+    ;; Number of times we retry partition label resolution.
+    7)
+
+  (define canonical-title
+    ;; The realm of canonicalization.
+    (if (eq? title 'any)
+        (if (string-prefix? "/" spec)
+            'device
+            'label)
+        title))
+
+  (case canonical-title
+    ((device)
+     ;; Nothing to do.
+     spec)
+    ((label)
+     ;; Resolve the label.
+     (let loop ((count 0))
+       (let ((device (find-partition-by-label spec)))
+         (or device
+             ;; Some devices take a bit of time to appear, most notably USB
+             ;; storage devices.  Thus, wait for the device to appear.
+             (if (> count max-trials)
+                 (begin
+                   (format (current-error-port)
+                           "failed to resolve partition label: ~s~%" spec)
+                   (start-repl))
+                 (begin
+                   (sleep 1)
+                   (loop (+ 1 count))))))))
+    ;; TODO: Add support for UUIDs.
+    (else
+     (error "unknown device title" title))))
 
 (define* (make-disk-device-nodes base major #:optional (minor 0))
   "Make the block device nodes around BASE (something like \"/root/dev/sda\")
