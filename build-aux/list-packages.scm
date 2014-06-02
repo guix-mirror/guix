@@ -4,7 +4,7 @@ exec guile -l "$0"                              \
              (cdr (command-line)))'
 !#
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Alex Sassmannshausen <alex.sassmannshausen@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -148,7 +148,8 @@ decreasing, is 1."
 
     `(div "status: "
           ,(url "x86_64-linux") " "
-          ,(url "i686-linux")))
+          ,(url "i686-linux") " "
+          ,(url "mips64el-linux")))
 
   (define (package-logo name)
     (and=> (lookup-gnu-package name)
