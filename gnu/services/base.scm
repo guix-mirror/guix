@@ -89,9 +89,11 @@ This service must be the root of the service dependency graph so that its
       (respawn? #f)))))
 
 (define* (file-system-service device target type
-                              #:key (check? #t) options)
+                              #:key (check? #t) options (title 'any))
   "Return a service that mounts DEVICE on TARGET as a file system TYPE with
-OPTIONS.  When CHECK? is true, check the file system before mounting it."
+OPTIONS.  TITLE is a symbol specifying what kind of name DEVICE is: 'label for
+a partition label, 'device for a device file name, or 'any.  When CHECK? is
+true, check the file system before mounting it."
   (with-monad %store-monad
     (return
      (service
@@ -99,10 +101,11 @@ OPTIONS.  When CHECK? is true, check the file system before mounting it."
       (requirement '(root-file-system))
       (documentation "Check, mount, and unmount the given file system.")
       (start #~(lambda args
-                 #$(if check?
-                       #~(check-file-system #$device #$type)
-                       #~#t)
-                 (mount #$device #$target #$type 0 #$options)
+                 (let ((device (canonicalize-device-spec #$device '#$title)))
+                   #$(if check?
+                         #~(check-file-system device #$type)
+                         #~#t)
+                   (mount device #$target #$type 0 #$options))
                  #t))
       (stop #~(lambda args
                 ;; Normally there are no processes left at this point, so

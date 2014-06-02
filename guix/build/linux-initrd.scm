@@ -37,6 +37,7 @@
             disk-partitions
             partition-label-predicate
             find-partition-by-label
+            canonicalize-device-spec
 
             check-file-system
             mount-file-system
@@ -485,7 +486,7 @@ UNIONFS."
   "Mount the file system described by SPEC under ROOT.  SPEC must have the
 form:
 
-  (DEVICE MOUNT-POINT TYPE (FLAGS ...) OPTIONS CHECK?)
+  (DEVICE TITLE MOUNT-POINT TYPE (FLAGS ...) OPTIONS CHECK?)
 
 DEVICE, MOUNT-POINT, and TYPE must be strings; OPTIONS can be a string or #f;
 FLAGS must be a list of symbols.  CHECK? is a Boolean indicating whether to
@@ -500,8 +501,8 @@ run a file system check."
       0)))
 
   (match spec
-    ((source mount-point type (flags ...) options check?)
-     (let ((source      (canonicalize-device-spec source))
+    ((source title mount-point type (flags ...) options check?)
+     (let ((source      (canonicalize-device-spec source title))
            (mount-point (string-append root "/" mount-point)))
        (when check?
          (check-file-system source type))
@@ -596,12 +597,12 @@ to it are lost."
 
   (define root-mount-point?
     (match-lambda
-     ((device "/" _ ...) #t)
+     ((device _ "/" _ ...) #t)
      (_ #f)))
 
   (define root-fs-type
     (or (any (match-lambda
-              ((device "/" type _ ...) type)
+              ((device _ "/" type _ ...) type)
               (_ #f))
              mounts)
         "ext4"))

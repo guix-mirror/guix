@@ -290,6 +290,7 @@ to USB sticks meant to be read-only."
               (file-systems (cons (file-system
                                     (mount-point "/")
                                     (device root-label)
+                                    (title 'label)
                                     (type file-system-type))
                                   file-systems-to-keep)))))
 

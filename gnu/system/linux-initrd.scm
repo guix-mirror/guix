@@ -198,8 +198,8 @@ a list of Guile module names to be embedded in the initrd."
   "Return a list corresponding to file-system FS that can be passed to the
 initrd code."
   (match fs
-    (($ <file-system> device mount-point type flags options _ check?)
-     (list device mount-point type flags options check?))))
+    (($ <file-system> device title mount-point type flags options _ check?)
+     (list device title mount-point type flags options check?))))
 
 (define* (qemu-initrd file-systems
                       #:key

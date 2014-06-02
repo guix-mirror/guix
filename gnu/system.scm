@@ -182,8 +182,10 @@ as 'needed-for-boot'."
 
   (sequence %store-monad
             (map (match-lambda
-                  (($ <file-system> device target type flags opts #f check?)
+                  (($ <file-system> device title target type flags opts
+                                    #f check?)
                    (file-system-service device target type
+                                        #:title title
                                         #:check? check?
                                         #:options opts)))
                  file-systems)))
@@ -449,7 +451,7 @@ we're running in the final root."
 (define (operating-system-root-file-system os)
   "Return the root file system of OS."
   (find (match-lambda
-         (($ <file-system> _ "/") #t)
+         (($ <file-system> _ _ "/") #t)
          (_ #f))
         (operating-system-file-systems os)))
 
@@ -457,9 +459,10 @@ we're running in the final root."
   "Return a gexp denoting the initrd file of OS."
   (define boot-file-systems
     (filter (match-lambda
-             (($ <file-system> device "/")
+             (($ <file-system> device title "/")
               #t)
-             (($ <file-system> device mount-point type flags options boot?)
+             (($ <file-system> device title mount-point type flags
+                               options boot?)
               boot?))
             (operating-system-file-systems os)))
 
