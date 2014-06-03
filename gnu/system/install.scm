@@ -138,9 +138,11 @@ Use Alt-F2 for documentation.
      (base-pam-services #:allow-empty-passwords? #t))
 
     (packages (list bash coreutils findutils grep sed
-                    procps psmisc less
-                    guile-2.0 dmd guix util-linux inetutils
-                    parted fdisk module-init-tools
+                    procps psmisc less texinfo-4
+                    guile-2.0 dmd guix util-linux
+                    inetutils isc-dhcp net-tools
+                    parted fdisk ddrescue
+                    module-init-tools kbd
                     zile))))
 
 ;; Return it here so 'guix system' can consume it directly.
