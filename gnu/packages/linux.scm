@@ -182,7 +182,8 @@
                                                 "CONFIG_VIRTIO_MMIO=m\n"
                                                 "CONFIG_FUSE_FS=m\n"
                                                 "CONFIG_CIFS=m\n"
-                                                "CONFIG_9P_FS=m\n")
+                                                "CONFIG_9P_FS=m\n"
+                                                "CONFIG_E1000E=m\n")
                                  port)
                         (close-port port))
 
