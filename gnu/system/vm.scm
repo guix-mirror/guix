@@ -29,7 +29,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages less)
   #:use-module (gnu packages qemu)
-  #:use-module (gnu packages parted)
+  #:use-module (gnu packages disk)
   #:use-module (gnu packages zile)
   #:use-module (gnu packages grub)
   #:use-module (gnu packages linux)

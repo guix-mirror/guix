@@ -62,15 +62,14 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/dc.scm				\
   gnu/packages/dejagnu.scm			\
-  gnu/packages/ddrescue.scm			\
   gnu/packages/dictionaries.scm			\
+  gnu/packages/disk.scm				\
   gnu/packages/docbook.scm			\
   gnu/packages/doxygen.scm			\
   gnu/packages/dwm.scm				\
   gnu/packages/ed.scm				\
   gnu/packages/elf.scm				\
   gnu/packages/emacs.scm			\
-  gnu/packages/fdisk.scm			\
   gnu/packages/file.scm				\
   gnu/packages/flex.scm				\
   gnu/packages/fltk.scm				\
@@ -177,7 +176,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/openssl.scm			\
   gnu/packages/package-management.scm		\
   gnu/packages/parallel.scm			\
-  gnu/packages/parted.scm			\
   gnu/packages/patchutils.scm			\
   gnu/packages/pciutils.scm			\
   gnu/packages/pcre.scm				\

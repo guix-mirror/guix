@@ -27,8 +27,7 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages zile)
-  #:use-module (gnu packages parted)
-  #:use-module (gnu packages fdisk)
+  #:use-module (gnu packages disk)
   #:use-module (gnu packages texinfo)
   #:export (installation-os))
 
