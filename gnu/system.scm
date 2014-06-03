@@ -248,8 +248,8 @@ export LC_ALL=\"" locale "\"
 export TZ=\"" timezone "\"
 export TZDIR=\"" tzdata "/share/zoneinfo\"
 
-export PATH=/run/setuid-programs:/run/current-system/profile/sbin
-export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin:$PATH
+export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin
+export PATH=/run/setuid-programs:/run/current-system/profile/sbin:$PATH
 export CPATH=$HOME/.guix-profile/include:" profile "/include
 export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
 alias ls='ls -p --color'
