@@ -33,8 +33,11 @@
              (gnu packages less)
              (gnu packages tor)
              (gnu packages package-management)
+             (gnu packages avahi)
 
              (gnu services networking)
+             (gnu services avahi)
+             (gnu services dbus)
              (gnu services xorg))
 
 (operating-system
@@ -88,11 +91,14 @@ You can log in as 'guest' or 'root' with no password.
                                              #:name-servers '("10.0.2.3")
                                              #:gateway "10.0.2.2")
 
+                  (avahi-service)
+                  (dbus-service (list avahi))
+
                   %base-services))
  (pam-services
   ;; Explicitly allow for empty passwords.
   (base-pam-services #:allow-empty-passwords? #t))
  (packages (list bash coreutils findutils grep sed
                  procps psmisc less
-                 guile-2.0 dmd guix util-linux inetutils
+                 guile-2.0 dmd guix util-linux inetutils avahi
                  xterm zile)))
