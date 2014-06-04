@@ -126,7 +126,8 @@ numeric gid or #f."
   ;; Then create the groups.
   (for-each (match-lambda
              ((name password gid)
-              (add-group name #:gid gid #:password password)))
+              (unless (false-if-exception (getgrnam name))
+                (add-group name #:gid gid #:password password))))
             groups)
 
   ;; Finally create the other user accounts.
