@@ -395,7 +395,7 @@ etc."
     (define group-specs
       (map user-group->gexp groups))
 
-    (gexp->file "boot"
+    (gexp->file "activate"
                 #~(begin
                     (eval-when (expand load eval)
                       ;; Make sure 'use-modules' below succeeds.
