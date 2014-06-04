@@ -229,6 +229,7 @@ explicitly appear in OS."
 This is the GNU system.  Welcome.\n")
 
 (define* (etc-directory #:key
+                        kernel
                         (locale "C") (timezone "Europe/Paris")
                         (issue "Hello!\n")
                         (skeletons '())
@@ -254,6 +255,11 @@ export PS1='\\u@\\h\\$ '
 export LC_ALL=\"" locale "\"
 export TZ=\"" timezone "\"
 export TZDIR=\"" tzdata "/share/zoneinfo\"
+
+# Tell 'modprobe' & co. where to look for modules.
+# XXX: The downside of doing it here is that when switching to a new config
+# without rebooting, this variable possibly becomes invalid.
+export LINUX_MODULE_DIRECTORY=" kernel "/lib/modules
 
 export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin
 export PATH=/run/setuid-programs:/run/current-system/profile/sbin:$PATH
@@ -317,7 +323,8 @@ alias ll='ls -l'
                               (append-map service-pam-services services))))
        (profile-drv (operating-system-profile os))
        (skeletons   (operating-system-skeletons os)))
-   (etc-directory #:pam-services pam-services
+   (etc-directory #:kernel (operating-system-kernel os)
+                  #:pam-services pam-services
                   #:skeletons skeletons
                   #:issue (operating-system-issue os)
                   #:locale (operating-system-locale os)

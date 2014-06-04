@@ -133,7 +133,9 @@
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))))
+               "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))
+             (patches
+              (list (search-patch "module-init-tools-moduledir.patch")))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: The upstream tarball lacks man pages, and building them would
