@@ -330,10 +330,37 @@ starting at FIRST-UID, and under GID."
                     1+
                     1))))
 
+(define (hydra-key-authorization guix)
+  "Return a gexp with code to register the hydra.gnu.org public key with
+GUIX."
+  #~(unless (file-exists? "/etc/guix/acl")
+      (let ((pid (primitive-fork)))
+        (case pid
+          ((0)
+           (let* ((key  (string-append #$guix
+                                       "/share/guix/hydra.gnu.org.pub"))
+                  (port (open-file key "r0b")))
+             (format #t "registering public key '~a'...~%" key)
+             (close-port (current-input-port))
+             ;; (close-fdes 0)
+             (dup port 0)
+             (execl (string-append #$guix "/bin/guix")
+                    "guix" "archive" "--authorize")
+             (exit 1)))
+          (else
+           (let ((status (cdr (waitpid pid))))
+             (unless (zero? status)
+               (format (current-error-port) "warning: \
+failed to register hydra.gnu.org public key: ~a~%" status))))))))
+
 (define* (guix-service #:key (guix guix) (builder-group "guixbuild")
-                       (build-accounts 10))
+                       (build-accounts 10) authorize-hydra-key?)
   "Return a service that runs the build daemon from GUIX, and has
-BUILD-ACCOUNTS user accounts available under BUILD-USER-GID."
+BUILD-ACCOUNTS user accounts available under BUILD-USER-GID.
+
+When AUTHORIZE-HYDRA-KEY? is true, the hydra.gnu.org public key provided by
+GUIX is authorized upon activation, meaning that substitutes from
+hydra.gnu.org are used by default."
   (mlet %store-monad ((accounts (guix-build-accounts build-accounts
                                                      #:group builder-group)))
     (return (service
@@ -349,7 +376,9 @@ BUILD-ACCOUNTS user accounts available under BUILD-USER-GID."
              (user-groups (list (user-group
                                  (name builder-group)
                                  (members (map user-account-name
-                                               user-accounts)))))))))
+                                               user-accounts)))))
+             (activate (and authorize-hydra-key?
+                            (hydra-key-authorization guix)))))))
 
 (define %base-services
   ;; Convenience variable holding the basic services.

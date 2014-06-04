@@ -77,7 +77,12 @@ You have been warned.  Thanks for being so brave.
 
           ;; The usual services.
           (syslog-service)
-          (guix-service)
+
+          ;; The build daemon.  Register the hydra.gnu.org key as trusted.
+          ;; This allows the installation process to use substitutes by
+          ;; default.
+          (guix-service #:authorize-hydra-key? #t)
+
           (nscd-service))))
 
 (define %issue
