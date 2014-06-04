@@ -3116,14 +3116,8 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
 @findex operating-system
 @lisp
 (use-modules (gnu)   ; for 'user-account', '%base-services', etc.
-             (gnu services ssh)    ; for 'lsh-service'
-             (gnu packages base)   ; Coreutils, grep, etc.
-             (gnu packages bash)   ; Bash
-             (gnu packages admin)  ; dmd, Inetutils
-             (gnu packages zile)   ; Zile
-             (gnu packages less)   ; less
-             (gnu packages guile)  ; Guile
-             (gnu packages linux)) ; procps, psmisc
+             (gnu packages emacs)  ; for 'emacs'
+             (gnu services ssh))   ; for 'lsh-service'
 
 (define komputilo
   (operating-system
@@ -3142,22 +3136,21 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
                  (uid 1000) (gid 100)
                  (comment "Bob's sister")
                  (home-directory "/home/alice"))))
-   (packages (list coreutils bash guile-2.0
-                   guix dmd
-                   inetutils
-                   findutils grep sed
-                   procps psmisc
-                   zile less))
+   (packages (cons emacs %base-packages))
    (services (cons (lsh-service #:port 2222 #:allow-root-login? #t)
                    %base-services))))
 @end lisp
 
 This example should be self-describing.  The @code{packages} field lists
-packages provided by the various @code{(gnu packages ...)} modules above
-(@pxref{Package Modules}).  These are the packages that will be globally
-visible on the system, for all user accounts---i.e., in every user's
-@code{PATH} environment variable---in addition to the per-user profiles
-(@pxref{Invoking guix package}).
+packages that will be globally visible on the system, for all user
+accounts---i.e., in every user's @code{PATH} environment variable---in
+addition to the per-user profiles (@pxref{Invoking guix package}).  The
+@var{%base-packages} variables provides all the tools one would expect
+for basic user and administrator tasks---including the GNU Core
+Utilities, the GNU Networking Utilities, the GNU Zile lightweight text
+editor, @command{find}, @command{grep}, etc.  The example above adds
+Emacs to those, taken from the @code{(gnu packages emacs)} module
+(@pxref{Package Modules}).
 
 @vindex %base-services
 The @code{services} field lists @dfn{system services} to be made

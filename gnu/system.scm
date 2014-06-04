@@ -28,6 +28,9 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages less)
+  #:use-module (gnu packages zile)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
   #:use-module (gnu services base)
@@ -59,7 +62,9 @@
 
             operating-system-derivation
             operating-system-profile
-            operating-system-grub.cfg))
+            operating-system-grub.cfg
+
+            %base-packages))
 
 ;;; Commentary:
 ;;;
@@ -97,15 +102,7 @@
          (default %default-issue))
 
   (packages operating-system-packages             ; list of (PACKAGE OUTPUT...)
-            (default (list coreutils              ; or just PACKAGE
-                           grep
-                           sed
-                           findutils
-                           guile
-                           bash
-                           (@ (gnu packages dmd) dmd)
-                           guix
-                           tzdata)))
+            (default %base-packages))             ; or just PACKAGE
 
   (timezone operating-system-timezone)            ; string
   (locale   operating-system-locale)              ; string
@@ -215,6 +212,16 @@ explicitly appear in OS."
 ;;;
 ;;; /etc.
 ;;;
+
+(define %base-packages
+  ;; Default set of packages globally visible.  It should include anything
+  ;; required for basic administrator tasks.
+  (list bash coreutils findutils grep sed
+        procps psmisc less zile
+        guile-final (@ (gnu packages admin) dmd) guix
+        util-linux inetutils isc-dhcp
+        net-tools                        ; XXX: remove when Inetutils suffices
+        module-init-tools kbd))
 
 (define %default-issue
   ;; Default contents for /etc/issue.

@@ -24,15 +24,7 @@
 
 (use-modules (gnu)
 
-             (gnu packages zile)
              (gnu packages xorg)
-             (gnu packages admin)
-             (gnu packages guile)
-             (gnu packages bash)
-             (gnu packages linux)
-             (gnu packages less)
-             (gnu packages tor)
-             (gnu packages package-management)
              (gnu packages avahi)
 
              (gnu services networking)
@@ -98,7 +90,5 @@ You can log in as 'guest' or 'root' with no password.
  (pam-services
   ;; Explicitly allow for empty passwords.
   (base-pam-services #:allow-empty-passwords? #t))
- (packages (list bash coreutils findutils grep sed
-                 procps psmisc less
-                 guile-2.0 dmd guix util-linux inetutils avahi
-                 xterm zile)))
+
+ (packages (cons* xterm avahi %base-packages)))

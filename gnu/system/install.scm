@@ -20,13 +20,8 @@
   #:use-module (gnu)
   #:use-module (guix gexp)
   #:use-module (guix monads)
-  #:use-module (gnu packages bash)
-  #:use-module (gnu packages less)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages guile)
-  #:use-module (gnu packages admin)
   #:use-module (gnu packages package-management)
-  #:use-module (gnu packages zile)
   #:use-module (gnu packages disk)
   #:use-module (gnu packages texinfo)
   #:export (installation-os))
@@ -137,13 +132,9 @@ Use Alt-F2 for documentation.
      ;; Explicitly allow for empty passwords.
      (base-pam-services #:allow-empty-passwords? #t))
 
-    (packages (list bash coreutils findutils grep sed
-                    procps psmisc less texinfo-4
-                    guile-2.0 dmd guix util-linux
-                    inetutils isc-dhcp net-tools
-                    parted fdisk ddrescue
-                    module-init-tools kbd
-                    zile))))
+    (packages (cons* texinfo-4                ; for the standalone Info reader
+                     parted fdisk ddrescue
+                     %base-packages))))
 
 ;; Return it here so 'guix system' can consume it directly.
 installation-os
