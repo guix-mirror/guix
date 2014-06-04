@@ -17,6 +17,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services base)
+  #:use-module ((guix store)
+                #:select (%store-prefix))
   #:use-module (gnu services)
   #:use-module (gnu system shadow)                ; 'user-account', etc.
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
@@ -348,7 +350,6 @@ GUIX."
                   (port (open-file key "r0b")))
              (format #t "registering public key '~a'...~%" key)
              (close-port (current-input-port))
-             ;; (close-fdes 0)
              (dup port 0)
              (execl (string-append #$guix "/bin/guix")
                     "guix" "archive" "--authorize")
@@ -367,6 +368,18 @@ BUILD-ACCOUNTS user accounts available under BUILD-USER-GID.
 When AUTHORIZE-HYDRA-KEY? is true, the hydra.gnu.org public key provided by
 GUIX is authorized upon activation, meaning that substitutes from
 hydra.gnu.org are used by default."
+  (define activate
+    #~(begin
+        ;; Make sure the store has BUILDER-GROUP as its group.  This may fail
+        ;; with EACCES when the store is a 9p mount, so catch exceptions.
+        (false-if-exception
+         (chown #$(%store-prefix) 0
+                (group:gid (getgrnam #$builder-group))))
+
+        ;; Optionally authorize hydra.gnu.org's key.
+        #$(and authorize-hydra-key?
+               (hydra-key-authorization guix))))
+
   (mlet %store-monad ((accounts (guix-build-accounts build-accounts
                                                      #:group builder-group)))
     (return (service
@@ -383,8 +396,7 @@ hydra.gnu.org are used by default."
                                  (name builder-group)
                                  (members (map user-account-name
                                                user-accounts)))))
-             (activate (and authorize-hydra-key?
-                            (hydra-key-authorization guix)))))))
+             (activate activate)))))
 
 (define %base-services
   ;; Convenience variable holding the basic services.
