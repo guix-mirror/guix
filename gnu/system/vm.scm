@@ -261,6 +261,7 @@ the image."
 
 (define* (system-disk-image os
                             #:key
+                            (name "disk-image")
                             (file-system-type "ext4")
                             (disk-image-size (* 900 (expt 2 20)))
                             (volatile? #t))
@@ -296,7 +297,8 @@ to USB sticks meant to be read-only."
 
     (mlet* %store-monad ((os-drv   (operating-system-derivation os))
                          (grub.cfg (operating-system-grub.cfg os)))
-      (qemu-image #:grub-configuration grub.cfg
+      (qemu-image #:name name
+                  #:grub-configuration grub.cfg
                   #:disk-image-size disk-image-size
                   #:disk-image-format "raw"
                   #:file-system-type file-system-type
