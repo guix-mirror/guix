@@ -971,6 +971,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
   ;; The final GCC.
   (package (inherit gcc-boot0)
     (name "gcc")
+    (location (source-properties->location (current-source-location)))
     (arguments
      `(#:guile ,%bootstrap-guile
        #:implicit-inputs? #f
