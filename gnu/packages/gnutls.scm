@@ -63,7 +63,7 @@ specifications.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.2.12")
+    (version "3.2.15")
     (source (origin
              (method url-fetch)
              (uri
@@ -75,7 +75,7 @@ specifications.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "0195nliarszq5mginli6d2f5z7ljnd7mwa46iy9z8pkcgy56khbl"))))
+               "1fbpr9r1r2y803s3avwjpy1higqsz85dyb302kvmh0i29frwgg9h"))))
     (build-system gnu-build-system)
     (arguments
      ;; Work around build issue reported at
