@@ -211,6 +211,14 @@
     (return (string=? (readlink (string-append out "/foo"))
                       guile))))
 
+(define shebang
+  (string-append (derivation->output-path guile-for-build)
+                 "/bin/guile --no-auto-compile"))
+
+;; If we're going to hit the silly shebang limit (128 chars on Linux-based
+;; systems), then skip the following test.
+(test-skip (if (> (string-length shebang) 127) 1 0))
+
 (test-assertm "gexp->script"
   (mlet* %store-monad ((n ->   (random (expt 2 50)))
                        (exp -> (gexp

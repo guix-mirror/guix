@@ -351,6 +351,10 @@ its search path."
                       (gexp
                        (call-with-output-file (ungexp output)
                          (lambda (port)
+                           ;; Note: that makes a long shebang.  When the store
+                           ;; is /gnu/store, that fits within the 128-byte
+                           ;; limit imposed by Linux, but that may go beyond
+                           ;; when running tests.
                            (format port
                                    "#!~a/bin/guile --no-auto-compile~%!#~%"
                                    (ungexp guile))
