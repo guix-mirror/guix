@@ -34,13 +34,21 @@
             (sha256 (base32
                      "1f2g2612lf8djbwbwhxsvmffmf9d7693kh2l20195pqp0f9jmnfx"))))
    (build-system gnu-build-system)
+   (outputs '("out"                             ; programs, libraries, headers
+              "doc"))                           ; 94 MiB of HTML docs
    (arguments
     '(#:tests? #f                            ; no check target available
       #:phases
       (alist-replace
        'configure
        (lambda* (#:key outputs #:allow-other-keys)
-         (let ((out (assoc-ref outputs "out")))
+         (let ((out (assoc-ref outputs "out"))
+               (doc (assoc-ref outputs "doc")))
+           ;; '--docdir' is not honored, so we need to patch.
+           (substitute* "dist/Makefile.in"
+             (("docdir[[:blank:]]*=.*")
+              (string-append "docdir = " doc "/share/doc/bdb")))
+
            (zero?
             (system* "./dist/configure"
                      (string-append "--prefix=" out)
