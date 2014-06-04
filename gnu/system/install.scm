@@ -37,7 +37,7 @@
   "Return a script that spawns the Info reader on the right section of the
 manual."
   (gexp->script "log-to-info"
-                #~(execl (string-append #$texinfo-4 "/bin/info")
+                #~(execl (string-append #$texinfo-4 "/bin/info") "info"
                          "-d" "/run/current-system/profile/share/info"
                          "-f" (string-append #$guix "/share/info/guix.info")
                          "-n" "System Configuration")))
