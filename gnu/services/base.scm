@@ -324,6 +324,12 @@ starting at FIRST-UID, and under GID."
                        (name (format #f "guixbuilder~2,'0d" n))
                        (uid (+ first-uid n -1))
                        (group group)
+
+                       ;; guix-daemon expects GROUP to be listed as a
+                       ;; supplementary group too:
+                       ;; <http://lists.gnu.org/archive/html/bug-guix/2013-01/msg00239.html>.
+                       (supplementary-groups (list group))
+
                        (comment (format #f "Guix Build User ~2d" n))
                        (home-directory "/var/empty")
                        (shell #~(string-append #$shadow "/sbin/nologin"))))
