@@ -73,9 +73,9 @@ directory TARGET."
 (define (directives store)
   "Return a list of directives to populate the root file system that will host
 STORE."
-  `(;; Note: The store's group is changed to the "guixbuild" group at
-    ;; activation time.
-    (directory ,store 0 0)
+  `(;; Note: the store's GID is fixed precisely so we can set it here rather
+    ;; than at activation time.
+    (directory ,store 0 30000)
 
     (directory "/etc")
     (directory "/var/log")                          ; for dmd

@@ -369,16 +369,13 @@ When AUTHORIZE-HYDRA-KEY? is true, the hydra.gnu.org public key provided by
 GUIX is authorized upon activation, meaning that substitutes from
 hydra.gnu.org are used by default."
   (define activate
-    #~(begin
-        ;; Make sure the store has BUILDER-GROUP as its group.  This may fail
-        ;; with EACCES when the store is a 9p mount, so catch exceptions.
-        (false-if-exception
-         (chown #$(%store-prefix) 0
-                (group:gid (getgrnam #$builder-group))))
+    ;; Assume that the store has BUILDER-GROUP as its group.  We could
+    ;; otherwise call 'chown' here, but the problem is that on a COW unionfs,
+    ;; chown leads to an entire copy of the tree, which is a bad idea.
 
-        ;; Optionally authorize hydra.gnu.org's key.
-        #$(and authorize-hydra-key?
-               (hydra-key-authorization guix))))
+    ;; Optionally authorize hydra.gnu.org's key.
+    (and authorize-hydra-key?
+         (hydra-key-authorization guix)))
 
   (mlet %store-monad ((accounts (guix-build-accounts build-accounts
                                                      #:group builder-group)))
@@ -395,7 +392,11 @@ hydra.gnu.org are used by default."
              (user-groups (list (user-group
                                  (name builder-group)
                                  (members (map user-account-name
-                                               user-accounts)))))
+                                               user-accounts))
+
+                                 ;; Use a fixed GID so that we can create the
+                                 ;; store with the right owner.
+                                 (id 30000))))
              (activate activate)))))
 
 (define %base-services
