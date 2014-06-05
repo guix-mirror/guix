@@ -28,17 +28,14 @@
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.1g")
+   (version "1.0.1h")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.openssl.org/source/openssl-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "0a70qdqccg16nw4bbawa6pjvzn05vfp5wkwg6jl0grch7f683jsk"))
-            (patches
-             (list (search-patch "openssl-CVE-2010-5298.patch")
-                   (search-patch "openssl-extension-checking-fixes.patch")))))
+              "14yhsgag5as7nhxnw7f0vklwjwa3pmn1i15nmp3f4qxa6sc8l74x"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments

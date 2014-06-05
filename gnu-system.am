@@ -332,8 +332,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/mit-krb5-init-fix.patch			\
   gnu/packages/patches/mpc123-initialize-ao.patch		\
   gnu/packages/patches/module-init-tools-moduledir.patch	\
-  gnu/packages/patches/openssl-CVE-2010-5298.patch		\
-  gnu/packages/patches/openssl-extension-checking-fixes.patch	\
   gnu/packages/patches/patchelf-page-size.patch			\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
