@@ -731,3 +731,41 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
 
     ;; In practice, this is linked against Readline, which makes it GPLv3+.
     (license bsd-3)))
+
+(define-public wakelan
+  (package
+    (name "wakelan")
+    (version "1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "ftp://ftp.gwdg.de/pub/linux/metalab/system/network/misc/wakelan-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0vydqpf44146ir6k87gmqaq6xy66xhc1gkr3nsd7jj3nhy7ypx9x"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     (mkdir-p (string-append out "/bin"))
+                     (mkdir-p (string-append out "/share/man/man1"))
+
+                     ;; It's an old configure script that doesn't understand
+                     ;; the extra options we pass.
+                     (setenv "CONFIG_SHELL" (which "bash"))
+                     (zero?
+                      (system* "./configure"
+                               (string-append "--prefix=" out)
+                               (string-append "--mandir=" out
+                                              "/share/man")))))
+                 %standard-phases)
+       #:tests? #f))
+    (home-page "http://kernel.org")               ; really, no home page
+    (synopsis "Send a wake-on-LAN packet")
+    (description
+     "WakeLan broadcasts a properly formatted UDP packet across the local area
+network, which causes enabled computers to power on.")
+    (license gpl2+)))
