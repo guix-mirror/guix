@@ -460,7 +460,6 @@ the API")
               (sha256
                (base32 "1ya4d2j2aacr9ii5zj4ac95fjpdvlm2rg79mgnk7yvl1dcy3y1z5"))
               (patches (list
-                        (search-patch "gtkglext-remove-pangox-dependency.patch")
                         (search-patch "gtkglext-disable-disable-deprecated.patch")))))
     (build-system gnu-build-system)
     (inputs `(("gtk+" ,gtk+-2)
@@ -468,6 +467,7 @@ the API")
               ("libx11" ,libx11)
               ("libxt" ,libxt)))
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (propagated-inputs `(("pangox-compat" ,pangox-compat)))
     (home-page "https://projects.gnome.org/gtkglext")
     (synopsis "OpenGL extension to GTK+.")
     (description "GtkGLExt is an OpenGL extension to GTK+. It provides
@@ -837,7 +837,8 @@ allows applications to access local and remote files with a single consistent AP
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
+                    "mirror://gnome/sources/" name "/"
+                    (string-take version 4)  "/" name "-"
                     version
                     ".tar.bz2"))
               (sha256

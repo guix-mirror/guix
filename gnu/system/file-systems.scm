@@ -22,6 +22,7 @@
             file-system
             file-system?
             file-system-device
+            file-system-title
             file-system-mount-point
             file-system-type
             file-system-needed-for-boot?
@@ -42,6 +43,8 @@
   make-file-system
   file-system?
   (device           file-system-device)           ; string
+  (title            file-system-title             ; 'device | 'label | 'uuid
+                    (default 'device))
   (mount-point      file-system-mount-point)      ; string
   (type             file-system-type)             ; string
   (flags            file-system-flags             ; list of symbols

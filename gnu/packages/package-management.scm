@@ -43,6 +43,7 @@
     (arguments
      `(#:configure-flags (list
                           "--localstatedir=/var"
+                          "--sysconfdir=/etc"
                           (string-append "--with-libgcrypt-prefix="
                                          (assoc-ref %build-inputs
                                                     "libgcrypt")))

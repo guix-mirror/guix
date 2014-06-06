@@ -18,12 +18,14 @@
 
 (define-module (guix build linux-initrd)
   #:use-module (rnrs io ports)
+  #:use-module (rnrs bytevectors)
   #:use-module (system foreign)
   #:autoload   (system repl repl) (start-repl)
   #:autoload   (system base compile) (compile-file)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 rdelim)
   #:use-module (ice-9 ftw)
   #:use-module (guix build utils)
   #:export (mount-essential-file-systems
@@ -31,9 +33,16 @@
             find-long-option
             make-essential-device-nodes
             configure-qemu-networking
+
+            disk-partitions
+            partition-label-predicate
+            find-partition-by-label
+            canonicalize-device-spec
+
             check-file-system
             mount-file-system
             bind-mount
+
             load-linux-module*
             device-number
             boot-system))
@@ -88,6 +97,169 @@ Return the value associated with OPTION, or #f on failure."
            (lambda (arg)
              (substring arg (+ 1 (string-index arg #\=)))))))
 
+(define-syntax %ext2-endianness
+  ;; Endianness of ext2 file systems.
+  (identifier-syntax (endianness little)))
+
+;; Offset in bytes of interesting parts of an ext2 superblock.  See
+;; <http://www.nongnu.org/ext2-doc/ext2.html#DEF-SUPERBLOCK>.
+;; TODO: Use "packed structs" from Guile-OpenGL or similar.
+(define-syntax %ext2-sblock-magic       (identifier-syntax 56))
+(define-syntax %ext2-sblock-creator-os  (identifier-syntax 72))
+(define-syntax %ext2-sblock-uuid        (identifier-syntax 104))
+(define-syntax %ext2-sblock-volume-name (identifier-syntax 120))
+
+(define (read-ext2-superblock device)
+  "Return the raw contents of DEVICE's ext2 superblock as a bytevector, or #f
+if DEVICE does not contain an ext2 file system."
+  (define %ext2-magic
+    ;; The magic bytes that identify an ext2 file system.
+    #xef53)
+
+  (call-with-input-file device
+    (lambda (port)
+      (seek port 1024 SEEK_SET)
+      (let* ((block (get-bytevector-n port 264))
+             (magic (bytevector-u16-ref block %ext2-sblock-magic
+                                        %ext2-endianness)))
+        (and (= magic %ext2-magic)
+             block)))))
+
+(define (ext2-superblock-uuid sblock)
+  "Return the UUID of ext2 superblock SBLOCK as a 16-byte bytevector."
+  (let ((uuid (make-bytevector 16)))
+    (bytevector-copy! sblock %ext2-sblock-uuid uuid 0 16)
+    uuid))
+
+(define (ext2-superblock-volume-name sblock)
+  "Return the volume name of SBLOCK as a string of at most 16 characters, or
+#f if SBLOCK has no volume name."
+  (let ((bv (make-bytevector 16)))
+    (bytevector-copy! sblock %ext2-sblock-volume-name bv 0 16)
+
+    ;; This is a Latin-1, nul-terminated string.
+    (let ((bytes (take-while (negate zero?) (bytevector->u8-list bv))))
+      (if (null? bytes)
+          #f
+          (list->string (map integer->char bytes))))))
+
+(define (disk-partitions)
+  "Return the list of device names corresponding to valid disk partitions."
+  (define (partition? major minor)
+    (let ((marker (format #f "/sys/dev/block/~a:~a/partition" major minor)))
+      (catch 'system-error
+        (lambda ()
+          (not (zero? (call-with-input-file marker read))))
+        (lambda args
+          (if (= ENOENT (system-error-errno args))
+              #f
+              (apply throw args))))))
+
+  (call-with-input-file "/proc/partitions"
+    (lambda (port)
+      ;; Skip the two header lines.
+      (read-line port)
+      (read-line port)
+
+      ;; Read each subsequent line, and extract the last space-separated
+      ;; field.
+      (let loop ((parts '()))
+        (let ((line  (read-line port)))
+          (if (eof-object? line)
+              (reverse parts)
+              (match (string-tokenize line)
+                (((= string->number major) (= string->number minor)
+                  blocks name)
+                 (if (partition? major minor)
+                     (loop (cons name parts))
+                     (loop parts))))))))))
+
+(define (partition-label-predicate label)
+  "Return a procedure that, when applied to a partition name such as \"sda1\",
+return #t if that partition's volume name is LABEL."
+  (lambda (part)
+    (let* ((device (string-append "/dev/" part))
+           (sblock (catch 'system-error
+                     (lambda ()
+                       (read-ext2-superblock device))
+                     (lambda args
+                       ;; When running on the hand-made /dev,
+                       ;; 'disk-partitions' could return partitions for which
+                       ;; we have no /dev node.  Handle that gracefully.
+                       (if (= ENOENT (system-error-errno args))
+                           (begin
+                             (format (current-error-port)
+                                     "warning: device '~a' not found~%"
+                                     device)
+                             #f)
+                           (apply throw args))))))
+      (and sblock
+           (let ((volume (ext2-superblock-volume-name sblock)))
+             (and volume
+                  (string=? volume label)))))))
+
+(define (find-partition-by-label label)
+  "Return the first partition found whose volume name is LABEL, or #f if none
+were found."
+  (and=> (find (partition-label-predicate label)
+               (disk-partitions))
+         (cut string-append "/dev/" <>)))
+
+(define* (canonicalize-device-spec spec #:optional (title 'any))
+  "Return the device name corresponding to SPEC.  TITLE is a symbol, one of
+the following:
+
+  • 'device', in which case SPEC is known to designate a device node--e.g.,
+     \"/dev/sda1\";
+  • 'label', in which case SPEC is known to designate a partition label--e.g.,
+     \"my-root-part\";
+  • 'any', in which case SPEC can be anything.
+"
+  (define max-trials
+    ;; Number of times we retry partition label resolution.
+    7)
+
+  (define canonical-title
+    ;; The realm of canonicalization.
+    (if (eq? title 'any)
+        (if (string-prefix? "/" spec)
+            'device
+            'label)
+        title))
+
+  (case canonical-title
+    ((device)
+     ;; Nothing to do.
+     spec)
+    ((label)
+     ;; Resolve the label.
+     (let loop ((count 0))
+       (let ((device (find-partition-by-label spec)))
+         (or device
+             ;; Some devices take a bit of time to appear, most notably USB
+             ;; storage devices.  Thus, wait for the device to appear.
+             (if (> count max-trials)
+                 (begin
+                   (format (current-error-port)
+                           "failed to resolve partition label: ~s~%" spec)
+                   (start-repl))
+                 (begin
+                   (sleep 1)
+                   (loop (+ 1 count))))))))
+    ;; TODO: Add support for UUIDs.
+    (else
+     (error "unknown device title" title))))
+
+(define* (make-disk-device-nodes base major #:optional (minor 0))
+  "Make the block device nodes around BASE (something like \"/root/dev/sda\")
+with the given MAJOR number, starting with MINOR."
+  (mknod base 'block-special #o644 (device-number major minor))
+  (let loop ((i 1))
+    (when (< i 6)
+      (mknod (string-append base (number->string i))
+             'block-special #o644 (device-number major (+ minor i)))
+      (loop (+ i 1)))))
+
 (define* (make-essential-device-nodes #:key (root "/"))
   "Make essential device nodes under ROOT/dev."
   ;; The hand-made udev!
@@ -103,14 +275,17 @@ Return the value associated with OPTION, or #f on failure."
     (mkdir (scope "dev")))
 
   ;; Make the device nodes for SCSI disks.
-  (mknod (scope "dev/sda") 'block-special #o644 (device-number 8 0))
-  (mknod (scope "dev/sda1") 'block-special #o644 (device-number 8 1))
-  (mknod (scope "dev/sda2") 'block-special #o644 (device-number 8 2))
+  (make-disk-device-nodes (scope "dev/sda") 8)
+  (make-disk-device-nodes (scope "dev/sdb") 8 16)
+  (make-disk-device-nodes (scope "dev/sdc") 8 32)
+  (make-disk-device-nodes (scope "dev/sdd") 8 48)
+
+  ;; SCSI CD-ROM devices (aka. "/dev/sr0" etc.).
+  (mknod (scope "dev/scd0") 'block-special #o644 (device-number 11 0))
+  (mknod (scope "dev/scd1") 'block-special #o644 (device-number 11 1))
 
   ;; The virtio (para-virtualized) block devices, as supported by QEMU/KVM.
-  (mknod (scope "dev/vda") 'block-special #o644 (device-number 252 0))
-  (mknod (scope "dev/vda1") 'block-special #o644 (device-number 252 1))
-  (mknod (scope "dev/vda2") 'block-special #o644 (device-number 252 2))
+  (make-disk-device-nodes (scope "dev/vda") 252)
 
   ;; Memory (used by Xorg's VESA driver.)
   (mknod (scope "dev/mem") 'char-special #o640 (device-number 1 1))
@@ -122,6 +297,12 @@ Return the value associated with OPTION, or #f on failure."
   (mknod (scope "dev/input/mice") 'char-special #o640 (device-number 13 63))
   (mknod (scope "dev/input/mouse0") 'char-special #o640 (device-number 13 32))
   (mknod (scope "dev/input/event0") 'char-special #o640 (device-number 13 64))
+
+  ;; System console.  This node is magically created by the kernel on the
+  ;; initrd's root, so don't try to create it in that case.
+  (unless (string=? root "/")
+    (mknod (scope "dev/console") 'char-special #o600
+           (device-number 5 1)))
 
   ;; TTYs.
   (mknod (scope "dev/tty") 'char-special #o600
@@ -305,7 +486,7 @@ UNIONFS."
   "Mount the file system described by SPEC under ROOT.  SPEC must have the
 form:
 
-  (DEVICE MOUNT-POINT TYPE (FLAGS ...) OPTIONS CHECK?)
+  (DEVICE TITLE MOUNT-POINT TYPE (FLAGS ...) OPTIONS CHECK?)
 
 DEVICE, MOUNT-POINT, and TYPE must be strings; OPTIONS can be a string or #f;
 FLAGS must be a list of symbols.  CHECK? is a Boolean indicating whether to
@@ -320,8 +501,9 @@ run a file system check."
       0)))
 
   (match spec
-    ((source mount-point type (flags ...) options check?)
-     (let ((mount-point (string-append root "/" mount-point)))
+    ((source title mount-point type (flags ...) options check?)
+     (let ((source      (canonicalize-device-spec source title))
+           (mount-point (string-append root "/" mount-point)))
        (when check?
          (check-file-system source type))
        (mkdir-p mount-point)
@@ -381,6 +563,7 @@ bailing out.~%root contents: ~s~%" (scandir "/"))
 
       (close-port console))))
 
+
 (define* (boot-system #:key
                       (linux-modules '())
                       qemu-guest-networking?
@@ -414,12 +597,12 @@ to it are lost."
 
   (define root-mount-point?
     (match-lambda
-     ((device "/" _ ...) #t)
+     ((device _ "/" _ ...) #t)
      (_ #f)))
 
   (define root-fs-type
     (or (any (match-lambda
-              ((device "/" type _ ...) type)
+              ((device _ "/" type _ ...) type)
               (_ #f))
              mounts)
         "ext4"))
@@ -451,7 +634,8 @@ to it are lost."
     (unless (file-exists? "/root")
       (mkdir "/root"))
     (if root
-        (mount-root-file-system root root-fs-type
+        (mount-root-file-system (canonicalize-device-spec root)
+                                root-fs-type
                                 #:volatile-root? volatile-root?)
         (mount "none" "/root" "tmpfs"))
 

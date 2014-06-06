@@ -253,7 +253,8 @@ plotting engine by third-party applications like Octave.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://www.hdfgroup.org/ftp/HDF5/current/src/hdf5-"
+      (uri (string-append "http://www.hdfgroup.org/ftp/HDF5/releases/hdf5-"
+                          version "/src/hdf5-"
                           version ".tar.bz2"))
       (sha256
        (base32 "0f9n0v3p3lwc7564791a39c6cn1d3dbrn7d1j3ikqsi27a8hy23d"))))

@@ -62,15 +62,14 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cyrus-sasl.scm			\
   gnu/packages/dc.scm				\
   gnu/packages/dejagnu.scm			\
-  gnu/packages/ddrescue.scm			\
   gnu/packages/dictionaries.scm			\
+  gnu/packages/disk.scm				\
   gnu/packages/docbook.scm			\
   gnu/packages/doxygen.scm			\
   gnu/packages/dwm.scm				\
   gnu/packages/ed.scm				\
   gnu/packages/elf.scm				\
   gnu/packages/emacs.scm			\
-  gnu/packages/fdisk.scm			\
   gnu/packages/file.scm				\
   gnu/packages/flex.scm				\
   gnu/packages/fltk.scm				\
@@ -177,7 +176,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/openssl.scm			\
   gnu/packages/package-management.scm		\
   gnu/packages/parallel.scm			\
-  gnu/packages/parted.scm			\
   gnu/packages/patchutils.scm			\
   gnu/packages/pciutils.scm			\
   gnu/packages/pcre.scm				\
@@ -256,6 +254,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/system.scm				\
   gnu/system/file-systems.scm			\
   gnu/system/grub.scm				\
+  gnu/system/install.scm			\
   gnu/system/linux.scm				\
   gnu/system/linux-initrd.scm			\
   gnu/system/shadow.scm				\
@@ -279,6 +278,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/coreutils-dummy-man.patch		\
   gnu/packages/patches/coreutils-skip-nohup.patch		\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
+  gnu/packages/patches/cssc-gets-undeclared.patch               \
+  gnu/packages/patches/cssc-missing-include.patch               \
   gnu/packages/patches/curl-fix-test172.patch			\
   gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
@@ -311,7 +312,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-relocatable.patch			\
   gnu/packages/patches/guix-test-networking.patch		\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \
-  gnu/packages/patches/gtkglext-remove-pangox-dependency.patch  \
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/inkscape-stray-comma.patch               \
   gnu/packages/patches/libevent-dns-tests.patch			\
@@ -331,8 +331,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/mhash-keygen-test-segfault.patch		\
   gnu/packages/patches/mit-krb5-init-fix.patch			\
   gnu/packages/patches/mpc123-initialize-ao.patch		\
-  gnu/packages/patches/openssl-CVE-2010-5298.patch		\
-  gnu/packages/patches/openssl-extension-checking-fixes.patch	\
+  gnu/packages/patches/module-init-tools-moduledir.patch	\
   gnu/packages/patches/patchelf-page-size.patch			\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
@@ -359,6 +358,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/superlu-dist-scotchmetis.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
+  gnu/packages/patches/util-linux-perl.patch			\
   gnu/packages/patches/valgrind-glibc.patch			\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\

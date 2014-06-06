@@ -55,6 +55,7 @@
              (gnu packages make-bootstrap)
              (gnu system)
              (gnu system vm)
+             (gnu system install)
              (srfi srfi-1)
              (srfi srfi-26)
              (ice-9 match))
@@ -114,6 +115,12 @@ SYSTEM."
   '("mips64el-linux-gnu"
     "mips64el-linux-gnuabi64"))
 
+(define (demo-os)
+  "Return the \"demo\" 'operating-system' structure."
+  (let* ((dir  (dirname (assoc-ref (current-source-location) 'filename)))
+         (file (string-append dir "/demo-os.scm")))
+    (read-operating-system file)))
+
 (define (qemu-jobs store system)
   "Return a list of jobs that build QEMU images for SYSTEM."
   (define (->alist drv)
@@ -130,24 +137,28 @@ system.")
                                (string->symbol system))))
       `(,name . ,(cut ->alist drv))))
 
-  (if (string=? system "x86_64-linux")
-      (let* ((dir  (dirname (assoc-ref (current-source-location) 'filename)))
-             (file (string-append dir "/demo-os.scm"))
-             (os   (read-operating-system file))
-             (size (* 1400 (expt 2 20))))         ; 1.4GiB
-        (if (operating-system? os)
-            (list (->job 'qemu-image
-                         (run-with-store store
-                           (system-qemu-image os
-                                              #:disk-image-size size))))
-            '()))
+  (define MiB
+    (expt 2 20))
+
+  (if (member system '("x86_64-linux" "i686-linux"))
+      (list (->job 'qemu-image
+                   (run-with-store store
+                     (system-qemu-image (demo-os)
+                                        #:disk-image-size
+                                        (* 1400 MiB)))) ; 1.4 GiB
+            (->job 'usb-image
+                   (run-with-store store
+                     (system-disk-image installation-os
+                                        #:disk-image-size
+                                        (* 630 MiB)))))
       '()))
 
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
   (define systems
     ;; Systems we want to build for.
-    '("x86_64-linux" "i686-linux"))
+    '("x86_64-linux" "i686-linux"
+      "mips64el-linux"))
 
   (define subset
     (match (assoc-ref arguments 'subset)
@@ -165,12 +176,22 @@ system.")
       (and (string-prefix? "i686-" system)
            (string-suffix? "64" target)))
 
+    (define (same? target)
+      ;; Return true if SYSTEM and TARGET are the same thing.  This is so we
+      ;; don't try to cross-compile to 'mips64el-linux-gnu' from
+      ;; 'mips64el-linux'.
+      (string-contains target system))
+
+    (define (either proc1 proc2)
+      (lambda (x)
+        (or (proc1 x) (proc2 x))))
+
     (append-map (lambda (target)
                   (map (lambda (package)
                          (package-cross-job store (job-name package)
                                             package target system))
                        %packages-to-cross-build))
-                (remove from-32-to-64? %cross-targets)))
+                (remove (either from-32-to-64? same?) %cross-targets)))
 
   ;; Return one job for each package, except bootstrap packages.
   (let ((base-packages (delete-duplicates

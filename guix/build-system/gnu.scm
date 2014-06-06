@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -265,7 +265,8 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
                     (system (%current-system))
                     (implicit-inputs? #t)    ; useful when bootstrapping
                     (imported-modules %default-modules)
-                    (modules %default-modules))
+                    (modules %default-modules)
+                    allowed-references)
   "Return a derivation called NAME that builds from tarball SOURCE, with
 input derivation INPUTS, using the usual procedure of the GNU Build
 System.  The builder is run with GUILE, or with the distro's final Guile
@@ -276,7 +277,10 @@ specifies modules not provided by Guile itself that must be imported in
 the builder's environment, from the host.  Note that we distinguish
 between both, because for Guile's own modules like (ice-9 foo), we want
 to use GUILE's own version of it, rather than import the user's one,
-which could lead to gratuitous input divergence."
+which could lead to gratuitous input divergence.
+
+ALLOWED-REFERENCES can be either #f, or a list of packages that the outputs
+are allowed to refer to."
   (define implicit-inputs
     (and implicit-inputs?
          (parameterize ((%store store))
@@ -286,6 +290,16 @@ which could lead to gratuitous input divergence."
     (if implicit-inputs?
         (standard-search-paths)
         '()))
+
+  (define canonicalize-reference
+    (match-lambda
+     ((? package? p)
+      (derivation->output-path (package-derivation store p system)))
+     (((? package? p) output)
+      (derivation->output-path (package-derivation store p system)
+                               output))
+     ((? string? output)
+      output)))
 
   (define builder
     `(begin
@@ -337,6 +351,10 @@ which could lead to gratuitous input divergence."
                                               outputs
                                               (delete "debug" outputs))
                                 #:modules imported-modules
+                                #:allowed-references
+                                (and allowed-references
+                                     (map canonicalize-reference
+                                          allowed-references))
                                 #:guile-for-build guile-for-build))
 
 
@@ -403,7 +421,8 @@ inputs."
                           (imported-modules '((guix build gnu-build-system)
                                               (guix build utils)))
                           (modules '((guix build gnu-build-system)
-                                     (guix build utils))))
+                                     (guix build utils)))
+                          allowed-references)
   "Cross-build NAME for TARGET, where TARGET is a GNU triplet.  INPUTS are
 cross-built inputs, and NATIVE-INPUTS are inputs that run on the build
 platform."
@@ -427,6 +446,16 @@ platform."
     (if implicit-inputs?
         (standard-cross-search-paths target 'target)
         '()))
+
+  (define canonicalize-reference
+    (match-lambda
+     ((? package? p)
+      (derivation->output-path (package-cross-derivation store p system)))
+     (((? package? p) output)
+      (derivation->output-path (package-cross-derivation store p system)
+                               output))
+     ((? string? output)
+      output)))
 
   (define builder
     `(begin
@@ -512,6 +541,10 @@ platform."
                                               outputs
                                               (delete "debug" outputs))
                                 #:modules imported-modules
+                                #:allowed-references
+                                (and allowed-references
+                                     (map canonicalize-reference
+                                          allowed-references))
                                 #:guile-for-build guile-for-build))
 
 (define gnu-build-system

@@ -44,7 +44,8 @@
   #:use-module (gnu packages emacs)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages swig)
-  #:use-module (gnu packages tcl))
+  #:use-module (gnu packages tcl)
+  #:use-module (gnu packages))
 
 (define-public bazaar
   (package
@@ -435,3 +436,46 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
 insertions, deletions, and modifications per-file.  It is useful for reviewing
 large, complex patch files.")
     (license (x11-style "file://COPYING"))))
+
+
+(define-public cssc
+  (package
+    (name "cssc")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/" name "/CSSC-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0bkw6fjh20ppvn54smv05461lm1vcwvn02avx941c4acafmkl1cm"))
+              (patches (list (search-patch "cssc-gets-undeclared.patch")
+                             (search-patch "cssc-missing-include.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (alist-cons-before
+                 'check 'precheck
+                 (lambda _
+                   (begin
+                     (substitute* "tests/common/test-common"
+                       (("/bin/pwd") (which "pwd")))
+
+                     (substitute* "tests/prt/all-512.sh"
+                       (("/bin/sh") (which "sh")))
+
+                     ;; XXX: This test has no hope of passing until there is a "nogroup"
+                     ;; entry (or at least some group to which the guix builder does
+                     ;; not belong) in the /etc/group file of the build environment.
+                     ;; Currently we do not have such a group.  Disable this test for now.
+                     (substitute* "tests/Makefile"
+                       (("test-delta ") ""))))
+                 %standard-phases)))
+    ;; These are needed for the tests
+    (native-inputs `(("git" ,git)
+                     ("cvs" ,cvs)))
+    (home-page "http://www.gnu.org/software/cssc/")
+    (synopsis "File-based version control like SCCS")
+    (description  "GNU CSSC provides a replacement for the legacy Unix source
+code control system SCCS.  This allows old code still under that system to be
+accessed and migrated on modern systems.")
+    (license gpl3+)))

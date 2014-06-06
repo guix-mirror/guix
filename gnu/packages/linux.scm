@@ -34,6 +34,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages gettext)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages xml)
@@ -132,7 +133,9 @@
                    version ".tar.bz2"))
              (sha256
               (base32
-               "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))))
+               "0jxnz9ahfic79rp93l5wxcbgh4pkv85mwnjlbv1gz3jawv5cvwp1"))
+             (patches
+              (list (search-patch "module-init-tools-moduledir.patch")))))
     (build-system gnu-build-system)
     (arguments
      ;; FIXME: The upstream tarball lacks man pages, and building them would
@@ -181,7 +184,8 @@
                                                 "CONFIG_VIRTIO_MMIO=m\n"
                                                 "CONFIG_FUSE_FS=m\n"
                                                 "CONFIG_CIFS=m\n"
-                                                "CONFIG_9P_FS=m\n")
+                                                "CONFIG_9P_FS=m\n"
+                                                "CONFIG_E1000E=m\n")
                                  port)
                         (close-port port))
 
@@ -316,15 +320,15 @@ providing the system administrator with some help in common tasks.")
   (package
     (name "util-linux")
     (version "2.21")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://kernel.org/linux/utils/"
-                          name "/v" version "/"
-                          name "-" version ".2" ".tar.xz"))
-      (sha256
-       (base32
-        "1rpgghf7n0zx0cdy8hibr41wvkm2qp1yvd8ab1rxr193l1jmgcir"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://kernel.org/linux/utils/"
+                                  name "/v" version "/"
+                                  name "-" version ".2" ".tar.xz"))
+              (sha256
+               (base32
+                "1rpgghf7n0zx0cdy8hibr41wvkm2qp1yvd8ab1rxr193l1jmgcir"))
+              (patches (list (search-patch "util-linux-perl.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-use-tty-group"
@@ -961,7 +965,15 @@ processes currently causing I/O.")
                                     "/bin/" maybe-u "mount")))
                   (substitute* '("util/mount.fuse.c")
                     (("/bin/sh")
-                     (which "sh"))))
+                     (which "sh")))
+
+                  ;; This hack leads libfuse to search for 'fusermount' in
+                  ;; $PATH, where it may find a setuid-root binary, instead of
+                  ;; trying solely $out/sbin/fusermount and failing because
+                  ;; it's not setuid.
+                  (substitute* "lib/Makefile"
+                    (("-DFUSERMOUNT_DIR=[[:graph:]]+")
+                     "-DFUSERMOUNT_DIR=\\\"/var/empty\\\"")))
                 %standard-phases)))
     (home-page "http://fuse.sourceforge.net/")
     (synopsis "Support file systems implemented in user space")
@@ -1032,6 +1044,32 @@ UnionFS-FUSE additionally supports copy-on-write.")
      '(#:tests? #f
        #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")))
     (inputs `(("fuse" ,fuse-static)))))
+
+(define-public sshfs-fuse
+  (package
+    (name "sshfs-fuse")
+    (version "2.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/fuse/sshfs-fuse-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0gp6qr33l2p0964j0kds0dfmvyyf5lpgsn11daf0n5fhwm9185z9"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("fuse" ,fuse)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (home-page "http://fuse.sourceforge.net/sshfs.html")
+    (synopsis "Mount remote file systems over SSH")
+    (description
+     "This is a file system client based on the SSH File Transfer Protocol.
+Since most SSH servers already support this protocol it is very easy to set
+up: on the server side there's nothing to do; on the client side mounting the
+file system is as easy as logging into the server with an SSH client.")
+    (license gpl2+)))
 
 (define-public numactl
   (package

@@ -1,17 +1,17 @@
 # Esperanto messages for GNU Guix
-# Copyright (C) 2013 Free Software Foundation, Inc.
+# Copyright (C) 2013, 2014 Free Software Foundation, Inc.
 # This file is distributed under the same license as the guix package.
-# Felipe Castro <fefcas@gmail.com>, 2013.
+# Felipe Castro <fefcas@gmail.com>, 2013, 2014.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: guix 0.5-pre2\n"
+"Project-Id-Version: guix 0.6-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
-"POT-Creation-Date: 2014-04-09 14:58+0200\n"
-"PO-Revision-Date: 2013-12-04 08:13-0300\n"
+"POT-Creation-Date: 2014-04-05 12:37+0200\n"
+"PO-Revision-Date: 2014-06-03 09:35-0300\n"
 "Last-Translator: Felipe Castro <fefcas@gmail.com>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
-"Language: eo\n"
+"Language: Esperanto\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -29,13 +29,11 @@ msgstr "Saluton, mondo GNU: ekzemplo de pako GNU"
 #: gnu/packages/base.scm:65
 msgid ""
 "GNU Hello prints the message \"Hello, world!\" and then exits.  It\n"
-"serves as an example of standard GNU coding practices.  As such, it "
-"supports\n"
+"serves as an example of standard GNU coding practices.  As such, it supports\n"
 "command-line arguments, multiple languages, and so on."
 msgstr ""
 "GNU Hello montras la mesaĝon \"Hello, world!\" kaj finiĝas.  Ĝi\n"
-"funkcias kiel ekzemplo de norma kodumada tradicio de GNU.  Tiel, ĝi "
-"subtenas\n"
+"funkcias kiel ekzemplo de norma kodumada tradicio de GNU.  Tiel, ĝi subtenas\n"
 "komand-liniajn argumentojn, plurajn lingvojn, kaj tiel plu."
 
 #: gnu/packages/base.scm:83
@@ -52,6 +50,13 @@ msgid ""
 "numbers.  GNU grep offers many extensions over the standard utility,\n"
 "including, for example, recursive directory searching."
 msgstr ""
+"grep estas ilo por trovi tekstojn interne de dosieroj.  Teksto estas trovita\n"
+"per kongruo al ŝablono indikita de la uzanto en unu aŭ pluraj dosieroj.\n"
+"La ŝablono povas esti indikata kiel bazan aŭ etenditan regul-esprimon, aŭ\n"
+"kiel fiksajn ĉenojn.  Apriore, la kongruita teksto estas simple montrata\n"
+"en la ekrano, tamen la eligo povas esti ege personigita por inkluzivigi,\n"
+"ekzemple, lini-numerojn.  GNU grep oferaj multajn kromaĵojn kompare al la\n"
+"originala aplikaĵo, inkluzive, ekzemple, rikuran serĉadon en dosierujoj."
 
 #: gnu/packages/base.scm:107
 msgid "Stream editor"
@@ -60,10 +65,8 @@ msgstr "Flu-redaktilo"
 #: gnu/packages/base.scm:122
 msgid ""
 "Sed is a non-interactive, text stream editor.  It receives a text\n"
-"input from a file or from standard input and it then applies a series of "
-"text\n"
-"editing commands to the stream and prints its output to standard output.  "
-"It\n"
+"input from a file or from standard input and it then applies a series of text\n"
+"editing commands to the stream and prints its output to standard output.  It\n"
 "is often used for substituting text patterns in a stream.  The GNU\n"
 "implementation offers several extensions over the standard utility."
 msgstr ""
@@ -89,8 +92,7 @@ msgstr "Apliki malsamojn al originaloj, kun nedevigaj savkopioj"
 #: gnu/packages/base.scm:173
 msgid ""
 "Patch is a program that applies changes to files based on differences\n"
-"laid out as by the program \"diff\".  The changes may be applied to one or "
-"more\n"
+"laid out as by the program \"diff\".  The changes may be applied to one or more\n"
 "files depending on the contents of the diff file.  It accepts several\n"
 "different diff formats.  It may also be used to revert previously applied\n"
 "differences."
@@ -103,10 +105,8 @@ msgstr "Komparo kaj kunmikso de dosieroj"
 #: gnu/packages/base.scm:195
 msgid ""
 "GNU Diffutils is a package containing tools for finding the\n"
-"differences between files.  The \"diff\" command is used to show how two "
-"files\n"
-"differ, while \"cmp\" shows the offsets and line numbers where they "
-"differ. \n"
+"differences between files.  The \"diff\" command is used to show how two files\n"
+"differ, while \"cmp\" shows the offsets and line numbers where they differ. \n"
 "\"diff3\" allows you to compare three files.  Finally, \"sdiff\" offers an\n"
 "interactive means to merge two files."
 msgstr ""
@@ -119,12 +119,9 @@ msgstr "Operacio sur dosieroj kongruantaj al indikia kriterio"
 msgid ""
 "Findutils supplies the basic file directory searching utilities of the\n"
 "GNU system.  It consists of two primary searching utilities: \"find\"\n"
-"recursively searches for files in a directory according to given criteria "
-"and\n"
-"\"locate\" lists files in a database that match a query.  Two auxiliary "
-"tools\n"
-"are included: \"updatedb\" updates the file name database and \"xargs\" may "
-"be\n"
+"recursively searches for files in a directory according to given criteria and\n"
+"\"locate\" lists files in a database that match a query.  Two auxiliary tools\n"
+"are included: \"updatedb\" updates the file name database and \"xargs\" may be\n"
 "used to apply commands with arbitrarily long arguments."
 msgstr ""
 
@@ -136,8 +133,7 @@ msgstr "Nukleaj utilaĵoj GNU (file, text, shell)"
 msgid ""
 "GNU Coreutils includes all of the basic command-line tools that are\n"
 "expected in a POSIX system.  These provide the basic file, shell and text\n"
-"manipulation functions of the GNU system.  Most of these tools offer "
-"extended\n"
+"manipulation functions of the GNU system.  Most of these tools offer extended\n"
 "functionality beyond that which is outlined in the POSIX standard."
 msgstr ""
 
@@ -149,8 +145,7 @@ msgstr "Reprocezi dosierojn aŭtomate"
 msgid ""
 "Make is a program that is used to control the production of\n"
 "executables or other files from their source files.  The process is\n"
-"controlled from a Makefile, in which the developer specifies how each file "
-"is\n"
+"controlled from a Makefile, in which the developer specifies how each file is\n"
 "generated from its source.  It has powerful dependency resolution and the\n"
 "ability to determine when files have to be regenerated after their sources\n"
 "change.  GNU make offers many powerful extensions over the standard utility."
@@ -163,11 +158,9 @@ msgstr "Duumaj utilaĵoj: bfd gas gprof ld"
 #: gnu/packages/base.scm:359
 msgid ""
 "GNU Binutils is a collection of tools for working with binary files.\n"
-"Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler. "
-"Other\n"
+"Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler. Other\n"
 "tools include programs to display binary profiling information, list the\n"
-"strings in a binary file, and utilities for working with archives.  The \"bfd"
-"\"\n"
+"strings in a binary file, and utilities for working with archives.  The \"bfd\"\n"
 "library for working with executable and object formats is also included."
 msgstr ""
 
@@ -178,12 +171,10 @@ msgstr "La Biblioteko GNU C"
 #: gnu/packages/base.scm:502
 msgid ""
 "Any Unix-like operating system needs a C library: the library which\n"
-"defines the \"system calls\" and other basic facilities such as open, "
-"malloc,\n"
+"defines the \"system calls\" and other basic facilities such as open, malloc,\n"
 "printf, exit...\n"
 "\n"
-"The GNU C library is used as the C library in the GNU system and most "
-"systems\n"
+"The GNU C library is used as the C library in the GNU system and most systems\n"
 "with the Linux kernel."
 msgstr ""
 
@@ -196,8 +187,7 @@ msgid ""
 "The Time Zone Database (often called tz or zoneinfo)\n"
 "contains code and data that represent the history of local time for many\n"
 "representative locations around the globe. It is updated periodically to\n"
-"reflect changes made by political bodies to time zone boundaries, UTC "
-"offsets,\n"
+"reflect changes made by political bodies to time zone boundaries, UTC offsets,\n"
 "and daylight-saving rules."
 msgstr ""
 
@@ -212,20 +202,8 @@ msgstr "La ligila ĉirkaŭanto"
 #: gnu/packages/base.scm:1057
 msgid ""
 "The linker wrapper (or `ld-wrapper') wraps the linker to add any\n"
-"missing `-rpath' flags, and to detect any misuse of libraries outside of "
-"the\n"
+"missing `-rpath' flags, and to detect any misuse of libraries outside of the\n"
 "store."
-msgstr ""
-
-#: gnu/packages/base.scm:1158
-msgid "Complete GCC tool chain for C/C++ development"
-msgstr ""
-
-#: gnu/packages/base.scm:1160
-msgid ""
-"This package provides a complete GCC tool chain for C/C++ development to\n"
-"be installed in user profiles.  This includes GCC, as well as libc (headers\n"
-"and binaries, plus debugging symbols in the 'debug' output), and Binutils."
 msgstr ""
 
 #: gnu/packages/guile.scm:99 gnu/packages/guile.scm:166
@@ -237,8 +215,7 @@ msgid ""
 "Guile is the GNU Ubiquitous Intelligent Language for Extensions, the\n"
 "official extension language of the GNU system.  It is an implementation of\n"
 "the Scheme language which can be easily embedded in other applications to\n"
-"provide a convenient means of extending the functionality of the "
-"application\n"
+"provide a convenient means of extending the functionality of the application\n"
 "without requiring the source code to be rewritten."
 msgstr ""
 
@@ -251,8 +228,7 @@ msgid ""
 "Guile-Reader is a simple framework for building readers for GNU Guile.\n"
 "\n"
 "The idea is to make it easy to build procedures that extend Guile’s read\n"
-"procedure. Readers supporting various syntax variants can easily be "
-"written,\n"
+"procedure. Readers supporting various syntax variants can easily be written,\n"
 "possibly by re-using existing “token readers” of a standard Scheme\n"
 "readers. For example, it is used to implement Skribilo’s R5RS-derived\n"
 "document syntax.\n"
@@ -279,8 +255,7 @@ msgstr "Lanĉi taskoj je antaŭplanitaj horoj"
 #: gnu/packages/guile.scm:289
 msgid ""
 "GNU Mcron is a complete replacement for Vixie cron.  It is used to run\n"
-"tasks on a schedule, such as every hour or every Monday.  Mcron is written "
-"in\n"
+"tasks on a schedule, such as every hour or every Monday.  Mcron is written in\n"
 "Guile, so its configuration can be written in Scheme; the original cron\n"
 "format is also supported."
 msgstr ""
@@ -299,7 +274,7 @@ msgstr ""
 
 #: gnu/packages/guile.scm:350
 msgid "JSON module for Guile"
-msgstr ""
+msgstr "Modulo JSON por Guile"
 
 #: gnu/packages/guile.scm:352
 msgid ""
@@ -317,19 +292,15 @@ msgstr "Lout, dokument-aranĝa sistemo simila al LaTeX, laŭ stilo"
 
 #: gnu/packages/lout.scm:111
 msgid ""
-"The Lout document formatting system is now reads a high-level description "
-"of\n"
-"a document similar in style to LaTeX and produces a PostScript or plain "
-"text\n"
+"The Lout document formatting system is now reads a high-level description of\n"
+"a document similar in style to LaTeX and produces a PostScript or plain text\n"
 "output file.\n"
 "\n"
 "Lout offers an unprecedented range of advanced features, including optimal\n"
 "paragraph and page breaking, automatic hyphenation, PostScript EPS file\n"
-"inclusion and generation, equation formatting, tables, diagrams, rotation "
-"and\n"
+"inclusion and generation, equation formatting, tables, diagrams, rotation and\n"
 "scaling, sorted indexes, bibliographic databases, running headers and\n"
-"odd-even pages, automatic cross referencing, multilingual documents "
-"including\n"
+"odd-even pages, automatic cross referencing, multilingual documents including\n"
 "hyphenation (most European languages are supported), formatting of computer\n"
 "programs, and much more, all ready to use.  Furthermore, Lout is easily\n"
 "extended with definitions which are very much easier to write than troff of\n"
@@ -345,11 +316,9 @@ msgstr "Manipuli simplajn tekst-dosierojn kiel datumbazojn"
 #: gnu/packages/recutils.scm:60
 msgid ""
 "GNU Recutils is a set of tools and libraries for creating and\n"
-"manipulating text-based, human-editable databases.  Despite being text-"
-"based,\n"
+"manipulating text-based, human-editable databases.  Despite being text-based,\n"
 "databases created with Recutils carry all of the expected features such as\n"
-"unique fields, primary keys, time stamps and more. Many different field "
-"types\n"
+"unique fields, primary keys, time stamps and more. Many different field types\n"
 "are supported, as is encryption."
 msgstr ""
 
@@ -400,8 +369,7 @@ msgid ""
 "      --fallback         fall back to building when the substituter fails"
 msgstr ""
 "\n"
-"      --fallback         retropaŝi al konstruado kiam la anstataŭiganto "
-"fiaskas"
+"      --fallback         retropaŝi al konstruado kiam la anstataŭiganto fiaskas"
 
 #: guix/scripts/build.scm:128
 msgid ""
@@ -409,14 +377,15 @@ msgid ""
 "      --no-substitutes   build instead of resorting to pre-built substitutes"
 msgstr ""
 "\n"
-"      --no-substitutes   konstrui anstataŭ provi jam-konstruitajn "
-"anstataŭigantojn"
+"      --no-substitutes   konstrui anstataŭ provi jam-konstruitajn anstataŭigantojn"
 
 #: guix/scripts/build.scm:130
 msgid ""
 "\n"
 "      --no-build-hook    do not attempt to offload builds via the build hook"
 msgstr ""
+"\n"
+"      --no-build-hook    ne provi disŝarĝi konstruojn per la konstru-hoko"
 
 #: guix/scripts/build.scm:132
 msgid ""
@@ -426,19 +395,15 @@ msgid ""
 msgstr ""
 "\n"
 "      --max-silent-time=SEKUNDOJ\n"
-"                         marki la konstruo kiel fiaskinta post SEKUNDOJ da "
-"silento"
+"                         marki la konstruon kiel fiaskintan post SEKUNDOJ da silento"
 
 #: guix/scripts/build.scm:135
-#, fuzzy
 msgid ""
 "\n"
 "      --timeout=SECONDS  mark the build as failed after SECONDS of activity"
 msgstr ""
 "\n"
-"      --max-silent-time=SEKUNDOJ\n"
-"                         marki la konstruo kiel fiaskinta post SEKUNDOJ da "
-"silento"
+"      --timeout=SEKUNDOJ marki la konstruon kiel fiaskintan post SEKUNDOJ da aktivado"
 
 #: guix/scripts/build.scm:137
 msgid ""
@@ -499,7 +464,7 @@ msgid ""
 "      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""
 msgstr ""
 "\n"
-"      --target=TRIOPO   cruc-konstrui por TRIOPO--ekz., \"armel-linux-gnu\""
+"      --target=TRIOPO    cruc-konstrui por TRIOPO--ekz., \"armel-linux-gnu\""
 
 #: guix/scripts/build.scm:230
 msgid ""
@@ -507,6 +472,9 @@ msgid ""
 "      --with-source=SOURCE\n"
 "                         use SOURCE when building the corresponding package"
 msgstr ""
+"\n"
+"      --with-source=FONTO\n"
+"                         uzi FONTOn dum konstruo de la koresponda pako"
 
 #: guix/scripts/build.scm:233
 msgid ""
@@ -523,8 +491,7 @@ msgid ""
 "                         as a garbage collector root"
 msgstr ""
 "\n"
-"  -r, --root=DOSIERO     igi DOSIEROn simbola ligo al la rezulto, kaj "
-"registri\n"
+"  -r, --root=DOSIERO     igi DOSIEROn simbola ligo al la rezulto, kaj registri\n"
 "                         ĝin kiel radikon de rubaĵ-kolektanto"
 
 #: guix/scripts/build.scm:238
@@ -533,13 +500,12 @@ msgid ""
 "      --log-file         return the log file names for the given derivations"
 msgstr ""
 "\n"
-"      --log-file         liveri la protokol-dosierajn nomojn por la "
-"indikitaj derivaĵoj"
+"      --log-file         liveri la protokol-dosierajn nomojn por la indikitaj derivaĵoj"
 
 #: guix/scripts/build.scm:243 guix/scripts/download.scm:53
 #: guix/scripts/package.scm:511 guix/scripts/gc.scm:58
 #: guix/scripts/hash.scm:55 guix/scripts/pull.scm:82
-#: guix/scripts/substitute-binary.scm:564 guix/scripts/system.scm:81
+#: guix/scripts/substitute-binary.scm:564 guix/scripts/system.scm:77
 msgid ""
 "\n"
 "  -h, --help             display this help and exit"
@@ -550,7 +516,7 @@ msgstr ""
 #: guix/scripts/build.scm:245 guix/scripts/download.scm:55
 #: guix/scripts/package.scm:513 guix/scripts/gc.scm:60
 #: guix/scripts/hash.scm:57 guix/scripts/pull.scm:84
-#: guix/scripts/substitute-binary.scm:566 guix/scripts/system.scm:83
+#: guix/scripts/substitute-binary.scm:566 guix/scripts/system.scm:79
 msgid ""
 "\n"
 "  -V, --version          display version information and exit"
@@ -561,11 +527,11 @@ msgstr ""
 #: guix/scripts/build.scm:360
 #, scheme-format
 msgid "sources do not match any package:~{ ~a~}~%"
-msgstr ""
+msgstr "fontoj ne kongruas al iu ajn pako:~{ ~a~}~%"
 
 #: guix/scripts/build.scm:389 guix/scripts/download.scm:96
-#: guix/scripts/package.scm:744 guix/scripts/gc.scm:122
-#: guix/scripts/pull.scm:115 guix/scripts/system.scm:125
+#: guix/scripts/package.scm:744 guix/scripts/gc.scm:152
+#: guix/scripts/pull.scm:115 guix/scripts/system.scm:116
 #, scheme-format
 msgid "~A: unrecognized option~%"
 msgstr "~A: nerekonata modifilo~%"
@@ -720,8 +686,7 @@ msgid ""
 "  -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"
 msgstr ""
 "\n"
-"  -u, --upgrade[=REGESP] ĝisdatigi ĉiujn instalitajn pakojn kongruantajn al "
-"REGESP"
+"  -u, --upgrade[=REGESP] ĝisdatigi ĉiujn instalitajn pakojn kongruantajn al REGESP"
 
 #: guix/scripts/package.scm:482
 msgid ""
@@ -765,8 +730,7 @@ msgid ""
 "  -p, --profile=PROFILE  use PROFILE instead of the user's default profile"
 msgstr ""
 "\n"
-"  -p, --profile=PROFILO  uzi PROFILOn anstataŭ la apriora profilo de la "
-"uzanto"
+"  -p, --profile=PROFILO  uzi PROFILOn anstataŭ la apriora profilo de la uzanto"
 
 #: guix/scripts/package.scm:495
 msgid ""
@@ -938,13 +902,22 @@ msgstr ""
 "\n"
 "      --referrers        listigi la referencantojn de VOJOJ"
 
-#: guix/scripts/gc.scm:84
+#: guix/scripts/gc.scm:92
+#, scheme-format
+msgid "unknown unit: ~a~%"
+msgstr "nekonata unuo: ~a~%"
+
+#: guix/scripts/gc.scm:93
+#, scheme-format
+msgid "invalid number: ~a~%"
+msgstr "malvalida numero: ~a~%"
+
+#: guix/scripts/gc.scm:114
 #, scheme-format
 msgid "invalid amount of storage: ~a~%"
-msgstr "nevalida kvanto da konserv-spaco: ~a~%"
+msgstr "malvalida kvanto da konserv-spaco: ~a~%"
 
 #: guix/scripts/hash.scm:45
-#, fuzzy
 msgid ""
 "Usage: guix hash [OPTION] FILE\n"
 "Return the cryptographic hash of FILE.\n"
@@ -953,23 +926,25 @@ msgid ""
 "and 'hexadecimal' can be used as well).\n"
 msgstr ""
 "Uzmaniero: guix hash [MODIFILO] DOSIERO\n"
-"Retroiri al la ĉifra haketo de DOSIERO.\n"
+"Liveras la ĉifran haketon de DOSIERO.\n"
 "\n"
-"Subtenataj formoj: 'nix-base32' (aprioras), 'base32', kaj 'base16'\n"
-"('hex' kaj 'hexadecimal' ankaŭ povas esti uzataj, por deksesumo).\n"
+"Subtenataj formoj: 'nix-base32' (aprioras), 'base32', kaj 'base16' ('hex'\n"
+"kaj 'hexadecimal' ankaŭ povas esti uzataj, por deksesumo).\n"
 
 #: guix/scripts/hash.scm:52
 msgid ""
 "\n"
 "  -r, --recursive        compute the hash on FILE recursively"
 msgstr ""
+"\n"
+"  -r, --recursive        komputi la haketon ĉe DOSIERO rikure"
 
 #: guix/scripts/hash.scm:103
 #, scheme-format
 msgid "unrecognized option: ~a~%"
 msgstr "nerekonata modifilo: ~a~%"
 
-#: guix/scripts/hash.scm:134 guix/ui.scm:226
+#: guix/scripts/hash.scm:134 guix/ui.scm:193
 #, scheme-format
 msgid "~a~%"
 msgstr "~a~%"
@@ -1029,12 +1004,12 @@ msgstr "Guix jam estas ĝisdata\n"
 #: guix/scripts/substitute-binary.scm:80
 #, scheme-format
 msgid "authentication and authorization of substitutes disabled!~%"
-msgstr ""
+msgstr "aŭtentikigo kaj permeso de anstataŭantoj estas malebligataj!~%"
 
 #: guix/scripts/substitute-binary.scm:163
-#, fuzzy, scheme-format
+#, scheme-format
 msgid "download from '~a' failed: ~a, ~s~%"
-msgstr "~a: elŝuto fiaskis~%"
+msgstr "elŝuto el '~a' fiaskis: ~a, ~s~%"
 
 #: guix/scripts/substitute-binary.scm:178
 #, scheme-format
@@ -1047,49 +1022,49 @@ msgid "try `--no-substitutes' if the problem persists~%"
 msgstr "provu '--no-substituse' se la problemo persistos~%"
 
 #: guix/scripts/substitute-binary.scm:244
-#, fuzzy, scheme-format
+#, scheme-format
 msgid "signature version must be a number: ~a~%"
-msgstr "subskriba kontrolo fiaskis por '~a'~%"
+msgstr "subskriba versio devas esti numero: ~a~%"
 
 #: guix/scripts/substitute-binary.scm:248
-#, fuzzy, scheme-format
+#, scheme-format
 msgid "unsupported signature version: ~a~%"
-msgstr "nesubtenata haket-formo: ~a~%"
+msgstr "nesubtenata subskriba versio: ~a~%"
 
 #: guix/scripts/substitute-binary.scm:256
-#, fuzzy, scheme-format
+#, scheme-format
 msgid "signature is not a valid s-expression: ~s~%"
-msgstr "fiasko dum lego de esprimo ~s: ~s~%"
+msgstr "subskribo ne estas valida s-esprimo: ~s~%"
 
 #: guix/scripts/substitute-binary.scm:260
-#, fuzzy, scheme-format
+#, scheme-format
 msgid "invalid format of the signature field: ~a~%"
-msgstr "nevalida kvanto da konserv-spaco: ~a~%"
+msgstr "malvalida formo de subskriba kampo: ~a~%"
 
 #: guix/scripts/substitute-binary.scm:295
-#, fuzzy, scheme-format
+#, scheme-format
 msgid "invalid signature for '~a'~%"
-msgstr "nevalida numero: ~a~%"
+msgstr "malvalida subskribo por '~a'~%"
 
 #: guix/scripts/substitute-binary.scm:297
 #, scheme-format
 msgid "hash mismatch for '~a'~%"
-msgstr ""
+msgstr "haketa malkongruo por '~a'~%"
 
 #: guix/scripts/substitute-binary.scm:299
 #, scheme-format
 msgid "'~a' is signed with an unauthorized key~%"
-msgstr ""
+msgstr "'~a' estas subskribita sen rajtigita ŝlosilo~%"
 
 #: guix/scripts/substitute-binary.scm:301
 #, scheme-format
 msgid "signature on '~a' is corrupt~%"
-msgstr ""
+msgstr "subskribo en '~a' estas difektita~%"
 
 #: guix/scripts/substitute-binary.scm:338
 #, scheme-format
 msgid "narinfo for '~a' lacks a signature~%"
-msgstr ""
+msgstr "narinfo por '~a' malhavas subskribon~%"
 
 #: guix/scripts/substitute-binary.scm:526
 #, scheme-format
@@ -1099,9 +1074,7 @@ msgstr "Ni elŝutas, bonvolu atendi...~%"
 #: guix/scripts/substitute-binary.scm:528
 #, scheme-format
 msgid "(Please consider upgrading Guile to get proper progress report.)~%"
-msgstr ""
-"(Bonvolu konsideri pri ĝisdatigo de Guile por havigi ĝustan progres-"
-"raporton.)~%"
+msgstr "(Bonvolu konsideri pri ĝisdatigo de Guile por havigi ĝustan progres-raporton.)~%"
 
 #: guix/scripts/substitute-binary.scm:545
 #, scheme-format
@@ -1135,20 +1108,17 @@ msgid ""
 msgstr ""
 "\n"
 "      --substitute KONSERV-DOSIERO CELO\n"
-"                         elŝuti KONSERV-DOSIEROn kaj konservi ĝin kiel Nar "
-"en la\n"
+"                         elŝuti KONSERV-DOSIEROn kaj konservi ĝin kiel Nar en la\n"
 "                         dosiero CELO"
 
 #: guix/scripts/substitute-binary.scm:599
-msgid ""
-"ACL for archive imports seems to be uninitialized, substitutes may be "
-"unavailable\n"
-msgstr ""
+msgid "ACL for archive imports seems to be uninitialized, substitutes may be unavailable\n"
+msgstr "ACL por importo de arĥivoj ŝajnas esti ne-ekigita, anstataŭoj eble ne disponeblos\n"
 
 #: guix/scripts/substitute-binary.scm:619
 #, scheme-format
 msgid "failed to look up host '~a' (~a), substituter disabled~%"
-msgstr ""
+msgstr "ni malsukcesis serĉi gastiganton '~a' (~a), anstataŭiganto estas malebligata~%"
 
 #: guix/scripts/substitute-binary.scm:726
 #, scheme-format
@@ -1158,22 +1128,22 @@ msgstr "~a: nerekonata modifiloj~%"
 #: guix/scripts/authenticate.scm:58
 #, scheme-format
 msgid "cannot find public key for secret key '~a'~%"
-msgstr ""
+msgstr "ne eblas trovi publikan ŝlosilon por la sekreta '~a'~%"
 
 #: guix/scripts/authenticate.scm:78
-#, fuzzy, scheme-format
+#, scheme-format
 msgid "error: invalid signature: ~a~%"
-msgstr "malvalida sintakso: ~a~%"
+msgstr "eraro: malvalida subskribo: ~a~%"
 
 #: guix/scripts/authenticate.scm:80
 #, scheme-format
 msgid "error: unauthorized public key: ~a~%"
-msgstr ""
+msgstr "eraro: nerajtigita publika ŝlosilo: ~a~%"
 
 #: guix/scripts/authenticate.scm:82
 #, scheme-format
 msgid "error: corrupt signature data: ~a~%"
-msgstr ""
+msgstr "eraro: difektita subskriba datumaro: ~a~%"
 
 #: guix/scripts/authenticate.scm:110
 msgid ""
@@ -1181,56 +1151,54 @@ msgid ""
 "Sign or verify the signature on the given file.  This tool is meant to\n"
 "be used internally by 'guix-daemon'.\n"
 msgstr ""
+"Uzmaniero: guix authenticate MODIFILO...\n"
+"Subskribi aŭ kontroli la subskribon de indikita dosiero. Tiu ĉi ilo celas\n"
+"esti interne uzata de 'guix-daemon'.\n"
 
 #: guix/scripts/authenticate.scm:116
-#, fuzzy
 msgid "wrong arguments"
-msgstr "malĝusta nombro da argumentoj~%"
+msgstr "malĝustaj argumentoj"
 
-#: guix/scripts/system.scm:60
-#, fuzzy, scheme-format
+#: guix/scripts/system.scm:59
+#, scheme-format
 msgid "failed to open operating system file '~a': ~a~%"
-msgstr "fiasko dum konekto al '~a': ~a~%"
+msgstr "fiasko dum malfermo de la operaci-sistema dosiero '~a': ~a~%"
 
-#: guix/scripts/system.scm:63
-#, fuzzy, scheme-format
+#: guix/scripts/system.scm:62
+#, scheme-format
 msgid "failed to load machine file '~a': ~s~%"
-msgstr "fiasko dum konekto al '~a': ~a~%"
+msgstr "fiasko dum ŝargo de la maŝina dosiero '~a': ~s~%"
 
-#: guix/scripts/system.scm:72
+#: guix/scripts/system.scm:71
 msgid ""
 "Usage: guix system [OPTION] ACTION FILE\n"
 "Build the operating system declared in FILE according to ACTION.\n"
 msgstr ""
+"Uzmaniero: guix system [MODIFILO] AGO DOSIERO\n"
+"Konstrui la operaci-sistemon deklarita en DOSIERO akorde al AGO.\n"
 
-#: guix/scripts/system.scm:74
+#: guix/scripts/system.scm:73
 msgid ""
-"Currently the only valid values for ACTION are 'vm', which builds\n"
-"a virtual machine of the given operating system that shares the host's "
-"store,\n"
-"and 'vm-image', which builds a virtual machine image that stands alone.\n"
+"Currently the only valid value for ACTION is 'vm', which builds\n"
+"a virtual machine of the given operating system.\n"
 msgstr ""
+"Momente la nura valida valoro por AGO estas 'vm', kio konstruas\n"
+"virtualan maŝinon por la indikita operaci-sistemo.\n"
 
-#: guix/scripts/system.scm:78
-msgid ""
-"\n"
-"      --image-size=SIZE  for 'vm-image', produce an image of SIZE"
-msgstr ""
-
-#: guix/scripts/system.scm:130
-#, fuzzy, scheme-format
+#: guix/scripts/system.scm:121
+#, scheme-format
 msgid "~a: extraneous argument~%"
-msgstr "~A: fremda argumento~%"
+msgstr "~a: fremda argumento~%"
 
-#: guix/scripts/system.scm:138
-#, fuzzy, scheme-format
+#: guix/scripts/system.scm:126
+#, scheme-format
 msgid "~a: unknown action~%"
-msgstr "~A: nekonata pako~%"
+msgstr "~a: nekonata pako~%"
 
-#: guix/scripts/system.scm:148
+#: guix/scripts/system.scm:135
 #, scheme-format
 msgid "no configuration file specified~%"
-msgstr ""
+msgstr "neniu agorda dosiero estis indikata~%"
 
 #: guix/gnu-maintenance.scm:364
 #, scheme-format
@@ -1252,28 +1220,24 @@ msgstr "~a: ne eblis trovi fontan dosieron"
 msgid "~a: ~a: no `version' field in source; skipping~%"
 msgstr "~a: ~a: neniu kampo 'version' en la fonto; ni saltas~%"
 
-#: guix/ui.scm:124
+#: guix/ui.scm:123
 #, scheme-format
 msgid "failed to install locale: ~a~%"
 msgstr "fiasko dum instalo de lokaĵaro: ~a~%"
 
-#: guix/ui.scm:143
-#, fuzzy
+#: guix/ui.scm:142
 msgid ""
 "Copyright (C) 2014 the Guix authors\n"
-"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
-"html>\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
 "This is free software: you are free to change and redistribute it.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
-"Kopirajto (C) 2013 la aŭtoroj de Guix\n"
-"Permeso GPLv3+: GNU GPL versio 3 aŭ posta <http://gnu.org/licenses/gpl."
-"html>\n"
-"Tio ĉi estas libera programaro: vi estas libera por modifi kaj redisdoni "
-"ĝin.\n"
+"Kopirajto (C) 2014 la aŭtoroj de Guix\n"
+"Permeso GPLv3+: GNU GPL versio 3 aŭ posta <http://gnu.org/licenses/gpl.html>\n"
+"Tio ĉi estas libera programaro: vi estas libera por modifi kaj redisdoni ĝin.\n"
 "Estas NENIU GARANTIO, plejamplekse permesate de leĝoj.\n"
 
-#: guix/ui.scm:151
+#: guix/ui.scm:150
 #, scheme-format
 msgid ""
 "\n"
@@ -1282,7 +1246,7 @@ msgstr ""
 "\n"
 "Raportu program-misojn al: ~a."
 
-#: guix/ui.scm:153
+#: guix/ui.scm:152
 #, scheme-format
 msgid ""
 "\n"
@@ -1291,7 +1255,7 @@ msgstr ""
 "\n"
 "hejm-paĝo de ~a: <~a>"
 
-#: guix/ui.scm:155
+#: guix/ui.scm:154
 msgid ""
 "\n"
 "General help using GNU software: <http://www.gnu.org/gethelp/>"
@@ -1299,105 +1263,95 @@ msgstr ""
 "\n"
 "Ĝenerala helpo por uzi programaron de GNU: <http://www.gnu.org/gethelp/>"
 
-#: guix/ui.scm:162
+#: guix/ui.scm:161
 #, scheme-format
 msgid "~a: invalid number~%"
-msgstr "~a: nevalida numero~%"
+msgstr "~a: malvalida numero~%"
 
-#: guix/ui.scm:179
-#, scheme-format
-msgid "invalid number: ~a~%"
-msgstr "nevalida numero: ~a~%"
-
-#: guix/ui.scm:194
-#, scheme-format
-msgid "unknown unit: ~a~%"
-msgstr "nekonata unuo: ~a~%"
-
-#: guix/ui.scm:205
+#: guix/ui.scm:172
 #, scheme-format
 msgid "~a:~a:~a: package `~a' has an invalid input: ~s~%"
 msgstr "~a:~a:~a: pako '~a' havas malvalidan enigon: ~s~%"
 
-#: guix/ui.scm:212
+#: guix/ui.scm:179
 #, scheme-format
 msgid "~a: ~a: build system `~a' does not support cross builds~%"
 msgstr "~a: ~a: konstrui sistemon '~a' ne subtenas crucajn konstruojn~%"
 
-#: guix/ui.scm:217
+#: guix/ui.scm:184
 #, scheme-format
 msgid "failed to connect to `~a': ~a~%"
 msgstr "fiasko dum konekto al '~a': ~a~%"
 
-#: guix/ui.scm:222
+#: guix/ui.scm:189
 #, scheme-format
 msgid "build failed: ~a~%"
 msgstr "konstruo fiakis: ~a~%"
 
-#: guix/ui.scm:231
-#, fuzzy, scheme-format
+#: guix/ui.scm:198
+#, scheme-format
 msgid "~a: ~a~%"
-msgstr "~a~%"
+msgstr "~a: ~a~%"
 
-#: guix/ui.scm:240
+#: guix/ui.scm:207
 #, scheme-format
 msgid "failed to read expression ~s: ~s~%"
 msgstr "fiasko dum lego de esprimo ~s: ~s~%"
 
-#: guix/ui.scm:246
+#: guix/ui.scm:213
 #, scheme-format
 msgid "failed to evaluate expression `~a': ~s~%"
 msgstr "fiasko dum analizo de esprimo '~a': ~a~%"
 
-#: guix/ui.scm:255
+#: guix/ui.scm:222
 #, scheme-format
 msgid "expression ~s does not evaluate to a package~%"
 msgstr "la esprimo ~s ne rezultas pakon~%"
 
-#: guix/ui.scm:301
+#: guix/ui.scm:268
 #, scheme-format
 msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
 msgstr "~:[La jena derivo povus esti konstruata:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:306
+#: guix/ui.scm:273
 #, scheme-format
 msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
 msgstr "~:[La jena derivo povus esti elŝutata:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:312
+#: guix/ui.scm:279
 #, scheme-format
 msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
 msgstr "~:[La jena derivo estos esti konstruata:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:317
+#: guix/ui.scm:284
 #, scheme-format
 msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
 msgstr "~:[La jena derivo estos esti elŝutata:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:334
+#: guix/ui.scm:301
 msgid "<unknown location>"
 msgstr "<nekonata loko>"
 
-#: guix/ui.scm:362
+#: guix/ui.scm:329
 #, scheme-format
 msgid "failed to create configuration directory `~a': ~a~%"
 msgstr "fiasko dum kreo de agorda dosierujo '~a': ~a~%"
 
-#: guix/ui.scm:443 guix/ui.scm:457
+#: guix/ui.scm:410 guix/ui.scm:424
 msgid "unknown"
 msgstr "nekonata"
 
-#: guix/ui.scm:566
+#: guix/ui.scm:533
 #, scheme-format
 msgid "invalid argument: ~a~%"
 msgstr "malvalida argumento: ~a~%"
 
-#: guix/ui.scm:571
+#: guix/ui.scm:538
 #, scheme-format
 msgid "Try `guix --help' for more information.~%"
 msgstr "Provu 'guix --help' por pli da informo.~%"
 
-#: guix/ui.scm:601
+#: guix/ui.scm:568
 msgid ""
 "Usage: guix COMMAND ARGS...\n"
 "Run COMMAND with ARGS.\n"
@@ -1405,21 +1359,21 @@ msgstr ""
 "Uzmaniero: guix KOMANDO ARGj...\n"
 "Lanĉas KOMANDOn kun ARGj.\n"
 
-#: guix/ui.scm:604
+#: guix/ui.scm:571
 msgid "COMMAND must be one of the sub-commands listed below:\n"
 msgstr "KOMANDO devas esti unu el la sub-komandoj sube listataj:\n"
 
-#: guix/ui.scm:624
+#: guix/ui.scm:591
 #, scheme-format
 msgid "guix: ~a: command not found~%"
 msgstr "guix: ~a: komando ne trovita~%"
 
-#: guix/ui.scm:642
+#: guix/ui.scm:609
 #, scheme-format
 msgid "guix: missing command name~%"
 msgstr "guix: mankas komanda nomo~%"
 
-#: guix/ui.scm:650
+#: guix/ui.scm:617
 #, scheme-format
 msgid "guix: unrecognized option '~a'~%"
 msgstr "guix: nerekonata modifilo: '~a'~%"
@@ -1440,88 +1394,89 @@ msgid "following redirection to `~a'...~%"
 msgstr "ni sekvas la redirektigon al '~a'...~%"
 
 #: guix/http-client.scm:229
-#, fuzzy
 msgid "download failed"
-msgstr "~a: elŝuto fiaskis~%"
+msgstr "elŝuto fiaskis"
 
-#: guix/nar.scm:134
+#: guix/nar.scm:133
 msgid "unexpected executable file marker"
-msgstr ""
+msgstr "neatendita rul-dosiera markilo"
 
-#: guix/nar.scm:141
+#: guix/nar.scm:140
 msgid "unsupported nar file type"
-msgstr ""
+msgstr "nesubtenata dosier-tipo nar"
 
-#: guix/nar.scm:209
+#: guix/nar.scm:203
 msgid "unsupported file type"
-msgstr ""
+msgstr "nesubtenata dosier-tipo"
 
-#: guix/nar.scm:219
-#, fuzzy
+#: guix/nar.scm:213
 msgid "invalid nar signature"
-msgstr "malvalida argumento: ~a~%"
+msgstr "malvalida subskribo nar"
 
-#: guix/nar.scm:230
+#: guix/nar.scm:224
 msgid "invalid nar end-of-file marker"
-msgstr ""
+msgstr "malvalida dosierfina markilo nar"
 
-#: guix/nar.scm:244
+#: guix/nar.scm:238
 msgid "invalid symlink tokens"
-msgstr ""
+msgstr "malvalidaj simbol-ligaj ĵetonoj"
 
-#: guix/nar.scm:263
+#: guix/nar.scm:257
 msgid "unexpected directory entry termination"
-msgstr ""
+msgstr "neatendita fino de dosieruja enigo"
 
-#: guix/nar.scm:272
+#: guix/nar.scm:266
 msgid "unexpected directory inter-entry marker"
-msgstr ""
+msgstr "neatendita dosieruja inter-eniga markilo"
 
-#: guix/nar.scm:277
+#: guix/nar.scm:271
 msgid "unsupported nar entry type"
-msgstr ""
+msgstr "nesubtenata enig-tipo nar"
 
-#: guix/nar.scm:387
+#: guix/nar.scm:381
 msgid "signature is not a valid s-expression"
-msgstr ""
+msgstr "subskribo ne estas valida s-esprimo"
 
-#: guix/nar.scm:396
+#: guix/nar.scm:390
 msgid "invalid signature"
-msgstr ""
+msgstr "nevalida subskribo"
 
-#: guix/nar.scm:400
+#: guix/nar.scm:394
 msgid "invalid hash"
-msgstr ""
+msgstr "nevalida haketo"
 
-#: guix/nar.scm:408
+#: guix/nar.scm:402
 msgid "unauthorized public key"
-msgstr ""
+msgstr "nerajtigita publika ŝlosilo"
 
-#: guix/nar.scm:413
+#: guix/nar.scm:407
 msgid "corrupt signature data"
-msgstr ""
+msgstr "difektita subskriba datumaro"
 
-#: guix/nar.scm:430
+#: guix/nar.scm:424
 msgid "corrupt file set archive"
-msgstr ""
+msgstr "difektita arĥivo de dosier-grupo"
 
-#: guix/nar.scm:440
-#, fuzzy, scheme-format
+#: guix/nar.scm:434
+#, scheme-format
 msgid "importing file or directory '~a'...~%"
-msgstr "ni sekvas la redirektigon al '~a'...~%"
+msgstr "ni importas dosieron aŭ dosierujon '~a'...~%"
 
-#: guix/nar.scm:449
-#, fuzzy, scheme-format
+#: guix/nar.scm:443
+#, scheme-format
 msgid "found valid signature for '~a'~%"
-msgstr "neniu konstruita protokolo por '~a'~%"
+msgstr "ni trovis validan subskribon por '~a'~%"
 
-#: guix/nar.scm:458
+#: guix/nar.scm:452
 msgid "imported file lacks a signature"
-msgstr ""
+msgstr "importita dosiero malhavas subskribon"
 
-#: guix/nar.scm:465
+#: guix/nar.scm:459
 msgid "invalid inter-file archive mark"
-msgstr ""
+msgstr "malvalida inter-dosiera arĥiva marko"
+
+#~ msgid "Guile bindings to libssh"
+#~ msgstr "Bindoj de Guile por libssh"
 
 #~ msgid "package `~a' has no source~%"
 #~ msgstr "pako '~a' havas neniun fonton~%"
@@ -1532,9 +1487,6 @@ msgstr ""
 #~ msgstr ""
 #~ "\n"
 #~ "  -n, --dry-run          montri kion estus farita sen fakte fari ĝin"
-
-#~ msgid "Guile bindings to libssh"
-#~ msgstr "Bindoj de Guile por libssh"
 
 #~ msgid "Yeah..."
 #~ msgstr "Ja..."
@@ -1550,21 +1502,15 @@ msgstr ""
 
 #~ msgid ""
 #~ "Sed (stream editor) isn't really a true text editor or text processor.\n"
-#~ "Instead, it is used to filter text, i.e., it takes text input and "
-#~ "performs\n"
-#~ "some operation (or set of operations) on it and outputs the modified "
-#~ "text.\n"
-#~ "Sed is typically used for extracting part of a file using pattern "
-#~ "matching or\n"
+#~ "Instead, it is used to filter text, i.e., it takes text input and performs\n"
+#~ "some operation (or set of operations) on it and outputs the modified text.\n"
+#~ "Sed is typically used for extracting part of a file using pattern matching or\n"
 #~ "substituting multiple occurrences of a string within a file."
 #~ msgstr ""
-#~ "Sed (flu-redaktilo) ne estas fakte vera tekst-redaktilo aŭ tekst-"
-#~ "procezilo.\n"
-#~ "Anstataŭe, ĝi estas uzata por filtri tekston, t.e., ĝi prenas tekston "
-#~ "kaj\n"
+#~ "Sed (flu-redaktilo) ne estas fakte vera tekst-redaktilo aŭ tekst-procezilo.\n"
+#~ "Anstataŭe, ĝi estas uzata por filtri tekston, t.e., ĝi prenas tekston kaj\n"
 #~ "aplikas iun operacion (aŭ aron) al ĝi kaj eligas la modifitan tekston.\n"
-#~ "Sed ordinare estas uzata por eltiri parton de dosiero per ŝablon-kongruon "
-#~ "aŭ\n"
+#~ "Sed ordinare estas uzata por eltiri parton de dosiero per ŝablon-kongruon aŭ\n"
 #~ "por anstataŭigi multoblajn aperojn de ĉeno interne de dosiero."
 
 #~ msgid "profile `~a' does not exist~%"

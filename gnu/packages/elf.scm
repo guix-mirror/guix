@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,8 +47,11 @@
     (native-inputs `(("m4" ,m4)))
     (inputs `(("zlib" ,zlib)))
     (home-page "https://fedorahosted.org/elfutils/")
-    (synopsis #f)
-    (description #f)
+    (synopsis "Linker and ELF manipulation tools")
+    (description
+     "This package provides command-line tools to manipulate binaries in the
+Executable and Linkable Format (ELF).  This includes ld, ar, objdump,
+addr2line, and more.")
 
     ;; Libraries are dual-licensed LGPLv3.0+ | GPLv2, and programs are GPLv3+.
     (license lgpl3+)))

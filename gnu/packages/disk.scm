@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2012, 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages parted)
+(define-module (gnu packages disk)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -24,7 +24,10 @@
   #:use-module (gnu packages check)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages readline))
+  #:use-module (gnu packages readline)
+  #:use-module (gnu packages guile)
+  #:use-module ((gnu packages compression)
+                #:select (lzip)))
 
 (define-public parted
   (package
@@ -66,4 +69,53 @@
     (description
      "GNU Parted is a package for creating and manipulating disk partition
 tables.  It includes a library and command-line utility.")
+    (license gpl3+)))
+
+(define-public fdisk
+  (package
+    (name "fdisk")
+    (version "2.0.0a")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/fdisk/gnufdisk-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "04nd7civ561x2lwcmxhsqbprml3178jfc58fy1v7hzqg5k4nbhy3"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gettext" ,gnu-gettext)
+       ("guile" ,guile-1.8)
+       ("util-linux" ,util-linux)
+       ("parted" ,parted)))
+    (home-page "https://www.gnu.org/software/fdisk/")
+    (synopsis "Low-level disk partitioning and formatting")
+    (description
+     "GNU fdisk provides a GNU version of the common disk partitioning tool
+fdisk.  fdisk is used for the creation and manipulation of disk partition
+tables, and it understands a variety of different formats.")
+    (license gpl3+)))
+
+(define-public ddrescue
+  (package
+    (name "ddrescue")
+    (version "1.17")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/ddrescue/ddrescue-"
+                          version ".tar.lz"))
+      (sha256
+       (base32
+        "0bvmsbzli2j4czwkabzs978n1y6vx31axh02kpgcf7033cc6rydy"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.gnu.org/software/ddrescue/ddrescue.html")
+    (synopsis "Data recovery utility")
+    (native-inputs `(("lzip" ,lzip)))
+    (description
+     "GNU ddrescue is a fully automated data recovery tool.  It copies data
+from one file to another, working to rescue data in case of read errors.  The
+program also includes a tool for manipulating its log files, which are used
+to recover data more efficiently by only reading the necessary blocks.")
     (license gpl3+)))

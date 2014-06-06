@@ -29,7 +29,7 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages less)
   #:use-module (gnu packages qemu)
-  #:use-module (gnu packages parted)
+  #:use-module (gnu packages disk)
   #:use-module (gnu packages zile)
   #:use-module (gnu packages grub)
   #:use-module (gnu packages linux)
@@ -196,15 +196,17 @@ made available under the /xchg CIFS share."
                      (disk-image-size (* 100 (expt 2 20)))
                      (disk-image-format "qcow2")
                      (file-system-type "ext4")
+                     file-system-label
                      grub-configuration
                      (register-closures? #t)
                      (inputs '())
                      copy-inputs?)
   "Return a bootable, stand-alone QEMU image of type DISK-IMAGE-FORMAT (e.g.,
-'qcow2' or 'raw'), with a root partition of type FILE-SYSTEM-TYPE.  The
-returned image is a full disk image, with a GRUB installation that uses
-GRUB-CONFIGURATION as its configuration file (GRUB-CONFIGURATION must be the
-name of a file in the VM.)
+'qcow2' or 'raw'), with a root partition of type FILE-SYSTEM-TYPE.
+Optionally, FILE-SYSTEM-LABEL can be specified as the volume name for the root
+partition.  The returned image is a full disk image, with a GRUB installation
+that uses GRUB-CONFIGURATION as its configuration file (GRUB-CONFIGURATION
+must be the name of a file in the VM.)
 
 INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
 all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
@@ -243,7 +245,8 @@ the image."
                                   #:copy-closures? #$copy-inputs?
                                   #:register-closures? #$register-closures?
                                   #:disk-image-size #$disk-image-size
-                                  #:file-system-type #$file-system-type)
+                                  #:file-system-type #$file-system-type
+                                  #:file-system-label #$file-system-label)
             (reboot))))
     #:system system
     #:make-disk-image? #t
@@ -258,6 +261,7 @@ the image."
 
 (define* (system-disk-image os
                             #:key
+                            (name "disk-image")
                             (file-system-type "ext4")
                             (disk-image-size (* 900 (expt 2 20)))
                             (volatile? #t))
@@ -265,6 +269,12 @@ the image."
 system described by OS.  Said image can be copied on a USB stick as is.  When
 VOLATILE? is true, the root file system is made volatile; this is useful
 to USB sticks meant to be read-only."
+  (define root-label
+    ;; Volume name of the root file system.  Since we don't know which device
+    ;; will hold it, we use the volume name to find it (using the UUID would
+    ;; be even better, but somewhat less convenient.)
+    "gnu-disk-image")
+
   (define file-systems-to-keep
     (remove (lambda (fs)
               (string=? (file-system-mount-point fs) "/"))
@@ -280,16 +290,19 @@ to USB sticks meant to be read-only."
               ;; Force our own root file system.
               (file-systems (cons (file-system
                                     (mount-point "/")
-                                    (device "/dev/sda1")
+                                    (device root-label)
+                                    (title 'label)
                                     (type file-system-type))
                                   file-systems-to-keep)))))
 
     (mlet* %store-monad ((os-drv   (operating-system-derivation os))
                          (grub.cfg (operating-system-grub.cfg os)))
-      (qemu-image #:grub-configuration grub.cfg
+      (qemu-image #:name name
+                  #:grub-configuration grub.cfg
                   #:disk-image-size disk-image-size
                   #:disk-image-format "raw"
                   #:file-system-type file-system-type
+                  #:file-system-label root-label
                   #:copy-inputs? #t
                   #:register-closures? #t
                   #:inputs `(("system" ,os-drv)

@@ -26,7 +26,11 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages admin)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages package-management)
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages less)
+  #:use-module (gnu packages zile)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
   #:use-module (gnu services base)
@@ -50,6 +54,7 @@
             operating-system-initrd
             operating-system-users
             operating-system-groups
+            operating-system-issue
             operating-system-packages
             operating-system-timezone
             operating-system-locale
@@ -57,7 +62,9 @@
 
             operating-system-derivation
             operating-system-profile
-            operating-system-grub.cfg))
+            operating-system-grub.cfg
+
+            %base-packages))
 
 ;;; Commentary:
 ;;;
@@ -91,17 +98,11 @@
 
   (skeletons operating-system-skeletons           ; list of name/monadic value
              (default (default-skeletons)))
+  (issue operating-system-issue                   ; string
+         (default %default-issue))
 
   (packages operating-system-packages             ; list of (PACKAGE OUTPUT...)
-            (default (list coreutils              ; or just PACKAGE
-                           grep
-                           sed
-                           findutils
-                           guile
-                           bash
-                           (@ (gnu packages dmd) dmd)
-                           guix
-                           tzdata)))
+            (default %base-packages))             ; or just PACKAGE
 
   (timezone operating-system-timezone)            ; string
   (locale   operating-system-locale)              ; string
@@ -178,8 +179,10 @@ as 'needed-for-boot'."
 
   (sequence %store-monad
             (map (match-lambda
-                  (($ <file-system> device target type flags opts #f check?)
+                  (($ <file-system> device title target type flags opts
+                                    #f check?)
                    (file-system-service device target type
+                                        #:title title
                                         #:check? check?
                                         #:options opts)))
                  file-systems)))
@@ -210,8 +213,25 @@ explicitly appear in OS."
 ;;; /etc.
 ;;;
 
+(define %base-packages
+  ;; Default set of packages globally visible.  It should include anything
+  ;; required for basic administrator tasks.
+  (list bash coreutils findutils grep sed
+        procps psmisc less zile
+        guile-final (@ (gnu packages admin) dmd) guix
+        util-linux inetutils isc-dhcp
+        net-tools                        ; XXX: remove when Inetutils suffices
+        module-init-tools kbd))
+
+(define %default-issue
+  ;; Default contents for /etc/issue.
+  "
+This is the GNU system.  Welcome.\n")
+
 (define* (etc-directory #:key
+                        kernel
                         (locale "C") (timezone "Europe/Paris")
+                        (issue "Hello!\n")
                         (skeletons '())
                         (pam-services '())
                         (profile "/run/current-system/profile")
@@ -226,15 +246,7 @@ explicitly appear in OS."
 /bin/sh
 /run/current-system/profile/bin/sh
 /run/current-system/profile/bin/bash\n"))
-       (issue      (text-file "issue" "
-This is an alpha preview of the GNU system.  Welcome.
-
-This image features the GNU Guix package manager, which was used to
-build it (http://www.gnu.org/software/guix/).  The init system is
-GNU dmd (http://www.gnu.org/software/dmd/).
-
-You can log in as 'guest' or 'root' with no password.
-"))
+       (issue      (text-file "issue" issue))
 
        ;; TODO: Generate bashrc from packages' search-paths.
        (bashrc    (text-file* "bashrc"  "
@@ -244,8 +256,13 @@ export LC_ALL=\"" locale "\"
 export TZ=\"" timezone "\"
 export TZDIR=\"" tzdata "/share/zoneinfo\"
 
-export PATH=/run/setuid-programs:/run/current-system/profile/sbin
-export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin:$PATH
+# Tell 'modprobe' & co. where to look for modules.
+# XXX: The downside of doing it here is that when switching to a new config
+# without rebooting, this variable possibly becomes invalid.
+export LINUX_MODULE_DIRECTORY=" kernel "/lib/modules
+
+export PATH=$HOME/.guix-profile/bin:/run/current-system/profile/bin
+export PATH=/run/setuid-programs:/run/current-system/profile/sbin:$PATH
 export CPATH=$HOME/.guix-profile/include:" profile "/include
 export LIBRARY_PATH=$HOME/.guix-profile/lib:" profile "/lib
 alias ls='ls -p --color'
@@ -306,8 +323,10 @@ alias ll='ls -l'
                               (append-map service-pam-services services))))
        (profile-drv (operating-system-profile os))
        (skeletons   (operating-system-skeletons os)))
-   (etc-directory #:pam-services pam-services
+   (etc-directory #:kernel (operating-system-kernel os)
+                  #:pam-services pam-services
                   #:skeletons skeletons
+                  #:issue (operating-system-issue os)
                   #:locale (operating-system-locale os)
                   #:timezone (operating-system-timezone os)
                   #:sudoers (operating-system-sudoers os)
@@ -319,7 +338,8 @@ alias ll='ls -l'
     (list #~(string-append #$shadow "/bin/passwd")
           #~(string-append #$shadow "/bin/su")
           #~(string-append #$inetutils "/bin/ping")
-          #~(string-append #$sudo "/bin/sudo"))))
+          #~(string-append #$sudo "/bin/sudo")
+          #~(string-append #$fuse "/bin/fusermount"))))
 
 (define %sudoers-specification
   ;; Default /etc/sudoers contents: 'root' and all members of the 'wheel'
@@ -382,7 +402,7 @@ etc."
     (define group-specs
       (map user-group->gexp groups))
 
-    (gexp->file "boot"
+    (gexp->file "activate"
                 #~(begin
                     (eval-when (expand load eval)
                       ;; Make sure 'use-modules' below succeeds.
@@ -445,7 +465,7 @@ we're running in the final root."
 (define (operating-system-root-file-system os)
   "Return the root file system of OS."
   (find (match-lambda
-         (($ <file-system> _ "/") #t)
+         (($ <file-system> _ _ "/") #t)
          (_ #f))
         (operating-system-file-systems os)))
 
@@ -453,9 +473,10 @@ we're running in the final root."
   "Return a gexp denoting the initrd file of OS."
   (define boot-file-systems
     (filter (match-lambda
-             (($ <file-system> device "/")
+             (($ <file-system> device title "/")
               #t)
-             (($ <file-system> device mount-point type flags options boot?)
+             (($ <file-system> device title mount-point type flags
+                               options boot?)
               boot?))
             (operating-system-file-systems os)))
 

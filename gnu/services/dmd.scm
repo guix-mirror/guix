@@ -50,7 +50,7 @@
           (use-modules (ice-9 ftw)
                        (guix build syscalls)
                        ((guix build linux-initrd)
-                        #:select (check-file-system)))
+                        #:select (check-file-system canonicalize-device-spec)))
 
           (register-services
            #$@(map (lambda (service)

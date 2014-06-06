@@ -565,7 +565,7 @@ HASH-ALGO, of the derivation NAME.  RECURSIVE? has the same meaning as for
                      (system (%current-system)) (env-vars '())
                      (inputs '()) (outputs '("out"))
                      hash hash-algo recursive?
-                     references-graphs
+                     references-graphs allowed-references
                      local-build?)
   "Build a derivation with the given arguments, and return the resulting
 <derivation> object.  When HASH and HASH-ALGO are given, a
@@ -577,6 +577,9 @@ the hash of an archive containing this output.
 When REFERENCES-GRAPHS is true, it must be a list of file name/store path
 pairs.  In that case, the reference graph of each store path is exported in
 the build environment in the corresponding file, in a simple text format.
+
+When ALLOWED-REFERENCES is true, it must be a list of store items or outputs
+that the derivation's output may refer to.
 
 When LOCAL-BUILD? is true, declare that the derivation is not a good candidate
 for offloading and should rather be built locally.  This is the case for small
@@ -615,10 +618,14 @@ derivations where the costs of data transfers would outweigh the benefits."
     ;; Some options are passed to the build daemon via the env. vars of
     ;; derivations (urgh!).  We hide that from our API, but here is the place
     ;; where we kludgify those options.
-    (let ((env-vars (if local-build?
-                        `(("preferLocalBuild" . "1")
-                          ,@env-vars)
-                        env-vars)))
+    (let ((env-vars `(,@(if local-build?
+                            `(("preferLocalBuild" . "1"))
+                            '())
+                      ,@(if allowed-references
+                            `(("allowedReferences"
+                               . ,(string-join allowed-references)))
+                            '())
+                      ,@env-vars)))
       (match references-graphs
         (((file . path) ...)
          (let ((value (map (cut string-append <> " " <>)
@@ -955,6 +962,7 @@ they can refer to each other."
                                        (modules '())
                                        guile-for-build
                                        references-graphs
+                                       allowed-references
                                        local-build?)
   "Return a derivation that executes Scheme expression EXP as a builder
 for derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV)
@@ -974,8 +982,8 @@ EXP returns #f, the build is considered to have failed.
 EXP is built using GUILE-FOR-BUILD (a derivation).  When GUILE-FOR-BUILD is
 omitted or is #f, the value of the `%guile-for-build' fluid is used instead.
 
-See the `derivation' procedure for the meaning of REFERENCES-GRAPHS and
-LOCAL-BUILD?."
+See the `derivation' procedure for the meaning of REFERENCES-GRAPHS,
+ALLOWED-REFERENCES, and LOCAL-BUILD?."
   (define guile-drv
     (or guile-for-build (%guile-for-build)))
 
@@ -1100,4 +1108,5 @@ LOCAL-BUILD?."
                 #:recursive? recursive?
                 #:outputs outputs
                 #:references-graphs references-graphs
+                #:allowed-references allowed-references
                 #:local-build? local-build?)))

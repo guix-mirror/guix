@@ -17,6 +17,8 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services base)
+  #:use-module ((guix store)
+                #:select (%store-prefix))
   #:use-module (gnu services)
   #:use-module (gnu system shadow)                ; 'user-account', etc.
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
@@ -89,9 +91,11 @@ This service must be the root of the service dependency graph so that its
       (respawn? #f)))))
 
 (define* (file-system-service device target type
-                              #:key (check? #t) options)
+                              #:key (check? #t) options (title 'any))
   "Return a service that mounts DEVICE on TARGET as a file system TYPE with
-OPTIONS.  When CHECK? is true, check the file system before mounting it."
+OPTIONS.  TITLE is a symbol specifying what kind of name DEVICE is: 'label for
+a partition label, 'device for a device file name, or 'any.  When CHECK? is
+true, check the file system before mounting it."
   (with-monad %store-monad
     (return
      (service
@@ -99,10 +103,11 @@ OPTIONS.  When CHECK? is true, check the file system before mounting it."
       (requirement '(root-file-system))
       (documentation "Check, mount, and unmount the given file system.")
       (start #~(lambda args
-                 #$(if check?
-                       #~(check-file-system #$device #$type)
-                       #~#t)
-                 (mount #$device #$target #$type 0 #$options)
+                 (let ((device (canonicalize-device-spec #$device '#$title)))
+                   #$(if check?
+                         #~(check-file-system device #$type)
+                         #~#t)
+                   (mount device #$target #$type 0 #$options))
                  #t))
       (stop #~(lambda args
                 ;; Normally there are no processes left at this point, so
@@ -193,9 +198,31 @@ stopped before 'kill' is called."
 (define* (mingetty-service tty
                            #:key
                            (motd (text-file "motd" "Welcome.\n"))
+                           auto-login
+                           login-program
+                           login-pause?
                            (allow-empty-passwords? #t))
-  "Return a service to run mingetty on TTY."
-  (mlet %store-monad ((motd motd))
+  "Return a service to run mingetty on @var{tty}.
+
+When @var{allow-empty-passwords?} is true, allow empty log-in password.  When
+@var{auto-login} is true, it must be a user name under which to log-in
+automatically.  @var{login-pause?} can be set to @code{#t} in conjunction with
+@var{auto-login}, in which case the user will have to press a key before the
+login shell is launched.
+
+When true, @var{login-program} is a gexp or a monadic gexp denoting the name
+of the log-in program (the default is the @code{login} program from the Shadow
+tool suite.)
+
+@var{motd} is a monadic value containing a text file to use as
+the \"message of the day\"."
+  (mlet %store-monad ((motd motd)
+                      (login-program (cond ((gexp? login-program)
+                                            (return login-program))
+                                           ((not login-program)
+                                            (return #f))
+                                           (else
+                                            login-program))))
     (return
      (service
       (documentation (string-append "Run mingetty on " tty "."))
@@ -207,7 +234,16 @@ stopped before 'kill' is called."
 
       (start  #~(make-forkexec-constructor
                  (string-append #$mingetty "/sbin/mingetty")
-                 "--noclear" #$tty))
+                 "--noclear" #$tty
+                 #$@(if auto-login
+                        #~("--autologin" #$auto-login)
+                        #~())
+                 #$@(if login-program
+                        #~("--loginprog" #$login-program)
+                        #~())
+                 #$@(if login-pause?
+                        #~("--loginpause")
+                        #~())))
       (stop   #~(make-kill-destructor))
 
       (pam-services
@@ -243,11 +279,11 @@ stopped before 'kill' is called."
 
   ;; Snippet adapted from the GNU inetutils manual.
   (define contents "
-     # Log all kernel messages, authentication messages of
+     # Log all error messages, authentication messages of
      # level notice or higher and anything of level err or
      # higher to the console.
      # Don't log private authentication messages!
-     *.err;kern.*;auth.notice;authpriv.none  /dev/console
+     *.err;auth.notice;authpriv.none         /dev/console
 
      # Log anything (except mail) of level info or higher.
      # Don't log private authentication messages!
@@ -290,16 +326,57 @@ starting at FIRST-UID, and under GID."
                        (name (format #f "guixbuilder~2,'0d" n))
                        (uid (+ first-uid n -1))
                        (group group)
+
+                       ;; guix-daemon expects GROUP to be listed as a
+                       ;; supplementary group too:
+                       ;; <http://lists.gnu.org/archive/html/bug-guix/2013-01/msg00239.html>.
+                       (supplementary-groups (list group))
+
                        (comment (format #f "Guix Build User ~2d" n))
                        (home-directory "/var/empty")
                        (shell #~(string-append #$shadow "/sbin/nologin"))))
                     1+
                     1))))
 
+(define (hydra-key-authorization guix)
+  "Return a gexp with code to register the hydra.gnu.org public key with
+GUIX."
+  #~(unless (file-exists? "/etc/guix/acl")
+      (let ((pid (primitive-fork)))
+        (case pid
+          ((0)
+           (let* ((key  (string-append #$guix
+                                       "/share/guix/hydra.gnu.org.pub"))
+                  (port (open-file key "r0b")))
+             (format #t "registering public key '~a'...~%" key)
+             (close-port (current-input-port))
+             (dup port 0)
+             (execl (string-append #$guix "/bin/guix")
+                    "guix" "archive" "--authorize")
+             (exit 1)))
+          (else
+           (let ((status (cdr (waitpid pid))))
+             (unless (zero? status)
+               (format (current-error-port) "warning: \
+failed to register hydra.gnu.org public key: ~a~%" status))))))))
+
 (define* (guix-service #:key (guix guix) (builder-group "guixbuild")
-                       (build-accounts 10))
+                       (build-accounts 10) authorize-hydra-key?)
   "Return a service that runs the build daemon from GUIX, and has
-BUILD-ACCOUNTS user accounts available under BUILD-USER-GID."
+BUILD-ACCOUNTS user accounts available under BUILD-USER-GID.
+
+When AUTHORIZE-HYDRA-KEY? is true, the hydra.gnu.org public key provided by
+GUIX is authorized upon activation, meaning that substitutes from
+hydra.gnu.org are used by default."
+  (define activate
+    ;; Assume that the store has BUILDER-GROUP as its group.  We could
+    ;; otherwise call 'chown' here, but the problem is that on a COW unionfs,
+    ;; chown leads to an entire copy of the tree, which is a bad idea.
+
+    ;; Optionally authorize hydra.gnu.org's key.
+    (and authorize-hydra-key?
+         (hydra-key-authorization guix)))
+
   (mlet %store-monad ((accounts (guix-build-accounts build-accounts
                                                      #:group builder-group)))
     (return (service
@@ -315,7 +392,12 @@ BUILD-ACCOUNTS user accounts available under BUILD-USER-GID."
              (user-groups (list (user-group
                                  (name builder-group)
                                  (members (map user-account-name
-                                               user-accounts)))))))))
+                                               user-accounts))
+
+                                 ;; Use a fixed GID so that we can create the
+                                 ;; store with the right owner.
+                                 (id 30000))))
+             (activate activate)))))
 
 (define %base-services
   ;; Convenience variable holding the basic services.
