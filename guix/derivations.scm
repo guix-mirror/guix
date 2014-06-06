@@ -962,6 +962,7 @@ they can refer to each other."
                                        (modules '())
                                        guile-for-build
                                        references-graphs
+                                       allowed-references
                                        local-build?)
   "Return a derivation that executes Scheme expression EXP as a builder
 for derivation NAME.  INPUTS must be a list of (NAME DRV-PATH SUB-DRV)
@@ -981,8 +982,8 @@ EXP returns #f, the build is considered to have failed.
 EXP is built using GUILE-FOR-BUILD (a derivation).  When GUILE-FOR-BUILD is
 omitted or is #f, the value of the `%guile-for-build' fluid is used instead.
 
-See the `derivation' procedure for the meaning of REFERENCES-GRAPHS and
-LOCAL-BUILD?."
+See the `derivation' procedure for the meaning of REFERENCES-GRAPHS,
+ALLOWED-REFERENCES, and LOCAL-BUILD?."
   (define guile-drv
     (or guile-for-build (%guile-for-build)))
 
@@ -1107,4 +1108,5 @@ LOCAL-BUILD?."
                 #:recursive? recursive?
                 #:outputs outputs
                 #:references-graphs references-graphs
+                #:allowed-references allowed-references
                 #:local-build? local-build?)))

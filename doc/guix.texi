@@ -1798,7 +1798,8 @@ is now deprecated in favor of the much nicer @code{gexp->derivation}.
        [#:system (%current-system)] [#:inputs '()] @
        [#:outputs '("out")] [#:hash #f] [#:hash-algo #f] @
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
-       [#:references-graphs #f] [#:local-build? #f] [#:guile-for-build #f]
+       [#:references-graphs #f] [#:allowed-references #f] @
+       [#:local-build? #f] [#:guile-for-build #f]
 Return a derivation that executes Scheme expression @var{exp} as a
 builder for derivation @var{name}.  @var{inputs} must be a list of
 @code{(name drv-path sub-drv)} tuples; when @var{sub-drv} is omitted,
@@ -1820,8 +1821,8 @@ terminates by passing the result of @var{exp} to @code{exit}; thus, when
 @var{guile-for-build} is omitted or is @code{#f}, the value of the
 @code{%guile-for-build} fluid is used instead.
 
-See the @code{derivation} procedure for the meaning of @var{references-graphs}
-and @var{local-build?}.
+See the @code{derivation} procedure for the meaning of
+@var{references-graphs}, @var{allowed-references}, and @var{local-build?}.
 @end deffn
 
 @noindent
