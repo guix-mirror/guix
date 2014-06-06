@@ -1114,13 +1114,32 @@ store.")
               ,@(fold alist-delete (package-inputs ld-wrapper-boot3)
                       '("guile" "bash"))))))
 
+(define coreutils-final
+  ;; The final Coreutils.  Treat them specially because some packages, such as
+  ;; Findutils, keep a reference to the Coreutils they were built with.
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs coreutils
+                                 %boot4-inputs
+                                 (current-source-location)
+
+                                 ;; Use the final Guile, linked against the
+                                 ;; final libc with working iconv, so that
+                                 ;; 'substitute*' works well when touching
+                                 ;; test files in Gettext.
+                                 #:guile guile-final)))
+
+(define %boot5-inputs
+  ;; Now use the final Coreutils.
+  `(("coreutils" ,coreutils-final)
+    ,@%boot4-inputs))
+
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by 'gnu-build-system'.  We
   ;; still use 'package-with-bootstrap-guile' so that the bootstrap tools are
   ;; used for origins that have patches, thereby avoiding circular
   ;; dependencies.
   (let ((finalize (compose package-with-bootstrap-guile
-                           (cut package-with-explicit-inputs <> %boot4-inputs
+                           (cut package-with-explicit-inputs <> %boot5-inputs
                                 (current-source-location)))))
     `(,@(map (match-lambda
               ((name package)
@@ -1131,11 +1150,11 @@ store.")
                ("xz" ,xz)
                ("diffutils" ,diffutils)
                ("patch" ,patch)
-               ("coreutils" ,coreutils)
                ("sed" ,sed)
                ("grep" ,grep)
                ("findutils" ,findutils)
                ("gawk" ,gawk)))
+      ("coreutils" ,coreutils-final)
       ("make" ,gnu-make-final)
       ("bash" ,bash-final)
       ("ld-wrapper" ,ld-wrapper)
