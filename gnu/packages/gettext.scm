@@ -34,37 +34,42 @@
 (define-public gnu-gettext
   (package
     (name "gettext")
-    (version "0.18.3.2")
+    (version "0.19")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gettext/gettext-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1my5njl7mp663abpdn8qsm5i462wlhlnb5q50fmhgd0fsr9f996i"))))
+               "0z44pm0vh4rmj8jq6lww0qhw72r2dkqs31vnlnn851y69dvcgyd9"))
+             (patches (list (search-patch "gettext.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)))
     (arguments
      `(#:phases (alist-cons-before
-                 'configure 'link-expat
-                 (lambda _
-                   (substitute* "gettext-tools/configure"
-                     (("LIBEXPAT=\"-ldl\"") "LIBEXPAT=\"-ldl -lexpat\"")
-                     (("LTLIBEXPAT=\"-ldl\"") "LTLIBEXPAT=\"-ldl -lexpat\"")))
-                (alist-cons-before
                  'check 'patch-tests
                  (lambda* (#:key inputs #:allow-other-keys)
-                   (let ((bash (which "sh")))
-                     (substitute* (find-files "gettext-tools/tests"
-                                              "^msgexec-[0-9]")
+                   (let* ((bash (which "sh")))
+                     (substitute*
+                         (find-files "gettext-tools/tests"
+                                     "^(lang-sh|msg(exec|filter)-[0-9])")
                        (("#![[:blank:]]/bin/sh")
                         (format #f "#!~a" bash)))
-                     (substitute* (find-files "gettext-tools/gnulib-tests"
-                                              "posix_spawn")
+
+                     (substitute* (cons "gettext-tools/src/msginit.c"
+                                        (find-files "gettext-tools/gnulib-tests"
+                                                    "posix_spawn"))
                        (("/bin/sh")
-                        bash))))
-                 %standard-phases))))
+                        bash))
+
+                     (substitute* "gettext-tools/src/project-id"
+                       (("/bin/pwd")
+                        "pwd"))))
+                 %standard-phases)
+
+       ;; When tests fail, we want to know the details.
+       #:make-flags '("VERBOSE=yes")))
     (home-page "http://www.gnu.org/software/gettext/")
     (synopsis "Tools and documentation for translation")
     (description
