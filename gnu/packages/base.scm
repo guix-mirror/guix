@@ -929,12 +929,19 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
 
 (define-public glibc-final
   ;; The final glibc, which embeds the statically-linked Bash built above.
-  (package (inherit glibc-final-with-bootstrap-bash)
-    (name "glibc")
-    (inputs `(("static-bash" ,static-bash-for-glibc)
-              ,@(alist-delete
-                 "static-bash"
-                 (package-inputs glibc-final-with-bootstrap-bash))))))
+  (package-with-restricted-references
+   (package (inherit glibc-final-with-bootstrap-bash)
+     (name "glibc")
+     (inputs `(("static-bash" ,static-bash-for-glibc)
+               ,@(alist-delete
+                  "static-bash"
+                  (package-inputs glibc-final-with-bootstrap-bash)))))
+
+   ;; The final libc only refers to itself, but the 'debug' output contains
+   ;; references to GCC-BOOT0 and to the Linux headers.  XXX: Would be great
+   ;; if 'allowed-references' were per-output.
+   (cons* gcc-boot0 (linux-libre-headers-boot0)
+          (package-outputs glibc-final-with-bootstrap-bash))))
 
 (define gcc-boot0-wrapped
   ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
