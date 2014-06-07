@@ -1004,6 +1004,8 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      `(#:guile ,%bootstrap-guile
        #:implicit-inputs? #f
 
+       #:allowed-references ("out" ,glibc-final)
+
        ;; Build again GMP & co. within GCC's build process, because it's hard
        ;; to do outside (because GCC-BOOT0 is a cross-compiler, and thus
        ;; doesn't honor $LIBRARY_PATH, which breaks `gnu-build-system'.)
