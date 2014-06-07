@@ -827,22 +827,37 @@ identifier SYSTEM."
                             ;; Build Sun/ONC RPC support.  In particular,
                             ;; install rpc/*.h.
                             "--enable-obsolete-rpc")
-                      ,flags)))))
+                      ,flags))
+            ((#:phases phases)
+             `(alist-cons-before
+               'configure 'pre-configure
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; Don't clobber CPATH with the bootstrap libc.
+                 (setenv "NATIVE_CPATH" (getenv "CPATH"))
+                 (unsetenv "CPATH")
+
+                 ;; 'rpcgen' needs native libc headers to be built.
+                 (substitute* "sunrpc/Makefile"
+                   (("sunrpc-CPPFLAGS =.*" all)
+                    (string-append "CPATH = $(NATIVE_CPATH)\n"
+                                   "export CPATH\n"
+                                   all "\n"))))
+               ,phases)))))
      (propagated-inputs `(("linux-headers" ,(linux-libre-headers-boot0))))
      (native-inputs
       `(("texinfo" ,texinfo-boot0)
         ("perl" ,perl-boot0)))
      (inputs
-      `( ;; A native GCC is needed to build `cross-rpcgen'.
+      `(;; The boot inputs.  That includes the bootstrap libc.  We don't want
+        ;; it in $CPATH, hence the 'pre-configure' phase above.
+        ,@%boot1-inputs
+
+        ;; A native GCC is needed to build `cross-rpcgen'.
         ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))
 
         ;; Here, we use the bootstrap Bash, which is not satisfactory
         ;; because we don't want to depend on bootstrap tools.
-        ("static-bash" ,@(assoc-ref %boot0-inputs "bash"))
-
-        ,@%boot1-inputs
-        ,@(alist-delete "static-bash"
-                        (package-inputs glibc))))))) ; patches
+        ("static-bash" ,@(assoc-ref %boot0-inputs "bash")))))))
 
 (define (cross-gcc-wrapper gcc binutils glibc bash)
   "Return a wrapper for the pseudo-cross toolchain GCC/BINUTILS/GLIBC
