@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -1189,3 +1190,35 @@ for systems using the Linux kernel.  This includes commands such as
      "The inotify-tools packages provides a C library and command-line tools
 to use Linux' inotify mechanism, which allows file accesses to be monitored.")
     (license gpl2+)))
+
+(define-public kmod
+  (package
+    (name "kmod")
+    (version "17")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://kernel.org/linux/utils/kernel/kmod/"
+                              "kmod-" version ".tar.xz"))
+              (sha256
+               (base32
+                "1yid3a9b64a60ybj66fk2ysrq5klnl0ijl4g624cl16y8404g9rv"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("xz" ,guix:xz)
+       ("zlib" ,guix:zlib)))
+    (arguments
+     `(#:tests? #f ; FIXME: Investigate test failures
+       #:configure-flags '("--with-xz" "--with-zlib")))
+    (home-page "https://www.kernel.org/")
+    (synopsis "Kernel module tools")
+    (description "kmod is a set of tools to handle common tasks with Linux
+kernel modules like insert, remove, list, check properties, resolve
+dependencies and aliases.
+
+These tools are designed on top of libkmod, a library that is shipped with
+kmod.  The aim is to be compatible with tools, configurations and indices
+from the module-init-tools project.")
+    (license gpl2+))) ; library under lgpl2.1+
