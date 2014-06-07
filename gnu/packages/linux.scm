@@ -27,8 +27,10 @@
                 #:renamer (symbol-prefix-proc 'guix:))
   #:use-module (gnu packages flex)
   #:use-module (gnu packages bison)
+  #:use-module (gnu packages gperf)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages pciutils)
   #:use-module (gnu packages bdb)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
@@ -1222,3 +1224,47 @@ These tools are designed on top of libkmod, a library that is shipped with
 kmod.  The aim is to be compatible with tools, configurations and indices
 from the module-init-tools project.")
     (license gpl2+))) ; library under lgpl2.1+
+
+(define-public udev
+  (package
+    (name "udev")
+    (version "182")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append
+                   "mirror://kernel.org/linux/utils/kernel/hotplug/udev-"
+                   version ".tar.xz"))
+             (sha256
+              (base32
+               "1awp7p07gi083w0dwqhhbbas68a7fx2sbm1yf1ip2jwf7cpqkf5d"))
+             (patches (list (search-patch "udev-gir-libtool.patch")))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags (list (string-append
+                                "--with-pci-ids-path="
+                                (assoc-ref %build-inputs "pciutils")
+                                "/share/pci.ids.gz")
+
+                               "--with-firmware-path=/no/firmware"
+
+                               ;; Work around undefined reference to
+                               ;; 'mq_getattr' in sc-daemon.c.
+                               "LDFLAGS=-lrt")))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("gperf" ,gperf)
+       ("perl" ,perl)                             ; for the tests
+       ("python" ,python-2)))                     ; ditto
+    (inputs
+     `(("kmod" ,kmod)
+       ("pciutils" ,pciutils)
+       ("usbutils" ,usbutils)
+       ("util-linux" ,util-linux)
+       ("glib" ,glib)
+       ("gobject-introspection" ,gobject-introspection)))
+    (home-page "http://www.freedesktop.org/software/systemd/libudev/")
+    (synopsis "Userspace device management")
+    (description "Udev is a daemon which dynamically creates and removes
+device nodes from /dev/, handles hotplug events and loads drivers at boot
+time.")
+    (license gpl2+))) ; libudev is under lgpl2.1+

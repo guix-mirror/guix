@@ -363,6 +363,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/superlu-dist-scotchmetis.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
+  gnu/packages/patches/udev-gir-libtool.patch			\
   gnu/packages/patches/util-linux-perl.patch			\
   gnu/packages/patches/valgrind-glibc.patch			\
   gnu/packages/patches/vpnc-script.patch			\

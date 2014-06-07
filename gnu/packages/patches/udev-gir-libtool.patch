@@ -1,0 +1,17 @@
+Without this patch, 'ld' as invoked by 'g-ir-scanner' fails to find -lgudev-1.0
+This is because libtool puts it in $(top_builddir)/.libs.
+
+This patch forces 'g-ir-scanner' to use libtool, which enables it to find
+libgudev-1.0.la.
+
+--- udev-182/Makefile.in	2014-06-22 14:55:07.000000000 +0200
++++ udev-182/Makefile.in	2014-06-22 14:55:15.000000000 +0200
+@@ -3622,7 +3622,7 @@ test-sys-distclean:
+ @ENABLE_GUDEV_TRUE@@ENABLE_INTROSPECTION_TRUE@		--namespace GUdev \
+ @ENABLE_GUDEV_TRUE@@ENABLE_INTROSPECTION_TRUE@		--nsversion=1.0 \
+ @ENABLE_GUDEV_TRUE@@ENABLE_INTROSPECTION_TRUE@		--include=GObject-2.0 \
+-@ENABLE_GUDEV_TRUE@@ENABLE_INTROSPECTION_TRUE@		--library=gudev-1.0 \
++@ENABLE_GUDEV_TRUE@@ENABLE_INTROSPECTION_TRUE@		--library=gudev-1.0 --libtool=$(top_builddir)/libtool \
+ @ENABLE_GUDEV_TRUE@@ENABLE_INTROSPECTION_TRUE@		--library-path=$(top_builddir)/src \
+ @ENABLE_GUDEV_TRUE@@ENABLE_INTROSPECTION_TRUE@		--library-path=$(top_builddir)/src/gudev \
+ @ENABLE_GUDEV_TRUE@@ENABLE_INTROSPECTION_TRUE@		--output $@ \
