@@ -961,6 +961,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      (arguments
       `(#:guile ,%bootstrap-guile
         #:implicit-inputs? #f
+        #:allowed-references ("out" ,glibc-final)
         ,@(package-arguments binutils)))
      (inputs %boot2-inputs))))
 
