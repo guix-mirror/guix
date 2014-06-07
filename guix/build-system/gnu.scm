@@ -33,7 +33,8 @@
             package-with-extra-configure-variable
             static-libgcc-package
             static-package
-            dist-package))
+            dist-package
+            package-with-restricted-references))
 
 ;; Commentary:
 ;;
@@ -189,6 +190,15 @@ runs `make distcheck' and whose result is one or more source tarballs."
            ("libtool"  ,(ref '(gnu packages autotools) 'libtool) "bin")
            ("gettext"  ,(ref '(gnu packages gettext) 'gnu-gettext))
            ("texinfo"  ,(ref '(gnu packages texinfo) 'texinfo))))))))
+
+(define (package-with-restricted-references p refs)
+  "Return a package whose outputs are guaranteed to only refer to the packages
+listed in REFS."
+  (if (eq? (package-build-system p) gnu-build-system) ; XXX: dirty
+      (package (inherit p)
+        (arguments `(#:allowed-references ,refs
+                     ,@(package-arguments p))))
+      p))
 
 
 (define %store
