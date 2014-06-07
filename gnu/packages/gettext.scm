@@ -41,8 +41,7 @@
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0z44pm0vh4rmj8jq6lww0qhw72r2dkqs31vnlnn851y69dvcgyd9"))
-             (patches (list (search-patch "gettext.patch")))))
+               "0z44pm0vh4rmj8jq6lww0qhw72r2dkqs31vnlnn851y69dvcgyd9"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)))
