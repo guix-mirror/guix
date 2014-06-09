@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -76,7 +76,13 @@ GCC that does not target a libc; otherwise, target that libc."
                          target))
     (source (origin (inherit (package-source gcc-4.8))
               (patches
-               (list (search-patch "gcc-cross-environment-variables.patch")))))
+               (list (search-patch
+                      "gcc-cross-environment-variables.patch")))))
+
+    ;; For simplicity, use a single output.  Otherwise libgcc_s & co. are not
+    ;; found by default, etc.
+    (outputs '("out"))
+
     (arguments
      `(#:implicit-inputs? #f
        #:modules ((guix build gnu-build-system)
