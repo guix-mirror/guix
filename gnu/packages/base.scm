@@ -263,14 +263,16 @@ used to apply commands with arbitrarily long arguments.")
                 'build 'patch-shell-references
                 (lambda* (#:key inputs #:allow-other-keys)
                   (let ((bash (assoc-ref inputs "bash")))
-                    (substitute* (cons "src/split.c"
-                                       (find-files "gnulib-tests"
-                                                   "\\.c$"))
+                    ;; 'split' uses either $SHELL or /bin/sh.  Set $SHELL so
+                    ;; that tests pass, since /bin/sh isn't in the chroot.
+                    (setenv "SHELL" (which "sh"))
+
+                    (substitute* (find-files "gnulib-tests" "\\.c$")
                       (("/bin/sh")
                        (format #f "~a/bin/sh" bash)))
                     (substitute* (find-files "tests" "\\.sh$")
                       (("#!/bin/sh")
-                       (format #f "#!~a/bin/bash" bash)))))
+                       (format #f "#!~a/bin/sh" bash)))))
                 %standard-phases)))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
