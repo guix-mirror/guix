@@ -79,6 +79,14 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 
                      "--with-local-prefix=/no-gcc-local-prefix"
 
+                     ;; With a separate "lib" output, the build system
+                     ;; incorrectly guesses GPLUSPLUS_INCLUDE_DIR, so force
+                     ;; it.  (Don't use a versioned sub-directory, that's
+                     ;; unnecessary.)
+                     ,(string-append "--with-gxx-include-dir="
+                                     (assoc-ref %outputs "out")
+                                     "/include/c++")
+
                      ,(let ((libc (assoc-ref %build-inputs "libc")))
                         (if libc
                             (string-append "--with-native-system-header-dir=" libc
@@ -103,6 +111,12 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                 (base32
                  "1hx9h64ivarlzi4hxvq42as5m9vlr5cyzaaq4gzj4i619zmkfz1g"))))
       (build-system gnu-build-system)
+
+      ;; Separate out the run-time support libraries because all the
+      ;; dynamic-linked objects depend on it.
+      (outputs '("out"                     ; commands, etc. (60+ MiB)
+                 "lib"))                   ; libgcc_s, libgomp, etc. (15+ MiB)
+
       (inputs `(("gmp" ,gmp)
                 ("mpfr" ,mpfr)
                 ("mpc" ,mpc)
@@ -143,8 +157,9 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          (alist-cons-before
           'configure 'pre-configure
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out  (assoc-ref outputs "out"))
-                  (libc (assoc-ref inputs "libc")))
+            (let ((libdir (or (assoc-ref outputs "lib")
+                              (assoc-ref outputs "out")))
+                  (libc   (assoc-ref inputs "libc")))
               (when libc
                 ;; The following is not performed for `--without-headers'
                 ;; cross-compiler builds.
@@ -170,7 +185,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                    ;; <http://sourceware.org/ml/libc-help/2013-11/msg00023.html>.)
                    (format #f "#define GNU_USER_TARGET_LIB_SPEC \
 \"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib -lgcc_s}} \" ~a"
-                           libc libc out out suffix))
+                           libc libc libdir libdir suffix))
                   (("#define GNU_USER_TARGET_STARTFILE_SPEC.*$" line)
                    (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
 #define STANDARD_STARTFILE_PREFIX_2 \"\"
@@ -180,7 +195,24 @@ where the OS part is overloaded to denote a specific ABI---into GCC
               ;; Don't retain a dependency on the build-time sed.
               (substitute* "fixincludes/fixincl.x"
                 (("static char const sed_cmd_z\\[\\] =.*;")
-                 "static char const sed_cmd_z[] = \"sed\";"))))
+                 "static char const sed_cmd_z[] = \"sed\";"))
+
+              ;; Move libstdc++*-gdb.py to the "lib" output to avoid a
+              ;; circularity between "out" and "lib".  (Note:
+              ;; --with-python-dir is useless because it imposes $(prefix) as
+              ;; the parent directory.)
+              (substitute* "libstdc++-v3/python/Makefile.in"
+                (("pythondir = .*$")
+                 (string-append "pythondir = " libdir "/share"
+                                "/gcc-$(gcc_version)/python\n")))
+
+              ;; Avoid another circularity between the outputs: this #define
+              ;; ends up in auto-host.h in the "lib" output, referring to
+              ;; "out".  (This variable is used to augment cpp's search path,
+              ;; but there's nothing useful to look for here.)
+              (substitute* "gcc/config.in"
+                (("PREFIX_INCLUDE_DIR")
+                 "PREFIX_INCLUDE_DIR_isnt_necessary_here"))))
 
           (alist-cons-after
            'configure 'post-configure

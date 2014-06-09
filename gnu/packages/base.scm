@@ -741,7 +741,7 @@ identifier SYSTEM."
                (alist-cons-after
                 'install 'symlink-libgcc_eh
                 (lambda* (#:key outputs #:allow-other-keys)
-                  (let ((out (assoc-ref outputs "out")))
+                  (let ((out (assoc-ref outputs "lib")))
                     ;; Glibc wants to link against libgcc_eh, so provide
                     ;; it.
                     (with-directory-excursion
@@ -866,6 +866,7 @@ that makes it available under the native tool names."
     (name (string-append (package-name gcc) "-wrapped"))
     (source #f)
     (build-system trivial-build-system)
+    (outputs '("out"))
     (arguments
      `(#:guile ,%bootstrap-guile
        #:modules ((guix build utils))
@@ -941,7 +942,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     ;; if 'allowed-references' were per-output.
     (arguments
      `(#:allowed-references
-       ,(cons* gcc-boot0 (linux-libre-headers-boot0)
+       ,(cons* `(,gcc-boot0 "lib") (linux-libre-headers-boot0)
                (package-outputs glibc-final-with-bootstrap-bash))
 
        ,@(package-arguments glibc-final-with-bootstrap-bash)))))
@@ -993,6 +994,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                             ;; "/include/c++/"
                                             ;; ,(package-version gcc-4.8)
                                             ))))
+     (outputs '("out"))
      (inputs %boot2-inputs)
      (native-inputs '())
      (propagated-inputs '())
@@ -1007,7 +1009,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      `(#:guile ,%bootstrap-guile
        #:implicit-inputs? #f
 
-       #:allowed-references ("out" ,glibc-final)
+       #:allowed-references ("out" "lib" ,glibc-final)
 
        ;; Build again GMP & co. within GCC's build process, because it's hard
        ;; to do outside (because GCC-BOOT0 is a cross-compiler, and thus

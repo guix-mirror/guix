@@ -393,6 +393,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   (package-with-relocatable-glibc
    (package (inherit gcc-4.8)
      (name "gcc-static")
+     (outputs '("out"))                           ; all in one
      (arguments
       `(#:modules ((guix build utils)
                    (guix build gnu-build-system)
