@@ -151,6 +151,7 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:use-build-hook? (assoc-ref opts 'build-hook?)
                      #:max-silent-time (assoc-ref opts 'max-silent-time)
                      #:timeout (assoc-ref opts 'timeout)
+                     #:print-build-trace (assoc-ref opts 'print-build-trace?)
                      #:verbosity (assoc-ref opts 'verbosity)))
 
 (define %standard-build-options
@@ -213,6 +214,7 @@ options handled by 'set-build-options-from-command-line', and listed in
   `((system . ,(%current-system))
     (substitutes? . #t)
     (build-hook? . #t)
+    (print-build-trace? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)))
 
