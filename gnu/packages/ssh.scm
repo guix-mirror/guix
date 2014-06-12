@@ -321,3 +321,23 @@ connectivity, and provides intelligent local echo and line editing of user
 keystrokes.  Mosh is a replacement for SSH.  It's more robust and responsive,
 especially over Wi-Fi, cellular, and long-distance links.")
     (license license:gpl3+)))
+
+(define-public dropbear
+  (package
+    (name "dropbear")
+    (version "2014.63")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://matt.ucc.asn.au/" name "/releases/" name "-" version ".tar.bz2"))
+              (sha256
+               (base32 "1bjpbg2vi5f332q4bqxkidkjfxsqmnqvp4g1wyh8d99b8gg94nar"))))
+    (build-system gnu-build-system)
+    (arguments  `(#:tests? #f)) ; There is no "make check" or anything similar
+    (inputs `(("zlib" ,zlib)))
+    (synopsis "Small SSH server and client")
+    (description "Dropbear is a relatively small SSH server and
+client. It runs on a variety of POSIX-based platforms. Dropbear is
+particularly useful for embedded systems, such as wireless routers.")   
+    (home-page "https://matt.ucc.asn.au/dropbear/dropbear.html")
+    (license (license:x11-style "" "See file LICENSE."))))
