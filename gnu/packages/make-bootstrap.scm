@@ -405,6 +405,12 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ((#:implicit-inputs? _) #t)
             ((#:configure-flags flags)
              `(append (list
+                       ;; We don't need a full bootstrap here.
+                       "--disable-bootstrap"
+
+                       ;; Make sure '-static' is passed where it matters.
+                       "--with-stage1-ldflags=-static"
+
                        "--disable-shared"
                        "--disable-plugin"
                        "--enable-languages=c"
@@ -417,11 +423,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        "--disable-libquadmath"
                        "--disable-decimal-float")
                       (remove (cut string-match "--(.*plugin|enable-languages)" <>)
-                              ,flags)))
-            ((#:make-flags flags)
-             (if (%current-target-system)
-                 `(cons "LDFLAGS=-static" ,flags)
-                 `(cons "BOOT_LDFLAGS=-static" ,flags))))))
+                              ,flags))))))
      (native-inputs
       (if (%current-target-system)
           `(;; When doing a Canadian cross, we need GMP/MPFR/MPC both
