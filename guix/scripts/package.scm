@@ -228,11 +228,11 @@ RX."
                      (define matches?
                        (cut regexp-exec rx <>))
 
-                     (if (or (matches? (gettext (package-name package)))
+                     (if (or (matches? (package-name package))
                              (and=> (package-synopsis package)
-                                    (compose matches? gettext))
+                                    (compose matches? P_))
                              (and=> (package-description package)
-                                    (compose matches? gettext)))
+                                    (compose matches? P_)))
                          (cons package result)
                          result))
                    '())

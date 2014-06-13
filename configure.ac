@@ -16,7 +16,7 @@ dnl For the C++ code.  This must be used early.
 AC_USE_SYSTEM_EXTENSIONS
 
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.18.1])
+AM_GNU_GETTEXT_VERSION([0.18.3])
 
 guilemoduledir="${datarootdir}/guile/site/2.0"
 AC_SUBST([guilemoduledir])
@@ -167,6 +167,7 @@ AM_MISSING_PROG([DOT], [dot])
 
 AC_CONFIG_FILES([Makefile
                  po/guix/Makefile.in
+                 po/packages/Makefile.in
 		 guix/config.scm])
 
 AC_CONFIG_FILES([scripts/guix], [chmod +x scripts/guix])

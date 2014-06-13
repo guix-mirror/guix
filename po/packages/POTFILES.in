@@ -1,0 +1,6 @@
+# List of source files which contain translatable strings.  These should be
+# only package modules.  Strings of the tools are in 'po/guix'.
+gnu/packages/base.scm
+gnu/packages/guile.scm
+gnu/packages/lout.scm
+gnu/packages/recutils.scm
