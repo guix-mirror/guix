@@ -166,7 +166,7 @@ dnl See `HACKING' for more info.
 AM_MISSING_PROG([DOT], [dot])
 
 AC_CONFIG_FILES([Makefile
-                 po/Makefile.in
+                 po/guix/Makefile.in
 		 guix/config.scm])
 
 AC_CONFIG_FILES([scripts/guix], [chmod +x scripts/guix])

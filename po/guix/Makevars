@@ -2,8 +2,8 @@
 
 DOMAIN = $(PACKAGE)
 
-subdir = po
-top_builddir = ..
+subdir = po/guix
+top_builddir = ../..
 
 # These options get passed to xgettext.  We want to catch standard
 # gettext uses, package synopses and descriptions, and SRFI-35 error

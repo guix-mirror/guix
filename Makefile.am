@@ -246,7 +246,7 @@ SUFFIXES = .go
 guix_install_go_files = install-nobase_nodist_guilemoduleDATA
 $(guix_install_go_files): install-nobase_dist_guilemoduleDATA
 
-SUBDIRS = po
+SUBDIRS = po/guix
 
 include doc.am
 
