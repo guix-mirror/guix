@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,8 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (gnu packages)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages glib)
@@ -28,6 +31,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
+  #:use-module (gnu packages libpng)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xorg)
@@ -157,4 +161,50 @@ France.  The Cathars, who preach about good Christian beliefs, were being
 expelled by the Catholic Church out of the Languedoc region in France.  One of
 them, called Jean Raymond, found an old church in which to hide, not knowing
 that beneath its ruins lay buried an ancient evil.")
+    (license gpl3+)))
+
+(define-public pingus
+  (package
+    (name "pingus")
+    (version "0.7.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://pingus.googlecode.com/files/pingus-"
+                           version ".tar.bz2"))
+       (sha256
+        (base32
+         "0q34d2k6anzqvb0mf67x85q92lfx9jr71ry13dlp47jx0x9i573m"))
+       (patches (list (search-patch "pingus-sdl-libs-config.patch")))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("scons" ,scons)))
+    (inputs `(("sdl" ,sdl)
+              ("sdl-image" ,sdl-image)
+              ("sdl-mixer" ,sdl-mixer)
+              ("mesa" ,mesa)
+              ("libpng" ,libpng)
+              ("boost" ,boost)))
+    (arguments
+     '(#:tests? #f                      ;no check target
+       #:phases
+       (alist-delete
+        'configure
+        (alist-replace
+         'install
+         (lambda* (#:key outputs #:allow-other-keys)
+           (zero? (system* "make" "install"
+                           (string-append "PREFIX="
+                                          (assoc-ref outputs "out")))))
+         %standard-phases))))
+    (home-page "http://pingus.seul.org/welcome.html")
+    (synopsis "Lemmings clone")
+    (description
+     "Pingus is a free Lemmings-like puzzle game in which the player takes
+command of a bunch of small animals and has to guide them through levels.
+Since the animals walk on their own, the player can only influence them by
+giving them commands, like build a bridge, dig a hole, or redirect all animals
+in the other direction.  Multiple such commands are necessary to reach the
+level's exit.  The game is presented in a 2D side view.")
+    ;; Some source files are under bsd-3 and gpl2+ licenses.
     (license gpl3+)))
