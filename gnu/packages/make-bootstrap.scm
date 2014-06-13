@@ -412,9 +412,11 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        ;; Make sure '-static' is passed where it matters.
                        "--with-stage1-ldflags=-static"
 
+                       ;; GCC 4.8+ requires a C++ compiler and library.
+                       "--enable-languages=c,c++"
+
                        "--disable-shared"
                        "--disable-plugin"
-                       "--enable-languages=c"
                        "--disable-libmudflap"
                        "--disable-libatomic"
                        "--disable-libsanitizer"
