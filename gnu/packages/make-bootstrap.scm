@@ -103,6 +103,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ,@%final-inputs))
         `(("libc" ,(glibc-for-bootstrap))
           ("gcc" ,(package (inherit gcc-4.8)
+                    (outputs '("out")) ; all in one so libgcc_s is easily found
                     (inputs
                      `(("libc",(glibc-for-bootstrap))
                        ,@(package-inputs gcc-4.8)))))
@@ -445,6 +446,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (name "gcc-stripped")
     (build-system trivial-build-system)
     (source #f)
+    (outputs '("out"))                            ;only one output
     (arguments
      `(#:modules ((guix build utils))
        #:builder
