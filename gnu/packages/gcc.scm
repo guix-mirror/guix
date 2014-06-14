@@ -52,12 +52,13 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 (define-public gcc-4.7
   (let* ((stripped? #t)                           ; TODO: make this a parameter
          (install-target
-          ;; The 'install-strip' rule uses the native 'strip' instead of
-          ;; 'TARGET-strip' when cross-compiling.  Thus, use 'install' in that
-          ;; case.
-          (if (and stripped? (not (%current-target-system)))
-              "install-strip"
-              "install"))
+          (lambda ()
+            ;; The 'install-strip' rule uses the native 'strip' instead of
+            ;; 'TARGET-strip' when cross-compiling.  Thus, use 'install' in that
+            ;; case.
+            (if (and stripped? (not (%current-target-system)))
+                "install-strip"
+                "install")))
          (maybe-target-tools
           (lambda ()
             ;; Return the `_FOR_TARGET' variables that are needed when
@@ -238,7 +239,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
            (alist-replace 'install
                           (lambda* (#:key outputs #:allow-other-keys)
                             (zero?
-                             (system* "make" ,install-target)))
+                             (system* "make" ,(install-target))))
                           %standard-phases)))))
 
       (native-search-paths
