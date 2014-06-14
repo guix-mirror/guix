@@ -133,24 +133,30 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          #:strip-binaries? ,stripped?
          #:configure-flags ,(configure-flags)
          #:make-flags
-         (let* ((libc        (assoc-ref %build-inputs "libc"))
-                (libc-native (or (assoc-ref %build-inputs "libc-native")
-                                 libc)))
-           `(,@(if libc
-                   (list (string-append "LDFLAGS_FOR_TARGET="
-                                        "-B" libc "/lib "
-                                        "-Wl,-dynamic-linker "
-                                        "-Wl," libc
-                                        ,(glibc-dynamic-linker)))
-                   '())
+         ;; None of the flags below are needed when doing a Canadian cross.
+         ;; TODO: Simplify this.
+         ,(if (%current-target-system)
+              (if stripped?
+                  ''("CFLAGS=-g0 -O2")
+                  ''())
+              `(let* ((libc        (assoc-ref %build-inputs "libc"))
+                      (libc-native (or (assoc-ref %build-inputs "libc-native")
+                                       libc)))
+                 `(,@(if libc
+                         (list (string-append "LDFLAGS_FOR_TARGET="
+                                              "-B" libc "/lib "
+                                              "-Wl,-dynamic-linker "
+                                              "-Wl," libc
+                                              ,(glibc-dynamic-linker)))
+                         '())
 
-             ;; Native programs like 'genhooks' also need that right.
-             ,(string-append "LDFLAGS="
-                              "-Wl,-rpath=" libc-native "/lib "
-                             "-Wl,-dynamic-linker "
-                             "-Wl," libc-native ,(glibc-dynamic-linker))
-             ,(string-append "BOOT_CFLAGS=-O2 "
-                             ,(if stripped? "-g0" "-g"))))
+                   ;; Native programs like 'genhooks' also need that right.
+                   ,(string-append "LDFLAGS="
+                                   "-Wl,-rpath=" libc-native "/lib "
+                                   "-Wl,-dynamic-linker "
+                                   "-Wl," libc-native ,(glibc-dynamic-linker))
+                   ,(string-append "BOOT_CFLAGS=-O2 "
+                                   ,(if stripped? "-g0" "-g")))))
 
          #:tests? #f
          #:phases
