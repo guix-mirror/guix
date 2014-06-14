@@ -60,6 +60,7 @@
     (let ((guix-main (module-ref (resolve-interface '(guix ui))
                                  'guix-main)))
       (bindtextdomain "guix" (config-lookup "localedir"))
+      (bindtextdomain "guix-packages" (config-lookup "localedir"))
       (apply guix-main (command-line))))
 
   (maybe-augment-load-paths!)
