@@ -485,7 +485,14 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            ;; (‘genchecksum’, ‘gcc-nm’, etc.) rely on C++ headers.
            (copy-recursively (string-append gcc "/include/c++")
                              (string-append includedir "/c++"))
-           #t))))
+
+           ;; For native builds, check whether the binaries actually work.
+           ,(if (%current-target-system)
+                '#t
+                '(every (lambda (prog)
+                          (zero? (system* (string-append gcc "/bin/" prog)
+                                          "--version")))
+                        '("gcc" "g++" "cpp")))))))
     (inputs `(("gcc" ,%gcc-static)))))
 
 (define %guile-static
