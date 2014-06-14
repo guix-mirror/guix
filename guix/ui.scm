@@ -238,6 +238,14 @@ interpreted."
         (leave (_ "~a: ~a~%") proc
                (apply format #f format-string format-args))))))
 
+(define %guix-user-module
+  ;; Module in which user expressions are evaluated.
+  (let ((module (make-module)))
+    (beautify-user-module! module)
+    ;; Use (guix gexp) so that one can use #~ & co.
+    (module-use! module (resolve-interface '(guix gexp)))
+    module))
+
 (define (read/eval str)
   "Read and evaluate STR, raising an error if something goes wrong."
   (let ((exp (catch #t
@@ -248,7 +256,7 @@ interpreted."
                         str args)))))
     (catch #t
       (lambda ()
-        (eval exp the-root-module))
+        (eval exp %guix-user-module))
       (lambda args
         (leave (_ "failed to evaluate expression `~a': ~s~%")
                exp args)))))

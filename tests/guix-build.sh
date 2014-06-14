@@ -80,3 +80,7 @@ guix build -e "(begin
                    (gexp->derivation \"test\"
                                      (gexp (mkdir (ungexp output))))))" \
    --dry-run
+
+# Running a gexp.
+guix build -e '#~(mkdir #$output)' -d
+guix build -e '#~(mkdir #$output)' -d | grep 'gexp\.drv'

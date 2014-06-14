@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
@@ -338,6 +339,11 @@ packages."
             `(argument . ,p))
            ((? procedure? proc)
             (let ((drv (run-with-store store (proc) #:system system)))
+              `(argument . ,drv)))
+           ((? gexp? gexp)
+            (let ((drv (run-with-store store
+                         (gexp->derivation "gexp" gexp
+                                           #:system system))))
               `(argument . ,drv)))))
         (opt opt))
        opts))
