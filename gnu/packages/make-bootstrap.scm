@@ -415,6 +415,9 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        ;; GCC 4.8+ requires a C++ compiler and library.
                        "--enable-languages=c,c++"
 
+                       ;; Make sure gcc-nm doesn't require liblto_plugin.so.
+                       "--disable-lto"
+
                        "--disable-shared"
                        "--disable-plugin"
                        "--disable-libmudflap"
