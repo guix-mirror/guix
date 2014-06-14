@@ -21,6 +21,7 @@
   #:use-module ((guix licenses)
                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix download)
+  #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
   #:use-module (gnu packages)
@@ -181,7 +182,23 @@ random access nor for in-place modification.")
                            version ".tar.bz2"))
        (sha256
         (base32
-         "0aklwd9v7ix0m4ayl762sil685f42cwljzx3jz5skrnjaq32npmj"))))
+         "0aklwd9v7ix0m4ayl762sil685f42cwljzx3jz5skrnjaq32npmj"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; Some test scripts are missing shebangs, which cause "could not
+        ;; execute" errors.  Add shebangs.
+        '(for-each
+          (lambda (testscript)
+            (with-atomic-file-replacement
+                (string-append "testsuite/rdup/" testscript)
+              (lambda (in out)
+                (begin
+                  (format out "#!/bin/sh\n" )
+                  (dump-port in out)))))
+          '("rdup.hardlink.helper"
+            "rdup.hardlink-strip.helper"
+            "rdup.hardlink-strip2.helper"
+            "rdup.pipeline.helper")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
@@ -199,7 +216,14 @@ random access nor for in-place modification.")
                  (lambda _
                    (substitute* "GNUmakefile"
                      (("^(CFLAGS=.*)-Werror" _ front) front)))
-                 %standard-phases)))
+                 (alist-cons-before
+                  'check 'pre-check
+                  (lambda _
+                    (setenv "HOME" (getcwd))
+                    (substitute* "testsuite/rdup/rdup.rdup-up-t-with-file.exp"
+                      (("/bin/cat") (which "cat"))))
+                  
+                  %standard-phases))))
     (home-page "http://archive.miek.nl/projects/rdup/index.html")
     (synopsis "Provide a list of files to backup")
     (description

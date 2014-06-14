@@ -1305,7 +1305,8 @@ store.  To instruct the daemon to perform a build action, users actually
 provide it with a @dfn{derivation}.  A derivation is a low-level
 representation of the build actions to be taken, and the environment in
 which they should occur---derivations are to package definitions what
-assembly is to C programs.
+assembly is to C programs.  The term ``derivation'' comes from the fact
+that build results @emph{derive} from them.
 
 This chapter describes all these APIs in turn, starting from high-level
 package definitions.
@@ -2243,7 +2244,11 @@ For example, @var{expr} may be @code{(@@ (gnu packages guile)
 guile-1.8)}, which unambiguously designates this specific variant of
 version 1.8 of Guile.
 
-Alternately, @var{expr} may refer to a zero-argument monadic procedure
+Alternately, @var{expr} may be a G-expression, in which case it is used
+as a build program passed to @code{gexp->derivation}
+(@pxref{G-Expressions}).
+
+Lastly, @var{expr} may refer to a zero-argument monadic procedure
 (@pxref{The Store Monad}).  The procedure must return a derivation as a
 monadic value, which is then passed through @code{run-with-store}.
 

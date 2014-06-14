@@ -1,0 +1,21 @@
+Do not assume the SDL_image and SLD_mixer libraries are installed at the same
+prefix reported by sdl-config, but instead get flags from the pkg-config files
+installed with these libraries.
+
+--- a/SConscript	2011-12-24 15:46:47.000000000 -0600
++++ b/SConscript	2014-06-12 21:20:45.702668330 -0500
+@@ -199,7 +199,13 @@
+                 self.fatal_error += "  * library 'png' not found\n"
+ 
+     def configure_sdl(self):
+-        if self.conf.CheckMyProgram('sdl-config'):
++        if self.conf.CheckMyProgram('pkg-config'):
++            self.conf.env.ParseConfig("pkg-config --cflags --libs sdl")
++            for sdllib in ['image', 'mixer']:
++                self.conf.env.ParseConfig("pkg-config --cflags --libs SDL_%s" % sdllib)
++                if not self.conf.CheckSDLLib(sdllib):
++                    self.fatal_error += "  * SDL library '%s' not found\n" % sdllib
++        elif self.conf.CheckMyProgram('sdl-config'):
+             self.conf.env.ParseConfig("sdl-config  --cflags --libs | sed 's/-I/-isystem/g'")
+             for sdllib in ['image', 'mixer']:
+                 if not self.conf.CheckSDLLib(sdllib):

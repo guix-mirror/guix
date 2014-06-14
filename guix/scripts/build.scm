@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix monads)
+  #:use-module (guix gexp)
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 vlist)
@@ -151,6 +152,7 @@ options handled by 'set-build-options-from-command-line', and listed in
                      #:use-build-hook? (assoc-ref opts 'build-hook?)
                      #:max-silent-time (assoc-ref opts 'max-silent-time)
                      #:timeout (assoc-ref opts 'timeout)
+                     #:print-build-trace (assoc-ref opts 'print-build-trace?)
                      #:verbosity (assoc-ref opts 'verbosity)))
 
 (define %standard-build-options
@@ -213,6 +215,7 @@ options handled by 'set-build-options-from-command-line', and listed in
   `((system . ,(%current-system))
     (substitutes? . #t)
     (build-hook? . #t)
+    (print-build-trace? . #t)
     (max-silent-time . 3600)
     (verbosity . 0)))
 
@@ -336,6 +339,11 @@ packages."
             `(argument . ,p))
            ((? procedure? proc)
             (let ((drv (run-with-store store (proc) #:system system)))
+              `(argument . ,drv)))
+           ((? gexp? gexp)
+            (let ((drv (run-with-store store
+                         (gexp->derivation "gexp" gexp
+                                           #:system system))))
               `(argument . ,drv)))))
         (opt opt))
        opts))

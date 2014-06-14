@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -94,10 +94,11 @@ exit with non-zero."
 
   (format #t "copying and compiling Guix to `~a'...~%" out)
 
-  ;; Copy everything under guix/ and gnu/ plus guix.scm.
+  ;; Copy everything under guix/ and gnu/ plus {guix,gnu}.scm.
   (copy-recursively "guix" (string-append out "/guix"))
   (copy-recursively "gnu" (string-append out "/gnu"))
   (copy-file "guix.scm" (string-append out "/guix.scm"))
+  (copy-file "gnu.scm" (string-append out "/gnu.scm"))
 
   ;; Add a fake (guix config) module to allow the other modules to be
   ;; compiled.  The user's (guix config) is the one that will be used.

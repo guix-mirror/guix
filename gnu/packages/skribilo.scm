@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,11 +46,15 @@
        #:parallel-build? #f))
     ;; TODO: Add Ploticus.
     (inputs `(("guile" ,guile-2.0)
-              ("guile-reader" ,guile-reader/guile-2.0)
-              ("guile-lib" ,guile-lib)
               ("imagemagick" ,imagemagick)
               ("ghostscript" ,ghostscript)        ; for 'convert'
               ("lout" ,lout)))
+
+    ;; The 'skribilo' command needs them, and for people using Skribilo as a
+    ;; library, these inputs are needed as well.
+    (propagated-inputs `(("guile-reader" ,guile-reader/guile-2.0)
+                         ("guile-lib" ,guile-lib)))
+
     (home-page "http://www.nongnu.org/skribilo/")
     (synopsis "Document production tool written in Guile Scheme")
     (description

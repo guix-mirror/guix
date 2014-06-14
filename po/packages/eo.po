@@ -1,0 +1,1315 @@
+# Esperanto messages for GNU Guix
+# Copyright (C) 2013, 2014 Free Software Foundation, Inc.
+# This file is distributed under the same license as the guix package.
+# Felipe Castro <fefcas@gmail.com>, 2013, 2014.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: guix 0.6-pre1\n"
+"Report-Msgid-Bugs-To: ludo@gnu.org\n"
+"POT-Creation-Date: 2014-06-13 16:24+0200\n"
+"PO-Revision-Date: 2014-06-03 09:35-0300\n"
+"Last-Translator: Felipe Castro <fefcas@gmail.com>\n"
+"Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
+"Language: eo\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: gnu/packages/base.scm:63
+msgid "Hello, GNU world: An example GNU package"
+msgstr "Saluton, mondo GNU: ekzemplo de pako GNU"
+
+#: gnu/packages/base.scm:65
+msgid ""
+"GNU Hello prints the message \"Hello, world!\" and then exits.  It\n"
+"serves as an example of standard GNU coding practices.  As such, it "
+"supports\n"
+"command-line arguments, multiple languages, and so on."
+msgstr ""
+"GNU Hello montras la mesaĝon \"Hello, world!\" kaj finiĝas.  Ĝi\n"
+"funkcias kiel ekzemplo de norma kodumada tradicio de GNU.  Tiel, ĝi "
+"subtenas\n"
+"komand-liniajn argumentojn, plurajn lingvojn, kaj tiel plu."
+
+#: gnu/packages/base.scm:83
+msgid "Print lines matching a pattern"
+msgstr "Montri liniojn kongruajn al ŝablono"
+
+#: gnu/packages/base.scm:85
+msgid ""
+"grep is a tool for finding text inside files.  Text is found by\n"
+"matching a pattern provided by the user in one or many files.  The pattern\n"
+"may be provided as a basic or extended regular expression, or as fixed\n"
+"strings.  By default, the matching text is simply printed to the screen,\n"
+"however the output can be greatly customized to include, for example, line\n"
+"numbers.  GNU grep offers many extensions over the standard utility,\n"
+"including, for example, recursive directory searching."
+msgstr ""
+"grep estas ilo por trovi tekstojn interne de dosieroj.  Teksto estas "
+"trovita\n"
+"per kongruo al ŝablono indikita de la uzanto en unu aŭ pluraj dosieroj.\n"
+"La ŝablono povas esti indikata kiel bazan aŭ etenditan regul-esprimon, aŭ\n"
+"kiel fiksajn ĉenojn.  Apriore, la kongruita teksto estas simple montrata\n"
+"en la ekrano, tamen la eligo povas esti ege personigita por inkluzivigi,\n"
+"ekzemple, lini-numerojn.  GNU grep oferaj multajn kromaĵojn kompare al la\n"
+"originala aplikaĵo, inkluzive, ekzemple, rikuran serĉadon en dosierujoj."
+
+#: gnu/packages/base.scm:107
+msgid "Stream editor"
+msgstr "Flu-redaktilo"
+
+#: gnu/packages/base.scm:122
+msgid ""
+"Sed is a non-interactive, text stream editor.  It receives a text\n"
+"input from a file or from standard input and it then applies a series of "
+"text\n"
+"editing commands to the stream and prints its output to standard output.  "
+"It\n"
+"is often used for substituting text patterns in a stream.  The GNU\n"
+"implementation offers several extensions over the standard utility."
+msgstr ""
+
+#: gnu/packages/base.scm:142
+msgid "Managing tar archives"
+msgstr "Administrado de arĥivoj tar"
+
+#: gnu/packages/base.scm:144
+msgid ""
+"Tar provides the ability to create tar archives, as well as the\n"
+"ability to extract, update or list files in an existing archive.  It is\n"
+"useful for combining many files into one larger file, while maintaining\n"
+"directory structure and file information such as permissions and\n"
+"creation/modification dates.  GNU tar offers many extensions over the\n"
+"standard utility."
+msgstr ""
+
+#: gnu/packages/base.scm:171
+msgid "Apply differences to originals, with optional backups"
+msgstr "Apliki malsamojn al originaloj, kun nedevigaj savkopioj"
+
+#: gnu/packages/base.scm:173
+msgid ""
+"Patch is a program that applies changes to files based on differences\n"
+"laid out as by the program \"diff\".  The changes may be applied to one or "
+"more\n"
+"files depending on the contents of the diff file.  It accepts several\n"
+"different diff formats.  It may also be used to revert previously applied\n"
+"differences."
+msgstr ""
+
+#: gnu/packages/base.scm:193
+msgid "Comparing and merging files"
+msgstr "Komparo kaj kunmikso de dosieroj"
+
+#: gnu/packages/base.scm:195
+msgid ""
+"GNU Diffutils is a package containing tools for finding the\n"
+"differences between files.  The \"diff\" command is used to show how two "
+"files\n"
+"differ, while \"cmp\" shows the offsets and line numbers where they "
+"differ. \n"
+"\"diff3\" allows you to compare three files.  Finally, \"sdiff\" offers an\n"
+"interactive means to merge two files."
+msgstr ""
+
+#: gnu/packages/base.scm:222
+msgid "Operating on files matching given criteria"
+msgstr "Operacio sur dosieroj kongruantaj al indikia kriterio"
+
+#: gnu/packages/base.scm:224
+msgid ""
+"Findutils supplies the basic file directory searching utilities of the\n"
+"GNU system.  It consists of two primary searching utilities: \"find\"\n"
+"recursively searches for files in a directory according to given criteria "
+"and\n"
+"\"locate\" lists files in a database that match a query.  Two auxiliary "
+"tools\n"
+"are included: \"updatedb\" updates the file name database and \"xargs\" may "
+"be\n"
+"used to apply commands with arbitrarily long arguments."
+msgstr ""
+
+#: gnu/packages/base.scm:274
+msgid "Core GNU utilities (file, text, shell)"
+msgstr "Nukleaj utilaĵoj GNU (file, text, shell)"
+
+#: gnu/packages/base.scm:276
+msgid ""
+"GNU Coreutils includes all of the basic command-line tools that are\n"
+"expected in a POSIX system.  These provide the basic file, shell and text\n"
+"manipulation functions of the GNU system.  Most of these tools offer "
+"extended\n"
+"functionality beyond that which is outlined in the POSIX standard."
+msgstr ""
+
+#: gnu/packages/base.scm:310
+msgid "Remake files automatically"
+msgstr "Reprocezi dosierojn aŭtomate"
+
+#: gnu/packages/base.scm:312
+msgid ""
+"Make is a program that is used to control the production of\n"
+"executables or other files from their source files.  The process is\n"
+"controlled from a Makefile, in which the developer specifies how each file "
+"is\n"
+"generated from its source.  It has powerful dependency resolution and the\n"
+"ability to determine when files have to be regenerated after their sources\n"
+"change.  GNU make offers many powerful extensions over the standard utility."
+msgstr ""
+
+#: gnu/packages/base.scm:357
+msgid "Binary utilities: bfd gas gprof ld"
+msgstr "Duumaj utilaĵoj: bfd gas gprof ld"
+
+#: gnu/packages/base.scm:359
+msgid ""
+"GNU Binutils is a collection of tools for working with binary files.\n"
+"Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler. "
+"Other\n"
+"tools include programs to display binary profiling information, list the\n"
+"strings in a binary file, and utilities for working with archives.  The \"bfd"
+"\"\n"
+"library for working with executable and object formats is also included."
+msgstr ""
+
+#: gnu/packages/base.scm:500
+msgid "The GNU C Library"
+msgstr "La Biblioteko GNU C"
+
+#: gnu/packages/base.scm:502
+msgid ""
+"Any Unix-like operating system needs a C library: the library which\n"
+"defines the \"system calls\" and other basic facilities such as open, "
+"malloc,\n"
+"printf, exit...\n"
+"\n"
+"The GNU C library is used as the C library in the GNU system and most "
+"systems\n"
+"with the Linux kernel."
+msgstr ""
+
+#: gnu/packages/base.scm:571
+msgid "Database of current and historical time zones"
+msgstr "Datumbazo de nuna kaj pasintaj temp-zonoj"
+
+#: gnu/packages/base.scm:572
+msgid ""
+"The Time Zone Database (often called tz or zoneinfo)\n"
+"contains code and data that represent the history of local time for many\n"
+"representative locations around the globe. It is updated periodically to\n"
+"reflect changes made by political bodies to time zone boundaries, UTC "
+"offsets,\n"
+"and daylight-saving rules."
+msgstr ""
+
+#: gnu/packages/base.scm:968
+msgid "GNU C++ standard library (intermediate)"
+msgstr "GNU C++ norma biblioteko (intermeza)"
+
+#: gnu/packages/base.scm:1056
+msgid "The linker wrapper"
+msgstr "La ligila ĉirkaŭanto"
+
+#: gnu/packages/base.scm:1058
+msgid ""
+"The linker wrapper (or `ld-wrapper') wraps the linker to add any\n"
+"missing `-rpath' flags, and to detect any misuse of libraries outside of "
+"the\n"
+"store."
+msgstr ""
+
+#: gnu/packages/base.scm:1159
+msgid "Complete GCC tool chain for C/C++ development"
+msgstr ""
+
+#: gnu/packages/base.scm:1161
+msgid ""
+"This package provides a complete GCC tool chain for C/C++ development to\n"
+"be installed in user profiles.  This includes GCC, as well as libc (headers\n"
+"and binaries, plus debugging symbols in the 'debug' output), and Binutils."
+msgstr ""
+
+#: gnu/packages/guile.scm:99 gnu/packages/guile.scm:166
+msgid "Scheme implementation intended especially for extensions"
+msgstr "Realigo de Scheme celata speciale por aldonoj"
+
+#: gnu/packages/guile.scm:101 gnu/packages/guile.scm:168
+msgid ""
+"Guile is the GNU Ubiquitous Intelligent Language for Extensions, the\n"
+"official extension language of the GNU system.  It is an implementation of\n"
+"the Scheme language which can be easily embedded in other applications to\n"
+"provide a convenient means of extending the functionality of the "
+"application\n"
+"without requiring the source code to be rewritten."
+msgstr ""
+
+#: gnu/packages/guile.scm:211
+msgid "Framework for building readers for GNU Guile"
+msgstr "Framo por konstrui legilojn por GNU Guile"
+
+#: gnu/packages/guile.scm:213
+msgid ""
+"Guile-Reader is a simple framework for building readers for GNU Guile.\n"
+"\n"
+"The idea is to make it easy to build procedures that extend Guile’s read\n"
+"procedure. Readers supporting various syntax variants can easily be "
+"written,\n"
+"possibly by re-using existing “token readers” of a standard Scheme\n"
+"readers. For example, it is used to implement Skribilo’s R5RS-derived\n"
+"document syntax.\n"
+"\n"
+"Guile-Reader’s approach is similar to Common Lisp’s “read table”, but\n"
+"hopefully more powerful and flexible (for instance, one may instantiate as\n"
+"many readers as needed)."
+msgstr ""
+
+#: gnu/packages/guile.scm:266
+msgid "Guile bindings to ncurses"
+msgstr "Bindoj de Guile por ncurses"
+
+#: gnu/packages/guile.scm:268
+msgid ""
+"guile-ncurses provides Guile language bindings for the ncurses\n"
+"library."
+msgstr ""
+
+#: gnu/packages/guile.scm:288
+msgid "Run jobs at scheduled times"
+msgstr "Lanĉi taskoj je antaŭplanitaj horoj"
+
+#: gnu/packages/guile.scm:290
+msgid ""
+"GNU Mcron is a complete replacement for Vixie cron.  It is used to run\n"
+"tasks on a schedule, such as every hour or every Monday.  Mcron is written "
+"in\n"
+"Guile, so its configuration can be written in Scheme; the original cron\n"
+"format is also supported."
+msgstr ""
+
+#: gnu/packages/guile.scm:318
+msgid "Collection of useful Guile Scheme modules"
+msgstr "Aro da utilaj moduloj de Guile Scheme"
+
+#: gnu/packages/guile.scm:320
+msgid ""
+"guile-lib is intended as an accumulation place for pure-scheme Guile\n"
+"modules, allowing for people to cooperate integrating their generic Guile\n"
+"modules into a coherent library.  Think \"a down-scaled, limited-scope CPAN\n"
+"for Guile\"."
+msgstr ""
+
+#: gnu/packages/guile.scm:351
+msgid "JSON module for Guile"
+msgstr "Modulo JSON por Guile"
+
+#: gnu/packages/guile.scm:353
+msgid ""
+"Guile-json supports parsing and building JSON documents according to the\n"
+"http:://json.org specification. These are the main features:\n"
+"- Strictly complies to http://json.org specification.\n"
+"- Build JSON documents programmatically via macros.\n"
+"- Unicode support for strings.\n"
+"- Allows JSON pretty printing."
+msgstr ""
+
+#: gnu/packages/lout.scm:109
+msgid "Lout, a document layout system similar in style to LaTeX"
+msgstr "Lout, dokument-aranĝa sistemo simila al LaTeX, laŭ stilo"
+
+#: gnu/packages/lout.scm:111
+msgid ""
+"The Lout document formatting system is now reads a high-level description "
+"of\n"
+"a document similar in style to LaTeX and produces a PostScript or plain "
+"text\n"
+"output file.\n"
+"\n"
+"Lout offers an unprecedented range of advanced features, including optimal\n"
+"paragraph and page breaking, automatic hyphenation, PostScript EPS file\n"
+"inclusion and generation, equation formatting, tables, diagrams, rotation "
+"and\n"
+"scaling, sorted indexes, bibliographic databases, running headers and\n"
+"odd-even pages, automatic cross referencing, multilingual documents "
+"including\n"
+"hyphenation (most European languages are supported), formatting of computer\n"
+"programs, and much more, all ready to use.  Furthermore, Lout is easily\n"
+"extended with definitions which are very much easier to write than troff of\n"
+"TeX macros because Lout is a high-level, purely functional language, the\n"
+"outcome of an eight-year research project that went back to the\n"
+"beginning."
+msgstr ""
+
+#: gnu/packages/recutils.scm:58
+msgid "Manipulate plain text files as databases"
+msgstr "Manipuli simplajn tekst-dosierojn kiel datumbazojn"
+
+#: gnu/packages/recutils.scm:60
+msgid ""
+"GNU Recutils is a set of tools and libraries for creating and\n"
+"manipulating text-based, human-editable databases.  Despite being text-"
+"based,\n"
+"databases created with Recutils carry all of the expected features such as\n"
+"unique fields, primary keys, time stamps and more. Many different field "
+"types\n"
+"are supported, as is encryption."
+msgstr ""
+
+#~ msgid "cannot access `~a': ~a~%"
+#~ msgstr "ne eblas atingi '~a': ~a~%"
+
+#~ msgid "ambiguous package specification `~a'~%"
+#~ msgstr "plursenca pak-specifigo '~a'~%"
+
+#~ msgid "choosing ~a from ~a~%"
+#~ msgstr "ni elektas ~a el ~a~%"
+
+#~ msgid "~A: package not found for version ~a~%"
+#~ msgstr "~A: pako ne trovita por versio ~a~%"
+
+#~ msgid "~A: unknown package~%"
+#~ msgstr "~A: nekonata pako~%"
+
+#~ msgid "failed to create GC root `~a': ~a~%"
+#~ msgstr "fiasko dum kreo de radiko GC '~a': ~a~%"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -K, --keep-failed      keep build tree of failed builds"
+#~ msgstr ""
+#~ "\n"
+#~ "  -K, --keep-failed      teni konstru-arbon el fiaskintaj konstruoj"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -n, --dry-run          do not build the derivations"
+#~ msgstr ""
+#~ "\n"
+#~ "  -n, --dry-run          ne konstrui derivaĵojn"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --fallback         fall back to building when the substituter fails"
+#~ msgstr ""
+#~ "\n"
+#~ "      --fallback         retropaŝi al konstruado kiam la anstataŭiganto "
+#~ "fiaskas"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --no-substitutes   build instead of resorting to pre-built "
+#~ "substitutes"
+#~ msgstr ""
+#~ "\n"
+#~ "      --no-substitutes   konstrui anstataŭ provi jam-konstruitajn "
+#~ "anstataŭigantojn"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --no-build-hook    do not attempt to offload builds via the build "
+#~ "hook"
+#~ msgstr ""
+#~ "\n"
+#~ "      --no-build-hook    ne provi disŝarĝi konstruojn per la konstru-hoko"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --max-silent-time=SECONDS\n"
+#~ "                         mark the build as failed after SECONDS of silence"
+#~ msgstr ""
+#~ "\n"
+#~ "      --max-silent-time=SEKUNDOJ\n"
+#~ "                         marki la konstruon kiel fiaskintan post SEKUNDOJ "
+#~ "da silento"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --timeout=SECONDS  mark the build as failed after SECONDS of "
+#~ "activity"
+#~ msgstr ""
+#~ "\n"
+#~ "      --timeout=SEKUNDOJ marki la konstruon kiel fiaskintan post SEKUNDOJ "
+#~ "da aktivado"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --verbosity=LEVEL  use the given verbosity LEVEL"
+#~ msgstr ""
+#~ "\n"
+#~ "      --verbosity=NIVELO uzi la indikitan detaligan NIVELOn"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -c, --cores=N          allow the use of up to N CPU cores for the build"
+#~ msgstr ""
+#~ "\n"
+#~ "  -c, --cores=N          permesigi uzon de ĝis N CPU-nukleojn por la "
+#~ "konstruo"
+
+#~ msgid "~a: not a number~%"
+#~ msgstr "~a: ne estas numero~%"
+
+#~ msgid ""
+#~ "Usage: guix build [OPTION]... PACKAGE-OR-DERIVATION...\n"
+#~ "Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"
+#~ msgstr ""
+#~ "Uzado: guix build [MODIFILO]... PAKO-AŬ-DERIVAĴO...\n"
+#~ "Konstrui la indikitan PAKO-AŬ-DERIVAĴOn kaj montri iliajn eligajn "
+#~ "vojojn.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -e, --expression=EXPR  build the package or derivation EXPR evaluates to"
+#~ msgstr ""
+#~ "\n"
+#~ "  -e, --expression=ESPR  konstrui la pakon aŭ derivaĵon kiu rezultas de "
+#~ "ESPR"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -S, --source           build the packages' source derivations"
+#~ msgstr ""
+#~ "\n"
+#~ "  -S, --source           konstrui la font-derivaĵojn de la pakoj"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""
+#~ msgstr ""
+#~ "\n"
+#~ "  -s, --system=SISTEMO   provi konstrui por SISTEMO--ekz., \"i686-linux\""
+
+#~ msgid ""
+#~ "\n"
+#~ "      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu"
+#~ "\""
+#~ msgstr ""
+#~ "\n"
+#~ "      --target=TRIOPO    cruc-konstrui por TRIOPO--ekz., \"armel-linux-gnu"
+#~ "\""
+
+#~ msgid ""
+#~ "\n"
+#~ "      --with-source=SOURCE\n"
+#~ "                         use SOURCE when building the corresponding "
+#~ "package"
+#~ msgstr ""
+#~ "\n"
+#~ "      --with-source=FONTO\n"
+#~ "                         uzi FONTOn dum konstruo de la koresponda pako"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -d, --derivations      return the derivation paths of the given packages"
+#~ msgstr ""
+#~ "\n"
+#~ "  -d, --derivations      liveri la derivaĵajn vojojn de la indikitaj pakoj"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -r, --root=FILE        make FILE a symlink to the result, and register "
+#~ "it\n"
+#~ "                         as a garbage collector root"
+#~ msgstr ""
+#~ "\n"
+#~ "  -r, --root=DOSIERO     igi DOSIEROn simbola ligo al la rezulto, kaj "
+#~ "registri\n"
+#~ "                         ĝin kiel radikon de rubaĵ-kolektanto"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --log-file         return the log file names for the given "
+#~ "derivations"
+#~ msgstr ""
+#~ "\n"
+#~ "      --log-file         liveri la protokol-dosierajn nomojn por la "
+#~ "indikitaj derivaĵoj"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -h, --help             display this help and exit"
+#~ msgstr ""
+#~ "\n"
+#~ "  -h, --help             montri ĉi tiun helpon kaj eliri"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -V, --version          display version information and exit"
+#~ msgstr ""
+#~ "\n"
+#~ "  -V, --version          montri informon pri versio kaj eliri"
+
+#~ msgid "sources do not match any package:~{ ~a~}~%"
+#~ msgstr "fontoj ne kongruas al iu ajn pako:~{ ~a~}~%"
+
+#~ msgid "~A: unrecognized option~%"
+#~ msgstr "~A: nerekonata modifilo~%"
+
+#~ msgid "no build log for '~a'~%"
+#~ msgstr "neniu konstruita protokolo por '~a'~%"
+
+#~ msgid ""
+#~ "Usage: guix download [OPTION] URL\n"
+#~ "Download the file at URL, add it to the store, and print its store path\n"
+#~ "and the hash of its contents.\n"
+#~ "\n"
+#~ "Supported formats: 'nix-base32' (default), 'base32', and 'base16'\n"
+#~ "('hex' and 'hexadecimal' can be used as well).\n"
+#~ msgstr ""
+#~ "Uzmaniero: guix download [OPTION] URL\n"
+#~ "Elŝuti la dosieron ĉe la URL, aldoni ĝin al la konservejo, kaj montri\n"
+#~ " ĝian konservo-vojon kaj la haketon de ĝia enhavo.\n"
+#~ "\n"
+#~ "Subtenataj formoj: 'nix-base32' (aprioras), 'base32', kaj 'base16'\n"
+#~ "('hex' kaj 'hexadecimal' ankaŭ uzeblas, por deksesumo).\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -f, --format=FMT       write the hash in the given format"
+#~ msgstr ""
+#~ "\n"
+#~ "  -f, --format=FRM       skribi la haketon laŭ la indikita formo"
+
+#~ msgid "unsupported hash format: ~a~%"
+#~ msgstr "nesubtenata haket-formo: ~a~%"
+
+#~ msgid "~a: failed to parse URI~%"
+#~ msgstr "~a: analizo de URI fiaskis~%"
+
+#~ msgid "~a: download failed~%"
+#~ msgstr "~a: elŝuto fiaskis~%"
+
+#~ msgid "failed to build the empty profile~%"
+#~ msgstr "fiasko dum konstruo de malplena profilo~%"
+
+#~ msgid "switching from generation ~a to ~a~%"
+#~ msgstr "alterno el generacio ~a al ~a~%"
+
+#~ msgid "profile '~a' does not exist~%"
+#~ msgstr "profilo '~a' ne ekzistas~%"
+
+#~ msgid "nothing to do: already at the empty profile~%"
+#~ msgstr "nenio por fari: jam estas ĉe la malplena profilo~%"
+
+#~ msgid "The following package would be removed:~%~{~a~%~}~%"
+#~ msgstr "La jena pako devos esti forigata:~%~{~a~%~}~%"
+
+#~ msgid "The following package will be removed:~%~{~a~%~}~%"
+#~ msgstr "La jena pako estos forigata:~%~{~a~%~}~%"
+
+#~ msgid "The following package would be installed:~%~{~a~%~}~%"
+#~ msgstr "La jena pako estus instalata:~% ~{~a~%~}~%"
+
+#~ msgid "The following package will be installed:~%~{~a~%~}~%"
+#~ msgstr "La jena pako estos instalata:~% ~{~a~%~}~%"
+
+#~ msgid "package `~a' lacks output `~a'~%"
+#~ msgstr "pako '~a' malhavas eligon '~a'~%"
+
+#~ msgid "~a: package not found~%"
+#~ msgstr "~a: pako ne trovita~%"
+
+#~ msgid "looking for the latest release of GNU ~a..."
+#~ msgstr "ni serĉas la lastan eldonon de GNU ~a..."
+
+#~ msgid "~a: note: using ~a but ~a is available upstream~%"
+#~ msgstr "~a: rimarko: ni uzas ~a sed ~a disponeblas unuanivele~%"
+
+#~ msgid "The following environment variable definitions may be needed:~%"
+#~ msgstr "La jenaj medi-variablaj difinoj povos esti necesaj:~%"
+
+#~ msgid ""
+#~ "Usage: guix package [OPTION]... PACKAGES...\n"
+#~ "Install, remove, or upgrade PACKAGES in a single transaction.\n"
+#~ msgstr ""
+#~ "Uzmaniero: guix package [MODIFILO]... PAKOJ...\n"
+#~ "Instalas, forigas, aŭ ĝisdatigas PAKOJn en ununura ago.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -i, --install=PACKAGE  install PACKAGE"
+#~ msgstr ""
+#~ "\n"
+#~ "  -i, --install=PAKO     instali PAKOn"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -e, --install-from-expression=EXP\n"
+#~ "                         install the package EXP evaluates to"
+#~ msgstr ""
+#~ "\n"
+#~ "  -e, --install-from-expression=ESP\n"
+#~ "                         instali la pakon ESP rezultas al"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -r, --remove=PACKAGE   remove PACKAGE"
+#~ msgstr ""
+#~ "\n"
+#~ "  -r, --remove=PAKO      forigi PAKOn"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -u, --upgrade[=REGEXP] upgrade all the installed packages matching "
+#~ "REGEXP"
+#~ msgstr ""
+#~ "\n"
+#~ "  -u, --upgrade[=REGESP] ĝisdatigi ĉiujn instalitajn pakojn kongruantajn "
+#~ "al REGESP"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --roll-back        roll back to the previous generation"
+#~ msgstr ""
+#~ "\n"
+#~ "      --roll-back        retropaŝi al la antaŭa generacio"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --search-paths     display needed environment variable definitions"
+#~ msgstr ""
+#~ "\n"
+#~ "      --search-paths     montri necesajn medi-variablajn difinojn"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -l, --list-generations[=PATTERN]\n"
+#~ "                         list generations matching PATTERN"
+#~ msgstr ""
+#~ "\n"
+#~ "  -I, --list-generations[=ŜABLONO]\n"
+#~ "                         listigi generaciojn kongruantajn al ŜABLONO"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -d, --delete-generations[=PATTERN]\n"
+#~ "                         delete generations matching PATTERN"
+#~ msgstr ""
+#~ "\n"
+#~ "  -d, --delete-generations[=ŜABLONO]\n"
+#~ "                         forigi generaciojn kongruantajn al ŜABLONO"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -p, --profile=PROFILE  use PROFILE instead of the user's default profile"
+#~ msgstr ""
+#~ "\n"
+#~ "  -p, --profile=PROFILO  uzi PROFILOn anstataŭ la apriora profilo de la "
+#~ "uzanto"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --bootstrap        use the bootstrap Guile to build the profile"
+#~ msgstr ""
+#~ "\n"
+#~ "      --bootstrap        uzi la praŝargilon Guile por konstrui la profilon"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --verbose          produce verbose output"
+#~ msgstr ""
+#~ "\n"
+#~ "      --verbose          produkti detalplenan eligon"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -s, --search=REGEXP    search in synopsis and description using REGEXP"
+#~ msgstr ""
+#~ "\n"
+#~ "  -s, --search=REGESP    serĉi en resumo kaj priskribo uzante REGESP"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -I, --list-installed[=REGEXP]\n"
+#~ "                         list installed packages matching REGEXP"
+#~ msgstr ""
+#~ "\n"
+#~ "  -I, --list-installed[=REGESP]\n"
+#~ "                         listigi instalitajn pakojn kongruantajn al REGESP"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -A, --list-available[=REGEXP]\n"
+#~ "                         list available packages matching REGEXP"
+#~ msgstr ""
+#~ "\n"
+#~ "  -A, --list-available[=REGESP]\n"
+#~ "                         listigi disponeblajn pakojn kongruantajn al "
+#~ "REGESP"
+
+#~ msgid "~A: extraneous argument~%"
+#~ msgstr "~A: fremda argumento~%"
+
+#~ msgid "Try \"info '(guix) Invoking guix package'\" for more information.~%"
+#~ msgstr "Provu \"info '(guix) Invoking guix package'\" por pli da informo.'%"
+
+#~ msgid "error: while creating directory `~a': ~a~%"
+#~ msgstr "eraro: dum kreo de dosierujo '~a': ~a~%"
+
+#~ msgid "Please create the `~a' directory, with you as the owner.~%"
+#~ msgstr "Bonvolu krei la dosierujon '~a', kun vi kiel posedanto.~%"
+
+#~ msgid "error: directory `~a' is not owned by you~%"
+#~ msgstr "eraro: dosierujo '~a' ne estas posedata de vi~%"
+
+#~ msgid "Please change the owner of `~a' to user ~s.~%"
+#~ msgstr "Bonvole ŝanĝu la posedanton de '~a' al la uzanto ~s.~%"
+
+#~ msgid "deleting ~a~%"
+#~ msgstr "ni forigas ~a~%"
+
+#~ msgid "invalid syntax: ~a~%"
+#~ msgstr "malvalida sintakso: ~a~%"
+
+#~ msgid "nothing to be done~%"
+#~ msgstr "nenio por fari~%"
+
+#~ msgid "~a package in profile~%"
+#~ msgstr "pako ~a en profilo~%"
+
+#~ msgid "Generation ~a\t~a"
+#~ msgstr "Generacio ~a\t~a"
+
+#~ msgid "~a\t(current)~%"
+#~ msgstr "~a\t(nuna)~%"
+
+#~ msgid ""
+#~ "Usage: guix gc [OPTION]... PATHS...\n"
+#~ "Invoke the garbage collector.\n"
+#~ msgstr ""
+#~ "Uzmaniero: guix gc [MODIFILO]... VOJOJ...\n"
+#~ "Voki la rubaĵ-kolektanton.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -C, --collect-garbage[=MIN]\n"
+#~ "                         collect at least MIN bytes of garbage"
+#~ msgstr ""
+#~ "\n"
+#~ "  -C, --collect-garbage[=MIN]\n"
+#~ "                         kolekti minimume MIN bajtojn da rubaĵo"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -d, --delete           attempt to delete PATHS"
+#~ msgstr ""
+#~ "\n"
+#~ "  -d, --delete           provi forigi VOJOJn"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --list-dead        list dead paths"
+#~ msgstr ""
+#~ "\n"
+#~ "      --list-dead        listigi mortajn vojojn"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --list-live        list live paths"
+#~ msgstr ""
+#~ "\n"
+#~ "      --list-live        listigi aktivajn vojojn"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --references       list the references of PATHS"
+#~ msgstr ""
+#~ "\n"
+#~ "      --references       listigi la referencojn de VOJOJ"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -R, --requisites       list the requisites of PATHS"
+#~ msgstr ""
+#~ "\n"
+#~ "  -R, --requisites       listigi la antaŭbezonojn de VOJOJ"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --referrers        list the referrers of PATHS"
+#~ msgstr ""
+#~ "\n"
+#~ "      --referrers        listigi la referencantojn de VOJOJ"
+
+#~ msgid "invalid amount of storage: ~a~%"
+#~ msgstr "malvalida kvanto da konserv-spaco: ~a~%"
+
+#~ msgid ""
+#~ "Usage: guix hash [OPTION] FILE\n"
+#~ "Return the cryptographic hash of FILE.\n"
+#~ "\n"
+#~ "Supported formats: 'nix-base32' (default), 'base32', and 'base16' ('hex'\n"
+#~ "and 'hexadecimal' can be used as well).\n"
+#~ msgstr ""
+#~ "Uzmaniero: guix hash [MODIFILO] DOSIERO\n"
+#~ "Liveras la ĉifran haketon de DOSIERO.\n"
+#~ "\n"
+#~ "Subtenataj formoj: 'nix-base32' (aprioras), 'base32', kaj "
+#~ "'base16' ('hex'\n"
+#~ "kaj 'hexadecimal' ankaŭ povas esti uzataj, por deksesumo).\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -r, --recursive        compute the hash on FILE recursively"
+#~ msgstr ""
+#~ "\n"
+#~ "  -r, --recursive        komputi la haketon ĉe DOSIERO rikure"
+
+#~ msgid "unrecognized option: ~a~%"
+#~ msgstr "nerekonata modifilo: ~a~%"
+
+#~ msgid "~a~%"
+#~ msgstr "~a~%"
+
+#~ msgid "wrong number of arguments~%"
+#~ msgstr "malĝusta nombro da argumentoj~%"
+
+#~ msgid ""
+#~ "Usage: guix pull [OPTION]...\n"
+#~ "Download and deploy the latest version of Guix.\n"
+#~ msgstr ""
+#~ "Uzmaniero: guix pull [MODIFILO]...\n"
+#~ "Elŝuti kaj liveri la lastan version de Guix.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --url=URL          download the Guix tarball from URL"
+#~ msgstr ""
+#~ "\n"
+#~ "      --url=URL          elŝuti la tar-dosiero de Guix el URL"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --bootstrap        use the bootstrap Guile to build the new Guix"
+#~ msgstr ""
+#~ "\n"
+#~ "      --bootstrap        uzi la 'bootstrap' Guile por konstrui novan Guix"
+
+#~ msgid "~A: unexpected argument~%"
+#~ msgstr "~A: neatendita argumento~%"
+
+#~ msgid "failed to download up-to-date source, exiting\n"
+#~ msgstr "fiasko dum elŝuto de aktuala fonto, ni ĉesas\n"
+
+#~ msgid "updated ~a successfully deployed under `~a'~%"
+#~ msgstr "ni ĝisdatigis ~a sukcese, liverita sur '~a'~%"
+
+#~ msgid "failed to update Guix, check the build log~%"
+#~ msgstr "fiasko dum ĝisdatigo de Guix, kontrolu la konstru-protokolon~%"
+
+#~ msgid "Guix already up to date\n"
+#~ msgstr "Guix jam estas ĝisdata\n"
+
+#~ msgid "authentication and authorization of substitutes disabled!~%"
+#~ msgstr "aŭtentikigo kaj permeso de anstataŭantoj estas malebligataj!~%"
+
+#~ msgid "download from '~a' failed: ~a, ~s~%"
+#~ msgstr "elŝuto el '~a' fiaskis: ~a, ~s~%"
+
+#~ msgid "while fetching ~a: server is unresponsive~%"
+#~ msgstr "dum havigo de ~a: servilo ne respondas~%"
+
+#~ msgid "try `--no-substitutes' if the problem persists~%"
+#~ msgstr "provu '--no-substituse' se la problemo persistos~%"
+
+#~ msgid "signature version must be a number: ~a~%"
+#~ msgstr "subskriba versio devas esti numero: ~a~%"
+
+#~ msgid "unsupported signature version: ~a~%"
+#~ msgstr "nesubtenata subskriba versio: ~a~%"
+
+#~ msgid "signature is not a valid s-expression: ~s~%"
+#~ msgstr "subskribo ne estas valida s-esprimo: ~s~%"
+
+#~ msgid "invalid format of the signature field: ~a~%"
+#~ msgstr "malvalida formo de subskriba kampo: ~a~%"
+
+#~ msgid "invalid signature for '~a'~%"
+#~ msgstr "malvalida subskribo por '~a'~%"
+
+#~ msgid "hash mismatch for '~a'~%"
+#~ msgstr "haketa malkongruo por '~a'~%"
+
+#~ msgid "'~a' is signed with an unauthorized key~%"
+#~ msgstr "'~a' estas subskribita sen rajtigita ŝlosilo~%"
+
+#~ msgid "signature on '~a' is corrupt~%"
+#~ msgstr "subskribo en '~a' estas difektita~%"
+
+#~ msgid "narinfo for '~a' lacks a signature~%"
+#~ msgstr "narinfo por '~a' malhavas subskribon~%"
+
+#~ msgid "Downloading, please wait...~%"
+#~ msgstr "Ni elŝutas, bonvolu atendi...~%"
+
+#~ msgid "(Please consider upgrading Guile to get proper progress report.)~%"
+#~ msgstr ""
+#~ "(Bonvolu konsideri pri ĝisdatigo de Guile por havigi ĝustan progres-"
+#~ "raporton.)~%"
+
+#~ msgid "host name lookup error: ~a~%"
+#~ msgstr "eraro en serĉado de gastigant-nomo: ~a~%"
+
+#~ msgid ""
+#~ "Usage: guix substitute-binary [OPTION]...\n"
+#~ "Internal tool to substitute a pre-built binary to a local build.\n"
+#~ msgstr ""
+#~ "Uzmaniero: guix substitute-binary [MODIFILO]...\n"
+#~ "Interna ilo por anstataŭigi antaŭ-konstruitan duumaĵon al loka "
+#~ "kompilaĵo.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --query            report on the availability of substitutes for "
+#~ "the\n"
+#~ "                         store file names passed on the standard input"
+#~ msgstr ""
+#~ "\n"
+#~ "      --query            raporti pri la disponebleco de anstataŭigoj por "
+#~ "la\n"
+#~ "                         konservaj dosier-nomoj indikitaj per la "
+#~ "ĉefenigujo"
+
+#~ msgid ""
+#~ "\n"
+#~ "      --substitute STORE-FILE DESTINATION\n"
+#~ "                         download STORE-FILE and store it as a Nar in "
+#~ "file\n"
+#~ "                         DESTINATION"
+#~ msgstr ""
+#~ "\n"
+#~ "      --substitute KONSERV-DOSIERO CELO\n"
+#~ "                         elŝuti KONSERV-DOSIEROn kaj konservi ĝin kiel "
+#~ "Nar en la\n"
+#~ "                         dosiero CELO"
+
+#~ msgid ""
+#~ "ACL for archive imports seems to be uninitialized, substitutes may be "
+#~ "unavailable\n"
+#~ msgstr ""
+#~ "ACL por importo de arĥivoj ŝajnas esti ne-ekigita, anstataŭoj eble ne "
+#~ "disponeblos\n"
+
+#~ msgid "failed to look up host '~a' (~a), substituter disabled~%"
+#~ msgstr ""
+#~ "ni malsukcesis serĉi gastiganton '~a' (~a), anstataŭiganto estas "
+#~ "malebligata~%"
+
+#~ msgid "~a: unrecognized options~%"
+#~ msgstr "~a: nerekonata modifiloj~%"
+
+#~ msgid "cannot find public key for secret key '~a'~%"
+#~ msgstr "ne eblas trovi publikan ŝlosilon por la sekreta '~a'~%"
+
+#~ msgid "error: invalid signature: ~a~%"
+#~ msgstr "eraro: malvalida subskribo: ~a~%"
+
+#~ msgid "error: unauthorized public key: ~a~%"
+#~ msgstr "eraro: nerajtigita publika ŝlosilo: ~a~%"
+
+#~ msgid "error: corrupt signature data: ~a~%"
+#~ msgstr "eraro: difektita subskriba datumaro: ~a~%"
+
+#~ msgid ""
+#~ "Usage: guix authenticate OPTION...\n"
+#~ "Sign or verify the signature on the given file.  This tool is meant to\n"
+#~ "be used internally by 'guix-daemon'.\n"
+#~ msgstr ""
+#~ "Uzmaniero: guix authenticate MODIFILO...\n"
+#~ "Subskribi aŭ kontroli la subskribon de indikita dosiero. Tiu ĉi ilo "
+#~ "celas\n"
+#~ "esti interne uzata de 'guix-daemon'.\n"
+
+#~ msgid "wrong arguments"
+#~ msgstr "malĝustaj argumentoj"
+
+#~ msgid "failed to open operating system file '~a': ~a~%"
+#~ msgstr "fiasko dum malfermo de la operaci-sistema dosiero '~a': ~a~%"
+
+#~ msgid "failed to load machine file '~a': ~s~%"
+#~ msgstr "fiasko dum ŝargo de la maŝina dosiero '~a': ~s~%"
+
+#, fuzzy
+#~ msgid "failed to register '~a' under '~a'~%"
+#~ msgstr "fiasko dum kreo de radiko GC '~a': ~a~%"
+
+#, fuzzy
+#~ msgid "failed to install GRUB on device '~a'~%"
+#~ msgstr "fiasko dum instalo de lokaĵaro: ~a~%"
+
+#~ msgid ""
+#~ "Usage: guix system [OPTION] ACTION FILE\n"
+#~ "Build the operating system declared in FILE according to ACTION.\n"
+#~ msgstr ""
+#~ "Uzmaniero: guix system [MODIFILO] AGO DOSIERO\n"
+#~ "Konstrui la operaci-sistemon deklarita en DOSIERO akorde al AGO.\n"
+
+#~ msgid "~a: unknown action~%"
+#~ msgstr "~a: nekonata pako~%"
+
+#, fuzzy
+#~ msgid "wrong number of arguments for action '~a'~%"
+#~ msgstr "malĝusta nombro da argumentoj~%"
+
+#~ msgid "no configuration file specified~%"
+#~ msgstr "neniu agorda dosiero estis indikata~%"
+
+#, fuzzy
+#~ msgid "initializing operating system under '~a'...~%"
+#~ msgstr "fiasko dum malfermo de la operaci-sistema dosiero '~a': ~a~%"
+
+#~ msgid "signature verification failed for `~a'~%"
+#~ msgstr "subskriba kontrolo fiaskis por '~a'~%"
+
+#~ msgid "(could be because the public key is not in your keyring)~%"
+#~ msgstr "(eble ĉar la publika ŝlosilo ne estas en via ŝlosilringo)~%"
+
+#~ msgid "~a: could not locate source file"
+#~ msgstr "~a: ne eblis trovi fontan dosieron"
+
+#~ msgid "~a: ~a: no `version' field in source; skipping~%"
+#~ msgstr "~a: ~a: neniu kampo 'version' en la fonto; ni saltas~%"
+
+#~ msgid "failed to install locale: ~a~%"
+#~ msgstr "fiasko dum instalo de lokaĵaro: ~a~%"
+
+#~ msgid ""
+#~ "Copyright (C) 2014 the Guix authors\n"
+#~ "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
+#~ "html>\n"
+#~ "This is free software: you are free to change and redistribute it.\n"
+#~ "There is NO WARRANTY, to the extent permitted by law.\n"
+#~ msgstr ""
+#~ "Kopirajto (C) 2014 la aŭtoroj de Guix\n"
+#~ "Permeso GPLv3+: GNU GPL versio 3 aŭ posta <http://gnu.org/licenses/gpl."
+#~ "html>\n"
+#~ "Tio ĉi estas libera programaro: vi estas libera por modifi kaj redisdoni "
+#~ "ĝin.\n"
+#~ "Estas NENIU GARANTIO, plejamplekse permesate de leĝoj.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "Report bugs to: ~a."
+#~ msgstr ""
+#~ "\n"
+#~ "Raportu program-misojn al: ~a."
+
+#~ msgid ""
+#~ "\n"
+#~ "~a home page: <~a>"
+#~ msgstr ""
+#~ "\n"
+#~ "hejm-paĝo de ~a: <~a>"
+
+#~ msgid ""
+#~ "\n"
+#~ "General help using GNU software: <http://www.gnu.org/gethelp/>"
+#~ msgstr ""
+#~ "\n"
+#~ "Ĝenerala helpo por uzi programaron de GNU: <http://www.gnu.org/gethelp/>"
+
+#~ msgid "~a: invalid number~%"
+#~ msgstr "~a: malvalida numero~%"
+
+#~ msgid "invalid number: ~a~%"
+#~ msgstr "malvalida numero: ~a~%"
+
+#~ msgid "unknown unit: ~a~%"
+#~ msgstr "nekonata unuo: ~a~%"
+
+#~ msgid "~a:~a:~a: package `~a' has an invalid input: ~s~%"
+#~ msgstr "~a:~a:~a: pako '~a' havas malvalidan enigon: ~s~%"
+
+#~ msgid "~a: ~a: build system `~a' does not support cross builds~%"
+#~ msgstr "~a: ~a: konstrui sistemon '~a' ne subtenas crucajn konstruojn~%"
+
+#~ msgid "failed to connect to `~a': ~a~%"
+#~ msgstr "fiasko dum konekto al '~a': ~a~%"
+
+#~ msgid "build failed: ~a~%"
+#~ msgstr "konstruo fiakis: ~a~%"
+
+#~ msgid "~a: ~a~%"
+#~ msgstr "~a: ~a~%"
+
+#~ msgid "failed to read expression ~s: ~s~%"
+#~ msgstr "fiasko dum lego de esprimo ~s: ~s~%"
+
+#~ msgid "failed to evaluate expression `~a': ~s~%"
+#~ msgstr "fiasko dum analizo de esprimo '~a': ~a~%"
+
+#~ msgid "expression ~s does not evaluate to a package~%"
+#~ msgstr "la esprimo ~s ne rezultas pakon~%"
+
+#~ msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
+#~ msgstr "~:[La jena derivo povus esti konstruata:~%~{   ~a~%~}~;~]"
+
+#~ msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
+#~ msgstr "~:[La jena derivo povus esti elŝutata:~%~{   ~a~%~}~;~]"
+
+#~ msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
+#~ msgstr "~:[La jena derivo estos esti konstruata:~%~{   ~a~%~}~;~]"
+
+#~ msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
+#~ msgstr "~:[La jena derivo estos esti elŝutata:~%~{   ~a~%~}~;~]"
+
+#~ msgid "<unknown location>"
+#~ msgstr "<nekonata loko>"
+
+#~ msgid "failed to create configuration directory `~a': ~a~%"
+#~ msgstr "fiasko dum kreo de agorda dosierujo '~a': ~a~%"
+
+#~ msgid "unknown"
+#~ msgstr "nekonata"
+
+#~ msgid "invalid argument: ~a~%"
+#~ msgstr "malvalida argumento: ~a~%"
+
+#~ msgid "Try `guix --help' for more information.~%"
+#~ msgstr "Provu 'guix --help' por pli da informo.~%"
+
+#~ msgid ""
+#~ "Usage: guix COMMAND ARGS...\n"
+#~ "Run COMMAND with ARGS.\n"
+#~ msgstr ""
+#~ "Uzmaniero: guix KOMANDO ARGj...\n"
+#~ "Lanĉas KOMANDOn kun ARGj.\n"
+
+#~ msgid "COMMAND must be one of the sub-commands listed below:\n"
+#~ msgstr "KOMANDO devas esti unu el la sub-komandoj sube listataj:\n"
+
+#~ msgid "guix: ~a: command not found~%"
+#~ msgstr "guix: ~a: komando ne trovita~%"
+
+#~ msgid "guix: missing command name~%"
+#~ msgstr "guix: mankas komanda nomo~%"
+
+#~ msgid "guix: unrecognized option '~a'~%"
+#~ msgstr "guix: nerekonata modifilo: '~a'~%"
+
+#~ msgid "using Guile ~a, which does not support ~s encoding~%"
+#~ msgstr "ni uzas Guile ~a, kiu ne subtenas enkodigon ~s~%"
+
+#~ msgid "download failed; use a newer Guile~%"
+#~ msgstr "elŝuto fiaskis; uzu pli novan Guile~%"
+
+#~ msgid "following redirection to `~a'...~%"
+#~ msgstr "ni sekvas la redirektigon al '~a'...~%"
+
+#~ msgid "download failed"
+#~ msgstr "elŝuto fiaskis"
+
+#~ msgid "unexpected executable file marker"
+#~ msgstr "neatendita rul-dosiera markilo"
+
+#~ msgid "unsupported nar file type"
+#~ msgstr "nesubtenata dosier-tipo nar"
+
+#~ msgid "unsupported file type"
+#~ msgstr "nesubtenata dosier-tipo"
+
+#~ msgid "invalid nar signature"
+#~ msgstr "malvalida subskribo nar"
+
+#~ msgid "invalid nar end-of-file marker"
+#~ msgstr "malvalida dosierfina markilo nar"
+
+#~ msgid "invalid symlink tokens"
+#~ msgstr "malvalidaj simbol-ligaj ĵetonoj"
+
+#~ msgid "unexpected directory entry termination"
+#~ msgstr "neatendita fino de dosieruja enigo"
+
+#~ msgid "unexpected directory inter-entry marker"
+#~ msgstr "neatendita dosieruja inter-eniga markilo"
+
+#~ msgid "unsupported nar entry type"
+#~ msgstr "nesubtenata enig-tipo nar"
+
+#~ msgid "signature is not a valid s-expression"
+#~ msgstr "subskribo ne estas valida s-esprimo"
+
+#~ msgid "invalid signature"
+#~ msgstr "nevalida subskribo"
+
+#~ msgid "invalid hash"
+#~ msgstr "nevalida haketo"
+
+#~ msgid "unauthorized public key"
+#~ msgstr "nerajtigita publika ŝlosilo"
+
+#~ msgid "corrupt signature data"
+#~ msgstr "difektita subskriba datumaro"
+
+#~ msgid "corrupt file set archive"
+#~ msgstr "difektita arĥivo de dosier-grupo"
+
+#~ msgid "importing file or directory '~a'...~%"
+#~ msgstr "ni importas dosieron aŭ dosierujon '~a'...~%"
+
+#~ msgid "found valid signature for '~a'~%"
+#~ msgstr "ni trovis validan subskribon por '~a'~%"
+
+#~ msgid "imported file lacks a signature"
+#~ msgstr "importita dosiero malhavas subskribon"
+
+#~ msgid "invalid inter-file archive mark"
+#~ msgstr "malvalida inter-dosiera arĥiva marko"
+
+#~ msgid ""
+#~ "Currently the only valid value for ACTION is 'vm', which builds\n"
+#~ "a virtual machine of the given operating system.\n"
+#~ msgstr ""
+#~ "Momente la nura valida valoro por AGO estas 'vm', kio konstruas\n"
+#~ "virtualan maŝinon por la indikita operaci-sistemo.\n"
+
+#~ msgid "~a: extraneous argument~%"
+#~ msgstr "~a: fremda argumento~%"
+
+#~ msgid "Guile bindings to libssh"
+#~ msgstr "Bindoj de Guile por libssh"
+
+#~ msgid "package `~a' has no source~%"
+#~ msgstr "pako '~a' havas neniun fonton~%"
+
+#~ msgid ""
+#~ "\n"
+#~ "  -n, --dry-run          show what would be done without actually doing it"
+#~ msgstr ""
+#~ "\n"
+#~ "  -n, --dry-run          montri kion estus farita sen fakte fari ĝin"
+
+#~ msgid "Yeah..."
+#~ msgstr "Ja..."
+
+#~ msgid ""
+#~ "The grep command searches one or more input files for lines containing a\n"
+#~ "match to a specified pattern.  By default, grep prints the matching\n"
+#~ "lines."
+#~ msgstr ""
+#~ "La komando grep serĉas en unu al pli enigaj dosieroj liniojn enhavantajn\n"
+#~ "kongruon al specifita ŝablono.  Apriore, grep montras la kongruantajn\n"
+#~ "liniojn."
+
+#~ msgid ""
+#~ "Sed (stream editor) isn't really a true text editor or text processor.\n"
+#~ "Instead, it is used to filter text, i.e., it takes text input and "
+#~ "performs\n"
+#~ "some operation (or set of operations) on it and outputs the modified "
+#~ "text.\n"
+#~ "Sed is typically used for extracting part of a file using pattern "
+#~ "matching or\n"
+#~ "substituting multiple occurrences of a string within a file."
+#~ msgstr ""
+#~ "Sed (flu-redaktilo) ne estas fakte vera tekst-redaktilo aŭ tekst-"
+#~ "procezilo.\n"
+#~ "Anstataŭe, ĝi estas uzata por filtri tekston, t.e., ĝi prenas tekston "
+#~ "kaj\n"
+#~ "aplikas iun operacion (aŭ aron) al ĝi kaj eligas la modifitan tekston.\n"
+#~ "Sed ordinare estas uzata por eltiri parton de dosiero per ŝablon-kongruon "
+#~ "aŭ\n"
+#~ "por anstataŭigi multoblajn aperojn de ĉeno interne de dosiero."
+
+#~ msgid "profile `~a' does not exist~%"
+#~ msgstr "profilo '~a' ne ekzistas~%"

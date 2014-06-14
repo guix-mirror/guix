@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: guix 0.5-pre2\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
-"POT-Creation-Date: 2014-04-09 14:58+0200\n"
+"POT-Creation-Date: 2014-06-14 22:38+0200\n"
 "PO-Revision-Date: 2013-12-04 07:48+0700\n"
 "Last-Translator: Trần Ngọc Quân <vnwildman@gmail.com>\n"
 "Language-Team: Vietnamese <translation-team-vi@lists.sourceforge.net>\n"
@@ -24,359 +24,32 @@ msgstr ""
 msgid "cannot access `~a': ~a~%"
 msgstr "không thể truy cập `~a': ~a~%"
 
-#: gnu/packages/base.scm:63
-msgid "Hello, GNU world: An example GNU package"
-msgstr "Xin chào, gia đình GNU: Một gói GNU ví dụ"
-
-#: gnu/packages/base.scm:65
-msgid ""
-"GNU Hello prints the message \"Hello, world!\" and then exits.  It\n"
-"serves as an example of standard GNU coding practices.  As such, it "
-"supports\n"
-"command-line arguments, multiple languages, and so on."
-msgstr ""
-
-#: gnu/packages/base.scm:83
-msgid "Print lines matching a pattern"
-msgstr "In ra những dòng khớp với một mẫu"
-
-#: gnu/packages/base.scm:85
-msgid ""
-"grep is a tool for finding text inside files.  Text is found by\n"
-"matching a pattern provided by the user in one or many files.  The pattern\n"
-"may be provided as a basic or extended regular expression, or as fixed\n"
-"strings.  By default, the matching text is simply printed to the screen,\n"
-"however the output can be greatly customized to include, for example, line\n"
-"numbers.  GNU grep offers many extensions over the standard utility,\n"
-"including, for example, recursive directory searching."
-msgstr ""
-
-#: gnu/packages/base.scm:107
-msgid "Stream editor"
-msgstr "Trình soạn thảo luồng dữ liệu"
-
-#: gnu/packages/base.scm:122
-msgid ""
-"Sed is a non-interactive, text stream editor.  It receives a text\n"
-"input from a file or from standard input and it then applies a series of "
-"text\n"
-"editing commands to the stream and prints its output to standard output.  "
-"It\n"
-"is often used for substituting text patterns in a stream.  The GNU\n"
-"implementation offers several extensions over the standard utility."
-msgstr ""
-
-#: gnu/packages/base.scm:142
-msgid "Managing tar archives"
-msgstr "Quản lý kho lưu tar"
-
-#: gnu/packages/base.scm:144
-msgid ""
-"Tar provides the ability to create tar archives, as well as the\n"
-"ability to extract, update or list files in an existing archive.  It is\n"
-"useful for combining many files into one larger file, while maintaining\n"
-"directory structure and file information such as permissions and\n"
-"creation/modification dates.  GNU tar offers many extensions over the\n"
-"standard utility."
-msgstr ""
-
-#: gnu/packages/base.scm:171
-msgid "Apply differences to originals, with optional backups"
-msgstr "Áp dụng những khác biệt này vào bản gốc, với các sao lưu tùy chọn"
-
-#: gnu/packages/base.scm:173
-msgid ""
-"Patch is a program that applies changes to files based on differences\n"
-"laid out as by the program \"diff\".  The changes may be applied to one or "
-"more\n"
-"files depending on the contents of the diff file.  It accepts several\n"
-"different diff formats.  It may also be used to revert previously applied\n"
-"differences."
-msgstr ""
-
-#: gnu/packages/base.scm:193
-msgid "Comparing and merging files"
-msgstr "So sánh và hòa trộn các tập tin"
-
-#: gnu/packages/base.scm:195
-msgid ""
-"GNU Diffutils is a package containing tools for finding the\n"
-"differences between files.  The \"diff\" command is used to show how two "
-"files\n"
-"differ, while \"cmp\" shows the offsets and line numbers where they "
-"differ. \n"
-"\"diff3\" allows you to compare three files.  Finally, \"sdiff\" offers an\n"
-"interactive means to merge two files."
-msgstr ""
-
-#: gnu/packages/base.scm:222
-msgid "Operating on files matching given criteria"
-msgstr "Thực hiện trên những tập tin khớp với điều kiện đã cho"
-
-#: gnu/packages/base.scm:224
-msgid ""
-"Findutils supplies the basic file directory searching utilities of the\n"
-"GNU system.  It consists of two primary searching utilities: \"find\"\n"
-"recursively searches for files in a directory according to given criteria "
-"and\n"
-"\"locate\" lists files in a database that match a query.  Two auxiliary "
-"tools\n"
-"are included: \"updatedb\" updates the file name database and \"xargs\" may "
-"be\n"
-"used to apply commands with arbitrarily long arguments."
-msgstr ""
-
-#: gnu/packages/base.scm:274
-msgid "Core GNU utilities (file, text, shell)"
-msgstr "Tiện ích lõi GNU (file, text, shell)"
-
-#: gnu/packages/base.scm:276
-msgid ""
-"GNU Coreutils includes all of the basic command-line tools that are\n"
-"expected in a POSIX system.  These provide the basic file, shell and text\n"
-"manipulation functions of the GNU system.  Most of these tools offer "
-"extended\n"
-"functionality beyond that which is outlined in the POSIX standard."
-msgstr ""
-
-#: gnu/packages/base.scm:310
-msgid "Remake files automatically"
-msgstr "Tạo lại các tập tin một cách tự động"
-
-#: gnu/packages/base.scm:312
-msgid ""
-"Make is a program that is used to control the production of\n"
-"executables or other files from their source files.  The process is\n"
-"controlled from a Makefile, in which the developer specifies how each file "
-"is\n"
-"generated from its source.  It has powerful dependency resolution and the\n"
-"ability to determine when files have to be regenerated after their sources\n"
-"change.  GNU make offers many powerful extensions over the standard utility."
-msgstr ""
-
-#: gnu/packages/base.scm:357
-msgid "Binary utilities: bfd gas gprof ld"
-msgstr "Tiện ích nhị phân: bfd gas gprof ld"
-
-#: gnu/packages/base.scm:359
-msgid ""
-"GNU Binutils is a collection of tools for working with binary files.\n"
-"Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler. "
-"Other\n"
-"tools include programs to display binary profiling information, list the\n"
-"strings in a binary file, and utilities for working with archives.  The \"bfd"
-"\"\n"
-"library for working with executable and object formats is also included."
-msgstr ""
-
-#: gnu/packages/base.scm:500
-msgid "The GNU C Library"
-msgstr "Thư viện C từ GNU"
-
-#: gnu/packages/base.scm:502
-msgid ""
-"Any Unix-like operating system needs a C library: the library which\n"
-"defines the \"system calls\" and other basic facilities such as open, "
-"malloc,\n"
-"printf, exit...\n"
-"\n"
-"The GNU C library is used as the C library in the GNU system and most "
-"systems\n"
-"with the Linux kernel."
-msgstr ""
-
-#: gnu/packages/base.scm:571
-msgid "Database of current and historical time zones"
-msgstr "Cơ sở dữ liệu của hiện tại và múi giờ lịch sử"
-
-#: gnu/packages/base.scm:572
-msgid ""
-"The Time Zone Database (often called tz or zoneinfo)\n"
-"contains code and data that represent the history of local time for many\n"
-"representative locations around the globe. It is updated periodically to\n"
-"reflect changes made by political bodies to time zone boundaries, UTC "
-"offsets,\n"
-"and daylight-saving rules."
-msgstr ""
-
-#: gnu/packages/base.scm:968
-msgid "GNU C++ standard library (intermediate)"
-msgstr "Thư viện GNU C++ chuẩn (khâu trung gian)"
-
-#: gnu/packages/base.scm:1055
-msgid "The linker wrapper"
-msgstr "Bộ bao liên kết"
-
-#: gnu/packages/base.scm:1057
-msgid ""
-"The linker wrapper (or `ld-wrapper') wraps the linker to add any\n"
-"missing `-rpath' flags, and to detect any misuse of libraries outside of "
-"the\n"
-"store."
-msgstr ""
-
-#: gnu/packages/base.scm:1158
-msgid "Complete GCC tool chain for C/C++ development"
-msgstr ""
-
-#: gnu/packages/base.scm:1160
-msgid ""
-"This package provides a complete GCC tool chain for C/C++ development to\n"
-"be installed in user profiles.  This includes GCC, as well as libc (headers\n"
-"and binaries, plus debugging symbols in the 'debug' output), and Binutils."
-msgstr ""
-
-#: gnu/packages/guile.scm:99 gnu/packages/guile.scm:166
-msgid "Scheme implementation intended especially for extensions"
-msgstr "Lược đồ thực thi có dụng ý đặc biệt cho phần mở rộng"
-
-#: gnu/packages/guile.scm:101 gnu/packages/guile.scm:168
-msgid ""
-"Guile is the GNU Ubiquitous Intelligent Language for Extensions, the\n"
-"official extension language of the GNU system.  It is an implementation of\n"
-"the Scheme language which can be easily embedded in other applications to\n"
-"provide a convenient means of extending the functionality of the "
-"application\n"
-"without requiring the source code to be rewritten."
-msgstr ""
-
-#: gnu/packages/guile.scm:211
-msgid "Framework for building readers for GNU Guile"
-msgstr "Một framework để xây dựng bộ đọc dành cho GNU Guile"
-
-#: gnu/packages/guile.scm:213
-msgid ""
-"Guile-Reader is a simple framework for building readers for GNU Guile.\n"
-"\n"
-"The idea is to make it easy to build procedures that extend Guile’s read\n"
-"procedure. Readers supporting various syntax variants can easily be "
-"written,\n"
-"possibly by re-using existing “token readers” of a standard Scheme\n"
-"readers. For example, it is used to implement Skribilo’s R5RS-derived\n"
-"document syntax.\n"
-"\n"
-"Guile-Reader’s approach is similar to Common Lisp’s “read table”, but\n"
-"hopefully more powerful and flexible (for instance, one may instantiate as\n"
-"many readers as needed)."
-msgstr ""
-
-#: gnu/packages/guile.scm:265
-msgid "Guile bindings to ncurses"
-msgstr "Guile ràng buộc vào ncurses"
-
-#: gnu/packages/guile.scm:267
-msgid ""
-"guile-ncurses provides Guile language bindings for the ncurses\n"
-"library."
-msgstr ""
-
-#: gnu/packages/guile.scm:287
-msgid "Run jobs at scheduled times"
-msgstr "Chạy các công việc theo lịch biểu"
-
-#: gnu/packages/guile.scm:289
-msgid ""
-"GNU Mcron is a complete replacement for Vixie cron.  It is used to run\n"
-"tasks on a schedule, such as every hour or every Monday.  Mcron is written "
-"in\n"
-"Guile, so its configuration can be written in Scheme; the original cron\n"
-"format is also supported."
-msgstr ""
-
-#: gnu/packages/guile.scm:317
-msgid "Collection of useful Guile Scheme modules"
-msgstr "Bộ sưu tập của các mô-đun Lược đồ Guile"
-
-#: gnu/packages/guile.scm:319
-msgid ""
-"guile-lib is intended as an accumulation place for pure-scheme Guile\n"
-"modules, allowing for people to cooperate integrating their generic Guile\n"
-"modules into a coherent library.  Think \"a down-scaled, limited-scope CPAN\n"
-"for Guile\"."
-msgstr ""
-
-#: gnu/packages/guile.scm:350
-msgid "JSON module for Guile"
-msgstr ""
-
-#: gnu/packages/guile.scm:352
-msgid ""
-"Guile-json supports parsing and building JSON documents according to the\n"
-"http:://json.org specification. These are the main features:\n"
-"- Strictly complies to http://json.org specification.\n"
-"- Build JSON documents programmatically via macros.\n"
-"- Unicode support for strings.\n"
-"- Allows JSON pretty printing."
-msgstr ""
-
-#: gnu/packages/lout.scm:109
-msgid "Lout, a document layout system similar in style to LaTeX"
-msgstr ""
-
-#: gnu/packages/lout.scm:111
-msgid ""
-"The Lout document formatting system is now reads a high-level description "
-"of\n"
-"a document similar in style to LaTeX and produces a PostScript or plain "
-"text\n"
-"output file.\n"
-"\n"
-"Lout offers an unprecedented range of advanced features, including optimal\n"
-"paragraph and page breaking, automatic hyphenation, PostScript EPS file\n"
-"inclusion and generation, equation formatting, tables, diagrams, rotation "
-"and\n"
-"scaling, sorted indexes, bibliographic databases, running headers and\n"
-"odd-even pages, automatic cross referencing, multilingual documents "
-"including\n"
-"hyphenation (most European languages are supported), formatting of computer\n"
-"programs, and much more, all ready to use.  Furthermore, Lout is easily\n"
-"extended with definitions which are very much easier to write than troff of\n"
-"TeX macros because Lout is a high-level, purely functional language, the\n"
-"outcome of an eight-year research project that went back to the\n"
-"beginning."
-msgstr ""
-
-#: gnu/packages/recutils.scm:58
-msgid "Manipulate plain text files as databases"
-msgstr "Thao tác các tập tin văn bản thường như là cơ sở dữ liệu"
-
-#: gnu/packages/recutils.scm:60
-msgid ""
-"GNU Recutils is a set of tools and libraries for creating and\n"
-"manipulating text-based, human-editable databases.  Despite being text-"
-"based,\n"
-"databases created with Recutils carry all of the expected features such as\n"
-"unique fields, primary keys, time stamps and more. Many different field "
-"types\n"
-"are supported, as is encryption."
-msgstr ""
-
-#: guix/scripts/build.scm:53 guix/scripts/package.scm:337
+#: guix/scripts/build.scm:54 guix/scripts/package.scm:337
 #, scheme-format
 msgid "ambiguous package specification `~a'~%"
 msgstr "đặc tả gói chưa rõ ràng `~a'~%"
 
-#: guix/scripts/build.scm:54 guix/scripts/package.scm:339
+#: guix/scripts/build.scm:55 guix/scripts/package.scm:339
 #, scheme-format
 msgid "choosing ~a from ~a~%"
 msgstr "chọn ~a từ ~a~%"
 
-#: guix/scripts/build.scm:60
+#: guix/scripts/build.scm:61
 #, scheme-format
 msgid "~A: package not found for version ~a~%"
 msgstr "~A: gói không tìm thấy cho phiên bản ~a~%"
 
-#: guix/scripts/build.scm:62
+#: guix/scripts/build.scm:63
 #, scheme-format
 msgid "~A: unknown package~%"
 msgstr "~A: không hiểu gói ~%"
 
-#: guix/scripts/build.scm:85
+#: guix/scripts/build.scm:86
 #, scheme-format
 msgid "failed to create GC root `~a': ~a~%"
 msgstr "gặp lỗi khi tạo gốc GC `~a': ~a~%"
 
-#: guix/scripts/build.scm:122
+#: guix/scripts/build.scm:123
 msgid ""
 "\n"
 "  -K, --keep-failed      keep build tree of failed builds"
@@ -384,7 +57,7 @@ msgstr ""
 "\n"
 "  -K, --keep-failed      giữ lại cây xây dựng của lần xây dựng gặp lỗi"
 
-#: guix/scripts/build.scm:124
+#: guix/scripts/build.scm:125
 msgid ""
 "\n"
 "  -n, --dry-run          do not build the derivations"
@@ -392,7 +65,7 @@ msgstr ""
 "\n"
 "  -n, --dry-run          không xây dựng dẫn xuất"
 
-#: guix/scripts/build.scm:126
+#: guix/scripts/build.scm:127
 msgid ""
 "\n"
 "      --fallback         fall back to building when the substituter fails"
@@ -400,7 +73,7 @@ msgstr ""
 "\n"
 "      --roll-back        quay lại dịch khi `substituter' thất bại"
 
-#: guix/scripts/build.scm:128
+#: guix/scripts/build.scm:129
 msgid ""
 "\n"
 "      --no-substitutes   build instead of resorting to pre-built substitutes"
@@ -409,13 +82,13 @@ msgstr ""
 "      --no-substitutes   xây dựng thay vì nhờ vào phần thay thế được dựng "
 "trước"
 
-#: guix/scripts/build.scm:130
+#: guix/scripts/build.scm:131
 msgid ""
 "\n"
 "      --no-build-hook    do not attempt to offload builds via the build hook"
 msgstr ""
 
-#: guix/scripts/build.scm:132
+#: guix/scripts/build.scm:133
 msgid ""
 "\n"
 "      --max-silent-time=SECONDS\n"
@@ -426,7 +99,7 @@ msgstr ""
 "                         đánh dấu là việc dịch sẽ là lỗi nếu lâu hơn số GIÂY "
 "này"
 
-#: guix/scripts/build.scm:135
+#: guix/scripts/build.scm:136
 #, fuzzy
 msgid ""
 "\n"
@@ -437,7 +110,7 @@ msgstr ""
 "                         đánh dấu là việc dịch sẽ là lỗi nếu lâu hơn số GIÂY "
 "này"
 
-#: guix/scripts/build.scm:137
+#: guix/scripts/build.scm:138
 msgid ""
 "\n"
 "      --verbosity=LEVEL  use the given verbosity LEVEL"
@@ -445,7 +118,7 @@ msgstr ""
 "\n"
 "      --verbosity=MỨC    dùng mức chi tiết đã cho"
 
-#: guix/scripts/build.scm:139
+#: guix/scripts/build.scm:140
 msgid ""
 "\n"
 "  -c, --cores=N          allow the use of up to N CPU cores for the build"
@@ -453,12 +126,12 @@ msgstr ""
 "\n"
 "  -c, --cores=N          cho dùng đến N lõi CPU cho công việc xây dựng"
 
-#: guix/scripts/build.scm:204
+#: guix/scripts/build.scm:206
 #, scheme-format
 msgid "~a: not a number~%"
 msgstr "~a: không phải con số~%"
 
-#: guix/scripts/build.scm:220
+#: guix/scripts/build.scm:223
 msgid ""
 "Usage: guix build [OPTION]... PACKAGE-OR-DERIVATION...\n"
 "Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"
@@ -467,7 +140,7 @@ msgstr ""
 "Xây dựng PACKAGE-OR-DERIVATION đã cho và trả về đường dẫn kết xuất của "
 "chúng.\n"
 
-#: guix/scripts/build.scm:222
+#: guix/scripts/build.scm:225
 msgid ""
 "\n"
 "  -e, --expression=EXPR  build the package or derivation EXPR evaluates to"
@@ -475,7 +148,7 @@ msgstr ""
 "\n"
 "  -e, --expression=BThức xây dựng gói hay tìm nguồn gốc BTthức lượng giá cho"
 
-#: guix/scripts/build.scm:224
+#: guix/scripts/build.scm:227
 msgid ""
 "\n"
 "  -S, --source           build the packages' source derivations"
@@ -483,7 +156,7 @@ msgstr ""
 "\n"
 "  -S, --source           xây dựng nguồn gốc mã nguồn của gói"
 
-#: guix/scripts/build.scm:226
+#: guix/scripts/build.scm:229
 msgid ""
 "\n"
 "  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""
@@ -491,7 +164,7 @@ msgstr ""
 "\n"
 "  -s, --system=HỆ-THỐNG   cố xây dựng cho HỆ-THỐNG--ví dụ: \"i686-linux\""
 
-#: guix/scripts/build.scm:228
+#: guix/scripts/build.scm:231
 msgid ""
 "\n"
 "      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""
@@ -499,14 +172,14 @@ msgstr ""
 "\n"
 "      --target=TRIPLET   biên dịch chéo cho BỘ BA--ví dụ: \"armel-linux-gnu\""
 
-#: guix/scripts/build.scm:230
+#: guix/scripts/build.scm:233
 msgid ""
 "\n"
 "      --with-source=SOURCE\n"
 "                         use SOURCE when building the corresponding package"
 msgstr ""
 
-#: guix/scripts/build.scm:233
+#: guix/scripts/build.scm:236
 msgid ""
 "\n"
 "  -d, --derivations      return the derivation paths of the given packages"
@@ -514,7 +187,7 @@ msgstr ""
 "\n"
 "  -d, --derivations      trả về các đường dẫn nguồn gốc của các gói đã cho"
 
-#: guix/scripts/build.scm:235
+#: guix/scripts/build.scm:238
 msgid ""
 "\n"
 "  -r, --root=FILE        make FILE a symlink to the result, and register it\n"
@@ -525,7 +198,7 @@ msgstr ""
 "ký nó\n"
 "                         như là bộ gom rác gốc"
 
-#: guix/scripts/build.scm:238
+#: guix/scripts/build.scm:241
 msgid ""
 "\n"
 "      --log-file         return the log file names for the given derivations"
@@ -533,10 +206,10 @@ msgstr ""
 "\n"
 "      --log-file         trả về tên của tập-tin nhật ký cho dẫn xuất đã cho"
 
-#: guix/scripts/build.scm:243 guix/scripts/download.scm:53
+#: guix/scripts/build.scm:246 guix/scripts/download.scm:53
 #: guix/scripts/package.scm:511 guix/scripts/gc.scm:58
 #: guix/scripts/hash.scm:55 guix/scripts/pull.scm:82
-#: guix/scripts/substitute-binary.scm:564 guix/scripts/system.scm:81
+#: guix/scripts/substitute-binary.scm:564 guix/scripts/system.scm:142
 msgid ""
 "\n"
 "  -h, --help             display this help and exit"
@@ -544,10 +217,10 @@ msgstr ""
 "\n"
 "  -h, --help             hiển thị trợ giúp này rồi thoát"
 
-#: guix/scripts/build.scm:245 guix/scripts/download.scm:55
+#: guix/scripts/build.scm:248 guix/scripts/download.scm:55
 #: guix/scripts/package.scm:513 guix/scripts/gc.scm:60
 #: guix/scripts/hash.scm:57 guix/scripts/pull.scm:84
-#: guix/scripts/substitute-binary.scm:566 guix/scripts/system.scm:83
+#: guix/scripts/substitute-binary.scm:566 guix/scripts/system.scm:144
 msgid ""
 "\n"
 "  -V, --version          display version information and exit"
@@ -555,19 +228,19 @@ msgstr ""
 "\n"
 "  -V, --version          hiển thị thông tin phiên bản rồi thoát"
 
-#: guix/scripts/build.scm:360
+#: guix/scripts/build.scm:368
 #, scheme-format
 msgid "sources do not match any package:~{ ~a~}~%"
 msgstr ""
 
-#: guix/scripts/build.scm:389 guix/scripts/download.scm:96
+#: guix/scripts/build.scm:397 guix/scripts/download.scm:96
 #: guix/scripts/package.scm:744 guix/scripts/gc.scm:122
-#: guix/scripts/pull.scm:115 guix/scripts/system.scm:125
+#: guix/scripts/pull.scm:115 guix/scripts/system.scm:190
 #, scheme-format
 msgid "~A: unrecognized option~%"
 msgstr "~A: tùy chọn không được chấp nhận~%"
 
-#: guix/scripts/build.scm:417
+#: guix/scripts/build.scm:425
 #, scheme-format
 msgid "no build log for '~a'~%"
 msgstr "không có nhật ký dịch cho '~a'~%"
@@ -966,7 +639,7 @@ msgstr ""
 msgid "unrecognized option: ~a~%"
 msgstr "tùy chọn không được thừa nhận: ~a~%"
 
-#: guix/scripts/hash.scm:134 guix/ui.scm:226
+#: guix/scripts/hash.scm:134 guix/ui.scm:233
 #, scheme-format
 msgid "~a~%"
 msgstr "~a~%"
@@ -1171,90 +844,132 @@ msgstr ""
 msgid "error: corrupt signature data: ~a~%"
 msgstr ""
 
-#: guix/scripts/authenticate.scm:110
+#: guix/scripts/authenticate.scm:126
 msgid ""
 "Usage: guix authenticate OPTION...\n"
 "Sign or verify the signature on the given file.  This tool is meant to\n"
 "be used internally by 'guix-daemon'.\n"
 msgstr ""
 
-#: guix/scripts/authenticate.scm:116
+#: guix/scripts/authenticate.scm:132
 #, fuzzy
 msgid "wrong arguments"
 msgstr "số lượng đối số không đúng~%"
 
-#: guix/scripts/system.scm:60
+#: guix/scripts/system.scm:67
 #, fuzzy, scheme-format
 msgid "failed to open operating system file '~a': ~a~%"
 msgstr "gặp lỗi khi kết nối đến `~a': ~a~%"
 
-#: guix/scripts/system.scm:63
+#: guix/scripts/system.scm:70
 #, fuzzy, scheme-format
 msgid "failed to load machine file '~a': ~s~%"
 msgstr "gặp lỗi khi kết nối đến `~a': ~a~%"
 
-#: guix/scripts/system.scm:72
+#: guix/scripts/system.scm:86
+#, fuzzy, scheme-format
+msgid "failed to register '~a' under '~a'~%"
+msgstr "gặp lỗi khi tạo gốc GC `~a': ~a~%"
+
+#: guix/scripts/system.scm:102
+#, scheme-format
+msgid "initializing the current root file system~%"
+msgstr ""
+
+#: guix/scripts/system.scm:113
+#, fuzzy, scheme-format
+msgid "failed to install GRUB on device '~a'~%"
+msgstr "gặp lỗi khi cài đặt `locale': ~a~%"
+
+#: guix/scripts/system.scm:121
 msgid ""
 "Usage: guix system [OPTION] ACTION FILE\n"
 "Build the operating system declared in FILE according to ACTION.\n"
 msgstr ""
 
-#: guix/scripts/system.scm:74
-msgid ""
-"Currently the only valid values for ACTION are 'vm', which builds\n"
-"a virtual machine of the given operating system that shares the host's "
-"store,\n"
-"and 'vm-image', which builds a virtual machine image that stands alone.\n"
+#: guix/scripts/system.scm:124
+msgid "The valid values for ACTION are:\n"
 msgstr ""
 
-#: guix/scripts/system.scm:78
+#: guix/scripts/system.scm:125
+msgid "  - 'build', build the operating system without installing anything\n"
+msgstr ""
+
+#: guix/scripts/system.scm:127
+msgid "  - 'vm', build a virtual machine image that shares the host's store\n"
+msgstr ""
+
+#: guix/scripts/system.scm:129
+msgid "  - 'vm-image', build a freestanding virtual machine image\n"
+msgstr ""
+
+#: guix/scripts/system.scm:131
+msgid "  - 'disk-image', build a disk image, suitable for a USB stick\n"
+msgstr ""
+
+#: guix/scripts/system.scm:133
+msgid "  - 'init', initialize a root file system to run GNU.\n"
+msgstr ""
+
+#: guix/scripts/system.scm:137
 msgid ""
 "\n"
 "      --image-size=SIZE  for 'vm-image', produce an image of SIZE"
 msgstr ""
 
-#: guix/scripts/system.scm:130
-#, fuzzy, scheme-format
-msgid "~a: extraneous argument~%"
-msgstr "~A: đối số ngoại lai~%"
+#: guix/scripts/system.scm:139
+msgid ""
+"\n"
+"      --no-grub          for 'init', do not install GRUB"
+msgstr ""
 
-#: guix/scripts/system.scm:138
+#: guix/scripts/system.scm:198
 #, fuzzy, scheme-format
 msgid "~a: unknown action~%"
 msgstr "~A: không hiểu gói ~%"
 
-#: guix/scripts/system.scm:148
+#: guix/scripts/system.scm:215
+#, fuzzy, scheme-format
+msgid "wrong number of arguments for action '~a'~%"
+msgstr "số lượng đối số không đúng~%"
+
+#: guix/scripts/system.scm:234
 #, scheme-format
 msgid "no configuration file specified~%"
 msgstr ""
 
-#: guix/gnu-maintenance.scm:364
+#: guix/scripts/system.scm:272
+#, fuzzy, scheme-format
+msgid "initializing operating system under '~a'...~%"
+msgstr "gặp lỗi khi kết nối đến `~a': ~a~%"
+
+#: guix/gnu-maintenance.scm:373
 #, scheme-format
 msgid "signature verification failed for `~a'~%"
 msgstr "việc xác minh chữ ký cho `~a'~% gặp lỗi"
 
-#: guix/gnu-maintenance.scm:366
+#: guix/gnu-maintenance.scm:375
 #, scheme-format
 msgid "(could be because the public key is not in your keyring)~%"
 msgstr ""
 "(có thể nguyên nhân là do khóa công không có trong chùm chìa khóa của bạn)~%"
 
-#: guix/gnu-maintenance.scm:441
+#: guix/gnu-maintenance.scm:450
 #, scheme-format
 msgid "~a: could not locate source file"
 msgstr "~a: không thể xác định tập tin nguồn"
 
-#: guix/gnu-maintenance.scm:446
+#: guix/gnu-maintenance.scm:455
 #, scheme-format
 msgid "~a: ~a: no `version' field in source; skipping~%"
 msgstr "~a: ~a: không có trường `version' trong nguồn; bỏ qua~%"
 
-#: guix/ui.scm:124
+#: guix/ui.scm:131
 #, scheme-format
 msgid "failed to install locale: ~a~%"
 msgstr "gặp lỗi khi cài đặt `locale': ~a~%"
 
-#: guix/ui.scm:143
+#: guix/ui.scm:150
 #, fuzzy
 msgid ""
 "Copyright (C) 2014 the Guix authors\n"
@@ -1269,7 +984,7 @@ msgstr ""
 "Đây là phần mềm tự do: bạn có quyền sửa đổi và phát hành lại nó.KHÔNG CÓ BẢO "
 "HÀNH GÌ CẢ, với điều kiện được pháp luật cho phép.\n"
 
-#: guix/ui.scm:151
+#: guix/ui.scm:158
 #, scheme-format
 msgid ""
 "\n"
@@ -1278,7 +993,7 @@ msgstr ""
 "\n"
 "Hãy thông báo lỗi cho ~a."
 
-#: guix/ui.scm:153
+#: guix/ui.scm:160
 #, scheme-format
 msgid ""
 "\n"
@@ -1287,7 +1002,7 @@ msgstr ""
 "\n"
 "~a trang chủ: <~a>"
 
-#: guix/ui.scm:155
+#: guix/ui.scm:162
 msgid ""
 "\n"
 "General help using GNU software: <http://www.gnu.org/gethelp/>"
@@ -1295,105 +1010,105 @@ msgstr ""
 "\n"
 "Trợ giúp chung về sử dụng phần mềm GNU: <http://www.gnu.org/gethelp/>"
 
-#: guix/ui.scm:162
+#: guix/ui.scm:169
 #, scheme-format
 msgid "~a: invalid number~%"
 msgstr "~a: số không hợp lệ~%"
 
-#: guix/ui.scm:179
+#: guix/ui.scm:186
 #, scheme-format
 msgid "invalid number: ~a~%"
 msgstr "số không hợp lệ: ~a~%"
 
-#: guix/ui.scm:194
+#: guix/ui.scm:201
 #, scheme-format
 msgid "unknown unit: ~a~%"
 msgstr "không hiểu đơn vị: ~a~%"
 
-#: guix/ui.scm:205
+#: guix/ui.scm:212
 #, scheme-format
 msgid "~a:~a:~a: package `~a' has an invalid input: ~s~%"
 msgstr "~a:~a:~a: gói `~a' có đầu vào không hợp lệ: ~s~%"
 
-#: guix/ui.scm:212
+#: guix/ui.scm:219
 #, scheme-format
 msgid "~a: ~a: build system `~a' does not support cross builds~%"
 msgstr "~a: ~a: hệ thống dịch `~a' không hỗ trợ dịch chéo~%"
 
-#: guix/ui.scm:217
+#: guix/ui.scm:224
 #, scheme-format
 msgid "failed to connect to `~a': ~a~%"
 msgstr "gặp lỗi khi kết nối đến `~a': ~a~%"
 
-#: guix/ui.scm:222
+#: guix/ui.scm:229
 #, scheme-format
 msgid "build failed: ~a~%"
 msgstr "xây dựng gặp lỗi: ~a~%"
 
-#: guix/ui.scm:231
+#: guix/ui.scm:238
 #, fuzzy, scheme-format
 msgid "~a: ~a~%"
 msgstr "~a~%"
 
-#: guix/ui.scm:240
+#: guix/ui.scm:255
 #, scheme-format
 msgid "failed to read expression ~s: ~s~%"
 msgstr "gặp lỗi khi đọc biểu thức ~s: ~s~%"
 
-#: guix/ui.scm:246
+#: guix/ui.scm:261
 #, scheme-format
 msgid "failed to evaluate expression `~a': ~s~%"
 msgstr "gặp lỗi khi định giá biểu thức `~a': ~s~%"
 
-#: guix/ui.scm:255
+#: guix/ui.scm:270
 #, scheme-format
 msgid "expression ~s does not evaluate to a package~%"
 msgstr "biểu thức `~s' không được định giá cho gói~%"
 
-#: guix/ui.scm:301
+#: guix/ui.scm:317
 #, scheme-format
 msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
 msgstr "~:[Nguồn sau đây sẽ được xây dựng:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:306
+#: guix/ui.scm:322
 #, scheme-format
 msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
 msgstr "~:[Tập tin sau đây sẽ được tải về:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:312
+#: guix/ui.scm:328
 #, scheme-format
 msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
 msgstr "~:[Nguồn sau đây sẽ được biên dịch:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:317
+#: guix/ui.scm:333
 #, scheme-format
 msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
 msgstr "~:[Những tập tin sau đây sẽ được tải về:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:334
+#: guix/ui.scm:350
 msgid "<unknown location>"
 msgstr "<không hiểu vị trí>"
 
-#: guix/ui.scm:362
+#: guix/ui.scm:378
 #, scheme-format
 msgid "failed to create configuration directory `~a': ~a~%"
 msgstr "gặp lỗi khi tạo thư mục cấu hình `~a': ~a~%"
 
-#: guix/ui.scm:443 guix/ui.scm:457
+#: guix/ui.scm:459 guix/ui.scm:473
 msgid "unknown"
 msgstr "không hiểu"
 
-#: guix/ui.scm:566
+#: guix/ui.scm:582
 #, scheme-format
 msgid "invalid argument: ~a~%"
 msgstr "đối số không hợp lệ: ~a~%"
 
-#: guix/ui.scm:571
+#: guix/ui.scm:587
 #, scheme-format
 msgid "Try `guix --help' for more information.~%"
 msgstr "Chạy lệnh `guix --help' để biết thêm thông tin.~%"
 
-#: guix/ui.scm:601
+#: guix/ui.scm:617
 msgid ""
 "Usage: guix COMMAND ARGS...\n"
 "Run COMMAND with ARGS.\n"
@@ -1401,41 +1116,41 @@ msgstr ""
 "Cách dùng: guix LỆNH ĐỐI_SỐ...\n"
 "Chạy LỆNH với các ĐỐI SỐ.\n"
 
-#: guix/ui.scm:604
+#: guix/ui.scm:620
 msgid "COMMAND must be one of the sub-commands listed below:\n"
 msgstr "LỆNH phải là một trong số những câu lệnh con được liệt kê dưới đây:\n"
 
-#: guix/ui.scm:624
+#: guix/ui.scm:640
 #, scheme-format
 msgid "guix: ~a: command not found~%"
 msgstr "guix: ~a: không tìm thấy lệnh~%"
 
-#: guix/ui.scm:642
+#: guix/ui.scm:658
 #, scheme-format
 msgid "guix: missing command name~%"
 msgstr "guix: thiếu tên lệnh~%"
 
-#: guix/ui.scm:650
+#: guix/ui.scm:666
 #, scheme-format
 msgid "guix: unrecognized option '~a'~%"
 msgstr "guix: tùy chọn không được thừa nhận `~a'~%"
 
-#: guix/http-client.scm:205
+#: guix/http-client.scm:217
 #, scheme-format
 msgid "using Guile ~a, which does not support ~s encoding~%"
 msgstr "đang dùng Guile ~a, mà nó lại không hỗ trợ ~s bộ mã~%"
 
-#: guix/http-client.scm:208
+#: guix/http-client.scm:220
 #, scheme-format
 msgid "download failed; use a newer Guile~%"
 msgstr "tải về gặp lỗi; dùng Guile mới hơn~%"
 
-#: guix/http-client.scm:220
+#: guix/http-client.scm:232
 #, scheme-format
 msgid "following redirection to `~a'...~%"
 msgstr "đang cho chuyển hướng sang `~a'...~%"
 
-#: guix/http-client.scm:229
+#: guix/http-client.scm:241
 #, fuzzy
 msgid "download failed"
 msgstr "~a: tải về gặp lỗi~%"
@@ -1477,47 +1192,111 @@ msgstr ""
 msgid "unsupported nar entry type"
 msgstr ""
 
-#: guix/nar.scm:387
+#: guix/nar.scm:376
 msgid "signature is not a valid s-expression"
 msgstr ""
 
-#: guix/nar.scm:396
+#: guix/nar.scm:385
 msgid "invalid signature"
 msgstr ""
 
-#: guix/nar.scm:400
+#: guix/nar.scm:389
 msgid "invalid hash"
 msgstr ""
 
-#: guix/nar.scm:408
+#: guix/nar.scm:397
 msgid "unauthorized public key"
 msgstr ""
 
-#: guix/nar.scm:413
+#: guix/nar.scm:402
 msgid "corrupt signature data"
 msgstr ""
 
-#: guix/nar.scm:430
+#: guix/nar.scm:422
 msgid "corrupt file set archive"
 msgstr ""
 
-#: guix/nar.scm:440
+#: guix/nar.scm:432
 #, fuzzy, scheme-format
 msgid "importing file or directory '~a'...~%"
 msgstr "đang cho chuyển hướng sang `~a'...~%"
 
-#: guix/nar.scm:449
+#: guix/nar.scm:441
 #, fuzzy, scheme-format
 msgid "found valid signature for '~a'~%"
 msgstr "không có nhật ký dịch cho '~a'~%"
 
-#: guix/nar.scm:458
+#: guix/nar.scm:448
 msgid "imported file lacks a signature"
 msgstr ""
 
-#: guix/nar.scm:465
+#: guix/nar.scm:487
 msgid "invalid inter-file archive mark"
 msgstr ""
+
+#~ msgid "Hello, GNU world: An example GNU package"
+#~ msgstr "Xin chào, gia đình GNU: Một gói GNU ví dụ"
+
+#~ msgid "Print lines matching a pattern"
+#~ msgstr "In ra những dòng khớp với một mẫu"
+
+#~ msgid "Stream editor"
+#~ msgstr "Trình soạn thảo luồng dữ liệu"
+
+#~ msgid "Managing tar archives"
+#~ msgstr "Quản lý kho lưu tar"
+
+#~ msgid "Apply differences to originals, with optional backups"
+#~ msgstr "Áp dụng những khác biệt này vào bản gốc, với các sao lưu tùy chọn"
+
+#~ msgid "Comparing and merging files"
+#~ msgstr "So sánh và hòa trộn các tập tin"
+
+#~ msgid "Operating on files matching given criteria"
+#~ msgstr "Thực hiện trên những tập tin khớp với điều kiện đã cho"
+
+#~ msgid "Core GNU utilities (file, text, shell)"
+#~ msgstr "Tiện ích lõi GNU (file, text, shell)"
+
+#~ msgid "Remake files automatically"
+#~ msgstr "Tạo lại các tập tin một cách tự động"
+
+#~ msgid "Binary utilities: bfd gas gprof ld"
+#~ msgstr "Tiện ích nhị phân: bfd gas gprof ld"
+
+#~ msgid "The GNU C Library"
+#~ msgstr "Thư viện C từ GNU"
+
+#~ msgid "Database of current and historical time zones"
+#~ msgstr "Cơ sở dữ liệu của hiện tại và múi giờ lịch sử"
+
+#~ msgid "GNU C++ standard library (intermediate)"
+#~ msgstr "Thư viện GNU C++ chuẩn (khâu trung gian)"
+
+#~ msgid "The linker wrapper"
+#~ msgstr "Bộ bao liên kết"
+
+#~ msgid "Scheme implementation intended especially for extensions"
+#~ msgstr "Lược đồ thực thi có dụng ý đặc biệt cho phần mở rộng"
+
+#~ msgid "Framework for building readers for GNU Guile"
+#~ msgstr "Một framework để xây dựng bộ đọc dành cho GNU Guile"
+
+#~ msgid "Guile bindings to ncurses"
+#~ msgstr "Guile ràng buộc vào ncurses"
+
+#~ msgid "Run jobs at scheduled times"
+#~ msgstr "Chạy các công việc theo lịch biểu"
+
+#~ msgid "Collection of useful Guile Scheme modules"
+#~ msgstr "Bộ sưu tập của các mô-đun Lược đồ Guile"
+
+#~ msgid "Manipulate plain text files as databases"
+#~ msgstr "Thao tác các tập tin văn bản thường như là cơ sở dữ liệu"
+
+#, fuzzy
+#~ msgid "~a: extraneous argument~%"
+#~ msgstr "~A: đối số ngoại lai~%"
 
 #~ msgid "package `~a' has no source~%"
 #~ msgstr "gói `~a' không có nguồn~%"

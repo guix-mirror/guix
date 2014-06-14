@@ -39,6 +39,7 @@
   #:use-module (ice-9 regex)
   #:export (_
             N_
+            P_
             leave
             show-version-and-exit
             show-bug-report-information
@@ -72,10 +73,16 @@
 ;;; Code:
 
 (define %gettext-domain
+  ;; Text domain for strings used in the tools.
   "guix")
+
+(define %package-text-domain
+  ;; Text domain for package synopses and descriptions.
+  "guix-packages")
 
 (define _ (cut gettext <> %gettext-domain))
 (define N_ (cut ngettext <> <> <> %gettext-domain))
+(define P_ (cut gettext <> %package-text-domain))
 
 (define-syntax-rule (define-diagnostic name prefix)
   "Create a diagnostic macro (i.e., NAME), which will prepend PREFIX to all
@@ -231,6 +238,16 @@ interpreted."
         (leave (_ "~a: ~a~%") proc
                (apply format #f format-string format-args))))))
 
+(define %guix-user-module
+  ;; Module in which user expressions are evaluated.
+  ;; Compute lazily to avoid circularity with (guix gexp).
+  (delay
+    (let ((module (make-module)))
+      (beautify-user-module! module)
+      ;; Use (guix gexp) so that one can use #~ & co.
+      (module-use! module (resolve-interface '(guix gexp)))
+      module)))
+
 (define (read/eval str)
   "Read and evaluate STR, raising an error if something goes wrong."
   (let ((exp (catch #t
@@ -241,7 +258,7 @@ interpreted."
                         str args)))))
     (catch #t
       (lambda ()
-        (eval exp the-root-module))
+        (eval exp (force %guix-user-module)))
       (lambda args
         (leave (_ "failed to evaluate expression `~a': ~s~%")
                exp args)))))
@@ -431,7 +448,7 @@ followed by \"+ \", which makes for a valid multi-line field value in the
   "Write to PORT a `recutils' record of package P, arranging to fit within
 WIDTH columns."
   (define (description->recutils str)
-    (let ((str (_ str)))
+    (let ((str (P_ str)))
       (string->recutils
        (fill-paragraph str width
                        (string-length "description: ")))))
@@ -460,7 +477,7 @@ WIDTH columns."
           (string-map (match-lambda
                        (#\newline #\space)
                        (chr       chr))
-                      (or (and=> (package-synopsis p) _)
+                      (or (and=> (package-synopsis p) P_)
                           "")))
   (format port "description: ~a~%"
           (and=> (package-description p) description->recutils))
