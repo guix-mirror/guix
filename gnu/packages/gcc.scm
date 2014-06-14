@@ -109,14 +109,14 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                    (maybe-target-tools))))))
     (package
       (name "gcc")
-      (version "4.7.3")
+      (version "4.7.4")
       (source (origin
                (method url-fetch)
                (uri (string-append "mirror://gnu/gcc/gcc-"
                                    version "/gcc-" version ".tar.bz2"))
                (sha256
                 (base32
-                 "1hx9h64ivarlzi4hxvq42as5m9vlr5cyzaaq4gzj4i619zmkfz1g"))))
+                 "10k2k71kxgay283ylbbhhs51cl55zn2q38vj5pk4k950qdnirrlj"))))
       (build-system gnu-build-system)
 
       ;; Separate out the run-time support libraries because all the
