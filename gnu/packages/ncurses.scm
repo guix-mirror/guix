@@ -94,9 +94,6 @@
       `(#:configure-flags
         `("--with-shared" "--without-debug" "--enable-widec"
 
-          ;; Create a separate libtinfo.so, as many distributions do.
-          "--with-termlib"
-
           ;; By default headers land in an `ncursesw' subdir, which is not
           ;; what users expect.
           ,(string-append "--includedir=" (assoc-ref %outputs "out")
