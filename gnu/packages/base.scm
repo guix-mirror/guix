@@ -1160,9 +1160,19 @@ store.")
                                  ;; test files in Gettext.
                                  #:guile guile-final)))
 
+(define grep-final
+  ;; The final grep.  Gzip holds a reference to it (via zgrep), so it must be
+  ;; built before gzip.
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs grep
+                                 %boot4-inputs
+                                 (current-source-location)
+                                 #:guile guile-final)))
+
 (define %boot5-inputs
   ;; Now use the final Coreutils.
   `(("coreutils" ,coreutils-final)
+    ("grep" ,grep-final)
     ,@%boot4-inputs))
 
 (define-public %final-inputs
@@ -1183,9 +1193,9 @@ store.")
                ("diffutils" ,diffutils)
                ("patch" ,patch)
                ("sed" ,sed)
-               ("grep" ,grep)
                ("findutils" ,findutils)
                ("gawk" ,gawk)))
+      ("grep" ,grep-final)
       ("coreutils" ,coreutils-final)
       ("make" ,gnu-make-final)
       ("bash" ,bash-final)
