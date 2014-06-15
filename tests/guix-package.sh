@@ -80,6 +80,8 @@ then
     test "`guix package -p "$profile" -I 'g.*e' | cut -f1`" = "guile-bootstrap"
 
     # Search.
+    LC_MESSAGES=C
+    export LC_MESSAGES
     test "`guix package -s "An example GNU package" | grep ^name:`" = \
         "name: hello"
     test -z "`guix package -s "n0t4r341p4ck4g3"`"
