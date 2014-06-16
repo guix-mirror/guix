@@ -37,7 +37,8 @@
                    (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                    "-src.tgz"))
             (sha256 (base32
-                     "14l0kl17nirc34frcybzg0snknaks23abhdxkmsqg3k9sil5wk9g"))))
+                     "14l0kl17nirc34frcybzg0snknaks23abhdxkmsqg3k9sil5wk9g")))
+            (patches (list (search-patch "icu4c-test-date-format.patch"))))
    (build-system gnu-build-system)
    (inputs
     `(("patchelf" ,patchelf)
