@@ -335,7 +335,7 @@ or is signed by an unauthorized key."
     (if (not hash)
         (if %allow-unauthenticated-substitutes?
             narinfo
-            (leave (_ "narinfo for '~a' lacks a signature~%")
+            (leave (_ "substitute at '~a' lacks a signature~%")
                    (uri->string (narinfo-uri narinfo))))
         (let ((signature (narinfo-signature narinfo)))
           (unless %allow-unauthenticated-substitutes?
