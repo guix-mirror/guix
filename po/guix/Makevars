@@ -8,9 +8,12 @@ top_builddir = ../..
 # These options get passed to xgettext.  We want to catch standard
 # gettext uses, and SRFI-35 error condition messages.
 XGETTEXT_OPTIONS =				\
+  --no-wrap					\
   --language=Scheme --from-code=UTF-8		\
   --keyword=_ --keyword=N_			\
   --keyword=message
+
+MSGMERGE_OPTIONS = --no-wrap
 
 COPYRIGHT_HOLDER = Ludovic Courtès
 
