@@ -310,6 +310,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/guile-1.8-cpp-4.5.patch			\
   gnu/packages/patches/guile-default-utf8.patch			\
   gnu/packages/patches/guile-linux-syscalls.patch		\
+  gnu/packages/patches/guile-ncurses-tests.patch		\
   gnu/packages/patches/guile-relocatable.patch			\
   gnu/packages/patches/guix-test-networking.patch		\
   gnu/packages/patches/gtkglext-disable-disable-deprecated.patch \

@@ -1,0 +1,15 @@
+The wide test files are missing from the tarball, so ignore them.
+Reported at <https://lists.gnu.org/archive/html/bug-guile-ncurses/2014-06/msg00000.html>.
+
+--- guile-ncurses-1.4/test/Makefile.in	2013-04-27 17:55:19.000000000 +0200
++++ guile-ncurses-1.4/test/Makefile.in	2014-06-16 21:39:40.000000000 +0200
+@@ -258,8 +258,7 @@ m011_menu_options.test slk_001_init.test
+ slk_003_init.test slk_004_init.test slk_005_demo.test			\
+ slk_006_attributes.test
+ 
+-WIDETESTS = r037_border_set.test r038_get_wch.test r039_get_wstr.test	\
+-r040_term_attrs.test
++WIDETESTS =
+ 
+ TESTS = $(NOTERMTESTS) $(am__append_1) $(am__append_2)
+ EXTRA_DIST = $(TESTLIB) $(TESTS)

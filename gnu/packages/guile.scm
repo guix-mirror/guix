@@ -242,7 +242,8 @@ many readers as needed).")
                                  version ".tar.gz"))
              (sha256
               (base32
-               "070wl664lsm14hb6y9ch97x9q6cns4k6nxgdzbdzi5byixn74899"))))
+               "070wl664lsm14hb6y9ch97x9q6cns4k6nxgdzbdzi5byixn74899"))
+             (patches (list (search-patch "guile-ncurses-tests.patch")))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("guile" ,guile-2.0)))
