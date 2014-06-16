@@ -28,7 +28,7 @@
 (define-public icu4c
   (package
    (name "icu4c")
-   (version "52.1")
+   (version "53.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://download.icu-project.org/files/icu4c/"
@@ -36,9 +36,9 @@
                    "/icu4c-"
                    (string-map (lambda (x) (if (char=? x #\.) #\_ x)) version)
                    "-src.tgz"))
-            (sha256 (base32
-                     "14l0kl17nirc34frcybzg0snknaks23abhdxkmsqg3k9sil5wk9g")))
-            (patches (list (search-patch "icu4c-test-date-format.patch"))))
+            (sha256
+             (base32 "0a4sg9w054640zncb13lhrcjqn7yg1qilwd1mczc4w60maslz9vg"))
+            (patches (list (search-patch "icu4c-test-date-format.patch")))))
    (build-system gnu-build-system)
    (inputs
     `(("patchelf" ,patchelf)
