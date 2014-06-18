@@ -216,12 +216,16 @@ explicitly appear in OS."
 (define %base-packages
   ;; Default set of packages globally visible.  It should include anything
   ;; required for basic administrator tasks.
-  (list bash coreutils findutils grep sed
-        procps psmisc less zile
-        guile-final (@ (gnu packages admin) dmd) guix
-        util-linux inetutils isc-dhcp
-        net-tools                        ; XXX: remove when Inetutils suffices
-        module-init-tools kbd))
+  (cons* procps psmisc less zile
+         guile-final (@ (gnu packages admin) dmd) guix
+         util-linux inetutils isc-dhcp
+         net-tools                        ; XXX: remove when Inetutils suffices
+         module-init-tools kbd
+
+         ;; The packages below are also in %FINAL-INPUTS, so take them from
+         ;; there to avoid duplication.
+         (map canonical-package
+              (list bash coreutils findutils grep sed))))
 
 (define %default-issue
   ;; Default contents for /etc/issue.

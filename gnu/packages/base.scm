@@ -42,6 +42,7 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (ice-9 vlist)
   #:use-module (ice-9 match))
 
 ;;; Commentary:
@@ -1203,6 +1204,40 @@ store.")
       ("binutils" ,binutils-final)
       ("gcc" ,gcc-final)
       ("libc" ,glibc-final))))
+
+(define-public canonical-package
+  (let ((name->package (fold (lambda (input result)
+                               (match input
+                                 ((_ package)
+                                  (vhash-cons (package-full-name package)
+                                              package result))))
+                             vlist-null
+                             `(("guile" ,guile-final)
+                               ,@%final-inputs))))
+    (lambda (package)
+      "Return the 'canonical' variant of PACKAGE---i.e., if PACKAGE is one of
+the implicit inputs of 'gnu-build-system', return that one, otherwise return
+PACKAGE.
+
+The goal is to avoid duplication in cases like GUILE-FINAL vs. GUILE-2.0,
+COREUTILS-FINAL vs. COREUTILS, etc."
+      ;; XXX: This doesn't handle dependencies of the final inputs, such as
+      ;; libunistring, GMP, etc.
+      (match (vhash-assoc (package-full-name package) name->package)
+        ((_ . canon)
+         ;; In general we want CANON, except if we're cross-compiling: CANON
+         ;; uses explicit inputs, so it is "anchored" in the bootstrapped
+         ;; process, with dependencies on things that cannot be
+         ;; cross-compiled.
+         (if (%current-target-system)
+             package
+             canon))
+        (_ package)))))
+
+
+;;;
+;;; GCC toolchain.
+;;;
 
 (define (gcc-toolchain gcc)
   "Return a complete toolchain for GCC."
