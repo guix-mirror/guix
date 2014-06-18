@@ -94,7 +94,12 @@ rejects UDP traffic from the application you're using.")
                "1f6xb7aa47p90c26vqaw74y6drs9gpnhxsgby3mx0awdjh0ydisy"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:phases (alist-cons-before
+     '(;; The default 'sysconfdir' is $out/etc; change that to
+       ;; $out/etc/privoxy.
+       #:configure-flags (list (string-append "--sysconfdir="
+                                              (assoc-ref %outputs "out")
+                                              "/etc/privoxy"))
+       #:phases (alist-cons-before
                  'configure 'autoconf
                  (lambda _
                    ;; Unfortunately, this is not a tarball produced by
