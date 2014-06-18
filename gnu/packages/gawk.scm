@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -54,6 +55,17 @@
                           '((substitute* "extension/Makefile.in"
                               (("^.*: check-for-shared-lib-support" match)
                                (string-append "### " match))))
+                          '())
+
+                    ;; XXX FIXME gawk 4.1.1 was bootstrapped with a prerelease
+                    ;; libtool, which fails on MIPS in the absence of
+                    ;; /usr/bin/file.  As a temporary workaround, we patch
+                    ;; the configure script to hardcode use of the little
+                    ;; endian N32 ABI on MIPS.
+                    ,@(if (equal? "mips64el-linux" (or (%current-target-system)
+                                                       (%current-system)))
+                          '((substitute* "extension/configure"
+                              (("\\$emul") "elf32ltsmipn32")))
                           '())))
                 %standard-phases)))
    (inputs `(("libsigsegv" ,libsigsegv)
