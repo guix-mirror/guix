@@ -437,11 +437,15 @@ connection alive.")
 
     (native-inputs `(("perl" ,perl)))
 
-    ;; Even Coreutils and sed are needed here in case we're cross-compiling.
-    (inputs `(("coreutils" ,coreutils)
-              ("sed" ,sed)
-              ("net-tools" ,net-tools)
-              ("iproute" ,iproute)))
+    (inputs `(("net-tools" ,net-tools)
+              ("iproute" ,iproute)
+
+              ;; When cross-compiling, we need the cross Coreutils and sed.
+              ;; Otherwise just use those from %FINAL-INPUTS.
+              ,@(if (%current-target-system)
+                    `(("coreutils" ,coreutils)
+                      ("sed" ,sed))
+                    '())))
 
     (home-page "http://www.isc.org/products/DHCP/")
     (synopsis "Dynamic Host Configuration Protocol (DHCP) tools")
