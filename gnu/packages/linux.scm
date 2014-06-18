@@ -1137,7 +1137,13 @@ system.")
                                   version ".tar.gz"))
               (sha256
                (base32
-                "0c34b0za2v0934acvgnva0vaqpghmmhz4zh7k0m9jd4mbc91byqm"))))
+                "0c34b0za2v0934acvgnva0vaqpghmmhz4zh7k0m9jd4mbc91byqm"))
+              (modules '((guix build utils)))
+              (snippet
+               '(substitute* "tests/Makefile.in"
+                  ;; The '%: %.in' rule incorrectly uses @VERSION@.
+                  (("@VERSION@")
+                   "[@]VERSION[@]")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
