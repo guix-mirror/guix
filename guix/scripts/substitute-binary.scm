@@ -592,9 +592,14 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
          (let ((key (call-with-input-file %public-key-file
                       (compose string->canonical-sexp
                                get-string-all))))
-           (equal? (acl->public-keys acl) (list key)))))
+           (match acl
+             ((thing)
+              (equal? (canonical-sexp->string thing)
+                      (canonical-sexp->string key)))
+             (_
+              #f)))))
 
-  (let ((acl (current-acl)))
+  (let ((acl (acl->public-keys (current-acl))))
     (when (or (null? acl) (singleton? acl))
       (warning (_ "ACL for archive imports seems to be uninitialized, \
 substitutes may be unavailable\n")))))
@@ -603,6 +608,7 @@ substitutes may be unavailable\n")))))
   "Implement the build daemon's substituter protocol."
   (mkdir-p %narinfo-cache-directory)
   (maybe-remove-expired-cached-narinfo)
+  (check-acl-initialized)
 
   ;; Starting from commit 22144afa in Nix, we are allowed to bail out directly
   ;; when we know we cannot substitute, but we must emit a newline on stdout
