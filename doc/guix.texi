@@ -3263,6 +3263,12 @@ using the following command:
 @var{options} can contain any of the common build options provided by
 @command{guix build} (@pxref{Invoking guix build}).
 
+Note that all the actions above, except @code{build} and @code{init},
+rely on KVM support in the Linux-Libre kernel.  Specifically, the
+machine should have hardware virtualization support, the corresponding
+KVM kernel module should be loaded, and the @file{/dev/kvm} device node
+must exist and be readable and writable by the user and by the daemon's
+build users.
 
 @node Defining Services
 @subsection Defining Services
