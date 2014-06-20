@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -36,6 +36,11 @@
               "18q620269xzpw39dwvr9zpilnl2dkw5z5kz3mxaadnpv4k3kw3b1"))))
    (propagated-inputs '())                  ; FIXME: add libiconv when !glibc
    (build-system gnu-build-system)
+   (arguments
+    ;; Work around parallel build issue whereby C files may be compiled before
+    ;; config.h is built: see <http://hydra.gnu.org/build/59381/nixlog/2/raw> and
+    ;; <http://lists.openembedded.org/pipermail/openembedded-core/2012-April/059850.html>.
+    '(#:parallel-build? #f))
    (synopsis "C library for manipulating Unicode strings")
    (description
     "GNU libunistring is a library providing functions to manipulate

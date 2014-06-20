@@ -100,9 +100,13 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
 
   (if (string=? target "/")
       (warning (_ "initializing the current root file system~%"))
-      ;; Copy items to the new store.
-      (for-each (cut copy-closure store <> target #:log-port log-port)
-                to-copy))
+      (begin
+        ;; Make sure the target store exists.
+        (mkdir-p (string-append target (%store-prefix)))
+
+        ;; Copy items to the new store.
+        (for-each (cut copy-closure store <> target #:log-port log-port)
+                  to-copy)))
 
   ;; Create a bunch of additional files.
   (format log-port "populating '~a'...~%" target)

@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -41,6 +42,7 @@
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
+  #:use-module (ice-9 vlist)
   #:use-module (ice-9 match))
 
 ;;; Commentary:
@@ -71,14 +73,14 @@ command-line arguments, multiple languages, and so on.")
 (define-public grep
   (package
    (name "grep")
-   (version "2.18")
+   (version "2.20")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/grep/grep-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "08773flbnx28ksy0y4mzd4iifysh7yysmzn8rkz9f57sfx86whz6"))))
+              "0rcs0spsxdmh6yz8y4frkqp6f5iw19mdbdl9s2v6956hq0mlbbzh"))))
    (build-system gnu-build-system)
    (synopsis "Print lines matching a pattern")
    (description
@@ -262,14 +264,16 @@ used to apply commands with arbitrarily long arguments.")
                 'build 'patch-shell-references
                 (lambda* (#:key inputs #:allow-other-keys)
                   (let ((bash (assoc-ref inputs "bash")))
-                    (substitute* (cons "src/split.c"
-                                       (find-files "gnulib-tests"
-                                                   "\\.c$"))
+                    ;; 'split' uses either $SHELL or /bin/sh.  Set $SHELL so
+                    ;; that tests pass, since /bin/sh isn't in the chroot.
+                    (setenv "SHELL" (which "sh"))
+
+                    (substitute* (find-files "gnulib-tests" "\\.c$")
                       (("/bin/sh")
                        (format #f "~a/bin/sh" bash)))
                     (substitute* (find-files "tests" "\\.sh$")
                       (("#!/bin/sh")
-                       (format #f "#!~a/bin/bash" bash)))))
+                       (format #f "#!~a/bin/sh" bash)))))
                 %standard-phases)))
    (synopsis "Core GNU utilities (file, text, shell)")
    (description
@@ -728,15 +732,19 @@ identifier SYSTEM."
                                           source)))
                              (list gmp mpfr mpc))
 
-                   ;; Create symlinks like `gmp' -> `gmp-5.0.5'.
+                   ;; Create symlinks like `gmp' -> `gmp-x.y.z'.
                    ,@(map (lambda (lib)
-                            `(symlink ,(package-full-name lib)
+                            ;; Drop trailing letters, as gmp-6.0.0a unpacks
+                            ;; into gmp-6.0.0.
+                            `(symlink ,(string-trim-right
+                                        (package-full-name lib)
+                                        char-set:letter)
                                       ,(package-name lib)))
                           (list gmp mpfr mpc))))
                (alist-cons-after
                 'install 'symlink-libgcc_eh
                 (lambda* (#:key outputs #:allow-other-keys)
-                  (let ((out (assoc-ref outputs "out")))
+                  (let ((out (assoc-ref outputs "lib")))
                     ;; Glibc wants to link against libgcc_eh, so provide
                     ;; it.
                     (with-directory-excursion
@@ -822,22 +830,37 @@ identifier SYSTEM."
                             ;; Build Sun/ONC RPC support.  In particular,
                             ;; install rpc/*.h.
                             "--enable-obsolete-rpc")
-                      ,flags)))))
+                      ,flags))
+            ((#:phases phases)
+             `(alist-cons-before
+               'configure 'pre-configure
+               (lambda* (#:key inputs #:allow-other-keys)
+                 ;; Don't clobber CPATH with the bootstrap libc.
+                 (setenv "NATIVE_CPATH" (getenv "CPATH"))
+                 (unsetenv "CPATH")
+
+                 ;; 'rpcgen' needs native libc headers to be built.
+                 (substitute* "sunrpc/Makefile"
+                   (("sunrpc-CPPFLAGS =.*" all)
+                    (string-append "CPATH = $(NATIVE_CPATH)\n"
+                                   "export CPATH\n"
+                                   all "\n"))))
+               ,phases)))))
      (propagated-inputs `(("linux-headers" ,(linux-libre-headers-boot0))))
      (native-inputs
       `(("texinfo" ,texinfo-boot0)
         ("perl" ,perl-boot0)))
      (inputs
-      `( ;; A native GCC is needed to build `cross-rpcgen'.
+      `(;; The boot inputs.  That includes the bootstrap libc.  We don't want
+        ;; it in $CPATH, hence the 'pre-configure' phase above.
+        ,@%boot1-inputs
+
+        ;; A native GCC is needed to build `cross-rpcgen'.
         ("native-gcc" ,@(assoc-ref %boot0-inputs "gcc"))
 
         ;; Here, we use the bootstrap Bash, which is not satisfactory
         ;; because we don't want to depend on bootstrap tools.
-        ("static-bash" ,@(assoc-ref %boot0-inputs "bash"))
-
-        ,@%boot1-inputs
-        ,@(alist-delete "static-bash"
-                        (package-inputs glibc))))))) ; patches
+        ("static-bash" ,@(assoc-ref %boot0-inputs "bash")))))))
 
 (define (cross-gcc-wrapper gcc binutils glibc bash)
   "Return a wrapper for the pseudo-cross toolchain GCC/BINUTILS/GLIBC
@@ -846,6 +869,7 @@ that makes it available under the native tool names."
     (name (string-append (package-name gcc) "-wrapped"))
     (source #f)
     (build-system trivial-build-system)
+    (outputs '("out"))
     (arguments
      `(#:guile ,%bootstrap-guile
        #:modules ((guix build utils))
@@ -914,7 +938,17 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (inputs `(("static-bash" ,static-bash-for-glibc)
               ,@(alist-delete
                  "static-bash"
-                 (package-inputs glibc-final-with-bootstrap-bash))))))
+                 (package-inputs glibc-final-with-bootstrap-bash))))
+
+    ;; The final libc only refers to itself, but the 'debug' output contains
+    ;; references to GCC-BOOT0 and to the Linux headers.  XXX: Would be great
+    ;; if 'allowed-references' were per-output.
+    (arguments
+     `(#:allowed-references
+       ,(cons* `(,gcc-boot0 "lib") (linux-libre-headers-boot0)
+               (package-outputs glibc-final-with-bootstrap-bash))
+
+       ,@(package-arguments glibc-final-with-bootstrap-bash)))))
 
 (define gcc-boot0-wrapped
   ;; Make the cross-tools GCC-BOOT0 and BINUTILS-BOOT0 available under the
@@ -934,6 +968,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
      (arguments
       `(#:guile ,%bootstrap-guile
         #:implicit-inputs? #f
+        #:allowed-references ("out" ,glibc-final)
         ,@(package-arguments binutils)))
      (inputs %boot2-inputs))))
 
@@ -962,6 +997,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                             ;; "/include/c++/"
                                             ;; ,(package-version gcc-4.8)
                                             ))))
+     (outputs '("out"))
      (inputs %boot2-inputs)
      (native-inputs '())
      (propagated-inputs '())
@@ -975,6 +1011,8 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
     (arguments
      `(#:guile ,%bootstrap-guile
        #:implicit-inputs? #f
+
+       #:allowed-references ("out" "lib" ,glibc-final)
 
        ;; Build again GMP & co. within GCC's build process, because it's hard
        ;; to do outside (because GCC-BOOT0 is a cross-compiler, and thus
@@ -1002,6 +1040,10 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                         ,flags)))
            ((#:phases phases)
             `(alist-delete 'symlink-libgcc_eh ,phases)))))
+
+    ;; This time we want Texinfo, so we get the manual.
+    (native-inputs `(("texinfo" ,texinfo-boot0)
+                     ,@(package-native-inputs gcc-boot0)))
 
     (inputs `(("gmp-source" ,(package-source gmp))
               ("mpfr-source" ,(package-source mpfr))
@@ -1105,13 +1147,42 @@ store.")
               ,@(fold alist-delete (package-inputs ld-wrapper-boot3)
                       '("guile" "bash"))))))
 
+(define coreutils-final
+  ;; The final Coreutils.  Treat them specially because some packages, such as
+  ;; Findutils, keep a reference to the Coreutils they were built with.
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs coreutils
+                                 %boot4-inputs
+                                 (current-source-location)
+
+                                 ;; Use the final Guile, linked against the
+                                 ;; final libc with working iconv, so that
+                                 ;; 'substitute*' works well when touching
+                                 ;; test files in Gettext.
+                                 #:guile guile-final)))
+
+(define grep-final
+  ;; The final grep.  Gzip holds a reference to it (via zgrep), so it must be
+  ;; built before gzip.
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs grep
+                                 %boot4-inputs
+                                 (current-source-location)
+                                 #:guile guile-final)))
+
+(define %boot5-inputs
+  ;; Now use the final Coreutils.
+  `(("coreutils" ,coreutils-final)
+    ("grep" ,grep-final)
+    ,@%boot4-inputs))
+
 (define-public %final-inputs
   ;; Final derivations used as implicit inputs by 'gnu-build-system'.  We
   ;; still use 'package-with-bootstrap-guile' so that the bootstrap tools are
   ;; used for origins that have patches, thereby avoiding circular
   ;; dependencies.
   (let ((finalize (compose package-with-bootstrap-guile
-                           (cut package-with-explicit-inputs <> %boot4-inputs
+                           (cut package-with-explicit-inputs <> %boot5-inputs
                                 (current-source-location)))))
     `(,@(map (match-lambda
               ((name package)
@@ -1122,17 +1193,51 @@ store.")
                ("xz" ,xz)
                ("diffutils" ,diffutils)
                ("patch" ,patch)
-               ("coreutils" ,coreutils)
                ("sed" ,sed)
-               ("grep" ,grep)
                ("findutils" ,findutils)
                ("gawk" ,gawk)))
+      ("grep" ,grep-final)
+      ("coreutils" ,coreutils-final)
       ("make" ,gnu-make-final)
       ("bash" ,bash-final)
       ("ld-wrapper" ,ld-wrapper)
       ("binutils" ,binutils-final)
       ("gcc" ,gcc-final)
       ("libc" ,glibc-final))))
+
+(define-public canonical-package
+  (let ((name->package (fold (lambda (input result)
+                               (match input
+                                 ((_ package)
+                                  (vhash-cons (package-full-name package)
+                                              package result))))
+                             vlist-null
+                             `(("guile" ,guile-final)
+                               ,@%final-inputs))))
+    (lambda (package)
+      "Return the 'canonical' variant of PACKAGE---i.e., if PACKAGE is one of
+the implicit inputs of 'gnu-build-system', return that one, otherwise return
+PACKAGE.
+
+The goal is to avoid duplication in cases like GUILE-FINAL vs. GUILE-2.0,
+COREUTILS-FINAL vs. COREUTILS, etc."
+      ;; XXX: This doesn't handle dependencies of the final inputs, such as
+      ;; libunistring, GMP, etc.
+      (match (vhash-assoc (package-full-name package) name->package)
+        ((_ . canon)
+         ;; In general we want CANON, except if we're cross-compiling: CANON
+         ;; uses explicit inputs, so it is "anchored" in the bootstrapped
+         ;; process, with dependencies on things that cannot be
+         ;; cross-compiled.
+         (if (%current-target-system)
+             package
+             canon))
+        (_ package)))))
+
+
+;;;
+;;; GCC toolchain.
+;;;
 
 (define (gcc-toolchain gcc)
   "Return a complete toolchain for GCC."

@@ -103,6 +103,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ,@%final-inputs))
         `(("libc" ,(glibc-for-bootstrap))
           ("gcc" ,(package (inherit gcc-4.8)
+                    (outputs '("out")) ; all in one so libgcc_s is easily found
                     (inputs
                      `(("libc",(glibc-for-bootstrap))
                        ,@(package-inputs gcc-4.8)))))
@@ -393,6 +394,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
   (package-with-relocatable-glibc
    (package (inherit gcc-4.8)
      (name "gcc-static")
+     (outputs '("out"))                           ; all in one
      (arguments
       `(#:modules ((guix build utils)
                    (guix build gnu-build-system)
@@ -404,9 +406,20 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
             ((#:implicit-inputs? _) #t)
             ((#:configure-flags flags)
              `(append (list
+                       ;; We don't need a full bootstrap here.
+                       "--disable-bootstrap"
+
+                       ;; Make sure '-static' is passed where it matters.
+                       "--with-stage1-ldflags=-static"
+
+                       ;; GCC 4.8+ requires a C++ compiler and library.
+                       "--enable-languages=c,c++"
+
+                       ;; Make sure gcc-nm doesn't require liblto_plugin.so.
+                       "--disable-lto"
+
                        "--disable-shared"
                        "--disable-plugin"
-                       "--enable-languages=c"
                        "--disable-libmudflap"
                        "--disable-libatomic"
                        "--disable-libsanitizer"
@@ -416,11 +429,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
                        "--disable-libquadmath"
                        "--disable-decimal-float")
                       (remove (cut string-match "--(.*plugin|enable-languages)" <>)
-                              ,flags)))
-            ((#:make-flags flags)
-             (if (%current-target-system)
-                 `(cons "LDFLAGS=-static" ,flags)
-                 `(cons "BOOT_LDFLAGS=-static" ,flags))))))
+                              ,flags))))))
      (native-inputs
       (if (%current-target-system)
           `(;; When doing a Canadian cross, we need GMP/MPFR/MPC both
@@ -442,6 +451,7 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
     (name "gcc-stripped")
     (build-system trivial-build-system)
     (source #f)
+    (outputs '("out"))                            ;only one output
     (arguments
      `(#:modules ((guix build utils))
        #:builder
@@ -475,7 +485,14 @@ for `sh' in $PATH, and without nscd, and with static NSS modules."
            ;; (‘genchecksum’, ‘gcc-nm’, etc.) rely on C++ headers.
            (copy-recursively (string-append gcc "/include/c++")
                              (string-append includedir "/c++"))
-           #t))))
+
+           ;; For native builds, check whether the binaries actually work.
+           ,(if (%current-target-system)
+                '#t
+                '(every (lambda (prog)
+                          (zero? (system* (string-append gcc "/bin/" prog)
+                                          "--version")))
+                        '("gcc" "g++" "cpp")))))))
     (inputs `(("gcc" ,%gcc-static)))))
 
 (define %guile-static

@@ -51,6 +51,14 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 
 (define-public gcc-4.7
   (let* ((stripped? #t)                           ; TODO: make this a parameter
+         (install-target
+          (lambda ()
+            ;; The 'install-strip' rule uses the native 'strip' instead of
+            ;; 'TARGET-strip' when cross-compiling.  Thus, use 'install' in that
+            ;; case.
+            (if (and stripped? (not (%current-target-system)))
+                "install-strip"
+                "install")))
          (maybe-target-tools
           (lambda ()
             ;; Return the `_FOR_TARGET' variables that are needed when
@@ -79,6 +87,14 @@ where the OS part is overloaded to denote a specific ABI---into GCC
 
                      "--with-local-prefix=/no-gcc-local-prefix"
 
+                     ;; With a separate "lib" output, the build system
+                     ;; incorrectly guesses GPLUSPLUS_INCLUDE_DIR, so force
+                     ;; it.  (Don't use a versioned sub-directory, that's
+                     ;; unnecessary.)
+                     ,(string-append "--with-gxx-include-dir="
+                                     (assoc-ref %outputs "out")
+                                     "/include/c++")
+
                      ,(let ((libc (assoc-ref %build-inputs "libc")))
                         (if libc
                             (string-append "--with-native-system-header-dir=" libc
@@ -94,15 +110,21 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                    (maybe-target-tools))))))
     (package
       (name "gcc")
-      (version "4.7.3")
+      (version "4.7.4")
       (source (origin
                (method url-fetch)
                (uri (string-append "mirror://gnu/gcc/gcc-"
                                    version "/gcc-" version ".tar.bz2"))
                (sha256
                 (base32
-                 "1hx9h64ivarlzi4hxvq42as5m9vlr5cyzaaq4gzj4i619zmkfz1g"))))
+                 "10k2k71kxgay283ylbbhhs51cl55zn2q38vj5pk4k950qdnirrlj"))))
       (build-system gnu-build-system)
+
+      ;; Separate out the run-time support libraries because all the
+      ;; dynamic-linked objects depend on it.
+      (outputs '("out"                     ; commands, etc. (60+ MiB)
+                 "lib"))                   ; libgcc_s, libgomp, etc. (15+ MiB)
+
       (inputs `(("gmp" ,gmp)
                 ("mpfr" ,mpfr)
                 ("mpc" ,mpc)
@@ -119,32 +141,39 @@ where the OS part is overloaded to denote a specific ABI---into GCC
          #:strip-binaries? ,stripped?
          #:configure-flags ,(configure-flags)
          #:make-flags
-         (let* ((libc        (assoc-ref %build-inputs "libc"))
-                (libc-native (or (assoc-ref %build-inputs "libc-native")
-                                 libc)))
-           `(,@(if libc
-                   (list (string-append "LDFLAGS_FOR_TARGET="
-                                        "-B" libc "/lib "
-                                        "-Wl,-dynamic-linker "
-                                        "-Wl," libc
-                                        ,(glibc-dynamic-linker)))
-                   '())
+         ;; None of the flags below are needed when doing a Canadian cross.
+         ;; TODO: Simplify this.
+         ,(if (%current-target-system)
+              (if stripped?
+                  ''("CFLAGS=-g0 -O2")
+                  ''())
+              `(let* ((libc        (assoc-ref %build-inputs "libc"))
+                      (libc-native (or (assoc-ref %build-inputs "libc-native")
+                                       libc)))
+                 `(,@(if libc
+                         (list (string-append "LDFLAGS_FOR_TARGET="
+                                              "-B" libc "/lib "
+                                              "-Wl,-dynamic-linker "
+                                              "-Wl," libc
+                                              ,(glibc-dynamic-linker)))
+                         '())
 
-             ;; Native programs like 'genhooks' also need that right.
-             ,(string-append "LDFLAGS="
-                              "-Wl,-rpath=" libc-native "/lib "
-                             "-Wl,-dynamic-linker "
-                             "-Wl," libc-native ,(glibc-dynamic-linker))
-             ,(string-append "BOOT_CFLAGS=-O2 "
-                             ,(if stripped? "-g0" "-g"))))
+                   ;; Native programs like 'genhooks' also need that right.
+                   ,(string-append "LDFLAGS="
+                                   "-Wl,-rpath=" libc-native "/lib "
+                                   "-Wl,-dynamic-linker "
+                                   "-Wl," libc-native ,(glibc-dynamic-linker))
+                   ,(string-append "BOOT_CFLAGS=-O2 "
+                                   ,(if stripped? "-g0" "-g")))))
 
          #:tests? #f
          #:phases
          (alist-cons-before
           'configure 'pre-configure
           (lambda* (#:key inputs outputs #:allow-other-keys)
-            (let ((out  (assoc-ref outputs "out"))
-                  (libc (assoc-ref inputs "libc")))
+            (let ((libdir (or (assoc-ref outputs "lib")
+                              (assoc-ref outputs "out")))
+                  (libc   (assoc-ref inputs "libc")))
               (when libc
                 ;; The following is not performed for `--without-headers'
                 ;; cross-compiler builds.
@@ -170,7 +199,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
                    ;; <http://sourceware.org/ml/libc-help/2013-11/msg00023.html>.)
                    (format #f "#define GNU_USER_TARGET_LIB_SPEC \
 \"-L~a/lib %{!static:-rpath=~a/lib %{!static-libgcc:-rpath=~a/lib64 -rpath=~a/lib -lgcc_s}} \" ~a"
-                           libc libc out out suffix))
+                           libc libc libdir libdir suffix))
                   (("#define GNU_USER_TARGET_STARTFILE_SPEC.*$" line)
                    (format #f "#define STANDARD_STARTFILE_PREFIX_1 \"~a/lib\"
 #define STANDARD_STARTFILE_PREFIX_2 \"\"
@@ -180,7 +209,24 @@ where the OS part is overloaded to denote a specific ABI---into GCC
               ;; Don't retain a dependency on the build-time sed.
               (substitute* "fixincludes/fixincl.x"
                 (("static char const sed_cmd_z\\[\\] =.*;")
-                 "static char const sed_cmd_z[] = \"sed\";"))))
+                 "static char const sed_cmd_z[] = \"sed\";"))
+
+              ;; Move libstdc++*-gdb.py to the "lib" output to avoid a
+              ;; circularity between "out" and "lib".  (Note:
+              ;; --with-python-dir is useless because it imposes $(prefix) as
+              ;; the parent directory.)
+              (substitute* "libstdc++-v3/python/Makefile.in"
+                (("pythondir = .*$")
+                 (string-append "pythondir = " libdir "/share"
+                                "/gcc-$(gcc_version)/python\n")))
+
+              ;; Avoid another circularity between the outputs: this #define
+              ;; ends up in auto-host.h in the "lib" output, referring to
+              ;; "out".  (This variable is used to augment cpp's search path,
+              ;; but there's nothing useful to look for here.)
+              (substitute* "gcc/config.in"
+                (("PREFIX_INCLUDE_DIR")
+                 "PREFIX_INCLUDE_DIR_isnt_necessary_here"))))
 
           (alist-cons-after
            'configure 'post-configure
@@ -193,10 +239,7 @@ where the OS part is overloaded to denote a specific ABI---into GCC
            (alist-replace 'install
                           (lambda* (#:key outputs #:allow-other-keys)
                             (zero?
-                             (system* "make"
-                                      ,(if stripped?
-                                           "install-strip"
-                                           "install"))))
+                             (system* "make" ,(install-target))))
                           %standard-phases)))))
 
       (native-search-paths
@@ -218,14 +261,14 @@ Go.  It also includes runtime support libraries for these languages.")
 
 (define-public gcc-4.8
   (package (inherit gcc-4.7)
-    (version "4.8.2")
+    (version "4.8.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gcc/gcc-"
                                  version "/gcc-" version ".tar.bz2"))
              (sha256
               (base32
-               "1j6dwgby4g3p3lz7zkss32ghr45zpdidrg8xvazvn91lqxv25p09"))))))
+               "07hg10zs7gnqz58my10ch0zygizqh0z0bz6pv4pgxx45n48lz3ka"))))))
 
 (define-public gcc-4.9
   (package (inherit gcc-4.7)

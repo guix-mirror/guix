@@ -34,7 +34,6 @@
   #:use-module (gnu packages libjpeg)
   #:use-module (gnu packages attr)
   #:use-module (gnu packages linux)
-  #:use-module (gnu packages samba)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages sdl)
@@ -59,8 +58,7 @@
                  (lambda* (#:key inputs outputs #:allow-other-keys)
                    ;; The `configure' script doesn't understand some of the
                    ;; GNU options.  Thus, add a new phase that's compatible.
-                   (let ((out   (assoc-ref outputs "out"))
-                         (samba (assoc-ref inputs "samba")))
+                   (let ((out (assoc-ref outputs "out")))
                      (setenv "SHELL" (which "bash"))
 
                      ;; While we're at it, patch for tests.
@@ -74,9 +72,7 @@
                                (string-append "--cc=" (which "gcc"))
                                "--disable-debug-info" ; save build space
                                "--enable-virtfs"      ; just to be sure
-                               (string-append "--prefix=" out)
-                               (string-append "--smbd=" samba
-                                              "/sbin/smbd")))))
+                               (string-append "--prefix=" out)))))
                  (alist-cons-after
                   'install 'install-info
                   (lambda* (#:key inputs outputs #:allow-other-keys)
@@ -108,8 +104,7 @@
        ;; ("pciutils" ,pciutils)
        ("alsa-lib" ,alsa-lib)
        ("zlib" ,zlib)
-       ("attr" ,attr)
-       ("samba" ,samba)))                         ; an optional dependency
+       ("attr" ,attr)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("python" ,python-2) ; incompatible with Python 3 according to error message
                      ("texinfo" ,texinfo)

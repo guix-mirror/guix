@@ -186,27 +186,28 @@ tests/guix-gc.log:							\
 # Public key used to sign substitutes from hydra.gnu.org.
 dist_pkgdata_DATA = hydra.gnu.org.pub
 
-EXTRA_DIST =					\
-  HACKING					\
-  ROADMAP					\
-  TODO						\
-  .dir-locals.el				\
-  build-aux/hydra/gnu-system.scm		\
-  build-aux/hydra/demo-os.scm			\
-  build-aux/hydra/guix.scm			\
-  build-aux/check-available-binaries.scm	\
-  build-aux/download.scm			\
-  build-aux/list-packages.scm			\
-  build-aux/sync-descriptions.scm		\
-  srfi/srfi-37.scm.in				\
-  srfi/srfi-64.scm				\
-  srfi/srfi-64.upstream.scm			\
-  tests/test.drv				\
-  tests/signing-key.pub				\
-  tests/signing-key.sec				\
-  build-aux/config.rpath			\
-  bootstrap					\
-  release.nix					\
+EXTRA_DIST =						\
+  HACKING						\
+  ROADMAP						\
+  TODO							\
+  .dir-locals.el					\
+  build-aux/hydra/gnu-system.scm			\
+  build-aux/hydra/demo-os.scm				\
+  build-aux/hydra/guix.scm				\
+  build-aux/check-available-binaries.scm		\
+  build-aux/check-final-inputs-self-contained.scm	\
+  build-aux/download.scm				\
+  build-aux/list-packages.scm				\
+  build-aux/sync-descriptions.scm			\
+  srfi/srfi-37.scm.in					\
+  srfi/srfi-64.scm					\
+  srfi/srfi-64.upstream.scm				\
+  tests/test.drv					\
+  tests/signing-key.pub					\
+  tests/signing-key.sec					\
+  build-aux/config.rpath				\
+  bootstrap						\
+  release.nix						\
   $(TESTS)
 
 if !BUILD_DAEMON_OFFLOAD
@@ -264,7 +265,7 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --enable-daemon
 
 dist-hook: sync-descriptions gen-ChangeLog assert-no-store-file-names
-distcheck-hook: assert-binaries-available
+distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
 sync-descriptions:
 	-$(top_builddir)/pre-inst-env $(GUILE)		\
@@ -292,5 +293,11 @@ assert-binaries-available:
 	$(top_builddir)/pre-inst-env "$(GUILE)"				\
 	  "$(top_srcdir)/build-aux/check-available-binaries.scm"
 
+# Make sure the final inputs don't refer to bootstrap tools.
+assert-final-inputs-self-contained:
+	$(top_builddir)/pre-inst-env "$(GUILE)"				\
+	  "$(top_srcdir)/build-aux/check-final-inputs-self-contained.scm"
+
 .PHONY: sync-descriptions gen-ChangeLog clean-go
 .PHONY: assert-no-store-file-names assert-binaries-available
+.PHONY: assert-final-inputs-self-contained

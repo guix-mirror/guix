@@ -27,7 +27,7 @@
 (define-public gmp
   (package
    (name "gmp")
-   (version "5.1.3")
+   (version "6.0.0a")
    (source (origin
             (method url-fetch)
             (uri
@@ -35,7 +35,7 @@
                             version ".tar.xz"))
             (sha256
              (base32
-              "0wbhn3wih61vjcs94q531fipfvvzqfq2v4qr03rl3xaggyiyvqny"))))
+              "0r5pp27cy7ch3dg5v0rsny8bib1zfvrza6027g2mp5f6v8pd6mli"))))
    (build-system gnu-build-system)
    (native-inputs `(("m4" ,m4)))
    (outputs '("out" "debug"))
