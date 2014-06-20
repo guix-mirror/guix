@@ -168,7 +168,7 @@ specifications are building blocks of S/MIME and TLS.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.0.22")
+    (version "2.0.23")
     (source
      (origin
       (method url-fetch)
@@ -176,7 +176,7 @@ specifications are building blocks of S/MIME and TLS.")
                           ".tar.bz2"))
       (sha256
        (base32
-        "0lg210acj2rxq291q4cwamg9gx6gh2prb1xa93y5jhw5b6r0lza3"))))
+        "0hcq21n96j0vp7qxyvjdxhgjl0p08cjy38q0y0v45yzaas06n6fg"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,guix:bzip2)
