@@ -439,9 +439,12 @@ UNIONFS."
             ;; We want read-write /dev nodes.
             (make-essential-device-nodes #:root "/rw-root")
 
-            ;; Make /root a union of the tmpfs and the actual root.
+            ;; Make /root a union of the tmpfs and the actual root.  Use
+            ;; 'max_files' to set a high RLIMIT_NOFILE for the unionfs process
+            ;; itself.  Failing to do that, we quickly run out of file
+            ;; descriptors; see <http://bugs.gnu.org/17827>.
             (unless (zero? (system* unionfs "-o"
-                                    "cow,allow_other,use_ino,suid,dev"
+                                    "cow,allow_other,use_ino,suid,dev,max_files=65536"
                                     "/rw-root=RW:/real-root=RO"
                                     "/root"))
               (error "unionfs failed"))
