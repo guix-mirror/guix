@@ -111,19 +111,18 @@ Use Alt-F2 for documentation.
 
     (users (list (user-account
                   (name "guest")
-                  (group "wheel")
+                  (group "users")
+                  (supplementary-groups '("wheel"))  ; allow use of sudo
                   (password "")
                   (comment "Guest of GNU")
                   (home-directory "/home/guest"))))
     (groups (list (user-group (name "root") (id 0))
                   (user-group
                    (name "wheel")
-                   (id 1)
-                   (members '("guest")))          ; allow 'guest' to use sudo
+                   (id 1))
                   (user-group
                    (name "users")
-                   (id 100)
-                   (members '("guest")))))
+                   (id 100))))
 
     (issue %issue)
 

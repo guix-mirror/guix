@@ -391,8 +391,6 @@ hydra.gnu.org are used by default."
              (user-accounts accounts)
              (user-groups (list (user-group
                                  (name builder-group)
-                                 (members (map user-account-name
-                                               user-accounts))
 
                                  ;; Use a fixed GID so that we can create the
                                  ;; store with the right owner.

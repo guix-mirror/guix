@@ -40,7 +40,6 @@
             user-group-name
             user-group-password
             user-group-id
-            user-group-members
 
             default-skeletons
             skeleton-directory))
@@ -70,8 +69,7 @@
   user-group?
   (name           user-group-name)
   (password       user-group-password (default #f))
-  (id             user-group-id (default #f))
-  (members        user-group-members (default '())))
+  (id             user-group-id (default #f)))
 
 (define (default-skeletons)
   "Return the default skeleton files for /etc/skel.  These files are copied by
