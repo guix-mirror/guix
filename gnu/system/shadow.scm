@@ -42,7 +42,8 @@
             user-group-id
 
             default-skeletons
-            skeleton-directory))
+            skeleton-directory
+            %base-groups))
 
 ;;; Commentary:
 ;;;
@@ -70,6 +71,26 @@
   (name           user-group-name)
   (password       user-group-password (default #f))
   (id             user-group-id (default #f)))
+
+(define %base-groups
+  ;; Default set of groups.
+  (list (user-group (name "root") (id 0))
+        (user-group (name "wheel"))               ; root-like users
+        (user-group (name "users"))               ; normal users
+        (user-group (name "nogroup"))             ; for daemons etc.
+
+        ;; The following groups are conventionally used by things like udev to
+        ;; control access to hardware devices.
+        (user-group (name "tty"))
+        (user-group (name "dialout"))
+        (user-group (name "kmem"))
+        (user-group (name "video"))
+        (user-group (name "audio"))
+        (user-group (name "lp"))
+        (user-group (name "disk"))
+        (user-group (name "floppy"))
+        (user-group (name "cdrom"))
+        (user-group (name "tape"))))
 
 (define (default-skeletons)
   "Return the default skeleton files for /etc/skel.  These files are copied by

@@ -92,9 +92,7 @@
   (users operating-system-users                   ; list of user accounts
          (default '()))
   (groups operating-system-groups                 ; list of user groups
-          (default (list (user-group
-                          (name "root")
-                          (id 0)))))
+          (default %base-groups))
 
   (skeletons operating-system-skeletons           ; list of name/monadic value
              (default (default-skeletons)))
