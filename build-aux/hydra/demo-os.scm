@@ -56,13 +56,6 @@
                (password "")
                (comment "Guest of GNU")
                (home-directory "/home/guest"))))
- (groups (list (user-group (name "root") (id 0))
-               (user-group
-                (name "wheel")
-                (id 1))
-               (user-group
-                (name "users")
-                (id 100))))
 
  (issue "
 This is an alpha preview of the GNU system.  Welcome.
