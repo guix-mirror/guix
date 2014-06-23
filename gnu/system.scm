@@ -218,7 +218,7 @@ explicitly appear in OS."
          guile-final (@ (gnu packages admin) dmd) guix
          util-linux inetutils isc-dhcp
          net-tools                        ; XXX: remove when Inetutils suffices
-         module-init-tools kbd
+         module-init-tools udev kbd
 
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.

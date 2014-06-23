@@ -23,6 +23,8 @@
   #:use-module (gnu system shadow)                ; 'user-account', etc.
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
+  #:use-module ((gnu packages linux)
+                #:select (udev))
   #:use-module ((gnu packages base)
                 #:select (glibc-final))
   #:use-module (gnu packages package-management)
@@ -35,6 +37,7 @@
             file-system-service
             user-processes-service
             host-name-service
+            udev-service
             mingetty-service
             nscd-service
             syslog-service
@@ -397,6 +400,32 @@ hydra.gnu.org are used by default."
                                  (id 30000))))
              (activate activate)))))
 
+(define* (udev-service #:key (udev udev))
+  "Run @var{udev}, which populates the @file{/dev} directory dynamically."
+  (with-monad %store-monad
+    (return (service
+             (provision '(udev))
+             (requirement '(root-file-system))
+             (documentation "Populate the /dev directory.")
+             (start #~(lambda ()
+                        (let ((pid (primitive-fork)))
+                          (case pid
+                            ((0)
+                             ;; In dmd 0.1, file descriptor 0 is closed, thus
+                             ;; is gets reused when open(2) is called, and it
+                             ;; turns out that EPOLL_CTL_ADD of 0 returns
+                             ;; EPERM for some reason.  So make sure 0 is
+                             ;; open.
+                             ;; FIXME: Close the other descriptors.
+                             (execl (string-append #$udev "/libexec/udev/udevd")
+                                    "udevd"))
+                            (else
+                             ;; Create a bunch of devices.
+                             (system* (string-append #$udev "/bin/udevadm")
+                                      "trigger")
+                             pid)))))
+             (stop #~(make-kill-destructor))))))
+
 (define %base-services
   ;; Convenience variable holding the basic services.
   (let ((motd (text-file "motd" "
@@ -409,6 +438,7 @@ This is the GNU operating system, welcome!\n\n")))
           (mingetty-service "tty6" #:motd motd)
           (syslog-service)
           (guix-service)
-          (nscd-service))))
+          (nscd-service)
+          (udev-service))))
 
 ;;; base.scm ends here
