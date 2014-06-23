@@ -83,6 +83,9 @@ You have been warned.  Thanks for being so brave.
           ;; default.
           (guix-service #:authorize-hydra-key? #t)
 
+          ;; Start udev so that useful device nodes are available.
+          (udev-service)
+
           (nscd-service))))
 
 (define %issue
