@@ -73,6 +73,40 @@ related documentation.")
     (license l:asl2.0)
     (home-page "https://httpd.apache.org/")))
 
+(define-public json-c
+  (package
+    (name "json-c")
+    (version "0.12")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://s3.amazonaws.com/json-c_releases/releases/json-c-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "0gwzic3ifg2d0w32ya3agpxh8i083cgvf7kmc51cnbgqnfr02300"))
+             (modules '((guix build utils)))
+             (snippet
+              '(begin
+                 ;; Somehow 'config.h.in' is older than
+                 ;; 'aclocal.m4', which would trigger a rule to
+                 ;; run 'autoheader'.
+                 (set-file-time "config.h.in"
+                                (stat "aclocal.m4"))
+
+                 ;; Don't try to build with -Werror.
+                 (substitute* (find-files "." "Makefile\\.in")
+                   (("-Werror") ""))))))
+    (build-system gnu-build-system)
+    (arguments '(#:parallel-build? #f
+                 #:parallel-tests? #f))
+    (home-page "https://github.com/json-c/json-c/wiki")
+    (synopsis "JSON implementation in C")
+    (description
+     "JSON-C implements a reference counting object model that allows you to
+easily construct JSON objects in C, output them as JSON formatted strings and
+parse JSON formatted strings back into the C representation of JSON objects.")
+    (license l:x11)))
+
 (define-public libwebsockets
   (package
     (name "libwebsockets")
