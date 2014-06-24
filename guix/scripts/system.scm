@@ -113,7 +113,7 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
   (populate-root-file-system target)
 
   (when grub?
-    (unless (install-grub grub.cfg device target)
+    (unless (false-if-exception (install-grub grub.cfg device target))
       (leave (_ "failed to install GRUB on device '~a'~%") device))))
 
 
