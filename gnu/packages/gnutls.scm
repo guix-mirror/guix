@@ -36,7 +36,7 @@
 (define-public libtasn1
   (package
     (name "libtasn1")
-    (version "3.4")
+    (version "3.6")
     (source
      (origin
       (method url-fetch)
@@ -44,7 +44,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "1j5cwsjk9wai700ljsr5qyzywijrr5ba05hhg4mkgqlg8mx50lzk"))))
+        "0c547qa1vfk1x2jzgjhf65izf4sfi86c6g46q7779g4aldk4gqqr"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
 
