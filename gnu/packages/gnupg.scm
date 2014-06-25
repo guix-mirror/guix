@@ -168,15 +168,14 @@ specifications are building blocks of S/MIME and TLS.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.0.23")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
-                          ".tar.bz2"))
-      (sha256
-       (base32
-        "0hcq21n96j0vp7qxyvjdxhgjl0p08cjy38q0y0v45yzaas06n6fg"))))
+    (version "2.0.24")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "0ch2hbindk832cy7ca00a7whw84ndm0nhqrl24a5fw4ldkca2x6r"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,guix:bzip2)
@@ -204,21 +203,20 @@ specifications are building blocks of S/MIME and TLS.")
 standard.  It is used to encrypt and sign data and communication.  It
 features powerful key management and the ability to access public key
 servers.  It includes several libraries: libassuan (IPC between GnuPG
-components), libgpg-error (centralized GnuPG error values), and libskba
-(working with X.509 certificates and CMS data).")
+components), libgpg-error (centralized GnuPG error values), and
+libskba (working with X.509 certificates and CMS data).")
     (license gpl3+)))
 
 (define-public gnupg-1
   (package (inherit gnupg)
-    (version "1.4.16")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
-                          ".tar.bz2"))
-      (sha256
-       (base32
-        "0bsa1yqa3ybhvmc4ys73amdpcmckrlq1fsxjl2980cxada778fvv"))))
+    (version "1.4.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
+                                  ".tar.bz2"))
+              (sha256
+               (base32
+                "0nvv1bd8v13gh2m1429azws7ks0ix9y1yv87ak9k9i1dsqcrvpg6"))))
     (inputs
      `(("zlib" ,guix:zlib)
        ("bzip2" ,guix:bzip2)
