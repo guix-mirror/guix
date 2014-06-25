@@ -27,6 +27,7 @@
   #:use-module (gnu packages ghostscript)         ;lcms
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages zip)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -341,3 +342,44 @@ supplies a generic doubly-linked list and some string functions.")
     ;; X11 license.
     (license (license:x11-style "file://COPYING"
                                 "See 'COPYING' in the distribution."))))
+
+(define-public freeimage
+  (package
+   (name "freeimage")
+   (version "3.16.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "mirror://sourceforge/freeimage/Source%20Distribution/"
+                  version "/FreeImage"
+                  (string-join (string-split version #\.) "")
+                  ".zip"))
+            (sha256
+             (base32
+              "0q1gnjnxgphsh4l8i9rfly4bi8xsczsb9ryzbm8hf38lc3fk5bq3"))))
+   (build-system gnu-build-system)
+   (arguments
+    '(#:phases (alist-replace
+                'unpack
+                (lambda* (#:key source #:allow-other-keys)
+                  (and (zero? (system* "unzip" source))
+                       (chdir "FreeImage")))
+                (alist-delete
+                 'configure
+                 (alist-cons-before
+                  'build 'patch-makefile
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (substitute* "Makefile.gnu"
+                      (("/usr") (assoc-ref outputs "out"))
+                      (("-o root -g root") "")))
+                  %standard-phases)))
+      #:make-flags '("CC=gcc")
+      #:tests? #f)) ; no check target
+   (native-inputs
+    `(("unzip" ,unzip)))
+   (synopsis "Library for handling popular graphics image formats")
+   (description
+    "FreeImage is a library for developers who would like to support popular
+graphics image formats like PNG, BMP, JPEG, TIFF and others.")
+   (license license:gpl2+)
+   (home-page "http://freeimage.sourceforge.net")))
