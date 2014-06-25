@@ -19,6 +19,7 @@
 (define-module (gnu packages moe)
   #:use-module (guix licenses)
   #:use-module (gnu packages ncurses)
+  #:use-module ((gnu packages compression) #:select (lzip))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -26,18 +27,18 @@
 (define-public moe
   (package
     (name "moe")
-    (version "1.5")
+    (version "1.6")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/moe/moe-"
-                          version ".tar.gz"))
+                          version ".tar.lz"))
       (sha256
        (base32
-        "0hqag8022x68jmii1v6n7jb4fhp9icjkapgcpd2j3p9nzc8xch7s"))))
+        "1cfwi67sdl2qchqbdib4p6wxjpwz2kmn6vxn9hmh1zs0gg4xkbwc"))))
     (build-system gnu-build-system)
-    (inputs
-     `(("ncurses" ,ncurses)))
+    (native-inputs `(("lzip" ,lzip)))
+    (inputs `(("ncurses" ,ncurses)))
     (home-page "https://www.gnu.org/software/moe/moe.html")
     (synopsis "Modeless, multiple-buffer, user-friendly 8-bit text editor")
     (description
