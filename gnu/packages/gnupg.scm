@@ -40,7 +40,7 @@
 (define-public libgpg-error
   (package
     (name "libgpg-error")
-    (version "1.12")
+    (version "1.13")
     (source
      (origin
       (method url-fetch)
@@ -48,7 +48,7 @@
                           version ".tar.bz2"))
       (sha256
        (base32
-        "0pz58vr12qihq2f0bypjxsb6cf6ajq5258fmfm8s6lvwm3b9xz6a"))))
+        "02lv5h865f8if391xjp3njg04k0l4x2pwjkcdbzcwilail1skazq"))))
     (build-system gnu-build-system)
     (home-page "http://gnupg.org")
     (synopsis
