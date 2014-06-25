@@ -52,3 +52,16 @@ fit in easily in almost any context.  It can be easily included in
 cryptographic toolkits for object-oriented languages or in applications
 themselves.")
     (license gpl2+)))
+
+(define-public nettle-3
+  ;; This version is not API-compatible with version 2.  In particular GnuTLS
+  ;; cannot use it yet.  So keep it separate.
+  (package (inherit nettle)
+    (version "3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/nettle/nettle-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "04yrpjz33vrj6j0zxc153b00f93i8hs41syr1ryp7sr64fyw0lcn"))))))
