@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Guy Grant <gzg@riseup.net>
+;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +31,8 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages fontutils))
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages guile))
 
 (define-public glu
   (package
@@ -170,3 +172,43 @@ a system for rendering interactive 3D graphics. A variety of device drivers
 allows Mesa to be used in many different environments ranging from software
 emulation to complete hardware acceleration for modern GPUs.")
     (license l:x11)))
+
+(define-public guile-opengl
+  (package
+    (name "guile-opengl")
+    (version "0.1.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://gnu/guile-opengl/guile-opengl-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32
+               "13qfx4xh8baryxqrv986l848ygd0piqwm6s2s90pxk9c0m9vklim"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("guile" ,guile-2.0)
+              ("mesa" ,mesa)
+              ("freeglut" ,freeglut)))
+    (arguments
+     '(#:phases (alist-cons-before
+                 'build 'patch-dynamic-link
+                 (lambda* (#:key inputs outputs #:allow-other-keys)
+                   (define (dynamic-link-substitute file lib input)
+                     (substitute* file
+                       (("dynamic-link \"lib([a-zA-Z]+)\"" _ lib)
+                        (string-append "dynamic-link \""
+                                       (assoc-ref inputs input)
+                                       "/lib/lib" lib "\""))))
+                   ;; Replace dynamic-link calls for libGL, libGLU, and
+                   ;; libglut with absolute paths to the store.
+                   (dynamic-link-substitute "glx/runtime.scm" "GL" "mesa")
+                   (dynamic-link-substitute "glu/runtime.scm" "GLU" "mesa")
+                   (dynamic-link-substitute "glut/runtime.scm" "glut"
+                                            "freeglut"))
+                 %standard-phases)))
+    (home-page "http://gnu.org/s/guile-opengl")
+    (synopsis "OpenGL bindings for Guile")
+    (description
+     "GNU Guile-OpenGL is a library providing access to the OpenGL graphics
+API from GNU Guile.")
+    (license l:lgpl3+)))
