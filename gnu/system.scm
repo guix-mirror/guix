@@ -511,6 +511,20 @@ we're running in the final root."
                            (initrd #~(string-append #$system "/initrd"))))))
     (grub-configuration-file (operating-system-bootloader os) entries)))
 
+(define (operating-system-parameters-file os)
+  "Return a file that describes the boot parameters of OS.  The primary use of
+this file is the reconstruction of GRUB menu entries for old configurations."
+  (mlet %store-monad ((initrd   (operating-system-initrd-file os))
+                      (root ->  (operating-system-root-file-system os))
+                      (label -> (kernel->grub-label
+                                 (operating-system-kernel os))))
+    (gexp->file "parameters"
+                #~(boot-parameters (version 0)
+                                   (label #$label)
+                                   (root-device #$(file-system-device root))
+                                   (kernel #$(operating-system-kernel os))
+                                   (initrd #$initrd)))))
+
 (define (operating-system-derivation os)
   "Return a derivation that builds OS."
   (mlet* %store-monad
@@ -518,10 +532,12 @@ we're running in the final root."
        (etc         (operating-system-etc-directory os))
        (boot        (operating-system-boot-script os))
        (kernel  ->  (operating-system-kernel os))
-       (initrd      (operating-system-initrd-file os)))
+       (initrd      (operating-system-initrd-file os))
+       (params      (operating-system-parameters-file os)))
     (file-union "system"
                 `(("boot" ,#~#$boot)
                   ("kernel" ,#~#$kernel)
+                  ("parameters" ,#~#$params)
                   ("initrd" ,initrd)
                   ("profile" ,#~#$profile)
                   ("etc" ,#~#$etc)))))
