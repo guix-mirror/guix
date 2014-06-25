@@ -493,8 +493,9 @@ we're running in the final root."
                  (package-version kernel)
                  " (technology preview)"))
 
-(define (operating-system-grub.cfg os)
-  "Return the GRUB configuration file for OS."
+(define* (operating-system-grub.cfg os #:optional (old-entries '()))
+  "Return the GRUB configuration file for OS.  Use OLD-ENTRIES to populate the
+\"old entries\" menu."
   (mlet* %store-monad
       ((system      (operating-system-derivation os))
        (root-fs ->  (operating-system-root-file-system os))
@@ -509,7 +510,8 @@ we're running in the final root."
                                   #~(string-append "--load=" #$system
                                                    "/boot")))
                            (initrd #~(string-append #$system "/initrd"))))))
-    (grub-configuration-file (operating-system-bootloader os) entries)))
+    (grub-configuration-file (operating-system-bootloader os) entries
+                             #:old-entries old-entries)))
 
 (define (operating-system-parameters-file os)
   "Return a file that describes the boot parameters of OS.  The primary use of

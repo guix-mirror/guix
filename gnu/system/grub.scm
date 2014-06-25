@@ -63,9 +63,12 @@
   (initrd          menu-entry-initrd))     ; file name of the initrd as a gexp
 
 (define* (grub-configuration-file config entries
-                                  #:key (system (%current-system)))
+                                  #:key
+                                  (system (%current-system))
+                                  (old-entries '()))
   "Return the GRUB configuration file corresponding to CONFIG, a
-<grub-configuration> object."
+<grub-configuration> object.  OLD-ENTRIES is taken to be a list of menu
+entries corresponding to old generations of the system."
   (define all-entries
     (append entries (grub-configuration-menu-entries config)))
 
@@ -93,7 +96,14 @@ search.file ~a/bzImage~%"
                           (($ <menu-entry> _ linux)
                            linux))
                          all-entries))
-          #$@(map entry->gexp all-entries))))
+          #$@(map entry->gexp all-entries)
+
+          #$@(if (pair? old-entries)
+                 #~((format port "
+submenu \"GNU system, old configurations...\" {~%")
+                    #$@(map entry->gexp old-entries)
+                    (format port "}~%"))
+                 #~()))))
 
   (gexp->derivation "grub.cfg" builder))
 
