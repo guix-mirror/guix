@@ -29,14 +29,15 @@
 (define-public cursynth
   (package
     (name "cursynth")
-    (version "1.4")
+    (version "1.5")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/cursynth/cursynth-"
                           version ".tar.gz"))
       (sha256
-       (base32 "1p9c54v9b0jjx33sammqsdi5xw65csly4cr1i08wv9x6r2yib55m"))))
+       (base32 "1dhphsya41rv8z6yqcv9l6fwbslsds4zh1y56zizi39nd996d40v"))
+      (patches (list (search-patch "cursynth-wave-rand.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     ;; TODO: See https://github.com/iyoko/cursynth/issues/4 which currently

@@ -1,0 +1,12 @@
+Related to https://github.com/mtytel/cursynth/issues/9
+
+--- a/mopo/src/wave.h	2014-06-25 14:10:57.827369578 -0500
++++ b/mopo/src/wave.h	2014-06-25 14:08:15.795376354 -0500
+@@ -19,6 +19,7 @@
+ #define WAVE_H
+ 
+ #include "mopo.h"
++#include <cstdlib>
+ #include <cmath>
+ 
+ #define LOOKUP_SIZE 2048
