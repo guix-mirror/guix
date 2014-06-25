@@ -273,14 +273,14 @@ library.")
 (define-public mcron
   (package
     (name "mcron")
-    (version "1.0.7")
+    (version "1.0.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/mcron/mcron-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1d214fmhsn3kvpnwxnqwfpy6gr5c5dbz2mx3sijhxi070vkfibxc"))
+               "0zparwgf01jgl1x53ik71ghabldq6zz18ha4dscps1i0qrzgap1b"))
              (patches (list (search-patch "mcron-install.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
