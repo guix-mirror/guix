@@ -486,6 +486,13 @@ we're running in the final root."
       ((initrd ((operating-system-initrd os) boot-file-systems)))
     (return #~(string-append #$initrd "/initrd"))))
 
+(define (kernel->grub-label kernel)
+  "Return a label for the GRUB menu entry that boots KERNEL."
+  (string-append "GNU system with "
+                 (string-titlecase (package-name kernel)) " "
+                 (package-version kernel)
+                 " (technology preview)"))
+
 (define (operating-system-grub.cfg os)
   "Return the GRUB configuration file for OS."
   (mlet* %store-monad
@@ -493,10 +500,7 @@ we're running in the final root."
        (root-fs ->  (operating-system-root-file-system os))
        (kernel ->   (operating-system-kernel os))
        (entries ->  (list (menu-entry
-                           (label (string-append
-                                   "GNU system with "
-                                   (package-full-name kernel)
-                                   " (technology preview)"))
+                           (label (kernel->grub-label kernel))
                            (linux kernel)
                            (linux-arguments
                             (list (string-append "--root="
