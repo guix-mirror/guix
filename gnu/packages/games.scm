@@ -31,7 +31,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
-  #:use-module (gnu packages libpng)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xorg)

@@ -25,7 +25,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
-  #:use-module (gnu packages libpng)
+  #:use-module (gnu packages image)
   #:use-module ((gnu packages ghostscript)
                 #:select (lcms))
   #:use-module (gnu packages compression)

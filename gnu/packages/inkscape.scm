@@ -36,7 +36,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages libpng)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config))
 
 (define-public inkscape

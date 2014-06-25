@@ -121,6 +121,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/hurd.scm				\
   gnu/packages/icu4c.scm			\
   gnu/packages/idutils.scm			\
+  gnu/packages/image.scm			\
   gnu/packages/imagemagick.scm			\
   gnu/packages/indent.scm			\
   gnu/packages/inkscape.scm			\
@@ -135,11 +136,8 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/libevent.scm			\
   gnu/packages/libffi.scm			\
   gnu/packages/libidn.scm			\
-  gnu/packages/libjpeg.scm			\
   gnu/packages/libphidget.scm			\
-  gnu/packages/libpng.scm			\
   gnu/packages/libsigsegv.scm			\
-  gnu/packages/libtiff.scm			\
   gnu/packages/libunistring.scm			\
   gnu/packages/libusb.scm			\
   gnu/packages/libunwind.scm			\

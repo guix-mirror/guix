@@ -23,7 +23,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages fontutils)
-  #:use-module (gnu packages libjpeg)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config))
 
 (define-public windowmaker

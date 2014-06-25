@@ -34,7 +34,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages libffi)
-  #:use-module (gnu packages libjpeg)
+  #:use-module (gnu packages image)
   #:use-module (ice-9 match))
 
 (define-public mit-scheme

@@ -29,7 +29,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages icu4c)
-  #:use-module (gnu packages libpng)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages pdf)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
