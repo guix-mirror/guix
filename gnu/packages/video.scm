@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,7 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages video)
-  #:use-module ((guix licenses) #:select (gpl2 gpl2+))
+  #:use-module ((guix licenses) #:select (gpl2 gpl2+ bsd-3))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -368,3 +369,35 @@ Ogg/OGM, VIVO, ASF/WMA/WMV, QT/MOV/MP4, RealMedia, Matroska, NUT,
 NuppelVideo, FLI, YUV4MPEG, FILM, RoQ, PVA files.  One can watch VideoCD,
 SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (license gpl2)))
+
+(define-public libvpx
+  (package
+    (name "libvpx")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://webm.googlecode.com/files/libvpx-v"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1aai0h0z1bhp89pxmg4fkrwpmqq24k39fhr15cw6q77m9bccip6k"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (setenv "CONFIG_SHELL" (which "bash"))
+                   (let ((out (assoc-ref outputs "out")))
+                     (zero? (system* "./configure"
+                                     "--enable-shared"
+                                     "--as=yasm"
+                                     (string-append "--prefix=" out)))))
+                 %standard-phases)
+       #:tests? #f)) ; no check target
+    (native-inputs
+     `(("perl" ,perl)
+       ("yasm" ,yasm)))
+    (synopsis "VP8/VP9 video codec")
+    (description "libvpx is a codec for the VP8/VP9 video compression format.")
+    (license bsd-3)
+    (home-page "http://www.webmproject.org/")))
