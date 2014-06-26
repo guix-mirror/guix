@@ -59,6 +59,7 @@
             operating-system-timezone
             operating-system-locale
             operating-system-file-systems
+            operating-system-activation-script
 
             operating-system-derivation
             operating-system-profile

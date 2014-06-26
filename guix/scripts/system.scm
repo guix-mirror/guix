@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix scripts system)
+  #:use-module (guix config)
   #:use-module (guix ui)
   #:use-module (guix store)
   #:use-module (guix gexp)
@@ -24,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix utils)
   #:use-module (guix monads)
+  #:use-module (guix profiles)
   #:use-module (guix scripts build)
   #:use-module (guix build utils)
   #:use-module (guix build install)
@@ -122,6 +124,70 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
 
 
 ;;;
+;;; Reconfiguration.
+;;;
+
+(define %system-profile
+  ;; The system profile.
+  (string-append %state-directory "/profiles/system"))
+
+(define* (switch-to-system store os system
+                           #:optional (profile %system-profile))
+  "Make a new generation of PROFILE pointing to SYSTEM, which is the directory
+corresponding to OS, switch to it atomically, and then run OS's activation
+script."
+  (let* ((number     (+ 1 (generation-number profile)))
+         (generation (generation-file-name profile number)))
+    (symlink system generation)
+    (switch-symlinks profile generation)
+
+    (run-with-store store
+      (mlet %store-monad ((script (operating-system-activation-script os)))
+        (format #t (_ "activating system...~%"))
+        (return (primitive-load (derivation->output-path script)))))
+
+    ;; TODO: Run 'deco reload ...'.
+    ))
+
+(define-syntax-rule (unless-file-not-found exp)
+  (catch 'system-error
+    (lambda ()
+      exp)
+    (lambda args
+      (if (= ENOENT (system-error-errno args))
+          #f
+          (apply throw args)))))
+
+(define* (previous-grub-entries #:optional (profile %system-profile))
+  "Return a list of 'menu-entry' for the generations of PROFILE."
+  (define (system->grub-entry system)
+    (unless-file-not-found
+     (call-with-input-file (string-append system "/parameters")
+       (lambda (port)
+         (match (read port)
+           (('boot-parameters ('version 0)
+                              ('label label) ('root-device root)
+                              ('kernel linux)
+                              _ ...)
+            (menu-entry
+             (label label)
+             (linux linux)
+             (linux-arguments
+              (list (string-append "--root=" root)
+                    #~(string-append "--system=" #$system)
+                    #~(string-append "--load=" #$system "/boot")))
+             (initrd #~(string-append #$system "/initrd"))))
+           (_                                     ;unsupported format
+            (warning (_ "unrecognized boot parameters for '~a'~%")
+                     system)
+            #f))))))
+
+  (let ((systems (map (cut generation-file-name profile <>)
+                      (generation-numbers profile))))
+    (filter-map system->grub-entry systems)))
+
+
+;;;
 ;;; Options.
 ;;;
 
@@ -130,6 +196,8 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
 Build the operating system declared in FILE according to ACTION.\n"))
   (newline)
   (display (_ "The valid values for ACTION are:\n"))
+  (display (_ "\
+  - 'reconfigure', switch to a new operating system configuration\n"))
   (display (_ "\
   - 'build', build the operating system without installing anything\n"))
   (display (_ "\
@@ -201,7 +269,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
                       (alist-cons 'argument arg result)
                       (let ((action (string->symbol arg)))
                         (case action
-                          ((build vm vm-image disk-image init)
+                          ((build vm vm-image disk-image reconfigure init)
                            (alist-cons 'action action result))
                           (else (leave (_ "~a: unknown action~%")
                                        action))))))
@@ -224,7 +292,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
                action))
 
       (case action
-        ((build vm vm-image disk-image)
+        ((build vm vm-image disk-image reconfigure)
          (unless (= count 1)
            (fail)))
         ((init)
@@ -241,7 +309,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
                          (read-operating-system file)
                          (leave (_ "no configuration file specified~%"))))
            (mdrv     (case action
-                       ((build init)
+                       ((build init reconfigure)
                         (operating-system-derivation os))
                        ((vm-image)
                         (let ((size (assoc-ref opts 'image-size)))
@@ -257,8 +325,9 @@ Build the operating system declared in FILE according to ACTION.\n"))
            (dry?     (assoc-ref opts 'dry-run?))
            (drv      (run-with-store store mdrv))
            (grub?    (assoc-ref opts 'install-grub?))
+           (old      (previous-grub-entries))
            (grub.cfg (run-with-store store
-                       (operating-system-grub.cfg os)))
+                       (operating-system-grub.cfg os old)))
            (grub     (package-derivation store grub))
            (drv-lst  (if grub?
                          (list drv grub grub.cfg)
@@ -273,21 +342,33 @@ Build the operating system declared in FILE according to ACTION.\n"))
         (display (derivation->output-path drv))
         (newline)
 
-        (when (eq? action 'init)
-          (let* ((target (second args))
-                 (device (grub-configuration-device
-                          (operating-system-bootloader os))))
-            (format #t (_ "initializing operating system under '~a'...~%")
-                    target)
+        ;; Make sure GRUB is accessible.
+        (when grub
+          (let ((prefix (derivation->output-path grub)))
+            (setenv "PATH"
+                    (string-append  prefix "/bin:" prefix "/sbin:"
+                                    (getenv "PATH")))))
 
-            (when grub
-              (let ((prefix (derivation->output-path grub)))
-                (setenv "PATH"
-                        (string-append  prefix "/bin:" prefix "/sbin:"
-                                        (getenv "PATH")))))
+        (let ((target (match args
+                        ((first second) second)
+                        (_ #f)))
+              (device (and grub?
+                           (grub-configuration-device
+                            (operating-system-bootloader os)))))
+          (case action
+            ((reconfigure)
+             (switch-to-system store os (derivation->output-path drv))
+             (when grub?
+               (unless (install-grub grub.cfg device target)
+                 (leave (_ "failed to install GRUB on device '~a'~%") device))))
+            ((init)
+             (format #t (_ "initializing operating system under '~a'...~%")
+                     target)
 
-            (install store (derivation->output-path drv)
-                     (canonicalize-path target)
-                     #:grub? grub?
-                     #:grub.cfg (derivation->output-path grub.cfg)
-                     #:device device)))))))
+             (install store (derivation->output-path drv)
+                      (canonicalize-path target)
+                      #:grub? grub?
+                      #:grub.cfg (derivation->output-path grub.cfg)
+                      #:device device))))))))
+
+;;; system.scm ends here

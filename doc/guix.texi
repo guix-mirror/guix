@@ -3210,6 +3210,18 @@ operating system is instantiate.  Currently the following values are
 supported:
 
 @table @code
+@item reconfigure
+Build the operating system described in @var{file}, activate it, and
+switch to it@footnote{This action is usable only on systems already
+running GNU.}.
+
+This effects all the configuration specified in @var{file}: user
+accounts, system services, global package list, setuid programs, etc.
+
+It also adds a GRUB menu entry for the new OS configuration, and moves
+entries for older configurations to a submenu---unless
+@option{--no-grub} is passed.
+
 @item build
 Build the operating system's derivation, which includes all the
 configuration files and programs needed to boot and run the system.
