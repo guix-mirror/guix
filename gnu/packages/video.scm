@@ -69,6 +69,7 @@
        ("opus" ,opus)
        ("libtheora" ,libtheora)
        ("libvorbis" ,libvorbis)
+       ("libvpx" ,libvpx)
        ("patchelf" ,patchelf)
        ("speex" ,speex)
        ("zlib", zlib)))
@@ -142,7 +143,6 @@
 ;;   --enable-libvidstab      enable video stabilization using vid.stab [no]
 ;;   --enable-libvo-aacenc    enable AAC encoding via libvo-aacenc [no]
 ;;   --enable-libvo-amrwbenc  enable AMR-WB encoding via libvo-amrwbenc [no]
-;;   --enable-libvpx          enable VP8 and VP9 de/encoding via libvpx [no]
 ;;   --enable-libwavpack      enable wavpack encoding via libwavpack [no]
 ;;   --enable-libx264         enable H.264 encoding via x264 [no]
 ;;   --enable-libxavs         enable AVS encoding via xavs [no]
@@ -165,6 +165,7 @@
                       "--enable-libspeex"
                       "--enable-libtheora"
                       "--enable-libvorbis"
+                      "--enable-libvpx"
                       ;; drop special machine instructions not supported
                       ;; on all instances of the target
                       ,@(if (string-prefix? "x86_64"
