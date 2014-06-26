@@ -87,8 +87,7 @@
 
   (host-name operating-system-host-name)          ; string
 
-  (file-systems operating-system-file-systems     ; list of fs
-                (default '()))
+  (file-systems operating-system-file-systems)    ; list of fs
 
   (users operating-system-users                   ; list of user accounts
          (default '()))
@@ -104,7 +103,8 @@
             (default %base-packages))             ; or just PACKAGE
 
   (timezone operating-system-timezone)            ; string
-  (locale   operating-system-locale)              ; string
+  (locale   operating-system-locale               ; string
+            (default "en_US.UTF-8"))
 
   (services operating-system-user-services        ; list of monadic services
             (default %base-services))
