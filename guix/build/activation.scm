@@ -93,7 +93,7 @@ Each item in USERS is a list of all the characteristics of a user account;
 each item in GROUPS is a tuple with the group name, group password or #f, and
 numeric gid or #f."
   (define (touch file)
-    (call-with-output-file file (const #t)))
+    (close-port (open-file file "a0b")))
 
   (define activate-user
     (match-lambda
