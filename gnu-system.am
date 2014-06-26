@@ -59,6 +59,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cpio.scm				\
   gnu/packages/cppi.scm				\
   gnu/packages/cross-base.scm			\
+  gnu/packages/crypto.scm			\
   gnu/packages/cryptsetup.scm			\
   gnu/packages/curl.scm				\
   gnu/packages/cursynth.scm			\
