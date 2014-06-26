@@ -66,8 +66,12 @@
          (let ((err (system-error-errno args)))
            (leave (_ "failed to open operating system file '~a': ~a~%")
                   file (strerror err))))
+        (('syntax-error proc message properties form . rest)
+         (let ((loc (source-properties->location properties)))
+           (leave (_ "~a: ~a~%")
+                  (location->string loc) message)))
         (_
-         (leave (_ "failed to load machine file '~a': ~s~%")
+         (leave (_ "failed to load operating system file '~a': ~s~%")
                 file args))))))
 
 (define* (copy-closure store item target

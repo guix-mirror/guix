@@ -121,6 +121,10 @@ determined."
                '()
                (leave (_ "failed to open machine file '~a': ~a~%")
                       file (strerror err)))))
+        (('syntax-error proc message properties form . rest)
+         (let ((loc (source-properties->location properties)))
+           (leave (_ "~a: ~a~%")
+                  (location->string loc) message)))
         (_
          (leave (_ "failed to load machine file '~a': ~s~%")
                 file args))))))
