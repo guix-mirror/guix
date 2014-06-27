@@ -208,3 +208,23 @@ in the other direction.  Multiple such commands are necessary to reach the
 level's exit.  The game is presented in a 2D side view.")
     ;; Some source files are under bsd-3 and gpl2+ licenses.
     (license gpl3+)))
+
+(define-public talkfilters
+  (package
+    (name "talkfilters")
+    (version "2.3.8")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.hyperrealm.com/" name "/"
+                           name  "-" version  ".tar.gz")) 
+       (sha256
+        (base32 "19nc5vq4bnkjvhk8srqddzhcs93jyvpm9r6lzjzwc1mgf08yg0a6"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.gnu.org/software/talkfilters")
+    (synopsis "Convert English text to humorous dialects")
+    (description "The GNU Talk Filters are programs that convert English text
+into stereotyped or otherwise humorous dialects.  The filters are provided as
+a C library, so they can easily be integrated into other programs.")
+    (license gpl2+)))
+ 
