@@ -3114,10 +3114,11 @@ instance to support new system services.
 @node Using the Configuration System
 @subsection Using the Configuration System
 
-The operating system is configured by filling in an
-@code{operating-system} structure, as defined by the @code{(gnu system)}
-module.  A simple setup, with the default system services, the default
-Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
+The operating system is configured by providing an
+@code{operating-system} declaration in a file that can then be passed to
+the @command{guix system} command (@pxref{Invoking guix system}).  A
+simple setup, with the default system services, the default Linux-Libre
+kernel, initial RAM disk, and boot loader looks like this:
 
 @findex operating-system
 @lisp
@@ -3125,33 +3126,38 @@ Linux-Libre kernel, initial RAM disk, and boot loader looks like this:
              (gnu packages emacs)  ; for 'emacs'
              (gnu services ssh))   ; for 'lsh-service'
 
-(define komputilo
-  (operating-system
-   (host-name "komputilo")
-   (timezone "Europe/Paris")
-   (locale "fr_FR.UTF-8")
-   (bootloader (grub-configuration
-                 (device "/dev/sda")))
-   (file-systems (list (file-system
-                         (device "/dev/sda1") ; or partition label
-                         (mount-point "/")
-                         (type "ext3"))))
-   (users (list (user-account
-                 (name "alice")
-                 (password "")
-                 (uid 1000) (gid 100)
-                 (comment "Bob's sister")
-                 (home-directory "/home/alice"))))
-   (packages (cons emacs %base-packages))
-   (services (cons (lsh-service #:port 2222 #:allow-root-login? #t)
-                   %base-services))))
+(operating-system
+  (host-name "komputilo")
+  (timezone "Europe/Paris")
+  (locale "fr_FR.UTF-8")
+  (bootloader (grub-configuration
+                (device "/dev/sda")))
+  (file-systems (list (file-system
+                        (device "/dev/sda1") ; or partition label
+                        (mount-point "/")
+                        (type "ext3"))))
+  (users (list (user-account
+                (name "alice")
+                (password "")
+                (uid 1000) (gid 100)
+                (comment "Bob's sister")
+                (home-directory "/home/alice"))))
+  (packages (cons emacs %base-packages))
+  (services (cons (lsh-service #:port 2222 #:allow-root-login? #t)
+                  %base-services)))
 @end lisp
 
-This example should be self-describing.  The @code{packages} field lists
+This example should be self-describing.  Some of the fields defined
+above, such as @code{host-name} and @code{bootloader}, are mandatory.
+Others, such as @code{packages} and @code{services}, can be omitted, in
+which case they get a default value.
+
+@vindex %base-packages
+The @code{packages} field lists
 packages that will be globally visible on the system, for all user
 accounts---i.e., in every user's @code{PATH} environment variable---in
 addition to the per-user profiles (@pxref{Invoking guix package}).  The
-@var{%base-packages} variables provides all the tools one would expect
+@var{%base-packages} variable provides all the tools one would expect
 for basic user and administrator tasks---including the GNU Core
 Utilities, the GNU Networking Utilities, the GNU Zile lightweight text
 editor, @command{find}, @command{grep}, etc.  The example above adds
