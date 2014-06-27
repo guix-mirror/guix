@@ -83,21 +83,30 @@ STORE."
     (directory "/var/empty")                        ; for no-login accounts
     (directory "/var/run")
     (directory "/run")
+    (directory "/var/guix/profiles/per-user/root" 0 0)
+
+    ;; Link to the initial system generation.
+    ("/var/guix/profiles/system" -> "system-1-link")
+
     ("/var/guix/gcroots/booted-system" -> "/run/booted-system")
     ("/var/guix/gcroots/current-system" -> "/run/current-system")
+
     (directory "/bin")
     ("/bin/sh" -> "/run/current-system/profile/bin/bash")
     (directory "/tmp" 0 0 #o1777)                 ; sticky bit
-    (directory "/var/guix/profiles/per-user/root" 0 0)
 
     (directory "/root" 0 0)                       ; an exception
     (directory "/home" 0 0)))
 
-(define (populate-root-file-system target)
+(define (populate-root-file-system system target)
   "Make the essential non-store files and directories on TARGET.  This
-includes /etc, /var, /run, /bin/sh, etc."
+includes /etc, /var, /run, /bin/sh, etc., and all the symlinks to SYSTEM."
   (for-each (cut evaluate-populate-directive <> target)
-            (directives (%store-directory))))
+            (directives (%store-directory)))
+
+  ;; Add system generation 1.
+  (symlink system
+           (string-append target "/var/guix/profiles/system-1-link")))
 
 (define (reset-timestamps directory)
   "Reset the timestamps of all the files under DIRECTORY, so that they appear

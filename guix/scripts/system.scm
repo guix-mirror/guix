@@ -116,7 +116,7 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
 
   ;; Create a bunch of additional files.
   (format log-port "populating '~a'...~%" target)
-  (populate-root-file-system target)
+  (populate-root-file-system os-dir target)
 
   (when grub?
     (unless (false-if-exception (install-grub grub.cfg device target))

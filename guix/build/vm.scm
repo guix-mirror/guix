@@ -172,7 +172,7 @@ volume name."
 
 (define* (initialize-root-partition target-directory
                                     #:key copy-closures? register-closures?
-                                    closures)
+                                    closures system-directory)
   "Initialize the root partition mounted at TARGET-DIRECTORY."
   (define target-store
     (string-append target-directory (%store-directory)))
@@ -203,10 +203,11 @@ volume name."
 
   ;; Add the non-store directories and files.
   (display "populating...\n")
-  (populate-root-file-system target-directory))
+  (populate-root-file-system system-directory target-directory))
 
 (define* (initialize-hard-disk device
                                #:key
+                               system-directory
                                grub.cfg
                                disk-image-size
                                (file-system-type "ext4")
@@ -218,7 +219,8 @@ volume name."
 partition with (optionally) FILE-SYSTEM-LABEL as its volume name, and with
 GRUB installed.  If REGISTER-CLOSURES? is true, register all of CLOSURES is
 the partition's store.  If COPY-CLOSURES? is true, copy all of CLOSURES to the
-partition."
+partition.  SYSTEM-DIRECTORY is the name of the directory of the 'system'
+derivation."
   (define target-directory
     "/fs")
 
@@ -236,6 +238,7 @@ partition."
   (mount partition target-directory file-system-type)
 
   (initialize-root-partition target-directory
+                             #:system-directory system-directory
                              #:copy-closures? copy-closures?
                              #:register-closures? register-closures?
                              #:closures closures)

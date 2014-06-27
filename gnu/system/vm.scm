@@ -197,6 +197,7 @@ made available under the /xchg CIFS share."
                      (disk-image-format "qcow2")
                      (file-system-type "ext4")
                      file-system-label
+                     os-derivation
                      grub-configuration
                      (register-closures? #t)
                      (inputs '())
@@ -204,9 +205,9 @@ made available under the /xchg CIFS share."
   "Return a bootable, stand-alone QEMU image of type DISK-IMAGE-FORMAT (e.g.,
 'qcow2' or 'raw'), with a root partition of type FILE-SYSTEM-TYPE.
 Optionally, FILE-SYSTEM-LABEL can be specified as the volume name for the root
-partition.  The returned image is a full disk image, with a GRUB installation
-that uses GRUB-CONFIGURATION as its configuration file (GRUB-CONFIGURATION
-must be the name of a file in the VM.)
+partition.  The returned image is a full disk image that runs OS-DERIVATION,
+with a GRUB installation that uses GRUB-CONFIGURATION as its configuration
+file (GRUB-CONFIGURATION must be the name of a file in the VM.)
 
 INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
 all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
@@ -240,6 +241,7 @@ the image."
                              (((names . _) ...)
                               names))))
             (initialize-hard-disk "/dev/vda"
+                                  #:system-directory #$os-derivation
                                   #:grub.cfg #$grub-configuration
                                   #:closures graphs
                                   #:copy-closures? #$copy-inputs?
@@ -298,6 +300,7 @@ to USB sticks meant to be read-only."
     (mlet* %store-monad ((os-drv   (operating-system-derivation os))
                          (grub.cfg (operating-system-grub.cfg os)))
       (qemu-image #:name name
+                  #:os-derivation os-drv
                   #:grub-configuration grub.cfg
                   #:disk-image-size disk-image-size
                   #:disk-image-format "raw"
@@ -334,7 +337,8 @@ of the GNU system as described by OS."
     (mlet* %store-monad
         ((os-drv      (operating-system-derivation os))
          (grub.cfg    (operating-system-grub.cfg os)))
-      (qemu-image  #:grub-configuration grub.cfg
+      (qemu-image  #:os-derivation os-drv
+                   #:grub-configuration grub.cfg
                    #:disk-image-size disk-image-size
                    #:file-system-type file-system-type
                    #:inputs `(("system" ,os-drv)
@@ -376,7 +380,8 @@ with the host."
   (mlet* %store-monad
       ((os-drv      (operating-system-derivation os))
        (grub.cfg    (operating-system-grub.cfg os)))
-    (qemu-image #:grub-configuration grub.cfg
+    (qemu-image #:os-derivation os-drv
+                #:grub-configuration grub.cfg
                 #:disk-image-size disk-image-size
                 #:inputs `(("system" ,os-drv))
 
