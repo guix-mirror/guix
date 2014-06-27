@@ -100,6 +100,7 @@ sockets."
       (user-accounts (list (user-account
                             (name "avahi")
                             (group "avahi")
+                            (system? #t)
                             (comment "Avahi daemon user")
                             (home-directory "/var/empty")
                             (shell

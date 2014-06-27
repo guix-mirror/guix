@@ -34,6 +34,7 @@
             user-account-comment
             user-account-home-directory
             user-account-shell
+            user-account-system?
 
             user-group
             user-group?
@@ -63,7 +64,9 @@
   (comment        user-account-comment (default ""))
   (home-directory user-account-home-directory)
   (shell          user-account-shell              ; gexp
-                  (default #~(string-append #$bash "/bin/bash"))))
+                  (default #~(string-append #$bash "/bin/bash")))
+  (system?        user-account-system?            ; Boolean
+                  (default #f)))
 
 (define-record-type* <user-group>
   user-group make-user-group

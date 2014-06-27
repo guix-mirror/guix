@@ -327,6 +327,7 @@ starting at FIRST-UID, and under GID."
                     (lambda (n)
                       (user-account
                        (name (format #f "guixbuilder~2,'0d" n))
+                       (system? #t)
                        (uid (+ first-uid n -1))
                        (group group)
 

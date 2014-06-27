@@ -47,7 +47,7 @@
     (zero? (apply system* "groupadd" args))))
 
 (define* (add-user name group
-                   #:key uid comment home shell password
+                   #:key uid comment home shell password system?
                    (supplementary-groups '())
                    (log-port (current-error-port)))
   "Create an account for user NAME part of GROUP, with the specified
@@ -82,6 +82,7 @@ properties.  Return #t on success."
                           '())
                     ,@(if shell `("-s" ,shell) '())
                     ,@(if password `("-p" ,password) '())
+                    ,@(if system? '("--system") '())
                     ,name)))
         (zero? (apply system* "useradd" args)))))
 
@@ -97,22 +98,24 @@ numeric gid or #f."
 
   (define activate-user
     (match-lambda
-     ((name uid group supplementary-groups comment home shell password)
+     ((name uid group supplementary-groups comment home shell password system?)
       (unless (false-if-exception (getpwnam name))
         (let ((profile-dir (string-append "/var/guix/profiles/per-user/"
                                           name)))
           (add-user name group
                     #:uid uid
+                    #:system? system?
                     #:supplementary-groups supplementary-groups
                     #:comment comment
                     #:home home
                     #:shell shell
                     #:password password)
 
-          ;; Create the profile directory for the new account.
-          (let ((pw (getpwnam name)))
-            (mkdir-p profile-dir)
-            (chown profile-dir (passwd:uid pw) (passwd:gid pw))))))))
+          (unless system?
+            ;; Create the profile directory for the new account.
+            (let ((pw (getpwnam name)))
+              (mkdir-p profile-dir)
+              (chown profile-dir (passwd:uid pw) (passwd:gid pw)))))))))
 
   ;; 'groupadd' aborts if the file doesn't already exist.
   (touch "/etc/group")

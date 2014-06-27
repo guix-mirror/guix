@@ -369,7 +369,8 @@ alias ll='ls -l'
       #$(user-account-comment account)
       #$(user-account-home-directory account)
       ,#$(user-account-shell account)             ; this one is a gexp
-      #$(user-account-password account)))
+      #$(user-account-password account)
+      #$(user-account-system? account)))
 
 (define (operating-system-activation-script os)
   "Return the activation script for OS---i.e., the code that \"activates\" the

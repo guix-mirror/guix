@@ -90,6 +90,7 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
       (user-accounts (list (user-account
                             (name "messagebus")
                             (group "messagebus")
+                            (system? #t)
                             (comment "D-Bus system bus user")
                             (home-directory "/var/run/dbus")
                             (shell
