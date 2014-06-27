@@ -34,7 +34,7 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages texinfo))
 
-(define-public guix
+(define-public guix-0.6
   (package
     (name "guix")
     (version "0.6")
@@ -109,10 +109,10 @@ upgrades and roll-backs, per-user profiles, and much more. It is based on the
 Nix package manager.")
     (license gpl3+)))
 
-(define-public guix-devel
+(define-public guix
   ;; Development version of Guix.
   (let ((commit "20b1d19"))
-    (package (inherit guix)
+    (package (inherit guix-0.6)
       (version (string-append "0.6." commit))
       (source (origin
                 (method git-fetch)
@@ -124,7 +124,7 @@ Nix package manager.")
                  (base32
                   "0n278kzp586rzbhcghbj7am641yjc35pcb6n1r304myziwd0mz6r"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix)
+       (substitute-keyword-arguments (package-arguments guix-0.6)
          ((#:phases phases)
           `(alist-cons-before
             'configure 'bootstrap
@@ -160,4 +160,4 @@ Nix package manager.")
          ("gettext" ,gnu-gettext)
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
-         ,@(package-native-inputs guix))))))
+         ,@(package-native-inputs guix-0.6))))))
