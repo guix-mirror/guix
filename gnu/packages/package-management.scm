@@ -19,6 +19,8 @@
 (define-module (gnu packages package-management)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (gnu packages)
@@ -26,7 +28,11 @@
   #:use-module ((gnu packages compression) #:select (bzip2 gzip))
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages sqlite)
-  #:use-module (gnu packages pkg-config))
+  #:use-module (gnu packages graphviz)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages texinfo))
 
 (define-public guix
   (package
@@ -103,3 +109,55 @@ upgrades and roll-backs, per-user profiles, and much more. It is based on the
 Nix package manager.")
     (license gpl3+)))
 
+(define-public guix-devel
+  ;; Development version of Guix.
+  (let ((commit "20b1d19"))
+    (package (inherit guix)
+      (version (string-append "0.6." commit))
+      (source (origin
+                (method git-fetch)
+                (uri (git-reference
+                      (url "git://git.sv.gnu.org/guix.git")
+                      (commit commit)
+                      (recursive? #t)))
+                (sha256
+                 (base32
+                  "0n278kzp586rzbhcghbj7am641yjc35pcb6n1r304myziwd0mz6r"))))
+      (arguments
+       (substitute-keyword-arguments (package-arguments guix)
+         ((#:phases phases)
+          `(alist-cons-before
+            'configure 'bootstrap
+            (lambda _
+              ;; Comment out `git' invocations, since 'git-fetch' provides us
+              ;; with a checkout that includes sub-modules.
+              (substitute* "bootstrap"
+                (("git ")
+                 "true git "))
+
+              ;; Keep a list of the files already available under nix/...
+              (call-with-output-file "ls-R"
+                (lambda (port)
+                  (for-each (lambda (file)
+                              (format port "~a~%" file))
+                            (find-files "nix" ""))))
+
+              ;; ... and use that as a substitute to 'git ls-tree'.
+              (substitute* "nix/sync-with-upstream"
+                (("git ls-tree HEAD -- [[:graph:]]+")
+                 "cat ls-R"))
+
+              ;; Make sure 'msgmerge' can modify the PO files.
+              (for-each (lambda (po)
+                          (chmod po #o666))
+                        (find-files "." "\\.po$"))
+
+              (zero? (system* "./bootstrap")))
+            ,phases))))
+      (native-inputs
+       `(("autoconf" ,(autoconf-wrapper))
+         ("automake" ,automake)
+         ("gettext" ,gnu-gettext)
+         ("texinfo" ,texinfo)
+         ("graphviz" ,graphviz)
+         ,@(package-native-inputs guix))))))
