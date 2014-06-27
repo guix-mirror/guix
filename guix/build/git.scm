@@ -28,23 +28,32 @@
 ;;; Code:
 
 (define* (git-fetch url commit directory
-                    #:key (git-command "git"))
+                    #:key (git-command "git") recursive?)
   "Fetch COMMIT from URL into DIRECTORY.  COMMIT must be a valid Git commit
-identifier.  Return #t on success, #f otherwise."
+identifier.  When RECURSIVE? is true, all the sub-modules of URL are fetched,
+recursively.  Return #t on success, #f otherwise."
 
   ;; Disable TLS certificate verification.  The hash of the checkout is known
   ;; in advance anyway.
   (setenv "GIT_SSL_NO_VERIFY" "true")
 
-  (and (zero? (system* git-command "clone" url directory))
-       (with-directory-excursion directory
-         (system* git-command "tag" "-l")
-         (and (zero? (system* git-command "checkout" commit))
-              (begin
-                ;; The contents of '.git' vary as a function of the current
-                ;; status of the Git repo.  Since we want a fixed output, this
-                ;; directory needs to be taken out.
-                (delete-file-recursively ".git")
-                #t)))))
+  (let ((args `("clone" ,@(if recursive? '("--recursive") '())
+                ,url ,directory)))
+    (and (zero? (apply system* git-command args))
+         (with-directory-excursion directory
+           (system* git-command "tag" "-l")
+           (and (zero? (system* git-command "checkout" commit))
+                (begin
+                  ;; The contents of '.git' vary as a function of the current
+                  ;; status of the Git repo.  Since we want a fixed output, this
+                  ;; directory needs to be taken out.
+                  (delete-file-recursively ".git")
+
+                  (when recursive?
+                    ;; In sub-modules, '.git' is a flat file, not a directory,
+                    ;; so we can use 'find-files' here.
+                    (for-each delete-file-recursively
+                              (find-files directory "^\\.git$")))
+                  #t))))))
 
 ;;; git.scm ends here

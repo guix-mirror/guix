@@ -20,11 +20,13 @@
   #:use-module (guix records)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:autoload   (guix build-system gnu) (standard-inputs)
   #:use-module (ice-9 match)
   #:export (git-reference
             git-reference?
             git-reference-url
             git-reference-commit
+            git-reference-recursive?
 
             git-fetch))
 
@@ -39,8 +41,10 @@
 (define-record-type* <git-reference>
   git-reference make-git-reference
   git-reference?
-  (url    git-reference-url)
-  (commit git-reference-commit))
+  (url        git-reference-url)
+  (commit     git-reference-commit)
+  (recursive? git-reference-recursive?   ; whether to recurse into sub-modules
+              (default #f)))
 
 (define* (git-fetch store ref hash-algo hash
                     #:optional name
@@ -67,18 +71,37 @@ type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
               (git    (module-ref distro 'git)))
          (package-derivation store git system)))))
 
+  (define inputs
+    ;; When doing 'git clone --recursive', we need sed, grep, etc. to be
+    ;; available so that 'git submodule' works.
+    (if (git-reference-recursive? ref)
+        (standard-inputs (%current-system))
+        '()))
+
   (let* ((command (string-append (derivation->output-path git-for-build)
                                  "/bin/git"))
          (builder `(begin
-                     (use-modules (guix build git))
+                     (use-modules (guix build git)
+                                  (guix build utils)
+                                  (ice-9 match))
+
+                     ;; The 'git submodule' commands expects Coreutils, sed,
+                     ;; grep, etc. to be in $PATH.
+                     (set-path-environment-variable "PATH" '("bin")
+                                                    (match %build-inputs
+                                                      (((names . dirs) ...)
+                                                       dirs)))
+
                      (git-fetch ',(git-reference-url ref)
                                 ',(git-reference-commit ref)
                                 %output
+                                #:recursive? ',(git-reference-recursive? ref)
                                 #:git-command ',command))))
     (build-expression->derivation store (or name "git-checkout") builder
                                   #:system system
                                   #:local-build? #t
-                                  #:inputs `(("git" ,git-for-build))
+                                  #:inputs `(("git" ,git-for-build)
+                                             ,@inputs)
                                   #:hash-algo hash-algo
                                   #:hash hash
                                   #:recursive? #t
