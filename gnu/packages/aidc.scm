@@ -23,7 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages libpng)
+  #:use-module (gnu packages image)
   #:use-module (guix build-system gnu))
 
 
