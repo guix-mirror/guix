@@ -1090,3 +1090,82 @@ widgets built in the loading process.")
 controls using the Bonobo component framework.")
     (license license:lgpl2.0+)))
 
+
+(define-public goffice
+  (package
+    (name "goffice")
+    (version "0.10.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" 
+                    (string-take version 4) "/" name "-"
+                    version    ".tar.xz"))
+              (sha256
+               (base32 "0kj0iwng6w4axm7yv2zy7myn5dhw5ilrlq2pzrjlm9i852ikqy60"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("libgsf" ,libgsf)
+       ("librsvg" ,librsvg)
+       ("libxslt" ,libxslt)
+       ("libxml2" ,libxml2)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "https://developer.gnome.org/goffice/")
+    (synopsis "Document-centric objects and utilities")
+    (description "A GLib/GTK+ set of document-centric objects and utilities.")
+    (license 
+     ;; Dual licensed under GPLv2 or GPLv3 (both without "or later")
+     ;; Note: NOT LGPL
+     (list license:gpl2 license:gpl3))))
+
+(define-public gnumeric
+  (package
+    (name "gnumeric")
+    (version "1.12.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://gnome/sources/" name "/" 
+                    (string-take version 4) "/" name "-" version
+                    ".tar.xz"))
+              (sha256
+               (base32
+                "18bvc3phghr4p5440fp8hm6gvp53d3mqs9cyc637zpmk0b6bcp7c"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(;; The gnumeric developers don't worry much about failing tests.
+       ;; See https://bugzilla.gnome.org/show_bug.cgi?id=732387
+       #:tests? #f 
+       #:phases
+       (alist-cons-before
+        'configure 'pre-conf
+        (lambda* (#:key outputs #:allow-other-keys)
+          ;; Make install tries to write into the directory of goffice
+          ;; I am informed that this only affects the possibility to embed a
+          ;; spreadsheet inside an Abiword document.   So presumably when we
+          ;; package Abiword we'll have to refer it to this directory.
+          (substitute* "configure" 
+            (("^GOFFICE_PLUGINS_DIR=.*")
+             (string-append "GOFFICE_PLUGINS_DIR=" 
+                            (assoc-ref outputs "out") "/goffice/plugins"))))
+        %standard-phases)))
+    (inputs
+     `(("glib" ,glib)
+       ("gtk+" ,gtk+)
+       ("goffice" ,goffice)
+       ("libgsf" ,libgsf)
+       ("libxml2" ,libxml2)
+       ("zlib" ,zlib)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("pkg-config" ,pkg-config)))
+    (home-page "http://www.gnumeric.org")
+    (synopsis "Spreadsheet program")
+    (description "Gnumeric is a spreadsheet program for GNOME.  The project aims
+to become a drop in replacement for proprietary spreadsheets.")
+    (license 
+    ;; Dual licensed under GPLv2 or GPLv3 (both without "or later")
+     (list license:gpl2 license:gpl3))))
