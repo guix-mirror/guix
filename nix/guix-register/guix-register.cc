@@ -33,6 +33,7 @@
 #include <cstdio>
 
 #include <argp.h>
+#include <gcrypt.h>
 
 using namespace nix;
 
@@ -168,6 +169,17 @@ register_validity (LocalStore *store, std::istream &input,
 int
 main (int argc, char *argv[])
 {
+  /* Initialize libgcrypt, which is indirectly used.  */
+  if (!gcry_check_version (GCRYPT_VERSION))
+    {
+      fprintf (stderr, "error: libgcrypt version mismatch\n");
+      exit (EXIT_FAILURE);
+    }
+
+  /* Tell Libgcrypt that initialization has completed, as per the Libgcrypt
+     1.6.0 manual (although this does not appear to be strictly needed.)  */
+  gcry_control (GCRYCTL_INITIALIZATION_FINISHED, 0);
+
   /* Honor the environment variables, and initialize the settings.  */
   settings.processEnvironment ();
 
