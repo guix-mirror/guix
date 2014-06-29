@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,7 +40,8 @@
   #:use-module (gnu packages xiph)
   #:export (libmpdclient
             mpd
-            ncmpc))
+            ncmpc
+            ncmpcpp))
 
 (define libmpdclient
   (package
@@ -147,3 +149,27 @@ protocol.")
 terminal using ncurses.")
     (home-page "http://www.musicpd.org/clients/ncmpc/")
     (license license:gpl2)))
+
+(define ncmpcpp
+  (package
+    (name "ncmpcpp")
+    (version "0.5.10")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "http://ncmpcpp.rybczak.net/stable/ncmpcpp-"
+                              version ".tar.bz2"))
+              (sha256
+               (base32
+                "1a54g6dary1rirrny9fd0hpxpyyffypni3mpbdpvmjnrl9v56vgz"))))
+    (build-system gnu-build-system)
+    (inputs `(("libmpdclient" ,libmpdclient)
+              ("ncurses" ,ncurses)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (synopsis "Featureful ncurses based MPD client inspired by ncmpc")
+    (description "Ncmpcpp is an mpd client with a UI very similar to ncmpc,
+but it provides new useful features such as support for regular expressions
+for library searches, extended song format, items filtering, the ability to
+sort playlists, and a local filesystem browser.")
+    (home-page "http://ncmpcpp.rybczak.net/")
+    (license license:gpl2+)))
