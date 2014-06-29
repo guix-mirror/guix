@@ -409,6 +409,10 @@ hydra.gnu.org are used by default."
              (requirement '(root-file-system))
              (documentation "Populate the /dev directory.")
              (start #~(lambda ()
+                        ;; Allow udev to find the modules.
+                        (setenv "LINUX_MODULE_DIRECTORY"
+                                "/run/booted-system/kernel/lib/modules")
+
                         (let ((pid (primitive-fork)))
                           (case pid
                             ((0)
@@ -421,6 +425,9 @@ hydra.gnu.org are used by default."
                              (execl (string-append #$udev "/libexec/udev/udevd")
                                     "udevd"))
                             (else
+                             ;; Wait for things to settle down.
+                             (system* (string-append #$udev "/bin/udevadm")
+                                      "settle")
                              ;; Create a bunch of devices.
                              (system* (string-append #$udev "/bin/udevadm")
                                       "trigger")
