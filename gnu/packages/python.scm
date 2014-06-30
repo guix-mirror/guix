@@ -3,6 +3,7 @@
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -380,6 +381,31 @@ Python 3 support.")
   (package-with-python2 python-setuptools))
 
 
+(define-public python-six
+  (package
+    (name "python-six")
+    (version "1.7.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/s/"
+                          "six/six-" version ".tar.gz"))
+      (sha256
+       (base32
+        "164rns26aqfqx2hwi0qq3scl50s69japn0fvgvrjsbyg7r1mxf67"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pypi.python.org/pypi/six/")
+    (synopsis "Python 2 and 3 compatibility utilities")
+    (description
+     "Six is a Python 2 and 3 compatibility library. It provides utility
+functions for smoothing over the differences between the Python versions with
+the goal of writing Python code that is compatible on both Python versions.
+Six supports every Python version since 2.5. It is contained in only one
+Python file, so it can be easily copied into your project.")
+    (license x11)))
+
 (define-public python-dateutil
   (package
     (name "python-dateutil")
@@ -644,6 +670,86 @@ bug tracker.")
     (home-page "http://www.liquidx.net/pybugz/")
     (license gpl2)))
 
+(define-public python-enum34
+  (package
+    (name "python-enum34")
+    (version "1.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/e/"
+                          "enum34/enum34-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0dg6mpg9n4g9diyrbnbb5vd9d1qw9f265zwhknqy0mxh0cvmjjrq"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:phases
+       (alist-replace
+        'check
+        (lambda _ (zero? (system* "python" "enum/test_enum.py")))
+        %standard-phases)))
+    (home-page "https://pypi.python.org/pypi/enum34")
+    (synopsis "Backported Python 3.4 Enum")
+    (description
+     "Enum34 is the new Python stdlib enum module available in Python 3.4
+backported for previous versions of Python from 2.4 to 3.3.")
+    (license bsd-3)))
+
+(define-public python-parse-type
+  (package
+    (name "python-parse-type")
+    (version "0.3.4")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/p/"
+                          "parse_type/parse_type-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0iv1c34npr4iynwpgv1vkjx9rjd18a85ir8c01gc5f7wp8iv7l1x"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)
+       ("python-parse" ,python-parse)
+       ("python-enum34" ,python-enum34))) ;required for python<3.4
+    (arguments '(#:tests? #f))            ;TODO: tests require pytest
+    (home-page "https://github.com/jenisys/parse_type")
+    (synopsis "Extended parse module")
+    (description
+     "Parse_type extends the python parse module.")
+    (license bsd-3)))
+
+(define-public python-parse
+  (package
+    (name "python-parse")
+    (version "1.6.4")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/p/"
+                          "parse/parse-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0m30q64l6szl7s9mhvqy64w2fdhdn8lb91fmacjiwbv3479cmk57"))))
+    (build-system python-build-system)
+    (arguments
+     `(#:phases
+       (alist-replace
+        'check
+        (lambda _ (zero? (system* "python" "test_parse.py")))
+        %standard-phases)))
+    (home-page "https://github.com/r1chardj0n3s/parse")
+    (synopsis "Parse strings")
+    (description
+     "Parse strings using a specification based on the Python format()
+syntax.")
+    (license x11)))
+
+
 (define-public scons
   (package
     (name "scons")
@@ -670,3 +776,32 @@ In short, SCons is an easier, more reliable and faster way to build
 software.")
     (license x11)))
 
+(define-public behave
+  (package
+    (name "behave")
+    (version "1.2.4")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://pypi.python.org/packages/source/b/"
+                                 name "/" name "-" version ".tar.gz"))
+             (sha256
+              (base32
+               "1v2rfy8xnf0rk7cj4cgr7lam4015d458i7bg0xqs9czfv6njlm14"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)
+       ("python-enum43" ,python-enum34)
+       ("python-parse" ,python-parse)
+       ("python-parse-type" ,python-parse-type)))
+    (arguments `(#:tests? #f))          ;TODO: tests require nose>=1.3 and
+                                        ;PyHamcrest>=1.8
+    (home-page "http://github.com/behave/behave")
+    (synopsis "Python behavior-driven development")
+    (description
+     "Behave is a tool for behavior-driven development in python.
+Behavior-driven development (or BDD) is an agile software development
+technique that encourages collaboration between developers, QA and
+non-technical or business participants in a software project.  Behave uses
+tests written in a natural language style, backed up by Python code.")
+    (license x11)))
