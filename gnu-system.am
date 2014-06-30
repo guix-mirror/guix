@@ -252,6 +252,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/services/dbus.scm				\
   gnu/services/dmd.scm				\
   gnu/services/networking.scm			\
+  gnu/services/ssh.scm				\
   gnu/services/xorg.scm				\
 						\
   gnu/system.scm				\
