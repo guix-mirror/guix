@@ -154,6 +154,7 @@ made available under the /xchg CIFS share."
        (initrd       (if initrd                   ; use the default initrd?
                          (return initrd)
                          (qemu-initrd %linux-vm-file-systems
+                                      #:virtio? #t
                                       #:guile-modules-in-chroot? #t))))
 
     (define builder
@@ -349,7 +350,9 @@ of the GNU system as described by OS."
   "Return an operating system based on OS suitable for use in a virtualized
 environment with the store shared with the host."
   (operating-system (inherit os)
-    (initrd (cut qemu-initrd <> #:volatile-root? #t))
+    (initrd (cut qemu-initrd <>
+                 #:volatile-root? #t
+                 #:virtio? #t))
     (file-systems (cons* (file-system
                            (mount-point "/")
                            (device "/dev/vda1")

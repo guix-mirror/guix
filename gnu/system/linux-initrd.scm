@@ -203,16 +203,18 @@ initrd code."
 
 (define* (qemu-initrd file-systems
                       #:key
-                      guile-modules-in-chroot?
                       (qemu-networking? #t)
-                      volatile-root?)
+                      virtio?
+                      volatile-root?
+                      guile-modules-in-chroot?)
   "Return a monadic derivation that builds an initrd for use in a QEMU guest
 where the store is shared with the host.  FILE-SYSTEMS is a list of
 file-systems to be mounted by the initrd, possibly in addition to the root
 file system specified on the kernel command line via '--root'.
 
 When QEMU-NETWORKING? is true, set up networking with the standard QEMU
-parameters.
+parameters.  When VIRTIO? is true, load additional modules so the initrd can
+be used as a QEMU guest with para-virtualized I/O drivers.
 
 When VOLATILE-ROOT? is true, the root file system is writable but any changes
 to it are lost.
@@ -221,6 +223,11 @@ When GUILE-MODULES-IN-CHROOT? is true, make core Guile modules available in
 the new root.  This is necessary is the file specified as '--load' needs
 access to these modules (which is the case if it wants to even just print an
 exception and backtrace!)."
+  (define virtio-modules
+    ;; Modules for Linux para-virtualized devices, for use in QEMU guests.
+    '("virtio.ko" "virtio_ring.ko" "virtio_pci.ko"
+      "virtio_balloon.ko" "virtio_blk.ko" "virtio_net.ko"))
+
   (define cifs-modules
     ;; Modules needed to mount CIFS file systems.
     '("md4.ko" "ecb.ko" "cifs.ko"))
@@ -235,8 +242,9 @@ exception and backtrace!)."
 
   (define linux-modules
     ;; Modules added to the initrd and loaded from the initrd.
-    `("virtio.ko" "virtio_ring.ko" "virtio_pci.ko"
-      "virtio_balloon.ko" "virtio_blk.ko" "virtio_net.ko"
+    `(,@(if (or virtio? qemu-networking?)
+            virtio-modules
+            '())
       ,@(if (find (file-system-type-predicate "cifs") file-systems)
             cifs-modules
             '())
