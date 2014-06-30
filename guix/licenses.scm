@@ -25,6 +25,7 @@
             asl2.0
             boost1.0
             bsd-2 bsd-3 bsd-4 bsd-style
+            cc0
             cddl1.0
             cecill-c
             cpl1.0
@@ -107,6 +108,11 @@ which may be a file:// URI pointing the package's tree."
             "This is a BSD-style, non-copyleft free software license.  "
             "Check the URI for details.  "
             comment)))
+
+(define cc0
+  (license "CC0"
+           "http://directory.fsf.org/wiki/License:CC0"
+           "http://www.gnu.org/licenses/license-list.html#CC0"))
 
 (define cddl1.0
   (license "CDDL 1.0"
