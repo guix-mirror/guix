@@ -60,6 +60,7 @@
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)
@@ -73,9 +74,6 @@
        ("libnotify" ,libnotify)
        ("libsm" ,libsm)
        ("libxml2" ,libxml2)))
-    (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/brasero/")
     (synopsis "CD/DVD burning tool for Gnome")
     (description "Brasero is an application to burn CD/DVD for the Gnome
@@ -173,6 +171,7 @@ and keep up to date translations of documentation.")
        ("dbus" ,dbus)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")
        ("intltool" ,intltool)))
     (propagated-inputs
      ;; Referred to in .h files and .pc.
@@ -239,6 +238,7 @@ and keep up to date translations of documentation.")
        ("dogtail" ,python2-dogtail)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (home-page
      "http://www.gnome.org/projects/evince/")
@@ -268,6 +268,7 @@ on the GNOME Desktop with a single simple application.")
      `(("glib" ,glib)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
        ("pkg-config" ,pkg-config)))
     (home-page "https://launchpad.net/gsettings-desktop-schemas")
     (synopsis
@@ -402,7 +403,8 @@ database is translated at Transifex.")
        ("gtk+" ,gtk+)
        ("libpng" ,libpng)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      `(("pkg-config" ,pkg-config)
+        ("glib" ,glib "bin")))
     (home-page "https://developer-next.gnome.org/libnotify/")
     (synopsis
      "GNOME desktop notification library")
@@ -465,7 +467,8 @@ the API")
               ("mesa" ,mesa)
               ("libx11" ,libx11)
               ("libxt" ,libxt)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("glib" ,glib "bin")))
     (propagated-inputs `(("pangox-compat" ,pangox-compat)))
     (home-page "https://projects.gnome.org/gtkglext")
     (synopsis "OpenGL extension to GTK+.")

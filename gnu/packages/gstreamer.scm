@@ -51,6 +51,7 @@
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
+       ("glib" ,glib "bin")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
@@ -112,6 +113,7 @@ This package provides the core library and elements.")
        ("gstreamer" ,gstreamer)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
+        ("glib" ,glib "bin")
         ("python-wrapper" ,python-wrapper)))
     (arguments
      `(#:tests? #f))
@@ -154,4 +156,5 @@ This package provides an essential exemplary set of elements.")
        ("gstreamer" ,gstreamer-0.10)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
-       ("python" ,python-2)))))
+        ("glib" ,glib "bin")
+        ("python" ,python-2)))))

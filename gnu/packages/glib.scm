@@ -119,8 +119,9 @@ shared NFS home directories.")
                            (search-patch "glib-tests-prlimit.patch")
                            (search-patch "glib-tests-newnet.patch")))))
    (build-system gnu-build-system)
-   (outputs '("out"                        ; everything
-              "doc"))                      ; 20 MiB of GTK-Doc reference
+   (outputs '("out"           ; everything
+              "bin"           ; glib-mkenums, gtester, etc.; depends on Python
+              "doc"))         ; 20 MiB of GTK-Doc reference
    (inputs
     `(("coreutils" ,coreutils)
       ("libffi" ,libffi)
@@ -201,6 +202,8 @@ dynamic loading, and an object system.")
        ("glib" ,glib)
        ("pkg-config" ,pkg-config)
        ("python-2" ,python-2)))
+    (native-inputs
+     `(("glib" ,glib "bin")))
     (propagated-inputs
      `(;; In practice, GIR users will need libffi when using
        ;; gobject-introspection.
