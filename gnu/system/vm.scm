@@ -153,7 +153,7 @@ made available under the /xchg CIFS share."
        (coreutils -> (car (assoc-ref %final-inputs "coreutils")))
        (initrd       (if initrd                   ; use the default initrd?
                          (return initrd)
-                         (qemu-initrd %linux-vm-file-systems
+                         (base-initrd %linux-vm-file-systems
                                       #:virtio? #t
                                       #:qemu-networking? #t
                                       #:guile-modules-in-chroot? #t))))
@@ -287,7 +287,7 @@ to USB sticks meant to be read-only."
   (let ((os (operating-system (inherit os)
               ;; Since this is meant to be used on real hardware, don't set up
               ;; QEMU networking.
-              (initrd (cut qemu-initrd <>
+              (initrd (cut base-initrd <>
                            #:volatile-root? volatile?))
 
               ;; Force our own root file system.
@@ -350,7 +350,7 @@ of the GNU system as described by OS."
   "Return an operating system based on OS suitable for use in a virtualized
 environment with the store shared with the host."
   (operating-system (inherit os)
-    (initrd (cut qemu-initrd <>
+    (initrd (cut base-initrd <>
                  #:volatile-root? #t
                  #:virtio? #t
                  #:qemu-networking? #t))

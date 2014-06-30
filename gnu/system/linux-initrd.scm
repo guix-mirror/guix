@@ -35,7 +35,7 @@
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
   #:export (expression->initrd
-            qemu-initrd))
+            base-initrd))
 
 
 ;;; Commentary:
@@ -201,16 +201,15 @@ initrd code."
     (($ <file-system> device title mount-point type flags options _ check?)
      (list device title mount-point type flags options check?))))
 
-(define* (qemu-initrd file-systems
+(define* (base-initrd file-systems
                       #:key
                       qemu-networking?
                       virtio?
                       volatile-root?
                       guile-modules-in-chroot?)
-  "Return a monadic derivation that builds an initrd for use in a QEMU guest
-where the store is shared with the host.  FILE-SYSTEMS is a list of
-file-systems to be mounted by the initrd, possibly in addition to the root
-file system specified on the kernel command line via '--root'.
+  "Return a monadic derivation that builds a generic initrd.  FILE-SYSTEMS is
+a list of file-systems to be mounted by the initrd, possibly in addition to
+the root file system specified on the kernel command line via '--root'.
 
 When QEMU-NETWORKING? is true, set up networking with the standard QEMU
 parameters.  When VIRTIO? is true, load additional modules so the initrd can
@@ -282,7 +281,7 @@ exception and backtrace!)."
                     #:qemu-guest-networking? #$qemu-networking?
                     #:guile-modules-in-chroot? '#$guile-modules-in-chroot?
                     #:volatile-root? '#$volatile-root?))
-   #:name "qemu-initrd"
+   #:name "base-initrd"
    #:modules '((guix build utils)
                (guix build linux-initrd))
    #:to-copy helper-packages

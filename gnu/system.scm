@@ -83,7 +83,7 @@
   (bootloader operating-system-bootloader)        ; <grub-configuration>
 
   (initrd operating-system-initrd                 ; (list fs) -> M derivation
-          (default qemu-initrd))
+          (default base-initrd))
 
   (host-name operating-system-host-name)          ; string
 
