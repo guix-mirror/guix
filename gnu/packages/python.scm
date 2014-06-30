@@ -22,8 +22,9 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (bsd-3 bsd-style expat psfl x11 x11-style
-                          gpl2 gpl2+ lgpl2.1+))
+                #:select (asl2.0 bsd-3 bsd-style cc0 expat x11 x11-style
+                          gpl2 gpl2+ lgpl2.1+
+                          psfl public-domain))
   #:use-module ((guix licenses) #:select (zlib)
                                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (gnu packages)
@@ -36,6 +37,8 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages sqlite)
+  #:use-module ((gnu packages zip) #:select (unzip))
+  #:use-module (gnu packages multiprecision)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -381,6 +384,80 @@ Python 3 support.")
   (package-with-python2 python-setuptools))
 
 
+(define-public python-pycrypto
+  (package
+    (name "python-pycrypto")
+    (version "2.6.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/p/"
+                          "pycrypto/pycrypto-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0g0ayql5b9mkjam8hym6zyg6bv77lbh66rv1fyvgqb17kfc1xkpj"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (inputs
+     `(("python" ,python)
+       ("gmp" ,gmp)))
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'build 'set-build-env
+        ;; pycrypto runs an autoconf configure script behind the scenes
+        (lambda _
+          (setenv "CONFIG_SHELL" (which "bash")))
+        %standard-phases)))
+    (home-page "http://www.pycrypto.org/")
+    (synopsis "Cryptographic modules for Python")
+    (description
+     "Pycrypto is a collection of both secure hash functions (such as SHA256
+and RIPEMD160), and various encryption algorithms (AES, DES, RSA, ElGamal,
+etc.). The package is structured to make adding new modules easy.")
+    (license public-domain)))
+
+(define-public python-keyring
+  (package
+    (name "python-keyring")
+    (version "3.8")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/k/"
+                          "keyring/keyring-" version ".zip"))
+      (sha256
+       (base32
+        "1vxazfbcwggyfyramh55shkxs08skhpqrkm6lrrjnygnm8c1l2zg"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python-setuptools" ,python-setuptools)
+       ("python-mock" ,python-mock)))
+    (inputs
+     `(("python-pycrypto" ,python-pycrypto)))
+    (arguments
+     `(#:tests? #f                      ;TODO: tests require pytest
+       #:phases
+       (alist-replace
+        'unpack
+        (lambda _
+          (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
+                                      "/bin/unzip"))
+                (source (assoc-ref %build-inputs "source")))
+            (and (zero? (system* unzip source))
+                 (chdir (string-append "keyring-" ,version)))))
+        %standard-phases)))
+    (home-page "http://bitbucket.org/kang/python-keyring-lib")
+    (synopsis "Store and access your passwords safely")
+    (description
+     "The Python keyring lib provides a easy way to access the system keyring
+service from python. It can be used in any application that needs safe
+password storage.")
+    ;; "MIT" and PSF dual license
+    (license x11)))
+
 (define-public python-six
   (package
     (name "python-six")
@@ -406,6 +483,32 @@ Six supports every Python version since 2.5. It is contained in only one
 Python file, so it can be easily copied into your project.")
     (license x11)))
 
+(define-public python-dateutil-2
+  (package
+    (name "python-dateutil")
+    (version "2.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/p/"
+                          name "/" name "-" version ".tar.gz"))
+      (sha256
+       (base32
+        "0s74ad6r789810s10dxgvaf48ni6adac2icrdad34zxygqq6bj7f"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-six" ,python-six)))
+    (home-page "http://labix.org/python-dateutil")
+    (synopsis "Extensions to the standard datetime module")
+    (description
+     "The dateutil module provides powerful extensions to the standard
+datetime module, available in Python 2.3+.")
+    (license bsd-3)))
+
+(define-public python2-dateutil-2
+  (package-with-python2 python-dateutil-2))
+
 (define-public python-dateutil
   (package
     (name "python-dateutil")
@@ -413,8 +516,8 @@ Python file, so it can be easily copied into your project.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://labix.org/download/python-dateutil/python-dateutil-"
-                          version ".tar.gz"))
+      (uri (string-append "http://labix.org/download/python-dateutil/"
+                          "python-dateutil-" version ".tar.gz"))
       (sha256
        (base32
         "0fqfglhy5khbvsipr3x7m6bcaqljh8xl5cw33vbfxy7qhmywm2n0"))))
@@ -422,8 +525,7 @@ Python file, so it can be easily copied into your project.")
     (inputs
      `(("python-setuptools" ,python-setuptools)))
     (home-page "http://labix.org/python-dateutil")
-    (synopsis
-     "Extensions to the standard datetime module, available in Python 2.3+")
+    (synopsis "Extensions to the standard datetime module")
     (description
      "The dateutil module provides powerful extensions to the standard
 datetime module, available in Python 2.3+.")
@@ -431,6 +533,67 @@ datetime module, available in Python 2.3+.")
 
 (define-public python2-dateutil
   (package-with-python2 python-dateutil))
+
+(define-public python-parsedatetime
+  (package
+    (name "python-parsedatetime")
+    (version "1.2")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/p/"
+                          "parsedatetime/parsedatetime-" version ".tar.gz"))
+      (sha256
+       (base32
+        "1zcj0pzxvpl4j2ma9awmpkfxldybi2kjaahjjpmgfbg5cxwcjsqv"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments `(#:tests? #f))          ;no test target
+    (home-page "http://github.com/bear/parsedatetime/")
+    (synopsis
+     "Parse human-readable date/time text")
+    (description
+     "Parse human-readable date/time text")
+    (license asl2.0)))
+
+(define-public python-tzlocal
+  (package
+    (name "python-tzlocal")
+    (version "1.1.1")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "https://pypi.python.org/packages/source/t/"
+                          "tzlocal/tzlocal-" version ".zip"))
+      (sha256
+       (base32
+        "1m3y918c3chf41fwg2bx4w42bqsjzn3dyvvcmwwy13c8gj6zssv9"))))
+    (build-system python-build-system)
+    (native-inputs
+     `(("unzip" ,unzip)
+       ("python-setuptools" ,python-setuptools)))
+    (inputs `(("python-pytz" ,python-pytz)))
+    (arguments
+     `(#:phases
+       (alist-replace
+        'unpack
+        (lambda _
+          (let ((unzip (string-append (assoc-ref %build-inputs "unzip")
+                                      "/bin/unzip"))
+                (source (assoc-ref %build-inputs "source")))
+            (and (zero? (system* unzip source))
+                 (chdir (string-append "tzlocal-" ,version)))))
+        %standard-phases)))
+    (home-page "https://github.com/regebro/tzlocal")
+    (synopsis
+     "tzinfo object for the local timezone")
+    (description
+     "Tzlocal returns a tzinfo object with the local timezone information.
+This module attempts to fix a glaring hole in pytz, that there is no way to
+get the local timezone information, unless you know the zoneinfo name, and
+under several distributions that's hard or impossible to figure out.")
+    (license cc0)))
 
 
 (define-public python2-pysqlite
