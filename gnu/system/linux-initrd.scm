@@ -203,7 +203,7 @@ initrd code."
 
 (define* (qemu-initrd file-systems
                       #:key
-                      (qemu-networking? #t)
+                      qemu-networking?
                       virtio?
                       volatile-root?
                       guile-modules-in-chroot?)

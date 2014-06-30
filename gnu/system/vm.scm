@@ -155,6 +155,7 @@ made available under the /xchg CIFS share."
                          (return initrd)
                          (qemu-initrd %linux-vm-file-systems
                                       #:virtio? #t
+                                      #:qemu-networking? #t
                                       #:guile-modules-in-chroot? #t))))
 
     (define builder
@@ -287,8 +288,7 @@ to USB sticks meant to be read-only."
               ;; Since this is meant to be used on real hardware, don't set up
               ;; QEMU networking.
               (initrd (cut qemu-initrd <>
-                           #:volatile-root? volatile?
-                           #:qemu-networking? #f))
+                           #:volatile-root? volatile?))
 
               ;; Force our own root file system.
               (file-systems (cons (file-system
@@ -352,7 +352,8 @@ environment with the store shared with the host."
   (operating-system (inherit os)
     (initrd (cut qemu-initrd <>
                  #:volatile-root? #t
-                 #:virtio? #t))
+                 #:virtio? #t
+                 #:qemu-networking? #t))
     (file-systems (cons* (file-system
                            (mount-point "/")
                            (device "/dev/vda1")
