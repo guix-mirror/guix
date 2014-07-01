@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,6 +33,7 @@
   #:use-module (gnu packages guile)
   #:use-module (gnu packages libcanberra)
   #:use-module (gnu packages image)
+  #:use-module (gnu packages ncurses)
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xorg)
@@ -228,3 +230,36 @@ into stereotyped or otherwise humorous dialects.  The filters are provided as
 a C library, so they can easily be integrated into other programs.")
     (license gpl2+)))
  
+(define-public cmatrix
+  (package
+    (name "cmatrix")
+    (version "1.2a")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.asty.org/cmatrix/dist/cmatrix-" version
+                           ".tar.gz"))
+       (sha256
+        (base32
+         "0k06fw2n8nzp1pcdynhajp5prba03gfgsbj91bknyjr5xb5fd9hz"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (alist-replace 'configure
+                      (lambda* (#:key outputs #:allow-other-keys)
+                        ;; This old `configure' script doesn't support
+                        ;; variables passed as arguments.
+                        (let ((out (assoc-ref outputs "out")))
+                          (setenv "CONFIG_SHELL" (which "bash"))
+                          (zero?
+                           (system* "./configure"
+                                    (string-append "--prefix=" out)))))
+                      %standard-phases)))
+    (inputs `(("ncurses" ,ncurses)))
+    (home-page "http://wwww.asty.org/cmatrix")
+    (synopsis "Simulate the display from \"The Matrix\"")
+    (description "CMatrix simulates the display from \"The Matrix\" and is
+based on the screensaver from the movie's website.  It works with terminal
+settings up to 132x300 and can scroll lines all at the same rate or
+asynchronously and at a user-defined speed.")
+    (license gpl2+)))
