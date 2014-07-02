@@ -116,14 +116,25 @@ if DEVICE does not contain an ext2 file system."
     ;; The magic bytes that identify an ext2 file system.
     #xef53)
 
+  (define superblock-size
+    ;; Size of the interesting part of an ext2 superblock.
+    264)
+
+  (define block
+    ;; The superblock contents.
+    (make-bytevector superblock-size))
+
   (call-with-input-file device
     (lambda (port)
       (seek port 1024 SEEK_SET)
-      (let* ((block (get-bytevector-n port 264))
-             (magic (bytevector-u16-ref block %ext2-sblock-magic
-                                        %ext2-endianness)))
-        (and (= magic %ext2-magic)
-             block)))))
+
+      ;; Note: work around <http://bugs.gnu.org/17466>.
+      (and (eqv? superblock-size (get-bytevector-n! port block 0
+                                                    superblock-size))
+           (let ((magic (bytevector-u16-ref block %ext2-sblock-magic
+                                            %ext2-endianness)))
+             (and (= magic %ext2-magic)
+                  block))))))
 
 (define (ext2-superblock-uuid sblock)
   "Return the UUID of ext2 superblock SBLOCK as a 16-byte bytevector."
