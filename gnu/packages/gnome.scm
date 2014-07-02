@@ -598,6 +598,7 @@ dealing with different structured file formats.")
         %standard-phases)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
     (inputs
      `(("pango" ,pango)
@@ -713,12 +714,13 @@ featuring mature C, C++ and Python bindings.")
     (inputs `(("popt" ,popt)
               ("libxml2" ,libxml2)))
     ;; The following are Required by the .pc file
-    (propagated-inputs  
+    (propagated-inputs
      `(("glib" ,glib)
        ("orbit2" ,orbit2)))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")
        ("flex" ,flex)
        ("bison" ,bison)))
     (home-page "https://developer.gnome.org/libbonobo/")
@@ -922,6 +924,7 @@ high-quality vector-based 2D library with antialiasing and alpha composition.")
                          ("gtk+" ,gtk+-2)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/libgnomecanvas/")
     (synopsis "Flexible widget for creating interactive structured graphics")
@@ -1007,9 +1010,10 @@ widgets built in the loading process.")
      `(("popt" ,popt)
        ("libart-lgpl" ,libart-lgpl)
        ("gtk+" ,gtk+-2)
-       ("libxml2" ,libxml2))) 
+       ("libxml2" ,libxml2)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/gnome-print/home/faq.html")
     (synopsis "printing framework for GNOME")

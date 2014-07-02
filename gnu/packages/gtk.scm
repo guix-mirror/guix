@@ -217,7 +217,8 @@ functions which were removed.")
        ("xorg-server" ,xorg-server)
        ("shared-mime-info" ,shared-mime-info)))
     (native-inputs
-      `(("intltool" ,intltool)
+     `(("intltool" ,intltool)
+       ("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:phases
