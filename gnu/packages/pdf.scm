@@ -22,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages fontutils)
@@ -29,9 +30,11 @@
   #:use-module (gnu packages lesstif)
   #:use-module (gnu packages image)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages openssl)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages lua)
   #:use-module (srfi srfi-1))
 
 (define-public poppler
@@ -122,3 +125,36 @@
     "Xpdf is a viewer for Portable Document Format (PDF) files")
    (license license:gpl3) ; or gpl2, but not gpl2+
    (home-page "http://www.foolabs.com/xpdf/")))
+
+(define-public podofo
+  (package
+    (name "podofo")
+    (version "0.9.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/podofo/podofo-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1wx3s0718rmhdzdwyi8hgpf2s92sk3hijy8f4glrmnjpiihr2la6"))))
+    (build-system cmake-build-system)
+    (inputs                                      ; TODO: Add cppunit for tests
+     `(;; Optional Lua support fails to build with:
+       ;;   error: 'luaL_getn' was not declared in this scope
+       ;; ("lua" ,lua)
+       ("libpng" ,libpng)
+       ("openssl" ,openssl)
+       ("fontconfig" ,fontconfig)
+       ("libtiff" ,libtiff)
+       ("libjpeg" ,libjpeg-8)
+       ("freetype" ,freetype)
+       ("zlib" ,zlib)))
+    (home-page "http://podofo.sourceforge.net")
+    (synopsis "Tools to work with the PDF file format")
+    (description
+     "PoDoFo is a C++ library and set of command-line tools to work with the
+PDF file format.  It can parse PDF files and load them into memory, and makes
+it easy to modify them and write the changes to disk.  It is primarily useful
+for applications that wish to do lower level manipulation of PDF, such as
+extracting content or merging files.")
+    (license license:lgpl2.0+)))
