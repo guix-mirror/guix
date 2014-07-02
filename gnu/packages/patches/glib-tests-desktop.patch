@@ -21,10 +21,10 @@ database, the `update-desktop-database' program, which we don't provide.
  
    return g_test_run ();
 
---- glib-2.34.3/gio/tests/contenttype.c	2013-01-16 21:22:29.000000000 +0100
-+++ glib-2.34.3/gio/tests/contenttype.c	2013-01-16 21:22:33.000000000 +0100
-@@ -207,13 +207,6 @@ main (int argc, char *argv[])
- 
+--- glib-2.40.0/gio/tests/contenttype.c	2013-01-16 21:22:29.000000000 +0100
++++ glib-2.40.0/gio/tests/contenttype.c	2013-01-16 21:22:33.000000000 +0100
+@@ -207,15 +207,6 @@ main (int argc, char *argv[])
+ {
    g_test_init (&argc, &argv, NULL);
  
 -  g_test_add_func ("/contenttype/guess", test_guess);
@@ -34,18 +34,21 @@ database, the `update-desktop-database' program, which we don't provide.
 -  g_test_add_func ("/contenttype/executable", test_executable);
 -  g_test_add_func ("/contenttype/description", test_description);
 -  g_test_add_func ("/contenttype/icon", test_icon);
+-  g_test_add_func ("/contenttype/symbolic-icon", test_symbolic_icon);
+-  g_test_add_func ("/contenttype/tree", test_tree);
  
    return g_test_run ();
  }
 
 
---- glib-2.39.1/gio/tests/desktop-app-info.c	2013-06-07 23:46:28.000000000 +0200
-+++ glib-2.39.1/gio/tests/desktop-app-info.c	2013-06-07 23:46:32.000000000 +0200
-@@ -699,6 +699,7 @@ main (int   argc,
+--- glib-2.40.0/gio/tests/desktop-app-info.c	2014-03-19 22:50:45.000000000 -0500
++++ glib-2.40.0/gio/tests/desktop-app-info.c	2014-06-30 14:27:52.543358331 -0500
+@@ -708,6 +708,8 @@
    g_setenv ("XDG_DATA_HOME", basedir, TRUE);
    cleanup_subdirs (basedir);
  
-+  return 0;
++  result = g_test_run ();
++  return result;
    g_test_add_func ("/desktop-app-info/delete", test_delete);
    g_test_add_func ("/desktop-app-info/default", test_default);
    g_test_add_func ("/desktop-app-info/fallback", test_fallback);
@@ -81,31 +84,33 @@ because that script depends on python-gobject.
 
 The test below depends on the availability /etc/passwd to dbus-daemon.
 
---- glib-2.38.0.orig/gio/tests/gdbus-auth.c     2013-05-07 20:26:07.000000000 +0200
-+++ glib-2.38.0/gio/tests/gdbus-auth.c  2013-09-30 19:42:27.000000000 +0200
-@@ -284,6 +284,7 @@
+--- glib-2.40.0/gio/tests/gdbus-auth.c	2014-02-03 11:40:41.000000000 -0600
++++ glib-2.40.0/gio/tests/gdbus-auth.c	2014-06-30 15:08:43.719421893 -0500
+@@ -286,6 +286,8 @@
  {
    gint ret;
-
-+  return 0;
+ 
++  g_test_init (&argc, &argv, NULL);
++  return g_test_run();
    setlocale (LC_ALL, "C");
-
+ 
    temp_dbus_keyrings_setup ();
 
 
 The test dbus-appinfo is dropped as it hangs indefinitely since 2.37.5, see
    https://launchpad.net/ubuntu/+source/glib2.0/2.37.5-1ubuntu1
 
---- glib-2.38.0.orig/gio/tests/dbus-appinfo.c   2013-09-05 12:43:41.000000000 +0200
-+++ glib-2.38.0/gio/tests/dbus-appinfo.c        2013-09-30 21:57:21.000000000 +0200
-@@ -278,6 +278,7 @@
- int
- main (int argc, char **argv)
+--- glib-2.40.0/gio/tests/dbus-appinfo.c	2014-02-03 11:40:41.000000000 -0600
++++ glib-2.40.0/gio/tests/dbus-appinfo.c	2014-06-30 14:44:08.215383632 -0500
+@@ -278,7 +278,7 @@
  {
-+  return 0;
    g_test_init (&argc, &argv, NULL);
  
-   session_bus_up ();
+-  g_test_add_func ("/appinfo/dbusappinfo", test_dbus_appinfo);
++  return g_test_run();
+ 
+   return session_bus_run ();
+ }
 
 
 The test below fails for unknown reasons (!).

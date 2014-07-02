@@ -106,18 +106,17 @@ shared NFS home directories.")
 (define glib
   (package
    (name "glib")
-   (version "2.39.1")
+   (version "2.40.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/"
                                 name "/" (string-take version 4) "/"
                                 name "-" version ".tar.xz"))
             (sha256
-             (base32 "0lqi6z47068vgh91fm59jn0kq969wf3g2q8k4m33jsb0amprg36h"))
+             (base32 "1d98mbqjmc34s8095lkw1j1bwvnnkw9581yfvjaikjvfjsaz29qd"))
             (patches (list (search-patch "glib-tests-homedir.patch")
                            (search-patch "glib-tests-desktop.patch")
-                           (search-patch "glib-tests-prlimit.patch")
-                           (search-patch "glib-tests-newnet.patch")))))
+                           (search-patch "glib-tests-prlimit.patch")))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
               "bin"           ; glib-mkenums, gtester, etc.; depends on Python
@@ -128,7 +127,7 @@ shared NFS home directories.")
       ("zlib" ,zlib)
       ("tzdata" ,tzdata)))     ; for tests/gdatetime.c
    (native-inputs
-     `(("gettext" ,gnu-gettext)
+    `(("gettext" ,gnu-gettext)
       ("dbus" ,dbus)                              ; for GDBus tests
       ("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)
