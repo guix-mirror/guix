@@ -41,6 +41,7 @@
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages gd)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages less)
   #:use-module (gnu packages gnome)
@@ -169,7 +170,8 @@ LP/MIP solver is included in the package.")
        ("gtksourceview" ,gtksourceview)
        ("zlib" ,zlib)))
     (native-inputs
-     `(("perl" ,perl)
+     `(("glib" ,glib "bin")             ;for glib-genmarshal
+       ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnu.org/software/pspp/")
     (synopsis "Statistical analysis")

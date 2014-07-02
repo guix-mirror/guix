@@ -218,7 +218,7 @@ functions which were removed.")
        ("shared-mime-info" ,shared-mime-info)))
     (native-inputs
      `(("intltool" ,intltool)
-       ("glib" ,glib "bin")
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:phases

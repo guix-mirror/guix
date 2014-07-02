@@ -42,7 +42,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (srfi srfi-1))
 
 (define-public brasero
   (package
@@ -720,7 +721,7 @@ featuring mature C, C++ and Python bindings.")
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
-       ("glib" ,glib "bin")
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("flex" ,flex)
        ("bison" ,bison)))
     (home-page "https://developer.gnome.org/libbonobo/")
@@ -755,6 +756,7 @@ use in GNOME applications, built on top of CORBA.")
     (propagated-inputs `(("orbit2" ,orbit2))) ; referred to in the .pc file
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/gconf/")
     (synopsis "store application preferences")
@@ -823,7 +825,8 @@ designed to be accessed through the MIME functions in GnomeVFS.")
               ("gnome-mime-data" ,gnome-mime-data)
               ("zlib" ,zlib)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/gnome-vfs/")
     (synopsis "access files and folders in GNOME applications")
@@ -860,7 +863,8 @@ allows applications to access local and remote files with a single consistent AP
     (inputs `(("popt" ,popt)
               ("libxml2" ,libxml2)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     ;; The following are listed as Required in the .pc file
     ;; (except for libcanberra -- which seems to be oversight on the part
@@ -924,7 +928,7 @@ high-quality vector-based 2D library with antialiasing and alpha composition.")
                          ("gtk+" ,gtk+-2)))
     (native-inputs
      `(("intltool" ,intltool)
-       ("glib" ,glib "bin")
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/libgnomecanvas/")
     (synopsis "Flexible widget for creating interactive structured graphics")
@@ -957,7 +961,8 @@ creating interactive structured graphics.")
               ("libxml2" ,libxml2)
               ("libglade" ,libglade)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/libgnomeui/")
     (synopsis "Additional widgets for applications")
@@ -1013,7 +1018,7 @@ widgets built in the loading process.")
        ("libxml2" ,libxml2)))
     (native-inputs
      `(("intltool" ,intltool)
-       ("glib" ,glib "bin")
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/gnome-print/home/faq.html")
     (synopsis "printing framework for GNOME")
@@ -1088,7 +1093,8 @@ widgets built in the loading process.")
        ("libgnomecanvas" ,libgnomecanvas)
        ("libglade" ,libglade)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.
+       ("intltool" ,intltool)
        ("xorg-server" ,xorg-server) ; For running the tests
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/libbonoboui/")
