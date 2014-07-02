@@ -694,24 +694,25 @@ featuring mature C, C++ and Python bindings.")
     (version "2.32.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 4) "/" name "-"
-                    version
-                    ".tar.bz2"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (string-join (take (string-split version #\.) 2)
+                                               ".")
+                                  "/" name "-" version ".tar.bz2"))
               (sha256
                (base32 "0swp4kk6x7hy1rvd1f9jba31lvfc6qvafkvbpg9h0r34fzrd8q4i"))))
     (build-system gnu-build-system)
     (arguments
      ;; The programmer kindly gives us a hook to turn off deprecation warnings ...
-     `(#:configure-flags '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
-                         ;; ... which they then completly ignore !!
-                         #:phases
-                         (alist-cons-before
-                          'configure 'ignore-deprecations
-                          (lambda _
-                            (substitute* "activation-server/Makefile.in"
-                              (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
-                          %standard-phases)))
+     `(#:configure-flags
+       '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
+       ;; ... which they then completly ignore !!
+       #:phases
+       (alist-cons-before
+        'configure 'ignore-deprecations
+        (lambda _
+          (substitute* "activation-server/Makefile.in"
+            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
+        %standard-phases)))
     (inputs `(("popt" ,popt)
               ("libxml2" ,libxml2)))
     ;; The following are Required by the .pc file
@@ -1063,9 +1064,9 @@ widgets built in the loading process.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
-                    version
-                    ".tar.bz2"))
+                    "mirror://gnome/sources/" name "/"
+                    (string-join (take (string-split version #\.) 2) ".")
+                    "/" name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "1kbgqh7bw0fdx4f1a1aqwpff7gp5mwhbaz60c6c98bc4djng5dgs"))))
