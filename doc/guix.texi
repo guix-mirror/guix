@@ -3107,6 +3107,9 @@ instance to support new system services.
 
 @menu
 * Using the Configuration System::  Customizing your GNU system.
+* File Systems::                Configuring file system mounts.
+* User Accounts::               Specifying user accounts.
+* Services::                    Specifying system services.
 * Invoking guix system::        Instantiating a system configuration.
 * Defining Services::           Adding new service definitions.
 @end menu
@@ -3180,7 +3183,7 @@ right command-line options, possibly with supporting configuration files
 generated as needed (@pxref{Defining Services}).
 
 Assuming the above snippet is stored in the @file{my-system-config.scm}
-file, the @command{guix system boot my-system-config.scm} command
+file, the @command{guix system reconfigure my-system-config.scm} command
 instantiates that configuration, and makes it the default GRUB boot
 entry (@pxref{Invoking guix system}).  The normal way to change the
 system's configuration is by updating this file and re-running the
@@ -3198,6 +3201,83 @@ The output of the derivation is a single directory that refers to all
 the packages, configuration files, and other supporting files needed to
 instantiate @var{os}.
 @end deffn
+
+@node File Systems
+@subsection File Systems
+
+The list of file systems to be mounted is specified in the
+@code{file-systems} field of the operating system's declaration
+(@pxref{Using the Configuration System}).  Each file system is declared
+using the @code{file-system} form, like this:
+
+@example
+(file-system
+  (mount-point "/home")
+  (device "/dev/sda3")
+  (type "ext4"))
+@end example
+
+As usual, some of the fields are mandatory---those shown in the example
+above---while others can be omitted.  These are described below.
+
+@deftp {Data Type} file-system
+Objects of these types represent file systems to be mounted.  They
+contain the following members:
+
+@table @asis
+@item @code{type}
+This is a string specifying the type of the file system---e.g.,
+@code{"ext4"}.
+
+@item @code{mount-point}
+This designates the place where the file system is to be mounted.
+
+@item @code{device}
+This names the ``source'' of the file system.  By default it is the name
+of a node under @file{/dev}, but its meaning depends on the @code{title}
+field described below.
+
+@item @code{title} (default: @code{'device})
+This is a symbol that specifies how the @code{device} field is to be
+interpreted.
+
+When it is the symbol @code{device}, then the @code{device} field is
+interpreted as a file name; when it is @code{label}, then @code{device}
+is interpreted as a partition label name; when it is @code{uuid},
+@code{device} is interpreted as a partition unique identifier (UUID).
+
+The @code{label} and @code{uuid} options offer a way to refer to disk
+partitions without having to hard-code their actual device name.
+
+@item @code{flags} (default: @code{'()})
+This is a list of symbols denoting mount flags.  Recognized flags
+include @code{read-only} and @code{bind-mount}.
+
+@item @code{options} (default: @code{#f})
+This is either @code{#f}, or a string denoting mount options.
+
+@item @code{needed-for-boot?} (default: @code{#f})
+This Boolean value indicates whether the file system is needed when
+booting.  If that is true, then the file system is mounted when the
+initial RAM disk (initrd) is loaded.  This is always the case, for
+instance, for the root file system.
+
+@item @code{check?} (default: @code{#t})
+This Boolean indicates whether the file system needs to be checked for
+errors before being mounted.
+
+@end table
+@end deftp
+
+@node User Accounts
+@subsection User Accounts
+
+TODO
+
+@node Services
+@subsection Services
+
+TODO
 
 @node Invoking guix system
 @subsection Invoking @code{guix system}
