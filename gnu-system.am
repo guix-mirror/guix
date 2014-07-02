@@ -320,6 +320,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/icu4c-test-date-format.patch		\
   gnu/packages/patches/inkscape-stray-comma.patch               \
   gnu/packages/patches/kmod-module-directory.patch		\
+  gnu/packages/patches/libbonobo-activation-test-race.patch	\
   gnu/packages/patches/libevent-dns-tests.patch			\
   gnu/packages/patches/libffi-mips-n32-fix.patch		\
   gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\

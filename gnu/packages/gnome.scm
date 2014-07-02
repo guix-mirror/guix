@@ -699,7 +699,8 @@ featuring mature C, C++ and Python bindings.")
                                                ".")
                                   "/" name "-" version ".tar.bz2"))
               (sha256
-               (base32 "0swp4kk6x7hy1rvd1f9jba31lvfc6qvafkvbpg9h0r34fzrd8q4i"))))
+               (base32 "0swp4kk6x7hy1rvd1f9jba31lvfc6qvafkvbpg9h0r34fzrd8q4i"))
+              (patches (list (search-patch "libbonobo-activation-test-race.patch")))))
     (build-system gnu-build-system)
     (arguments
      ;; The programmer kindly gives us a hook to turn off deprecation warnings ...
