@@ -20,6 +20,7 @@
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (system foreign)
+  #:use-module (system repl error-handling)
   #:autoload   (system repl repl) (start-repl)
   #:autoload   (system base compile) (compile-file)
   #:use-module (srfi srfi-1)
@@ -250,10 +251,7 @@ the following:
              ;; Some devices take a bit of time to appear, most notably USB
              ;; storage devices.  Thus, wait for the device to appear.
              (if (> count max-trials)
-                 (begin
-                   (format (current-error-port)
-                           "failed to resolve partition label: ~s~%" spec)
-                   (start-repl))
+                 (error "failed to resolve partition label" spec)
                  (begin
                    (sleep 1)
                    (loop (+ 1 count))))))))
@@ -615,84 +613,79 @@ to it are lost."
   (display "Welcome, this is GNU's early boot Guile.\n")
   (display "Use '--repl' for an initrd REPL.\n\n")
 
-  (mount-essential-file-systems)
-  (let* ((args    (linux-command-line))
-         (to-load (find-long-option "--load" args))
-         (root    (find-long-option "--root" args)))
+  (call-with-error-handling
+   (lambda ()
+     (mount-essential-file-systems)
+     (let* ((args    (linux-command-line))
+            (to-load (find-long-option "--load" args))
+            (root    (find-long-option "--root" args)))
 
-    (when (member "--repl" args)
-      (start-repl))
+       (when (member "--repl" args)
+         (start-repl))
 
-    (display "loading kernel modules...\n")
-    (for-each (compose load-linux-module*
-                       (cut string-append "/modules/" <>))
-              linux-modules)
+       (display "loading kernel modules...\n")
+       (for-each (compose load-linux-module*
+                          (cut string-append "/modules/" <>))
+                 linux-modules)
 
-    (when qemu-guest-networking?
-      (unless (configure-qemu-networking)
-        (display "network interface is DOWN\n")))
+       (when qemu-guest-networking?
+         (unless (configure-qemu-networking)
+           (display "network interface is DOWN\n")))
 
-    ;; Make /dev nodes.
-    (make-essential-device-nodes)
+       ;; Make /dev nodes.
+       (make-essential-device-nodes)
 
-    ;; Prepare the real root file system under /root.
-    (unless (file-exists? "/root")
-      (mkdir "/root"))
-    (if root
-        (mount-root-file-system (canonicalize-device-spec root)
-                                root-fs-type
-                                #:volatile-root? volatile-root?)
-        (mount "none" "/root" "tmpfs"))
+       ;; Prepare the real root file system under /root.
+       (unless (file-exists? "/root")
+         (mkdir "/root"))
+       (if root
+           (mount-root-file-system (canonicalize-device-spec root)
+                                   root-fs-type
+                                   #:volatile-root? volatile-root?)
+           (mount "none" "/root" "tmpfs"))
 
-    (unless (file-exists? "/root/dev")
-      (mkdir "/root/dev")
-      (make-essential-device-nodes #:root "/root"))
+       (unless (file-exists? "/root/dev")
+         (mkdir "/root/dev")
+         (make-essential-device-nodes #:root "/root"))
 
-    ;; Mount the specified file systems.
-    (for-each mount-file-system
-              (remove root-mount-point? mounts))
+       ;; Mount the specified file systems.
+       (for-each mount-file-system
+                 (remove root-mount-point? mounts))
 
-    (when guile-modules-in-chroot?
-      ;; Copy the directories that contain .scm and .go files so that the
-      ;; child process in the chroot can load modules (we would bind-mount
-      ;; them but for some reason that fails with EINVAL -- XXX).
-      (mkdir-p "/root/share")
-      (mkdir-p "/root/lib")
-      (mount "none" "/root/share" "tmpfs")
-      (mount "none" "/root/lib" "tmpfs")
-      (copy-recursively "/share" "/root/share"
-                        #:log (%make-void-port "w"))
-      (copy-recursively "/lib" "/root/lib"
-                        #:log (%make-void-port "w")))
+       (when guile-modules-in-chroot?
+         ;; Copy the directories that contain .scm and .go files so that the
+         ;; child process in the chroot can load modules (we would bind-mount
+         ;; them but for some reason that fails with EINVAL -- XXX).
+         (mkdir-p "/root/share")
+         (mkdir-p "/root/lib")
+         (mount "none" "/root/share" "tmpfs")
+         (mount "none" "/root/lib" "tmpfs")
+         (copy-recursively "/share" "/root/share"
+                           #:log (%make-void-port "w"))
+         (copy-recursively "/lib" "/root/lib"
+                           #:log (%make-void-port "w")))
 
-    (if to-load
-        (begin
-          (switch-root "/root")
-          (format #t "loading '~a'...\n" to-load)
+       (if to-load
+           (begin
+             (switch-root "/root")
+             (format #t "loading '~a'...\n" to-load)
 
-          ;; Obviously this has to be done each time we boot.  Do it from here
-          ;; so that statfs(2) returns DEVPTS_SUPER_MAGIC like libc's getpt(3)
-          ;; expects (and thus openpty(3) and its users, such as xterm.)
-          (mount "none" "/dev/pts" "devpts")
+             ;; Obviously this has to be done each time we boot.  Do it from here
+             ;; so that statfs(2) returns DEVPTS_SUPER_MAGIC like libc's getpt(3)
+             ;; expects (and thus openpty(3) and its users, such as xterm.)
+             (mount "none" "/dev/pts" "devpts")
 
-          ;; TODO: Remove /lib, /share, and /loader.go.
-          (catch #t
-            (lambda ()
-              (primitive-load to-load))
-            (lambda args
-              (start-repl))
-            (lambda args
-              (format (current-error-port) "'~a' raised an exception: ~s~%"
-                      to-load args)
-              (display-backtrace (make-stack #t) (current-error-port))))
-          (format (current-error-port)
-                  "boot program '~a' terminated, rebooting~%"
-                  to-load)
-          (sleep 2)
-          (reboot))
-        (begin
-          (display "no boot file passed via '--load'\n")
-          (display "entering a warm and cozy REPL\n")
-          (start-repl)))))
+             ;; TODO: Remove /lib, /share, and /loader.go.
+             (primitive-load to-load)
+
+             (format (current-error-port)
+                     "boot program '~a' terminated, rebooting~%"
+                     to-load)
+             (sleep 2)
+             (reboot))
+           (begin
+             (display "no boot file passed via '--load'\n")
+             (display "entering a warm and cozy REPL\n")
+             (start-repl)))))))
 
 ;;; linux-initrd.scm ends here
