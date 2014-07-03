@@ -600,15 +600,6 @@ the new root.
 
 When VOLATILE-ROOT? is true, the root file system is writable but any changes
 to it are lost."
-  (define (resolve file)
-    ;; If FILE is a symlink to an absolute file name, resolve it as if we were
-    ;; under /root.
-    (let ((st (lstat file)))
-      (if (eq? 'symlink (stat:type st))
-          (let ((target (readlink file)))
-            (resolve (string-append "/root" target)))
-          file)))
-
   (define root-mount-point?
     (match-lambda
      ((device _ "/" _ ...) #t)
