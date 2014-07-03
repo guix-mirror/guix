@@ -18,14 +18,17 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages video)
-  #:use-module ((guix licenses) #:select (gpl2 gpl2+ bsd-3))
+  #:use-module ((guix licenses)
+                #:select (gpl2 gpl2+ bsd-3 public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system python)
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages cdrom)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages zip)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages gl)
@@ -401,3 +404,24 @@ SVCD, DVD, 3ivx, DivX 3/4/5, WMV and H.264 movies.")
     (description "libvpx is a codec for the VP8/VP9 video compression format.")
     (license bsd-3)
     (home-page "http://www.webmproject.org/")))
+
+(define-public youtube-dl
+  (package
+    (name "youtube-dl")
+    (version "2014.06.26")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://youtube-dl.org/downloads/"
+                                  version "/youtube-dl-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0jl90plg9mz4mwich219a58y4npwi33myx0cx44v8pymkqykv5cd"))))
+    (build-system python-build-system)
+    (inputs `(("setuptools" ,python-setuptools)))
+    (home-page "http://youtube-dl.org")
+    (synopsis "Download videos from YouTube.com and other sites")
+    (description
+     "youtube-dl is a small command-line program to download videos from
+YouTube.com and a few more sites.")
+    (license public-domain)))
