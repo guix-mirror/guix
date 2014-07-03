@@ -60,3 +60,87 @@ representations, color models and component permutations.
 A vocabulary to formulate new pixel formats from existing primitives is
 provided as well as the framework to add new color models and data types.")
     (license license:lgpl3+)))
+
+(define-public gegl
+  (package
+    (name "gegl")
+    (version "0.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (list (string-append "http://download.gimp.org/pub/gegl/" 
+                                        (string-take version 3)
+                                        "/" name "-" version ".tar.bz2")))
+              (sha256
+               (base32
+                "09nlv06li9nrn74ifpm7223mxpg0s7cii702z72cpbwrjh6nlbnz"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'build 'pre-build
+        (lambda _
+          ;; This test program seems to crash on exit. Specifically, whilst
+          ;; g_object_unreffing bufferA and bufferB - This seems to be a bug
+          ;; in the destructor.  This is just a test program so will not have
+          ;; any wider effect, although might be hiding another problem.
+          ;; According to advice received on irc.gimp.org#gegl although 0.2.0
+          ;; is the latest released version, any bug reports against it will
+          ;; be ignored.  So we are on our own.
+          (substitute* "tools/img_cmp.c"
+            (("g_object_unref \\(buffer.\\);") ""))
+
+          (substitute* "tests/compositions/Makefile"
+            (("/bin/sh") (which "bash"))))
+        %standard-phases)))
+    (inputs
+     `(("babl" ,babl)
+       ("glib" ,glib)
+       ("cairo" ,cairo)
+       ("pango" ,pango)
+       ("libpng" ,libpng)
+       ("libjpeg" ,libjpeg-8)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (home-page "http://gegl.org")
+    (synopsis "Graph based image processing framework")
+    (description "GEGL (Generic Graphics Library) provides infrastructure to
+do demand based cached non destructive image editing on larger than RAM
+buffers.")
+    ;; The library itself is licensed under LGPL while the sample commandline
+    ;; application and GUI binary gegl is licensed under GPL.
+    (license (list license:lgpl3+ license:gpl3+))))
+
+(define-public gimp
+  (package
+    (name "gimp")
+    (version "2.8.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://download.gimp.org/pub/gimp/v2.8/gimp-"
+                                        version ".tar.bz2"))
+              (sha256
+               (base32
+                "1rha8yx0pplfjziqczjrxxp16vsvpmb5ziq3c218s4w9z4cqpzg7"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:configure-flags       
+       ;; We don't have pygtk which seems to be needed for this feature
+       `("--disable-python" ))) 
+    (inputs
+     `(("babl" ,babl)
+       ("glib" ,glib)
+       ("libtiff" ,libtiff)
+       ("libjpeg" ,libjpeg-8)
+       ("atk" ,atk)
+       ("gtk+" ,gtk+-2)
+       ("gegl" ,gegl)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("intltool" ,intltool)))
+    (home-page "http://gimp.org")
+    (synopsis "Image manipulation program.")
+    (description "GIMP is the GNU Image Manipulation Program. It is a freely
+distributed piece of software for such tasks as photo retouching, image
+composition and image authoring.")
+    (license license:gpl3+))) ; some files are lgplv3
