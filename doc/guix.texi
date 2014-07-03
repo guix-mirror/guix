@@ -3221,7 +3221,7 @@ As usual, some of the fields are mandatory---those shown in the example
 above---while others can be omitted.  These are described below.
 
 @deftp {Data Type} file-system
-Objects of these types represent file systems to be mounted.  They
+Objects of this type represent file systems to be mounted.  They
 contain the following members:
 
 @table @asis
@@ -3272,7 +3272,93 @@ errors before being mounted.
 @node User Accounts
 @subsection User Accounts
 
-TODO
+User accounts are specified with the @code{user-account} form:
+
+@example
+(user-account
+  (name "alice")
+  (group "users")
+  (supplementary-groups '("wheel"))  ; allow use of sudo, etc.
+  (comment "Bob's sister")
+  (home-directory "/home/alice"))
+@end example
+
+@deftp {Data Type} user-account
+Objects of this type represent user accounts.  The following members may
+be specified:
+
+@table @asis
+@item @code{name}
+The name of the user account.
+
+@item @code{group}
+This is the name (a string) or identifier (a number) of the user group
+this account belongs to.
+
+@item @code{supplementary-groups} (default: @code{'()})
+Optionally, this can be defined as a list of group names that this
+account belongs to.
+
+@item @code{uid} (default: @code{#f})
+This is the user ID for this account (a number), or @code{#f}.  In the
+latter case, a number is automatically chosen by the system when the
+account is created.
+
+@item @code{comment} (default: @code{""})
+A comment about the account, such as the account's owner full name.
+
+@item @code{home-directory}
+This is the name of the home directory for the account.
+
+@item @code{shell} (default: Bash)
+This is a G-expression denoting the file name of a program to be used as
+the shell (@pxref{G-Expressions}).
+
+@item @code{system?} (default: @code{#f})
+This Boolean value indicates whether the account is a ``system''
+account.  System accounts are sometimes treated specially; for instance,
+graphical login managers do not list them.
+
+@item @code{password} (default: @code{#f})
+Unless @code{#f}, this is the password to be used for the account.
+
+@end table
+@end deftp
+
+User group declarations are even simpler:
+
+@example
+(user-group (name "students"))
+@end example
+
+@deftp {Data Type} user-group
+This type is for, well, user groups.  There are just a few fields:
+
+@table @asis
+@item @code{name}
+The group's name.
+
+@item @code{id} (default: @code{#f})
+The group identifier (a number).  If @code{#f}, a new number is
+automatically allocated when the group is created.
+
+@item @code{password} (default: @code{#f})
+What, user groups can have a password?  Well, apparently yes.  Unless
+@code{#f}, this field specifies the group's password.
+
+@end table
+@end deftp
+
+For convenience, a variable lists all the basic user groups one may
+expect:
+
+@defvr {Scheme Variable} %base-groups
+This is the list of basic user groups that users and/or packages expect
+to be present on the system.  This includes groups such as ``root'',
+``wheel'', and ``users'', as well as groups used to control access to
+specific devices such as ``audio'', ``disk'', and ``cdrom''.
+@end defvr
+
 
 @node Services
 @subsection Services
