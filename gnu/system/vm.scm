@@ -329,6 +329,11 @@ of the GNU system as described by OS."
             (operating-system-file-systems os)))
 
   (let ((os (operating-system (inherit os)
+              ;; Use an initrd with the whole QEMU shebang.
+              (initrd (cut base-initrd <>
+                           #:virtio? #t
+                           #:qemu-networking? #t))
+
               ;; Force our own root file system.
               (file-systems (cons (file-system
                                     (mount-point "/")
