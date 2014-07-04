@@ -37,7 +37,7 @@
   #:use-module (gnu packages elf)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages sqlite)
-  #:use-module ((gnu packages zip) #:select (unzip))
+  #:use-module (gnu packages zip)
   #:use-module (gnu packages multiprecision)
   #:use-module (guix packages)
   #:use-module (guix download)
