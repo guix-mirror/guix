@@ -168,14 +168,14 @@ specifications are building blocks of S/MIME and TLS.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.0.24")
+    (version "2.0.25")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0ch2hbindk832cy7ca00a7whw84ndm0nhqrl24a5fw4ldkca2x6r"))))
+                "08sqdkybgw4jkdkcyz1bi6y8irj87hpr5b12lkb57kwny1yykaxk"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,guix:bzip2)
@@ -209,14 +209,14 @@ libskba (working with X.509 certificates and CMS data).")
 
 (define-public gnupg-1
   (package (inherit gnupg)
-    (version "1.4.17")
+    (version "1.4.18")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "0nvv1bd8v13gh2m1429azws7ks0ix9y1yv87ak9k9i1dsqcrvpg6"))))
+                "1233bppjvdpbbl425ii6l7xvgy0879ghhnmwrph5b6c4g3dgvddp"))))
     (inputs
      `(("zlib" ,guix:zlib)
        ("bzip2" ,guix:bzip2)
