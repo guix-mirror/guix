@@ -68,6 +68,17 @@
   ;; coexist with Nix profiles.
   (string-append %profile-directory "/guix-profile"))
 
+(define (canonicalize-profile profile)
+  "If PROFILE is %USER-PROFILE-DIRECTORY, return %CURRENT-PROFILE.  Otherwise
+return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
+'-p' was omitted."                           ; see <http://bugs.gnu.org/17939>
+  (if (and %user-profile-directory
+           (string=? (canonicalize-path (dirname profile))
+                     (dirname %user-profile-directory))
+           (string=? (basename profile) (basename %user-profile-directory)))
+      %current-profile
+      profile))
+
 (define (link-to-empty-profile generation)
   "Link GENERATION, a string, to the empty profile."
   (let* ((drv  (profile-derivation (%store) (manifest '())))
@@ -573,7 +584,7 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                            #f)))
          (option '(#\p "profile") #t #f
                  (lambda (opt name arg result arg-handler)
-                   (values (alist-cons 'profile arg
+                   (values (alist-cons 'profile (canonicalize-profile arg)
                                        (alist-delete 'profile result))
                            #f)))
          (option '(#\n "dry-run") #f #f

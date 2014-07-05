@@ -189,7 +189,7 @@ test "`readlink_base "$profile"`" = "$generation"
 
 XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
 export XDG_CACHE_HOME
-HOME="t-home-$$"
+HOME="$PWD/t-home-$$"
 export HOME
 
 mkdir -p "$HOME"
@@ -223,6 +223,15 @@ do
     ! test -f "$HOME/.guix-profile/lib"
     test "`readlink "$default_profile"`" = "$default_profile-0-link"
 done
+
+# Check whether '-p ~/.guix-profile' makes any difference.
+# See <http://bugs.gnu.org/17939>.
+if test -e "$HOME/.guix-profile-0-link"; then false; fi
+if test -e "$HOME/.guix-profile-1-link"; then false; fi
+guix package --bootstrap -p "$HOME/.guix-profile" -i guile-bootstrap
+if test -e "$HOME/.guix-profile-1-link"; then false; fi
+guix package --bootstrap --roll-back -p "$HOME/.guix-profile"
+if test -e "$HOME/.guix-profile-0-link"; then false; fi
 
 # Extraneous argument.
 if guix package install foo-bar;
