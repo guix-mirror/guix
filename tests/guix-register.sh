@@ -57,8 +57,8 @@ guile -c "
 #
 
 mkdir -p "$new_store/$storedir"
-new_store_dir="`cd "$new_store/$storedir" ; pwd`"
-new_store="`cd "$new_store" ; pwd`"
+new_store_dir="`cd "$new_store/$storedir" ; pwd -P`"
+new_store="`cd "$new_store" ; pwd -P`"
 
 to_copy="`guix build guile-bootstrap`"
 cp -r "$to_copy" "$new_store_dir"
@@ -81,7 +81,6 @@ guix-register --prefix "$new_store" "$closure"
 
 # Now make sure this is recognized as valid.
 
-NIX_IGNORE_SYMLINK_STORE=1
 NIX_STORE_DIR="$new_store_dir"
 NIX_STATE_DIR="$new_store$localstatedir"
 NIX_LOG_DIR="$new_store$localstatedir/log/guix"

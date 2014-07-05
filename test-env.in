@@ -27,8 +27,15 @@
 if [ -x "@abs_top_builddir@/guix-daemon" ]
 then
     NIX_SETUID_HELPER="@abs_top_builddir@/nix-setuid-helper" # normally unused
-    NIX_IGNORE_SYMLINK_STORE=1	# in case the store is a symlink
     NIX_STORE_DIR="@GUIX_TEST_ROOT@/store"
+
+    # Do that because store.scm calls `canonicalize-path' on it.
+    mkdir -p "$NIX_STORE_DIR"
+
+    # Canonicalize the store directory name in an attempt to avoid symlinks in
+    # it or its parent directories.  See <http://bugs.gnu.org/17935>.
+    NIX_STORE_DIR="`cd "@GUIX_TEST_ROOT@/store"; pwd -P`"
+
     NIX_LOCALSTATE_DIR="@GUIX_TEST_ROOT@/var"
     NIX_LOG_DIR="@GUIX_TEST_ROOT@/var/log/guix"
     NIX_DB_DIR="@GUIX_TEST_ROOT@/db"
@@ -70,9 +77,6 @@ then
 	NIX_ROOT_FINDER NIX_SETUID_HELPER GUIX_BINARY_SUBSTITUTE_URL	\
         GUIX_ALLOW_UNAUTHENTICATED_SUBSTITUTES				\
         NIX_CONF_DIR XDG_CACHE_HOME
-
-    # Do that because store.scm calls `canonicalize-path' on it.
-    mkdir -p "$NIX_STORE_DIR"
 
     # Launch the daemon without chroot support because is may be
     # unavailable, for instance if we're not running as root.
