@@ -6,22 +6,24 @@ Thanks to the following people who contributed to GNU Guix through
 suggestions, bug reports, patches, internationalization, or general
 infrastructure help:
 
-       Lluís Batlle i Rossell <viric@viric.name>
-      Carlos Carleos <carleos@uniovi.es>
-      Felipe Castro <fefcas@gmail.com>
-      Daniel Clark <dclark@pobox.com>
-   Alexandru Cojocaru <xojoc@gmx.com>
-       Aleix Conchillo Flaqué <aconchillo@gmail.com>
-        John Darrington <john@cellform.com>
-      Rafael Ferreira <rafael.f.f1@gmail.com>
-   Christian Grothoff <christian@grothoff.org>
-     Jeffrin Jose <ahiliation@yahoo.co.in>
-        Kete <kete@ninthfloor.org>
-     Matthew Lien <bluet@bluet.org>
-       Niels Möller <nisse@lysator.liu.se>
-      Yutaka Niibe <gniibe@fsij.org>
-      Cyrill Schenkel <cyrill.schenkel@gmail.com>
-       Benno Schulenberg <coordinator@translationproject.org>
-       Jason Self <jself@gnu.org>
-        Alen Skondro <askondro@gmail.com>
-    Matthias Wachs <wachs@net.in.tum.de>
+	    Lluís Batlle i Rossell <viric@viric.name>
+    Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
+	   Carlos Carleos <carleos@uniovi.es>
+	   Felipe Castro <fefcas@gmail.com>
+	   Daniel Clark <dclark@pobox.com>
+	Alexandru Cojocaru <xojoc@gmx.com>
+	    Aleix Conchillo Flaqué <aconchillo@gmail.com>
+	     John Darrington <john@cellform.com>
+	   Rafael Ferreira <rafael.f.f1@gmail.com>
+	Christian Grothoff <christian@grothoff.org>
+	  Jeffrin Jose <ahiliation@yahoo.co.in>
+	     Kete <kete@ninthfloor.org>
+             Alex Kost <alezost@gmail.com>
+	  Matthew Lien <bluet@bluet.org>
+	    Niels Möller <nisse@lysator.liu.se>
+	   Yutaka Niibe <gniibe@fsij.org>
+	   Cyrill Schenkel <cyrill.schenkel@gmail.com>
+	    Benno Schulenberg <coordinator@translationproject.org>
+	    Jason Self <jself@gnu.org>
+	     Alen Skondro <askondro@gmail.com>
+	 Matthias Wachs <wachs@net.in.tum.de>
