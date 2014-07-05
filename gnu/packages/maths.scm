@@ -43,9 +43,11 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages less)
+  #:use-module (gnu packages lisp)
   #:use-module (gnu packages gnome)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages mpi)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages pcre)
@@ -827,3 +829,40 @@ canvas.  The program supports rectangular two-dimensional plots, histograms,
 polar-axis plots and three-dimensional plots.  Plots can be printed or saved
 to BMP, JPEG or PNG image formats.")
     (license license:gpl3+)))
+
+(define-public maxima
+  (package
+    (name "maxima")
+    (version "5.33.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://sourceforge/maxima/Maxima-source/"
+                           version "-source/" name "-" version ".tar.gz"))
+       (sha256
+        (base32
+         "13axm11xw0f3frx5b0qdidi7igkn1524fzz77s9rbpl2yy2nrbz2"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (alist-cons-before
+                 'check 'pre-check
+                 (lambda _ 
+                   (chmod "src/maxima" #o555))
+                 %standard-phases)))
+    (inputs 
+     `(("gcl" ,gcl)))
+    (native-inputs 
+     `(("texinfo" ,texinfo)
+       ("perl" ,perl)))
+    (home-page "http://maxima.sourceforge.net")
+    (synopsis "Numeric and symbolic expression manipulation")
+    (description "Maxima is a system for the manipulation of symbolic and
+numerical expressions.  It yields high precision numeric results by using
+exact fractions, arbitrary precision integers, and variable precision floating
+point numbers")
+    ;; Some files are lgpl2.1+. Some are gpl2+.  Some explicitly state gpl1+.
+    ;; Others simply say "GNU General Public License" without stating a
+    ;; version (which implicitly means gpl1+).
+    ;; At least one file (src/maxima.asd) says "version 2."
+    ;; GPLv2 only is therefore the smallest subset.
+    (license license:gpl2))) 
