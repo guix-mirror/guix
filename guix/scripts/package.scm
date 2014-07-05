@@ -59,7 +59,8 @@
 
 (define %profile-directory
   (string-append %state-directory "/profiles/"
-                 (or (and=> (getenv "USER")
+                 (or (and=> (or (getenv "USER")
+                                (getenv "LOGNAME"))
                             (cut string-append "per-user/" <>))
                      "default")))
 
@@ -808,7 +809,9 @@ more information.~%"))
                 %profile-directory)
         (format (current-error-port)
                 (_ "Please change the owner of `~a' to user ~s.~%")
-                %profile-directory (or (getenv "USER") (getuid)))
+                %profile-directory (or (getenv "USER")
+                                       (getenv "LOGNAME")
+                                       (getuid)))
         (rtfm))))
 
   (define (process-actions opts)
