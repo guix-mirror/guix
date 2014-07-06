@@ -194,6 +194,9 @@ export HOME
 
 mkdir -p "$HOME"
 
+# Get the canonical directory name so that 'guix package' recognizes it.
+HOME="`cd $HOME; pwd -P`"
+
 guix package --bootstrap -i guile-bootstrap
 test -L "$HOME/.guix-profile"
 test -f "$HOME/.guix-profile/bin/guile"
