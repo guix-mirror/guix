@@ -26,9 +26,11 @@
 # By default we may end up with absolute directory names that contain '..',
 # which get into $GUILE_LOAD_PATH, leading to '..' in the module file names
 # recorded by Guile.  To avoid that, make sure we get a real absolute
-# directory name.
-abs_top_srcdir="`cd "@abs_top_srcdir@" > /dev/null; pwd`"
-abs_top_builddir="`cd "@abs_top_builddir@" > /dev/null; pwd`"
+# directory name.  Additionally, use '-P' to get the canonical directory name
+# so that Guile's 'relative' %file-port-name-canonicalization can actually
+# work (see <http://bugs.gnu.org/17935>.)
+abs_top_srcdir="`cd "@abs_top_srcdir@" > /dev/null; pwd -P`"
+abs_top_builddir="`cd "@abs_top_builddir@" > /dev/null; pwd -P`"
 
 GUILE_LOAD_COMPILED_PATH="$abs_top_builddir${GUILE_LOAD_COMPILED_PATH:+:}$GUILE_LOAD_COMPILED_PATH"
 GUILE_LOAD_PATH="$abs_top_builddir:$abs_top_srcdir${GUILE_LOAD_PATH:+:}$GUILE_LOAD_PATH"
