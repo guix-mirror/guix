@@ -81,9 +81,9 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
       (provision '(dbus-system))
       (requirement '(user-processes))
       (start #~(make-forkexec-constructor
-                (string-append #$dbus "/bin/dbus-daemon")
-                "--nofork"
-                (string-append "--config-file=" #$conf "/system.conf")))
+                (list (string-append #$dbus "/bin/dbus-daemon")
+                      "--nofork"
+                      (string-append "--config-file=" #$conf "/system.conf"))))
       (stop #~(make-kill-destructor))
       (user-groups (list (user-group
                           (name "messagebus"))))

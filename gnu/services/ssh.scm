@@ -125,7 +125,7 @@ The other options should be self-descriptive."
              (documentation "GNU lsh SSH server")
              (provision '(ssh-daemon))
              (requirement '(networking))
-             (start #~(make-forkexec-constructor #$@lsh-command))
+             (start #~(make-forkexec-constructor (list #$@lsh-command)))
              (stop  #~(make-kill-destructor))
              (pam-services
               (list (unix-pam-service

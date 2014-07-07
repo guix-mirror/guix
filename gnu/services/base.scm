@@ -236,17 +236,17 @@ the \"message of the day\"."
       (requirement '(user-processes host-name))
 
       (start  #~(make-forkexec-constructor
-                 (string-append #$mingetty "/sbin/mingetty")
-                 "--noclear" #$tty
-                 #$@(if auto-login
-                        #~("--autologin" #$auto-login)
-                        #~())
-                 #$@(if login-program
-                        #~("--loginprog" #$login-program)
-                        #~())
-                 #$@(if login-pause?
-                        #~("--loginpause")
-                        #~())))
+                 (list (string-append #$mingetty "/sbin/mingetty")
+                       "--noclear" #$tty
+                       #$@(if auto-login
+                              #~("--autologin" #$auto-login)
+                              #~())
+                       #$@(if login-program
+                              #~("--loginprog" #$login-program)
+                              #~())
+                       #$@(if login-pause?
+                              #~("--loginpause")
+                              #~()))))
       (stop   #~(make-kill-destructor))
 
       (pam-services
@@ -269,10 +269,9 @@ the \"message of the day\"."
                            (use-modules (guix build utils))
                            (mkdir-p "/var/run/nscd")))
 
-             (start
-              #~(make-forkexec-constructor (string-append #$glibc "/sbin/nscd")
-                                           "-f" "/dev/null"
-                                           "--foreground"))
+             (start #~(make-forkexec-constructor
+                       (list (string-append #$glibc "/sbin/nscd")
+                             "-f" "/dev/null" "--foreground")))
              (stop #~(make-kill-destructor))
 
              (respawn? #f)))))
@@ -310,10 +309,9 @@ the \"message of the day\"."
       (provision '(syslogd))
       (requirement '(user-processes))
       (start
-       #~(make-forkexec-constructor (string-append #$inetutils
-                                                   "/libexec/syslogd")
-                                    "--no-detach"
-                                    "--rcfile" #$syslog.conf))
+       #~(make-forkexec-constructor
+          (list (string-append #$inetutils "/libexec/syslogd")
+                "--no-detach" "--rcfile" #$syslog.conf)))
       (stop #~(make-kill-destructor))))))
 
 (define* (guix-build-accounts count #:key
@@ -387,10 +385,9 @@ hydra.gnu.org are used by default."
              (provision '(guix-daemon))
              (requirement '(user-processes))
              (start
-              #~(make-forkexec-constructor (string-append #$guix
-                                                          "/bin/guix-daemon")
-                                           "--build-users-group"
-                                           #$builder-group))
+              #~(make-forkexec-constructor
+                 (list (string-append #$guix "/bin/guix-daemon")
+                       "--build-users-group" #$builder-group)))
              (stop #~(make-kill-destructor))
              (user-accounts accounts)
              (user-groups (list (user-group
@@ -409,6 +406,9 @@ hydra.gnu.org are used by default."
              (requirement '(root-file-system))
              (documentation "Populate the /dev directory.")
              (start #~(lambda ()
+                        (define udevd
+                          (string-append #$udev "/libexec/udev/udevd"))
+
                         ;; Allow udev to find the modules.
                         (setenv "LINUX_MODULE_DIRECTORY"
                                 "/run/booted-system/kernel/lib/modules")
@@ -416,14 +416,7 @@ hydra.gnu.org are used by default."
                         (let ((pid (primitive-fork)))
                           (case pid
                             ((0)
-                             ;; In dmd 0.1, file descriptor 0 is closed, thus
-                             ;; is gets reused when open(2) is called, and it
-                             ;; turns out that EPOLL_CTL_ADD of 0 returns
-                             ;; EPERM for some reason.  So make sure 0 is
-                             ;; open.
-                             ;; FIXME: Close the other descriptors.
-                             (execl (string-append #$udev "/libexec/udev/udevd")
-                                    "udevd"))
+                             (exec-command (list udevd)))
                             (else
                              ;; Wait for things to settle down.
                              (system* (string-append #$udev "/bin/udevadm")

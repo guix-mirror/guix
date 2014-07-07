@@ -88,8 +88,8 @@ sockets."
       (requirement '(dbus-system networking))
 
       (start #~(make-forkexec-constructor
-                (string-append #$avahi "/sbin/avahi-daemon")
-                "--syslog" "-f" #$config))
+                (list (string-append #$avahi "/sbin/avahi-daemon")
+                      "--syslog" "-f" #$config)))
       (stop #~(make-kill-destructor))
       (activate #~(begin
                     (use-modules (guix build utils))

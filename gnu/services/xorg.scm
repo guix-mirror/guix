@@ -163,11 +163,10 @@ reboot_cmd " dmd "/sbin/reboot
       (provision '(xorg-server))
       (requirement '(user-processes host-name))
       (start
-       ;; XXX: Work around the inability to specify env. vars. directly.
        #~(make-forkexec-constructor
-          (string-append #$bash "/bin/sh") "-c"
-          (string-append "SLIM_CFGFILE=" #$slim.cfg
-                         " " #$slim "/bin/slim" " -nodaemon")))
+          (list (string-append #$slim "/bin/slim") "-nodaemon")
+          #:environment-variables
+          (list (string-append "SLIM_CFGFILE=" #$slim.cfg))))
       (stop #~(make-kill-destructor))
       (respawn? #t)
       (pam-services
