@@ -55,6 +55,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cmake.scm			\
   gnu/packages/compression.scm			\
   gnu/packages/complexity.scm			\
+  gnu/packages/conkeror.scm			\
   gnu/packages/cook.scm 			\
   gnu/packages/cpio.scm				\
   gnu/packages/cppi.scm				\
