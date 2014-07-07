@@ -77,20 +77,18 @@ providing:
 (define-public bitlbee
   (package
     (name "bitlbee")
-    (version "3.2.1")
+    (version "3.2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://get.bitlbee.org/src/bitlbee-"
                                   version ".tar.gz"))
               (sha256
-               (base32 "0n8g5452i5qap43zxb83gxp01d48psf6rr3k1q7z6a3dgpfi3x00"))
-              (patches (list (search-patch "bitlbee-memset-fix.patch")
-                             (search-patch "bitlbee-fix-tests.patch")))))
+               (base32 "13jmcxxgli82wb2n4hs091159xk8rgh7nb02f478lgpjh6996f5s"))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("check" ,check)))
     (inputs `(("glib" ,glib)
-              ("libotr" ,libotr-3)
+              ("libotr" ,libotr)
               ("gnutls" ,gnutls)
               ("zlib" ,zlib)  ; Needed to satisfy "pkg-config --exists gnutls"
               ("python" ,python-2)
