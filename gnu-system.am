@@ -288,8 +288,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/cursynth-wave-rand.patch			\
   gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
-  gnu/packages/patches/dmd-getpw.patch				\
-  gnu/packages/patches/dmd-tests-longer-sleeps.patch		\
   gnu/packages/patches/doxygen-test.patch			\
   gnu/packages/patches/doxygen-tmake.patch			\
   gnu/packages/patches/emacs-configure-sh.patch			\

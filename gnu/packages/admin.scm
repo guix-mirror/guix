@@ -53,16 +53,14 @@
 (define-public dmd
   (package
     (name "dmd")
-    (version "0.1")
+    (version "0.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/dmd/dmd-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "07mddw0p62fcphwjzgb6rfa0pjz5sy6jzbha0sm2vc3rqf459jxg"))
-             (patches (list (search-patch "dmd-getpw.patch")
-                            (search-patch "dmd-tests-longer-sleeps.patch")))))
+               "10fl4k96f17gqx2fv8iw9c61ld26gsk4bbrlfqckdmiimz1k175z"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--localstatedir=/var")))
