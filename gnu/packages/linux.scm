@@ -158,10 +158,24 @@
 `insmod', `lsmod', and more.")
     (license gpl2+)))
 
+(define %boot-logo-patch
+  ;; Linux-Libre boot logo featuring Freedo and a gnu.
+  (origin
+    (method url-fetch)
+    (uri (string-append "http://www.fsfla.org/svn/fsfla/software/linux-libre/"
+                        "lemote/gnewsense/branches/3.15/100gnu+freedo.patch"))
+    (sha256
+     (base32
+      "1hk9swxxc80bmn2zd2qr5ccrjrk28xkypwhl4z0qx4hbivj7qm06"))))
+
 (define-public linux-libre
   (let* ((version "3.15")
          (build-phase
-          '(lambda* (#:key system #:allow-other-keys #:rest args)
+          '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
+             ;; Apply the neat patch.
+             (system* "patch" "-p1" "--batch"
+                      "-i" (assoc-ref inputs "patch/freedo+gnu"))
+
              (let ((arch (car (string-split system #\-))))
                (setenv "ARCH"
                        (cond ((string=? arch "i686") "i386")
@@ -226,7 +240,8 @@
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
-                     ("module-init-tools" ,module-init-tools)))
+                     ("module-init-tools" ,module-init-tools)
+                     ("patch/freedo+gnu" ,%boot-logo-patch)))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
