@@ -3445,7 +3445,21 @@ using the following command:
 @end table
 
 @var{options} can contain any of the common build options provided by
-@command{guix build} (@pxref{Invoking guix build}).
+@command{guix build} (@pxref{Invoking guix build}).  In addition,
+@var{options} can contain one of the following:
+
+@table @option
+@item --system=@var{system}
+@itemx -s @var{system}
+Attempt to build for @var{system} instead of the host's system type.
+This works as per @command{guix build} (@pxref{Invoking guix build}).
+
+@item --image-size=@var{size}
+For the @code{vm-image} and @code{disk-image} actions, create an image
+of the given @var{size}.  @var{size} may be a number of bytes, or it may
+include a unit as a suffix, such as @code{MiB} for mebibytes and
+@code{GB} for gigabytes.
+@end table
 
 Note that all the actions above, except @code{build} and @code{init},
 rely on KVM support in the Linux-Libre kernel.  Specifically, the

@@ -131,11 +131,12 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
   ;; The system profile.
   (string-append %state-directory "/profiles/system"))
 
-(define* (switch-to-system store os system
-                           #:optional (profile %system-profile))
-  "Make a new generation of PROFILE pointing to SYSTEM, which is the directory
-corresponding to OS, switch to it atomically, and then run OS's activation
-script."
+(define* (switch-to-system store os system-directory
+                           #:optional (profile %system-profile)
+                           #:key system)
+  "Make a new generation of PROFILE pointing to SYSTEM-DIRECTORY, which is the
+directory corresponding to OS on SYSTEM, switch to it atomically, and then run
+OS's activation script."
   (let* ((number     (+ 1 (generation-number profile)))
          (generation (generation-file-name profile number)))
     (symlink system generation)
@@ -144,7 +145,8 @@ script."
     (run-with-store store
       (mlet %store-monad ((script (operating-system-activation-script os)))
         (format #t (_ "activating system...~%"))
-        (return (primitive-load (derivation->output-path script)))))
+        (return (primitive-load (derivation->output-path script))))
+      #:system system)
 
     ;; TODO: Run 'deco reload ...'.
     ))
@@ -241,6 +243,10 @@ Build the operating system declared in FILE according to ACTION.\n"))
          (option '(#\n "dry-run") #f #f
                  (lambda (opt name arg result)
                    (alist-cons 'dry-run? #t result)))
+         (option '(#\s "system") #t #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'system arg
+                               (alist-delete 'system result eq?))))
          %standard-build-options))
 
 (define %default-options
@@ -305,6 +311,7 @@ Build the operating system declared in FILE according to ACTION.\n"))
            (args     (option-arguments opts))
            (file     (first args))
            (action   (assoc-ref opts 'action))
+           (system   (assoc-ref opts 'system))
            (os       (if file
                          (read-operating-system file)
                          (leave (_ "no configuration file specified~%"))))
@@ -323,12 +330,13 @@ Build the operating system declared in FILE according to ACTION.\n"))
                                              #:disk-image-size size)))))
            (store    (open-connection))
            (dry?     (assoc-ref opts 'dry-run?))
-           (drv      (run-with-store store mdrv))
+           (drv      (run-with-store store mdrv #:system system))
            (grub?    (assoc-ref opts 'install-grub?))
            (old      (previous-grub-entries))
            (grub.cfg (run-with-store store
-                       (operating-system-grub.cfg os old)))
-           (grub     (package-derivation store grub))
+                       (operating-system-grub.cfg os old)
+                       #:system system))
+           (grub     (package-derivation store grub system))
            (drv-lst  (if grub?
                          (list drv grub grub.cfg)
                          (list drv))))
@@ -357,7 +365,8 @@ Build the operating system declared in FILE according to ACTION.\n"))
                             (operating-system-bootloader os)))))
           (case action
             ((reconfigure)
-             (switch-to-system store os (derivation->output-path drv))
+             (switch-to-system store os (derivation->output-path drv)
+                               #:system system)
              (when grub?
                (unless (install-grub grub.cfg device target)
                  (leave (_ "failed to install GRUB on device '~a'~%") device))))
