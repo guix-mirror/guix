@@ -26,6 +26,7 @@
 
              (gnu packages xorg)
              (gnu packages avahi)
+             (gnu packages linux)
 
              (gnu services networking)
              (gnu services avahi)
@@ -47,7 +48,8 @@
           (device "dummy")
           (type "dummy"))
         ;; %fuse-control-file-system   ; needs fuse.ko
-        %binary-format-file-system))
+        ;; %binary-format-file-system  ; needs binfmt.ko
+        ))
 
  (users (list (user-account
                (name "guest")
@@ -83,4 +85,4 @@ You can log in as 'guest' or 'root' with no password.
   ;; Explicitly allow for empty passwords.
   (base-pam-services #:allow-empty-passwords? #t))
 
- (packages (cons* xterm avahi %base-packages)))
+ (packages (cons* strace xterm avahi %base-packages)))

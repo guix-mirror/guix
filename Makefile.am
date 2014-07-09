@@ -102,10 +102,14 @@ endif BUILD_DAEMON_OFFLOAD
 guix/scripts/download.go: guix/build/download.go
 guix/download.go: guix/build/download.go
 
+# Linux-Libre configurations.
+KCONFIGS =					\
+  gnu/packages/linux-libre-i686.conf		\
+  gnu/packages/linux-libre-x86_64.conf
 
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
 
-nobase_dist_guilemodule_DATA = $(MODULES)
+nobase_dist_guilemodule_DATA = $(MODULES) $(KCONFIGS)
 nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
 
 # Do we need to provide our own non-broken (srfi srfi-37) module?

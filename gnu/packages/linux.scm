@@ -49,7 +49,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
-  #:use-module (guix build-system trivial))
+  #:use-module (guix build-system trivial)
+  #:use-module (srfi srfi-26)
+  #:use-module (ice-9 match))
 
 (define-public (system->linux-architecture arch)
   "Return the Linux architecture name for ARCH, a Guix system name such as
@@ -168,6 +170,21 @@
      (base32
       "1hk9swxxc80bmn2zd2qr5ccrjrk28xkypwhl4z0qx4hbivj7qm06"))))
 
+(define (kernel-config system)
+  "Return the absolute file name of the Linux-Libre build configuration file
+for SYSTEM."
+  (define (lookup file)
+    (let ((file (string-append "gnu/packages/" file)))
+      (search-path %load-path file)))
+
+  (match system
+    ("i686-linux"
+     (lookup "linux-libre-i686.conf"))
+    ("x86_64-linux"
+     (lookup "linux-libre-x86_64.conf"))
+    (_
+     (error "unsupported architecture" system))))
+
 (define-public linux-libre
   (let* ((version "3.15")
          (build-phase
@@ -182,35 +199,34 @@
                              (else arch)))
                (format #t "`ARCH' set to `~a'~%" (getenv "ARCH")))
 
-             (let ((build (assoc-ref %standard-phases 'build)))
-               (and (zero? (system* "make" "defconfig"))
-                    (begin
-                      ;; Appending works even when the option wasn't in the
-                      ;; file.  The last one prevails if duplicated.
-                      (let ((port (open-file ".config" "a")))
-                        (display (string-append "CONFIG_NET_9P=m\n"
-                                                "CONFIG_NET_9P_VIRTIO=m\n"
-                                                "CONFIG_VIRTIO_BLK=m\n"
-                                                "CONFIG_SATA_SIS=y\n"
-                                                "CONFIG_VIRTIO_NET=m\n"
-                                                "CONFIG_SIS190=y\n"
-                                                ;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
-                                                "CONFIG_DEVPTS_MULTIPLE_INSTANCES=y\n"
-                                                "CONFIG_VIRTIO_PCI=m\n"
-                                                "CONFIG_VIRTIO_BALLOON=m\n"
-                                                "CONFIG_VIRTIO_MMIO=m\n"
-                                                "CONFIG_FUSE_FS=m\n"
-                                                "CONFIG_CIFS=m\n"
-                                                "CONFIG_9P_FS=m\n"
-                                                "CONFIG_E1000E=m\n")
-                                 port)
-                        (close-port port))
+             (let ((build  (assoc-ref %standard-phases 'build))
+                   (config (assoc-ref inputs "kconfig")))
+               (copy-file config ".config")
+               (chmod ".config" #o666)
 
-                      (zero? (system* "make" "oldconfig")))
+               ;; Appending works even when the option wasn't in the
+               ;; file.  The last one prevails if duplicated.
+               (let ((port (open-file ".config" "a")))
+                 (display (string-append "CONFIG_NET_9P=m\n"
+                                         "CONFIG_NET_9P_VIRTIO=m\n"
+                                         "CONFIG_VIRTIO_BLK=m\n"
+                                         "CONFIG_VIRTIO_NET=m\n"
+                                         ;; https://lists.gnu.org/archive/html/guix-devel/2014-04/msg00039.html
+                                         "CONFIG_DEVPTS_MULTIPLE_INSTANCES=y\n"
+                                         "CONFIG_VIRTIO_PCI=m\n"
+                                         "CONFIG_VIRTIO_BALLOON=m\n"
+                                         "CONFIG_VIRTIO_MMIO=m\n"
+                                         "CONFIG_FUSE_FS=m\n"
+                                         "CONFIG_CIFS=m\n"
+                                         "CONFIG_9P_FS=m\n")
+                          port)
+                 (close-port port))
 
-                    ;; Call the default `build' phase so `-j' is correctly
-                    ;; passed.
-                    (apply build #:make-flags "all" args)))))
+               (zero? (system* "make" "oldconfig"))
+
+               ;; Call the default `build' phase so `-j' is correctly
+               ;; passed.
+               (apply build #:make-flags "all" args))))
          (install-phase
           `(lambda* (#:key inputs outputs #:allow-other-keys)
              (let* ((out    (assoc-ref outputs "out"))
@@ -241,7 +257,9 @@
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
                      ("module-init-tools" ,module-init-tools)
-                     ("patch/freedo+gnu" ,%boot-logo-patch)))
+                     ("patch/freedo+gnu" ,%boot-logo-patch)
+                     ("kconfig" ,(kernel-config (or (%current-target-system)
+                                                    (%current-system))))))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
