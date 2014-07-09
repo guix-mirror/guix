@@ -67,32 +67,7 @@ EndSection
 Section \"ServerFlags\"
   Option \"AllowMouseOpenFail\" \"on""
 EndSection
-
-Section \"Monitor\"
-  Identifier \"Monitor[0]\"
-EndSection
-
-Section \"InputClass\"
-  Identifier \"Generic keyboard\"
-  MatchIsKeyboard \"on\"
-  Option \"XkbRules\" \"base\"
-  Option \"XkbModel\" \"pc104\"
-EndSection
-
-Section \"ServerLayout\"
-  Identifier \"Layout\"
-  Screen \"Screen-vesa\"
-EndSection
-
-Section \"Device\"
-  Identifier \"Device-vesa\"
-  Driver \"vesa\"
-EndSection
-
-Section \"Screen\"
-  Identifier \"Screen-vesa\"
-  Device \"Device-vesa\"
-EndSection"))
+"))
 
   (mlet %store-monad ((config (xserver.conf)))
     (define script
