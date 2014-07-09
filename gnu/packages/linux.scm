@@ -265,6 +265,7 @@ for SYSTEM."
                   (guix build utils)
                   (srfi srfi-1)
                   (ice-9 match))
+       #:strip-flags '("--strip-all")
        #:phases (alist-replace
                  'build ,build-phase
                  (alist-replace
