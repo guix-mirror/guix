@@ -48,7 +48,7 @@ XORG-SERVER.  Usually the X server is started by a login manager."
   (define (xserver.conf)
     (text-file* "xserver.conf" "
 Section \"Files\"
-  FontPath \"" font-adobe75dpi "/share/font/X11/75dpi\"
+  FontPath \"" font-adobe75dpi "/share/fonts/X11/75dpi\"
   ModulePath \"" xf86-video-vesa "/lib/xorg/modules/drivers\"
   ModulePath \"" xf86-input-mouse "/lib/xorg/modules/input\"
   ModulePath \"" xf86-input-keyboard "/lib/xorg/modules/input\"
