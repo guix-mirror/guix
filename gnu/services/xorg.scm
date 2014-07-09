@@ -168,7 +168,7 @@ reboot_cmd " dmd "/sbin/reboot
      (service
       (documentation "Xorg display server")
       (provision '(xorg-server))
-      (requirement '(user-processes host-name))
+      (requirement '(user-processes host-name udev))
       (start
        #~(make-forkexec-constructor
           (list (string-append #$slim "/bin/slim") "-nodaemon")
