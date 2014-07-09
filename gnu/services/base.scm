@@ -409,6 +409,20 @@ hydra.gnu.org are used by default."
                         (define udevd
                           (string-append #$udev "/libexec/udev/udevd"))
 
+                        (define (wait-for-udevd)
+                          ;; Wait until someone's listening on udevd's control
+                          ;; socket.
+                          (let ((sock (socket AF_UNIX SOCK_SEQPACKET 0)))
+                            (let try ()
+                              (catch 'system-error
+                                (lambda ()
+                                  (connect sock PF_UNIX "/run/udev/control")
+                                  (close-port sock))
+                                (lambda args
+                                  (format #t "waiting for udevd...~%")
+                                  (usleep 500000)
+                                  (try))))))
+
                         ;; Allow udev to find the modules.
                         (setenv "LINUX_MODULE_DIRECTORY"
                                 "/run/booted-system/kernel/lib/modules")
@@ -418,12 +432,18 @@ hydra.gnu.org are used by default."
                             ((0)
                              (exec-command (list udevd)))
                             (else
+                             ;; Wait until udevd is up and running.  This
+                             ;; appears to be needed so that the events
+                             ;; triggered below are actually handled.
+                             (wait-for-udevd)
+
+                             ;; Trigger device node creation.
+                             (system* (string-append #$udev "/bin/udevadm")
+                                      "trigger" "--action=add")
+
                              ;; Wait for things to settle down.
                              (system* (string-append #$udev "/bin/udevadm")
                                       "settle")
-                             ;; Create a bunch of devices.
-                             (system* (string-append #$udev "/bin/udevadm")
-                                      "trigger")
                              pid)))))
              (stop #~(make-kill-destructor))))))
 
