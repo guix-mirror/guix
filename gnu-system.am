@@ -235,6 +235,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/video.scm			\
   gnu/packages/vim.scm				\
   gnu/packages/vpn.scm				\
+  gnu/packages/vtk.scm				\
   gnu/packages/w3m.scm				\
   gnu/packages/wdiff.scm			\
   gnu/packages/web.scm				\
