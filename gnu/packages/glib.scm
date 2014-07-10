@@ -116,7 +116,8 @@ shared NFS home directories.")
              (base32 "1d98mbqjmc34s8095lkw1j1bwvnnkw9581yfvjaikjvfjsaz29qd"))
             (patches (list (search-patch "glib-tests-homedir.patch")
                            (search-patch "glib-tests-desktop.patch")
-                           (search-patch "glib-tests-prlimit.patch")))))
+                           (search-patch "glib-tests-prlimit.patch")
+                           (search-patch "glib-tests-timer.patch")))))
    (build-system gnu-build-system)
    (outputs '("out"           ; everything
               "bin"           ; glib-mkenums, gtester, etc.; depends on Python
