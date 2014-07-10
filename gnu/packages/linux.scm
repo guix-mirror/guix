@@ -172,7 +172,7 @@
 
 (define (kernel-config system)
   "Return the absolute file name of the Linux-Libre build configuration file
-for SYSTEM."
+for SYSTEM, or #f if there is no configuration for SYSTEM."
   (define (lookup file)
     (let ((file (string-append "gnu/packages/" file)))
       (search-path %load-path file)))
@@ -183,7 +183,7 @@ for SYSTEM."
     ("x86_64-linux"
      (lookup "linux-libre-x86_64.conf"))
     (_
-     (error "unsupported architecture" system))))
+     #f)))
 
 (define-public linux-libre
   (let* ((version "3.15")
@@ -201,8 +201,14 @@ for SYSTEM."
 
              (let ((build  (assoc-ref %standard-phases 'build))
                    (config (assoc-ref inputs "kconfig")))
-               (copy-file config ".config")
-               (chmod ".config" #o666)
+
+               ;; Use the architecture-specific config if available, and
+               ;; 'defconfig' otherwise.
+               (if config
+                   (begin
+                     (copy-file config ".config")
+                     (chmod ".config" #o666))
+                   (system* "make" "defconfig"))
 
                ;; Appending works even when the option wasn't in the
                ;; file.  The last one prevails if duplicated.
@@ -258,8 +264,12 @@ for SYSTEM."
                      ("bc" ,bc)
                      ("module-init-tools" ,module-init-tools)
                      ("patch/freedo+gnu" ,%boot-logo-patch)
-                     ("kconfig" ,(kernel-config (or (%current-target-system)
-                                                    (%current-system))))))
+
+                     ,@(let ((conf (kernel-config (or (%current-target-system)
+                                                      (%current-system)))))
+                         (if conf
+                             `(("kconfig" ,conf))
+                             '()))))
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
