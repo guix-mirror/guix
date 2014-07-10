@@ -299,7 +299,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/gd-mips64-deplibs-fix.patch		\
   gnu/packages/patches/glib-tests-desktop.patch			\
   gnu/packages/patches/glib-tests-homedir.patch			\
-  gnu/packages/patches/glib-tests-newnet.patch			\
   gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
