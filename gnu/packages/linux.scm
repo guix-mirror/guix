@@ -249,6 +249,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
                                (string-append "MODULE_DIR=" moddir)
                                (string-append "INSTALL_PATH=" out)
                                (string-append "INSTALL_MOD_PATH=" out)
+                               "INSTALL_MOD_STRIP=1"
                                "modules_install"))))))
    (package
     (name "linux-libre")
@@ -275,7 +276,6 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
                   (guix build utils)
                   (srfi srfi-1)
                   (ice-9 match))
-       #:strip-flags '("--strip-all")
        #:phases (alist-replace
                  'build ,build-phase
                  (alist-replace
