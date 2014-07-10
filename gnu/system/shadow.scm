@@ -89,6 +89,7 @@
         (user-group (name "kmem"))
         (user-group (name "video"))
         (user-group (name "audio"))
+        (user-group (name "netdev"))              ; used in avahi-dbus.conf
         (user-group (name "lp"))
         (user-group (name "disk"))
         (user-group (name "floppy"))
