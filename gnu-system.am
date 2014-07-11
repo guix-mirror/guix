@@ -145,6 +145,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/libusb.scm			\
   gnu/packages/libunwind.scm			\
   gnu/packages/lightning.scm			\
+  gnu/packages/links.scm			\
   gnu/packages/linux.scm			\
   gnu/packages/lisp.scm			\
   gnu/packages/lout.scm				\
