@@ -152,15 +152,36 @@ should be the name of a file used as the message-of-the-day."
                               (list #~(string-append "motd=" #$motd)))))
                       (list unix))))))))
 
+(define (rootok-pam-service command)
+  "Return a PAM service for COMMAND such that 'root' does not need to
+authenticate to run COMMAND."
+  (let ((unix (pam-entry
+               (control "required")
+               (module "pam_unix.so"))))
+    (pam-service
+     (name command)
+     (account (list unix))
+     (auth (list (pam-entry
+                  (control "sufficient")
+                  (module "pam_rootok.so"))))
+     (password (list unix))
+     (session (list unix)))))
+
 (define* (base-pam-services #:key allow-empty-passwords?)
   "Return the list of basic PAM services everyone would want."
-  (cons %pam-other-services
-        (map (cut unix-pam-service <>
-                  #:allow-empty-passwords? allow-empty-passwords?)
-             '("su" "passwd" "sudo"
-               "useradd" "userdel" "usermod"
-               "groupadd" "groupdel" "groupmod"
-               ;; TODO: Add other Shadow programs?
-               ))))
+  ;; TODO: Add other Shadow programs?
+  (append (list %pam-other-services)
+
+          ;; These programs are setuid-root.
+          (map (cut unix-pam-service <>
+                    #:allow-empty-passwords? allow-empty-passwords?)
+               '("su" "passwd" "sudo"))
+
+          ;; These programs are not setuid-root, and we want root to be able
+          ;; to run them without having to authenticate (notably because
+          ;; 'useradd' and 'groupadd' are run during system activation.)
+          (map rootok-pam-service
+               '("useradd" "userdel" "usermod"
+                 "groupadd" "groupdel" "groupmod"))))
 
 ;;; linux.scm ends here
