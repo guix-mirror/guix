@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,26 +44,26 @@
 (define texlive-extra-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2013/texlive-20130530-extra.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2014/texlive-20140525-extra.tar.xz")
     (sha256 (base32
-              "15r1qyn7x1iamiiycylx8vzsg27h1r962v6dz9q70f9pdp2rjr6s"))))
+              "1zlnjysvxskcy05iva6jfklirwv12wqyn3ia119a7xnqlvhpqz33"))))
 
 (define texlive-texmf-src
   (origin
     (method url-fetch)
-    (uri "ftp://tug.org/historic/systems/texlive/2013/texlive-20130530-texmf.tar.xz")
+    (uri "ftp://tug.org/historic/systems/texlive/2014/texlive-20140525-texmf.tar.xz")
     (sha256 (base32
-              "09kza0ha0x9cm4k2qm9w31h3g94y9hy17jahnnsirqyy8rpdqgwg"))))
+              "0qsr55ms1278dhmgixs5qqwd4fxhh369ihkki6wgh8xaqm8p48p0"))))
 
 (define-public texlive
   (package
    (name "texlive")
-   (version "2013")
+   (version "2014")
    (source (origin
             (method url-fetch)
-            (uri "ftp://tug.org/historic/systems/texlive/2013/texlive-20130530-source.tar.xz")
+            (uri "ftp://tug.org/historic/systems/texlive/2014/texlive-20140525-source.tar.xz")
             (sha256 (base32
-                     "1m3ripkmra53jwkaqcxxhabc3yvqrfm7pfxldnqirp849hp861d9"))))
+                     "1glmaw2jv42grbsn05kay825j66scimjqqc32776bb1356q4xfq8"))))
    (build-system gnu-build-system)
    (inputs `(("texlive-extra-src" ,texlive-extra-src)
              ("texlive-texmf-src" ,texlive-texmf-src)
@@ -115,11 +116,6 @@
          "--with-system-zlib"
          "--with-system-zziplib")
       #:phases
-       (alist-cons-before
-        'configure 'patch-perl-shebang
-        (lambda _
-          (substitute* "utils/psutils/Makefile.in"
-            (("/usr/bin/env perl") (which "perl"))))
        (alist-cons-after
         'install 'postinst
          (lambda* (#:key inputs outputs #:allow-other-keys #:rest args)
@@ -174,7 +170,7 @@
              (system* "updmap-sys" "--nohash" "--syncwithtrees")
              (system* "mktexlsr")
              (system* "fmtutil-sys" "--all")))
-       %standard-phases)))))
+       %standard-phases))))
    (synopsis "Tex Live, a package of the TeX typesetting system")
    (description
     "TeX Live provides a comprehensive TeX document production system.
