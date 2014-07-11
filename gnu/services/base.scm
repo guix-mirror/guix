@@ -189,7 +189,7 @@ stopped before 'kill' is called."
              (respawn? #f)))))
 
 (define (host-name-service name)
-  "Return a service that sets the host name to NAME."
+  "Return a service that sets the host name to @var{name}."
   (with-monad %store-monad
     (return (service
              (documentation "Initialize the machine's host name.")
@@ -204,6 +204,10 @@ stopped before 'kill' is called."
                            auto-login
                            login-program
                            login-pause?
+
+                           ;; Allow empty passwords by default so that
+                           ;; first-time users can log in when the 'root'
+                           ;; account has just been created.
                            (allow-empty-passwords? #t))
   "Return a service to run mingetty on @var{tty}.
 
@@ -218,7 +222,7 @@ of the log-in program (the default is the @code{login} program from the Shadow
 tool suite.)
 
 @var{motd} is a monadic value containing a text file to use as
-the \"message of the day\"."
+the ``message of the day''."
   (mlet %store-monad ((motd motd)
                       (login-program (cond ((gexp? login-program)
                                             (return login-program))
@@ -277,7 +281,7 @@ the \"message of the day\"."
              (respawn? #f)))))
 
 (define (syslog-service)
-  "Return a service that runs 'syslogd' with reasonable default settings."
+  "Return a service that runs @code{syslogd} with reasonable default settings."
 
   ;; Snippet adapted from the GNU inetutils manual.
   (define contents "
@@ -364,12 +368,12 @@ failed to register hydra.gnu.org public key: ~a~%" status))))))))
 
 (define* (guix-service #:key (guix guix) (builder-group "guixbuild")
                        (build-accounts 10) authorize-hydra-key?)
-  "Return a service that runs the build daemon from GUIX, and has
-BUILD-ACCOUNTS user accounts available under BUILD-USER-GID.
+  "Return a service that runs the build daemon from @var{guix}, and has
+@var{build-accounts} user accounts available under @var{builder-group}.
 
-When AUTHORIZE-HYDRA-KEY? is true, the hydra.gnu.org public key provided by
-GUIX is authorized upon activation, meaning that substitutes from
-hydra.gnu.org are used by default."
+When @var{authorize-hydra-key?} is true, the @code{hydra.gnu.org} public key
+provided by @var{guix} is authorized upon activation, meaning that substitutes
+from @code{hydra.gnu.org} are used by default."
   (define activate
     ;; Assume that the store has BUILDER-GROUP as its group.  We could
     ;; otherwise call 'chown' here, but the problem is that on a COW unionfs,

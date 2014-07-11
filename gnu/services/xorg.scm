@@ -112,11 +112,12 @@ EndSection
                        (xauth xauth) (dmd dmd) (bash bash)
                        startx)
   "Return a service that spawns the SLiM graphical login manager, which in
-turn start the X display server with STARTX, a command as returned by
-'xorg-start-command'.
+turn starts the X display server with @var{startx}, a command as returned by
+@code{xorg-start-command}.
 
-When ALLOW-EMPTY-PASSWORDS? is true, allow logins with an empty password.
-When AUTO-LOGIN? is true, log in automatically as DEFAULT-USER."
+When @var{allow-empty-passwords?} is true, allow logins with an empty
+password.  When @var{auto-login?} is true, log in automatically as
+@var{default-user}."
   (define (slim.cfg)
     (mlet %store-monad ((startx  (or startx (xorg-start-command)))
                         (xinitrc (xinitrc)))

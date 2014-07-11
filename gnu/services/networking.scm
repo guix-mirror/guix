@@ -36,8 +36,9 @@
                                     (name-servers '())
                                     (inetutils inetutils)
                                     (net-tools net-tools))
-  "Return a service that starts INTERFACE with address IP.  If GATEWAY is
-true, it must be a string specifying the default network gateway."
+  "Return a service that starts @var{interface} with address @var{ip}.  If
+@var{gateway} is true, it must be a string specifying the default network
+gateway."
 
   ;; TODO: Eventually we should do this using Guile's networking procedures,
   ;; like 'configure-qemu-networking' does, but the patch that does this is
