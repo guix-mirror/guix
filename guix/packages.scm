@@ -125,6 +125,17 @@
   (patch-guile origin-patch-guile                 ; package or #f
                (default #f)))
 
+(define (print-origin origin port)
+  "Write a concise representation of ORIGIN to PORT."
+  (match origin
+    (($ <origin> uri method sha256 file-name patches)
+     (simple-format port "#<origin ~s ~a ~s ~a>"
+                    uri (bytevector->base32-string sha256)
+                    patches
+                    (number->string (object-address origin) 16)))))
+
+(set-record-type-printer! <origin> print-origin)
+
 (define-syntax base32
   (lambda (s)
     "Return the bytevector corresponding to the given Nix-base32
