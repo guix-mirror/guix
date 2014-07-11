@@ -3169,13 +3169,9 @@ Emacs to those, taken from the @code{(gnu packages emacs)} module
 
 @vindex %base-services
 The @code{services} field lists @dfn{system services} to be made
-available when the system starts.  The @var{%base-services} list,
-from the @code{(gnu services base)} module, provides the basic services one
-would expect from a GNU system: a login service (mingetty) on each tty,
-syslogd, libc's name service cache daemon (nscd), etc.
-
+available when the system starts (@pxref{Services}).
 The @code{operating-system} declaration above specifies that, in
-addition to those services, we want the @command{lshd} secure shell
+addition to the basic services, we want the @command{lshd} secure shell
 daemon listening on port 2222, and allowing remote @code{root} logins
 (@pxref{Invoking lshd,,, lsh, GNU lsh Manual}).  Under the hood,
 @code{lsh-service} arranges so that @code{lshd} is started with the
@@ -3363,7 +3359,153 @@ specific devices such as ``audio'', ``disk'', and ``cdrom''.
 @node Services
 @subsection Services
 
-TODO
+@cindex system services
+An important part of preparing an @code{operating-system} declaration is
+listing @dfn{system services} and their configuration (@pxref{Using the
+Configuration System}).  System services are typically daemons launched
+when the system boots, or other actions needed at that time---e.g.,
+configuring network access.  They are managed by GNU@tie{}dmd
+(@pxref{Introduction,,, dmd, GNU dmd Manual}).
+
+The following sections document the available services, starting with
+the core services.
+
+@menu
+* Base Services::               Essential system services.
+* Networking Services::         Network setup, SSH daemon, etc.
+* X Window::                    Graphical display.
+@end menu
+
+@node Base Services
+@subsubsection Base Services
+
+The @code{(gnu services base)} module provides definitions for the basic
+services that one expects from the system.  The services exported by
+this module are listed below.
+
+@defvr {Scheme Variable} %base-services
+This variable contains a list of basic services@footnote{Technically,
+this is a list of monadic services.  @xref{The Store Monad}.} one would
+expect from the system: a login service (mingetty) on each tty, syslogd,
+libc's name service cache daemon (nscd), the udev device manager, and
+more.
+
+This is the default value of the @code{services} field of
+@code{operating-system} declarations.  Usually, when customizing a
+system, you will want to append services to @var{%base-services}, like
+this:
+
+@example
+(cons* (avahi-service) (lshd-service) %base-services)
+@end example
+@end defvr
+
+@deffn {Monadic Procedure} host-name-service @var{name}
+Return a service that sets the host name to @var{name}.
+@end deffn
+
+@deffn {Monadic Procedure} mingetty-service @var{tty} [#:motd] @
+       [#:auto-login #f] [#:login-program] [#:login-pause? #f] @
+       [#:allow-empty-passwords? #f]
+Return a service to run mingetty on @var{tty}.
+
+When @var{allow-empty-passwords?} is true, allow empty log-in password.  When
+@var{auto-login} is true, it must be a user name under which to log-in
+automatically.  @var{login-pause?} can be set to @code{#t} in conjunction with
+@var{auto-login}, in which case the user will have to press a key before the
+login shell is launched.
+
+When true, @var{login-program} is a gexp or a monadic gexp denoting the name
+of the log-in program (the default is the @code{login} program from the Shadow
+tool suite.)
+
+@var{motd} is a monadic value containing a text file to use as
+the ``message of the day''.
+@end deffn
+
+@deffn {Monadic Procedure} nscd-service [#:glibc glibc]
+Return a service that runs libc's name service cache daemon (nscd).
+@end deffn
+
+@deffn {Monadic Procedure} syslog-service
+Return a service that runs @code{syslogd} with reasonable default
+settings.
+@end deffn
+
+@deffn {Monadic Procedure} guix-service [#:guix guix] @
+       [#:builder-group "guixbuild"] [#:build-accounts 10] @
+       [#:authorize-hydra-key? #f]
+Return a service that runs the build daemon from @var{guix}, and has
+@var{build-accounts} user accounts available under @var{builder-group}.
+
+When @var{authorize-hydra-key?} is true, the @code{hydra.gnu.org} public key
+provided by @var{guix} is authorized upon activation, meaning that substitutes
+from @code{hydra.gnu.org} are used by default.
+@end deffn
+
+@deffn {Monadic Procedure} udev-service [#:udev udev]
+Run @var{udev}, which populates the @file{/dev} directory dynamically.
+@end deffn
+
+@node Networking Services
+@subsubsection Networking Services
+
+The @code{(gnu system networking)} module provides services to configure
+the network interface.
+
+@deffn {Monadic Procedure} static-networking-service @var{interface} @var{ip} @
+       [#:gateway #f] [#:name-services @code{'()}]
+Return a service that starts @var{interface} with address @var{ip}.  If
+@var{gateway} is true, it must be a string specifying the default network
+gateway.
+@end deffn
+
+In addition, @code{(gnu system ssh)} provides the following service.
+
+@deffn {Monadic Procedure} lsh-service [#:host-key "/etc/lsh/host-key"] @
+       [#:interfaces '()] [#:port-number 22] @
+       [#:allow-empty-passwords? #f] [#:root-login? #f] @
+       [#:syslog-output? #t] [#:x11-forwarding? #t] @
+       [#:tcp/ip-forwarding? #t] [#:password-authentication? #t] @
+       [public-key-authentication? #t] [#:initialize? #f]
+Run the @command{lshd} program from @var{lsh} to listen on port @var{port-number}.
+@var{host-key} must designate a file containing the host key, and readable
+only by root.
+
+When @var{initialize?} is true, automatically create the seed and host key
+upon service activation if they do not exist yet.  This may take long and
+require interaction.
+
+When @var{interfaces} is empty, lshd listens for connections on all the
+network interfaces; otherwise, @var{interfaces} must be a list of host names
+or addresses.
+
+@var{allow-empty-passwords?} specifies whether to accepts log-ins with empty
+passwords, and @var{root-login?} specifies whether to accepts log-ins as
+root.
+
+The other options should be self-descriptive.
+@end deffn
+
+@node X Window
+@subsubsection X Window
+
+Support for the X Window graphical display system---specifically
+Xorg---is provided by the @code{(gnu services xorg)} module.  Note that
+there is no @code{xorg-service} procedure.  Instead, the X server is
+started by the @dfn{login manager}, currently SLiM.
+
+@deffn {Monadic Procedure} slim-service [#:allow-empty-passwords? #f] @
+  [#:auto-login? #f] [#:default-user ""] [#:startx]
+Return a service that spawns the SLiM graphical login manager, which in
+turn starts the X display server with @var{startx}, a command as returned by
+@code{xorg-start-command}.
+
+When @var{allow-empty-passwords?} is true, allow logins with an empty
+password.  When @var{auto-login?} is true, log in automatically as
+@var{default-user}.
+@end deffn
+
 
 @node Invoking guix system
 @subsection Invoking @code{guix system}
