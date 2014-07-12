@@ -40,6 +40,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages sqlite)
   #:use-module (gnu packages sdl)
+  #:use-module (gnu packages texinfo)
   #:use-module (guix build-system gnu))
 
 (define-public gnubg
@@ -263,3 +264,60 @@ based on the screensaver from the movie's website.  It works with terminal
 settings up to 132x300 and can scroll lines all at the same rate or
 asynchronously and at a user-defined speed.")
     (license gpl2+)))
+
+(define-public chess
+  (package
+    (name "chess")
+    (version "6.1.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/chess/gnuchess-" version
+                           ".tar.gz"))
+       (sha256
+        (base32
+         "1jckpg1qi1vjr3pqs0dnip3rmn0mgklx63xflrpqiv3cx2qlz8kn"))))
+    (build-system gnu-build-system)
+    (home-page "http://wwww.gnu.org/software/chess")
+    (synopsis "Full chess implementation")
+    (description "GNU Chess is a chess engine.  It allows you to compete
+against the computer in a game of chess, either through the default terminal
+interface or via an external visual interface such as GNU XBoard.")
+    (license gpl3+)))
+
+(define-public xboard
+  (package
+    (name "xboard")
+    (version "4.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnu/xboard/xboard-" version
+                           ".tar.gz"))
+       (sha256
+        (base32
+         "1amy9krr0qkvcc7gnp3i9x9ma91fc5cq8hy3gdc7rmfsaczv1l3z"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases
+       (alist-cons-before 
+        'configure 'pre-conf
+        ;; This is GNU.  So use gnuchess as the first choice of engine
+        (lambda _
+          (substitute* "xboard.conf.in" 
+            (("-firstChessProgram fairymax") "-firstChessProgram gnuchess")))
+        %standard-phases)))
+    (inputs `(("cairo" ,cairo)
+              ("librsvg" ,librsvg)
+              ("libxt" ,libxt)
+              ("libxaw" ,libxaw)))
+    (native-inputs `(("texinfo" ,texinfo)
+                     ("pkg-config" ,pkg-config)))
+    (home-page "http://www.gnu.org/software/xboard")
+    (synopsis "Graphical user interface for chess programs")
+    (description "GNU XBoard is a graphical board for all varieties of chess,
+including international chess, xiangqi (Chinese chess), shogi (Japanese chess)
+and Makruk.  Several lesser-known variants are also supported.  It presents a
+fully interactive graphical interface and it can load and save games in the
+Portable Game Notation.")
+    (license gpl3+)))
