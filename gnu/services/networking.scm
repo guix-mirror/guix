@@ -55,7 +55,8 @@ gateway."
                  ;; Return #t if successfully started.
                  (and (zero? (system* (string-append #$inetutils
                                                      "/bin/ifconfig")
-                                      #$interface #$ip "up"))
+                                      "-i" #$interface "-A" #$ip
+                                      "-i" #$interface "--up"))
                       #$(if gateway
                             #~(zero? (system* (string-append #$net-tools
                                                              "/sbin/route")
@@ -77,8 +78,11 @@ gateway."
                 ;; Return #f is successfully stopped.
                 (not (and (system* (string-append #$inetutils "/bin/ifconfig")
                                    #$interface "down")
-                          (system* (string-append #$net-tools "/sbin/route")
-                                   "del" "-net" "default")))))
+                          #$(if gateway
+                                #~(system* (string-append #$net-tools
+                                                          "/sbin/route")
+                                           "del" "-net" "default")
+                                #t)))))
       (respawn? #f)))))
 
 ;;; networking.scm ends here
