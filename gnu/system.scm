@@ -25,6 +25,7 @@
   #:use-module (guix derivations)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages which)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages package-management)
@@ -214,7 +215,7 @@ explicitly appear in OS."
 (define %base-packages
   ;; Default set of packages globally visible.  It should include anything
   ;; required for basic administrator tasks.
-  (cons* procps psmisc less zile
+  (cons* procps psmisc which less zile
          guile-final (@ (gnu packages admin) dmd) guix
          util-linux inetutils isc-dhcp
          net-tools                        ; XXX: remove when Inetutils suffices
