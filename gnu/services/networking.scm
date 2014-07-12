@@ -33,6 +33,7 @@
 (define* (static-networking-service interface ip
                                     #:key
                                     gateway
+                                    (provision '(networking))
                                     (name-servers '())
                                     (inetutils inetutils)
                                     (net-tools net-tools))
@@ -49,7 +50,7 @@ gateway."
       (documentation
        (string-append "Set up networking on the '" interface
                       "' interface using a static IP address."))
-      (provision '(networking))
+      (provision provision)
       (start #~(lambda _
                  ;; Return #t if successfully started.
                  (and (zero? (system* (string-append #$inetutils

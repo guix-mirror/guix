@@ -20,6 +20,7 @@
   #:use-module ((guix store)
                 #:select (%store-prefix))
   #:use-module (gnu services)
+  #:use-module (gnu services networking)
   #:use-module (gnu system shadow)                ; 'user-account', etc.
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
@@ -461,6 +462,8 @@ This is the GNU operating system, welcome!\n\n")))
           (mingetty-service "tty4" #:motd motd)
           (mingetty-service "tty5" #:motd motd)
           (mingetty-service "tty6" #:motd motd)
+          (static-networking-service "lo" "127.0.0.1"
+                                     #:provision '(loopback))
           (syslog-service)
           (guix-service)
           (nscd-service)
