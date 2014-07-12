@@ -211,6 +211,17 @@
     (return (string=? (readlink (string-append out "/foo"))
                       guile))))
 
+(test-assertm "gexp->derivation, default system"
+  ;; The default system should be the one at '>>=' time, not the one at
+  ;; invocation time.  See <http://bugs.gnu.org/18002>.
+  (let ((system (%current-system))
+        (mdrv   (parameterize ((%current-system "foobar64-linux"))
+                  (gexp->derivation "foo"
+                                    (gexp
+                                     (mkdir (ungexp output)))))))
+    (mlet %store-monad ((drv mdrv))
+      (return (string=? system (derivation-system drv))))))
+
 (define shebang
   (string-append (derivation->output-path guile-for-build)
                  "/bin/guile --no-auto-compile"))

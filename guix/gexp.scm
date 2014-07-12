@@ -94,7 +94,7 @@ input list as a monadic value."
 
 (define* (gexp->derivation name exp
                            #:key
-                           (system (%current-system))
+                           system
                            hash hash-algo recursive?
                            (env-vars '())
                            (modules '())
@@ -114,6 +114,7 @@ The other arguments are as for 'derivation'."
   (define outputs (gexp-outputs exp))
 
   (mlet* %store-monad ((inputs   (lower-inputs (gexp-inputs exp)))
+                       (system -> (or system (%current-system)))
                        (sexp     (gexp->sexp exp))
                        (builder  (text-file (string-append name "-builder")
                                             (object->string sexp)))
