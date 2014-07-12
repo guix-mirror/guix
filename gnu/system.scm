@@ -123,7 +123,7 @@
 ;;;
 
 (define* (union inputs
-                #:key (guile (%guile-for-build)) (system (%current-system))
+                #:key (guile (%guile-for-build))
                 (name "union"))
   "Return a derivation that builds the union of INPUTS.  INPUTS is a list of
 input tuples."
@@ -141,7 +141,6 @@ input tuples."
         (union-build #$output inputs)))
 
   (gexp->derivation name builder
-                    #:system system
                     #:modules '((guix build union))
                     #:guile-for-build guile
                     #:local-build? #t))
