@@ -166,14 +166,16 @@
            (let* ((input (iota 100))
                   (order '()))
              (define (frob i)
-               ;; The side effect here is used to keep track of the order in
-               ;; which monadic values are bound.
-               (set! order (cons i order))
-               i)
+               (mlet monad ((foo (return 'foo)))
+                 ;; The side effect here is used to keep track of the order in
+                 ;; which monadic values are bound.  Perform the side effect
+                 ;; within a '>>=' so that it is performed when the return
+                 ;; value is actually bound.
+                 (set! order (cons i order))
+                 (return i)))
 
              (and (equal? input
-                          (run (sequence monad
-                                         (map (lift1 frob monad) input))))
+                          (run (sequence monad (map frob input))))
 
                   ;; Make sure this is from left to right.
                   (equal? order (reverse input)))))

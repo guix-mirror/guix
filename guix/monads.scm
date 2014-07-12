@@ -209,13 +209,15 @@ monadic value seeded by INIT."
 
 (define (mapm monad mproc lst)
   "Map MPROC over LST, a list of monadic values in MONAD, and return a monadic
-list."
-  (foldm monad
-         (lambda (item result)
-           (mlet monad ((item (mproc item)))
-             (return (cons item result))))
-         '()
-         (reverse lst)))
+list.  LST items are bound from left to right, so effects in MONAD are known
+to happen in that order."
+  (mlet monad ((result (foldm monad
+                              (lambda (item result)
+                                (mlet monad ((item (mproc item)))
+                                  (return (cons item result))))
+                              '()
+                              lst)))
+    (return (reverse result))))
 
 (define-inlinable (sequence monad lst)
   "Turn the list of monadic values LST into a monadic list of values, by
