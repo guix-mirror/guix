@@ -27,6 +27,7 @@
              (gnu packages xorg)
              (gnu packages avahi)
              (gnu packages linux)
+             (gnu packages tor)
 
              (gnu services networking)
              (gnu services avahi)
@@ -79,10 +80,13 @@ You can log in as 'guest' or 'root' with no password.
 
                   (avahi-service)
                   (dbus-service (list avahi))
+                  (tor-service)
 
                   %base-services))
  (pam-services
   ;; Explicitly allow for empty passwords.
   (base-pam-services #:allow-empty-passwords? #t))
 
- (packages (cons* strace xterm avahi %base-packages)))
+ (packages (cons* strace
+                  tor torsocks
+                  xterm avahi %base-packages)))

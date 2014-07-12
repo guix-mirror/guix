@@ -3460,6 +3460,13 @@ Return a service that starts @var{interface} with address @var{ip}.  If
 gateway.
 @end deffn
 
+@deffn {Monadic Procedure} tor-service [#:tor tor]
+Return a service to run the @uref{https://torproject.org,Tor} daemon.
+
+The daemon runs with the default settings (in particular the default exit
+policy) as the @code{tor} unprivileged user.
+@end deffn
+
 In addition, @code{(gnu system ssh)} provides the following service.
 
 @deffn {Monadic Procedure} lsh-service [#:host-key "/etc/lsh/host-key"] @

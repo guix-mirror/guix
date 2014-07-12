@@ -18,11 +18,14 @@
 
 (define-module (gnu services networking)
   #:use-module (gnu services)
+  #:use-module (gnu system shadow)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages tor)
   #:use-module (guix gexp)
   #:use-module (guix monads)
-  #:export (static-networking-service))
+  #:export (static-networking-service
+            tor-service))
 
 ;;; Commentary:
 ;;;
@@ -84,5 +87,36 @@ gateway."
                                            "del" "-net" "default")
                                 #t)))))
       (respawn? #f)))))
+
+(define* (tor-service #:key (tor tor))
+  "Return a service to run the @uref{https://torproject.org,Tor} daemon.
+
+The daemon runs with the default settings (in particular the default exit
+policy) as the @code{tor} unprivileged user."
+  (mlet %store-monad ((torrc (text-file "torrc" "User tor\n")))
+    (return
+     (service
+      (provision '(tor))
+
+      ;; Tor needs at least one network interface to be up, hence the
+      ;; dependency on 'loopback'.
+      (requirement '(user-processes loopback))
+
+      (start #~(make-forkexec-constructor
+                (list (string-append #$tor "/bin/tor") "-f" #$torrc)))
+      (stop #~(make-kill-destructor))
+
+      (user-groups   (list (user-group
+                            (name "tor"))))
+      (user-accounts (list (user-account
+                            (name "tor")
+                            (group "tor")
+                            (system? #t)
+                            (comment "Tor daemon user")
+                            (home-directory "/var/empty")
+                            (shell
+                             "/run/current-system/profile/sbin/nologin"))))
+
+      (documentation "Run the Tor anonymous network overlay.")))))
 
 ;;; networking.scm ends here
