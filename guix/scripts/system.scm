@@ -289,7 +289,8 @@ actions."
                (when grub?
                  (unless (install-grub grub.cfg device target)
                    (leave (_ "failed to install GRUB on device '~a'~%")
-                          device)))))
+                          device)))
+               (return #t)))
             ((init)
              (newline)
              (format #t (_ "initializing operating system under '~a'...~%")
