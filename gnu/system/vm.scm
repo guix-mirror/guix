@@ -23,6 +23,8 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix monads)
+  #:use-module ((guix build vm)
+                #:select (qemu-command))
   #:use-module ((gnu packages base)
                 #:select (%final-inputs))
   #:use-module (gnu packages guile)
@@ -414,7 +416,8 @@ OS that shares its store with the host."
           (lambda (port)
             (display
              (string-append "#!" #$bash "/bin/sh
-exec " #$qemu "/bin/qemu-system-x86_64 -enable-kvm -no-reboot -net nic,model=virtio \
+exec " #$qemu "/bin/" #$(qemu-command (%current-system))
+" -enable-kvm -no-reboot -net nic,model=virtio \
   -virtfs local,path=" #$(%store-prefix) ",security_model=none,mount_tag=store \
   -net user \
   -kernel " #$(operating-system-kernel os) "/bzImage \

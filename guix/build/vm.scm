@@ -21,10 +21,12 @@
   #:use-module (guix build linux-initrd)
   #:use-module (guix build install)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
-  #:export (load-in-linux-vm
+  #:export (qemu-command
+            load-in-linux-vm
             format-partition
             initialize-root-partition
             initialize-partition-table
@@ -37,12 +39,14 @@
 ;;;
 ;;; Code:
 
-(define (qemu-command)
-  "Return the default name of the QEMU command for the current host."
-  (string-append "qemu-system-"
-                 (substring %host-type 0
-                            (string-index %host-type #\-))))
-
+(define* (qemu-command #:optional (system %host-type))
+  "Return the default name of the QEMU command for SYSTEM."
+  (let ((cpu (substring %host-type 0
+                        (string-index %host-type #\-))))
+    (string-append "qemu-system-"
+                   (if (string-match "^i[3456]86$" cpu)
+                       "i386"
+                       cpu))))
 
 (define* (load-in-linux-vm builder
                            #:key
