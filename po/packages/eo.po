@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: guix 0.6-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
-"POT-Creation-Date: 2014-06-13 16:24+0200\n"
+"POT-Creation-Date: 2014-06-25 22:55+0200\n"
 "PO-Revision-Date: 2014-06-03 09:35-0300\n"
 "Last-Translator: Felipe Castro <fefcas@gmail.com>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
@@ -17,27 +17,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: gnu/packages/base.scm:63
+#: gnu/packages/base.scm:65
 msgid "Hello, GNU world: An example GNU package"
 msgstr "Saluton, mondo GNU: ekzemplo de pako GNU"
 
-#: gnu/packages/base.scm:65
+#: gnu/packages/base.scm:67
 msgid ""
 "GNU Hello prints the message \"Hello, world!\" and then exits.  It\n"
-"serves as an example of standard GNU coding practices.  As such, it "
-"supports\n"
+"serves as an example of standard GNU coding practices.  As such, it supports\n"
 "command-line arguments, multiple languages, and so on."
 msgstr ""
 "GNU Hello montras la mesaĝon \"Hello, world!\" kaj finiĝas.  Ĝi\n"
-"funkcias kiel ekzemplo de norma kodumada tradicio de GNU.  Tiel, ĝi "
-"subtenas\n"
+"funkcias kiel ekzemplo de norma kodumada tradicio de GNU.  Tiel, ĝi subtenas\n"
 "komand-liniajn argumentojn, plurajn lingvojn, kaj tiel plu."
 
-#: gnu/packages/base.scm:83
+#: gnu/packages/base.scm:85
 msgid "Print lines matching a pattern"
 msgstr "Montri liniojn kongruajn al ŝablono"
 
-#: gnu/packages/base.scm:85
+#: gnu/packages/base.scm:87
 msgid ""
 "grep is a tool for finding text inside files.  Text is found by\n"
 "matching a pattern provided by the user in one or many files.  The pattern\n"
@@ -47,8 +45,7 @@ msgid ""
 "numbers.  GNU grep offers many extensions over the standard utility,\n"
 "including, for example, recursive directory searching."
 msgstr ""
-"grep estas ilo por trovi tekstojn interne de dosieroj.  Teksto estas "
-"trovita\n"
+"grep estas ilo por trovi tekstojn interne de dosieroj.  Teksto estas trovita\n"
 "per kongruo al ŝablono indikita de la uzanto en unu aŭ pluraj dosieroj.\n"
 "La ŝablono povas esti indikata kiel bazan aŭ etenditan regul-esprimon, aŭ\n"
 "kiel fiksajn ĉenojn.  Apriore, la kongruita teksto estas simple montrata\n"
@@ -56,26 +53,24 @@ msgstr ""
 "ekzemple, lini-numerojn.  GNU grep oferaj multajn kromaĵojn kompare al la\n"
 "originala aplikaĵo, inkluzive, ekzemple, rikuran serĉadon en dosierujoj."
 
-#: gnu/packages/base.scm:107
+#: gnu/packages/base.scm:109
 msgid "Stream editor"
 msgstr "Flu-redaktilo"
 
-#: gnu/packages/base.scm:122
+#: gnu/packages/base.scm:124
 msgid ""
 "Sed is a non-interactive, text stream editor.  It receives a text\n"
-"input from a file or from standard input and it then applies a series of "
-"text\n"
-"editing commands to the stream and prints its output to standard output.  "
-"It\n"
+"input from a file or from standard input and it then applies a series of text\n"
+"editing commands to the stream and prints its output to standard output.  It\n"
 "is often used for substituting text patterns in a stream.  The GNU\n"
 "implementation offers several extensions over the standard utility."
 msgstr ""
 
-#: gnu/packages/base.scm:142
+#: gnu/packages/base.scm:144
 msgid "Managing tar archives"
 msgstr "Administrado de arĥivoj tar"
 
-#: gnu/packages/base.scm:144
+#: gnu/packages/base.scm:146
 msgid ""
 "Tar provides the ability to create tar archives, as well as the\n"
 "ability to extract, update or list files in an existing archive.  It is\n"
@@ -85,146 +80,132 @@ msgid ""
 "standard utility."
 msgstr ""
 
-#: gnu/packages/base.scm:171
+#: gnu/packages/base.scm:173
 msgid "Apply differences to originals, with optional backups"
 msgstr "Apliki malsamojn al originaloj, kun nedevigaj savkopioj"
 
-#: gnu/packages/base.scm:173
+#: gnu/packages/base.scm:175
 msgid ""
 "Patch is a program that applies changes to files based on differences\n"
-"laid out as by the program \"diff\".  The changes may be applied to one or "
-"more\n"
+"laid out as by the program \"diff\".  The changes may be applied to one or more\n"
 "files depending on the contents of the diff file.  It accepts several\n"
 "different diff formats.  It may also be used to revert previously applied\n"
 "differences."
 msgstr ""
 
-#: gnu/packages/base.scm:193
+#: gnu/packages/base.scm:195
 msgid "Comparing and merging files"
 msgstr "Komparo kaj kunmikso de dosieroj"
 
-#: gnu/packages/base.scm:195
+#: gnu/packages/base.scm:197
 msgid ""
 "GNU Diffutils is a package containing tools for finding the\n"
-"differences between files.  The \"diff\" command is used to show how two "
-"files\n"
-"differ, while \"cmp\" shows the offsets and line numbers where they "
-"differ. \n"
+"differences between files.  The \"diff\" command is used to show how two files\n"
+"differ, while \"cmp\" shows the offsets and line numbers where they differ. \n"
 "\"diff3\" allows you to compare three files.  Finally, \"sdiff\" offers an\n"
 "interactive means to merge two files."
 msgstr ""
 
-#: gnu/packages/base.scm:222
+#: gnu/packages/base.scm:224
 msgid "Operating on files matching given criteria"
 msgstr "Operacio sur dosieroj kongruantaj al indikia kriterio"
 
-#: gnu/packages/base.scm:224
+#: gnu/packages/base.scm:226
 msgid ""
 "Findutils supplies the basic file directory searching utilities of the\n"
 "GNU system.  It consists of two primary searching utilities: \"find\"\n"
-"recursively searches for files in a directory according to given criteria "
-"and\n"
-"\"locate\" lists files in a database that match a query.  Two auxiliary "
-"tools\n"
-"are included: \"updatedb\" updates the file name database and \"xargs\" may "
-"be\n"
+"recursively searches for files in a directory according to given criteria and\n"
+"\"locate\" lists files in a database that match a query.  Two auxiliary tools\n"
+"are included: \"updatedb\" updates the file name database and \"xargs\" may be\n"
 "used to apply commands with arbitrarily long arguments."
 msgstr ""
 
-#: gnu/packages/base.scm:274
+#: gnu/packages/base.scm:278
 msgid "Core GNU utilities (file, text, shell)"
 msgstr "Nukleaj utilaĵoj GNU (file, text, shell)"
 
-#: gnu/packages/base.scm:276
+#: gnu/packages/base.scm:280
 msgid ""
 "GNU Coreutils includes all of the basic command-line tools that are\n"
 "expected in a POSIX system.  These provide the basic file, shell and text\n"
-"manipulation functions of the GNU system.  Most of these tools offer "
-"extended\n"
+"manipulation functions of the GNU system.  Most of these tools offer extended\n"
 "functionality beyond that which is outlined in the POSIX standard."
 msgstr ""
 
-#: gnu/packages/base.scm:310
+#: gnu/packages/base.scm:314
 msgid "Remake files automatically"
 msgstr "Reprocezi dosierojn aŭtomate"
 
-#: gnu/packages/base.scm:312
+#: gnu/packages/base.scm:316
 msgid ""
 "Make is a program that is used to control the production of\n"
 "executables or other files from their source files.  The process is\n"
-"controlled from a Makefile, in which the developer specifies how each file "
-"is\n"
+"controlled from a Makefile, in which the developer specifies how each file is\n"
 "generated from its source.  It has powerful dependency resolution and the\n"
 "ability to determine when files have to be regenerated after their sources\n"
 "change.  GNU make offers many powerful extensions over the standard utility."
 msgstr ""
 
-#: gnu/packages/base.scm:357
+#: gnu/packages/base.scm:361
 msgid "Binary utilities: bfd gas gprof ld"
 msgstr "Duumaj utilaĵoj: bfd gas gprof ld"
 
-#: gnu/packages/base.scm:359
+#: gnu/packages/base.scm:363
 msgid ""
 "GNU Binutils is a collection of tools for working with binary files.\n"
-"Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler. "
-"Other\n"
+"Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler. Other\n"
 "tools include programs to display binary profiling information, list the\n"
-"strings in a binary file, and utilities for working with archives.  The \"bfd"
-"\"\n"
+"strings in a binary file, and utilities for working with archives.  The \"bfd\"\n"
 "library for working with executable and object formats is also included."
 msgstr ""
 
-#: gnu/packages/base.scm:500
+#: gnu/packages/base.scm:504
 msgid "The GNU C Library"
 msgstr "La Biblioteko GNU C"
 
-#: gnu/packages/base.scm:502
+#: gnu/packages/base.scm:506
 msgid ""
 "Any Unix-like operating system needs a C library: the library which\n"
-"defines the \"system calls\" and other basic facilities such as open, "
-"malloc,\n"
+"defines the \"system calls\" and other basic facilities such as open, malloc,\n"
 "printf, exit...\n"
 "\n"
-"The GNU C library is used as the C library in the GNU system and most "
-"systems\n"
+"The GNU C library is used as the C library in the GNU system and most systems\n"
 "with the Linux kernel."
 msgstr ""
 
-#: gnu/packages/base.scm:571
+#: gnu/packages/base.scm:575
 msgid "Database of current and historical time zones"
 msgstr "Datumbazo de nuna kaj pasintaj temp-zonoj"
 
-#: gnu/packages/base.scm:572
+#: gnu/packages/base.scm:576
 msgid ""
 "The Time Zone Database (often called tz or zoneinfo)\n"
 "contains code and data that represent the history of local time for many\n"
 "representative locations around the globe. It is updated periodically to\n"
-"reflect changes made by political bodies to time zone boundaries, UTC "
-"offsets,\n"
+"reflect changes made by political bodies to time zone boundaries, UTC offsets,\n"
 "and daylight-saving rules."
 msgstr ""
 
-#: gnu/packages/base.scm:968
+#: gnu/packages/base.scm:1004
 msgid "GNU C++ standard library (intermediate)"
 msgstr "GNU C++ norma biblioteko (intermeza)"
 
-#: gnu/packages/base.scm:1056
+#: gnu/packages/base.scm:1098
 msgid "The linker wrapper"
 msgstr "La ligila ĉirkaŭanto"
 
-#: gnu/packages/base.scm:1058
+#: gnu/packages/base.scm:1100
 msgid ""
 "The linker wrapper (or `ld-wrapper') wraps the linker to add any\n"
-"missing `-rpath' flags, and to detect any misuse of libraries outside of "
-"the\n"
+"missing `-rpath' flags, and to detect any misuse of libraries outside of the\n"
 "store."
 msgstr ""
 
-#: gnu/packages/base.scm:1159
+#: gnu/packages/base.scm:1264
 msgid "Complete GCC tool chain for C/C++ development"
 msgstr ""
 
-#: gnu/packages/base.scm:1161
+#: gnu/packages/base.scm:1266
 msgid ""
 "This package provides a complete GCC tool chain for C/C++ development to\n"
 "be installed in user profiles.  This includes GCC, as well as libc (headers\n"
@@ -240,8 +221,7 @@ msgid ""
 "Guile is the GNU Ubiquitous Intelligent Language for Extensions, the\n"
 "official extension language of the GNU system.  It is an implementation of\n"
 "the Scheme language which can be easily embedded in other applications to\n"
-"provide a convenient means of extending the functionality of the "
-"application\n"
+"provide a convenient means of extending the functionality of the application\n"
 "without requiring the source code to be rewritten."
 msgstr ""
 
@@ -254,8 +234,7 @@ msgid ""
 "Guile-Reader is a simple framework for building readers for GNU Guile.\n"
 "\n"
 "The idea is to make it easy to build procedures that extend Guile’s read\n"
-"procedure. Readers supporting various syntax variants can easily be "
-"written,\n"
+"procedure. Readers supporting various syntax variants can easily be written,\n"
 "possibly by re-using existing “token readers” of a standard Scheme\n"
 "readers. For example, it is used to implement Skribilo’s R5RS-derived\n"
 "document syntax.\n"
@@ -265,34 +244,33 @@ msgid ""
 "many readers as needed)."
 msgstr ""
 
-#: gnu/packages/guile.scm:266
+#: gnu/packages/guile.scm:267
 msgid "Guile bindings to ncurses"
 msgstr "Bindoj de Guile por ncurses"
 
-#: gnu/packages/guile.scm:268
+#: gnu/packages/guile.scm:269
 msgid ""
 "guile-ncurses provides Guile language bindings for the ncurses\n"
 "library."
 msgstr ""
 
-#: gnu/packages/guile.scm:288
+#: gnu/packages/guile.scm:289
 msgid "Run jobs at scheduled times"
 msgstr "Lanĉi taskoj je antaŭplanitaj horoj"
 
-#: gnu/packages/guile.scm:290
+#: gnu/packages/guile.scm:291
 msgid ""
 "GNU Mcron is a complete replacement for Vixie cron.  It is used to run\n"
-"tasks on a schedule, such as every hour or every Monday.  Mcron is written "
-"in\n"
+"tasks on a schedule, such as every hour or every Monday.  Mcron is written in\n"
 "Guile, so its configuration can be written in Scheme; the original cron\n"
 "format is also supported."
 msgstr ""
 
-#: gnu/packages/guile.scm:318
+#: gnu/packages/guile.scm:319
 msgid "Collection of useful Guile Scheme modules"
 msgstr "Aro da utilaj moduloj de Guile Scheme"
 
-#: gnu/packages/guile.scm:320
+#: gnu/packages/guile.scm:321
 msgid ""
 "guile-lib is intended as an accumulation place for pure-scheme Guile\n"
 "modules, allowing for people to cooperate integrating their generic Guile\n"
@@ -300,11 +278,11 @@ msgid ""
 "for Guile\"."
 msgstr ""
 
-#: gnu/packages/guile.scm:351
+#: gnu/packages/guile.scm:352
 msgid "JSON module for Guile"
 msgstr "Modulo JSON por Guile"
 
-#: gnu/packages/guile.scm:353
+#: gnu/packages/guile.scm:354
 msgid ""
 "Guile-json supports parsing and building JSON documents according to the\n"
 "http:://json.org specification. These are the main features:\n"
@@ -320,19 +298,15 @@ msgstr "Lout, dokument-aranĝa sistemo simila al LaTeX, laŭ stilo"
 
 #: gnu/packages/lout.scm:111
 msgid ""
-"The Lout document formatting system is now reads a high-level description "
-"of\n"
-"a document similar in style to LaTeX and produces a PostScript or plain "
-"text\n"
+"The Lout document formatting system is now reads a high-level description of\n"
+"a document similar in style to LaTeX and produces a PostScript or plain text\n"
 "output file.\n"
 "\n"
 "Lout offers an unprecedented range of advanced features, including optimal\n"
 "paragraph and page breaking, automatic hyphenation, PostScript EPS file\n"
-"inclusion and generation, equation formatting, tables, diagrams, rotation "
-"and\n"
+"inclusion and generation, equation formatting, tables, diagrams, rotation and\n"
 "scaling, sorted indexes, bibliographic databases, running headers and\n"
-"odd-even pages, automatic cross referencing, multilingual documents "
-"including\n"
+"odd-even pages, automatic cross referencing, multilingual documents including\n"
 "hyphenation (most European languages are supported), formatting of computer\n"
 "programs, and much more, all ready to use.  Furthermore, Lout is easily\n"
 "extended with definitions which are very much easier to write than troff of\n"
@@ -348,10 +322,8 @@ msgstr "Manipuli simplajn tekst-dosierojn kiel datumbazojn"
 #: gnu/packages/recutils.scm:60
 msgid ""
 "GNU Recutils is a set of tools and libraries for creating and\n"
-"manipulating text-based, human-editable databases.  Despite being text-"
-"based,\n"
+"manipulating text-based, human-editable databases.  Despite being text-based,\n"
 "databases created with Recutils carry all of the expected features such as\n"
-"unique fields, primary keys, time stamps and more. Many different field "
-"types\n"
+"unique fields, primary keys, time stamps and more. Many different field types\n"
 "are supported, as is encryption."
 msgstr ""
