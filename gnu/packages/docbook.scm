@@ -100,7 +100,7 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                 "0rxl013ncmz1n6ymk2idvx3hix9pdabk8xn01cpcv32wmfb753y9"))))
     (build-system trivial-build-system)
     (arguments
-     `(#:builder (begin
+     `(#:builder (let ((name-version (string-append ,name "-" ,version)))
                    (use-modules (guix build utils))
 
                    (let* ((bzip2  (assoc-ref %build-inputs "bzip2"))
@@ -112,10 +112,13 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                      (system* (string-append tar "/bin/tar") "xvf" source)
 
                      (mkdir-p xsl)
-                     (copy-recursively (string-append ,name "-" ,version)
-                                       (string-append xsl "/" ,name
-                                                      "-" ,version))))
-       #:modules ((guix build utils))))
+                     (copy-recursively name-version
+                                       (string-append xsl "/" name-version))
+
+                     (substitute* (string-append xsl "/" name-version "/catalog.xml")
+                       (("rewritePrefix=\"./") 
+                        (string-append "rewritePrefix=\"file://" xsl "/" name-version "/")))))
+                 #:modules ((guix build utils))))
     (native-inputs `(("bzip2" ,bzip2)
                      ("tar" ,tar)))
     (home-page "http://docbook.org")
