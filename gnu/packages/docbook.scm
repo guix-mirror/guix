@@ -61,6 +61,28 @@ suited to books and papers about computer hardware and software (though it is
 by no means limited to these applications.)  This package provides XML DTDs.")
     (license (x11-style "" "See file headers."))))
 
+(define-public docbook-xml-4.4
+  (package (inherit docbook-xml)
+   (version "4.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.docbook.org/xml/" version
+                                  "/docbook-xml-" version ".zip"))
+              (sha256
+               (base32
+                "141h4zsyc71sfi2zzd89v4bb4qqq9ca1ri9ix2als9f4i3mmkw82"))))))
+
+(define-public docbook-xml-4.3
+  (package (inherit docbook-xml)
+   (version "4.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.docbook.org/xml/" version
+                                  "/docbook-xml-" version ".zip"))
+              (sha256
+               (base32
+                "0r1l2if1z4wm2v664sqdizm4gak6db1kx9y50jq89m3gxaa8l1i3"))))))
+
 (define-public docbook-xsl
   (package
     (name "docbook-xsl")
