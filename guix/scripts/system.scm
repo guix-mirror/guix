@@ -40,6 +40,11 @@
   #:export (guix-system
             read-operating-system))
 
+
+;;;
+;;; Operating system declaration.
+;;;
+
 (define %user-module
   ;; Module in which the machine description file is loaded.
   (let ((module (make-fresh-user-module)))
@@ -76,51 +81,76 @@
          (leave (_ "failed to load operating system file '~a': ~s~%")
                 file args))))))
 
-(define* (copy-closure store item target
+
+;;;
+;;; Installation.
+;;;
+
+;; TODO: Factorize.
+(define references*
+  (store-lift references))
+(define topologically-sorted*
+  (store-lift topologically-sorted))
+(define show-what-to-build*
+  (store-lift show-what-to-build))
+
+
+(define* (copy-closure item target
                        #:key (log-port (current-error-port)))
   "Copy ITEM to the store under root directory TARGET and register it."
-  (let ((dest (string-append target item))
-        (refs (references store item)))
-    (format log-port "copying '~a'...~%" item)
-    (copy-recursively item dest
-                      #:log (%make-void-port "w"))
+  (mlet* %store-monad ((refs (references* item)))
+    (let ((dest (string-append target item)))
+      (format log-port "copying '~a'...~%" item)
+      (copy-recursively item dest
+                        #:log (%make-void-port "w"))
 
-    ;; Register ITEM; as a side-effect, it resets timestamps, etc.
-    (unless (register-path item
-                           #:prefix target
-                           #:references refs)
-      (leave (_ "failed to register '~a' under '~a'~%")
-             item target))))
+      ;; Register ITEM; as a side-effect, it resets timestamps, etc.
+      (unless (register-path item
+                             #:prefix target
+                             #:references refs)
+        (leave (_ "failed to register '~a' under '~a'~%")
+               item target))
 
-(define* (install store os-dir target
+      (return #t))))
+
+(define* (install os-drv target
                   #:key (log-port (current-output-port))
                   grub? grub.cfg device)
-  "Copy OS-DIR and its dependencies to directory TARGET.  TARGET must be an
-absolute directory name since that's what 'guix-register' expects.
+  "Copy the output of OS-DRV and its dependencies to directory TARGET.  TARGET
+must be an absolute directory name since that's what 'guix-register' expects.
 
 When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
-  (define to-copy
-    (let ((lst (delete-duplicates (cons os-dir (references store os-dir))
-                                  string=?)))
-      (topologically-sorted store lst)))
+  (define (maybe-copy to-copy)
+    (with-monad %store-monad
+      (if (string=? target "/")
+          (begin
+            (warning (_ "initializing the current root file system~%"))
+            (return #t))
+          (begin
+            ;; Make sure the target store exists.
+            (mkdir-p (string-append target (%store-prefix)))
 
-  (if (string=? target "/")
-      (warning (_ "initializing the current root file system~%"))
-      (begin
-        ;; Make sure the target store exists.
-        (mkdir-p (string-append target (%store-prefix)))
+            ;; Copy items to the new store.
+            (sequence %store-monad
+                      (map (cut copy-closure <> target #:log-port log-port)
+                           to-copy))))))
 
-        ;; Copy items to the new store.
-        (for-each (cut copy-closure store <> target #:log-port log-port)
-                  to-copy)))
+  (mlet* %store-monad ((os-dir -> (derivation->output-path os-drv))
+                       (refs      (references* os-dir))
+                       (lst    -> (delete-duplicates (cons os-dir refs)
+                                                     string=?))
+                       (to-copy   (topologically-sorted* lst))
+                       (%         (maybe-copy to-copy)))
 
-  ;; Create a bunch of additional files.
-  (format log-port "populating '~a'...~%" target)
-  (populate-root-file-system os-dir target)
+    ;; Create a bunch of additional files.
+    (format log-port "populating '~a'...~%" target)
+    (populate-root-file-system os-dir target)
 
-  (when grub?
-    (unless (false-if-exception (install-grub grub.cfg device target))
-      (leave (_ "failed to install GRUB on device '~a'~%") device))))
+    (when grub?
+      (unless (false-if-exception (install-grub grub.cfg device target))
+        (leave (_ "failed to install GRUB on device '~a'~%") device)))
+
+    (return #t)))
 
 
 ;;;
@@ -131,25 +161,23 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
   ;; The system profile.
   (string-append %state-directory "/profiles/system"))
 
-(define* (switch-to-system store os system-directory
-                           #:optional (profile %system-profile)
-                           #:key system)
-  "Make a new generation of PROFILE pointing to SYSTEM-DIRECTORY, which is the
-directory corresponding to OS on SYSTEM, switch to it atomically, and then run
-OS's activation script."
-  (let* ((number     (+ 1 (generation-number profile)))
-         (generation (generation-file-name profile number)))
-    (symlink system generation)
-    (switch-symlinks profile generation)
+(define* (switch-to-system os
+                           #:optional (profile %system-profile))
+  "Make a new generation of PROFILE pointing to the directory of OS, switch to
+it atomically, and then run OS's activation script."
+  (mlet* %store-monad ((drv    (operating-system-derivation os))
+                       (script (operating-system-activation-script os)))
+    (let* ((system     (derivation->output-path drv))
+           (number     (+ 1 (generation-number profile)))
+           (generation (generation-file-name profile number)))
+      (symlink system generation)
+      (switch-symlinks profile generation)
 
-    (run-with-store store
-      (mlet %store-monad ((script (operating-system-activation-script os)))
-        (format #t (_ "activating system...~%"))
-        (return (primitive-load (derivation->output-path script))))
-      #:system system)
+      (format #t (_ "activating system...~%"))
+      (return (primitive-load (derivation->output-path script)))
 
-    ;; TODO: Run 'deco reload ...'.
-    ))
+      ;; TODO: Run 'deco reload ...'.
+      )))
 
 (define-syntax-rule (unless-file-not-found exp)
   (catch 'system-error
@@ -187,6 +215,92 @@ OS's activation script."
   (let ((systems (map (cut generation-file-name profile <>)
                       (generation-numbers profile))))
     (filter-map system->grub-entry systems)))
+
+
+;;;
+;;; Action.
+;;;
+
+(define* (system-derivation-for-action os action
+                                       #:key image-size)
+  "Return as a monadic value the derivation for OS according to ACTION."
+  (case action
+    ((build init reconfigure)
+     (operating-system-derivation os))
+    ((vm-image)
+     (system-qemu-image os #:disk-image-size image-size))
+    ((vm)
+     (system-qemu-image/shared-store-script os))
+    ((disk-image)
+     (system-disk-image os #:disk-image-size image-size))))
+
+(define (grub.cfg os)
+  "Return the GRUB configuration file for OS."
+  (operating-system-grub.cfg os (previous-grub-entries)))
+
+(define* (maybe-build drvs
+                      #:key dry-run? use-substitutes?)
+  "Show what will/would be built, and actually build DRVS, unless DRY-RUN? is
+true."
+  (with-monad %store-monad
+    (>>= (show-what-to-build* drvs
+                              #:dry-run? dry-run?
+                              #:use-substitutes? use-substitutes?)
+         (lambda (_)
+           (if dry-run?
+               (return #f)
+               (built-derivations drvs))))))
+
+(define* (perform-action action os
+                         #:key grub? dry-run?
+                         use-substitutes? device target
+                         image-size)
+  "Perform ACTION for OS.  GRUB? specifies whether to install GRUB; DEVICE is
+the target devices for GRUB; TARGET is the target root directory; IMAGE-SIZE
+is the size of the image to be built, for the 'vm-image' and 'disk-image'
+actions."
+  (mlet* %store-monad
+      ((sys       (system-derivation-for-action os action
+                                                #:image-size image-size))
+       (grub      (package->derivation grub))
+       (grub.cfg  (grub.cfg os))
+       (drvs   -> (if (and grub? (memq action '(init reconfigure)))
+                      (list sys grub grub.cfg)
+                      (list sys)))
+       (%         (maybe-build drvs #:dry-run? dry-run?
+                               #:use-substitutes? use-substitutes?)))
+
+    (if dry-run?
+        (return #f)
+        (begin
+          (for-each (cut format #t "~a~%" <>)
+                    (map derivation->output-path drvs))
+
+          ;; Make sure GRUB is accessible.
+          (when grub?
+            (let ((prefix (derivation->output-path grub)))
+              (setenv "PATH"
+                      (string-append  prefix "/bin:" prefix "/sbin:"
+                                      (getenv "PATH")))))
+
+          (case action
+            ((reconfigure)
+             (mlet %store-monad ((% (switch-to-system os)))
+               (when grub?
+                 (unless (install-grub grub.cfg device target)
+                   (leave (_ "failed to install GRUB on device '~a'~%")
+                          device)))))
+            ((init)
+             (newline)
+             (format #t (_ "initializing operating system under '~a'...~%")
+                     target)
+             (install sys (canonicalize-path target)
+                      #:grub? grub?
+                      #:grub.cfg (derivation->output-path grub.cfg)
+                      #:device device))
+            (else
+             ;; All we had to do was to build SYS.
+             (return (derivation->output-path sys))))))))
 
 
 ;;;
@@ -315,69 +429,26 @@ Build the operating system declared in FILE according to ACTION.\n"))
            (os       (if file
                          (read-operating-system file)
                          (leave (_ "no configuration file specified~%"))))
-           (mdrv     (case action
-                       ((build init reconfigure)
-                        (operating-system-derivation os))
-                       ((vm-image)
-                        (let ((size (assoc-ref opts 'image-size)))
-                          (system-qemu-image os
-                                             #:disk-image-size size)))
-                       ((vm)
-                        (system-qemu-image/shared-store-script os))
-                       ((disk-image)
-                        (let ((size (assoc-ref opts 'image-size)))
-                          (system-disk-image os
-                                             #:disk-image-size size)))))
-           (store    (open-connection))
+
            (dry?     (assoc-ref opts 'dry-run?))
-           (drv      (run-with-store store mdrv #:system system))
            (grub?    (assoc-ref opts 'install-grub?))
-           (old      (previous-grub-entries))
-           (grub.cfg (run-with-store store
-                       (operating-system-grub.cfg os old)
-                       #:system system))
-           (grub     (package-derivation store grub system))
-           (drv-lst  (if grub?
-                         (list drv grub grub.cfg)
-                         (list drv))))
+           (target   (match args
+                       ((first second) second)
+                       (_ #f)))
+           (device   (and grub?
+                          (grub-configuration-device
+                           (operating-system-bootloader os))))
+
+           (store    (open-connection)))
       (set-build-options-from-command-line store opts)
-      (show-what-to-build store drv-lst
-                          #:dry-run? dry?
-                          #:use-substitutes? (assoc-ref opts 'substitutes?))
 
-      (unless dry?
-        (build-derivations store drv-lst)
-        (display (derivation->output-path drv))
-        (newline)
-
-        ;; Make sure GRUB is accessible.
-        (when grub
-          (let ((prefix (derivation->output-path grub)))
-            (setenv "PATH"
-                    (string-append  prefix "/bin:" prefix "/sbin:"
-                                    (getenv "PATH")))))
-
-        (let ((target (match args
-                        ((first second) second)
-                        (_ #f)))
-              (device (and grub?
-                           (grub-configuration-device
-                            (operating-system-bootloader os)))))
-          (case action
-            ((reconfigure)
-             (switch-to-system store os (derivation->output-path drv)
-                               #:system system)
-             (when grub?
-               (unless (install-grub grub.cfg device target)
-                 (leave (_ "failed to install GRUB on device '~a'~%") device))))
-            ((init)
-             (format #t (_ "initializing operating system under '~a'...~%")
-                     target)
-
-             (install store (derivation->output-path drv)
-                      (canonicalize-path target)
-                      #:grub? grub?
-                      #:grub.cfg (derivation->output-path grub.cfg)
-                      #:device device))))))))
+      (run-with-store store
+        (perform-action action os
+                        #:dry-run? dry?
+                        #:use-substitutes? (assoc-ref opts 'substitutes?)
+                        #:image-size (assoc-ref opts 'image-size)
+                        #:grub? grub?
+                        #:target target #:device device)
+        #:system system))))
 
 ;;; system.scm ends here
