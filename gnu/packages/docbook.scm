@@ -50,8 +50,12 @@
                           (dtd    (string-append out "/xml/dtd/docbook")))
                      (mkdir-p dtd)
                      (with-directory-excursion dtd
-                       (system* unzip source))))
-       #:modules ((guix build utils))))
+                       (system* unzip source))
+                     (substitute* (string-append out "/xml/dtd/docbook/catalog.xml")
+                       (("uri=\"") 
+                        (string-append 
+                         "uri=\"file://" dtd "/")))))
+                 #:modules ((guix build utils))))
     (native-inputs `(("unzip" ,unzip)))
     (home-page "http://docbook.org")
     (synopsis "DocBook XML DTDs for document authoring")
