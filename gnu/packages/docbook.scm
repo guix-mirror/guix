@@ -64,14 +64,14 @@ by no means limited to these applications.)  This package provides XML DTDs.")
 (define-public docbook-xsl
   (package
     (name "docbook-xsl")
-    (version "1.72.0")
+    (version "1.78.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://sourceforge/docbook/docbook-xsl-"
                                   version ".tar.bz2"))
               (sha256
                (base32
-                "1cnrfgqz8pc9wnlgqjch2338ad7jki6d4h6b2fhaxn1a2201df5k"))))
+                "0rxl013ncmz1n6ymk2idvx3hix9pdabk8xn01cpcv32wmfb753y9"))))
     (build-system trivial-build-system)
     (arguments
      `(#:builder (begin
