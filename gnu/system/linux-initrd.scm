@@ -206,6 +206,7 @@ initrd code."
                       qemu-networking?
                       virtio?
                       volatile-root?
+                      (extra-modules '())
                       guile-modules-in-chroot?)
   "Return a monadic derivation that builds a generic initrd.  FILE-SYSTEMS is
 a list of file-systems to be mounted by the initrd, possibly in addition to
@@ -217,6 +218,11 @@ be used as a QEMU guest with para-virtualized I/O drivers.
 
 When VOLATILE-ROOT? is true, the root file system is writable but any changes
 to it are lost.
+
+The initrd is automatically populated with all the kernel modules necessary
+for FILE-SYSTEMS and for the given options.  However, additional kernel
+modules can be listed in EXTRA-MODULES.  They will be added to the initrd, and
+loaded at boot time in the order in which they appear.
 
 When GUILE-MODULES-IN-CHROOT? is true, make core Guile modules available in
 the new root.  This is necessary is the file specified as '--load' needs
@@ -252,7 +258,8 @@ exception and backtrace!)."
             '())
       ,@(if volatile-root?
             '("fuse.ko")
-            '())))
+            '())
+      ,@extra-modules))
 
   (define helper-packages
     ;; Packages to be copied on the initrd.
