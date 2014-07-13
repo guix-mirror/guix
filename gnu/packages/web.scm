@@ -528,25 +528,19 @@ help you implement simple HTTP servers.")
        (alist-cons-before
         'build 'pre-build
         (lambda* (#:key inputs #:allow-other-keys #:rest args)
-          ;; This stuff is needed, because without it, xmlint etc tries
-          ;; to download docbookx.dtd and docbook.xsl from the net
-          (let ((build (assoc-ref %standard-phases 'build))
-                (docbook-xml (assoc-ref inputs "docbook-xml"))
-                (docbook-xsl (assoc-ref inputs "docbook-xsl"))
-                (our-catalog "/tmp/docbook-xml.xml"))
-            (setenv "XML_CATALOG_FILES" our-catalog)
-            (with-output-to-file our-catalog
-              (lambda ()
-                (display (string-append
-                          "<?xml version=\"1.0\"?>
-<!DOCTYPE catalog PUBLIC \"-//OASIS//DTD XML Catalogs V1.0//EN\"
-\"file:///usr/share/xml/schema/xml-core/catalog.dtd\">
-<catalog xmlns=\"urn:oasis:names:tc:entity:xmlns:xml:catalog\">
-<system systemId=\"http://www.oasis-open.org/docbook/xml/4.5/docbookx.dtd\"
-uri=\"file://" docbook-xml  "/xml/dtd/docbook/docbookx.dtd\"/>
-<system systemId=\"http://docbook.sourceforge.net/release/xsl/current/manpages/docbook.xsl\"
-uri=\"file://" docbook-xsl  "/xml/xsl/docbook-xsl-1.72.0/manpages/docbook.xsl\"/>
-</catalog>\n"))))))
+          ;; Uncommenting the next two lines may assist in debugging
+          ;; (substitute* "docs/man5/Makefile" (("a2x") "a2x -v"))
+          ;; (setenv "XML_DEBUG_CATALOG" "1")
+
+          (setenv "XML_CATALOG_FILES" 
+                  (string-append
+                   (assoc-ref inputs "docbook-xsl") 
+                   "/xml/xsl/docbook-xsl-1.78.1/catalog.xml"
+                   ;; Contrary to the documentation, the file names must
+                   ;; be separated by a space, not a colon.
+                   " " 
+                   (assoc-ref inputs "docbook-xml") 
+                   "/xml/dtd/docbook/catalog.xml")))
         %standard-phases)))
     ;; All of the below are used to generate the documentation
     ;; (Should they be propagated inputs of asciidoc ??)
