@@ -1298,6 +1298,7 @@ from the module-init-tools project.")
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("gperf" ,gperf)
+       ("glib" ,glib "bin")                       ; glib-genmarshal, etc.
        ("perl" ,perl)                             ; for the tests
        ("python" ,python-2)))                     ; ditto
     (inputs

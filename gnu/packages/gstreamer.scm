@@ -51,6 +51,7 @@
     (native-inputs
      `(("bison" ,bison)
        ("flex" ,flex)
+       ("glib" ,glib "bin")
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
        ("python-wrapper" ,python-wrapper)))
@@ -60,7 +61,7 @@
      "GStreamer is a library for constructing graphs of media-handling
 components.  The applications it supports range from simple Ogg/Vorbis
 playback, audio/video streaming to complex audio (mixing) and video
-(non-linear editing) processing.
+ (non-linear editing) processing.
 
 Applications can take advantage of advances in codec and filter technology
 transparently.  Developers can add new codecs and filters by writing a
@@ -91,6 +92,7 @@ This package provides the core library and elements.")
        ("flex" ,flex)
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")
        ("python" ,python-2)))))
 
 (define-public gst-plugins-base
@@ -112,6 +114,7 @@ This package provides the core library and elements.")
        ("gstreamer" ,gstreamer)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
+        ("glib" ,glib "bin")
         ("python-wrapper" ,python-wrapper)))
     (arguments
      `(#:tests? #f))
@@ -154,4 +157,5 @@ This package provides an essential exemplary set of elements.")
        ("gstreamer" ,gstreamer-0.10)))
     (native-inputs
       `(("pkg-config" ,pkg-config)
-       ("python" ,python-2)))))
+        ("glib" ,glib "bin")
+        ("python" ,python-2)))))

@@ -106,6 +106,7 @@
        ("attr" ,attr)))
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("python" ,python-2) ; incompatible with Python 3 according to error message
+                     ("glib" ,glib "bin") ; gtester, etc.
                      ("texinfo" ,texinfo)
                      ("perl" ,perl)))
     (home-page "http://www.qemu-project.org")

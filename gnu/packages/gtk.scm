@@ -54,6 +54,7 @@
    (inputs `(("glib" ,glib)))
    (native-inputs
     `(("pkg-config" ,pkg-config)
+      ("glib" ,glib "bin")                               ; glib-mkenums, etc.
       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME accessibility toolkit")
    (description
@@ -158,6 +159,7 @@ affine transformation (scale, rotation, shear, etc.)")
     `(("zlib" ,zlib)))
    (native-inputs
     `(("pkg-config" ,pkg-config)
+      ("glib" ,glib "bin")                               ; glib-mkenums, etc.
       ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME text and font handling library")
    (description
@@ -215,7 +217,8 @@ functions which were removed.")
        ("xorg-server" ,xorg-server)
        ("shared-mime-info" ,shared-mime-info)))
     (native-inputs
-      `(("intltool" ,intltool)
+     `(("intltool" ,intltool)
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
     (arguments
      `(#:phases
@@ -267,6 +270,7 @@ printing and other features typical of a source code editor.")
       ("libtiff" ,libtiff)))
    (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
        ("gobject-introspection", gobject-introspection))) ; g-ir-compiler, etc.
    (synopsis "GNOME image loading and manipulation library")
    (description
@@ -353,6 +357,7 @@ is part of the GNOME accessibility project.")
       ("pango" ,pango)))
    (native-inputs
     `(("perl" ,perl)
+      ("glib" ,glib "bin")
       ("pkg-config" ,pkg-config)
       ("python-wrapper" ,python-wrapper)))
    (arguments
@@ -395,6 +400,7 @@ application suites.")
     `(("libxml2" ,libxml2)))
    (native-inputs
     `(("perl" ,perl)
+      ("glib" ,glib "bin")
       ("pkg-config" ,pkg-config)
       ("gobject-introspection" ,gobject-introspection)
       ("python-wrapper" ,python-wrapper)

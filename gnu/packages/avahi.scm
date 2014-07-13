@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -60,6 +60,7 @@
        ("libdaemon" ,libdaemon)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (synopsis "Avahi, an mDNS/DNS-SD implementation")
     (description

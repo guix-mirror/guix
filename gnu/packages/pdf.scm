@@ -69,7 +69,8 @@
                                                (package-inputs cairo)))))
              ("glib" ,glib)))
    (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      `(("pkg-config" ,pkg-config)
+        ("glib" ,glib "bin")))                    ; glib-mkenums, etc.
    (arguments
     `(#:tests? #f ; no test data provided with the tarball
       #:configure-flags

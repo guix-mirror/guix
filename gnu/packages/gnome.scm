@@ -42,7 +42,8 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages xorg))
+  #:use-module (gnu packages xorg)
+  #:use-module (srfi srfi-1))
 
 (define-public brasero
   (package
@@ -60,6 +61,7 @@
      `(("hicolor-icon-theme" ,hicolor-icon-theme)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
        ("pkg-config" ,pkg-config)))
     (inputs
      `(("glib" ,glib)
@@ -73,9 +75,6 @@
        ("libnotify" ,libnotify)
        ("libsm" ,libsm)
        ("libxml2" ,libxml2)))
-    (native-inputs
-     `(("intltool" ,intltool)
-       ("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/brasero/")
     (synopsis "CD/DVD burning tool for Gnome")
     (description "Brasero is an application to burn CD/DVD for the Gnome
@@ -173,6 +172,7 @@ and keep up to date translations of documentation.")
        ("dbus" ,dbus)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")
        ("intltool" ,intltool)))
     (propagated-inputs
      ;; Referred to in .h files and .pc.
@@ -239,6 +239,7 @@ and keep up to date translations of documentation.")
        ("dogtail" ,python2-dogtail)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (home-page
      "http://www.gnome.org/projects/evince/")
@@ -268,6 +269,7 @@ on the GNOME Desktop with a single simple application.")
      `(("glib" ,glib)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")                       ; glib-compile-schemas, etc.
        ("pkg-config" ,pkg-config)))
     (home-page "https://launchpad.net/gsettings-desktop-schemas")
     (synopsis
@@ -402,7 +404,8 @@ database is translated at Transifex.")
        ("gtk+" ,gtk+)
        ("libpng" ,libpng)))
     (native-inputs
-      `(("pkg-config" ,pkg-config)))
+      `(("pkg-config" ,pkg-config)
+        ("glib" ,glib "bin")))
     (home-page "https://developer-next.gnome.org/libnotify/")
     (synopsis
      "GNOME desktop notification library")
@@ -465,7 +468,8 @@ the API")
               ("mesa" ,mesa)
               ("libx11" ,libx11)
               ("libxt" ,libxt)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("glib" ,glib "bin")))
     (propagated-inputs `(("pangox-compat" ,pangox-compat)))
     (home-page "https://projects.gnome.org/gtkglext")
     (synopsis "OpenGL extension to GTK+.")
@@ -595,6 +599,7 @@ dealing with different structured file formats.")
         %standard-phases)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")                               ; glib-mkenums, etc.
        ("gobject-introspection" ,gobject-introspection))) ; g-ir-compiler, etc.
     (inputs
      `(("pango" ,pango)
@@ -689,33 +694,36 @@ featuring mature C, C++ and Python bindings.")
     (version "2.32.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 4) "/" name "-"
-                    version
-                    ".tar.bz2"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (string-join (take (string-split version #\.) 2)
+                                               ".")
+                                  "/" name "-" version ".tar.bz2"))
               (sha256
-               (base32 "0swp4kk6x7hy1rvd1f9jba31lvfc6qvafkvbpg9h0r34fzrd8q4i"))))
+               (base32 "0swp4kk6x7hy1rvd1f9jba31lvfc6qvafkvbpg9h0r34fzrd8q4i"))
+              (patches (list (search-patch "libbonobo-activation-test-race.patch")))))
     (build-system gnu-build-system)
     (arguments
      ;; The programmer kindly gives us a hook to turn off deprecation warnings ...
-     `(#:configure-flags '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
-                         ;; ... which they then completly ignore !!
-                         #:phases
-                         (alist-cons-before
-                          'configure 'ignore-deprecations
-                          (lambda _
-                            (substitute* "activation-server/Makefile.in"
-                              (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
-                          %standard-phases)))
+     `(#:configure-flags
+       '("DISABLE_DEPRECATED_CFLAGS=-DGLIB_DISABLE_DEPRECATION_WARNINGS")
+       ;; ... which they then completly ignore !!
+       #:phases
+       (alist-cons-before
+        'configure 'ignore-deprecations
+        (lambda _
+          (substitute* "activation-server/Makefile.in"
+            (("-DG_DISABLE_DEPRECATED") "-DGLIB_DISABLE_DEPRECATION_WARNINGS")))
+        %standard-phases)))
     (inputs `(("popt" ,popt)
               ("libxml2" ,libxml2)))
     ;; The following are Required by the .pc file
-    (propagated-inputs  
+    (propagated-inputs
      `(("glib" ,glib)
        ("orbit2" ,orbit2)))
     (native-inputs
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("flex" ,flex)
        ("bison" ,bison)))
     (home-page "https://developer.gnome.org/libbonobo/")
@@ -750,6 +758,7 @@ use in GNOME applications, built on top of CORBA.")
     (propagated-inputs `(("orbit2" ,orbit2))) ; referred to in the .pc file
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/gconf/")
     (synopsis "store application preferences")
@@ -818,7 +827,8 @@ designed to be accessed through the MIME functions in GnomeVFS.")
               ("gnome-mime-data" ,gnome-mime-data)
               ("zlib" ,zlib)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/gnome-vfs/")
     (synopsis "access files and folders in GNOME applications")
@@ -855,7 +865,8 @@ allows applications to access local and remote files with a single consistent AP
     (inputs `(("popt" ,popt)
               ("libxml2" ,libxml2)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     ;; The following are listed as Required in the .pc file
     ;; (except for libcanberra -- which seems to be oversight on the part
@@ -919,6 +930,7 @@ high-quality vector-based 2D library with antialiasing and alpha composition.")
                          ("gtk+" ,gtk+-2)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/libgnomecanvas/")
     (synopsis "Flexible widget for creating interactive structured graphics")
@@ -951,7 +963,8 @@ creating interactive structured graphics.")
               ("libxml2" ,libxml2)
               ("libglade" ,libglade)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib" ,glib "bin")             ; for glib-mkenums, etc.
+       ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/libgnomeui/")
     (synopsis "Additional widgets for applications")
@@ -1004,9 +1017,10 @@ widgets built in the loading process.")
      `(("popt" ,popt)
        ("libart-lgpl" ,libart-lgpl)
        ("gtk+" ,gtk+-2)
-       ("libxml2" ,libxml2))) 
+       ("libxml2" ,libxml2)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/gnome-print/home/faq.html")
     (synopsis "printing framework for GNOME")
@@ -1051,9 +1065,9 @@ widgets built in the loading process.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
-                    version
-                    ".tar.bz2"))
+                    "mirror://gnome/sources/" name "/"
+                    (string-join (take (string-split version #\.) 2) ".")
+                    "/" name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "1kbgqh7bw0fdx4f1a1aqwpff7gp5mwhbaz60c6c98bc4djng5dgs"))))
@@ -1081,7 +1095,8 @@ widgets built in the loading process.")
        ("libgnomecanvas" ,libgnomecanvas)
        ("libglade" ,libglade)))
     (native-inputs
-     `(("intltool" ,intltool)
+     `(("glib" ,glib "bin")             ; for glib-genmarshal, etc.
+       ("intltool" ,intltool)
        ("xorg-server" ,xorg-server) ; For running the tests
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/libbonoboui/")
