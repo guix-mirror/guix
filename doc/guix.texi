@@ -126,6 +126,11 @@ GNU Guix is available for download from its website at
 software requirements of Guix, as well as how to install it and get
 ready to use it.
 
+Note that this section is concerned with the installation of the package
+manager, which can be done on top of a running GNU/Linux system.  If,
+instead, you want to install the complete GNU operating system,
+@ref{System Installation}.
+
 The build procedure for Guix is the same as for other GNU software, and
 is not covered here.  Please see the files @file{README} and
 @file{INSTALL} in the Guix source tree for additional details.
@@ -2598,6 +2603,7 @@ For information on porting to other architectures or kernels,
 @xref{Porting}.
 
 @menu
+* System Installation::         Installing the whole operating system.
 * Installing Debugging Files::  Feeding the debugger.
 * Package Modules::             Packages from the programmer's viewpoint.
 * Packaging Guidelines::        Growing the distribution.
@@ -2608,6 +2614,172 @@ For information on porting to other architectures or kernels,
 
 Building this distribution is a cooperative effort, and you are invited
 to join!  @ref{Contributing}, for information about how you can help.
+
+@node System Installation
+@section System Installation
+
+This section explains how to install the complete GNU operating system
+on a machine.  The Guix package manager can also be installed on top of
+a running GNU/Linux system, @ref{Installation}.
+
+@ifinfo
+@c This paragraph is for people reading this from tty2 of the
+@c installation image.
+You're reading this documentation with an Info reader.  For details on
+how to use it, hit the @key{RET} key (``return'' or ``enter'') on the
+link that follows: @ref{Help,,, info, Info: An Introduction}.  Hit
+@kbd{l} afterwards to come back here.
+@end ifinfo
+
+@emph{This section documents work-in-progress.  The system lacks
+features and may be buggy.  You've been warned.  But more than a
+disclaimer, this is an invitation to report issues (and success
+stories!), and join us in improving it.  @xref{Contributing}, for more
+info.}
+
+@subsection USB Stick Installation
+
+An installation image for USB sticks can be downloaded from
+@url{ftp://alpha.gnu.org/gnu/guix/gnu-usb-install-@value{VERSION}.@var{system}.xz},
+where @var{system} is one of:
+
+@table @code
+@item x86_64-linux
+for a GNU/Linux system on Intel/AMD-compatible 64-bit CPUs;
+
+@item i686-linux
+for a 32-bit GNU/Linux system on Intel-compatible CPUs.
+@end table
+
+This image contains a single partition with the tools necessary for an
+installation.  It is meant to be copied @emph{as is} to a large-enough
+USB stick.
+
+To copy the image to a USB stick, follow these steps:
+
+@enumerate
+@item
+Decompress the image using the @command{xz} command:
+
+@example
+xz -d gnu-usb-install-@value{VERSION}.@var{system}.xz
+@end example
+
+@item
+Insert a USB stick of 1@tie{}GiB or more in your machine, and determine
+its device name.  Assuming that USB stick is known as @file{/dev/sdX},
+copy the image with:
+
+@example
+dd if=gnu-usb-install-20140629.x86_64 of=/dev/sdX
+@end example
+
+Access to @file{/dev/sdX} usually requires root privileges.
+@end enumerate
+
+Once this is done, you should be able to reboot the system and boot from
+the USB stick.  The latter usually requires you to get in the BIOS' boot
+menu, where you can choose to boot from the USB stick.
+
+@subsection Preparing for Installation
+
+Once you have successfully booted the image on the USB stick, you should
+end up with a root prompt.  Several console TTYs are configured and can
+be used to run commands as root.  TTY2 shows this documentation,
+browsable using the Info reader commands (@pxref{Help,,, info, Info: An
+Introduction}).
+
+To install the system, you would:
+
+@enumerate
+
+@item
+Configure the network, by running @command{dhclient eth0} (to get an
+automatically assigned IP address from the wired network interface
+controller), or using the @command{ifconfig} command.
+
+The system automatically loads drivers for your network interface
+controllers.
+
+Setting up network access is almost always a requirement because the
+image does not contain all the software and tools that may be needed.
+
+@item
+Unless this has already been done, you must partition and format the
+target partitions.
+
+The installation image includes Parted (@pxref{Overview,,, parted, GNU
+Parted User Manual}), @command{fdisk}, and e2fsprogs, the suite of tools
+to manipulate ext2/ext3/ext4 file systems.
+
+@end enumerate
+
+Once that is done, mount the target root partition under @file{/mnt}.
+
+@subsection Proceeding with the Installation
+
+With the target partitions ready, you now have to edit a file and
+provide the declaration of the operating system to be installed.  To
+that end, the installation system comes with two text editors: GNU nano
+(@pxref{Top,,, nano, GNU nano Manual}), and GNU Zile, an Emacs clone.
+It is better to store that file on the target root file system, say, as
+@file{/mnt/etc/config.scm}.
+
+A minimal operating system configuration, with just the bare minimum and
+only a root account would look like this:
+
+@example
+(use-modules (gnu))
+
+(operating-system
+  (host-name "foo")
+  (timezone "Europe/Paris")
+  (locale "en_US.UTF-8")
+
+  ;; Assuming /dev/sdX is the target hard disk, and /dev/sdX1 the
+  ;; target root file system.
+  (bootloader (grub-configuration (device "/dev/sdX")))
+  (file-systems (list (file-system
+                        (device "/dev/sdX1")
+                        (mount-point "/")
+                        (type "ext4")))))
+@end example
+
+@noindent
+For more information on @code{operating-system} declarations,
+@xref{Using the Configuration System}.
+
+Once that is done, the new system must be initialized (remember that the
+target root file system is mounted under @file{/mnt}):
+
+@example
+guix system init /mnt/etc/config.scm /mnt
+@end example
+
+@noindent
+This will copy all the necessary files, and install GRUB on
+@file{/dev/sdX}, unless you pass the @option{--no-grub} option.  For
+more information, @xref{Invoking guix system}.  This command may trigger
+downloads or builds of missing packages, which can take some time.
+
+Once that command has completed---and hopefully succeeded!---you can
+unmount @file{/mnt} and boot into the new system.  Cross fingers, and
+join us on @code{#guix} on the Freenode IRC network or on
+@file{guix-devel@@gnu.org} to share your experience---good or not so
+good.
+
+@subsection Building the Installation Image
+
+The installation image described above was built using the @command{guix
+system} command, specifically:
+
+@example
+guix system disk-image --image-size=800MiB gnu/system/install.scm
+@end example
+
+@xref{Invoking guix system}, for more information.  See
+@file{gnu/system/install.scm} in the source tree for more information
+about the installation image.
 
 
 @node Installing Debugging Files
@@ -3078,10 +3250,6 @@ reason.
 
 @node System Configuration
 @section System Configuration
-
-@emph{This section documents work-in-progress.  As such it may be
-incomplete, outdated, or open to discussions.  Please discuss it on
-@email{guix-devel@@gnu.org}.}
 
 @cindex system configuration
 The GNU system supports a consistent whole-system configuration
