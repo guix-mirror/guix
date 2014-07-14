@@ -133,7 +133,11 @@ Use Alt-F2 for documentation.
      (base-pam-services #:allow-empty-passwords? #t))
 
     (packages (cons* texinfo-4                ; for the standalone Info reader
-                     parted fdisk ddrescue
+                     parted ddrescue
+                     ;; XXX: We used to have GNU fdisk here, but as of version
+                     ;; 2.0.0a, that pulls Guile 1.8, which takes unreasonable
+                     ;; space; furthermore util-linux's fdisk is already
+                     ;; available here, so we keep that.
                      %base-packages))))
 
 ;; Return it here so 'guix system' can consume it directly.
