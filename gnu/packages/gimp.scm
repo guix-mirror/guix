@@ -139,8 +139,10 @@ buffers.")
      `(("pkg-config" ,pkg-config)
        ("intltool" ,intltool)))
     (home-page "http://gimp.org")
-    (synopsis "Image manipulation program.")
-    (description "GIMP is the GNU Image Manipulation Program. It is a freely
-distributed piece of software for such tasks as photo retouching, image
-composition and image authoring.")
+    (synopsis "GNU Image Manipulation Program")
+    (description
+     "GIMP is an application for image manipulation tasks such as photo
+retouching, composition and authoring.  It supports all common image formats
+as well as specialized ones.  It features a highly customizable interface
+that is extensible via a plugin system.")
     (license license:gpl3+))) ; some files are lgplv3

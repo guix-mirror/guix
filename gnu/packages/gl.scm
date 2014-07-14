@@ -207,8 +207,8 @@ emulation to complete hardware acceleration for modern GPUs.")
                                             "freeglut"))
                  %standard-phases)))
     (home-page "http://gnu.org/s/guile-opengl")
-    (synopsis "OpenGL bindings for Guile")
+    (synopsis "Guile binding for the OpenGL graphics API")
     (description
-     "GNU Guile-OpenGL is a library providing access to the OpenGL graphics
-API from GNU Guile.")
+     "Guile-OpenGL is a library for Guile that provides bindings to the
+OpenGL graphics API.")
     (license l:lgpl3+)))

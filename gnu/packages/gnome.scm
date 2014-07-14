@@ -1178,9 +1178,13 @@ controls using the Bonobo component framework.")
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnumeric.org")
-    (synopsis "Spreadsheet program")
-    (description "Gnumeric is a spreadsheet program for GNOME.  The project aims
-to become a drop in replacement for proprietary spreadsheets.")
-    (license 
+    (synopsis "Spreadsheet application")
+    (description
+     "GNUmeric is a GNU spreadsheet application, running under GNOME.  It is
+interoperable with other spreadsheet applications.  It has a vast array of
+features beyond typical spreadsheet functionality, such as support for linear
+and non-linear solvers, statistical analysis, and telecommunication
+engineering.")
+    (license
     ;; Dual licensed under GPLv2 or GPLv3 (both without "or later")
      (list license:gpl2 license:gpl3))))
