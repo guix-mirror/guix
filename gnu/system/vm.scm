@@ -287,10 +287,12 @@ to USB sticks meant to be read-only."
             (operating-system-file-systems os)))
 
   (let ((os (operating-system (inherit os)
-              ;; Since this is meant to be used on real hardware, don't set up
-              ;; QEMU networking.
+              ;; Since this is meant to be used on real hardware, don't
+              ;; install QEMU networking or anything like that, but make sure
+              ;; USB mass storage devices are available.
               (initrd (cut base-initrd <>
-                           #:volatile-root? volatile?))
+                           #:volatile-root? #t
+                           #:extra-modules '("usb-storage.ko")))
 
               ;; Force our own root file system.
               (file-systems (cons (file-system
