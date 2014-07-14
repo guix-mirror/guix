@@ -3632,20 +3632,8 @@ The @code{(gnu services @dots{})} modules define several procedures that allow
 users to declare the operating system's services (@pxref{Using the
 Configuration System}).  These procedures are @emph{monadic
 procedures}---i.e., procedures that return a monadic value in the store
-monad (@pxref{The Store Monad}).  Examples of such procedures include:
-
-@table @code
-@item mingetty-service
-return the definition of a service that runs @command{mingetty} to
-offer a login service on the given console tty;
-
-@item nscd-service
-return a definition for libc's name service cache daemon (nscd);
-
-@item guix-service
-return a definition for a service that runs @command{guix-daemon}
-(@pxref{Invoking guix-daemon}).
-@end table
+monad (@pxref{The Store Monad}).  For examples of such procedures,
+@xref{Services}.
 
 @cindex service definition
 The monadic value returned by those procedures is a @dfn{service
