@@ -32,6 +32,8 @@
   #:use-module (gnu packages which)
   #:use-module (gnu packages less)
   #:use-module (gnu packages zile)
+  #:use-module (gnu packages nano)
+  #:use-module (gnu packages lsof)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
   #:use-module (gnu services base)
@@ -215,8 +217,9 @@ explicitly appear in OS."
 (define %base-packages
   ;; Default set of packages globally visible.  It should include anything
   ;; required for basic administrator tasks.
-  (cons* procps psmisc which less zile
+  (cons* procps psmisc which less zile nano
          guile-final (@ (gnu packages admin) dmd) guix
+         lsof                                 ;for Guix's 'list-runtime-roots'
          util-linux inetutils isc-dhcp
          net-tools                        ; XXX: remove when Inetutils suffices
          module-init-tools udev kbd
