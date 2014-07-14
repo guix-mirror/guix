@@ -368,13 +368,22 @@ GUIX."
 failed to register hydra.gnu.org public key: ~a~%" status))))))))
 
 (define* (guix-service #:key (guix guix) (builder-group "guixbuild")
-                       (build-accounts 10) authorize-hydra-key?)
+                       (build-accounts 10) authorize-hydra-key?
+                       (use-substitutes? #t)
+                       (extra-options '()))
   "Return a service that runs the build daemon from @var{guix}, and has
 @var{build-accounts} user accounts available under @var{builder-group}.
 
 When @var{authorize-hydra-key?} is true, the @code{hydra.gnu.org} public key
 provided by @var{guix} is authorized upon activation, meaning that substitutes
-from @code{hydra.gnu.org} are used by default."
+from @code{hydra.gnu.org} are used by default.
+
+If @var{use-substitutes?} is false, the daemon is run with
+@option{--no-substitutes} (@pxref{Invoking guix-daemon,
+@option{--no-substitutes}}).
+
+Finally, @var{extra-options} is a list of additional command-line options
+passed to @command{guix-daemon}."
   (define activate
     ;; Assume that the store has BUILDER-GROUP as its group.  We could
     ;; otherwise call 'chown' here, but the problem is that on a COW unionfs,
@@ -392,7 +401,11 @@ from @code{hydra.gnu.org} are used by default."
              (start
               #~(make-forkexec-constructor
                  (list (string-append #$guix "/bin/guix-daemon")
-                       "--build-users-group" #$builder-group)))
+                       "--build-users-group" #$builder-group
+                       #$@(if use-substitutes?
+                              '()
+                              '("--no-substitutes"))
+                       #$@extra-options)))
              (stop #~(make-kill-destructor))
              (user-accounts accounts)
              (user-groups (list (user-group

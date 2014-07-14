@@ -3434,13 +3434,21 @@ settings.
 
 @deffn {Monadic Procedure} guix-service [#:guix guix] @
        [#:builder-group "guixbuild"] [#:build-accounts 10] @
-       [#:authorize-hydra-key? #f]
+       [#:authorize-hydra-key? #f] [#:use-substitutes? #t] @
+       [#:extra-options '()]
 Return a service that runs the build daemon from @var{guix}, and has
 @var{build-accounts} user accounts available under @var{builder-group}.
 
 When @var{authorize-hydra-key?} is true, the @code{hydra.gnu.org} public key
 provided by @var{guix} is authorized upon activation, meaning that substitutes
 from @code{hydra.gnu.org} are used by default.
+
+If @var{use-substitutes?} is false, the daemon is run with
+@option{--no-substitutes} (@pxref{Invoking guix-daemon,
+@option{--no-substitutes}}).
+
+Finally, @var{extra-options} is a list of additional command-line options
+passed to @command{guix-daemon}.
 @end deffn
 
 @deffn {Monadic Procedure} udev-service [#:udev udev]
