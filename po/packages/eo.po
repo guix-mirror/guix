@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: guix 0.6-pre1\n"
+"Project-Id-Version: guix-packages 0.7-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2014-06-25 22:55+0200\n"
-"PO-Revision-Date: 2014-06-03 09:35-0300\n"
+"PO-Revision-Date: 2014-07-14 11:28-0300\n"
 "Last-Translator: Felipe Castro <fefcas@gmail.com>\n"
 "Language-Team: Esperanto <translation-team-eo@lists.sourceforge.net>\n"
 "Language: eo\n"
@@ -50,7 +50,7 @@ msgstr ""
 "La ŝablono povas esti indikata kiel bazan aŭ etenditan regul-esprimon, aŭ\n"
 "kiel fiksajn ĉenojn.  Apriore, la kongruita teksto estas simple montrata\n"
 "en la ekrano, tamen la eligo povas esti ege personigita por inkluzivigi,\n"
-"ekzemple, lini-numerojn.  GNU grep oferaj multajn kromaĵojn kompare al la\n"
+"ekzemple, lini-numerojn.  GNU grep oferaj multajn aldonojn kompare al la\n"
 "originala aplikaĵo, inkluzive, ekzemple, rikuran serĉadon en dosierujoj."
 
 #: gnu/packages/base.scm:109
@@ -65,6 +65,10 @@ msgid ""
 "is often used for substituting text patterns in a stream.  The GNU\n"
 "implementation offers several extensions over the standard utility."
 msgstr ""
+"Sed estas ne-interaga, teksta flu-redaktilo.  Ĝi ricevas tekstan\n"
+"enigon el dosiero aŭ el la ĉefenigujo kaj tiam ĝi aplikas serion da teksto-redaktaj komandoj al la fluo kaj montras sian eligon en la ĉefeligujo.  \n"
+"Ĝi estas ofte uzata por anstataŭigi teksto-ŝablonojn en fluo.  La GNU-a \n"
+"realigo oferas plurajn aldonojn kompare al la ordinara aplikaĵo."
 
 #: gnu/packages/base.scm:144
 msgid "Managing tar archives"
@@ -79,6 +83,12 @@ msgid ""
 "creation/modification dates.  GNU tar offers many extensions over the\n"
 "standard utility."
 msgstr ""
+"Tar aldonas la eblecon krei arĥivojn tar, kaj ankaŭ la eblecon\n"
+"eltiri, ĝisdatigi aŭ listigi dosierojn en ekzistanta arĥivo. Ĝi estas\n"
+"utila por kombini multajn dosierojn en unu granda dosiero, tenante\n"
+"dosierujan strukturon kaj dosierinformojn kiel permesojn kaj\n"
+"dato de kreo/modifo.  GNU tar oferas multajn aldonojn kompare\n"
+"al la ordinara aplikaĵo."
 
 #: gnu/packages/base.scm:173
 msgid "Apply differences to originals, with optional backups"
@@ -108,7 +118,7 @@ msgstr ""
 
 #: gnu/packages/base.scm:224
 msgid "Operating on files matching given criteria"
-msgstr "Operacio sur dosieroj kongruantaj al indikia kriterio"
+msgstr "Operacio sur dosieroj kongruantaj al indikita kriterio"
 
 #: gnu/packages/base.scm:226
 msgid ""
@@ -203,7 +213,7 @@ msgstr ""
 
 #: gnu/packages/base.scm:1264
 msgid "Complete GCC tool chain for C/C++ development"
-msgstr ""
+msgstr "Kompleta ilaro GCC por kodumado en C/C++"
 
 #: gnu/packages/base.scm:1266
 msgid ""
@@ -256,7 +266,7 @@ msgstr ""
 
 #: gnu/packages/guile.scm:289
 msgid "Run jobs at scheduled times"
-msgstr "Lanĉi taskoj je antaŭplanitaj horoj"
+msgstr "Lanĉi taskojn je antaŭplanitaj horoj"
 
 #: gnu/packages/guile.scm:291
 msgid ""
