@@ -201,8 +201,8 @@ update would trigger a complete rebuild."
                   (filter-map (match-lambda
                                (('argument . value)
                                 (let ((p (find-packages-by-name value)))
-                                  (unless p
-                                    (leave (_ "~a: no package by that name")
+                                  (when (null? p)
+                                    (leave (_ "~a: no package by that name~%")
                                            value))
                                   p))
                                (_ #f))
