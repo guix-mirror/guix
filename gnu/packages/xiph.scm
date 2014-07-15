@@ -192,16 +192,14 @@ OpenBSD's sndio.")
 (define flac
   (package
    (name "flac")
-   (version "1.2.1")
+   (version "1.3.0")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://downloads.xiph.org/releases/flac/flac-"
-                                version ".tar.gz"))
+                                version ".tar.xz"))
             (sha256
              (base32
-              "1pry5lgzfg57pga1zbazzdd55fkgk3v5qy4axvrbny5lrr5s8dcn"))
-            (patches
-             (list (search-patch "flac-fix-memcmp-not-declared.patch")))))
+              "1p0hh190kqvpkbk1bbajd81jfbmkyl4fn2i7pggk2zppq6m68bgs"))))
    (build-system gnu-build-system)
    (arguments
     `(#:parallel-tests? #f

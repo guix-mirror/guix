@@ -297,7 +297,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/doxygen-tmake.patch			\
   gnu/packages/patches/emacs-configure-sh.patch			\
   gnu/packages/patches/findutils-absolute-paths.patch		\
-  gnu/packages/patches/flac-fix-memcmp-not-declared.patch	\
   gnu/packages/patches/flex-bison-tests.patch			\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
