@@ -290,7 +290,7 @@ the ``message of the day''."
      # level notice or higher and anything of level err or
      # higher to the console.
      # Don't log private authentication messages!
-     *.err;auth.notice;authpriv.none         /dev/console
+     *.alert;auth.notice;authpriv.none       /dev/console
 
      # Log anything (except mail) of level info or higher.
      # Don't log private authentication messages!
