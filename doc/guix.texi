@@ -2604,12 +2604,12 @@ For information on porting to other architectures or kernels,
 
 @menu
 * System Installation::         Installing the whole operating system.
+* System Configuration::        Configuring a GNU system.
 * Installing Debugging Files::  Feeding the debugger.
 * Package Modules::             Packages from the programmer's viewpoint.
 * Packaging Guidelines::        Growing the distribution.
 * Bootstrapping::               GNU/Linux built from scratch.
 * Porting::                     Targeting another platform or kernel.
-* System Configuration::        Configuring a GNU system.
 @end menu
 
 Building this distribution is a cooperative effort, and you are invited
@@ -2780,473 +2780,6 @@ guix system disk-image --image-size=800MiB gnu/system/install.scm
 @xref{Invoking guix system}, for more information.  See
 @file{gnu/system/install.scm} in the source tree for more information
 about the installation image.
-
-
-@node Installing Debugging Files
-@section Installing Debugging Files
-
-@cindex debugging files
-Program binaries, as produced by the GCC compilers for instance, are
-typically written in the ELF format, with a section containing
-@dfn{debugging information}.  Debugging information is what allows the
-debugger, GDB, to map binary code to source code; it is required to
-debug a compiled program in good conditions.
-
-The problem with debugging information is that is takes up a fair amount
-of disk space.  For example, debugging information for the GNU C Library
-weighs in at more than 60 MiB.  Thus, as a user, keeping all the
-debugging info of all the installed programs is usually not an option.
-Yet, space savings should not come at the cost of an impediment to
-debugging---especially in the GNU system, which should make it easier
-for users to exert their computing freedom (@pxref{GNU Distribution}).
-
-Thankfully, the GNU Binary Utilities (Binutils) and GDB provide a
-mechanism that allows users to get the best of both worlds: debugging
-information can be stripped from the binaries and stored in separate
-files.  GDB is then able to load debugging information from those files,
-when they are available (@pxref{Separate Debug Files,,, gdb, Debugging
-with GDB}).
-
-The GNU distribution takes advantage of this by storing debugging
-information in the @code{lib/debug} sub-directory of a separate package
-output unimaginatively called @code{debug} (@pxref{Packages with
-Multiple Outputs}).  Users can choose to install the @code{debug} output
-of a package when they need it.  For instance, the following command
-installs the debugging information for the GNU C Library and for GNU
-Guile:
-
-@example
-guix package -i glibc:debug guile:debug
-@end example
-
-GDB must then be told to look for debug files in the user's profile, by
-setting the @code{debug-file-directory} variable (consider setting it
-from the @file{~/.gdbinit} file, @pxref{Startup,,, gdb, Debugging with
-GDB}):
-
-@example
-(gdb) set debug-file-directory ~/.guix-profile/lib/debug
-@end example
-
-From there on, GDB will pick up debugging information from the
-@code{.debug} files under @file{~/.guix-profile/lib/debug}.
-
-In addition, you will most likely want GDB to be able to show the source
-code being debugged.  To do that, you will have to unpack the source
-code of the package of interest (obtained with @code{guix build
---source}, @pxref{Invoking guix build}), and to point GDB to that source
-directory using the @code{directory} command (@pxref{Source Path,
-@code{directory},, gdb, Debugging with GDB}).
-
-@c XXX: keep me up-to-date
-The @code{debug} output mechanism in Guix is implemented by the
-@code{gnu-build-system} (@pxref{Build Systems}).  Currently, it is
-opt-in---debugging information is available only for those packages
-whose definition explicitly declares a @code{debug} output.  This may be
-changed to opt-out in the future, if our build farm servers can handle
-the load.  To check whether a package has a @code{debug} output, use
-@command{guix package --list-available} (@pxref{Invoking guix package}).
-
-
-@node Package Modules
-@section Package Modules
-
-From a programming viewpoint, the package definitions of the
-GNU distribution are provided by Guile modules in the @code{(gnu packages
-@dots{})} name space@footnote{Note that packages under the @code{(gnu
-packages @dots{})} module name space are not necessarily ``GNU
-packages''.  This module naming scheme follows the usual Guile module
-naming convention: @code{gnu} means that these modules are distributed
-as part of the GNU system, and @code{packages} identifies modules that
-define packages.}  (@pxref{Modules, Guile modules,, guile, GNU Guile
-Reference Manual}).  For instance, the @code{(gnu packages emacs)}
-module exports a variable named @code{emacs}, which is bound to a
-@code{<package>} object (@pxref{Defining Packages}).
-
-The @code{(gnu packages @dots{})} module name space is special: it is
-automatically scanned for packages by the command-line tools.  For
-instance, when running @code{guix package -i emacs}, all the @code{(gnu
-packages @dots{})} modules are scanned until one that exports a package
-object whose name is @code{emacs} is found.  This package search
-facility is implemented in the @code{(gnu packages)} module.
-
-Users can store package definitions in modules with different
-names---e.g., @code{(my-packages emacs)}.  In that case, commands such
-as @command{guix package} and @command{guix build} have to be used with
-the @code{-e} option so that they know where to find the package.
-
-The distribution is fully @dfn{bootstrapped} and @dfn{self-contained}:
-each package is built based solely on other packages in the
-distribution.  The root of this dependency graph is a small set of
-@dfn{bootstrap binaries}, provided by the @code{(gnu packages
-bootstrap)} module.  For more information on bootstrapping,
-@ref{Bootstrapping}.
-
-@node Packaging Guidelines
-@section Packaging Guidelines
-
-The GNU distribution is nascent and may well lack some of your favorite
-packages.  This section describes how you can help make the distribution
-grow.  @xref{Contributing}, for additional information on how you can
-help.
-
-Free software packages are usually distributed in the form of
-@dfn{source code tarballs}---typically @file{tar.gz} files that contain
-all the source files.  Adding a package to the distribution means
-essentially two things: adding a @dfn{recipe} that describes how to
-build the package, including a list of other packages required to build
-it, and adding @dfn{package meta-data} along with that recipe, such as a
-description and licensing information.
-
-In Guix all this information is embodied in @dfn{package definitions}.
-Package definitions provide a high-level view of the package.  They are
-written using the syntax of the Scheme programming language; in fact,
-for each package we define a variable bound to the package definition,
-and export that variable from a module (@pxref{Package Modules}).
-However, in-depth Scheme knowledge is @emph{not} a prerequisite for
-creating packages.  For more information on package definitions,
-@ref{Defining Packages}.
-
-Once a package definition is in place, stored in a file in the Guix
-source tree, it can be tested using the @command{guix build} command
-(@pxref{Invoking guix build}).  For example, assuming the new package is
-called @code{gnew}, you may run this command from the Guix build tree:
-
-@example
-./pre-inst-env guix build gnew --keep-failed
-@end example
-
-Using @code{--keep-failed} makes it easier to debug build failures since
-it provides access to the failed build tree.  Another useful
-command-line option when debugging is @code{--log-file}, to access the
-build log.
-
-If the package is unknown to the @command{guix} command, it may be that
-the source file contains a syntax error, or lacks a @code{define-public}
-clause to export the package variable.  To figure it out, you may load
-the module from Guile to get more information about the actual error:
-
-@example
-./pre-inst-env guile -c '(use-modules (gnu packages gnew))'
-@end example
-
-Once your package builds correctly, please send us a patch
-(@pxref{Contributing}).  Well, if you need help, we will be happy to
-help you too.  Once the patch is committed in the Guix repository, the
-new package automatically gets built on the supported platforms by
-@url{http://hydra.gnu.org/gnu/master, our continuous integration
-system}.
-
-@cindex substituter
-Users can obtain the new package definition simply by running
-@command{guix pull} (@pxref{Invoking guix pull}).  When
-@code{hydra.gnu.org} is done building the package, installing the
-package automatically downloads binaries from there
-(@pxref{Substitutes}).  The only place where human intervention is
-needed is to review and apply the patch.
-
-
-@menu
-* Software Freedom::     What may go into the distribution.
-* Package Naming::       What's in a name?
-* Version Numbers::      When the name is not enough.
-* Python Modules::       Taming the snake.
-* Perl Modules::         Little pearls.
-@end menu
-
-@node Software Freedom
-@subsection Software Freedom
-
-@c Adapted from http://www.gnu.org/philosophy/philosophy.html.
-
-The GNU operating system has been developed so that users can have
-freedom in their computing.  GNU is @dfn{free software}, meaning that
-users have the @url{http://www.gnu.org/philosophy/free-sw.html,four
-essential freedoms}: to run the program, to study and change the program
-in source code form, to redistribute exact copies, and to distribute
-modified versions.  Packages found in the GNU distribution provide only
-software that conveys these four freedoms.
-
-In addition, the GNU distribution follow the
-@url{http://www.gnu.org/distros/free-system-distribution-guidelines.html,free
-software distribution guidelines}.  Among other things, these guidelines
-reject non-free firmware, recommendations of non-free software, and
-discuss ways to deal with trademarks and patents.
-
-Some packages contain a small and optional subset that violates the
-above guidelines, for instance because this subset is itself non-free
-code.  When that happens, the offending items are removed with
-appropriate patches or code snippets in the package definition's
-@code{origin} form (@pxref{Defining Packages}).  That way, @code{guix
-build --source} returns the ``freed'' source rather than the unmodified
-upstream source.
-
-
-@node Package Naming
-@subsection Package Naming
-
-A package has actually two names associated with it:
-First, there is the name of the @emph{Scheme variable}, the one following
-@code{define-public}.  By this name, the package can be made known in the
-Scheme code, for instance as input to another package.  Second, there is
-the string in the @code{name} field of a package definition.  This name
-is used by package management commands such as
-@command{guix package} and @command{guix build}.
-
-Both are usually the same and correspond to the lowercase conversion of
-the project name chosen upstream, with underscores replaced with
-hyphens.  For instance, GNUnet is available as @code{gnunet}, and
-SDL_net as @code{sdl-net}.
-
-We do not add @code{lib} prefixes for library packages, unless these are
-already part of the official project name.  But see @pxref{Python
-Modules} and @ref{Perl Modules} for special rules concerning modules for
-the Python and Perl languages.
-
-
-@node Version Numbers
-@subsection Version Numbers
-
-We usually package only the latest version of a given free software
-project.  But sometimes, for instance for incompatible library versions,
-two (or more) versions of the same package are needed.  These require
-different Scheme variable names.  We use the name as defined
-in @ref{Package Naming}
-for the most recent version; previous versions use the same name, suffixed
-by @code{-} and the smallest prefix of the version number that may
-distinguish the two versions.
-
-The name inside the package definition is the same for all versions of a
-package and does not contain any version number.
-
-For instance, the versions 2.24.20 and 3.9.12 of GTK+ may be packaged as follows:
-
-@example
-(define-public gtk+
-  (package
-   (name "gtk+")
-   (version "3.9.12")
-   ...))
-(define-public gtk+-2
-  (package
-   (name "gtk+")
-   (version "2.24.20")
-   ...))
-@end example
-If we also wanted GTK+ 3.8.2, this would be packaged as
-@example
-(define-public gtk+-3.8
-  (package
-   (name "gtk+")
-   (version "3.8.2")
-   ...))
-@end example
-
-
-@node Python Modules
-@subsection Python Modules
-
-We currently package Python 2 and Python 3, under the Scheme variable names
-@code{python-2} and @code{python} as explained in @ref{Version Numbers}.
-To avoid confusion and naming clashes with other programming languages, it
-seems desirable that the name of a package for a Python module contains
-the word @code{python}.
-
-Some modules are compatible with only one version of Python, others with both.
-If the package Foo compiles only with Python 3, we name it
-@code{python-foo}; if it compiles only with Python 2, we name it
-@code{python2-foo}. If it is compatible with both versions, we create two
-packages with the corresponding names.
-
-If a project already contains the word @code{python}, we drop this;
-for instance, the module python-dateutil is packaged under the names
-@code{python-dateutil} and @code{python2-dateutil}.
-
-
-@node Perl Modules
-@subsection Perl Modules
-
-Perl programs standing for themselves are named as any other package,
-using the lowercase upstream name.
-For Perl packages containing a single class, we use the lowercase class name,
-replace all occurrences of @code{::} by dashes and prepend the prefix
-@code{perl-}.
-So the class @code{XML::Parser} becomes @code{perl-xml-parser}.
-Modules containing several classes keep their lowercase upstream name and
-are also prepended by @code{perl-}.  Such modules tend to have the word
-@code{perl} somewhere in their name, which gets dropped in favor of the
-prefix.  For instance, @code{libwww-perl} becomes @code{perl-libwww}.
-
-
-
-@node Bootstrapping
-@section Bootstrapping
-
-@c Adapted from the ELS 2013 paper.
-
-@cindex bootstrapping
-
-Bootstrapping in our context refers to how the distribution gets built
-``from nothing''.  Remember that the build environment of a derivation
-contains nothing but its declared inputs (@pxref{Introduction}).  So
-there's an obvious chicken-and-egg problem: how does the first package
-get built?  How does the first compiler get compiled?  Note that this is
-a question of interest only to the curious hacker, not to the regular
-user, so you can shamelessly skip this section if you consider yourself
-a ``regular user''.
-
-@cindex bootstrap binaries
-The GNU system is primarily made of C code, with libc at its core.  The
-GNU build system itself assumes the availability of a Bourne shell and
-command-line tools provided by GNU Coreutils, Awk, Findutils, `sed', and
-`grep'.  Furthermore, build programs---programs that run
-@code{./configure}, @code{make}, etc.---are written in Guile Scheme
-(@pxref{Derivations}).  Consequently, to be able to build anything at
-all, from scratch, Guix relies on pre-built binaries of Guile, GCC,
-Binutils, libc, and the other packages mentioned above---the
-@dfn{bootstrap binaries}.
-
-These bootstrap binaries are ``taken for granted'', though we can also
-re-create them if needed (more on that later).
-
-@unnumberedsubsec Preparing to Use the Bootstrap Binaries
-
-@c As of Emacs 24.3, Info-mode displays the image, but since it's a
-@c large image, it's hard to scroll.  Oh well.
-@image{images/bootstrap-graph,6in,,Dependency graph of the early bootstrap derivations}
-
-The figure above shows the very beginning of the dependency graph of the
-distribution, corresponding to the package definitions of the @code{(gnu
-packages bootstrap)} module.  At this level of detail, things are
-slightly complex.  First, Guile itself consists of an ELF executable,
-along with many source and compiled Scheme files that are dynamically
-loaded when it runs.  This gets stored in the @file{guile-2.0.7.tar.xz}
-tarball shown in this graph.  This tarball is part of Guix's ``source''
-distribution, and gets inserted into the store with @code{add-to-store}
-(@pxref{The Store}).
-
-But how do we write a derivation that unpacks this tarball and adds it
-to the store?  To solve this problem, the @code{guile-bootstrap-2.0.drv}
-derivation---the first one that gets built---uses @code{bash} as its
-builder, which runs @code{build-bootstrap-guile.sh}, which in turn calls
-@code{tar} to unpack the tarball.  Thus, @file{bash}, @file{tar},
-@file{xz}, and @file{mkdir} are statically-linked binaries, also part of
-the Guix source distribution, whose sole purpose is to allow the Guile
-tarball to be unpacked.
-
-Once @code{guile-bootstrap-2.0.drv} is built, we have a functioning
-Guile that can be used to run subsequent build programs.  Its first task
-is to download tarballs containing the other pre-built binaries---this
-is what the @code{.tar.xz.drv} derivations do.  Guix modules such as
-@code{ftp-client.scm} are used for this purpose.  The
-@code{module-import.drv} derivations import those modules in a directory
-in the store, using the original layout.  The
-@code{module-import-compiled.drv} derivations compile those modules, and
-write them in an output directory with the right layout.  This
-corresponds to the @code{#:modules} argument of
-@code{build-expression->derivation} (@pxref{Derivations}).
-
-Finally, the various tarballs are unpacked by the
-derivations @code{gcc-bootstrap-0.drv}, @code{glibc-bootstrap-0.drv},
-etc., at which point we have a working C tool chain.
-
-
-@unnumberedsubsec Building the Build Tools
-
-@c TODO: Add a package-level dependency graph generated from (gnu
-@c packages base).
-
-Bootstrapping is complete when we have a full tool chain that does not
-depend on the pre-built bootstrap tools discussed above.  This
-no-dependency requirement is verified by checking whether the files of
-the final tool chain contain references to the @file{/gnu/store}
-directories of the bootstrap inputs.  The process that leads to this
-``final'' tool chain is described by the package definitions found in
-the @code{(gnu packages base)} module.
-
-@c See <http://lists.gnu.org/archive/html/gnu-system-discuss/2012-10/msg00000.html>.
-The first tool that gets built with the bootstrap binaries is
-GNU Make, which is a prerequisite for all the following packages.
-From there Findutils and Diffutils get built.
-
-Then come the first-stage Binutils and GCC, built as pseudo cross
-tools---i.e., with @code{--target} equal to @code{--host}.  They are
-used to build libc.  Thanks to this cross-build trick, this libc is
-guaranteed not to hold any reference to the initial tool chain.
-
-From there the final Binutils and GCC are built.  GCC uses @code{ld}
-from the final Binutils, and links programs against the just-built libc.
-This tool chain is used to build the other packages used by Guix and by
-the GNU Build System: Guile, Bash, Coreutils, etc.
-
-And voilà!  At this point we have the complete set of build tools that
-the GNU Build System expects.  These are in the @code{%final-inputs}
-variables of the @code{(gnu packages base)} module, and are implicitly
-used by any package that uses @code{gnu-build-system} (@pxref{Defining
-Packages}).
-
-
-@unnumberedsubsec Building the Bootstrap Binaries
-
-Because the final tool chain does not depend on the bootstrap binaries,
-those rarely need to be updated.  Nevertheless, it is useful to have an
-automated way to produce them, should an update occur, and this is what
-the @code{(gnu packages make-bootstrap)} module provides.
-
-The following command builds the tarballs containing the bootstrap
-binaries (Guile, Binutils, GCC, libc, and a tarball containing a mixture
-of Coreutils and other basic command-line tools):
-
-@example
-guix build bootstrap-tarballs
-@end example
-
-The generated tarballs are those that should be referred to in the
-@code{(gnu packages bootstrap)} module mentioned at the beginning of
-this section.
-
-Still here?  Then perhaps by now you've started to wonder: when do we
-reach a fixed point?  That is an interesting question!  The answer is
-unknown, but if you would like to investigate further (and have
-significant computational and storage resources to do so), then let us
-know.
-
-@node Porting
-@section Porting to a New Platform
-
-As discussed above, the GNU distribution is self-contained, and
-self-containment is achieved by relying on pre-built ``bootstrap
-binaries'' (@pxref{Bootstrapping}).  These binaries are specific to an
-operating system kernel, CPU architecture, and application binary
-interface (ABI).  Thus, to port the distribution to a platform that is
-not yet supported, one must build those bootstrap binaries, and update
-the @code{(gnu packages bootstrap)} module to use them on that platform.
-
-Fortunately, Guix can @emph{cross compile} those bootstrap binaries.
-When everything goes well, and assuming the GNU tool chain supports the
-target platform, this can be as simple as running a command like this
-one:
-
-@example
-guix build --target=armv5tel-linux-gnueabi bootstrap-tarballs
-@end example
-
-Once these are built, the @code{(gnu packages bootstrap)} module needs
-to be updated to refer to these binaries on the target platform.  In
-addition, the @code{glibc-dynamic-linker} procedure in that module must
-be augmented to return the right file name for libc's dynamic linker on
-that platform; likewise, @code{system->linux-architecture} in @code{(gnu
-packages linux)} must be taught about the new platform.
-
-In practice, there may be some complications.  First, it may be that the
-extended GNU triplet that specifies an ABI (like the @code{eabi} suffix
-above) is not recognized by all the GNU tools.  Typically, glibc
-recognizes some of these, whereas GCC uses an extra @code{--with-abi}
-configure flag (see @code{gcc.scm} for examples of how to handle this).
-Second, some of the required packages could fail to build for that
-platform.  Lastly, the generated binaries could be broken for some
-reason.
-
 
 @node System Configuration
 @section System Configuration
@@ -3844,6 +3377,472 @@ which this service is known to dmd, and @code{documentation} specifies
 on-line documentation.  Thus, the commands @command{deco start ncsd},
 @command{deco stop nscd}, and @command{deco doc nscd} will do what you
 would expect (@pxref{Invoking deco,,, dmd, GNU dmd Manual}).
+
+
+@node Installing Debugging Files
+@section Installing Debugging Files
+
+@cindex debugging files
+Program binaries, as produced by the GCC compilers for instance, are
+typically written in the ELF format, with a section containing
+@dfn{debugging information}.  Debugging information is what allows the
+debugger, GDB, to map binary code to source code; it is required to
+debug a compiled program in good conditions.
+
+The problem with debugging information is that is takes up a fair amount
+of disk space.  For example, debugging information for the GNU C Library
+weighs in at more than 60 MiB.  Thus, as a user, keeping all the
+debugging info of all the installed programs is usually not an option.
+Yet, space savings should not come at the cost of an impediment to
+debugging---especially in the GNU system, which should make it easier
+for users to exert their computing freedom (@pxref{GNU Distribution}).
+
+Thankfully, the GNU Binary Utilities (Binutils) and GDB provide a
+mechanism that allows users to get the best of both worlds: debugging
+information can be stripped from the binaries and stored in separate
+files.  GDB is then able to load debugging information from those files,
+when they are available (@pxref{Separate Debug Files,,, gdb, Debugging
+with GDB}).
+
+The GNU distribution takes advantage of this by storing debugging
+information in the @code{lib/debug} sub-directory of a separate package
+output unimaginatively called @code{debug} (@pxref{Packages with
+Multiple Outputs}).  Users can choose to install the @code{debug} output
+of a package when they need it.  For instance, the following command
+installs the debugging information for the GNU C Library and for GNU
+Guile:
+
+@example
+guix package -i glibc:debug guile:debug
+@end example
+
+GDB must then be told to look for debug files in the user's profile, by
+setting the @code{debug-file-directory} variable (consider setting it
+from the @file{~/.gdbinit} file, @pxref{Startup,,, gdb, Debugging with
+GDB}):
+
+@example
+(gdb) set debug-file-directory ~/.guix-profile/lib/debug
+@end example
+
+From there on, GDB will pick up debugging information from the
+@code{.debug} files under @file{~/.guix-profile/lib/debug}.
+
+In addition, you will most likely want GDB to be able to show the source
+code being debugged.  To do that, you will have to unpack the source
+code of the package of interest (obtained with @code{guix build
+--source}, @pxref{Invoking guix build}), and to point GDB to that source
+directory using the @code{directory} command (@pxref{Source Path,
+@code{directory},, gdb, Debugging with GDB}).
+
+@c XXX: keep me up-to-date
+The @code{debug} output mechanism in Guix is implemented by the
+@code{gnu-build-system} (@pxref{Build Systems}).  Currently, it is
+opt-in---debugging information is available only for those packages
+whose definition explicitly declares a @code{debug} output.  This may be
+changed to opt-out in the future, if our build farm servers can handle
+the load.  To check whether a package has a @code{debug} output, use
+@command{guix package --list-available} (@pxref{Invoking guix package}).
+
+
+@node Package Modules
+@section Package Modules
+
+From a programming viewpoint, the package definitions of the
+GNU distribution are provided by Guile modules in the @code{(gnu packages
+@dots{})} name space@footnote{Note that packages under the @code{(gnu
+packages @dots{})} module name space are not necessarily ``GNU
+packages''.  This module naming scheme follows the usual Guile module
+naming convention: @code{gnu} means that these modules are distributed
+as part of the GNU system, and @code{packages} identifies modules that
+define packages.}  (@pxref{Modules, Guile modules,, guile, GNU Guile
+Reference Manual}).  For instance, the @code{(gnu packages emacs)}
+module exports a variable named @code{emacs}, which is bound to a
+@code{<package>} object (@pxref{Defining Packages}).
+
+The @code{(gnu packages @dots{})} module name space is special: it is
+automatically scanned for packages by the command-line tools.  For
+instance, when running @code{guix package -i emacs}, all the @code{(gnu
+packages @dots{})} modules are scanned until one that exports a package
+object whose name is @code{emacs} is found.  This package search
+facility is implemented in the @code{(gnu packages)} module.
+
+Users can store package definitions in modules with different
+names---e.g., @code{(my-packages emacs)}.  In that case, commands such
+as @command{guix package} and @command{guix build} have to be used with
+the @code{-e} option so that they know where to find the package.
+
+The distribution is fully @dfn{bootstrapped} and @dfn{self-contained}:
+each package is built based solely on other packages in the
+distribution.  The root of this dependency graph is a small set of
+@dfn{bootstrap binaries}, provided by the @code{(gnu packages
+bootstrap)} module.  For more information on bootstrapping,
+@ref{Bootstrapping}.
+
+@node Packaging Guidelines
+@section Packaging Guidelines
+
+The GNU distribution is nascent and may well lack some of your favorite
+packages.  This section describes how you can help make the distribution
+grow.  @xref{Contributing}, for additional information on how you can
+help.
+
+Free software packages are usually distributed in the form of
+@dfn{source code tarballs}---typically @file{tar.gz} files that contain
+all the source files.  Adding a package to the distribution means
+essentially two things: adding a @dfn{recipe} that describes how to
+build the package, including a list of other packages required to build
+it, and adding @dfn{package meta-data} along with that recipe, such as a
+description and licensing information.
+
+In Guix all this information is embodied in @dfn{package definitions}.
+Package definitions provide a high-level view of the package.  They are
+written using the syntax of the Scheme programming language; in fact,
+for each package we define a variable bound to the package definition,
+and export that variable from a module (@pxref{Package Modules}).
+However, in-depth Scheme knowledge is @emph{not} a prerequisite for
+creating packages.  For more information on package definitions,
+@ref{Defining Packages}.
+
+Once a package definition is in place, stored in a file in the Guix
+source tree, it can be tested using the @command{guix build} command
+(@pxref{Invoking guix build}).  For example, assuming the new package is
+called @code{gnew}, you may run this command from the Guix build tree:
+
+@example
+./pre-inst-env guix build gnew --keep-failed
+@end example
+
+Using @code{--keep-failed} makes it easier to debug build failures since
+it provides access to the failed build tree.  Another useful
+command-line option when debugging is @code{--log-file}, to access the
+build log.
+
+If the package is unknown to the @command{guix} command, it may be that
+the source file contains a syntax error, or lacks a @code{define-public}
+clause to export the package variable.  To figure it out, you may load
+the module from Guile to get more information about the actual error:
+
+@example
+./pre-inst-env guile -c '(use-modules (gnu packages gnew))'
+@end example
+
+Once your package builds correctly, please send us a patch
+(@pxref{Contributing}).  Well, if you need help, we will be happy to
+help you too.  Once the patch is committed in the Guix repository, the
+new package automatically gets built on the supported platforms by
+@url{http://hydra.gnu.org/gnu/master, our continuous integration
+system}.
+
+@cindex substituter
+Users can obtain the new package definition simply by running
+@command{guix pull} (@pxref{Invoking guix pull}).  When
+@code{hydra.gnu.org} is done building the package, installing the
+package automatically downloads binaries from there
+(@pxref{Substitutes}).  The only place where human intervention is
+needed is to review and apply the patch.
+
+
+@menu
+* Software Freedom::     What may go into the distribution.
+* Package Naming::       What's in a name?
+* Version Numbers::      When the name is not enough.
+* Python Modules::       Taming the snake.
+* Perl Modules::         Little pearls.
+@end menu
+
+@node Software Freedom
+@subsection Software Freedom
+
+@c Adapted from http://www.gnu.org/philosophy/philosophy.html.
+
+The GNU operating system has been developed so that users can have
+freedom in their computing.  GNU is @dfn{free software}, meaning that
+users have the @url{http://www.gnu.org/philosophy/free-sw.html,four
+essential freedoms}: to run the program, to study and change the program
+in source code form, to redistribute exact copies, and to distribute
+modified versions.  Packages found in the GNU distribution provide only
+software that conveys these four freedoms.
+
+In addition, the GNU distribution follow the
+@url{http://www.gnu.org/distros/free-system-distribution-guidelines.html,free
+software distribution guidelines}.  Among other things, these guidelines
+reject non-free firmware, recommendations of non-free software, and
+discuss ways to deal with trademarks and patents.
+
+Some packages contain a small and optional subset that violates the
+above guidelines, for instance because this subset is itself non-free
+code.  When that happens, the offending items are removed with
+appropriate patches or code snippets in the package definition's
+@code{origin} form (@pxref{Defining Packages}).  That way, @code{guix
+build --source} returns the ``freed'' source rather than the unmodified
+upstream source.
+
+
+@node Package Naming
+@subsection Package Naming
+
+A package has actually two names associated with it:
+First, there is the name of the @emph{Scheme variable}, the one following
+@code{define-public}.  By this name, the package can be made known in the
+Scheme code, for instance as input to another package.  Second, there is
+the string in the @code{name} field of a package definition.  This name
+is used by package management commands such as
+@command{guix package} and @command{guix build}.
+
+Both are usually the same and correspond to the lowercase conversion of
+the project name chosen upstream, with underscores replaced with
+hyphens.  For instance, GNUnet is available as @code{gnunet}, and
+SDL_net as @code{sdl-net}.
+
+We do not add @code{lib} prefixes for library packages, unless these are
+already part of the official project name.  But see @pxref{Python
+Modules} and @ref{Perl Modules} for special rules concerning modules for
+the Python and Perl languages.
+
+
+@node Version Numbers
+@subsection Version Numbers
+
+We usually package only the latest version of a given free software
+project.  But sometimes, for instance for incompatible library versions,
+two (or more) versions of the same package are needed.  These require
+different Scheme variable names.  We use the name as defined
+in @ref{Package Naming}
+for the most recent version; previous versions use the same name, suffixed
+by @code{-} and the smallest prefix of the version number that may
+distinguish the two versions.
+
+The name inside the package definition is the same for all versions of a
+package and does not contain any version number.
+
+For instance, the versions 2.24.20 and 3.9.12 of GTK+ may be packaged as follows:
+
+@example
+(define-public gtk+
+  (package
+   (name "gtk+")
+   (version "3.9.12")
+   ...))
+(define-public gtk+-2
+  (package
+   (name "gtk+")
+   (version "2.24.20")
+   ...))
+@end example
+If we also wanted GTK+ 3.8.2, this would be packaged as
+@example
+(define-public gtk+-3.8
+  (package
+   (name "gtk+")
+   (version "3.8.2")
+   ...))
+@end example
+
+
+@node Python Modules
+@subsection Python Modules
+
+We currently package Python 2 and Python 3, under the Scheme variable names
+@code{python-2} and @code{python} as explained in @ref{Version Numbers}.
+To avoid confusion and naming clashes with other programming languages, it
+seems desirable that the name of a package for a Python module contains
+the word @code{python}.
+
+Some modules are compatible with only one version of Python, others with both.
+If the package Foo compiles only with Python 3, we name it
+@code{python-foo}; if it compiles only with Python 2, we name it
+@code{python2-foo}. If it is compatible with both versions, we create two
+packages with the corresponding names.
+
+If a project already contains the word @code{python}, we drop this;
+for instance, the module python-dateutil is packaged under the names
+@code{python-dateutil} and @code{python2-dateutil}.
+
+
+@node Perl Modules
+@subsection Perl Modules
+
+Perl programs standing for themselves are named as any other package,
+using the lowercase upstream name.
+For Perl packages containing a single class, we use the lowercase class name,
+replace all occurrences of @code{::} by dashes and prepend the prefix
+@code{perl-}.
+So the class @code{XML::Parser} becomes @code{perl-xml-parser}.
+Modules containing several classes keep their lowercase upstream name and
+are also prepended by @code{perl-}.  Such modules tend to have the word
+@code{perl} somewhere in their name, which gets dropped in favor of the
+prefix.  For instance, @code{libwww-perl} becomes @code{perl-libwww}.
+
+
+
+@node Bootstrapping
+@section Bootstrapping
+
+@c Adapted from the ELS 2013 paper.
+
+@cindex bootstrapping
+
+Bootstrapping in our context refers to how the distribution gets built
+``from nothing''.  Remember that the build environment of a derivation
+contains nothing but its declared inputs (@pxref{Introduction}).  So
+there's an obvious chicken-and-egg problem: how does the first package
+get built?  How does the first compiler get compiled?  Note that this is
+a question of interest only to the curious hacker, not to the regular
+user, so you can shamelessly skip this section if you consider yourself
+a ``regular user''.
+
+@cindex bootstrap binaries
+The GNU system is primarily made of C code, with libc at its core.  The
+GNU build system itself assumes the availability of a Bourne shell and
+command-line tools provided by GNU Coreutils, Awk, Findutils, `sed', and
+`grep'.  Furthermore, build programs---programs that run
+@code{./configure}, @code{make}, etc.---are written in Guile Scheme
+(@pxref{Derivations}).  Consequently, to be able to build anything at
+all, from scratch, Guix relies on pre-built binaries of Guile, GCC,
+Binutils, libc, and the other packages mentioned above---the
+@dfn{bootstrap binaries}.
+
+These bootstrap binaries are ``taken for granted'', though we can also
+re-create them if needed (more on that later).
+
+@unnumberedsubsec Preparing to Use the Bootstrap Binaries
+
+@c As of Emacs 24.3, Info-mode displays the image, but since it's a
+@c large image, it's hard to scroll.  Oh well.
+@image{images/bootstrap-graph,6in,,Dependency graph of the early bootstrap derivations}
+
+The figure above shows the very beginning of the dependency graph of the
+distribution, corresponding to the package definitions of the @code{(gnu
+packages bootstrap)} module.  At this level of detail, things are
+slightly complex.  First, Guile itself consists of an ELF executable,
+along with many source and compiled Scheme files that are dynamically
+loaded when it runs.  This gets stored in the @file{guile-2.0.7.tar.xz}
+tarball shown in this graph.  This tarball is part of Guix's ``source''
+distribution, and gets inserted into the store with @code{add-to-store}
+(@pxref{The Store}).
+
+But how do we write a derivation that unpacks this tarball and adds it
+to the store?  To solve this problem, the @code{guile-bootstrap-2.0.drv}
+derivation---the first one that gets built---uses @code{bash} as its
+builder, which runs @code{build-bootstrap-guile.sh}, which in turn calls
+@code{tar} to unpack the tarball.  Thus, @file{bash}, @file{tar},
+@file{xz}, and @file{mkdir} are statically-linked binaries, also part of
+the Guix source distribution, whose sole purpose is to allow the Guile
+tarball to be unpacked.
+
+Once @code{guile-bootstrap-2.0.drv} is built, we have a functioning
+Guile that can be used to run subsequent build programs.  Its first task
+is to download tarballs containing the other pre-built binaries---this
+is what the @code{.tar.xz.drv} derivations do.  Guix modules such as
+@code{ftp-client.scm} are used for this purpose.  The
+@code{module-import.drv} derivations import those modules in a directory
+in the store, using the original layout.  The
+@code{module-import-compiled.drv} derivations compile those modules, and
+write them in an output directory with the right layout.  This
+corresponds to the @code{#:modules} argument of
+@code{build-expression->derivation} (@pxref{Derivations}).
+
+Finally, the various tarballs are unpacked by the
+derivations @code{gcc-bootstrap-0.drv}, @code{glibc-bootstrap-0.drv},
+etc., at which point we have a working C tool chain.
+
+
+@unnumberedsubsec Building the Build Tools
+
+@c TODO: Add a package-level dependency graph generated from (gnu
+@c packages base).
+
+Bootstrapping is complete when we have a full tool chain that does not
+depend on the pre-built bootstrap tools discussed above.  This
+no-dependency requirement is verified by checking whether the files of
+the final tool chain contain references to the @file{/gnu/store}
+directories of the bootstrap inputs.  The process that leads to this
+``final'' tool chain is described by the package definitions found in
+the @code{(gnu packages base)} module.
+
+@c See <http://lists.gnu.org/archive/html/gnu-system-discuss/2012-10/msg00000.html>.
+The first tool that gets built with the bootstrap binaries is
+GNU Make, which is a prerequisite for all the following packages.
+From there Findutils and Diffutils get built.
+
+Then come the first-stage Binutils and GCC, built as pseudo cross
+tools---i.e., with @code{--target} equal to @code{--host}.  They are
+used to build libc.  Thanks to this cross-build trick, this libc is
+guaranteed not to hold any reference to the initial tool chain.
+
+From there the final Binutils and GCC are built.  GCC uses @code{ld}
+from the final Binutils, and links programs against the just-built libc.
+This tool chain is used to build the other packages used by Guix and by
+the GNU Build System: Guile, Bash, Coreutils, etc.
+
+And voilà!  At this point we have the complete set of build tools that
+the GNU Build System expects.  These are in the @code{%final-inputs}
+variables of the @code{(gnu packages base)} module, and are implicitly
+used by any package that uses @code{gnu-build-system} (@pxref{Defining
+Packages}).
+
+
+@unnumberedsubsec Building the Bootstrap Binaries
+
+Because the final tool chain does not depend on the bootstrap binaries,
+those rarely need to be updated.  Nevertheless, it is useful to have an
+automated way to produce them, should an update occur, and this is what
+the @code{(gnu packages make-bootstrap)} module provides.
+
+The following command builds the tarballs containing the bootstrap
+binaries (Guile, Binutils, GCC, libc, and a tarball containing a mixture
+of Coreutils and other basic command-line tools):
+
+@example
+guix build bootstrap-tarballs
+@end example
+
+The generated tarballs are those that should be referred to in the
+@code{(gnu packages bootstrap)} module mentioned at the beginning of
+this section.
+
+Still here?  Then perhaps by now you've started to wonder: when do we
+reach a fixed point?  That is an interesting question!  The answer is
+unknown, but if you would like to investigate further (and have
+significant computational and storage resources to do so), then let us
+know.
+
+@node Porting
+@section Porting to a New Platform
+
+As discussed above, the GNU distribution is self-contained, and
+self-containment is achieved by relying on pre-built ``bootstrap
+binaries'' (@pxref{Bootstrapping}).  These binaries are specific to an
+operating system kernel, CPU architecture, and application binary
+interface (ABI).  Thus, to port the distribution to a platform that is
+not yet supported, one must build those bootstrap binaries, and update
+the @code{(gnu packages bootstrap)} module to use them on that platform.
+
+Fortunately, Guix can @emph{cross compile} those bootstrap binaries.
+When everything goes well, and assuming the GNU tool chain supports the
+target platform, this can be as simple as running a command like this
+one:
+
+@example
+guix build --target=armv5tel-linux-gnueabi bootstrap-tarballs
+@end example
+
+Once these are built, the @code{(gnu packages bootstrap)} module needs
+to be updated to refer to these binaries on the target platform.  In
+addition, the @code{glibc-dynamic-linker} procedure in that module must
+be augmented to return the right file name for libc's dynamic linker on
+that platform; likewise, @code{system->linux-architecture} in @code{(gnu
+packages linux)} must be taught about the new platform.
+
+In practice, there may be some complications.  First, it may be that the
+extended GNU triplet that specifies an ABI (like the @code{eabi} suffix
+above) is not recognized by all the GNU tools.  Typically, glibc
+recognizes some of these, whereas GCC uses an extra @code{--with-abi}
+configure flag (see @code{gcc.scm} for examples of how to handle this).
+Second, some of the required packages could fail to build for that
+platform.  Lastly, the generated binaries could be broken for some
+reason.
 
 
 @c *********************************************************************
