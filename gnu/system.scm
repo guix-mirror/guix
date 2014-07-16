@@ -227,7 +227,7 @@ explicitly appear in OS."
          ;; already depends on it anyway.
          kmod udev
 
-         kbd
+         e2fsprogs kbd
 
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
