@@ -222,7 +222,12 @@ explicitly appear in OS."
          lsof                                 ;for Guix's 'list-runtime-roots'
          util-linux inetutils isc-dhcp
          net-tools                        ; XXX: remove when Inetutils suffices
-         module-init-tools udev kbd
+
+         ;; Get 'insmod' & co. from kmod, not module-init-tools, since udev
+         ;; already depends on it anyway.
+         kmod udev
+
+         kbd
 
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
