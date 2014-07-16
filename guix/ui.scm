@@ -453,9 +453,17 @@ WIDTH columns."
        (fill-paragraph str width
                        (string-length "description: ")))))
 
+  (define (package<? p1 p2)
+    (string<? (package-full-name p1) (package-full-name p2)))
+
   ;; Note: Don't i18n field names so that people can post-process it.
   (format port "name: ~a~%" (package-name p))
   (format port "version: ~a~%" (package-version p))
+  (format port "dependencies: ~a~%"
+          (match (package-direct-inputs p)
+            (((labels packages . _) ...)
+             (string-join (map package-full-name
+                               (sort packages package<?)) ", "))))
   (format port "location: ~a~%"
           (or (and=> (package-location p) location->string)
               (_ "unknown")))
