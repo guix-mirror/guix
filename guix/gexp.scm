@@ -377,7 +377,8 @@ its search path."
                     (gexp
                      (call-with-output-file (ungexp output)
                        (lambda (port)
-                         (write '(ungexp exp) port))))))
+                         (write '(ungexp exp) port))))
+                    #:local-build? #t))
 
 
 
