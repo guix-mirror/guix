@@ -437,7 +437,6 @@ insertions, deletions, and modifications per-file.  It is useful for reviewing
 large, complex patch files.")
     (license (x11-style "file://COPYING"))))
 
-
 (define-public cssc
   (package
     (name "cssc")
