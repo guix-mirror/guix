@@ -1187,10 +1187,15 @@ system.")
                 "0c34b0za2v0934acvgnva0vaqpghmmhz4zh7k0m9jd4mbc91byqm"))
               (modules '((guix build utils)))
               (snippet
-               '(substitute* "tests/Makefile.in"
-                  ;; The '%: %.in' rule incorrectly uses @VERSION@.
-                  (("@VERSION@")
-                   "[@]VERSION[@]")))))
+               '(begin
+                  (substitute* "tests/Makefile.in"
+                    ;; The '%: %.in' rule incorrectly uses @VERSION@.
+                    (("@VERSION@")
+                     "[@]VERSION[@]"))
+                  (substitute* '("src/unicode_start" "src/unicode_stop")
+                    ;; Assume the Coreutils are in $PATH.
+                    (("/usr/bin/tty")
+                     "tty"))))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
@@ -1203,7 +1208,17 @@ system.")
                         (string-append gzip "/bin/gzip"))
                        (("bzip2")
                         (string-append bzip2 "/bin/bzip2")))))
-                 %standard-phases)))
+                 (alist-cons-after
+                  'install 'post-install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    ;; Make sure these programs find their comrades.
+                    (let* ((out (assoc-ref outputs "out"))
+                           (bin (string-append out "/bin")))
+                      (for-each (lambda (prog)
+                                  (wrap-program (string-append bin "/" prog)
+                                                `("PATH" ":" prefix (,bin))))
+                                '("unicode_start" "unicode_stop"))))
+                  %standard-phases))))
     (inputs `(("check" ,check)
               ("gzip" ,guix:gzip)
               ("bzip2" ,guix:bzip2)
