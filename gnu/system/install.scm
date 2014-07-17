@@ -40,7 +40,7 @@ manual."
                 #~(execl (string-append #$texinfo-4 "/bin/info") "info"
                          "-d" "/run/current-system/profile/share/info"
                          "-f" (string-append #$guix "/share/info/guix.info")
-                         "-n" "System Configuration")))
+                         "-n" "System Installation")))
 
 (define (installation-services)
   "Return the list services for the installation image."
