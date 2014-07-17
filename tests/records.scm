@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,8 +19,16 @@
 (define-module (test-records)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (guix records))
 
+(define (test-module)
+  ;; A module in which to evaluate things that are known to fail.
+  (let ((module (make-fresh-user-module)))
+    (module-use! module (resolve-interface '(guix records)))
+    module))
+
+
 (test-begin "records")
 
 (test-assert "define-record-type*"
@@ -130,6 +138,38 @@
                (eq? (foo-bar y) (mark)))
              (parameterize ((mark (cons 'a 'b)))
                (eq? (foo-baz y) (mark))))))))
+
+(test-assert "define-record-type* & missing initializers"
+  (catch 'syntax-error
+    (lambda ()
+      (eval '(begin
+               (define-record-type* <foo> foo make-foo
+                 foo?
+                 (bar foo-bar (default 42))
+                 (baz foo-baz))
+
+               (foo))
+            (test-module))
+      #f)
+    (lambda (key proc message location form . args)
+      (and (eq? proc 'foo)
+           (string-match "missing .*initialize.*baz" message)
+           (equal? form '(foo))))))
+
+(test-assert "define-record-type* & extra initializers"
+  (catch 'syntax-error
+    (lambda ()
+      (eval '(begin
+               (define-record-type* <foo> foo make-foo
+                 foo?
+                 (bar foo-bar (default 42)))
+
+               (foo (baz 'what?)))
+            (test-module))
+      #f)
+    (lambda (key proc message location form . args)
+      (and (string-match "extra.*initializer.*baz" message)
+           (eq? proc 'foo)))))
 
 (test-equal "recutils->alist"
   '((("Name" . "foo")
