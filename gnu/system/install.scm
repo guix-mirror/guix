@@ -63,7 +63,9 @@ You have been warned.  Thanks for being so brave.
                             #:motd motd
                             #:auto-login "root")
 
-          ;; Documentation.
+          ;; Documentation.  The manual is in UTF-8, but
+          ;; 'console-font-service' sets up Unicode support and loads a font
+          ;; with all the useful glyphs like em dash and quotation marks.
           (mingetty-service "tty2"
                             #:motd motd
                             #:auto-login "guest"
@@ -85,6 +87,14 @@ You have been warned.  Thanks for being so brave.
 
           ;; Start udev so that useful device nodes are available.
           (udev-service)
+
+          ;; Install Unicode support and a suitable font.
+          (console-font-service "tty1")
+          (console-font-service "tty2")
+          (console-font-service "tty3")
+          (console-font-service "tty4")
+          (console-font-service "tty5")
+          (console-font-service "tty6")
 
           (nscd-service))))
 

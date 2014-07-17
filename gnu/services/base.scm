@@ -25,7 +25,7 @@
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (udev))
+                #:select (udev kbd))
   #:use-module ((gnu packages base)
                 #:select (glibc-final))
   #:use-module (gnu packages package-management)
@@ -38,6 +38,7 @@
             file-system-service
             user-processes-service
             host-name-service
+            console-font-service
             udev-service
             mingetty-service
             nscd-service
@@ -198,6 +199,50 @@ stopped before 'kill' is called."
              (start #~(lambda _
                         (sethostname #$name)))
              (respawn? #f)))))
+
+(define (unicode-start tty)
+  "Return a gexp to start Unicode support on @var{tty}."
+
+  ;; We have to run 'unicode_start' in a pipe so that when it invokes the
+  ;; 'tty' command, that command returns TTY.
+  #~(begin
+      (let ((pid (primitive-fork)))
+        (case pid
+          ((0)
+           (close-fdes 0)
+           (dup2 (open-fdes #$tty O_RDONLY) 0)
+           (close-fdes 1)
+           (dup2 (open-fdes #$tty O_WRONLY) 1)
+           (execl (string-append #$kbd "/bin/unicode_start")
+                  "unicode_start"))
+          (else
+           (zero? (cdr (waitpid pid))))))))
+
+(define* (console-font-service tty #:optional (font "LatGrkCyr-8x16"))
+  "Return a service that sets up Unicode support in @var{tty} and loads
+@var{font} for that tty (fonts are per virtual console in Linux.)"
+  ;; Note: 'LatGrkCyr-8x16' has the advantage of providing three common
+  ;; scripts as well as glyphs for em dash, quotation marks, and other Unicode
+  ;; codepoints notably found in the UTF-8 manual.
+  (let ((device (string-append "/dev/" tty)))
+    (with-monad %store-monad
+      (return (service
+               (documentation "Load a Unicode console font.")
+               (provision (list (symbol-append 'console-font-
+                                               (string->symbol tty))))
+
+               ;; Start after mingetty has been started on TTY, otherwise the
+               ;; settings are ignored.
+               (requirement (list (symbol-append 'term-
+                                                 (string->symbol tty))))
+
+               (start #~(lambda _
+                          (and #$(unicode-start device)
+                               (zero?
+                                (system* (string-append #$kbd "/bin/setfont")
+                                         "-C" #$device #$font)))))
+               (stop #~(const #t))
+               (respawn? #f))))))
 
 (define* (mingetty-service tty
                            #:key
@@ -469,7 +514,14 @@ passed to @command{guix-daemon}."
   ;; Convenience variable holding the basic services.
   (let ((motd (text-file "motd" "
 This is the GNU operating system, welcome!\n\n")))
-    (list (mingetty-service "tty1" #:motd motd)
+    (list (console-font-service "tty1")
+          (console-font-service "tty2")
+          (console-font-service "tty3")
+          (console-font-service "tty4")
+          (console-font-service "tty5")
+          (console-font-service "tty6")
+
+          (mingetty-service "tty1" #:motd motd)
           (mingetty-service "tty2" #:motd motd)
           (mingetty-service "tty3" #:motd motd)
           (mingetty-service "tty4" #:motd motd)
