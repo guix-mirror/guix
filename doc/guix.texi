@@ -2847,6 +2847,7 @@ instance to support new system services.
 * File Systems::                Configuring file system mounts.
 * User Accounts::               Specifying user accounts.
 * Services::                    Specifying system services.
+* Initial RAM Disk::            Linux-Libre bootstrapping.
 * Invoking guix system::        Instantiating a system configuration.
 * Defining Services::           Adding new service definitions.
 @end menu
@@ -3258,6 +3259,76 @@ password.  When @var{auto-login?} is true, log in automatically as
 @var{default-user}.
 @end deffn
 
+
+@node Initial RAM Disk
+@subsection Initial RAM Disk
+
+@cindex initial RAM disk (initrd)
+@cindex initrd (initial RAM disk)
+For bootstrapping purposes, the Linux-Libre kernel is passed an
+@dfn{initial RAM disk}, or @dfn{initrd}.  An initrd contains a temporary
+root file system, as well as an initialization script.  The latter is
+responsible for mounting the real root file system, and for loading any
+kernel modules that may be needed to achieve that.
+
+The @code{initrd} field of an @code{operating-system} declaration allows
+you to specify which initrd you would like to use.  The @code{(gnu
+system linux-initrd)} module provides two ways to build an initrd: the
+high-level @code{base-initrd} procedure, and the low-level
+@code{expression->initrd} procedure.
+
+The @code{base-initrd} procedure is intended to cover most common uses.
+For example, if you want to add a bunch of kernel modules to be loaded
+at boot time, you can define the @code{initrd} field of the operating
+system declaration like this:
+
+@example
+(initrd (cut base-init <>
+             #:extra-modules '("my.ko" "modules.ko")))
+@end example
+
+It also handles common use cases that involves using the system as a
+QEMU guest, or as a ``live'' system whose root file system is volatile.
+
+@deffn {Monadic Procedure} base-initrd @var{file-systems} @
+       [#:qemu-networking? #f] [#:virtio? #f] [#:volatile-root? #f] @
+       [#:extra-modules '()]
+Return a monadic derivation that builds a generic initrd.  @var{file-systems} is
+a list of file-systems to be mounted by the initrd, possibly in addition to
+the root file system specified on the kernel command line via @code{--root}.
+
+When @var{qemu-networking?} is true, set up networking with the standard QEMU
+parameters.  When @var{virtio?} is true, load additional modules so the initrd can
+be used as a QEMU guest with para-virtualized I/O drivers.
+
+When @var{volatile-root?} is true, the root file system is writable but any changes
+to it are lost.
+
+The initrd is automatically populated with all the kernel modules necessary
+for @var{file-systems} and for the given options.  However, additional kernel
+modules can be listed in @var{extra-modules}.  They will be added to the initrd, and
+loaded at boot time in the order in which they appear.
+@end deffn
+
+Needless to say, the initrds we produce and use embed a
+statically-linked Guile, and the initialization program is a Guile
+program.  That gives a lot of flexibility.  The
+@code{expression->initrd} procedure builds such an initrd, given the
+program to run in that initrd.
+
+@deffn {Monadic Procedure} expression->initrd @var{exp} @
+       [#:guile %guile-static-stripped] [#:name "guile-initrd"] @
+       [#:modules '()] [#:to-copy '()] [#:linux #f] @
+       [#:linux-modules '()]
+Return a derivation that builds a Linux initrd (a gzipped cpio archive)
+containing @var{guile} and that evaluates @var{exp}, a G-expression,
+upon booting.
+
+@var{linux-modules} is a list of @file{.ko} file names to be copied from
+@var{linux} into the initrd.  @var{to-copy} is a list of additional
+derivations or packages to copy to the initrd.  @var{modules} is a list
+of Guile module names to be embedded in the initrd.
+@end deffn
 
 @node Invoking guix system
 @subsection Invoking @code{guix system}

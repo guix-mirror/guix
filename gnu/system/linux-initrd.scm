@@ -57,11 +57,13 @@
                              (to-copy '())
                              (linux #f)
                              (linux-modules '()))
-  "Return a package that contains a Linux initrd (a gzipped cpio archive)
-containing GUILE and that evaluates EXP upon booting.  LINUX-MODULES is a list
-of `.ko' file names to be copied from LINUX into the initrd.  TO-COPY is a
-list of additional derivations or packages to copy to the initrd.  MODULES is
-a list of Guile module names to be embedded in the initrd."
+  "Return a derivation that builds a Linux initrd (a gzipped cpio archive)
+containing GUILE and that evaluates EXP, a G-expression, upon booting.
+
+LINUX-MODULES is a list of '.ko' file names to be copied from LINUX into the
+initrd.  TO-COPY is a list of additional derivations or packages to copy to
+the initrd.  MODULES is a list of Guile module names to be embedded in the
+initrd."
 
   ;; General Linux overview in `Documentation/early-userspace/README' and
   ;; `Documentation/filesystems/ramfs-rootfs-initramfs.txt'.
