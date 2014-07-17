@@ -29,6 +29,7 @@
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 popen))
 
 ;; Test the (guix gexp) module.
@@ -246,6 +247,23 @@
            (str   (get-string-all pipe)))
       (return (and (zero? (close-pipe pipe))
                    (= (expt n 2) (string->number str)))))))
+
+(test-assert "printer"
+  (string-match "^#<gexp \\(string-append .*#<package coreutils.*\
+ \"/bin/uname\"\\) [[:xdigit:]]+>$"
+                (with-output-to-string
+                  (lambda ()
+                    (write
+                     (gexp (string-append (ungexp coreutils)
+                                          "/bin/uname")))))))
+
+(test-assert "printer vs. ungexp-splicing"
+  (string-match "^#<gexp .* [[:xdigit:]]+>$"
+                (with-output-to-string
+                  (lambda ()
+                    ;; #~(begin #$@#~())
+                    (write
+                     (gexp (begin (ungexp-splicing (gexp ())))))))))
 
 (test-equal "sugar"
   '(gexp (foo (ungexp bar) (ungexp baz "out")

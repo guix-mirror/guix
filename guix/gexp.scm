@@ -60,7 +60,12 @@
 (define (write-gexp gexp port)
   "Write GEXP on PORT."
   (display "#<gexp " port)
-  (write (apply (gexp-proc gexp) (gexp-references gexp)) port)
+
+  ;; Try to write the underlying sexp.  Now, this trick doesn't work when
+  ;; doing things like (ungexp-splicing (gexp ())) because GEXP's procedure
+  ;; tries to use 'append' on that, which fails with wrong-type-arg.
+  (false-if-exception
+   (write (apply (gexp-proc gexp) (gexp-references gexp)) port))
   (format port " ~a>"
           (number->string (object-address gexp) 16)))
 
