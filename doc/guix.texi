@@ -2631,11 +2631,47 @@ link that follows: @ref{Help,,, info, Info: An Introduction}.  Hit
 @kbd{l} afterwards to come back here.
 @end ifinfo
 
-@emph{This section documents work-in-progress.  The system lacks
-features and may be buggy.  You've been warned.  But more than a
-disclaimer, this is an invitation to report issues (and success
-stories!), and join us in improving it.  @xref{Contributing}, for more
-info.}
+@subsection Limitations
+
+As of version @value{VERSION}, GNU@tie{}Guix and the GNU system
+distribution are alpha software.  It may contain bugs and lack important
+features.  Thus, if you are looking for a stable production system that
+respects your freedom as a computer user, a good solution at this point
+is to consider @url{http://www.gnu.org/distros/free-distros.html, one of
+more established GNU/Linux distributions}.  We hope you can soon switch
+to the GNU system without fear, of course.  In the meantime, you can
+also keep using your distribution and try out the package manager on top
+of it (@pxref{Installation}).
+
+Before you proceed with the installation, be aware of the following
+noteworthy limitations applicable to version @value{VERSION}:
+
+@itemize
+@item
+The installation process does not include a graphical user interface and
+requires familiarity with GNU/Linux (see the following subsections to
+get a feel of what that means.)
+
+@item
+The system does not yet provide graphical desktop environments such as
+GNOME and KDE.
+
+@item
+Support for encrypted disks, the Logical Volume Manager (LVM), and swap
+devices are missing.
+
+@item
+Few system services are currently supported out-of-the-box
+(@pxref{Services}).
+
+@item
+On the order of 1,000 packages are available, which means that you may
+occasionally find that a useful package is missing.
+@end itemize
+
+You've been warned.  But more than a disclaimer, this is an invitation
+to report issues (and success stories!), and join us in improving it.
+@xref{Contributing}, for more info.
 
 @subsection USB Stick Installation
 
