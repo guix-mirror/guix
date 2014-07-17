@@ -517,6 +517,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -A, --list-available[=REGEXP]
                          list available packages matching REGEXP"))
+  (display (_ "
+  --show=PACKAGE         show details about PACKAGE"))
   (newline)
   (show-build-options-help)
   (newline)
@@ -613,6 +615,11 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
          (option '(#\A "list-available") #f #t
                  (lambda (opt name arg result arg-handler)
                    (values (cons `(query list-available ,(or arg ""))
+                                 result)
+                           #f)))
+         (option '("show") #t #t
+                 (lambda (opt name arg result arg-handler)
+                   (values (cons `(query show ,arg)
                                  result)
                            #f)))
 
@@ -1040,6 +1047,14 @@ more information.~%"))
            (leave-on-EPIPE
             (for-each (cute package->recutils <> (current-output-port))
                       (find-packages-by-description regexp)))
+           #t))
+
+        (('show requested-name)
+         (let-values (((name version)
+                       (package-name->name+version requested-name)))
+           (leave-on-EPIPE
+            (for-each (cute package->recutils <> (current-output-port))
+                      (find-packages-by-name name version)))
            #t))
 
         (('search-paths)

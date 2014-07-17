@@ -844,6 +844,30 @@ name: gmp
 @dots{}
 @end example
 
+@item --show=@var{package}
+Show details about @var{package}, taken from the list of available packages, in
+@code{recutils} format (@pxref{Top, GNU recutils databases,, recutils, GNU
+recutils manual}).
+
+@example
+$ guix package --show=python | recsel -p name,version
+name: python
+version: 2.7.6
+
+name: python
+version: 3.3.5
+@end example
+
+You may also specify the full name of a package to only get details about a
+specific version of it:
+@example
+$ guix package --show=python-3.3.5 | recsel -p name,version
+name: python
+version: 3.3.5
+@end example
+
+
+
 @item --list-installed[=@var{regexp}]
 @itemx -I [@var{regexp}]
 List the currently installed packages in the specified profile, with the

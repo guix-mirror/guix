@@ -176,6 +176,9 @@ then false; else true; fi
 # Check whether `--list-available' returns something sensible.
 guix package -p "$profile" -A 'gui.*e' | grep guile
 
+# Check whether `--show' returns something sensible.
+guix package --show=guile | grep "^Package: guile"
+
 # There's no generation older than 12 months, so the following command should
 # have no effect.
 generation="`readlink_base "$profile"`"
