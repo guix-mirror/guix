@@ -69,6 +69,14 @@ thunked fields."
                                field+value)
                          car))
 
+                ;; Make sure there are no unknown field names.
+                (let* ((fields     (map (compose car syntax->datum)
+                                        field+value))
+                       (unexpected (lset-difference eq? fields 'expected)))
+                  (when (pair? unexpected)
+                    (record-error 'name s "extraneous field initializers ~a"
+                                  unexpected)))
+
                 #`(make-struct type 0
                                #,@(map (lambda (field index)
                                          (or (field-inherited-value field)

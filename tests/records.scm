@@ -58,7 +58,7 @@
          (match (bar (x 7) (z (* x 3)))
            (($ <bar> 7 42 21)))
          (match (bar (z 21) (x (/ z 3)))
-           (($ <bar> 7 42 21))))))
+           (($ <bar> 7 42 21) #t)))))
 
 (test-assert "define-record-type* & inherit"
   (begin
@@ -165,6 +165,21 @@
                  (bar foo-bar (default 42)))
 
                (foo (baz 'what?)))
+            (test-module))
+      #f)
+    (lambda (key proc message location form . args)
+      (and (string-match "extra.*initializer.*baz" message)
+           (eq? proc 'foo)))))
+
+(test-assert "define-record-type* & inherit & extra initializers"
+  (catch 'syntax-error
+    (lambda ()
+      (eval '(begin
+               (define-record-type* <foo> foo make-foo
+                 foo?
+                 (bar foo-bar (default 42)))
+
+               (foo (inherit (foo)) (baz 'what?)))
             (test-module))
       #f)
     (lambda (key proc message location form . args)
