@@ -2847,6 +2847,7 @@ instance to support new system services.
 * File Systems::                Configuring file system mounts.
 * User Accounts::               Specifying user accounts.
 * Services::                    Specifying system services.
+* Setuid Programs::             Programs running with root privileges.
 * Initial RAM Disk::            Linux-Libre bootstrapping.
 * Invoking guix system::        Instantiating a system configuration.
 * Defining Services::           Adding new service definitions.
@@ -3258,6 +3259,53 @@ When @var{allow-empty-passwords?} is true, allow logins with an empty
 password.  When @var{auto-login?} is true, log in automatically as
 @var{default-user}.
 @end deffn
+
+
+@node Setuid Programs
+@subsection Setuid Programs
+
+@cindex setuid programs
+Some programs need to run with ``root'' privileges, even when they are
+launched by unprivileged users.  A notorious example is the
+@command{passwd} programs, which can users can run to change their
+password, and which requires write access to the @file{/etc/passwd} and
+@file{/etc/shadow} files---something normally restricted to root, for
+obvious security reasons.  To address that, these executables are
+@dfn{setuid-root}, meaning that they always run with root privileges
+(@pxref{How Change Persona,,, libc, The GNU C Library Reference Manual},
+for more info about the setuid mechanisms.)
+
+The store itself @emph{cannot} contain setuid programs: that would be a
+security issue since any user on the system can write derivations that
+populate the store (@pxref{The Store}).  Thus, a different mechanism is
+used: instead of changing the setuid bit directly on files that are in
+the store, we let the system administrator @emph{declare} which programs
+should be setuid root.
+
+The @code{setuid-programs} field of an @code{operating-system}
+declaration contains a list of G-expressions denoting the names of
+programs to be setuid-root (@pxref{Using the Configuration System}).
+For instance, the @command{passwd} program, which is part of the Shadow
+package, can be designated by this G-expression (@pxref{G-Expressions}):
+
+@example
+#~(string-append #$shadow "/bin/passwd")
+@end example
+
+A default set of setuid programs is defined by the
+@code{%setuid-programs} variable of the @code{(gnu system)} module.
+
+@defvr {Scheme Variable} %setuid-programs
+A list of G-expressions denoting common programs that are setuid-root.
+
+The list includes commands such as @command{passwd}, @command{ping},
+@command{su}, and @command{sudo}.
+@end defvr
+
+Under the hood, the actual setuid programs are created in the
+@file{/run/setuid-programs} directory at system activation time.  The
+files in this directory refer to the ``real'' binaries, which are in the
+store.
 
 
 @node Initial RAM Disk
