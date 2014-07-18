@@ -56,10 +56,14 @@ from an existing store.  It updates the new store's database with \
 information about which store files are valid, and what their \
 references are.";
 
+#define GUIX_OPT_STATE_DIRECTORY 1
+
 static const struct argp_option options[] =
   {
     { "prefix", 'p', "DIRECTORY", 0,
       "Open the store that lies under DIRECTORY" },
+    { "state-directory", GUIX_OPT_STATE_DIRECTORY, "DIRECTORY", 0,
+      "Use DIRECTORY as the state directory of the target store" },
     { 0, 0, 0, 0, 0 }
   };
 
@@ -81,6 +85,15 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	settings.nixLogDir = prefix + NIX_LOG_DIR;
 	settings.nixStateDir = prefix + NIX_STATE_DIR;
 	settings.nixDBPath = settings.nixStateDir + "/db";
+	break;
+      }
+
+    case GUIX_OPT_STATE_DIRECTORY:
+      {
+	string state_dir = canonPath (arg);
+
+	settings.nixStateDir = state_dir;
+	settings.nixDBPath = state_dir + "/db";
 	break;
       }
 

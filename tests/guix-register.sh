@@ -79,34 +79,48 @@ guix-register -p "$new_store" < "$closure"
 # Doing it a second time shouldn't hurt.
 guix-register --prefix "$new_store" "$closure"
 
+# Same, but with the database stored in a different place.
+guix-register -p "$new_store" \
+    --state-directory "$new_store/chbouib" "$closure"
+
 # Now make sure this is recognized as valid.
 
-NIX_STORE_DIR="$new_store_dir"
-NIX_STATE_DIR="$new_store$localstatedir"
-NIX_LOG_DIR="$new_store$localstatedir/log/guix"
-NIX_DB_DIR="$new_store$localstatedir/guix/db"
+ls -R "$new_store"
+for state_dir in "$new_store$localstatedir/guix" "$new_store/chbouib"
+do
+    NIX_STORE_DIR="$new_store_dir"
+    NIX_STATE_DIR="$new_store$state_dir"
+    NIX_LOG_DIR="$new_store$state_dir/log/guix"
+    NIX_DB_DIR="$new_store$state_dir/db"
 
-export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR NIX_STATE_DIR	\
-  NIX_LOG_DIR NIX_DB_DIR
+    export NIX_IGNORE_SYMLINK_STORE NIX_STORE_DIR NIX_STATE_DIR	\
+	NIX_LOG_DIR NIX_DB_DIR
 
-guix-daemon --disable-chroot &
-subdaemon_pid=$!
-exit_hook="kill $subdaemon_pid"
+    guix-daemon --disable-chroot &
+    subdaemon_pid=$!
+    exit_hook="kill $subdaemon_pid"
 
-final_name="$storedir/`basename $to_copy`"
+    final_name="$storedir/`basename $to_copy`"
 
-# At this point the copy in $new_store must be valid, and unreferenced.
-# The database under $new_store uses the $final_name, but we can't use
-# that name in a 'valid-path?' query because 'assertStorePath' would kill
-# us because of the wrong prefix.  So we just list dead paths instead.
-guile -c "
-   (use-modules (guix store))
-   (define s (open-connection))
-   (exit (equal? (list \"$copied\") (dead-paths s)))"
+    # At this point the copy in $new_store must be valid, and unreferenced.
+    # The database under $NIX_DB_DIR uses the $final_name, but we can't use
+    # that name in a 'valid-path?' query because 'assertStorePath' would kill
+    # us because of the wrong prefix.  So we just list dead paths instead.
+    guile -c "
+      (use-modules (guix store))
+      (define s (open-connection))
+      (exit (equal? (list \"$copied\") (dead-paths s)))"
 
-# When 'sqlite3' is available, check the name in the database.
-if type -P sqlite3
-then
-    echo "select * from ValidPaths where path=\"$final_name\";" | \
-	sqlite3 $NIX_DB_DIR/db.sqlite
-fi
+    # Kill the daemon so we can access the database below (otherwise we may
+    # get "database is locked" errors.)
+    kill $subdaemon_pid
+    exit_hook=":"
+    while kill -0 $subdaemon_pid ; do sleep 0.5 ; done
+
+    # When 'sqlite3' is available, check the name in the database.
+    if type -P sqlite3
+    then
+	echo "select * from ValidPaths where path=\"$final_name\";" | \
+	    sqlite3 "$NIX_DB_DIR/db.sqlite"
+    fi
+done
