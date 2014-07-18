@@ -249,7 +249,8 @@ exception and backtrace!)."
 
   (define linux-modules
     ;; Modules added to the initrd and loaded from the initrd.
-    `(,@(if (or virtio? qemu-networking?)
+    `("libahci.ko" "ahci.ko" ; modules for SATA controllers
+      ,@(if (or virtio? qemu-networking?)
             virtio-modules
             '())
       ,@(if (find (file-system-type-predicate "cifs") file-systems)
