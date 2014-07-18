@@ -23,6 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages boost)
   #:use-module (gnu packages python)
   #:use-module (gnu packages perl)
   #:export (swig))
@@ -39,11 +40,7 @@
               (base32
                "0kj21b6syp62vx68r1j6azv9033kng68pxm1k79pm4skkzr0ny33"))))
     (build-system gnu-build-system)
-    (arguments '(#:configure-flags '("--without-boost")
-
-                 ;; FIXME: Some tests require Boost anyway.  Turn them on when
-                 ;; we have Boost.
-                 #:tests? #f))
+    (native-inputs `(("boost" ,boost)))
     (inputs `(("pcre" ,pcre)
 
               ;; Provide these to run the corresponding tests.
