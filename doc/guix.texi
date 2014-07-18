@@ -2881,7 +2881,7 @@ kernel, initial RAM disk, and boot loader looks like this:
   (users (list (user-account
                 (name "alice")
                 (password "")
-                (uid 1000) (gid 100)
+                (uid 1000) (group 100)
                 (comment "Bob's sister")
                 (home-directory "/home/alice"))))
   (packages (cons emacs %base-packages))
@@ -3331,7 +3331,7 @@ at boot time, you can define the @code{initrd} field of the operating
 system declaration like this:
 
 @example
-(initrd (cut base-init <>
+(initrd (cut base-initrd <>
              #:extra-modules '("my.ko" "modules.ko")))
 @end example
 
