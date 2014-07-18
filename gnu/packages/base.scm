@@ -28,6 +28,7 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages ed)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages multiprecision)
@@ -164,12 +165,9 @@ standard utility.")
              (base32
               "1sqckf560pzwgniy00vcpdv2c9c11s4cmhlm14yqgg8avd3bl94i"))))
    (build-system gnu-build-system)
-   (native-inputs '())                      ; FIXME: needs `ed' for the tests
-   (arguments
-    '(#:tests? #f)
+   (native-inputs `(("ed", ed)))
     ;; TODO: When cross-compiling, add this:
     ;;  '(#:configure-flags '("ac_cv_func_strnlen_working=yes"))
-    )
    (synopsis "Apply differences to originals, with optional backups")
    (description
     "Patch is a program that applies changes to files based on differences
