@@ -99,14 +99,19 @@
                        #:key (log-port (current-error-port)))
   "Copy ITEM to the store under root directory TARGET and register it."
   (mlet* %store-monad ((refs (references* item)))
-    (let ((dest (string-append target item)))
+    (let ((dest  (string-append target item))
+          (state (string-append target "/var/guix")))
       (format log-port "copying '~a'...~%" item)
       (copy-recursively item dest
                         #:log (%make-void-port "w"))
 
       ;; Register ITEM; as a side-effect, it resets timestamps, etc.
+      ;; Explicitly use "TARGET/var/guix" as the state directory, to avoid
+      ;; reproducing the user's current settings; see
+      ;; <http://bugs.gnu.org/18049>.
       (unless (register-path item
                              #:prefix target
+                             #:state-directory state
                              #:references refs)
         (leave (_ "failed to register '~a' under '~a'~%")
                item target))
