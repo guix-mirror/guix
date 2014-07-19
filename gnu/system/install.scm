@@ -144,6 +144,7 @@ Use Alt-F2 for documentation.
 
     (packages (cons* texinfo-4                ; for the standalone Info reader
                      parted ddrescue
+                     wireless-tools
                      ;; XXX: We used to have GNU fdisk here, but as of version
                      ;; 2.0.0a, that pulls Guile 1.8, which takes unreasonable
                      ;; space; furthermore util-linux's fdisk is already
