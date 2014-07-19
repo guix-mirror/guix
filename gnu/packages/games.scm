@@ -52,7 +52,10 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages qt)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages pulseaudio)
+  #:use-module (gnu packages linux)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
 
 (define-public gnubg
@@ -535,3 +538,32 @@ clone.")
     ;; As noted in 'COPYING', part of it is under GPLv2+, while the rest is
     ;; under BSD-2.
     (license gpl2+)))
+
+(define-public openal
+  (package
+    (name "openal")
+    (version "1.15.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://kcat.strangesoft.net/openal-releases/openal-soft-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "0mmhdqiyb3c9dzvxspm8h2v8jibhi8pfjxnf6m0wn744y1ia2a8f"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; no check target
+    (inputs
+     `(("alsa-lib" ,alsa-lib)
+       ("pulseaudio" ,pulseaudio)))
+    (synopsis "3D audio API")
+    (description
+     "OpenAL provides capabilities for playing audio in a virtual 3D
+environment.  Distance attenuation, doppler shift, and directional sound
+emitters are among the features handled by the API.  More advanced effects,
+including air absorption, occlusion, and environmental reverb, are available
+through the EFX extension.  It also facilitates streaming audio, multi-channel
+buffers, and audio capture.")
+    (home-page "http://kcat.strangesoft.net/openal.html")
+    (license lgpl2.0+)))
