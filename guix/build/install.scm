@@ -75,7 +75,7 @@ directory TARGET."
 STORE."
   `(;; Note: the store's GID is fixed precisely so we can set it here rather
     ;; than at activation time.
-    (directory ,store 0 30000)
+    (directory ,store 0 30000 #o1775)
 
     (directory "/etc")
     (directory "/var/log")                          ; for dmd
