@@ -1329,3 +1329,29 @@ from the module-init-tools project.")
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license gpl2+))) ; libudev is under lgpl2.1+
+
+(define-public wireless-tools
+  (package
+    (name "wireless-tools")
+    (version "30.pre9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/wireless_tools."
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "0qscyd44jmhs4k32ggp107hlym1pcyjzihiai48xs7xzib4wbndb"))))
+    (build-system gnu-build-system)
+    (arguments
+     `(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (setenv "PREFIX" (assoc-ref outputs "out")))
+                 %standard-phases)
+       #:tests? #f))
+    (synopsis "Tools for manipulating Linux Wireless Extensions")
+    (description "Wireless Tools are used to manipulate the Linux Wireless
+Extensions.  The Wireless Extension is an interface allowing you to set
+Wireless LAN specific parameters and get the specific stats.")
+    (home-page "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
+    (license gpl2+)))
