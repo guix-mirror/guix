@@ -2545,6 +2545,31 @@ The command above specifically updates the @code{emacs} and
 @code{idutils} packages.  The @code{--select} option would have no
 effect in this case.
 
+When considering whether to upgrade a package, it is sometimes
+convenient to know which packages would be affected by the upgrade and
+should be checked for compatibility.  For this the following option may
+be used when passing @command{guix refresh} one or more package names:
+
+@table @code
+
+@item --list-dependent
+@itemx -l
+List top-level dependent packages that would need to be rebuilt as a
+result of upgrading one or more packages.
+
+@end table
+
+Be aware that the @code{--list-dependent} option only
+@emph{approximates} the rebuilds that would be required as a result of
+an upgrade.  More rebuilds might be required under some circumstances.
+
+@example
+guix refresh --list-dependent flex
+@end example
+
+The command above lists a set of packages that could be built to check
+for compatibility with an upgraded @code{flex} package.
+
 The following options can be used to customize GnuPG operation:
 
 @table @code

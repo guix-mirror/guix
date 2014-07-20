@@ -75,6 +75,7 @@
             package-location
             package-field-location
 
+            package-direct-inputs
             package-transitive-inputs
             package-transitive-target-inputs
             package-transitive-native-inputs
@@ -484,12 +485,17 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
       ((input rest ...)
        (loop rest (cons input result))))))
 
+(define (package-direct-inputs package)
+  "Return all the direct inputs of PACKAGE---i.e, its direct inputs along
+with their propagated inputs."
+  (append (package-native-inputs package)
+          (package-inputs package)
+          (package-propagated-inputs package)))
+
 (define (package-transitive-inputs package)
   "Return the transitive inputs of PACKAGE---i.e., its direct inputs along
 with their propagated inputs, recursively."
-  (transitive-inputs (append (package-native-inputs package)
-                             (package-inputs package)
-                             (package-propagated-inputs package))))
+  (transitive-inputs (package-direct-inputs package)))
 
 (define (package-transitive-target-inputs package)
   "Return the transitive target inputs of PACKAGE---i.e., its direct inputs
