@@ -668,7 +668,7 @@ commands and their arguments.")
 (define-public wpa-supplicant
   (package
     (name "wpa-supplicant")
-    (version "2.1")
+    (version "2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -677,7 +677,7 @@ commands and their arguments.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0xxjw7lslvql1ykfbwmbhdrnjsjljf59fbwf837418s97dz2wqwi"))))
+                "1vf8jc4yyksbxf86narvsli3vxfbm8nbnim2mdp66nd6d3yvin70"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
