@@ -95,8 +95,8 @@
   (store-lift show-what-to-build))
 
 
-(define* (copy-closure item target
-                       #:key (log-port (current-error-port)))
+(define* (copy-item item target
+                    #:key (log-port (current-error-port)))
   "Copy ITEM to the store under root directory TARGET and register it."
   (mlet* %store-monad ((refs (references* item)))
     (let ((dest  (string-append target item))
@@ -118,6 +118,18 @@
 
       (return #t))))
 
+(define* (copy-closure item target
+                       #:key (log-port (current-error-port)))
+  "Copy ITEM and all its dependencies to the store under root directory
+TARGET, and register them."
+  (mlet* %store-monad ((refs    (references* item))
+                       (to-copy (topologically-sorted*
+                                 (delete-duplicates (cons item refs)
+                                                    string=?))))
+    (sequence %store-monad
+              (map (cut copy-item <> target #:log-port log-port)
+                   to-copy))))
+
 (define* (install os-drv target
                   #:key (log-port (current-output-port))
                   grub? grub.cfg device)
@@ -136,16 +148,10 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
             (mkdir-p (string-append target (%store-prefix)))
 
             ;; Copy items to the new store.
-            (sequence %store-monad
-                      (map (cut copy-closure <> target #:log-port log-port)
-                           to-copy))))))
+            (copy-closure to-copy target #:log-port log-port)))))
 
   (mlet* %store-monad ((os-dir -> (derivation->output-path os-drv))
-                       (refs      (references* os-dir))
-                       (lst    -> (delete-duplicates (cons os-dir refs)
-                                                     string=?))
-                       (to-copy   (topologically-sorted* lst))
-                       (%         (maybe-copy to-copy)))
+                       (%         (maybe-copy os-dir)))
 
     ;; Create a bunch of additional files.
     (format log-port "populating '~a'...~%" target)
