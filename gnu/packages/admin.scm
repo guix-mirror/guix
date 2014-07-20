@@ -617,7 +617,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.10p2")
+    (version "1.8.10p3")
     (source (origin
               (method url-fetch)
               (uri
@@ -627,7 +627,7 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1wbrygz584abmywklq0b4xhqn3s1bjk3rrladslr5nycdpdvhv5s"))))
+                "002l6h27pnhb77b65frhazbhknsxvrsnkpi43j7i0qw1lrgi7nkf"))))
     (build-system gnu-build-system)
     (arguments
      '(#:configure-flags '("--with-logpath=/var/log/sudo.log")
