@@ -28,7 +28,7 @@
 (define-public acl
   (package
     (name "acl")
-    (version "2.2.51")
+    (version "2.2.52")
     (source
      (origin
       (method url-fetch)
@@ -36,7 +36,7 @@
                           version ".src.tar.gz"))
       (sha256
        (base32
-        "09aj30m49ivycl3irram8c3givc0crivjm3ymw0nhfaxrwhlb186"))))
+        "08qd9s3wfhv0ajswsylnfwr5h0d7j9d4rgip855nrh400nxp940p"))))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
