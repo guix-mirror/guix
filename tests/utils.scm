@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,7 +26,8 @@
   #:use-module (srfi srfi-64)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
-  #:use-module (ice-9 match))
+  #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist))
 
 (define temp-file
   (string-append "t-utils-" (number->string (getpid))))
@@ -117,6 +119,37 @@
                '(a b c d)
                '(0 1 2 3)))
     list))
+
+(let* ((tree (alist->vhash
+              '((0 2 3) (1 3 4) (2) (3 5 6) (4 6) (5) (6))
+              hashq))
+       (add-one (lambda (_ r) (1+ r)))
+       (tree-lookup (lambda (n) (cdr (vhash-assq n tree)))))
+  (test-equal "fold-tree, single root"
+    5 (fold-tree add-one 0 tree-lookup '(0)))
+  (test-equal "fold-tree, two roots"
+    7 (fold-tree add-one 0 tree-lookup '(0 1)))
+  (test-equal "fold-tree, sum"
+    16 (fold-tree + 0 tree-lookup '(0)))
+  (test-equal "fold-tree, internal"
+    18 (fold-tree + 0 tree-lookup '(3 4)))
+  (test-equal "fold-tree, cons"
+    '(1 3 4 5 6)
+    (sort (fold-tree cons '() tree-lookup '(1)) <))
+  (test-equal "fold-tree, overlapping paths"
+    '(1 3 4 5 6)
+    (sort (fold-tree cons '() tree-lookup '(1 4)) <))
+  (test-equal "fold-tree, cons, two roots"
+    '(0 2 3 4 5 6)
+    (sort (fold-tree cons '() tree-lookup '(0 4)) <))
+  (test-equal "fold-tree-leaves, single root"
+    2 (fold-tree-leaves add-one 0 tree-lookup '(1)))
+  (test-equal "fold-tree-leaves, single root, sum"
+    11 (fold-tree-leaves + 0 tree-lookup '(1)))
+  (test-equal "fold-tree-leaves, two roots"
+    3 (fold-tree-leaves add-one 0 tree-lookup '(0 1)))
+  (test-equal "fold-tree-leaves, two roots, sum"
+    13 (fold-tree-leaves + 0 tree-lookup '(0 1))))
 
 (test-assert "filtered-port, file"
   (let* ((file  (search-path %load-path "guix.scm"))
