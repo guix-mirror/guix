@@ -78,16 +78,16 @@ interface and is based on GNU Guile.")
 (define-public dfc
   (package
    (name "dfc")
-   (version "3.0.3")
+   (version "3.0.4")
    (source
     (origin
      (method url-fetch)
       (uri (string-append
-            "http://projects.gw-computing.net/attachments/download/78/dfc-"
+            "http://projects.gw-computing.net/attachments/download/79/dfc-"
             version ".tar.gz"))
       (sha256
        (base32
-        "1b4hfqv23l87cb37fxwzfk2sgspkyxpr3ig2hsd23hr6mm982j7z"))))
+        "0zk1ppx93ijimf4sbgqilxxikpsa2gmpbynknyh41xy7jbdjxp0b"))))
    (build-system cmake-build-system)
    (arguments '(#:tests? #f)) ; There are no tests.
    (native-inputs `(("gettext" ,gnu-gettext)))
