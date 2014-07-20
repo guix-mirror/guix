@@ -101,14 +101,14 @@ graphs and can export its output to different formats.")
 (define-public htop
   (package
    (name "htop")
-   (version "1.0.2")
+   (version "1.0.3")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://sourceforge/htop/"
+            (uri (string-append "http://hisham.hm/htop/"
                   version "/htop-" version ".tar.gz"))
             (sha256
              (base32
-              "18fqrhvnm7h4c3939av8lpiwrwxbyw6hcly0jvq0vkjf0ixnaq7f"))))
+              "0a8qbpsifzjwc4f45xfwm48jhm59g6q5hlib4bf7z13mgy95fp05"))))
    (build-system gnu-build-system)
    (inputs
     `(("ncurses" ,ncurses)))
