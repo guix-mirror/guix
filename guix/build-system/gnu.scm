@@ -250,6 +250,9 @@ derivations for SYSTEM.  Include propagated inputs in the result."
                            inputs))))
 
 (define standard-inputs
+  ;; FIXME: Memoization should be associated with the open store (as for
+  ;; 'add-text-to-store'), otherwise we get .drv that may not be valid when
+  ;; switching to another store.
   (memoize
    (lambda (system)
      "Return the list of implicit standard inputs used with the GNU Build

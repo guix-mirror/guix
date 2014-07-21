@@ -527,6 +527,8 @@ recursively."
 (define (cache package system thunk)
   "Memoize the return values of THUNK as the derivation of PACKAGE on
 SYSTEM."
+  ;; FIXME: This memoization should be associated with the open store, because
+  ;; otherwise it breaks when switching to a different store.
   (let ((vals (call-with-values thunk list)))
     ;; Use `hashq-set!' instead of `hash-set!' because `hash' returns the
     ;; same value for all structs (as of Guile 2.0.6), and because pointer
