@@ -10,6 +10,75 @@ Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 
 Please send Guix bug reports to bug-guix@gnu.org.
 
+* Changes in 0.7 (since 0.6)
+** Package management
+*** ‘guix refresh’ has a new ‘--list-dependent’ options
+
+See “Invoking guix refresh” in the manual.
+
+** Programming interfaces
+*** New (guix gexp) module, which implements “G-expressions”
+
+G-expressions are a new mechanism to embed build-side code in host-side
+code.  See “G-Expressions” in the manual.
+
+*** (gnu system) and related modules now use G-expressions
+
+This greatly simplifies code, and guarantees that build code carries
+references to the packages or derivations it uses.
+
+*** ‘build-expression->derivation’ is deprecated in favor of G-expressions
+*** The (gnu system) module has been largely augmented and factorized
+*** New (guix build vm) module, support for virtual machine images
+*** New (guix build activation) module, for “system activation”
+*** New (guix build syscalls) module
+*** New (guix build install) and module for whole system installation
+*** New (gnu system install) module, for the installation system
+*** New (gnu system file-systems) module, for ‘file-system’ declarations
+*** New (gnu) module, which aggregates common (gnu …) modules
+*** ‘service’ records now have an optional ‘activate’ field
+
+This allows services to specify code to run at system activation time.
+
+** GNU distribution
+*** An image to install the GNU system from a USB stick is provided
+
+This is the first time an installation image is provided.  See “System
+Installation” in the manual for details.  This is work in progress as noted
+in “Limitations”.  Your feedback and help are welcome!
+
+*** Support for more parameters in ‘operating-system’ declarations
+
+Operating system declarations can now provide a list of file systems, a list
+of setuid programs, bootloader options, and more.  See “System Configuration”
+in the manual.
+
+*** ‘guix system’ supports more actions
+
+Newly supported actions are ‘init’, ‘build’, ‘reconfigure’, and ‘disk-image’.
+See “Invoking guix system” in the manual.
+
+*** User accounts and groups are created at system activation time
+*** Virtual machine support uses para-virtualized devices
+*** GCC package now has an additional ‘lib’ output, for run-time support libs
+*** GLib package now has a separate “bin” output (<http://bugs.gnu.org/17853>)
+*** XXX new packages
+*** XXX package updates
+
+** Native language support
+*** New translations: de (German), and hu (Hungarian)
+*** Updated translations: eo, pt_BR, sr, vi
+*** Package descriptions moved from the ‘guix’ text domain to ‘guix-packages’
+** Bugs fixed
+*** Downloads are now faster (<http://bugs.gnu.org/15368>)
+*** ‘guix authenticate’ properly writes signatures to stdout
+    (<http://bugs.gnu.org/17312>)
+*** Progress report of downloads is now properly displayed
+*** Error reporting of pk-crypto errors has been improved
+*** The 'patches' field now works for origins with no extension
+*** Synchronization and GC issues fixed in the offload hook
+*** (guix ftp-client) emits USER commands suitable for all servers
+
 * Changes in 0.6 (since 0.5)
 ** Package management
 *** Default store directory changed to /gnu/store
