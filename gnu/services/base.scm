@@ -25,7 +25,7 @@
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (udev kbd))
+                #:select (udev kbd e2fsprogs))
   #:use-module ((gnu packages base)
                 #:select (glibc-final))
   #:use-module (gnu packages package-management)
@@ -110,7 +110,14 @@ true, check the file system before mounting it."
       (start #~(lambda args
                  (let ((device (canonicalize-device-spec #$device '#$title)))
                    #$(if check?
-                         #~(check-file-system device #$type)
+                         #~(begin
+                             ;; Make sure fsck.ext2 & co. can be found.
+                             (setenv "PATH"
+                                     (string-append
+                                      #$e2fsprogs "/sbin:"
+                                      "/run/current-system/profile/sbin:"
+                                      (getenv "PATH")))
+                             (check-file-system device #$type))
                          #~#t)
                    (mount device #$target #$type 0 #$options))
                  #t))
