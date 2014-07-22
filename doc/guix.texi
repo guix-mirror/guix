@@ -3039,7 +3039,9 @@ partitions without having to hard-code their actual device name.
 
 @item @code{flags} (default: @code{'()})
 This is a list of symbols denoting mount flags.  Recognized flags
-include @code{read-only} and @code{bind-mount}.
+include @code{read-only}, @code{bind-mount}, @code{no-dev} (disallow
+access to special files), @code{no-suid} (ignore setuid and setgid
+bits), and @code{no-exec} (disallow program execution.)
 
 @item @code{options} (default: @code{#f})
 This is either @code{#f}, or a string denoting mount options.

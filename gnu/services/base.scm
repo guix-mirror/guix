@@ -29,6 +29,8 @@
   #:use-module ((gnu packages base)
                 #:select (glibc-final))
   #:use-module (gnu packages package-management)
+  #:use-module ((guix build linux-initrd)
+                #:select (mount-flags->bit-mask))
   #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (srfi srfi-1)
@@ -96,13 +98,14 @@ This service must be the root of the service dependency graph so that its
       (respawn? #f)))))
 
 (define* (file-system-service device target type
-                              #:key (check? #t) create-mount-point?
-                              options (title 'any))
+                              #:key (flags '()) (check? #t)
+                              create-mount-point? options (title 'any))
   "Return a service that mounts DEVICE on TARGET as a file system TYPE with
 OPTIONS.  TITLE is a symbol specifying what kind of name DEVICE is: 'label for
 a partition label, 'device for a device file name, or 'any.  When CHECK? is
 true, check the file system before mounting it.  When CREATE-MOUNT-POINT? is
-true, create TARGET if it does not exist yet."
+true, create TARGET if it does not exist yet.  FLAGS is a list of symbols,
+such as 'read-only' etc."
   (with-monad %store-monad
     (return
      (service
@@ -124,7 +127,9 @@ true, create TARGET if it does not exist yet."
                                       (getenv "PATH")))
                              (check-file-system device #$type))
                          #~#t)
-                   (mount device #$target #$type 0 #$options))
+                   (mount device #$target #$type
+                          #$(mount-flags->bit-mask flags)
+                          #$options))
                  #t))
       (stop #~(lambda args
                 ;; Normally there are no processes left at this point, so

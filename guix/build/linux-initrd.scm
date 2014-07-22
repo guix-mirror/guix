@@ -40,6 +40,7 @@
             find-partition-by-label
             canonicalize-device-spec
 
+            mount-flags->bit-mask
             check-file-system
             mount-file-system
             bind-mount
@@ -393,6 +394,9 @@ networking values.)  Return #t if INTERFACE is up, #f otherwise."
 
 ;; Linux mount flags, from libc's <sys/mount.h>.
 (define MS_RDONLY 1)
+(define MS_NOSUID 2)
+(define MS_NODEV  4)
+(define MS_NOEXEC 8)
 (define MS_BIND 4096)
 (define MS_MOVE 8192)
 
@@ -494,6 +498,24 @@ UNIONFS."
                fsck code device)
        (start-repl)))))
 
+(define (mount-flags->bit-mask flags)
+  "Return the number suitable for the 'flags' argument of 'mount' that
+corresponds to the symbols listed in FLAGS."
+  (let loop ((flags flags))
+    (match flags
+      (('read-only rest ...)
+       (logior MS_RDONLY (loop rest)))
+      (('bind-mount rest ...)
+       (logior MS_BIND (loop rest)))
+      (('no-suid rest ...)
+       (logior MS_NOSUID (loop rest)))
+      (('no-dev rest ...)
+       (logior MS_NODEV (loop rest)))
+      (('no-exec rest ...)
+       (logior MS_NOEXEC (loop rest)))
+      (()
+       0))))
+
 (define* (mount-file-system spec #:key (root "/root"))
   "Mount the file system described by SPEC under ROOT.  SPEC must have the
 form:
@@ -503,15 +525,6 @@ form:
 DEVICE, MOUNT-POINT, and TYPE must be strings; OPTIONS can be a string or #f;
 FLAGS must be a list of symbols.  CHECK? is a Boolean indicating whether to
 run a file system check."
-  (define flags->bit-mask
-    (match-lambda
-     (('read-only rest ...)
-      (or MS_RDONLY (flags->bit-mask rest)))
-     (('bind-mount rest ...)
-      (or MS_BIND (flags->bit-mask rest)))
-     (()
-      0)))
-
   (match spec
     ((source title mount-point type (flags ...) options check?)
      (let ((source      (canonicalize-device-spec source title))
@@ -519,7 +532,7 @@ run a file system check."
        (when check?
          (check-file-system source type))
        (mkdir-p mount-point)
-       (mount source mount-point type (flags->bit-mask flags)
+       (mount source mount-point type (mount-flags->bit-mask flags)
               (if options
                   (string->pointer options)
                   %null-pointer))
@@ -528,7 +541,7 @@ run a file system check."
        (mkdir-p (string-append root "/etc"))
        (let ((port (open-file (string-append root "/etc/mtab") "a")))
          (format port "~a ~a ~a ~a 0 0~%"
-                 source mount-point type options)
+                 source mount-point type (or options ""))
          (close-port port))))))
 
 (define (switch-root root)

@@ -186,7 +186,8 @@ as 'needed-for-boot'."
                                         #:title title
                                         #:check? check?
                                         #:create-mount-point? create?
-                                        #:options opts)))
+                                        #:options opts
+                                        #:flags flags)))
                  file-systems)))
 
 (define (essential-services os)
