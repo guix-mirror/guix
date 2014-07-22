@@ -670,11 +670,6 @@ to it are lost."
              (switch-root "/root")
              (format #t "loading '~a'...\n" to-load)
 
-             ;; Obviously this has to be done each time we boot.  Do it from here
-             ;; so that statfs(2) returns DEVPTS_SUPER_MAGIC like libc's getpt(3)
-             ;; expects (and thus openpty(3) and its users, such as xterm.)
-             (mount "none" "/dev/pts" "devpts")
-
              ;; TODO: Remove /lib, /share, and /loader.go.
              (primitive-load to-load)
 

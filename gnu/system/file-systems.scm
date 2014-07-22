@@ -85,11 +85,33 @@
     (device "none")
     (mount-point "/dev")
     (type "devtmpfs")
-    (check? #f)))
+    (check? #f)
+
+    ;; Mount it from the initrd so /dev/pts & co. can then be mounted over it.
+    (needed-for-boot? #t)))
+
+(define %tty-gid
+  ;; ID of the 'tty' group.  Allocate it statically to make it easy to refer
+  ;; to it from here and from the 'tty' group definitions.
+  1004)
+
+(define %pseudo-terminal-file-system
+  ;; The pseudo-terminal file system.  It needs to be mounted so that
+  ;; statfs(2) returns DEVPTS_SUPER_MAGIC like libc's getpt(3) expects (and
+  ;; thus openpty(3) and its users, such as xterm.)
+  (file-system
+    (device "none")
+    (mount-point "/dev/pts")
+    (type "devpts")
+    (check? #f)
+    (needed-for-boot? #f)
+    (create-mount-point? #t)
+    (options (string-append "gid=" (number->string %tty-gid) ",mode=620"))))
 
 (define %base-file-systems
   ;; List of basic file systems to be mounted.  Note that /proc and /sys are
   ;; currently mounted by the initrd.
-  (list %devtmpfs-file-system))
+  (list %devtmpfs-file-system
+        %pseudo-terminal-file-system))
 
 ;;; file-systems.scm ends here

@@ -3074,6 +3074,14 @@ The @code{devtmpfs} file system to be mounted on @file{/dev}.  This is a
 requirement for udev (@pxref{Base Services, @code{udev-service}}).
 @end defvr
 
+@defvr {Scheme Variable} %pseudo-terminal-file-system
+This is the file system to be mounted as @file{/dev/pts}.  It supports
+@dfn{pseudo-terminals} created @i{via} @code{openpty} and similar
+functions (@pxref{Pseudo-Terminals,,, libc, The GNU C Library Reference
+Manual}).  Pseudo-terminals are used by terminal emulators such as
+@command{xterm}.
+@end defvr
+
 @defvr {Scheme Variable} %binary-format-file-system
 The @code{binfmt_misc} file system, which allows handling of arbitrary
 executable file types to be delegated to user space.  This requires the

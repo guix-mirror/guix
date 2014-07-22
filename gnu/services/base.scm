@@ -482,7 +482,7 @@ passed to @command{guix-daemon}."
              ;; Udev needs /dev to be a 'devtmpfs' mount so that new device
              ;; nodes can be added: see
              ;; <http://www.linuxfromscratch.org/lfs/view/development/chapter07/udev.html>.
-             (requirement '(root-file-system file-system-/dev))
+             (requirement '(root-file-system))
 
              (documentation "Populate the /dev directory, dynamically.")
              (start #~(lambda ()

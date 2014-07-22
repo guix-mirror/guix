@@ -20,6 +20,8 @@
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (guix monads)
+  #:use-module ((gnu system file-systems)
+                #:select (%tty-gid))
   #:use-module ((gnu packages admin)
                 #:select (shadow))
   #:use-module (gnu packages bash)
@@ -84,7 +86,7 @@
 
         ;; The following groups are conventionally used by things like udev to
         ;; control access to hardware devices.
-        (user-group (name "tty"))
+        (user-group (name "tty") (id %tty-gid))
         (user-group (name "dialout"))
         (user-group (name "kmem"))
         (user-group (name "video"))
