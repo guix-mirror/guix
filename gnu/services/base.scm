@@ -96,11 +96,13 @@ This service must be the root of the service dependency graph so that its
       (respawn? #f)))))
 
 (define* (file-system-service device target type
-                              #:key (check? #t) options (title 'any))
+                              #:key (check? #t) create-mount-point?
+                              options (title 'any))
   "Return a service that mounts DEVICE on TARGET as a file system TYPE with
 OPTIONS.  TITLE is a symbol specifying what kind of name DEVICE is: 'label for
 a partition label, 'device for a device file name, or 'any.  When CHECK? is
-true, check the file system before mounting it."
+true, check the file system before mounting it.  When CREATE-MOUNT-POINT? is
+true, create TARGET if it does not exist yet."
   (with-monad %store-monad
     (return
      (service
@@ -109,6 +111,9 @@ true, check the file system before mounting it."
       (documentation "Check, mount, and unmount the given file system.")
       (start #~(lambda args
                  (let ((device (canonicalize-device-spec #$device '#$title)))
+                   #$(if create-mount-point?
+                         #~(mkdir-p #$target)
+                         #~#t)
                    #$(if check?
                          #~(begin
                              ;; Make sure fsck.ext2 & co. can be found.

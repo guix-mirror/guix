@@ -3054,6 +3054,9 @@ instance, for the root file system.
 This Boolean indicates whether the file system needs to be checked for
 errors before being mounted.
 
+@item @code{create-mount-point?} (default: @code{#f})
+When true, the mount point is created if it does not exist yet.
+
 @end table
 @end deftp
 

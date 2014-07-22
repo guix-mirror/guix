@@ -28,6 +28,8 @@
             file-system-needed-for-boot?
             file-system-flags
             file-system-options
+            file-system-check?
+            file-system-create-mount-point?
 
             %fuse-control-file-system
             %binary-format-file-system
@@ -57,7 +59,9 @@
   (needed-for-boot? file-system-needed-for-boot?  ; Boolean
                     (default #f))
   (check?           file-system-check?            ; Boolean
-                    (default #t)))
+                    (default #t))
+  (create-mount-point? file-system-create-mount-point? ; Boolean
+                       (default #f)))
 
 (define %fuse-control-file-system
   ;; Control file system for Linux' file systems in user-space (FUSE).

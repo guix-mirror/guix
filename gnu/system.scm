@@ -181,10 +181,11 @@ as 'needed-for-boot'."
   (sequence %store-monad
             (map (match-lambda
                   (($ <file-system> device title target type flags opts
-                                    #f check?)
+                                    #f check? create?)
                    (file-system-service device target type
                                         #:title title
                                         #:check? check?
+                                        #:create-mount-point? create?
                                         #:options opts)))
                  file-systems)))
 
