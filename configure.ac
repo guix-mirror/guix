@@ -16,7 +16,7 @@ dnl For the C++ code.  This must be used early.
 AC_USE_SYSTEM_EXTENSIONS
 
 AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION([0.18.3])
+AM_GNU_GETTEXT_VERSION([0.18.1])
 
 guilemoduledir="${datarootdir}/guile/site/2.0"
 AC_SUBST([guilemoduledir])
