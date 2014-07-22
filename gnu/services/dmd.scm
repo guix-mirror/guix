@@ -49,6 +49,7 @@
 
           (use-modules (ice-9 ftw)
                        (guix build syscalls)
+                       (guix build utils)
                        ((guix build linux-initrd)
                         #:select (check-file-system canonicalize-device-spec)))
 

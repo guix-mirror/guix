@@ -2799,9 +2799,18 @@ The installation image includes Parted (@pxref{Overview,,, parted, GNU
 Parted User Manual}), @command{fdisk}, and e2fsprogs, the suite of tools
 to manipulate ext2/ext3/ext4 file systems.
 
+@item
+Once that is done, mount the target root partition under @file{/mnt}.
+
+@item
+Lastly, run @code{deco start cow-store /mnt}.
+
+This will make @file{/gnu/store} copy-on-write, such that packages added
+to it during the installation phase will be written to the target disk
+rather than kept in memory.
+
 @end enumerate
 
-Once that is done, mount the target root partition under @file{/mnt}.
 
 @subsection Proceeding with the Installation
 
