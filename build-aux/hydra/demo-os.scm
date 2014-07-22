@@ -44,13 +44,13 @@
  (file-systems
   ;; We provide a dummy file system for /, but that's OK because the VM build
   ;; code will automatically declare the / file system for us.
-  (list (file-system
-          (mount-point "/")
-          (device "dummy")
-          (type "dummy"))
-        ;; %fuse-control-file-system   ; needs fuse.ko
-        ;; %binary-format-file-system  ; needs binfmt.ko
-        ))
+  (cons* (file-system
+           (mount-point "/")
+           (device "dummy")
+           (type "dummy"))
+         ;; %fuse-control-file-system   ; needs fuse.ko
+         ;; %binary-format-file-system  ; needs binfmt.ko
+         %base-file-systems))
 
  (users (list (user-account
                (name "guest")

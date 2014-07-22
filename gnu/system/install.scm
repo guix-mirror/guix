@@ -117,10 +117,11 @@ Use Alt-F2 for documentation.
     (file-systems
      ;; Note: the disk image build code overrides this root file system with
      ;; the appropriate one.
-     (list (file-system
+     (cons (file-system
              (mount-point "/")
              (device "gnu-disk-image")
-             (type "ext4"))))
+             (type "ext4"))
+           %base-file-systems))
 
     (users (list (user-account
                   (name "guest")

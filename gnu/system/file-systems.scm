@@ -30,7 +30,10 @@
             file-system-options
 
             %fuse-control-file-system
-            %binary-format-file-system))
+            %binary-format-file-system
+            %devtmpfs-file-system
+
+            %base-file-systems))
 
 ;;; Commentary:
 ;;;
@@ -71,5 +74,18 @@
     (mount-point "/proc/sys/fs/binfmt_misc")
     (type "binfmt_misc")
     (check? #f)))
+
+(define %devtmpfs-file-system
+  ;; /dev as a 'devtmpfs' file system, needed for udev.
+  (file-system
+    (device "none")
+    (mount-point "/dev")
+    (type "devtmpfs")
+    (check? #f)))
+
+(define %base-file-systems
+  ;; List of basic file systems to be mounted.  Note that /proc and /sys are
+  ;; currently mounted by the initrd.
+  (list %devtmpfs-file-system))
 
 ;;; file-systems.scm ends here

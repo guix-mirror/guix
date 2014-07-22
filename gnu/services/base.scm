@@ -473,8 +473,13 @@ passed to @command{guix-daemon}."
   (with-monad %store-monad
     (return (service
              (provision '(udev))
-             (requirement '(root-file-system))
-             (documentation "Populate the /dev directory.")
+
+             ;; Udev needs /dev to be a 'devtmpfs' mount so that new device
+             ;; nodes can be added: see
+             ;; <http://www.linuxfromscratch.org/lfs/view/development/chapter07/udev.html>.
+             (requirement '(root-file-system file-system-/dev))
+
+             (documentation "Populate the /dev directory, dynamically.")
              (start #~(lambda ()
                         (define udevd
                           (string-append #$udev "/libexec/udev/udevd"))

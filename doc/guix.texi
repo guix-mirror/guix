@@ -2826,10 +2826,11 @@ only a root account would look like this:
   ;; Assuming /dev/sdX is the target hard disk, and /dev/sdX1 the
   ;; target root file system.
   (bootloader (grub-configuration (device "/dev/sdX")))
-  (file-systems (list (file-system
+  (file-systems (cons (file-system
                         (device "/dev/sdX1")
                         (mount-point "/")
-                        (type "ext4")))))
+                        (type "ext4"))
+                      %base-file-systems)))
 @end example
 
 @noindent
@@ -2925,10 +2926,11 @@ kernel, initial RAM disk, and boot loader looks like this:
   (locale "fr_FR.UTF-8")
   (bootloader (grub-configuration
                 (device "/dev/sda")))
-  (file-systems (list (file-system
+  (file-systems (cons (file-system
                         (device "/dev/sda1") ; or partition label
                         (mount-point "/")
-                        (type "ext3"))))
+                        (type "ext3"))
+                      %base-file-systems))
   (users (list (user-account
                 (name "alice")
                 (password "")
@@ -3054,6 +3056,32 @@ errors before being mounted.
 
 @end table
 @end deftp
+
+The @code{(gnu system file-systems)} exports the following useful
+variables.
+
+@defvr {Scheme Variable} %base-file-systems
+These are essential file systems that are required on normal systems,
+such as @var{%devtmpfs-file-system} (see below.)  Operating system
+declarations should always contain at least these.
+@end defvr
+
+@defvr {Scheme Variable} %devtmpfs-file-system
+The @code{devtmpfs} file system to be mounted on @file{/dev}.  This is a
+requirement for udev (@pxref{Base Services, @code{udev-service}}).
+@end defvr
+
+@defvr {Scheme Variable} %binary-format-file-system
+The @code{binfmt_misc} file system, which allows handling of arbitrary
+executable file types to be delegated to user space.  This requires the
+@code{binfmt.ko} kernel module to be loaded.
+@end defvr
+
+@defvr {Scheme Variable} %fuse-control-file-system
+The @code{fusectl} file system, which allows unprivileged users to mount
+and unmount user-space FUSE file systems.  This requires the
+@code{fuse.ko} kernel module to be loaded.
+@end defvr
 
 @node User Accounts
 @subsection User Accounts
@@ -3244,6 +3272,7 @@ passed to @command{guix-daemon}.
 @deffn {Monadic Procedure} udev-service [#:udev udev]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
 @end deffn
+
 
 @node Networking Services
 @subsubsection Networking Services
