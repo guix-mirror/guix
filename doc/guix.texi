@@ -3084,6 +3084,12 @@ Manual}).  Pseudo-terminals are used by terminal emulators such as
 @command{xterm}.
 @end defvr
 
+@defvr {Scheme Variable} %shared-memory-file-system
+This file system is mounted as @file{/dev/shm} and is used to support
+memory sharing across processes (@pxref{Memory-mapped I/O,
+@code{shm_open},, libc, The GNU C Library Reference Manual}).
+@end defvr
+
 @defvr {Scheme Variable} %binary-format-file-system
 The @code{binfmt_misc} file system, which allows handling of arbitrary
 executable file types to be delegated to user space.  This requires the

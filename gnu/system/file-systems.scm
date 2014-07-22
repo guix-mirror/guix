@@ -108,10 +108,22 @@
     (create-mount-point? #t)
     (options (string-append "gid=" (number->string %tty-gid) ",mode=620"))))
 
+(define %shared-memory-file-system
+  ;; Shared memory.
+  (file-system
+    (device "tmpfs")
+    (mount-point "/dev/shm")
+    (type "tmpfs")
+    (check? #f)
+    (flags '(no-suid no-dev))
+    (options "size=50%")                         ;TODO: make size configurable
+    (create-mount-point? #t)))
+
 (define %base-file-systems
   ;; List of basic file systems to be mounted.  Note that /proc and /sys are
   ;; currently mounted by the initrd.
   (list %devtmpfs-file-system
-        %pseudo-terminal-file-system))
+        %pseudo-terminal-file-system
+        %shared-memory-file-system))
 
 ;;; file-systems.scm ends here
