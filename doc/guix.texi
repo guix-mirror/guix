@@ -67,7 +67,7 @@ package management tool written for the GNU system.
 * Acknowledgments::             Thanks!
 * GNU Free Documentation License::  The license of this manual.
 * Concept Index::               Concepts.
-* Function Index::              Functions.
+* Programming Index::           Data types, functions, and variables.
 @end menu
 
 @c *********************************************************************
@@ -4131,8 +4131,10 @@ an inspiration for Guix.
 @unnumbered Concept Index
 @printindex cp
 
-@node Function Index
-@unnumbered Function Index
+@node Programming Index
+@unnumbered Programming Index
+@syncodeindex tp fn
+@syncodeindex vr fn
 @printindex fn
 
 @bye
