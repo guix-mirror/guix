@@ -2,17 +2,11 @@ This patch changes 'modprobe' & co. so they honor the 'LINUX_MODULE_DIRECTORY'
 environment variable, rather than looking for modules exclusively in
 /lib/modules.
 
-Patch by David Guibert, from Nixpkgs; adjusted to use 'LINUX_MODULE_DIRECTORY'
-rather than 'MODULE_DIR' as the variable name.
-
-commit cf2c95edb7918bc658f6cae93793c1949fc9cb6e
-Author: David Guibert <david.guibert@gmail.com>
-Date:   Fri Aug 5 14:20:12 2011 +0200
-
-    introduce module-dir
+Original patch by David Guibert, from Nixpkgs; adjusted to use
+'LINUX_MODULE_DIRECTORY' rather than 'MODULE_DIR' as the variable name.
 
 diff --git a/depmod.c b/depmod.c
-index a1d2f8c..9362a35 100644
+index a1d2f8c..a8f92b2 100644
 --- a/depmod.c
 +++ b/depmod.c
 @@ -48,9 +48,6 @@
@@ -38,26 +32,30 @@ index a1d2f8c..9362a35 100644
  	}
  
 +        if((module_dir = getenv("LINUX_MODULE_DIRECTORY")) == NULL) {
-+                module_dir = "/lib/modules/";
++                module_dir = "/lib/modules";
 +        }
 +
  	while ((line = getline_wrapped(cfile, &linenum)) != NULL) {
  		char *ptr = line;
  		char *cmd, *modname;
-@@ -1550,7 +1552,7 @@ static int parse_config_file(const char *filename,
+@@ -1549,8 +1551,8 @@ static int parse_config_file(const char *filename,
+ 							     0, *search);
  					continue;
  				}
- 				nofail_asprintf(&dirname, "%s%s%s/%s", basedir,
+-				nofail_asprintf(&dirname, "%s%s%s/%s", basedir,
 -					MODULE_DIR, kernelversion, search_path);
++				nofail_asprintf(&dirname, "%s%s/%s/%s", basedir,
 +					module_dir, kernelversion, search_path);
  				len = strlen(dirname);
  				*search = add_search(dirname, len, *search);
  				free(dirname);
-@@ -1565,7 +1567,7 @@ static int parse_config_file(const char *filename,
+@@ -1564,8 +1566,8 @@ static int parse_config_file(const char *filename,
+ 			if (!regex_match(kernelversion, (const char *)version))
  				continue;
  
- 			nofail_asprintf(&pathname, "%s%s%s/%s/%s.ko", basedir,
+-			nofail_asprintf(&pathname, "%s%s%s/%s/%s.ko", basedir,
 -				MODULE_DIR, kernelversion, subdir, modname);
++			nofail_asprintf(&pathname, "%s%s/%s/%s/%s.ko", basedir,
 +				module_dir, kernelversion, subdir, modname);
  
  			*overrides = add_override(pathname, *overrides);
@@ -76,24 +74,26 @@ index a1d2f8c..9362a35 100644
  
 -	nofail_asprintf(&dirname, "%s%s%s", basedir, MODULE_DIR, version);
 +        if((module_dir = getenv("LINUX_MODULE_DIRECTORY")) == NULL) {
-+                module_dir = "/lib/modules/";
++                module_dir = "/lib/modules";
 +        }
 +
 +	nofail_asprintf(&dirname, "%s%s%s", basedir, module_dir, version);
  
  	if (maybe_all) {
  		if (!doing_stdout && !depfile_out_of_date(dirname))
-@@ -1850,7 +1857,7 @@ int main(int argc, char *argv[])
+@@ -1849,8 +1856,8 @@ int main(int argc, char *argv[])
+ 		char *dirname;
  		size_t len;
  
- 		nofail_asprintf(&dirname, "%s%s%s/updates", basedir,
+-		nofail_asprintf(&dirname, "%s%s%s/updates", basedir,
 -				MODULE_DIR, version);
++		nofail_asprintf(&dirname, "%s%s/%s/updates", basedir,
 +				module_dir, version);
  		len = strlen(dirname);
  		search = add_search(dirname, len, search);
  	}
 diff --git a/modinfo.c b/modinfo.c
-index 1dd8469..67b1041 100644
+index 1dd8469..6a1865b 100644
 --- a/modinfo.c
 +++ b/modinfo.c
 @@ -19,9 +19,6 @@
@@ -113,7 +113,7 @@ index 1dd8469..67b1041 100644
 + 	char *module_dir;
 +
 +        if((module_dir = getenv("LINUX_MODULE_DIRECTORY")) == NULL) {
-+                module_dir = "/lib/modules/";
++                module_dir = "/lib/modules";
 +        }
  
  	if (strchr(name, '.') || strchr(name, '/')) {
@@ -131,7 +131,7 @@ index 1dd8469..67b1041 100644
  	/* Search for it in modules.dep. */
  	nofail_asprintf(&depname, "%s/%s", moddir, "modules.dep");
 diff --git a/modprobe.c b/modprobe.c
-index 5464f45..d9fbf9d 100644
+index 5464f45..cb57917 100644
 --- a/modprobe.c
 +++ b/modprobe.c
 @@ -86,10 +86,6 @@ typedef enum
