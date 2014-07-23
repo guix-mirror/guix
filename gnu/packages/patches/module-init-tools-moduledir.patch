@@ -6,7 +6,7 @@ Original patch by David Guibert, from Nixpkgs; adjusted to use
 'LINUX_MODULE_DIRECTORY' rather than 'MODULE_DIR' as the variable name.
 
 diff --git a/depmod.c b/depmod.c
-index a1d2f8c..a8f92b2 100644
+index a1d2f8c..ff579c7 100644
 --- a/depmod.c
 +++ b/depmod.c
 @@ -48,9 +48,6 @@
@@ -77,7 +77,7 @@ index a1d2f8c..a8f92b2 100644
 +                module_dir = "/lib/modules";
 +        }
 +
-+	nofail_asprintf(&dirname, "%s%s%s", basedir, module_dir, version);
++	nofail_asprintf(&dirname, "%s%s/%s", basedir, module_dir, version);
  
  	if (maybe_all) {
  		if (!doing_stdout && !depfile_out_of_date(dirname))
