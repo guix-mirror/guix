@@ -139,6 +139,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/libdaemon.scm			\
   gnu/packages/libevent.scm			\
   gnu/packages/libffi.scm			\
+  gnu/packages/libftdi.scm			\
   gnu/packages/libidn.scm			\
   gnu/packages/libphidget.scm			\
   gnu/packages/libsigsegv.scm			\
