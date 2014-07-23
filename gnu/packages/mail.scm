@@ -301,6 +301,7 @@ repository and Maildir/IMAP as LOCAL repository.")
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")             ; for gtester
        ("texinfo" ,texinfo)))
     ;; TODO: Add webkit and gtk to build the mug GUI.
     (inputs
