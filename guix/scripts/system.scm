@@ -172,6 +172,16 @@ When GRUB? is true, install GRUB on DEVICE, using GRUB.CFG."
   ;; The system profile.
   (string-append %state-directory "/profiles/system"))
 
+(define-syntax-rule (save-environment-excursion body ...)
+  "Save the current environment variables, run BODY..., and restore them."
+  (let ((env (environ)))
+    (dynamic-wind
+      (const #t)
+      (lambda ()
+        body ...)
+      (lambda ()
+        (environ env)))))
+
 (define* (switch-to-system os
                            #:optional (profile %system-profile))
   "Make a new generation of PROFILE pointing to the directory of OS, switch to
@@ -185,7 +195,11 @@ it atomically, and then run OS's activation script."
       (switch-symlinks profile generation)
 
       (format #t (_ "activating system...~%"))
-      (return (primitive-load (derivation->output-path script)))
+
+      ;; The activation script may change $PATH, among others, so protect
+      ;; against that.
+      (return (save-environment-excursion
+               (primitive-load (derivation->output-path script))))
 
       ;; TODO: Run 'deco reload ...'.
       )))
