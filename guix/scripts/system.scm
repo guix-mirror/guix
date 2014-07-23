@@ -299,7 +299,8 @@ actions."
              (mlet %store-monad ((% (switch-to-system os)))
                (when grub?
                  (unless (false-if-exception
-                          (install-grub grub.cfg device "/"))
+                          (install-grub (derivation->output-path grub.cfg)
+                                        device "/"))
                    (leave (_ "failed to install GRUB on device '~a'~%")
                           device)))
                (return #t)))
