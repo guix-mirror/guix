@@ -104,7 +104,7 @@ graphs and can export its output to different formats.")
    (version "1.0.3")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://hisham.hm/htop/"
+            (uri (string-append "http://hisham.hm/htop/releases/"
                   version "/htop-" version ".tar.gz"))
             (sha256
              (base32
