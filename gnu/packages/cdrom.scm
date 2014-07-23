@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -173,14 +173,14 @@ reconstruction capability.")
 (define-public dvdisaster
   (package
     (name "dvdisaster")
-    (version "0.72.4")
+    (version "0.72.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://dvdisaster.net/downloads/dvdisaster-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0pm039a78h7m9vvjmmjfkl05ii6qdmfhvbypxjbc7j5w82y66is4"))))
+               "0sqrprc5rh3shnfli25m2wy0i5f83db54iv04s5s7bxf77m7sy79"))))
     (build-system gnu-build-system)
     (inputs
      `(("gtk+" ,gtk+-2)))
@@ -192,7 +192,14 @@ reconstruction capability.")
      `(;; Parallel builds appear to be unsafe, see
        ;; <http://hydra.gnu.org/build/49331/nixlog/1/raw>.
        #:parallel-build? #f
-       #:tests? #f)) ; no check target
+       #:tests? #f ; no check target
+       #:phases
+         (alist-cons-before
+          'patch-source-shebangs 'sanitise
+          (lambda _
+            ;; delete dangling symlink
+            (delete-file ".#GNUmakefile"))
+          %standard-phases)))
     (home-page "http://dvdisaster.net/en/index.html")
     (synopsis "error correcting codes for optical media images")
     (description "Optical media (CD,DVD,BD) keep their data only for a
