@@ -84,14 +84,14 @@ solve the shortest vector problem.")
 (define-public pari-gp
   (package
    (name "pari-gp")
-   (version "2.7.0")
+   (version "2.7.1")
    (source (origin
             (method url-fetch)
             (uri (string-append
                   "http://pari.math.u-bordeaux.fr/pub/pari/unix/pari-"
                   version ".tar.gz"))
             (sha256 (base32
-                     "1hk7lmq09crr9jvia8nxzhvbwf8mw62xk456i96jg8dljh0r9sgz"))))
+                     "1gj1rddi22hinzwy7r6hljgbi252wwwyd6gapg4hvcn0ycc7jqyc"))))
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)
              ("perl" ,perl)
