@@ -33,6 +33,8 @@
 
             %fuse-control-file-system
             %binary-format-file-system
+            %shared-memory-file-system
+            %pseudo-terminal-file-system
             %devtmpfs-file-system
 
             %base-file-systems))
