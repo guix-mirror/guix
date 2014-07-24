@@ -177,7 +177,7 @@ then false; else true; fi
 guix package -p "$profile" -A 'gui.*e' | grep guile
 
 # Check whether `--show' returns something sensible.
-guix package --show=guile | grep "^Package: guile"
+guix package --show=guile | grep "^name: guile"
 
 # There's no generation older than 12 months, so the following command should
 # have no effect.
