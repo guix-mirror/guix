@@ -2795,6 +2795,11 @@ image does not contain all the software and tools that may be needed.
 Unless this has already been done, you must partition and format the
 target partitions.
 
+Preferably, assign partitions a label so that you can easily and
+reliably refer to them in @code{file-system} declarations (@pxref{File
+Systems}).  This is typically done using the @code{-L} option of
+@command{mkfs.ext4} and related commands.
+
 The installation image includes Parted (@pxref{Overview,,, parted, GNU
 Parted User Manual}), @command{fdisk}, and e2fsprogs, the suite of tools
 to manipulate ext2/ext3/ext4 file systems.
