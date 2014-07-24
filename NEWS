@@ -12,9 +12,8 @@ Please send Guix bug reports to bug-guix@gnu.org.
 
 * Changes in 0.7 (since 0.6)
 ** Package management
-*** ‘guix refresh’ has a new ‘--list-dependent’ options
-
-See “Invoking guix refresh” in the manual.
+*** ‘guix package’ has a new ‘--show’ option
+*** ‘guix refresh’ has a new ‘--list-dependent’ option
 
 ** Programming interfaces
 *** New (guix gexp) module, which implements “G-expressions”
@@ -62,8 +61,49 @@ See “Invoking guix system” in the manual.
 *** Virtual machine support uses para-virtualized devices
 *** GCC package now has an additional ‘lib’ output, for run-time support libs
 *** GLib package now has a separate “bin” output (<http://bugs.gnu.org/17853>)
-*** XXX new packages
-*** XXX package updates
+*** 134 new packages
+
+abbaye, aegis, attica, babl, barcode, behave, btar, busybox, ccache, ccrtp,
+chess, clucene, cmatrix, commoncpp, conkeror, cook, cssc, datamash, diffstat,
+doxygen, dropbear, dtach, duplicity, e2fsck-static, exosip, fftw-openmpi,
+fish, gconf, gegl, gimp, gmsh, gnome-mime-data, gnome-vfs, gnumeric, goffice,
+gsegrafix, guile-opengl, guile-static-stripped, hdup, hwloc, inotify-tools,
+jrnl, kbd, kmod, lftp, libarchive, libart-lgpl, libbonobo, libbonoboui,
+libcroco, libdbusmenu-qt, libftdi, libglade, libgnome, libgnomecanvas,
+libgnomeprint, libgnomeprintui, libgnomeui, libgsf, libidl, libmcrypt,
+libmhash, librsvg, librsync, libsodium, libuv, libvpx, links, lzop, man-pages,
+maxima, mcrypt, mosh, mpg123, mplayer, mu, ncmpcpp, node, notmuch, numactl,
+offlineimap, openmpi, orbit2, osip, pangox-compat, perl-io-tty, petsc,
+petsc-complex, petsc-complex-openmpi, petsc-openmpi, pingus, podofo, protobuf,
+pt-scotch, python-enum34, python-keyring, python-lockfile, python-mock,
+python-parse, python-parse-type, python-parsedatetime, python-pycrypto,
+python-six, python-tzlocal, python2-lockfile, python2-mock, qjson, qrencode,
+rasqal, rdiff-backup, rdup, redland, rottlog, scotch, sipwitch, sshfs-fuse,
+strigi, sudo, superlu, superlu-dist, talkfilters, talloc, tcpdump, tinyproxy,
+transmission, ucommon, udev, vlc, vtk, wakelan, wireless-tools,
+wpa-supplicant, xboard, youtube-dl
+
+*** 87 package updates
+
+bitlbee-3.2.2, cursynth-1.5, ddrescue-1.18.1, dfc-3.0.4, dmd-0.2,
+docbook-xml-4.3, docbook-xml-4.4, docbook-xsl-1.78.1, dvdisaster-0.72.6,
+ffmpeg-2.3, fftw-3.3.4, fftwf-3.3.4, flac-1.3.0, gawk-4.1.1, gcc-4.7.4,
+gcc-4.8.3, gcc-4.8.3, gcc-4.9.1, gcc-cross-mips64el-linux-gnuabi64-4.8.3,
+gcc-objc++-4.8.3, gcc-objc-4.8.3, gcc-stripped-tarball-4.8.3,
+gcc-toolchain-4.8.3, gcc-toolchain-4.9.1, gccgo-4.8.3, gdb-7.7.1,
+gettext-0.19.2, gfortran-4.8.3, glib-2.40.0, global-6.3, gmp-6.0.0a,
+gnupg-1.4.18, gnupg-2.0.25, gnutls-3.2.15, gp2c-0.0.9pl1, grep-2.20,
+gst-plugins-base-1.0.10, gstreamer-0.10.36, gtk+-3.10.1, gtkmm-2.24.2,
+guile-2.0.11, guile-2.0.11, guix-0.6, guix-0.6.0ae8c15, htop-1.0.3,
+icu4c-53.1, imagemagick-6.8.9-0, json-c-0.12, libdrm-2.4.33, libgc-7.2e,
+libgcrypt-1.5.3, libgpg-error-1.13, libjpeg-8d, libmicrohttpd-0.9.37,
+libogg-1.3.2, libotr-4.0.0, libtasn1-3.6, libvorbis-1.3.4, lightning-2.0.4,
+linux-libre-3.15.6, lua-5.1.5, lua-5.2.3, mcron-1.0.8, moe-1.6, nano-2.3.6,
+neon-0.29.6, nettle-3.0, openssl-1.0.1h, parallel-20140722, pari-gp-2.7.1,
+pspp-0.8.3, python-2.7.6, python-dateutil-2.2, python2-dateutil-2.2,
+qemu-2.0.0, qemu-headless-2.0.0, qt-4.8.6, qt-5.2.1, readline-6.2,
+screen-4.2.1, soprano-2.9.4, texinfo-5.2, texlive-2014, tor-0.2.4.22,
+wdiff-1.2.2, xorriso-1.3.8, xterm-304
 
 ** Native language support
 *** New translations: de (German), and hu (Hungarian)
