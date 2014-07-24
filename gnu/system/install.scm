@@ -115,6 +115,27 @@ the given target.")
                        (delete-file-recursively
                         (string-append target #$%backing-directory))))))))
 
+(define (configuration-template-service)
+  "Return a dummy service whose purpose is to install an operating system
+configuration template file in the installation system."
+
+  (define local-template
+    "/etc/configuration-template.scm")
+  (define template
+    (search-path %load-path "gnu/system/os-config.tmpl"))
+
+  (mlet %store-monad ((template (interned-file template)))
+    (return (service
+             (requirement '(root-file-system))
+             (provision '(os-config-template))
+             (documentation
+              "This dummy service installs an OS configuration template.")
+             (start #~(const #t))
+             (stop  #~(const #f))
+             (activate
+              #~(unless (file-exists? #$local-template)
+                  (copy-file #$template #$local-template)))))))
+
 (define (installation-services)
   "Return the list services for the installation image."
   (let ((motd (text-file "motd" "
@@ -143,6 +164,9 @@ You have been warned.  Thanks for being so brave.
                             #:motd motd
                             #:auto-login "guest"
                             #:login-program (log-to-info))
+
+          ;; Documentation add-on.
+          (configuration-template-service)
 
           ;; A bunch of 'root' ttys.
           (normal-tty "tty3")

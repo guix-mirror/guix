@@ -2850,24 +2850,11 @@ It is better to store that file on the target root file system, say, as
 @file{/mnt/etc/config.scm}.
 
 A minimal operating system configuration, with just the bare minimum and
-only a root account would look like this:
+only a root account would look like this (on the installation system,
+this example is available as @file{/etc/configuration-template.scm}):
 
 @example
-(use-modules (gnu))
-
-(operating-system
-  (host-name "foo")
-  (timezone "Europe/Paris")
-  (locale "en_US.UTF-8")
-
-  ;; Assuming /dev/sdX is the target hard disk, and /dev/sdX1 the
-  ;; target root file system.
-  (bootloader (grub-configuration (device "/dev/sdX")))
-  (file-systems (cons (file-system
-                        (device "/dev/sdX1")
-                        (mount-point "/")
-                        (type "ext4"))
-                      %base-file-systems)))
+@include gnu/system/os-config.tmpl
 @end example
 
 @noindent
