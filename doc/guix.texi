@@ -2856,7 +2856,7 @@ only a root account would look like this (on the installation system,
 this example is available as @file{/etc/configuration-template.scm}):
 
 @example
-@include gnu/system/os-config.tmpl
+@include os-config.texi
 @end example
 
 @noindent
