@@ -29,6 +29,8 @@ Documentation License''.
                       Managing packages with Guix.
 * guix build: (guix)Invoking guix build
                       Building packages with Guix.
+* guix system: (guix)Invoking guix system
+                      Managing the operating system configuration.
 @end direntry
 
 @titlepage
