@@ -2012,6 +2012,29 @@ will references @var{coreutils}, @var{grep}, and @var{sed}, thereby
 preventing them from being garbage-collected during its lifetime.
 @end deffn
 
+@deffn {Monadic Procedure} interned-file @var{file} [@var{name}] @
+         [#:recursive? #t]
+Return the name of @var{file} once interned in the store.  Use
+@var{name} as its store name, or the basename of @var{file} if
+@var{name} is omitted.
+
+When @var{recursive?} is true, the contents of @var{file} are added
+recursively; if @var{file} designates a flat file and @var{recursive?}
+is true, its contents are added, and its permission bits are kept.
+
+The example below adds a file to the store, under two different names:
+
+@example
+(run-with-store (open-connection)
+  (mlet %store-monad ((a (interned-file "README"))
+                      (b (interned-file "README" "LEGU-MIN")))
+    (return (list a b))))
+
+@result{} ("/gnu/store/rwm@dots{}-README" "/gnu/store/44i@dots{}-LEGU-MIN")
+@end example
+
+@end deffn
+
 @deffn {Monadic Procedure} package-file @var{package} [@var{file}] @
        [#:system (%current-system)] [#:output "out"] Return as a monadic
 value in the absolute file name of @var{file} within the @var{output}
