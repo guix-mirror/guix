@@ -95,7 +95,7 @@
 (define %tty-gid
   ;; ID of the 'tty' group.  Allocate it statically to make it easy to refer
   ;; to it from here and from the 'tty' group definitions.
-  1004)
+  996)
 
 (define %pseudo-terminal-file-system
   ;; The pseudo-terminal file system.  It needs to be mounted so that

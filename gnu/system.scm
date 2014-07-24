@@ -363,7 +363,8 @@ alias ll='ls -l'
 'active-groups'."
   #~(list #$(user-group-name group)
           #$(user-group-password group)
-          #$(user-group-id group)))
+          #$(user-group-id group)
+          #$(user-group-system? group)))
 
 (define (user-account->gexp account)
   "Turn ACCOUNT, a <user-account> object, into a list-valued gexp suitable for

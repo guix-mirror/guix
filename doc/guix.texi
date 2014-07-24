@@ -3201,6 +3201,10 @@ The group's name.
 The group identifier (a number).  If @code{#f}, a new number is
 automatically allocated when the group is created.
 
+@item @code{system?} (default: @code{#f})
+This Boolean value indicates whether the group is a ``system'' group.
+System groups have low numerical IDs.
+
 @item @code{password} (default: @code{#f})
 What, user groups can have a password?  Well, apparently yes.  Unless
 @code{#f}, this field specifies the group's password.
