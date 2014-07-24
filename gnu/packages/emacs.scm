@@ -37,6 +37,9 @@
   #:use-module (gnu packages giflib)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages version-control)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages w3m)
+  #:use-module (gnu packages autotools)
   #:use-module ((gnu packages compression)
                 #:renamer (symbol-prefix-proc 'compression:))
   #:use-module (gnu packages xml)
@@ -249,3 +252,77 @@ example, and you can browse the history of past changes.  There is support for
 cherry picking, reverting, merging, rebasing, and other common Git
 operations.")
     (license gpl3+)))
+
+
+;;;
+;;; Web browsing.
+;;;
+
+(define-public emacs-w3m
+  (package
+    (name "emacs-w3m")
+    (version "1.4.483+0.20120614")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://debian/pool/main/w/w3m-el/w3m-el_"
+                                 version ".orig.tar.gz"))
+             (sha256
+              (base32 "0ms181gjavnfk79hhv5xl9llik4c6kj0w3c04kgyif8lcy2sxljx"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("autoconf" ,autoconf)))
+    (inputs `(("w3m" ,w3m)
+              ("imagemagick" ,imagemagick)
+              ("emacs" ,emacs)))
+    (arguments
+     '(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules ((guix build gnu-build-system)
+                           (guix build utils)
+                           (guix build emacs-utils))
+       #:configure-flags
+       (let ((out (assoc-ref %outputs "out")))
+         (list (string-append "--with-lispdir="
+                              out "/share/emacs/site-lisp")
+               (string-append "--with-icondir="
+                              out "/share/images/emacs-w3m")))
+       #:tests? #f  ; no check target
+       #:phases
+       (alist-cons-before
+        'configure 'pre-configure
+        (lambda _
+          (zero? (system* "autoconf")))
+        (alist-cons-before
+         'build 'patch-exec-paths
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out"))
+                (w3m (assoc-ref inputs "w3m"))
+                (imagemagick (assoc-ref inputs "imagemagick"))
+                (coreutils (assoc-ref inputs "coreutils")))
+            (emacs-substitute-variables "w3m.el"
+              ("w3m-command" (string-append w3m "/bin/w3m"))
+              ("w3m-touch-command" (string-append coreutils "/bin/touch"))
+              ("w3m-image-viewer" (string-append imagemagick "/bin/display"))
+              ("w3m-icon-directory" (string-append out
+                                                   "/share/images/emacs-w3m")))
+            (emacs-substitute-variables "w3m-image.el"
+              ("w3m-imagick-convert-program" (string-append imagemagick
+                                                            "/bin/convert"))
+              ("w3m-imagick-identify-program" (string-append imagemagick
+                                                             "/bin/identify")))
+            #t))
+         (alist-replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (and (zero? (system* "make" "install" "install-icons"))
+                 (with-directory-excursion
+                     (string-append (assoc-ref outputs "out")
+                                    "/share/emacs/site-lisp")
+                   (for-each delete-file '("ChangeLog" "ChangeLog.1"))
+                   #t)))
+          %standard-phases)))))
+    (home-page "http://emacs-w3m.namazu.org/")
+    (synopsis "Simple Web browser for Emacs based on w3m")
+    (description
+     "emacs-w3m is an emacs interface for the w3m web browser.")
+    (license gpl2+)))
