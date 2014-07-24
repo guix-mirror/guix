@@ -97,7 +97,12 @@ EndSection
     #~(begin
         (use-modules (ice-9 match))
 
-        ;; TODO: Check for ~/.xsession.
+        ;; First, try to run ~/.xsession.
+        (let* ((home (getenv "HOME"))
+               (file (string-append home "/.xsession")))
+          (false-if-exception (execl file file)))
+
+        ;; Then try a pre-configured session type.
         (match (command-line)
           ((_ "ratpoison")
            (execl (string-append #$ratpoison "/bin/ratpoison")))
