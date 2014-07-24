@@ -12,6 +12,12 @@ Please send Guix bug reports to bug-guix@gnu.org.
 
 * Changes in 0.7 (since 0.6)
 ** Package management
+*** Binaries for mips64el-linux now available from hydra.gnu.org
+
+These come in addition to the x86_64-linux and i686-linux binaries already
+provided, thanks to our generous donor and friendly admins.  See
+“Substitutes” in the manual.
+
 *** ‘guix package’ has a new ‘--show’ option
 *** ‘guix refresh’ has a new ‘--list-dependent’ option
 
