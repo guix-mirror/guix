@@ -224,7 +224,7 @@
       (return (string=? system (derivation-system drv))))))
 
 (define shebang
-  (string-append (derivation->output-path guile-for-build)
+  (string-append "#!" (derivation->output-path guile-for-build)
                  "/bin/guile --no-auto-compile"))
 
 ;; If we're going to hit the silly shebang limit (128 chars on Linux-based
