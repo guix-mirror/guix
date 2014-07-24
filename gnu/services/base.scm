@@ -472,6 +472,7 @@ passed to @command{guix-daemon}."
              (user-accounts accounts)
              (user-groups (list (user-group
                                  (name builder-group)
+                                 (system? #t)
 
                                  ;; Use a fixed GID so that we can create the
                                  ;; store with the right owner.

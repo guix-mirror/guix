@@ -86,7 +86,8 @@ and policy files.  For example, to allow avahi-daemon to use the system bus,
                       (string-append "--config-file=" #$conf "/system.conf"))))
       (stop #~(make-kill-destructor))
       (user-groups (list (user-group
-                          (name "messagebus"))))
+                          (name "messagebus")
+                          (system? #t))))
       (user-accounts (list (user-account
                             (name "messagebus")
                             (group "messagebus")
