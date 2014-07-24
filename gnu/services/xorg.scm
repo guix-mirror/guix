@@ -146,10 +146,15 @@ reboot_cmd " dmd "/sbin/reboot
       (provision '(xorg-server))
       (requirement '(user-processes host-name udev))
       (start
-       #~(make-forkexec-constructor
-          (list (string-append #$slim "/bin/slim") "-nodaemon")
-          #:environment-variables
-          (list (string-append "SLIM_CFGFILE=" #$slim.cfg))))
+       #~(lambda ()
+           ;; A stale lock file can prevent SLiM from starting, so remove it
+           ;; to be on the safe side.
+           (false-if-exception (delete-file "/var/run/slim.lock"))
+
+           (fork+exec-command
+            (list (string-append #$slim "/bin/slim") "-nodaemon")
+            #:environment-variables
+            (list (string-append "SLIM_CFGFILE=" #$slim.cfg)))))
       (stop #~(make-kill-destructor))
       (respawn? #t)
       (pam-services
