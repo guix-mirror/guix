@@ -453,6 +453,13 @@ WIDTH columns."
        (fill-paragraph str width
                        (string-length "description: ")))))
 
+  (define (dependencies->recutils packages)
+    (let ((list (string-join (map package-full-name
+                                  (sort packages package<?)) " ")))
+      (string->recutils
+       (fill-paragraph list width
+                       (string-length "dependencies: ")))))
+
   (define (package<? p1 p2)
     (string<? (package-full-name p1) (package-full-name p2)))
 
@@ -462,8 +469,7 @@ WIDTH columns."
   (format port "dependencies: ~a~%"
           (match (package-direct-inputs p)
             (((labels packages . _) ...)
-             (string-join (map package-full-name
-                               (sort packages package<?)) ", "))))
+             (dependencies->recutils packages))))
   (format port "location: ~a~%"
           (or (and=> (package-location p) location->string)
               (_ "unknown")))
