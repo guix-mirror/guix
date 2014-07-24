@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: guix 0.7-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
-"POT-Creation-Date: 2014-07-13 17:06+0200\n"
+"POT-Creation-Date: 2014-07-25 00:55+0200\n"
 "PO-Revision-Date: 2014-07-13 20:38+0100\n"
 "Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
 "Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Poedit 1.5.4\n"
 
-#: gnu/packages.scm:95
+#: gnu/packages.scm:102
 #, scheme-format
 msgid "cannot access `~a': ~a~%"
 msgstr "Zugriff auf »~a« nicht möglich: ~a~%"
@@ -165,9 +165,9 @@ msgid ""
 msgstr ""
 
 #: guix/scripts/build.scm:246 guix/scripts/download.scm:53
-#: guix/scripts/package.scm:523 guix/scripts/gc.scm:58
+#: guix/scripts/package.scm:525 guix/scripts/gc.scm:58
 #: guix/scripts/hash.scm:55 guix/scripts/pull.scm:82
-#: guix/scripts/substitute-binary.scm:564 guix/scripts/system.scm:334
+#: guix/scripts/substitute-binary.scm:564 guix/scripts/system.scm:362
 msgid ""
 "\n"
 "  -h, --help             display this help and exit"
@@ -176,9 +176,9 @@ msgstr ""
 "  -h, --help             diese Hilfe anzeigen und beenden"
 
 #: guix/scripts/build.scm:248 guix/scripts/download.scm:55
-#: guix/scripts/package.scm:525 guix/scripts/gc.scm:60
+#: guix/scripts/package.scm:527 guix/scripts/gc.scm:60
 #: guix/scripts/hash.scm:57 guix/scripts/pull.scm:84
-#: guix/scripts/substitute-binary.scm:566 guix/scripts/system.scm:336
+#: guix/scripts/substitute-binary.scm:566 guix/scripts/system.scm:364
 msgid ""
 "\n"
 "  -V, --version          display version information and exit"
@@ -192,8 +192,8 @@ msgid "sources do not match any package:~{ ~a~}~%"
 msgstr ""
 
 #: guix/scripts/build.scm:397 guix/scripts/download.scm:96
-#: guix/scripts/package.scm:756 guix/scripts/gc.scm:122
-#: guix/scripts/pull.scm:115 guix/scripts/system.scm:386
+#: guix/scripts/package.scm:763 guix/scripts/gc.scm:122
+#: guix/scripts/pull.scm:115 guix/scripts/system.scm:414
 #, scheme-format
 msgid "~A: unrecognized option~%"
 msgstr "~A: nicht erkannte Option~%"
@@ -244,8 +244,8 @@ msgstr "Leeres Profil konnte nicht erstellt werden~%"
 msgid "switching from generation ~a to ~a~%"
 msgstr ""
 
-#: guix/scripts/package.scm:108 guix/scripts/package.scm:866
-#: guix/scripts/package.scm:978
+#: guix/scripts/package.scm:108 guix/scripts/package.scm:873
+#: guix/scripts/package.scm:985
 #, scheme-format
 msgid "profile '~a' does not exist~%"
 msgstr "Profil »~a« existiert nicht~%"
@@ -399,62 +399,71 @@ msgid ""
 "                         list available packages matching REGEXP"
 msgstr ""
 
-#: guix/scripts/package.scm:760
+#: guix/scripts/package.scm:520
+#, fuzzy
+msgid ""
+"\n"
+"  --show=PACKAGE         show details about PACKAGE"
+msgstr ""
+"\n"
+"  -i, --install=PAKET    PAKET installieren"
+
+#: guix/scripts/package.scm:767
 #, scheme-format
 msgid "~A: extraneous argument~%"
 msgstr ""
 
-#: guix/scripts/package.scm:775
+#: guix/scripts/package.scm:782
 #, scheme-format
 msgid "Try \"info '(guix) Invoking guix package'\" for more information.~%"
 msgstr ""
 
-#: guix/scripts/package.scm:797
+#: guix/scripts/package.scm:804
 #, scheme-format
 msgid "error: while creating directory `~a': ~a~%"
 msgstr ""
 
-#: guix/scripts/package.scm:801
+#: guix/scripts/package.scm:808
 #, scheme-format
 msgid "Please create the `~a' directory, with you as the owner.~%"
 msgstr ""
 
-#: guix/scripts/package.scm:808
+#: guix/scripts/package.scm:815
 #, scheme-format
 msgid "error: directory `~a' is not owned by you~%"
 msgstr ""
 
-#: guix/scripts/package.scm:811
+#: guix/scripts/package.scm:818
 #, scheme-format
 msgid "Please change the owner of `~a' to user ~s.~%"
 msgstr ""
 
-#: guix/scripts/package.scm:836
+#: guix/scripts/package.scm:843
 #, scheme-format
 msgid "deleting ~a~%"
 msgstr ""
 
-#: guix/scripts/package.scm:889 guix/scripts/package.scm:994
+#: guix/scripts/package.scm:896 guix/scripts/package.scm:1001
 #, scheme-format
 msgid "invalid syntax: ~a~%"
 msgstr "Unzulässige Syntax: ~a~%"
 
-#: guix/scripts/package.scm:918
+#: guix/scripts/package.scm:925
 #, scheme-format
 msgid "nothing to be done~%"
 msgstr "Nichts zu tun~%"
 
-#: guix/scripts/package.scm:941
+#: guix/scripts/package.scm:948
 #, scheme-format
 msgid "~a package in profile~%"
 msgstr "~a-Paket im Profil~%"
 
-#: guix/scripts/package.scm:956
+#: guix/scripts/package.scm:963
 #, scheme-format
 msgid "Generation ~a\t~a"
 msgstr ""
 
-#: guix/scripts/package.scm:963
+#: guix/scripts/package.scm:970
 #, scheme-format
 msgid "~a\t(current)~%"
 msgstr "~a\t(aktuell)~%"
@@ -747,93 +756,93 @@ msgstr "~a: ~a~%"
 msgid "failed to load operating system file '~a': ~s~%"
 msgstr ""
 
-#: guix/scripts/system.scm:111
+#: guix/scripts/system.scm:116
 #, scheme-format
 msgid "failed to register '~a' under '~a'~%"
 msgstr ""
 
-#: guix/scripts/system.scm:127
+#: guix/scripts/system.scm:144
 #, scheme-format
 msgid "initializing the current root file system~%"
 msgstr ""
 
-#: guix/scripts/system.scm:151 guix/scripts/system.scm:291
+#: guix/scripts/system.scm:162 guix/scripts/system.scm:318
 #, scheme-format
 msgid "failed to install GRUB on device '~a'~%"
 msgstr ""
 
-#: guix/scripts/system.scm:176
+#: guix/scripts/system.scm:197
 #, scheme-format
 msgid "activating system...~%"
 msgstr "System wird aktiviert …~%"
 
-#: guix/scripts/system.scm:211
+#: guix/scripts/system.scm:236
 #, scheme-format
 msgid "unrecognized boot parameters for '~a'~%"
 msgstr "Nicht erkannte Startparameter für »~a«~%"
 
-#: guix/scripts/system.scm:295
+#: guix/scripts/system.scm:323
 #, scheme-format
 msgid "initializing operating system under '~a'...~%"
 msgstr ""
 
-#: guix/scripts/system.scm:311
+#: guix/scripts/system.scm:339
 msgid ""
 "Usage: guix system [OPTION] ACTION FILE\n"
 "Build the operating system declared in FILE according to ACTION.\n"
 msgstr ""
 
-#: guix/scripts/system.scm:314
+#: guix/scripts/system.scm:342
 msgid "The valid values for ACTION are:\n"
 msgstr "Die gültigen Werte für AKTION sind:\n"
 
-#: guix/scripts/system.scm:315
+#: guix/scripts/system.scm:343
 msgid "  - 'reconfigure', switch to a new operating system configuration\n"
 msgstr ""
 
-#: guix/scripts/system.scm:317
+#: guix/scripts/system.scm:345
 msgid "  - 'build', build the operating system without installing anything\n"
 msgstr ""
 
-#: guix/scripts/system.scm:319
+#: guix/scripts/system.scm:347
 msgid "  - 'vm', build a virtual machine image that shares the host's store\n"
 msgstr ""
 
-#: guix/scripts/system.scm:321
+#: guix/scripts/system.scm:349
 msgid "  - 'vm-image', build a freestanding virtual machine image\n"
 msgstr ""
 
-#: guix/scripts/system.scm:323
+#: guix/scripts/system.scm:351
 msgid "  - 'disk-image', build a disk image, suitable for a USB stick\n"
 msgstr ""
 
-#: guix/scripts/system.scm:325
+#: guix/scripts/system.scm:353
 msgid "  - 'init', initialize a root file system to run GNU.\n"
 msgstr ""
 
-#: guix/scripts/system.scm:329
+#: guix/scripts/system.scm:357
 msgid ""
 "\n"
 "      --image-size=SIZE  for 'vm-image', produce an image of SIZE"
 msgstr ""
 
-#: guix/scripts/system.scm:331
+#: guix/scripts/system.scm:359
 msgid ""
 "\n"
 "      --no-grub          for 'init', do not install GRUB"
 msgstr ""
 
-#: guix/scripts/system.scm:394
+#: guix/scripts/system.scm:422
 #, scheme-format
 msgid "~a: unknown action~%"
 msgstr "~a: unbekannte Aktion~%"
 
-#: guix/scripts/system.scm:411
+#: guix/scripts/system.scm:439
 #, scheme-format
 msgid "wrong number of arguments for action '~a'~%"
 msgstr "Falsche Anzahl an Argumenten für Aktion »~a«~%"
 
-#: guix/scripts/system.scm:431
+#: guix/scripts/system.scm:459
 #, scheme-format
 msgid "no configuration file specified~%"
 msgstr "Keine Konfigurationsdatei angegeben~%"
@@ -976,21 +985,21 @@ msgstr "<unbekannter Ort>"
 msgid "failed to create configuration directory `~a': ~a~%"
 msgstr "Konfigurationsverzeichnis »~a« konnte nicht angelegt werden: ~a~%"
 
-#: guix/ui.scm:461 guix/ui.scm:475
+#: guix/ui.scm:475 guix/ui.scm:489
 msgid "unknown"
 msgstr "unbekannt"
 
-#: guix/ui.scm:584
+#: guix/ui.scm:598
 #, scheme-format
 msgid "invalid argument: ~a~%"
 msgstr "Ungültiges Argument: ~a~%"
 
-#: guix/ui.scm:589
+#: guix/ui.scm:603
 #, scheme-format
 msgid "Try `guix --help' for more information.~%"
 msgstr "Rufen Sie »guix --help« auf, um weitere Informationen zu erhalten.~%"
 
-#: guix/ui.scm:619
+#: guix/ui.scm:633
 msgid ""
 "Usage: guix COMMAND ARGS...\n"
 "Run COMMAND with ARGS.\n"
@@ -998,21 +1007,21 @@ msgstr ""
 "Aufruf: guix BEFEHL ARGUMENTE …\n"
 "BEFEHL mit ARGUMENTEN ausführen.\n"
 
-#: guix/ui.scm:622
+#: guix/ui.scm:636
 msgid "COMMAND must be one of the sub-commands listed below:\n"
 msgstr "BEFEHL muss einer der unten aufgelisteten Unterbefehle sein:\n"
 
-#: guix/ui.scm:642
+#: guix/ui.scm:656
 #, scheme-format
 msgid "guix: ~a: command not found~%"
 msgstr "guix: ~a: Befehl nicht gefunden~%"
 
-#: guix/ui.scm:660
+#: guix/ui.scm:674
 #, scheme-format
 msgid "guix: missing command name~%"
 msgstr "guix: Befehlsname fehlt~%"
 
-#: guix/ui.scm:668
+#: guix/ui.scm:682
 #, scheme-format
 msgid "guix: unrecognized option '~a'~%"
 msgstr "guix: nicht erkannte Option »~a«~%"
