@@ -468,8 +468,8 @@ WIDTH columns."
   (format port "version: ~a~%" (package-version p))
   (format port "dependencies: ~a~%"
           (match (package-direct-inputs p)
-            (((labels packages . _) ...)
-             (dependencies->recutils packages))))
+            (((labels inputs . _) ...)
+             (dependencies->recutils (filter package? inputs)))))
   (format port "location: ~a~%"
           (or (and=> (package-location p) location->string)
               (_ "unknown")))
