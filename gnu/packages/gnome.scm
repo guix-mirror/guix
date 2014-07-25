@@ -449,6 +449,7 @@ some form of information without getting in the user's way.")
        ("pango" ,pango)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("glib:bin" ,glib "bin")
        ("gobject-introspection" ,gobject-introspection)
        ("intltool" ,intltool)))
     (home-page "https://wiki.gnome.org/Libpeas")
