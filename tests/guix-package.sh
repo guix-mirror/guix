@@ -79,13 +79,6 @@ then
 
     test "`guix package -p "$profile" -I 'g.*e' | cut -f1`" = "guile-bootstrap"
 
-    # Search.
-    LC_MESSAGES=C
-    export LC_MESSAGES
-    test "`guix package -s "An example GNU package" | grep ^name:`" = \
-        "name: hello"
-    test -z "`guix package -s "n0t4r341p4ck4g3"`"
-
     # List generations.
     test "`guix package -p "$profile" -l | cut -f1 | grep guile | head -n1`" \
         = "  guile-bootstrap"
@@ -179,8 +172,18 @@ guix package -p "$profile" -A 'gui.*e' | grep guile
 # Check whether `--show' returns something sensible.
 guix package --show=guile | grep "^name: guile"
 
-# Check show doesn't fail for packages with non-package inputs.
+# Ensure `--show' doesn't fail for packages with non-package inputs.
 guix package --show=texlive
+
+# Search.
+LC_MESSAGES=C
+export LC_MESSAGES
+test "`guix package -s "An example GNU package" | grep ^name:`" = \
+    "name: hello"
+test -z "`guix package -s "n0t4r341p4ck4g3"`"
+
+# Make sure `--search' can display all the packages.
+guix package --search="" > /dev/null
 
 # There's no generation older than 12 months, so the following command should
 # have no effect.
