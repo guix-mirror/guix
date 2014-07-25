@@ -762,3 +762,33 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
      "WakeLan broadcasts a properly formatted UDP packet across the local area
 network, which causes enabled computers to power on.")
     (license gpl2+)))
+
+(define-public dmidecode
+  (package
+    (name "dmidecode")
+    (version "2.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://savannah/dmidecode/dmidecode-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "122hgaw8mpqdfra159lfl6pyk3837giqx6vq42j64fjnbl2z6gwi"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-delete 'configure %standard-phases)
+       #:tests? #f                                ; no 'check' target
+       #:make-flags (list (string-append "prefix="
+                                         (assoc-ref %outputs "out")))))
+    (home-page "http://www.nongnu.org/dmidecode/")
+    (synopsis "Read hardware information from the BIOS")
+    (description
+     "Dmidecode reports information about your system's hardware as described
+in your system BIOS according to the SMBIOS/DMI standard.  This typically
+includes system manufacturer, model name, serial number, BIOS version, asset
+tag as well as a lot of other details of varying level of interest and
+reliability depending on the manufacturer.  This will often include usage
+status for the CPU sockets, expansion slots (e.g. AGP, PCI, ISA) and memory
+module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
+    (license gpl2+)))
