@@ -2783,7 +2783,7 @@ its device name.  Assuming that USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=gnu-usb-install-20140629.x86_64 of=/dev/sdX
+dd if=gnu-usb-install-@value{VERSION}.x86_64 of=/dev/sdX
 @end example
 
 Access to @file{/dev/sdX} usually requires root privileges.
