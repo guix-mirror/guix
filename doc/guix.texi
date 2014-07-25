@@ -131,7 +131,7 @@ ready to use it.
 Note that this section is concerned with the installation of the package
 manager, which can be done on top of a running GNU/Linux system.  If,
 instead, you want to install the complete GNU operating system,
-@ref{System Installation}.
+@pxref{System Installation}.
 
 The build procedure for Guix is the same as for other GNU software, and
 is not covered here.  Please see the files @file{README} and
@@ -1818,7 +1818,7 @@ As can be guessed, this primitive is cumbersome to use directly.  A
 better approach is to write build scripts in Scheme, of course!  The
 best course of action for that is to write the build code as a
 ``G-expression'', and to pass it to @code{gexp->derivation}.  For more
-information, @ref{G-Expressions}.
+information, @pxref{G-Expressions}.
 
 Once upon a time, @code{gexp->derivation} did not exist and constructing
 derivations with build code written in Scheme was achieved with
@@ -2696,14 +2696,14 @@ to join!  @ref{Contributing}, for information about how you can help.
 
 This section explains how to install the complete GNU operating system
 on a machine.  The Guix package manager can also be installed on top of
-a running GNU/Linux system, @ref{Installation}.
+a running GNU/Linux system, @pxref{Installation}.
 
 @ifinfo
 @c This paragraph is for people reading this from tty2 of the
 @c installation image.
 You're reading this documentation with an Info reader.  For details on
 how to use it, hit the @key{RET} key (``return'' or ``enter'') on the
-link that follows: @ref{Help,,, info, Info: An Introduction}.  Hit
+link that follows: @pxref{Help,,, info, Info: An Introduction}.  Hit
 @kbd{l} afterwards to come back here.
 @end ifinfo
 
@@ -2861,7 +2861,7 @@ this example is available as @file{/etc/configuration-template.scm}):
 
 @noindent
 For more information on @code{operating-system} declarations,
-@xref{Using the Configuration System}.
+@pxref{Using the Configuration System}.
 
 Once that is done, the new system must be initialized (remember that the
 target root file system is mounted under @file{/mnt}):
@@ -2873,7 +2873,7 @@ guix system init /mnt/etc/config.scm /mnt
 @noindent
 This will copy all the necessary files, and install GRUB on
 @file{/dev/sdX}, unless you pass the @option{--no-grub} option.  For
-more information, @xref{Invoking guix system}.  This command may trigger
+more information, @pxref{Invoking guix system}.  This command may trigger
 downloads or builds of missing packages, which can take some time.
 
 Once that command has completed---and hopefully succeeded!---you can
