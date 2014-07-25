@@ -185,6 +185,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/onc-rpc.scm			\
   gnu/packages/openldap.scm			\
   gnu/packages/openssl.scm			\
+  gnu/packages/orpheus.scm			\
   gnu/packages/package-management.scm		\
   gnu/packages/parallel.scm			\
   gnu/packages/patchutils.scm			\
@@ -349,6 +350,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/mit-krb5-init-fix.patch			\
   gnu/packages/patches/mpc123-initialize-ao.patch		\
   gnu/packages/patches/module-init-tools-moduledir.patch	\
+  gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
   gnu/packages/patches/patchelf-page-size.patch			\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\

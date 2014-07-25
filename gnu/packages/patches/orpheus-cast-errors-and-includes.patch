@@ -1,0 +1,51 @@
+The 'intcompare' definition was causing a "cast from 'void*' to 'int' loses
+precision [-fpermissive]" error.  It isn't used anywhere, so simply remove it.
+Same with 'findint' in texteditor.cc.
+
+Fix other "cast from ‘void*’ to ‘int’ loses precision" errors.
+
+--- a/kkstrtext-0.1/kkstrtext.cc	2005-01-31 18:13:24.000000000 -0600
++++ b/kkstrtext-0.1/kkstrtext.cc	2014-07-24 00:25:07.149305476 -0500
+@@ -430,10 +430,6 @@
+     }
+ }
+ 
+-int intcompare(void *s1, void *s2) {
+-    return (int) s1 != (int) s2;
+-}
+-
+ string i2str(int i) {
+     char buf[64];
+     sprintf(buf, "%d", i);
+@@ -885,7 +881,7 @@
+ #ifdef HAVE_ICONV
+     iconv_t cd = iconv_open(tocs.c_str(), fromcs.c_str());
+ 
+-    if(((int) cd) != -1) {
++    if(cd != (iconv_t) -1) {
+ 	string r, text(atext);
+ 	size_t inleft, outleft, soutleft;
+ 	char *inbuf, *outbuf, *sinbuf, *soutbuf;
+--- a/kkconsui-0.1/src/texteditor.cc	2003-09-09 16:51:33.000000000 -0500
++++ b/kkconsui-0.1/src/texteditor.cc	2014-07-24 00:33:20.093279060 -0500
+@@ -1939,10 +1939,6 @@
+     if(ur) delete ur;
+ }
+ 
+-int texteditor::findint(void *p1, void *p2) {
+-    return *(int *) p1 != (int) p2;
+-}
+-
+ int texteditor::findhighline(void *p1, void *p2) {
+     return *(int *) p1 != ((highline *) p2)->line;
+ }
+--- a/src/streamtrack.cc	2006-05-11 12:45:20.000000000 -0500
++++ b/src/streamtrack.cc	2014-07-24 00:38:10.797263482 -0500
+@@ -34,6 +34,7 @@
+ #include <sys/wait.h>
+ #include <sys/stat.h>
+ #include <signal.h>
++#include <unistd.h>
+ 
+ #include <algorithm>
+ 
