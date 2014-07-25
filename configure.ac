@@ -2,7 +2,7 @@
 # Process this file with autoconf to produce a configure script.
 
 AC_PREREQ(2.68)
-AC_INIT([GNU Guix], [0.7], [bug-guix@gnu.org], [guix],
+AC_INIT([GNU Guix], [0.8], [bug-guix@gnu.org], [guix],
   [http://www.gnu.org/software/guix/])
 AC_CONFIG_AUX_DIR([build-aux])
 
