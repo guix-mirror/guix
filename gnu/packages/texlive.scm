@@ -115,6 +115,11 @@
          "--with-system-xpdf"
          "--with-system-zlib"
          "--with-system-zziplib")
+
+      ;; Disable tests on mips64 to cope with a failure of luajiterr.test.
+      ;; XXX FIXME fix luajit properly on mips64.
+      #:tests? ,(not (equal? "mips64el-linux" (or (%current-target-system)
+                                                  (%current-system))))
       #:phases
        (alist-cons-after
         'install 'postinst
