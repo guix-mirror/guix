@@ -45,9 +45,6 @@
             manifest-pattern
             manifest-pattern?
 
-            read-manifest
-            write-manifest
-
             manifest-remove
             manifest-installed?
             manifest-matching-entries
@@ -156,10 +153,6 @@
 (define (read-manifest port)
   "Return the packages listed in MANIFEST."
   (sexp->manifest (read port)))
-
-(define (write-manifest manifest port)
-  "Write MANIFEST to PORT."
-  (write (manifest->sexp manifest) port))
 
 (define (entry-predicate pattern)
   "Return a procedure that returns #t when passed a manifest entry that
