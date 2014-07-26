@@ -24,6 +24,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix profiles)
+  #:use-module (guix monads)
   #:use-module (guix utils)
   #:use-module (guix config)
   #:use-module (guix scripts build)
@@ -82,7 +83,8 @@ return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
 
 (define (link-to-empty-profile generation)
   "Link GENERATION, a string, to the empty profile."
-  (let* ((drv  (profile-derivation (%store) (manifest '())))
+  (let* ((drv  (run-with-store (%store)
+                 (profile-derivation (manifest '()))))
          (prof (derivation->output-path drv "out")))
     (when (not (build-derivations (%store) (list drv)))
           (leave (_ "failed to build the empty profile~%")))
@@ -205,10 +207,14 @@ packages that will/would be installed and removed."
                    remove))))
     (_ #f))
   (match install
-    ((($ <manifest-entry> name version output path _) ..1)
+    ((($ <manifest-entry> name version output item _) ..1)
      (let ((len     (length name))
-           (install (map (cut format #f "   ~a-~a\t~a\t~a" <> <> <> <>)
-                         name version output path)))
+           (install (map (lambda (name version output item)
+                           (format #f "   ~a-~a\t~a\t~a" name version output
+                                   (if (package? item)
+                                       (package-output (%store) item output)
+                                       item)))
+                         name version output item)))
        (if dry-run?
            (format (current-error-port)
                    (N_ "The following package would be installed:~%~{~a~%~}~%"
@@ -252,17 +258,6 @@ RX."
       (string<? (package-name p1)
                 (package-name p2))))
    same-location?))
-
-(define (input->name+path input)
-  "Convert the name/package/sub-drv tuple INPUT to a name/store-path tuple."
-  (let loop ((input input))
-    (match input
-      ((name (? package? package))
-       (loop `(,name ,package "out")))
-      ((name (? package? package) sub-drv)
-       `(,name ,(package-output (%store) package sub-drv)))
-      (_
-       input))))
 
 (define %sigint-prompt
   ;; The prompt to jump to upon SIGINT.
@@ -652,14 +647,13 @@ return the new list of manifest entries."
     ;; When given a package via `-e', install the first of its
     ;; outputs (XXX).
     (let* ((output (or output (car (package-outputs p))))
-           (path   (package-output (%store) p output))
            (deps   (deduplicate (package-transitive-propagated-inputs p))))
       (manifest-entry
        (name (package-name p))
        (version (package-version p))
        (output output)
-       (path path)
-       (dependencies (map input->name+path deps))
+       (item p)
+       (dependencies deps)
        (inputs (cons (list (package-name p) p output)
                      deps)))))
 
@@ -723,7 +717,7 @@ return the new list of manifest entries."
                              (name name)
                              (version version)
                              (output #f)
-                             (path path))))
+                             (item path))))
                          (_ #f))
                         opts)))
 
@@ -932,7 +926,8 @@ more information.~%"))
                (ensure-default-profile))
 
              (unless (and (null? install) (null? remove))
-               (let* ((prof-drv (profile-derivation (%store) new))
+               (let* ((prof-drv (run-with-store (%store)
+                                  (profile-derivation new)))
                       (prof     (derivation->output-path prof-drv))
                       (remove   (manifest-matching-entries manifest remove)))
                  (show-what-to-remove/install remove install dry-run?)

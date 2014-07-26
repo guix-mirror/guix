@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -30,7 +30,7 @@
   (manifest-entry
     (name "guile")
     (version "2.0.9")
-    (path "/gnu/store/...")
+    (item "/gnu/store/...")
     (output "out")))
 
 (define guile-2.0.9:debug
