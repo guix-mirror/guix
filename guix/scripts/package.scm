@@ -647,15 +647,18 @@ return the new list of manifest entries."
     ;; When given a package via `-e', install the first of its
     ;; outputs (XXX).
     (let* ((output (or output (car (package-outputs p))))
-           (deps   (deduplicate (package-transitive-propagated-inputs p))))
+           (deps   (map (match-lambda
+                         ((label package)
+                          `(,package "out"))
+                         ((label package output)
+                          `(,package ,output)))
+                        (package-transitive-propagated-inputs p))))
       (manifest-entry
        (name (package-name p))
        (version (package-version p))
        (output output)
        (item p)
-       (dependencies deps)
-       (inputs (cons (list (package-name p) p output)
-                     deps)))))
+       (dependencies (delete-duplicates deps)))))
 
   (define upgrade-regexps
     (filter-map (match-lambda

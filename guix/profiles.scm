@@ -86,10 +86,8 @@
   (output       manifest-entry-output             ; string
                 (default "out"))
   (item         manifest-entry-item)              ; package | store path
-  (dependencies manifest-entry-dependencies       ; list of store paths
-                (default '()))
-  (inputs       manifest-entry-inputs             ; list of inputs to build
-                (default '())))                   ; this entry
+  (dependencies manifest-entry-dependencies       ; (store path | package)*
+                (default '())))
 
 (define-record-type* <manifest-pattern> manifest-pattern
   make-manifest-pattern
@@ -210,11 +208,11 @@ the given MANIFEST."
   (define inputs
     (append-map (match-lambda
                  (($ <manifest-entry> name version
-                                      output path deps (inputs ..1))
-                  inputs)
+                                      output (? package? package) deps)
+                  `((,package ,output) ,@deps))
                  (($ <manifest-entry> name version output path deps)
                   ;; Assume PATH and DEPS are already valid.
-                  `((,name ,path) ,@deps)))
+                  `(,path ,@deps)))
                 (manifest-entries manifest)))
 
   (define builder
@@ -225,17 +223,11 @@ the given MANIFEST."
         (setvbuf (current-output-port) _IOLBF)
         (setvbuf (current-error-port) _IOLBF)
 
-        (let ((inputs '#$(map (match-lambda
-                               ((label thing)
-                                thing)
-                               ((label thing output)
-                                `(,thing ,output)))
-                              inputs)))
-          (union-build #$output inputs
-                       #:log-port (%make-void-port "w"))
-          (call-with-output-file (string-append #$output "/manifest")
-            (lambda (p)
-              (pretty-print '#$(manifest->gexp manifest) p))))))
+        (union-build #$output '#$inputs
+                     #:log-port (%make-void-port "w"))
+        (call-with-output-file (string-append #$output "/manifest")
+          (lambda (p)
+            (pretty-print '#$(manifest->gexp manifest) p)))))
 
   (gexp->derivation "profile" builder
                     #:modules '((guix build union))
