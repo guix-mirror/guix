@@ -641,24 +641,11 @@ return the new list of manifest entries."
 
     (delete-duplicates deps same?))
 
-  (define (package->manifest-entry p output)
-    ;; Return a manifest entry for the OUTPUT of package P.
-    (check-package-freshness p)
+  (define (package->manifest-entry* package output)
+    (check-package-freshness package)
     ;; When given a package via `-e', install the first of its
     ;; outputs (XXX).
-    (let* ((output (or output (car (package-outputs p))))
-           (deps   (map (match-lambda
-                         ((label package)
-                          `(,package "out"))
-                         ((label package output)
-                          `(,package ,output)))
-                        (package-transitive-propagated-inputs p))))
-      (manifest-entry
-       (name (package-name p))
-       (version (package-version p))
-       (output output)
-       (item p)
-       (dependencies (delete-duplicates deps)))))
+    (package->manifest-entry package output))
 
   (define upgrade-regexps
     (filter-map (match-lambda
@@ -689,7 +676,7 @@ return the new list of manifest entries."
   (define to-upgrade
     (map (match-lambda
           ((package output)
-           (package->manifest-entry package output)))
+           (package->manifest-entry* package output)))
          packages-to-upgrade))
 
   (define packages-to-install
@@ -707,7 +694,7 @@ return the new list of manifest entries."
   (define to-install
     (append (map (match-lambda
                   ((package output)
-                   (package->manifest-entry package output)))
+                   (package->manifest-entry* package output)))
                  packages-to-install)
             (filter-map (match-lambda
                          (('install . (? package?))

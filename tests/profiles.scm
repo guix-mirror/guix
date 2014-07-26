@@ -18,10 +18,24 @@
 
 (define-module (test-profiles)
   #:use-module (guix profiles)
+  #:use-module (guix store)
+  #:use-module (guix monads)
+  #:use-module (guix packages)
+  #:use-module (guix derivations)
+  #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-64))
 
 ;; Test the (guix profile) module.
+
+(define %store
+  (open-connection))
+
+(define guile-for-build
+  (package-derivation %store %bootstrap-guile))
+
+;; Make it the default.
+(%guile-for-build guile-for-build)
 
 
 ;; Example manifest entries.
@@ -86,6 +100,19 @@
        (and (equal? m1 m2)
             (null? (manifest-entries m3))
             (null? (manifest-entries m4)))))))
+
+(test-assert "profile-derivation"
+  (run-with-store %store
+    (mlet* %store-monad
+        ((entry ->   (package->manifest-entry %bootstrap-guile))
+         (guile      (package->derivation %bootstrap-guile))
+         (drv        (profile-derivation (manifest (list entry))))
+         (profile -> (derivation->output-path drv))
+         (bindir ->  (string-append profile "/bin"))
+         (_          (built-derivations (list drv))))
+      (return (and (file-exists? (string-append bindir "/guile"))
+                   (string=? (dirname (readlink bindir))
+                             (derivation->output-path guile)))))))
 
 (test-end "profiles")
 

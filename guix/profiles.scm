@@ -51,6 +51,7 @@
             manifest-matching-entries
 
             profile-manifest
+            package->manifest-entry
             profile-derivation
             generation-number
             generation-numbers
@@ -104,6 +105,22 @@
     (if (file-exists? file)
         (call-with-input-file file read-manifest)
         (manifest '()))))
+
+(define* (package->manifest-entry package #:optional output)
+  "Return a manifest entry for the OUTPUT of package PACKAGE.  When OUTPUT is
+omitted or #f, use the first output of PACKAGE."
+  (let ((deps (map (match-lambda
+                    ((label package)
+                     `(,package "out"))
+                    ((label package output)
+                     `(,package ,output)))
+                   (package-transitive-propagated-inputs package))))
+    (manifest-entry
+     (name (package-name package))
+     (version (package-version package))
+     (output (or output (car (package-outputs package))))
+     (item package)
+     (dependencies (delete-duplicates deps)))))
 
 (define (manifest->gexp manifest)
   "Return a representation of MANIFEST as a gexp."
