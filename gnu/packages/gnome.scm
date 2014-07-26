@@ -1189,6 +1189,7 @@ controls using the Bonobo component framework.")
        ("zlib" ,zlib)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnumeric.org")
     (synopsis "Spreadsheet application")
