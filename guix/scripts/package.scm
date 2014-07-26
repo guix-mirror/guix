@@ -750,6 +750,16 @@ removed from MANIFEST."
   (unless (string=? profile %current-profile)
     (add-indirect-root store (canonicalize-path profile))))
 
+(define (readlink* file)
+  "Call 'readlink' until the result is not a symlink."
+  (catch 'system-error
+    (lambda ()
+      (readlink* (readlink file)))
+    (lambda args
+      (if (= EINVAL (system-error-errno args))
+          file
+          (apply throw args)))))
+
 
 ;;;
 ;;; Entry point.
@@ -921,36 +931,40 @@ more information.~%"))
              (when (equal? profile %current-profile)
                (ensure-default-profile))
 
-             (if (manifest=? new manifest)
-                 (format (current-error-port) (_ "nothing to be done~%"))
-                 (let ((prof-drv (profile-derivation (%store) new))
-                       (remove   (manifest-matching-entries manifest remove)))
-                   (show-what-to-remove/install remove install dry-run?)
-                   (show-what-to-build (%store) (list prof-drv)
-                                       #:use-substitutes?
-                                       (assoc-ref opts 'substitutes?)
-                                       #:dry-run? dry-run?)
+             (unless (and (null? install) (null? remove))
+               (let* ((prof-drv (profile-derivation (%store) new))
+                      (prof     (derivation->output-path prof-drv))
+                      (remove   (manifest-matching-entries manifest remove)))
+                 (show-what-to-remove/install remove install dry-run?)
+                 (show-what-to-build (%store) (list prof-drv)
+                                     #:use-substitutes?
+                                     (assoc-ref opts 'substitutes?)
+                                     #:dry-run? dry-run?)
 
-                   (or dry-run?
-                       (let* ((prof   (derivation->output-path prof-drv))
-                              (number (generation-number profile))
+                 (cond
+                  (dry-run? #t)
+                  ((and (file-exists? profile)
+                        (and=> (readlink* profile) (cut string=? prof <>)))
+                   (format (current-error-port) (_ "nothing to be done~%")))
+                  (else
+                   (let* ((number (generation-number profile))
 
-                              ;; Always use NUMBER + 1 for the new profile,
-                              ;; possibly overwriting a "previous future
-                              ;; generation".
-                              (name   (generation-file-name profile
-                                                            (+ 1 number))))
-                         (and (build-derivations (%store) (list prof-drv))
-                              (let ((count (length entries)))
-                                (switch-symlinks name prof)
-                                (switch-symlinks profile name)
-                                (maybe-register-gc-root (%store) profile)
-                                (format #t (N_ "~a package in profile~%"
-                                               "~a packages in profile~%"
-                                               count)
-                                        count)
-                                (display-search-paths entries
-                                                      profile)))))))))))
+                          ;; Always use NUMBER + 1 for the new profile,
+                          ;; possibly overwriting a "previous future
+                          ;; generation".
+                          (name   (generation-file-name profile
+                                                        (+ 1 number))))
+                     (and (build-derivations (%store) (list prof-drv))
+                          (let ((count (length entries)))
+                            (switch-symlinks name prof)
+                            (switch-symlinks profile name)
+                            (maybe-register-gc-root (%store) profile)
+                            (format #t (N_ "~a package in profile~%"
+                                           "~a packages in profile~%"
+                                           count)
+                                    count)
+                            (display-search-paths entries
+                                                  profile))))))))))))
 
   (define (process-query opts)
     ;; Process any query specified by OPTS.  Return #t when a query was

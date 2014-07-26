@@ -48,7 +48,6 @@
             manifest-remove
             manifest-installed?
             manifest-matching-entries
-            manifest=?
 
             profile-manifest
             profile-derivation
@@ -195,13 +194,6 @@ must be a manifest-pattern."
          predicates))
 
   (filter matches? (manifest-entries manifest)))
-
-(define (manifest=? m1 m2)
-  "Return #t if manifests M1 and M2 are equal.  This differs from 'equal?' in
-that the 'inputs' field is ignored for the comparison, since it is know to
-have no effect on the manifest contents."
-  (equal? (manifest->sexp m1)
-          (manifest->sexp m2)))
 
 
 ;;;
