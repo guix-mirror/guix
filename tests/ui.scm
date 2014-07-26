@@ -67,6 +67,11 @@ interface, and powerful string processing.")
                    10)
    #\newline))
 
+(test-equal "fill-paragraph, two spaces after period"
+  "First line.  Second line"
+  (fill-paragraph "First line.
+Second line" 24))
+
 (test-equal "package-specification->name+version+output"
   '(("guile" #f "out")
     ("guile" "2.0.9" "out")

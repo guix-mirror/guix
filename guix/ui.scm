@@ -393,15 +393,17 @@ converted to a space; sequences of more than one line break are preserved."
          ((#\newline)
           `(,column ,(+ 1 newlines) ,chars))
          (else
-          (let ((chars  (case newlines
-                          ((0) chars)
-                          ((1) (cons #\space chars))
-                          (else
-                           (append (make-list newlines #\newline) chars))))
-                (column (case newlines
-                          ((0) column)
-                          ((1) (+ 1 column))
-                          (else 0))))
+          (let* ((spaces (if (and (pair? chars) (eqv? (car chars) #\.)) 2 1))
+                 (chars  (case newlines
+                           ((0) chars)
+                           ((1)
+                            (append (make-list spaces #\space) chars))
+                           (else
+                            (append (make-list newlines #\newline) chars))))
+                 (column (case newlines
+                           ((0) column)
+                           ((1) (+ spaces column))
+                           (else 0))))
             (let ((chars  (cons chr chars))
                   (column (+ 1 column)))
               (if (> column width)
@@ -414,7 +416,10 @@ converted to a space; sequences of more than one line break are preserved."
                           0
                           ,(if (null? after)
                                before
-                               (append before (cons #\newline (cdr after)))))
+                               (append before
+                                       (cons #\newline
+                                             (drop-while (cut eqv? #\space <>)
+                                                         after)))))
                         `(,column 0 ,chars)))     ; unbreakable
                   `(,column 0 ,chars)))))))))
 
