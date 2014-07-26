@@ -1139,6 +1139,7 @@ controls using the Bonobo component framework.")
        ("libxml2" ,libxml2)))
     (native-inputs
      `(("intltool" ,intltool)
+       ("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/goffice/")
     (synopsis "Document-centric objects and utilities")
