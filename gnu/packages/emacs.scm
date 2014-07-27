@@ -39,6 +39,7 @@
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages imagemagick)
   #:use-module (gnu packages w3m)
+  #:use-module (gnu packages wget)
   #:use-module (gnu packages autotools)
   #:use-module ((gnu packages compression)
                 #:renamer (symbol-prefix-proc 'compression:))
@@ -325,4 +326,45 @@ operations.")
     (synopsis "Simple Web browser for Emacs based on w3m")
     (description
      "emacs-w3m is an emacs interface for the w3m web browser.")
+    (license gpl2+)))
+
+(define-public emacs-wget
+  (package
+    (name "emacs-wget")
+    (version "0.5.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "mirror://debian/pool/main/w/wget-el/wget-el_"
+                                 version ".orig.tar.gz"))
+             (sha256
+              (base32 "10byvyv9dk0ib55gfqm7bcpxmx2qbih1jd03gmihrppr2mn52nff"))))
+    (build-system gnu-build-system)
+    (inputs `(("wget" ,wget)
+              ("emacs" ,emacs)))
+    (arguments
+     '(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules ((guix build gnu-build-system)
+                           (guix build utils)
+                           (guix build emacs-utils))
+       #:tests? #f  ; no check target
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key outputs #:allow-other-keys)
+          (substitute* "Makefile"
+            (("/usr/local") (assoc-ref outputs "out"))
+            (("/site-lisp/emacs-wget") "/site-lisp")))
+        (alist-cons-before
+         'build 'patch-exec-paths
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let ((wget (assoc-ref inputs "wget")))
+             (emacs-substitute-variables "wget.el"
+               ("wget-command" (string-append wget "/bin/wget")))))
+         %standard-phases))))
+    (home-page "http://www.emacswiki.org/emacs/EmacsWget")
+    (synopsis "A simple file downloader for emacs, based on wget.")
+    (description
+     "emacs-wget is an emacs interface for the wget file downloader.")
     (license gpl2+)))
