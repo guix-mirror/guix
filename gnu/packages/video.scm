@@ -193,7 +193,6 @@
                       "--disable-armv6t2"
                       "--disable-vfp"
                       "--disable-neon"
-                      "--disable-vis"
                       "--disable-mips32r2"
                       "--disable-mipsdspr1"
                       "--disable-mipsdspr2"

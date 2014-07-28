@@ -55,6 +55,7 @@
             run-with-store
             text-file
             text-file*
+            interned-file
             package-file
             origin->derivation
             package->derivation
@@ -361,6 +362,18 @@ and store file names; the resulting store file holds references to all these."
   (mlet %store-monad ((inputs (lower-inputs inputs)))
     (derivation-expression name (builder inputs)
                            #:inputs inputs)))
+
+(define* (interned-file file #:optional name
+                        #:key (recursive? #t))
+  "Return the name of FILE once interned in the store.  Use NAME as its store
+name, or the basename of FILE if NAME is omitted.
+
+When RECURSIVE? is true, the contents of FILE are added recursively; if FILE
+designates a flat file and RECURSIVE? is true, its contents are added, and its
+permission bits are kept."
+  (lambda (store)
+    (add-to-store store (or name (basename file))
+                  recursive? "sha256" file)))
 
 (define* (package-file package
                        #:optional file

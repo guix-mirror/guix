@@ -107,7 +107,8 @@ policy) as the @code{tor} unprivileged user."
       (stop #~(make-kill-destructor))
 
       (user-groups   (list (user-group
-                            (name "tor"))))
+                            (name "tor")
+                            (system? #t))))
       (user-accounts (list (user-account
                             (name "tor")
                             (group "tor")

@@ -86,7 +86,7 @@ guix-register -p "$new_store" \
 # Now make sure this is recognized as valid.
 
 ls -R "$new_store"
-for state_dir in "$new_store$localstatedir/guix" "$new_store/chbouib"
+for state_dir in "$localstatedir/guix" "/chbouib"
 do
     NIX_STORE_DIR="$new_store_dir"
     NIX_STATE_DIR="$new_store$state_dir"

@@ -101,6 +101,7 @@ provided as well as the framework to add new color models and data types.")
        ("libjpeg" ,libjpeg-8)))
     (native-inputs
      `(("pkg-config" ,pkg-config)
+       ("glib" ,glib "bin")             ; for gtester
        ("intltool" ,intltool)))
     (home-page "http://gegl.org")
     (synopsis "Graph based image processing framework")

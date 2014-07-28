@@ -75,6 +75,7 @@
             package-location
             package-field-location
 
+            package-direct-inputs
             package-transitive-inputs
             package-transitive-target-inputs
             package-transitive-native-inputs
@@ -484,12 +485,17 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
       ((input rest ...)
        (loop rest (cons input result))))))
 
+(define (package-direct-inputs package)
+  "Return all the direct inputs of PACKAGE---i.e, its direct inputs along
+with their propagated inputs."
+  (append (package-native-inputs package)
+          (package-inputs package)
+          (package-propagated-inputs package)))
+
 (define (package-transitive-inputs package)
   "Return the transitive inputs of PACKAGE---i.e., its direct inputs along
 with their propagated inputs, recursively."
-  (transitive-inputs (append (package-native-inputs package)
-                             (package-inputs package)
-                             (package-propagated-inputs package))))
+  (transitive-inputs (package-direct-inputs package)))
 
 (define (package-transitive-target-inputs package)
   "Return the transitive target inputs of PACKAGE---i.e., its direct inputs
@@ -521,6 +527,8 @@ recursively."
 (define (cache package system thunk)
   "Memoize the return values of THUNK as the derivation of PACKAGE on
 SYSTEM."
+  ;; FIXME: This memoization should be associated with the open store, because
+  ;; otherwise it breaks when switching to a different store.
   (let ((vals (call-with-values thunk list)))
     ;; Use `hashq-set!' instead of `hash-set!' because `hash' returns the
     ;; same value for all structs (as of Guile 2.0.6), and because pointer

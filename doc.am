@@ -1,5 +1,5 @@
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 # Copyright © 2013 Andreas Enge <andreas@enge.fr>
 #
 # This file is part of GNU Guix.
@@ -23,6 +23,15 @@ EXTRA_DIST +=					\
   doc/images/bootstrap-graph.dot		\
   doc/images/bootstrap-graph.eps		\
   doc/images/bootstrap-graph.pdf
+
+# Bundle this file so that makeinfo finds it in out-of-source-tree builds.
+BUILT_SOURCES        += doc/os-config.texi
+EXTRA_DIST           += doc/os-config.texi
+MAINTAINERCLEANFILES  = doc/os-config.texi
+
+doc/os-config.texi: gnu/system/os-config.tmpl
+	$(MKDIR_P) "`dirname "$@"`"
+	cp "$<" "$@"
 
 infoimagedir = $(infodir)/images
 dist_infoimage_DATA = doc/images/bootstrap-graph.png

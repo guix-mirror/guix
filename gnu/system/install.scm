@@ -20,6 +20,7 @@
   #:use-module (gnu)
   #:use-module (guix gexp)
   #:use-module (guix monads)
+  #:use-module ((guix store) #:select (%store-prefix))
   #:use-module (gnu packages linux)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages disk)
@@ -41,6 +42,99 @@ manual."
                          "-d" "/run/current-system/profile/share/info"
                          "-f" (string-append #$guix "/share/info/guix.info")
                          "-n" "System Installation")))
+
+(define %backing-directory
+  ;; Sub-directory used as the backing store for copy-on-write.
+  "/tmp/guix-inst")
+
+(define (make-cow-store target)
+  "Return a gexp that makes the store copy-on-write, using TARGET as the
+backing store.  This is useful when TARGET is on a hard disk, whereas the
+current store is on a RAM disk."
+  (define (unionfs read-only read-write mount-point)
+    ;; Make MOUNT-POINT the union of READ-ONLY and READ-WRITE.
+
+    ;; Note: in the command below, READ-WRITE appears before READ-ONLY so that
+    ;; it is considered a "higher-level branch", as per unionfs-fuse(8),
+    ;; thereby allowing files existing on READ-ONLY to be copied over to
+    ;; READ-WRITE.
+    #~(fork+exec-command
+       (list (string-append #$unionfs-fuse "/bin/unionfs")
+             "-o"
+             "cow,allow_other,use_ino,max_files=65536,nonempty"
+             (string-append #$read-write "=RW:" #$read-only "=RO")
+             #$mount-point)))
+
+  (define (set-store-permissions directory)
+    ;; Set the right perms on DIRECTORY to use it as the store.
+    #~(begin
+        (chown #$directory 0 30000)             ;use the fixed 'guixbuild' GID
+        (chmod #$directory #o1775)))
+
+  #~(begin
+      (unless (file-exists? "/.ro-store")
+        (mkdir "/.ro-store")
+        (mount #$(%store-prefix) "/.ro-store" "none"
+               (logior MS_BIND MS_RDONLY)))
+
+      (let ((rw-dir (string-append target #$%backing-directory)))
+        (mkdir-p rw-dir)
+        (mkdir-p "/.rw-store")
+        #$(set-store-permissions #~rw-dir)
+        #$(set-store-permissions "/.rw-store")
+
+        ;; Mount the union, then atomically make it the store.
+        (and #$(unionfs "/.ro-store" #~rw-dir "/.rw-store")
+             (begin
+               (sleep 1) ;XXX: wait for unionfs to be ready
+               (mount "/.rw-store" #$(%store-prefix) "" MS_MOVE)
+               (rmdir "/.rw-store"))))))
+
+(define (cow-store-service)
+  "Return a service that makes the store copy-on-write, such that writes go to
+the user's target storage device rather than on the RAM disk."
+  ;; See <http://bugs.gnu.org/18061> for the initial report.
+  (with-monad %store-monad
+    (return (service
+             (requirement '(root-file-system user-processes))
+             (provision '(cow-store))
+             (documentation
+              "Make the store copy-on-write, with writes going to \
+the given target.")
+             (start #~(case-lambda
+                        ((target)
+                         #$(make-cow-store #~target)
+                         target)
+                        (else
+                         ;; Do nothing, and mark the service as stopped.
+                         #f)))
+             (stop #~(lambda (target)
+                       ;; Delete the temporary directory, but leave everything
+                       ;; mounted as there may still be processes using it
+                       ;; since 'user-processes' doesn't depend on us.
+                       (delete-file-recursively
+                        (string-append target #$%backing-directory))))))))
+
+(define (configuration-template-service)
+  "Return a dummy service whose purpose is to install an operating system
+configuration template file in the installation system."
+
+  (define local-template
+    "/etc/configuration-template.scm")
+  (define template
+    (search-path %load-path "gnu/system/os-config.tmpl"))
+
+  (mlet %store-monad ((template (interned-file template)))
+    (return (service
+             (requirement '(root-file-system))
+             (provision '(os-config-template))
+             (documentation
+              "This dummy service installs an OS configuration template.")
+             (start #~(const #t))
+             (stop  #~(const #f))
+             (activate
+              #~(unless (file-exists? #$local-template)
+                  (copy-file #$template #$local-template)))))))
 
 (define (installation-services)
   "Return the list services for the installation image."
@@ -71,6 +165,9 @@ You have been warned.  Thanks for being so brave.
                             #:auto-login "guest"
                             #:login-program (log-to-info))
 
+          ;; Documentation add-on.
+          (configuration-template-service)
+
           ;; A bunch of 'root' ttys.
           (normal-tty "tty3")
           (normal-tty "tty4")
@@ -87,6 +184,10 @@ You have been warned.  Thanks for being so brave.
 
           ;; Start udev so that useful device nodes are available.
           (udev-service)
+
+          ;; Add the 'cow-store' service, which users have to start manually
+          ;; since it takes the installation directory as an argument.
+          (cow-store-service)
 
           ;; Install Unicode support and a suitable font.
           (console-font-service "tty1")
@@ -117,10 +218,11 @@ Use Alt-F2 for documentation.
     (file-systems
      ;; Note: the disk image build code overrides this root file system with
      ;; the appropriate one.
-     (list (file-system
+     (cons (file-system
              (mount-point "/")
              (device "gnu-disk-image")
-             (type "ext4"))))
+             (type "ext4"))
+           %base-file-systems))
 
     (users (list (user-account
                   (name "guest")

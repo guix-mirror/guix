@@ -96,7 +96,8 @@ sockets."
                     (mkdir-p "/var/run/avahi-daemon")))
 
       (user-groups (list (user-group
-                          (name "avahi"))))
+                          (name "avahi")
+                          (system? #t))))
       (user-accounts (list (user-account
                             (name "avahi")
                             (group "avahi")

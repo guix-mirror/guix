@@ -25,10 +25,12 @@
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (udev kbd))
+                #:select (udev kbd e2fsprogs))
   #:use-module ((gnu packages base)
                 #:select (glibc-final))
   #:use-module (gnu packages package-management)
+  #:use-module ((guix build linux-initrd)
+                #:select (mount-flags->bit-mask))
   #:use-module (guix gexp)
   #:use-module (guix monads)
   #:use-module (srfi srfi-1)
@@ -96,11 +98,14 @@ This service must be the root of the service dependency graph so that its
       (respawn? #f)))))
 
 (define* (file-system-service device target type
-                              #:key (check? #t) options (title 'any))
+                              #:key (flags '()) (check? #t)
+                              create-mount-point? options (title 'any))
   "Return a service that mounts DEVICE on TARGET as a file system TYPE with
 OPTIONS.  TITLE is a symbol specifying what kind of name DEVICE is: 'label for
 a partition label, 'device for a device file name, or 'any.  When CHECK? is
-true, check the file system before mounting it."
+true, check the file system before mounting it.  When CREATE-MOUNT-POINT? is
+true, create TARGET if it does not exist yet.  FLAGS is a list of symbols,
+such as 'read-only' etc."
   (with-monad %store-monad
     (return
      (service
@@ -109,10 +114,22 @@ true, check the file system before mounting it."
       (documentation "Check, mount, and unmount the given file system.")
       (start #~(lambda args
                  (let ((device (canonicalize-device-spec #$device '#$title)))
-                   #$(if check?
-                         #~(check-file-system device #$type)
+                   #$(if create-mount-point?
+                         #~(mkdir-p #$target)
                          #~#t)
-                   (mount device #$target #$type 0 #$options))
+                   #$(if check?
+                         #~(begin
+                             ;; Make sure fsck.ext2 & co. can be found.
+                             (setenv "PATH"
+                                     (string-append
+                                      #$e2fsprogs "/sbin:"
+                                      "/run/current-system/profile/sbin:"
+                                      (getenv "PATH")))
+                             (check-file-system device #$type))
+                         #~#t)
+                   (mount device #$target #$type
+                          #$(mount-flags->bit-mask flags)
+                          #$options))
                  #t))
       (stop #~(lambda args
                 ;; Normally there are no processes left at this point, so
@@ -455,6 +472,7 @@ passed to @command{guix-daemon}."
              (user-accounts accounts)
              (user-groups (list (user-group
                                  (name builder-group)
+                                 (system? #t)
 
                                  ;; Use a fixed GID so that we can create the
                                  ;; store with the right owner.
@@ -466,8 +484,13 @@ passed to @command{guix-daemon}."
   (with-monad %store-monad
     (return (service
              (provision '(udev))
+
+             ;; Udev needs /dev to be a 'devtmpfs' mount so that new device
+             ;; nodes can be added: see
+             ;; <http://www.linuxfromscratch.org/lfs/view/development/chapter07/udev.html>.
              (requirement '(root-file-system))
-             (documentation "Populate the /dev directory.")
+
+             (documentation "Populate the /dev directory, dynamically.")
              (start #~(lambda ()
                         (define udevd
                           (string-append #$udev "/libexec/udev/udevd"))

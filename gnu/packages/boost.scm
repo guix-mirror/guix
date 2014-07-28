@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -46,39 +47,48 @@
        ("python" ,python-2)
        ("tcsh" ,tcsh)))
     (arguments
-     `(#:phases
-       (alist-replace
-        'configure
-        (lambda* (#:key outputs #:allow-other-keys)
-          (let ((out (assoc-ref outputs "out")))
-            (substitute* '("libs/config/configure"
-                           "libs/spirit/classic/phoenix/test/runtest.sh"
-                           "tools/build/v2/doc/bjam.qbk"
-                           "tools/build/v2/engine/execunix.c"
-                           "tools/build/v2/engine/Jambase"
-                           "tools/build/v2/engine/jambase.c")
-              (("/bin/sh") (which "sh")))
-
-            (setenv "SHELL" (which "sh"))
-            (setenv "CONFIG_SHELL" (which "sh"))
-
-            (zero? (system* "./bootstrap.sh"
-                            (string-append "--prefix=" out)
-                            "--with-toolset=gcc"))))
-        (alist-replace
-         'build
-         (lambda _
-           (zero? (system* "./b2" "threading=multi" "link=shared")))
-
+     (let ((build-flags
+            `("threading=multi" "link=shared"
+              ;; Boost's 'context' library is not yet supported on mips64, so
+              ;; we disable it.  The 'coroutine' library depends on 'context',
+              ;; so we disable that too.
+              ,@(if (equal? "mips64el-linux" (or (%current-target-system)
+                                                 (%current-system)))
+                    '("--without-context" "--without-coroutine")
+                    '()))))
+       `(#:phases
          (alist-replace
-          'check
-          (lambda _ #t)
+          'configure
+          (lambda* (#:key outputs #:allow-other-keys)
+            (let ((out (assoc-ref outputs "out")))
+              (substitute* '("libs/config/configure"
+                             "libs/spirit/classic/phoenix/test/runtest.sh"
+                             "tools/build/v2/doc/bjam.qbk"
+                             "tools/build/v2/engine/execunix.c"
+                             "tools/build/v2/engine/Jambase"
+                             "tools/build/v2/engine/jambase.c")
+                (("/bin/sh") (which "sh")))
 
+              (setenv "SHELL" (which "sh"))
+              (setenv "CONFIG_SHELL" (which "sh"))
+
+              (zero? (system* "./bootstrap.sh"
+                              (string-append "--prefix=" out)
+                              "--with-toolset=gcc"))))
           (alist-replace
-           'install
+           'build
            (lambda _
-             (zero? (system* "./b2" "install" "threading=multi" "link=shared")))
-           %standard-phases))))))
+             (zero? (system* "./b2" ,@build-flags)))
+
+           (alist-replace
+            'check
+            (lambda _ #t)
+
+            (alist-replace
+             'install
+             (lambda _
+               (zero? (system* "./b2" "install" ,@build-flags)))
+             %standard-phases)))))))
 
     (home-page "http://boost.org")
     (synopsis "Peer-reviewed portable C++ source libraries")

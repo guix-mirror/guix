@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -29,6 +30,8 @@
   #:use-module ((gnu packages base) #:select (%final-inputs))
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
+  #:use-module (ice-9 vlist)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -59,6 +62,9 @@
                     (x
                      (leave (_ "~a: invalid selection; expected `core' or `non-core'")
                             arg)))))
+        (option '(#\l "list-dependent") #f #f
+                (lambda (opt name arg result)
+                  (alist-cons 'list-dependent? #t result)))
 
         (option '("key-server") #t #f
                 (lambda (opt name arg result)
@@ -96,6 +102,9 @@ specified with `--select'.\n"))
   (display (_ "
   -s, --select=SUBSET    select all the packages in SUBSET, one of
                          `core' or `non-core'"))
+  (display (_ "
+  -l, --list-dependent   list top-level dependent packages that would need to
+                         be rebuilt as a result of upgrading PACKAGE..."))
   (newline)
   (display (_ "
       --key-server=HOST  use HOST as the OpenPGP key server"))
@@ -193,9 +202,10 @@ update would trigger a complete rebuild."
         ;; XXX: Fails to catch MPFR/MPC, whose *source* is used as input.
         (member (package-name package) names))))
 
-  (let* ((opts         (parse-options))
-         (update?      (assoc-ref opts 'update?))
-         (key-download (assoc-ref opts 'key-download))
+  (let* ((opts            (parse-options))
+         (update?         (assoc-ref opts 'update?))
+         (list-dependent? (assoc-ref opts 'list-dependent?))
+         (key-download    (assoc-ref opts 'key-download))
          (packages
           (match (concatenate
                   (filter-map (match-lambda
@@ -220,26 +230,48 @@ update would trigger a complete rebuild."
                  (some                        ; user-specified packages
                   some))))
     (with-error-handling
-      (if update?
-          (let ((store (open-connection)))
-            (parameterize ((%openpgp-key-server
-                            (or (assoc-ref opts 'key-server)
-                                (%openpgp-key-server)))
-                           (%gpg-command
-                            (or (assoc-ref opts 'gpg-command)
-                                (%gpg-command))))
-              (for-each
-               (cut update-package store <> #:key-download key-download)
-               packages)))
-          (for-each (lambda (package)
-                      (match (false-if-exception (package-update-path package))
-                        ((new-version . directory)
-                         (let ((loc (or (package-field-location package 'version)
-                                        (package-location package))))
-                           (format (current-error-port)
-                                   (_ "~a: ~a would be upgraded from ~a to ~a~%")
-                                   (location->string loc)
-                                   (package-name package) (package-version package)
-                                   new-version)))
-                        (_ #f)))
-                    packages)))))
+      (cond
+       (list-dependent?
+        (let* ((rebuilds (map package-full-name
+                              (package-covering-dependents packages)))
+               (total-dependents
+                (length (package-transitive-dependents packages))))
+          (if (= total-dependents 0)
+              (format (current-output-port)
+                      (N_ "No dependents other than itself: ~{~a~}~%"
+                          "No dependents other than themselves: ~{~a~^ ~}~%"
+                          (length packages))
+                      (map package-full-name packages))
+              (format (current-output-port)
+                      (N_ (N_ "A single dependent package: ~2*~{~a~}~%"
+                              "Building the following package would ensure ~d \
+dependent packages are rebuilt; ~*~{~a~^ ~}~%"
+                              total-dependents)
+                          "Building the following ~d packages would ensure ~d \
+dependent packages are rebuilt: ~{~a~^ ~}~%"
+                          (length rebuilds))
+                      (length rebuilds) total-dependents rebuilds))))
+       (update?
+        (let ((store (open-connection)))
+          (parameterize ((%openpgp-key-server
+                          (or (assoc-ref opts 'key-server)
+                              (%openpgp-key-server)))
+                         (%gpg-command
+                          (or (assoc-ref opts 'gpg-command)
+                              (%gpg-command))))
+            (for-each
+             (cut update-package store <> #:key-download key-download)
+             packages))))
+       (else
+        (for-each (lambda (package)
+                    (match (false-if-exception (package-update-path package))
+                      ((new-version . directory)
+                       (let ((loc (or (package-field-location package 'version)
+                                      (package-location package))))
+                         (format (current-error-port)
+                                 (_ "~a: ~a would be upgraded from ~a to ~a~%")
+                                 (location->string loc)
+                                 (package-name package) (package-version package)
+                                 new-version)))
+                      (_ #f)))
+                  packages))))))

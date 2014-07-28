@@ -34,17 +34,17 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages texinfo))
 
-(define-public guix-0.6
+(define guix-0.7
   (package
     (name "guix")
-    (version "0.6")
+    (version "0.7")
     (source (origin
              (method url-fetch)
              (uri (string-append "ftp://alpha.gnu.org/gnu/guix/guix-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "01xw51wizhsk827w4xp79k2b6dxjaviw04r6rbrb85qdxnwg6k9n"))))
+               "05r7bsjgc0a4m7yy433n3c1dlv2yqlf3qpwlhayn9djhpp2q1ssb"))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags (list
@@ -109,10 +109,12 @@ upgrades and roll-backs, per-user profiles, and much more. It is based on the
 Nix package manager.")
     (license gpl3+)))
 
-(define-public guix
+(define-public guix guix-0.7)
+
+(define-public guix-devel
   ;; Development version of Guix.
   (let ((commit "0ae8c15"))
-    (package (inherit guix-0.6)
+    (package (inherit guix-0.7)
       (version (string-append "0.6." commit))
       (source (origin
                 (method git-fetch)
@@ -124,7 +126,7 @@ Nix package manager.")
                  (base32
                   "1y6mwzwsjdxbfibqypb55dix371rifhfz0bygfr8k868lcdsawic"))))
       (arguments
-       (substitute-keyword-arguments (package-arguments guix-0.6)
+       (substitute-keyword-arguments (package-arguments guix-0.7)
          ((#:phases phases)
           `(alist-cons-before
             'configure 'bootstrap
@@ -160,4 +162,4 @@ Nix package manager.")
          ("gettext" ,gnu-gettext)
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
-         ,@(package-native-inputs guix-0.6))))))
+         ,@(package-native-inputs guix-0.7))))))

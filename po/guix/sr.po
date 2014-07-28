@@ -6,7 +6,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: guix-0.6-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
-"POT-Creation-Date: 2014-04-05 12:37+0200\n"
+"POT-Creation-Date: 2014-07-25 00:55+0200\n"
 "PO-Revision-Date: 2014-06-19 08:51+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <(nothing)>\n"
@@ -14,41 +14,39 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
-#: gnu/packages.scm:95
+#: gnu/packages.scm:102
 #, scheme-format
 msgid "cannot access `~a': ~a~%"
 msgstr "не могу да приступим „~a“: ~a~%"
 
-#: guix/scripts/build.scm:54 guix/scripts/package.scm:337
-#: guix/scripts/build.scm:53 guix/scripts/package.scm:337
+#: guix/scripts/build.scm:54 guix/scripts/package.scm:349
 #, scheme-format
 msgid "ambiguous package specification `~a'~%"
 msgstr "нејасна одредница пакета „~a“~%"
 
-#: guix/scripts/build.scm:54 guix/scripts/package.scm:339
+#: guix/scripts/build.scm:55 guix/scripts/package.scm:351
 #, scheme-format
 msgid "choosing ~a from ~a~%"
 msgstr "бирам ~a из ~a~%"
 
-#: guix/scripts/build.scm:60
+#: guix/scripts/build.scm:61
 #, scheme-format
 msgid "~A: package not found for version ~a~%"
 msgstr "~A: нисам пронашао пакет за издање ~a~%"
 
-#: guix/scripts/build.scm:62
+#: guix/scripts/build.scm:63
 #, scheme-format
 msgid "~A: unknown package~%"
 msgstr "~A: непознат пакет~%"
 
-#: guix/scripts/build.scm:85
+#: guix/scripts/build.scm:86
 #, scheme-format
 msgid "failed to create GC root `~a': ~a~%"
 msgstr "нисам успео да направим ГЦ корен „~a“: ~a~%"
 
-#: guix/scripts/build.scm:122
+#: guix/scripts/build.scm:123
 msgid ""
 "\n"
 "  -K, --keep-failed      keep build tree of failed builds"
@@ -56,7 +54,7 @@ msgstr ""
 "\n"
 "  -K, --keep-failed      задржава стабло изградње неуспелих изградњи"
 
-#: guix/scripts/build.scm:124
+#: guix/scripts/build.scm:125
 msgid ""
 "\n"
 "  -n, --dry-run          do not build the derivations"
@@ -64,7 +62,7 @@ msgstr ""
 "\n"
 "  -n, --dry-run          не изграђује изведенице"
 
-#: guix/scripts/build.scm:126
+#: guix/scripts/build.scm:127
 msgid ""
 "\n"
 "      --fallback         fall back to building when the substituter fails"
@@ -72,25 +70,23 @@ msgstr ""
 "\n"
 "      --fallback         враћа се на изградњу када заменик не успе"
 
-#: guix/scripts/build.scm:128
+#: guix/scripts/build.scm:129
 msgid ""
 "\n"
 "      --no-substitutes   build instead of resorting to pre-built substitutes"
 msgstr ""
 "\n"
-"      --no-substitutes   изграђује уместо да поново ређа заменике "
-"предизградње"
+"      --no-substitutes   изграђује уместо да поново ређа заменике предизградње"
 
-#: guix/scripts/build.scm:130
+#: guix/scripts/build.scm:131
 msgid ""
 "\n"
 "      --no-build-hook    do not attempt to offload builds via the build hook"
 msgstr ""
 "\n"
-"      --no-build-hook    не покушава да растерети изградњу путем предворја "
-"изградње"
+"      --no-build-hook    не покушава да растерети изградњу путем предворја изградње"
 
-#: guix/scripts/build.scm:132
+#: guix/scripts/build.scm:133
 msgid ""
 "\n"
 "      --max-silent-time=SECONDS\n"
@@ -100,7 +96,7 @@ msgstr ""
 "      --max-silent-time=СЕКУНДЕ\n"
 "                         означава изградњу неупелом након СЕКУНДЕ мировања"
 
-#: guix/scripts/build.scm:135
+#: guix/scripts/build.scm:136
 msgid ""
 "\n"
 "      --timeout=SECONDS  mark the build as failed after SECONDS of activity"
@@ -109,7 +105,7 @@ msgstr ""
 "      --timeout=СЕКУНДЕ\n"
 "                         означава изградњу неуспелом након СЕКУНДЕ рада"
 
-#: guix/scripts/build.scm:137
+#: guix/scripts/build.scm:138
 msgid ""
 "\n"
 "      --verbosity=LEVEL  use the given verbosity LEVEL"
@@ -117,21 +113,20 @@ msgstr ""
 "\n"
 "      --verbosity=НИВО  користи дати НИВО опширности"
 
-#: guix/scripts/build.scm:139
+#: guix/scripts/build.scm:140
 msgid ""
 "\n"
 "  -c, --cores=N          allow the use of up to N CPU cores for the build"
 msgstr ""
 "\n"
-"  -c, --cores=N          омогућава коришћење до N језгра процесора за "
-"изградњу"
+"  -c, --cores=N          омогућава коришћење до N језгра процесора за изградњу"
 
-#: guix/scripts/build.scm:204
+#: guix/scripts/build.scm:206
 #, scheme-format
 msgid "~a: not a number~%"
 msgstr "~a: није број~%"
 
-#: guix/scripts/build.scm:220
+#: guix/scripts/build.scm:223
 msgid ""
 "Usage: guix build [OPTION]... PACKAGE-OR-DERIVATION...\n"
 "Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"
@@ -139,7 +134,7 @@ msgstr ""
 "Употреба: guix build [ОПЦИЈА]... ПАКЕТ-ИЛИ-ИЗВЕДНИЦА...\n"
 "Изграђује дати ПАКЕТ-ИЛИ-ИЗВЕДНИЦУ и исписује њихове путање излаза.\n"
 
-#: guix/scripts/build.scm:222
+#: guix/scripts/build.scm:225
 msgid ""
 "\n"
 "  -e, --expression=EXPR  build the package or derivation EXPR evaluates to"
@@ -147,7 +142,7 @@ msgstr ""
 "\n"
 "  -e, --expression=ИЗРАЗ  изграђује процене ИЗРАЗА пакета или изведенице на"
 
-#: guix/scripts/build.scm:224
+#: guix/scripts/build.scm:227
 msgid ""
 "\n"
 "  -S, --source           build the packages' source derivations"
@@ -155,7 +150,7 @@ msgstr ""
 "\n"
 "  -S, --source           изграђује изведенице извора пакета"
 
-#: guix/scripts/build.scm:226
+#: guix/scripts/build.scm:229
 msgid ""
 "\n"
 "  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""
@@ -163,7 +158,7 @@ msgstr ""
 "\n"
 "  -s, --system=СИСТЕМ    покушава да изгради за СИСТЕМ--e.g., „i686-linux“"
 
-#: guix/scripts/build.scm:228
+#: guix/scripts/build.scm:231
 msgid ""
 "\n"
 "      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""
@@ -171,7 +166,7 @@ msgstr ""
 "\n"
 "      --target=ТРОЈКА   унакрсно изграђује за ТРОЈКУ--e.g., „armel-linux-gnu“"
 
-#: guix/scripts/build.scm:230
+#: guix/scripts/build.scm:233
 msgid ""
 "\n"
 "      --with-source=SOURCE\n"
@@ -181,7 +176,7 @@ msgstr ""
 "      --with-source=ИЗВОР\n"
 "                         користи ИЗВОР приликом изградње одговарајућег пакета"
 
-#: guix/scripts/build.scm:233
+#: guix/scripts/build.scm:236
 msgid ""
 "\n"
 "  -d, --derivations      return the derivation paths of the given packages"
@@ -189,18 +184,17 @@ msgstr ""
 "\n"
 "  -d, --derivations      исписује путање изведенице датог пакета"
 
-#: guix/scripts/build.scm:235
+#: guix/scripts/build.scm:238
 msgid ""
 "\n"
 "  -r, --root=FILE        make FILE a symlink to the result, and register it\n"
 "                         as a garbage collector root"
 msgstr ""
 "\n"
-"  -r, --root=ДАТОТЕКА       чини ДАТОТЕКУ симболичком везом ка резултату, и "
-"бележи је\n"
+"  -r, --root=ДАТОТЕКА       чини ДАТОТЕКУ симболичком везом ка резултату, и бележи је\n"
 "                         као корен скупљача ђубра"
 
-#: guix/scripts/build.scm:238
+#: guix/scripts/build.scm:241
 msgid ""
 "\n"
 "      --log-file         return the log file names for the given derivations"
@@ -208,10 +202,10 @@ msgstr ""
 "\n"
 "      --log-file         исписује називе датотеке дневника за дате изведенице"
 
-#: guix/scripts/build.scm:243 guix/scripts/download.scm:53
-#: guix/scripts/package.scm:511 guix/scripts/gc.scm:58
+#: guix/scripts/build.scm:246 guix/scripts/download.scm:53
+#: guix/scripts/package.scm:525 guix/scripts/gc.scm:58
 #: guix/scripts/hash.scm:55 guix/scripts/pull.scm:82
-#: guix/scripts/substitute-binary.scm:564 guix/scripts/system.scm:77
+#: guix/scripts/substitute-binary.scm:564 guix/scripts/system.scm:362
 msgid ""
 "\n"
 "  -h, --help             display this help and exit"
@@ -219,10 +213,10 @@ msgstr ""
 "\n"
 "  -h, --help                  приказује ову помоћ и излази"
 
-#: guix/scripts/build.scm:245 guix/scripts/download.scm:55
-#: guix/scripts/package.scm:513 guix/scripts/gc.scm:60
+#: guix/scripts/build.scm:248 guix/scripts/download.scm:55
+#: guix/scripts/package.scm:527 guix/scripts/gc.scm:60
 #: guix/scripts/hash.scm:57 guix/scripts/pull.scm:84
-#: guix/scripts/substitute-binary.scm:566 guix/scripts/system.scm:79
+#: guix/scripts/substitute-binary.scm:566 guix/scripts/system.scm:364
 msgid ""
 "\n"
 "  -V, --version          display version information and exit"
@@ -230,19 +224,19 @@ msgstr ""
 "\n"
 "  -V, --version              приказује податке о издању и излази"
 
-#: guix/scripts/build.scm:360
+#: guix/scripts/build.scm:368
 #, scheme-format
 msgid "sources do not match any package:~{ ~a~}~%"
 msgstr "извори не одговарају ниједном пакету:~{ ~a~}~%"
 
-#: guix/scripts/build.scm:389 guix/scripts/download.scm:96
-#: guix/scripts/package.scm:744 guix/scripts/gc.scm:152
-#: guix/scripts/pull.scm:115 guix/scripts/system.scm:116
+#: guix/scripts/build.scm:397 guix/scripts/download.scm:96
+#: guix/scripts/package.scm:763 guix/scripts/gc.scm:122
+#: guix/scripts/pull.scm:115 guix/scripts/system.scm:414
 #, scheme-format
 msgid "~A: unrecognized option~%"
 msgstr "~A: непозната опција~%"
 
-#: guix/scripts/build.scm:417
+#: guix/scripts/build.scm:425
 #, scheme-format
 msgid "no build log for '~a'~%"
 msgstr "нема дневника изградње за „~a“~%"
@@ -286,73 +280,73 @@ msgstr "~a: нисам успео да обрадим путању~%"
 msgid "~a: download failed~%"
 msgstr "~a: преузимање није успело~%"
 
-#: guix/scripts/package.scm:76
+#: guix/scripts/package.scm:88
 #, scheme-format
 msgid "failed to build the empty profile~%"
 msgstr "нисам успео да изградим празан профил~%"
 
-#: guix/scripts/package.scm:85
+#: guix/scripts/package.scm:97
 #, scheme-format
 msgid "switching from generation ~a to ~a~%"
 msgstr "пребацујем се са генерације ~a на ~a~%"
 
-#: guix/scripts/package.scm:96 guix/scripts/package.scm:852
-#: guix/scripts/package.scm:964
+#: guix/scripts/package.scm:108 guix/scripts/package.scm:873
+#: guix/scripts/package.scm:985
 #, scheme-format
 msgid "profile '~a' does not exist~%"
 msgstr "профил „~a“ не постоји~%"
 
-#: guix/scripts/package.scm:100
+#: guix/scripts/package.scm:112
 #, scheme-format
 msgid "nothing to do: already at the empty profile~%"
 msgstr "ништа за урадити: већ сам у празном профилу~%"
 
-#: guix/scripts/package.scm:185
+#: guix/scripts/package.scm:197
 #, scheme-format
 msgid "The following package would be removed:~%~{~a~%~}~%"
 msgstr "Следећи пакети би требали бити уклоњени:~%~{~a~%~}~%"
 
-#: guix/scripts/package.scm:190
+#: guix/scripts/package.scm:202
 #, scheme-format
 msgid "The following package will be removed:~%~{~a~%~}~%"
 msgstr "Следећи пакети ће бити уклоњени:~%~{~a~%~}~%"
 
-#: guix/scripts/package.scm:202
+#: guix/scripts/package.scm:214
 #, scheme-format
 msgid "The following package would be installed:~%~{~a~%~}~%"
 msgstr "Следећи пакети би требали бити инсталирани:~%~{~a~%~}~%"
 
-#: guix/scripts/package.scm:207
+#: guix/scripts/package.scm:219
 #, scheme-format
 msgid "The following package will be installed:~%~{~a~%~}~%"
 msgstr "Следећи пакети ће бити инсталирани:~%~{~a~%~}~%"
 
-#: guix/scripts/package.scm:327
+#: guix/scripts/package.scm:339
 #, scheme-format
 msgid "package `~a' lacks output `~a'~%"
 msgstr "пакету „~a“ недостаје излаз „~a“~%"
 
-#: guix/scripts/package.scm:344
+#: guix/scripts/package.scm:356
 #, scheme-format
 msgid "~a: package not found~%"
 msgstr "~a: нисам пронашао пакет~%"
 
-#: guix/scripts/package.scm:379
+#: guix/scripts/package.scm:391
 #, scheme-format
 msgid "looking for the latest release of GNU ~a..."
 msgstr "тражим последње издање Гнуа ~a..."
 
-#: guix/scripts/package.scm:383
+#: guix/scripts/package.scm:395
 #, scheme-format
 msgid "~a: note: using ~a but ~a is available upstream~%"
 msgstr "~a: напомена: користим ~a али ~a је доступно узводно~%"
 
-#: guix/scripts/package.scm:455
+#: guix/scripts/package.scm:467
 #, scheme-format
 msgid "The following environment variable definitions may be needed:~%"
 msgstr "Следеће одреднице променљиве окружења могу бити потребне:~%"
 
-#: guix/scripts/package.scm:471
+#: guix/scripts/package.scm:483
 msgid ""
 "Usage: guix package [OPTION]... PACKAGES...\n"
 "Install, remove, or upgrade PACKAGES in a single transaction.\n"
@@ -360,7 +354,7 @@ msgstr ""
 "Употреба: guix package [ОПЦИЈА]... ПАКЕТИ...\n"
 "Инсталирајте, уклоните, или доградите ПАКЕТЕ у једном прелазу.\n"
 
-#: guix/scripts/package.scm:473
+#: guix/scripts/package.scm:485
 msgid ""
 "\n"
 "  -i, --install=PACKAGE  install PACKAGE"
@@ -368,7 +362,7 @@ msgstr ""
 "\n"
 "  -i, --install=ПАКЕТ  инсталира ПАКЕТ"
 
-#: guix/scripts/package.scm:475
+#: guix/scripts/package.scm:487
 msgid ""
 "\n"
 "  -e, --install-from-expression=EXP\n"
@@ -378,7 +372,7 @@ msgstr ""
 "  -e, --install-from-expression=ИЗР\n"
 "                         инсталира процене ИЗР пакета у"
 
-#: guix/scripts/package.scm:478
+#: guix/scripts/package.scm:490
 msgid ""
 "\n"
 "  -r, --remove=PACKAGE   remove PACKAGE"
@@ -386,16 +380,15 @@ msgstr ""
 "\n"
 "  -r, --remove=ПАКЕТ   уклања ПАКЕТ"
 
-#: guix/scripts/package.scm:480
+#: guix/scripts/package.scm:492
 msgid ""
 "\n"
 "  -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"
 msgstr ""
 "\n"
-"  -u, --upgrade[=РЕГИЗР] дограђује све инсталиране пакете који одговарају "
-"РЕГИЗРАЗУ"
+"  -u, --upgrade[=РЕГИЗР] дограђује све инсталиране пакете који одговарају РЕГИЗРАЗУ"
 
-#: guix/scripts/package.scm:482
+#: guix/scripts/package.scm:494
 msgid ""
 "\n"
 "      --roll-back        roll back to the previous generation"
@@ -403,7 +396,7 @@ msgstr ""
 "\n"
 "      --roll-back        враћа се на претходну генерацију"
 
-#: guix/scripts/package.scm:484
+#: guix/scripts/package.scm:496
 msgid ""
 "\n"
 "      --search-paths     display needed environment variable definitions"
@@ -411,7 +404,7 @@ msgstr ""
 "\n"
 "      --search-paths     приказује потребне одреднице променљиве окружења"
 
-#: guix/scripts/package.scm:486
+#: guix/scripts/package.scm:498
 msgid ""
 "\n"
 "  -l, --list-generations[=PATTERN]\n"
@@ -421,7 +414,7 @@ msgstr ""
 "  -l, --list-generations[=ШАБЛОН]\n"
 "                         исписује генерације које одговарају ШАБЛОНУ"
 
-#: guix/scripts/package.scm:489
+#: guix/scripts/package.scm:501
 msgid ""
 "\n"
 "  -d, --delete-generations[=PATTERN]\n"
@@ -431,7 +424,7 @@ msgstr ""
 "  -d, --delete-generations[=ШАБЛОН]\n"
 "                         брише генерације које одговарају ШАБЛОНУ"
 
-#: guix/scripts/package.scm:492
+#: guix/scripts/package.scm:504
 msgid ""
 "\n"
 "  -p, --profile=PROFILE  use PROFILE instead of the user's default profile"
@@ -439,7 +432,7 @@ msgstr ""
 "\n"
 "  -p, --profile=ПРОФИЛ   користи ПРОФИЛ уместо корисничког подразумеваног"
 
-#: guix/scripts/package.scm:495
+#: guix/scripts/package.scm:507
 msgid ""
 "\n"
 "      --bootstrap        use the bootstrap Guile to build the profile"
@@ -447,7 +440,7 @@ msgstr ""
 "\n"
 "      --bootstrap        користи Гуиле почетног учитавања да изгради профил"
 
-#: guix/scripts/package.scm:497 guix/scripts/pull.scm:75
+#: guix/scripts/package.scm:509 guix/scripts/pull.scm:75
 msgid ""
 "\n"
 "      --verbose          produce verbose output"
@@ -455,7 +448,7 @@ msgstr ""
 "\n"
 "      --verbose          ствара опширан излаз"
 
-#: guix/scripts/package.scm:500
+#: guix/scripts/package.scm:512
 msgid ""
 "\n"
 "  -s, --search=REGEXP    search in synopsis and description using REGEXP"
@@ -463,7 +456,7 @@ msgstr ""
 "\n"
 "  -s, --search=РЕГИЗР    тражи у скици и опису користећи РЕГИЗР"
 
-#: guix/scripts/package.scm:502
+#: guix/scripts/package.scm:514
 msgid ""
 "\n"
 "  -I, --list-installed[=REGEXP]\n"
@@ -471,10 +464,9 @@ msgid ""
 msgstr ""
 "\n"
 "  -I, --list-installed[=РЕГИЗР]\n"
-"                         исписује инсталиране пакете који одговарају "
-"РЕГИЗРАЗУ"
+"                         исписује инсталиране пакете који одговарају РЕГИЗРАЗУ"
 
-#: guix/scripts/package.scm:505
+#: guix/scripts/package.scm:517
 msgid ""
 "\n"
 "  -A, --list-available[=REGEXP]\n"
@@ -484,62 +476,71 @@ msgstr ""
 "  -A, --list-available[=РЕГИЗР]\n"
 "                         исписује доступне пакете који одговарају РЕГИЗРАЗУ"
 
-#: guix/scripts/package.scm:748
+#: guix/scripts/package.scm:520
+#, fuzzy
+msgid ""
+"\n"
+"  --show=PACKAGE         show details about PACKAGE"
+msgstr ""
+"\n"
+"  -i, --install=ПАКЕТ  инсталира ПАКЕТ"
+
+#: guix/scripts/package.scm:767
 #, scheme-format
 msgid "~A: extraneous argument~%"
 msgstr "~A: страни аргумент~%"
 
-#: guix/scripts/package.scm:763
+#: guix/scripts/package.scm:782
 #, scheme-format
 msgid "Try \"info '(guix) Invoking guix package'\" for more information.~%"
 msgstr "Покушајте „info '(guix) Invoking guix package'“ за више података.~%"
 
-#: guix/scripts/package.scm:785
+#: guix/scripts/package.scm:804
 #, scheme-format
 msgid "error: while creating directory `~a': ~a~%"
 msgstr "грешка: приликом стварања директоријума „~a“: ~a~%"
 
-#: guix/scripts/package.scm:789
+#: guix/scripts/package.scm:808
 #, scheme-format
 msgid "Please create the `~a' directory, with you as the owner.~%"
 msgstr "Направите директоријум „~a“, у вашем власништву.~%"
 
-#: guix/scripts/package.scm:796
+#: guix/scripts/package.scm:815
 #, scheme-format
 msgid "error: directory `~a' is not owned by you~%"
 msgstr "грешка: директоријум „~a“ није у вашем власништву~%"
 
-#: guix/scripts/package.scm:799
+#: guix/scripts/package.scm:818
 #, scheme-format
 msgid "Please change the owner of `~a' to user ~s.~%"
 msgstr "Поставите као власника ~s над „~a“.~%"
 
-#: guix/scripts/package.scm:822
+#: guix/scripts/package.scm:843
 #, scheme-format
 msgid "deleting ~a~%"
 msgstr "бришем ~a~%"
 
-#: guix/scripts/package.scm:875 guix/scripts/package.scm:980
+#: guix/scripts/package.scm:896 guix/scripts/package.scm:1001
 #, scheme-format
 msgid "invalid syntax: ~a~%"
 msgstr "неисправна синтакса: ~a~%"
 
-#: guix/scripts/package.scm:904
+#: guix/scripts/package.scm:925
 #, scheme-format
 msgid "nothing to be done~%"
 msgstr "ништа неће бити урађено~%"
 
-#: guix/scripts/package.scm:927
+#: guix/scripts/package.scm:948
 #, scheme-format
 msgid "~a package in profile~%"
 msgstr "~a пакет у профилу~%"
 
-#: guix/scripts/package.scm:942
+#: guix/scripts/package.scm:963
 #, scheme-format
 msgid "Generation ~a\t~a"
 msgstr "Генерација ~a\t~a"
 
-#: guix/scripts/package.scm:949
+#: guix/scripts/package.scm:970
 #, scheme-format
 msgid "~a\t(current)~%"
 msgstr "~a\t(текуће)~%"
@@ -610,17 +611,7 @@ msgstr ""
 "\n"
 "      --referrers        исписује убрајаче ПУТАЊА"
 
-#: guix/scripts/gc.scm:92
-#, scheme-format
-msgid "unknown unit: ~a~%"
-msgstr "непозната јединица: ~a~%"
-
-#: guix/scripts/gc.scm:93
-#, scheme-format
-msgid "invalid number: ~a~%"
-msgstr "неисправан број: ~a~%"
-
-#: guix/scripts/gc.scm:114
+#: guix/scripts/gc.scm:84
 #, scheme-format
 msgid "invalid amount of storage: ~a~%"
 msgstr "неисправан износ складишта: ~a~%"
@@ -652,7 +643,7 @@ msgstr ""
 msgid "unrecognized option: ~a~%"
 msgstr "непозната опција: ~a~%"
 
-#: guix/scripts/hash.scm:134 guix/ui.scm:193
+#: guix/scripts/hash.scm:134 guix/ui.scm:233
 #, scheme-format
 msgid "~a~%"
 msgstr "~a~%"
@@ -684,8 +675,7 @@ msgid ""
 "      --bootstrap        use the bootstrap Guile to build the new Guix"
 msgstr ""
 "\n"
-"      --bootstrap        користи Гуиле почетног учитавања да изгради нови "
-"Гуикс"
+"      --bootstrap        користи Гуиле почетног учитавања да изгради нови Гуикс"
 
 #: guix/scripts/pull.scm:117
 #, scheme-format
@@ -771,8 +761,8 @@ msgid "signature on '~a' is corrupt~%"
 msgstr "потпис на „~a“ је оштећен~%"
 
 #: guix/scripts/substitute-binary.scm:338
-#, scheme-format
-msgid "narinfo for '~a' lacks a signature~%"
+#, fuzzy, scheme-format
+msgid "substitute at '~a' lacks a signature~%"
 msgstr "нарподацима за „~a“ недостаје потпис~%"
 
 #: guix/scripts/substitute-binary.scm:526
@@ -783,8 +773,7 @@ msgstr "Преузима, молим сачекајте...~%"
 #: guix/scripts/substitute-binary.scm:528
 #, scheme-format
 msgid "(Please consider upgrading Guile to get proper progress report.)~%"
-msgstr ""
-"(Размотрите надоградњу Гуила да добијете извештај о његовом напредовању.)~%"
+msgstr "(Размотрите надоградњу Гуила да добијете извештај о његовом напредовању.)~%"
 
 #: guix/scripts/substitute-binary.scm:545
 #, scheme-format
@@ -806,8 +795,7 @@ msgid ""
 "                         store file names passed on the standard input"
 msgstr ""
 "\n"
-"      --query            извештава о доступности заменика за називе "
-"датотека\n"
+"      --query            извештава о доступности заменика за називе датотека\n"
 "                         складишта прослеђених на стандардном улазу"
 
 #: guix/scripts/substitute-binary.scm:559
@@ -819,23 +807,19 @@ msgid ""
 msgstr ""
 "\n"
 "      --substitute ОДРЕДИШТЕ СКЛАДИШНЕ-ДАТОТЕКЕ\n"
-"                         преузима СКЛАДИШНУ-ДАТОТЕКУ и смешта је као Нар "
-"удатотеци\n"
+"                         преузима СКЛАДИШНУ-ДАТОТЕКУ и смешта је као Нар удатотеци\n"
 "                         ОДРЕДИШТЕ"
 
-#: guix/scripts/substitute-binary.scm:599
-msgid ""
-"ACL for archive imports seems to be uninitialized, substitutes may be "
-"unavailable\n"
-msgstr ""
-"АЦЛ за увоз архиве изгледа да је неупотребљив, замене могу бити недоступне\n"
+#: guix/scripts/substitute-binary.scm:604
+msgid "ACL for archive imports seems to be uninitialized, substitutes may be unavailable\n"
+msgstr "АЦЛ за увоз архиве изгледа да је неупотребљив, замене могу бити недоступне\n"
 
-#: guix/scripts/substitute-binary.scm:619
+#: guix/scripts/substitute-binary.scm:625
 #, scheme-format
 msgid "failed to look up host '~a' (~a), substituter disabled~%"
 msgstr "нисам успео да потражим домаћина „~a“ (~a), замењивач је искључен~%"
 
-#: guix/scripts/substitute-binary.scm:726
+#: guix/scripts/substitute-binary.scm:732
 #, scheme-format
 msgid "~a: unrecognized options~%"
 msgstr "~a: непозната опција~%"
@@ -860,7 +844,7 @@ msgstr "грешка: неовлашћени јавни кључ: ~a~%"
 msgid "error: corrupt signature data: ~a~%"
 msgstr "грешка: оштећени подаци потписа: ~a~%"
 
-#: guix/scripts/authenticate.scm:110
+#: guix/scripts/authenticate.scm:126
 msgid ""
 "Usage: guix authenticate OPTION...\n"
 "Sign or verify the signature on the given file.  This tool is meant to\n"
@@ -870,21 +854,56 @@ msgstr ""
 "Потпишите или проверите потпис на датој датотеци.  Овај алат је замишљен\n"
 "за унутрашњу употребу гуих-демоном.\n"
 
-#: guix/scripts/authenticate.scm:116
+#: guix/scripts/authenticate.scm:132
 msgid "wrong arguments"
 msgstr "погрешни аргуменати"
 
-#: guix/scripts/system.scm:59
+#: guix/scripts/system.scm:74
 #, scheme-format
 msgid "failed to open operating system file '~a': ~a~%"
 msgstr "нисам успео да отворим датотеку оперативног система „~a“: ~a~%"
 
-#: guix/scripts/system.scm:62
+#: guix/scripts/system.scm:78 guix/ui.scm:238
 #, scheme-format
-msgid "failed to load machine file '~a': ~s~%"
-msgstr "нисам успео да учитам датотеку машине „~a“: ~s~%"
+msgid "~a: ~a~%"
+msgstr "~a: ~a~%"
 
-#: guix/scripts/system.scm:71
+#: guix/scripts/system.scm:81
+#, fuzzy, scheme-format
+msgid "failed to load operating system file '~a': ~s~%"
+msgstr "нисам успео да отворим датотеку оперативног система „~a“: ~a~%"
+
+#: guix/scripts/system.scm:116
+#, fuzzy, scheme-format
+msgid "failed to register '~a' under '~a'~%"
+msgstr "нисам успео да направим ГЦ корен „~a“: ~a~%"
+
+#: guix/scripts/system.scm:144
+#, scheme-format
+msgid "initializing the current root file system~%"
+msgstr ""
+
+#: guix/scripts/system.scm:162 guix/scripts/system.scm:318
+#, fuzzy, scheme-format
+msgid "failed to install GRUB on device '~a'~%"
+msgstr "нисам успео да инсталирам локалитет: ~a~%"
+
+#: guix/scripts/system.scm:197
+#, scheme-format
+msgid "activating system...~%"
+msgstr ""
+
+#: guix/scripts/system.scm:236
+#, fuzzy, scheme-format
+msgid "unrecognized boot parameters for '~a'~%"
+msgstr "непозната опција: ~a~%"
+
+#: guix/scripts/system.scm:323
+#, fuzzy, scheme-format
+msgid "initializing operating system under '~a'...~%"
+msgstr "нисам успео да отворим датотеку оперативног система „~a“: ~a~%"
+
+#: guix/scripts/system.scm:339
 msgid ""
 "Usage: guix system [OPTION] ACTION FILE\n"
 "Build the operating system declared in FILE according to ACTION.\n"
@@ -892,69 +911,99 @@ msgstr ""
 "Употреба: guix system [ОПЦИЈА] РАДЊА ДАТОТЕКА\n"
 "Изграђује оперативни систем објављен у ДАТОТЕЦИ у складу са РАДЊОМ.\n"
 
-#: guix/scripts/system.scm:73
-msgid ""
-"Currently the only valid value for ACTION is 'vm', which builds\n"
-"a virtual machine of the given operating system.\n"
+#: guix/scripts/system.scm:342
+msgid "The valid values for ACTION are:\n"
 msgstr ""
-"Тренутно једина исправна вредност за РАДЊУ је „vm“, која гради\n"
-"виртуелну машину датог оперативног система.\n"
 
-#: guix/scripts/system.scm:121
-#, scheme-format
-msgid "~a: extraneous argument~%"
-msgstr "~a: страни аргумент~%"
+#: guix/scripts/system.scm:343
+msgid "  - 'reconfigure', switch to a new operating system configuration\n"
+msgstr ""
 
-#: guix/scripts/system.scm:126
+#: guix/scripts/system.scm:345
+msgid "  - 'build', build the operating system without installing anything\n"
+msgstr ""
+
+#: guix/scripts/system.scm:347
+msgid "  - 'vm', build a virtual machine image that shares the host's store\n"
+msgstr ""
+
+#: guix/scripts/system.scm:349
+msgid "  - 'vm-image', build a freestanding virtual machine image\n"
+msgstr ""
+
+#: guix/scripts/system.scm:351
+msgid "  - 'disk-image', build a disk image, suitable for a USB stick\n"
+msgstr ""
+
+#: guix/scripts/system.scm:353
+msgid "  - 'init', initialize a root file system to run GNU.\n"
+msgstr ""
+
+#: guix/scripts/system.scm:357
+msgid ""
+"\n"
+"      --image-size=SIZE  for 'vm-image', produce an image of SIZE"
+msgstr ""
+
+#: guix/scripts/system.scm:359
+msgid ""
+"\n"
+"      --no-grub          for 'init', do not install GRUB"
+msgstr ""
+
+#: guix/scripts/system.scm:422
 #, scheme-format
 msgid "~a: unknown action~%"
 msgstr "~a: непозната радња~%"
 
-#: guix/scripts/system.scm:135
+#: guix/scripts/system.scm:439
+#, fuzzy, scheme-format
+msgid "wrong number of arguments for action '~a'~%"
+msgstr "погрешан број аргумената~%"
+
+#: guix/scripts/system.scm:459
 #, scheme-format
 msgid "no configuration file specified~%"
 msgstr "није наведена датотека подешавања~%"
 
-#: guix/gnu-maintenance.scm:364
+#: guix/gnu-maintenance.scm:373
 #, scheme-format
 msgid "signature verification failed for `~a'~%"
 msgstr "није успела провера потписа за „~a“~%"
 
-#: guix/gnu-maintenance.scm:366
+#: guix/gnu-maintenance.scm:375
 #, scheme-format
 msgid "(could be because the public key is not in your keyring)~%"
 msgstr "(може бити зато што јавни кључ није у вашем привеску)~%"
 
-#: guix/gnu-maintenance.scm:441
+#: guix/gnu-maintenance.scm:450
 #, scheme-format
 msgid "~a: could not locate source file"
 msgstr "~a: не могу да пронађем изворну датотеку"
 
-#: guix/gnu-maintenance.scm:446
+#: guix/gnu-maintenance.scm:455
 #, scheme-format
 msgid "~a: ~a: no `version' field in source; skipping~%"
 msgstr "~a: ~a: нема поља „version“ у извору; прескачем~%"
 
-#: guix/ui.scm:123
+#: guix/ui.scm:131
 #, scheme-format
 msgid "failed to install locale: ~a~%"
 msgstr "нисам успео да инсталирам локалитет: ~a~%"
 
-#: guix/ui.scm:142
+#: guix/ui.scm:150
 msgid ""
 "Copyright (C) 2014 the Guix authors\n"
-"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl."
-"html>\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
 "This is free software: you are free to change and redistribute it.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
 "Ауторска права (C) 2014 аутори Гуикса\n"
-"Лиценца ОЈЛв3+: ГНУ ОЈЛ издање 3 или касније <http://gnu.org/licenses/gpl."
-"html>\n"
+"Лиценца ОЈЛв3+: ГНУ ОЈЛ издање 3 или касније <http://gnu.org/licenses/gpl.html>\n"
 "Ово је слободан софтвер: слободни сте да га мењате и расподељујете.\n"
 "Не постоји НИКАКВА ГАРАНЦИЈА, у оквирима дозвољеним законом.\n"
 
-#: guix/ui.scm:150
+#: guix/ui.scm:158
 #, scheme-format
 msgid ""
 "\n"
@@ -963,7 +1012,7 @@ msgstr ""
 "\n"
 "Грешке пријавите на: ~a."
 
-#: guix/ui.scm:152
+#: guix/ui.scm:160
 #, scheme-format
 msgid ""
 "\n"
@@ -972,7 +1021,7 @@ msgstr ""
 "\n"
 "~a матична страница: <~a>"
 
-#: guix/ui.scm:154
+#: guix/ui.scm:162
 msgid ""
 "\n"
 "General help using GNU software: <http://www.gnu.org/gethelp/>"
@@ -980,95 +1029,100 @@ msgstr ""
 "\n"
 "Општа помоћ користећи ГНУ софтвер: <http://www.gnu.org/gethelp/>"
 
-#: guix/ui.scm:161
+#: guix/ui.scm:169
 #, scheme-format
 msgid "~a: invalid number~%"
 msgstr "~a: неисправан број~%"
 
-#: guix/ui.scm:172
+#: guix/ui.scm:186
+#, scheme-format
+msgid "invalid number: ~a~%"
+msgstr "неисправан број: ~a~%"
+
+#: guix/ui.scm:201
+#, scheme-format
+msgid "unknown unit: ~a~%"
+msgstr "непозната јединица: ~a~%"
+
+#: guix/ui.scm:212
 #, scheme-format
 msgid "~a:~a:~a: package `~a' has an invalid input: ~s~%"
 msgstr "~a:~a:~a: пакет „~a“ садржи неисправан улаз: ~s~%"
 
-#: guix/ui.scm:179
+#: guix/ui.scm:219
 #, scheme-format
 msgid "~a: ~a: build system `~a' does not support cross builds~%"
 msgstr "~a: ~a: систем изградње „~a“ не садржи унакрсне изградње~%"
 
-#: guix/ui.scm:184
+#: guix/ui.scm:224
 #, scheme-format
 msgid "failed to connect to `~a': ~a~%"
 msgstr "нисам успео да се повежем на „~a“: ~a~%"
 
-#: guix/ui.scm:189
+#: guix/ui.scm:229
 #, scheme-format
 msgid "build failed: ~a~%"
 msgstr "изградња није успела: ~a~%"
 
-#: guix/ui.scm:198
-#, scheme-format
-msgid "~a: ~a~%"
-msgstr "~a: ~a~%"
-
-#: guix/ui.scm:207
+#: guix/ui.scm:257
 #, scheme-format
 msgid "failed to read expression ~s: ~s~%"
 msgstr "нисам успео да прочитам израз ~s: ~s~%"
 
-#: guix/ui.scm:213
+#: guix/ui.scm:263
 #, scheme-format
 msgid "failed to evaluate expression `~a': ~s~%"
 msgstr "нисам успео да проценим израз „~a“: ~s~%"
 
-#: guix/ui.scm:222
+#: guix/ui.scm:272
 #, scheme-format
 msgid "expression ~s does not evaluate to a package~%"
 msgstr "израз „~s“ се не процењује на пакет~%"
 
-#: guix/ui.scm:268
+#: guix/ui.scm:319
 #, scheme-format
 msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
 msgstr "~:[Следећа изводница би требала бити изграђена:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:273
+#: guix/ui.scm:324
 #, scheme-format
 msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
 msgstr "~:[Следећа датотека би требала бити преузета:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:279
+#: guix/ui.scm:330
 #, scheme-format
 msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
 msgstr "~:[Следећа изводница ће бити изграђена:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:284
+#: guix/ui.scm:335
 #, scheme-format
 msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
 msgstr "~:[Следећа датотека ће бити преузета:~%~{   ~a~%~}~;~]"
 
-#: guix/ui.scm:301
+#: guix/ui.scm:352
 msgid "<unknown location>"
 msgstr "<непознато место>"
 
-#: guix/ui.scm:329
+#: guix/ui.scm:380
 #, scheme-format
 msgid "failed to create configuration directory `~a': ~a~%"
 msgstr "нисам успео да направим директоријум подешавања „~a“: ~a~%"
 
-#: guix/ui.scm:410 guix/ui.scm:424
+#: guix/ui.scm:475 guix/ui.scm:489
 msgid "unknown"
 msgstr "непознато"
 
-#: guix/ui.scm:533
+#: guix/ui.scm:598
 #, scheme-format
 msgid "invalid argument: ~a~%"
 msgstr "неисправан аргумент: ~a~%"
 
-#: guix/ui.scm:538
+#: guix/ui.scm:603
 #, scheme-format
 msgid "Try `guix --help' for more information.~%"
 msgstr "Пробајте „guix --help“ за више података.~%"
 
-#: guix/ui.scm:568
+#: guix/ui.scm:633
 msgid ""
 "Usage: guix COMMAND ARGS...\n"
 "Run COMMAND with ARGS.\n"
@@ -1076,118 +1130,131 @@ msgstr ""
 "Употреба: guix НАРЕДБА АРГУМЕНТИ...\n"
 "Покрените НАРЕДБУ са АРГУМЕНТИМА.\n"
 
-#: guix/ui.scm:571
+#: guix/ui.scm:636
 msgid "COMMAND must be one of the sub-commands listed below:\n"
 msgstr "НАРЕДБА мора бити једна од подкоманди наведених испод:\n"
 
-#: guix/ui.scm:591
+#: guix/ui.scm:656
 #, scheme-format
 msgid "guix: ~a: command not found~%"
 msgstr "guix: ~a: нисам пронашао наредбу~%"
 
-#: guix/ui.scm:609
+#: guix/ui.scm:674
 #, scheme-format
 msgid "guix: missing command name~%"
 msgstr "guix: недостаје назив наредбе~%"
 
-#: guix/ui.scm:617
+#: guix/ui.scm:682
 #, scheme-format
 msgid "guix: unrecognized option '~a'~%"
 msgstr "guix: непозната опција „~a“~%"
 
-#: guix/http-client.scm:205
+#: guix/http-client.scm:217
 #, scheme-format
 msgid "using Guile ~a, which does not support ~s encoding~%"
 msgstr "користим Гуиле ~a, који не подржава ~s кодирање~%"
 
-#: guix/http-client.scm:208
+#: guix/http-client.scm:220
 #, scheme-format
 msgid "download failed; use a newer Guile~%"
 msgstr "преузимање није успело; користите новији Гуиле~%"
 
-#: guix/http-client.scm:220
+#: guix/http-client.scm:232
 #, scheme-format
 msgid "following redirection to `~a'...~%"
 msgstr "пратим преусмеравање на „~a“...~%"
 
-#: guix/http-client.scm:229
+#: guix/http-client.scm:241
 msgid "download failed"
 msgstr "преузимање није успело"
 
-#: guix/nar.scm:133
+#: guix/nar.scm:134
 msgid "unexpected executable file marker"
 msgstr "неочекивани означавач извршне датотеке"
 
-#: guix/nar.scm:140
+#: guix/nar.scm:141
 msgid "unsupported nar file type"
 msgstr "неподржана врста нар датотеке"
 
-#: guix/nar.scm:203
+#: guix/nar.scm:209
 msgid "unsupported file type"
 msgstr "неподржана врста датотеке"
 
-#: guix/nar.scm:213
+#: guix/nar.scm:219
 msgid "invalid nar signature"
 msgstr "неисправан нар потпис"
 
-#: guix/nar.scm:224
+#: guix/nar.scm:230
 msgid "invalid nar end-of-file marker"
 msgstr "неисправан нар означавач краја датотеке"
 
-#: guix/nar.scm:238
+#: guix/nar.scm:244
 msgid "invalid symlink tokens"
 msgstr "неисправна обележја симболичке везе"
 
-#: guix/nar.scm:257
+#: guix/nar.scm:263
 msgid "unexpected directory entry termination"
 msgstr "неочекивано окончање уноса директоријума"
 
-#: guix/nar.scm:266
+#: guix/nar.scm:272
 msgid "unexpected directory inter-entry marker"
 msgstr "неочекивани означавач унутрашњег уноса директоријума "
 
-#: guix/nar.scm:271
+#: guix/nar.scm:277
 msgid "unsupported nar entry type"
 msgstr "неподржана врста нар уноса"
 
-#: guix/nar.scm:381
+#: guix/nar.scm:376
 msgid "signature is not a valid s-expression"
 msgstr "потпис није исправан с-израз"
 
-#: guix/nar.scm:390
+#: guix/nar.scm:385
 msgid "invalid signature"
 msgstr "неисправан потпис"
 
-#: guix/nar.scm:394
+#: guix/nar.scm:389
 msgid "invalid hash"
 msgstr "неисправан хеш"
 
-#: guix/nar.scm:402
+#: guix/nar.scm:397
 msgid "unauthorized public key"
 msgstr "неовлашћени јавни кључ"
 
-#: guix/nar.scm:407
+#: guix/nar.scm:402
 msgid "corrupt signature data"
 msgstr "оштећени подаци потписа"
 
-#: guix/nar.scm:424
+#: guix/nar.scm:422
 msgid "corrupt file set archive"
 msgstr "оштећена датотека скупа архиве"
 
-#: guix/nar.scm:434
+#: guix/nar.scm:432
 #, scheme-format
 msgid "importing file or directory '~a'...~%"
 msgstr "увозим датотеку или директоријум „~a“...~%"
 
-#: guix/nar.scm:443
+#: guix/nar.scm:441
 #, scheme-format
 msgid "found valid signature for '~a'~%"
 msgstr "нађох исправан потпис за „~a“~%"
 
-#: guix/nar.scm:452
+#: guix/nar.scm:448
 msgid "imported file lacks a signature"
 msgstr "увезеној датотеци недостаје потпис"
 
-#: guix/nar.scm:459
+#: guix/nar.scm:487
 msgid "invalid inter-file archive mark"
 msgstr "неисправан знак архиве унутрашње датотеке"
+
+#~ msgid "failed to load machine file '~a': ~s~%"
+#~ msgstr "нисам успео да учитам датотеку машине „~a“: ~s~%"
+
+#~ msgid ""
+#~ "Currently the only valid value for ACTION is 'vm', which builds\n"
+#~ "a virtual machine of the given operating system.\n"
+#~ msgstr ""
+#~ "Тренутно једина исправна вредност за РАДЊУ је „vm“, која гради\n"
+#~ "виртуелну машину датог оперативног система.\n"
+
+#~ msgid "~a: extraneous argument~%"
+#~ msgstr "~a: страни аргумент~%"

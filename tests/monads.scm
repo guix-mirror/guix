@@ -108,6 +108,16 @@
                       guile)))
     #:guile-for-build (package-derivation %store %bootstrap-guile)))
 
+(test-assert "interned-file"
+  (run-with-store %store
+    (mlet* %store-monad ((file -> (search-path %load-path "guix.scm"))
+                         (a       (interned-file file))
+                         (b       (interned-file file "b")))
+      (return (equal? (call-with-input-file file get-string-all)
+                      (call-with-input-file a get-string-all)
+                      (call-with-input-file b get-string-all))))
+    #:guile-for-build (package-derivation %store %bootstrap-guile)))
+
 (define derivation-expression
   (@@ (guix monads) derivation-expression))
 

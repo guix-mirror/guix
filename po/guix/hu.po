@@ -1,82 +1,96 @@
-# German translation of guix.
+# Hungarian translation for guix.
 # Copyright (C) 2014 Free Software Foundation, Inc.
 # This file is distributed under the same license as the guix package.
-# Mario Blättermann <mario.blaettermann@gmail.com>, 2014.
 #
+# Balázs Úr <urbalazs@gmail.com>, 2014.
 msgid ""
 msgstr ""
 "Project-Id-Version: guix 0.7-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
 "POT-Creation-Date: 2014-07-25 00:55+0200\n"
-"PO-Revision-Date: 2014-07-13 20:38+0100\n"
-"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
-"Language-Team: German <translation-team-de@lists.sourceforge.net>\n"
-"Language: de\n"
+"PO-Revision-Date: 2014-07-18 17:37+0200\n"
+"Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
+"Language-Team: Hungarian <translation-team-hu@lists.sourceforge.net>\n"
+"Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Lokalize 1.5\n"
 
 #: gnu/packages.scm:102
 #, scheme-format
 msgid "cannot access `~a': ~a~%"
-msgstr "Zugriff auf »~a« nicht möglich: ~a~%"
+msgstr "nem sikerült elérni: „~a”: ~a~%"
 
 #: guix/scripts/build.scm:54 guix/scripts/package.scm:349
 #, scheme-format
 msgid "ambiguous package specification `~a'~%"
-msgstr ""
+msgstr "nem egyértelmű csomag specifikáció: „~a”~%"
 
 #: guix/scripts/build.scm:55 guix/scripts/package.scm:351
 #, scheme-format
 msgid "choosing ~a from ~a~%"
-msgstr ""
+msgstr "~a választása innen: ~a~%"
 
 #: guix/scripts/build.scm:61
 #, scheme-format
 msgid "~A: package not found for version ~a~%"
-msgstr "~A: Paket nicht gefunden für Version ~a~%"
+msgstr "~A: nem található csomag ehhez a verzióhoz: ~a~%"
 
 #: guix/scripts/build.scm:63
 #, scheme-format
 msgid "~A: unknown package~%"
-msgstr "~A: unbekanntes Paket~%"
+msgstr "~A: ismeretlen csomag~%"
 
 #: guix/scripts/build.scm:86
 #, scheme-format
 msgid "failed to create GC root `~a': ~a~%"
-msgstr ""
+msgstr "nem sikerült a GC gyökér létrehozása: „~a”: ~a~%"
 
 #: guix/scripts/build.scm:123
 msgid ""
 "\n"
 "  -K, --keep-failed      keep build tree of failed builds"
 msgstr ""
+"\n"
+"  -K, --keep-failed      sikertelen összeállítások összeállítási fájának\n"
+"                         megtartása"
 
 #: guix/scripts/build.scm:125
 msgid ""
 "\n"
 "  -n, --dry-run          do not build the derivations"
 msgstr ""
+"\n"
+"  -n, --dry-run          ne állítsa össze a származékokat"
 
 #: guix/scripts/build.scm:127
 msgid ""
 "\n"
 "      --fallback         fall back to building when the substituter fails"
 msgstr ""
+"\n"
+"      --fallback         térjen vissza az összeállításra, ha a helyettesítő\n"
+"                         sikertelen"
 
 #: guix/scripts/build.scm:129
 msgid ""
 "\n"
 "      --no-substitutes   build instead of resorting to pre-built substitutes"
 msgstr ""
+"\n"
+"      --no-substitutes   összeállítás az előre összeállított helyettesítők\n"
+"                         felhasználása helyett"
 
 #: guix/scripts/build.scm:131
 msgid ""
 "\n"
 "      --no-build-hook    do not attempt to offload builds via the build hook"
 msgstr ""
+"\n"
+"      --no-build-hook    ne próbáljon meg összeállításokat tehermentesíteni\n"
+"                         az összeállítási hurkon keresztül"
 
 #: guix/scripts/build.scm:133
 msgid ""
@@ -84,59 +98,85 @@ msgid ""
 "      --max-silent-time=SECONDS\n"
 "                         mark the build as failed after SECONDS of silence"
 msgstr ""
+"\n"
+"      --max-silent-time=MÁSODPERC\n"
+"                         az összeállítás sikertelennek jelölése MÁSODPERC\n"
+"                         hallgatás után"
 
 #: guix/scripts/build.scm:136
 msgid ""
 "\n"
 "      --timeout=SECONDS  mark the build as failed after SECONDS of activity"
 msgstr ""
+"\n"
+"      --timeout=MÁSODPERC  az összeállítás sikertelennek jelölése MÁSODPERC\n"
+"                         aktivitás után"
 
 #: guix/scripts/build.scm:138
 msgid ""
 "\n"
 "      --verbosity=LEVEL  use the given verbosity LEVEL"
 msgstr ""
+"\n"
+"      --verbosity=SZINT  a megadott bőbeszédűségi SZINT használata"
 
 #: guix/scripts/build.scm:140
 msgid ""
 "\n"
 "  -c, --cores=N          allow the use of up to N CPU cores for the build"
 msgstr ""
+"\n"
+"  -c, --cores=N          legfeljebb N CPU-mag használatának engedélyezése\n"
+"                         az összeállításhoz"
 
 #: guix/scripts/build.scm:206
 #, scheme-format
 msgid "~a: not a number~%"
-msgstr "~a: keine Zahl~%"
+msgstr "~a: nem szám~%"
 
 #: guix/scripts/build.scm:223
 msgid ""
 "Usage: guix build [OPTION]... PACKAGE-OR-DERIVATION...\n"
 "Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"
 msgstr ""
+"Használat: guix build [KAPCSOLÓ]… CSOMAG-VAGY-SZÁRMAZTATOTT…\n"
+"A megadott CSOMAG-VAGY-SZÁRMAZTATOTT összeállítása, és a kimeneti elérési\n"
+"útjaik visszaadása.\n"
 
 #: guix/scripts/build.scm:225
 msgid ""
 "\n"
 "  -e, --expression=EXPR  build the package or derivation EXPR evaluates to"
 msgstr ""
+"\n"
+"  -e, --expression=KIF   a csomag vagy a kiértékelt származtatott KIF\n"
+"                         összeállítása"
 
 #: guix/scripts/build.scm:227
 msgid ""
 "\n"
 "  -S, --source           build the packages' source derivations"
 msgstr ""
+"\n"
+"  -S, --source           a csomagok forrásszármazékainak összeállítása"
 
 #: guix/scripts/build.scm:229
 msgid ""
 "\n"
 "  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""
 msgstr ""
+"\n"
+"  -s, --system=RENDSZER  kísérlet a RENDSZERRE történő összeállításra,\n"
+"                         például „i686-linux”"
 
 #: guix/scripts/build.scm:231
 msgid ""
 "\n"
 "      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""
 msgstr ""
+"\n"
+"      --target=HÁRMAS    kereszt összeállítás a HÁRMASRA, például\n"
+"                         „armel-linux-gnu”"
 
 #: guix/scripts/build.scm:233
 msgid ""
@@ -144,12 +184,17 @@ msgid ""
 "      --with-source=SOURCE\n"
 "                         use SOURCE when building the corresponding package"
 msgstr ""
+"\n"
+"      --with-source=FORRÁS\n"
+"                         FORRÁS használata a megfelelő csomag összeállításakor"
 
 #: guix/scripts/build.scm:236
 msgid ""
 "\n"
 "  -d, --derivations      return the derivation paths of the given packages"
 msgstr ""
+"\n"
+"  -d, --derivations      a megadott csomagok származék-útvonalának visszaadása"
 
 #: guix/scripts/build.scm:238
 msgid ""
@@ -157,12 +202,17 @@ msgid ""
 "  -r, --root=FILE        make FILE a symlink to the result, and register it\n"
 "                         as a garbage collector root"
 msgstr ""
+"\n"
+"  -r, --root=FÁJL        a FÁJL az eredmény egy szimbolikus linkje legyen,\n"
+"                         és regisztrálja gyökér szemétgyűjtőként"
 
 #: guix/scripts/build.scm:241
 msgid ""
 "\n"
 "      --log-file         return the log file names for the given derivations"
 msgstr ""
+"\n"
+"      --log-file         a megadott származékok naplófájl-neveinek visszaadása"
 
 #: guix/scripts/build.scm:246 guix/scripts/download.scm:53
 #: guix/scripts/package.scm:525 guix/scripts/gc.scm:58
@@ -173,7 +223,7 @@ msgid ""
 "  -h, --help             display this help and exit"
 msgstr ""
 "\n"
-"  -h, --help             diese Hilfe anzeigen und beenden"
+"  -h, --help             ezen súgó megjelenítése és kilépés"
 
 #: guix/scripts/build.scm:248 guix/scripts/download.scm:55
 #: guix/scripts/package.scm:527 guix/scripts/gc.scm:60
@@ -184,24 +234,24 @@ msgid ""
 "  -V, --version          display version information and exit"
 msgstr ""
 "\n"
-"  -V, --version          Versionsinformation anzeigen und beenden"
+"  -V, --version          verzióinformációk megjelenítése és kilépés"
 
 #: guix/scripts/build.scm:368
 #, scheme-format
 msgid "sources do not match any package:~{ ~a~}~%"
-msgstr ""
+msgstr "a források nem illeszkednek semmilyen csomagra:~{ ~a~}~%"
 
 #: guix/scripts/build.scm:397 guix/scripts/download.scm:96
 #: guix/scripts/package.scm:763 guix/scripts/gc.scm:122
 #: guix/scripts/pull.scm:115 guix/scripts/system.scm:414
 #, scheme-format
 msgid "~A: unrecognized option~%"
-msgstr "~A: nicht erkannte Option~%"
+msgstr "~A: ismeretlen kapcsoló~%"
 
 #: guix/scripts/build.scm:425
 #, scheme-format
 msgid "no build log for '~a'~%"
-msgstr "Kein Erstellungsprotokoll für »~a«~%"
+msgstr "nincs összeállítási napló ehhez: „~a”~%"
 
 #: guix/scripts/download.scm:44
 msgid ""
@@ -212,99 +262,109 @@ msgid ""
 "Supported formats: 'nix-base32' (default), 'base32', and 'base16'\n"
 "('hex' and 'hexadecimal' can be used as well).\n"
 msgstr ""
+"Használat: guix download [KAPCSOLÓ] URL\n"
+"A fájl letöltése az URL-ről, hozzáadás a tárolóhoz, és a tárolója\n"
+"útvonalának és a tartalma hash-ének kiírása.\n"
+"\n"
+"Támogatott formátumok: „nix-base32” (alapértelmezett), „base32” és „base16”\n"
+"(„hex” és „hexadecimal” is használható).\n"
 
 #: guix/scripts/download.scm:50 guix/scripts/hash.scm:50
 msgid ""
 "\n"
 "  -f, --format=FMT       write the hash in the given format"
 msgstr ""
+"\n"
+"  -f, --format=FMT       a hash kiírása a megadott formátumban"
 
 #: guix/scripts/download.scm:73 guix/scripts/hash.scm:75
 #, scheme-format
 msgid "unsupported hash format: ~a~%"
-msgstr "Nicht unterstütztes Prüfsummenformat: ~a~%"
+msgstr "nem támogatott hash-formátum: ~a~%"
 
 #: guix/scripts/download.scm:106
 #, scheme-format
 msgid "~a: failed to parse URI~%"
-msgstr "~a: URI~% konnte nicht verarbeitet werden"
+msgstr "~a: az URI feldolgozása sikertelen~%"
 
 #: guix/scripts/download.scm:117
 #, scheme-format
 msgid "~a: download failed~%"
-msgstr "~a: Herunterladen fehlgeschlagen~%"
+msgstr "~a: letöltés sikertelen~%"
 
 #: guix/scripts/package.scm:88
 #, scheme-format
 msgid "failed to build the empty profile~%"
-msgstr "Leeres Profil konnte nicht erstellt werden~%"
+msgstr "az üres profil összeállítása sikertelen~%"
 
 #: guix/scripts/package.scm:97
 #, scheme-format
 msgid "switching from generation ~a to ~a~%"
-msgstr ""
+msgstr "átváltás a(z) ~a generációról erre: ~a~%"
 
 #: guix/scripts/package.scm:108 guix/scripts/package.scm:873
 #: guix/scripts/package.scm:985
 #, scheme-format
 msgid "profile '~a' does not exist~%"
-msgstr "Profil »~a« existiert nicht~%"
+msgstr "a(z) „~a” profil nem létezik~%"
 
 #: guix/scripts/package.scm:112
 #, scheme-format
 msgid "nothing to do: already at the empty profile~%"
-msgstr ""
+msgstr "nincs mit tenni: már az üres profilnál van~%"
 
 #: guix/scripts/package.scm:197
 #, scheme-format
 msgid "The following package would be removed:~%~{~a~%~}~%"
-msgstr ""
+msgstr "A következő csomagot el kellene távolítani:~%~{~a~%~}~%"
 
 #: guix/scripts/package.scm:202
 #, scheme-format
 msgid "The following package will be removed:~%~{~a~%~}~%"
-msgstr ""
+msgstr "A következő csomag el lesz távolítva:~%~{~a~%~}~%"
 
 #: guix/scripts/package.scm:214
 #, scheme-format
 msgid "The following package would be installed:~%~{~a~%~}~%"
-msgstr ""
+msgstr "A következő csomagot telepíteni kellene:~%~{~a~%~}~%"
 
 #: guix/scripts/package.scm:219
 #, scheme-format
 msgid "The following package will be installed:~%~{~a~%~}~%"
-msgstr "Das folgende Paket wird installiert:~%~{~a~%~}~%"
+msgstr "A következő csomag telepítve lesz:~%~{~a~%~}~%"
 
 #: guix/scripts/package.scm:339
 #, scheme-format
 msgid "package `~a' lacks output `~a'~%"
-msgstr ""
+msgstr "a(z) „~a” csomag hiányolja a kimenetet: „~a”~%"
 
 #: guix/scripts/package.scm:356
 #, scheme-format
 msgid "~a: package not found~%"
-msgstr "~a: Paket nicht gefunden~%"
+msgstr "~a: a csomag nem található~%"
 
 #: guix/scripts/package.scm:391
 #, scheme-format
 msgid "looking for the latest release of GNU ~a..."
-msgstr "Nach der letzten Veröffentlichung von GNU ~a wird gesucht …"
+msgstr "a GNU ~a legutóbbi kiadásának keresése…"
 
 #: guix/scripts/package.scm:395
 #, scheme-format
 msgid "~a: note: using ~a but ~a is available upstream~%"
-msgstr ""
+msgstr "~a: megjegyzés: ~a használata, de ~a elérhető a tárolóban~%"
 
 #: guix/scripts/package.scm:467
 #, scheme-format
 msgid "The following environment variable definitions may be needed:~%"
-msgstr ""
+msgstr "A következő környezeti változó meghatározások lehetnek szükségesek:~%"
 
 #: guix/scripts/package.scm:483
 msgid ""
 "Usage: guix package [OPTION]... PACKAGES...\n"
 "Install, remove, or upgrade PACKAGES in a single transaction.\n"
 msgstr ""
+"Használat: guix package [KAPCSOLÓ]… CSOMAGOK…\n"
+"CSOMAGOK telepítése, eltávolítása vagy frissítése egyetlen tranzakcióban.\n"
 
 #: guix/scripts/package.scm:485
 msgid ""
@@ -312,7 +372,7 @@ msgid ""
 "  -i, --install=PACKAGE  install PACKAGE"
 msgstr ""
 "\n"
-"  -i, --install=PAKET    PAKET installieren"
+"  -i, --install=CSOMAG   CSOMAG telepítése"
 
 #: guix/scripts/package.scm:487
 msgid ""
@@ -320,6 +380,9 @@ msgid ""
 "  -e, --install-from-expression=EXP\n"
 "                         install the package EXP evaluates to"
 msgstr ""
+"\n"
+"  -e, --install-from-expression=KIF\n"
+"                         a kiértékelt KIF csomag telepítése"
 
 #: guix/scripts/package.scm:490
 msgid ""
@@ -327,25 +390,33 @@ msgid ""
 "  -r, --remove=PACKAGE   remove PACKAGE"
 msgstr ""
 "\n"
-"  -r, --remove=PAKET     PAKET entfernen"
+"  -r, --remove=CSOMAG    CSOMAG eltávolítása"
 
 #: guix/scripts/package.scm:492
 msgid ""
 "\n"
 "  -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"
 msgstr ""
+"\n"
+"  -u, --upgrade[=REGKIF] az összes REGKIF-re illeszkedő telepített csomag\n"
+"                         frissítése"
 
 #: guix/scripts/package.scm:494
 msgid ""
 "\n"
 "      --roll-back        roll back to the previous generation"
 msgstr ""
+"\n"
+"      --roll-back        visszagörgetés az előző generációra"
 
 #: guix/scripts/package.scm:496
 msgid ""
 "\n"
 "      --search-paths     display needed environment variable definitions"
 msgstr ""
+"\n"
+"      --search-paths     a szükséges környezeti változó meghatározások\n"
+"                         megjelenítése"
 
 #: guix/scripts/package.scm:498
 msgid ""
@@ -353,6 +424,9 @@ msgid ""
 "  -l, --list-generations[=PATTERN]\n"
 "                         list generations matching PATTERN"
 msgstr ""
+"\n"
+"  -l, --list-generations[=MINTA]\n"
+"                         a MINTÁRA illeszkedő generációk listázása"
 
 #: guix/scripts/package.scm:501
 msgid ""
@@ -360,30 +434,44 @@ msgid ""
 "  -d, --delete-generations[=PATTERN]\n"
 "                         delete generations matching PATTERN"
 msgstr ""
+"\n"
+"  -d, --delete-generations[=MINTA]\n"
+"                         a MINTÁRA illeszkedő generációk törlése"
 
 #: guix/scripts/package.scm:504
 msgid ""
 "\n"
 "  -p, --profile=PROFILE  use PROFILE instead of the user's default profile"
 msgstr ""
+"\n"
+"  -p, --profile=PROFIL   a PROFIL használata a felhasználó alapértelmezett\n"
+"                         profilja helyett"
 
 #: guix/scripts/package.scm:507
 msgid ""
 "\n"
 "      --bootstrap        use the bootstrap Guile to build the profile"
 msgstr ""
+"\n"
+"      --bootstrap        a Guile rendszertöltő használata a profil\n"
+"                         összeállításához"
 
 #: guix/scripts/package.scm:509 guix/scripts/pull.scm:75
 msgid ""
 "\n"
 "      --verbose          produce verbose output"
 msgstr ""
+"\n"
+"      --verbose          bőbeszédű kimenet előállítása"
 
 #: guix/scripts/package.scm:512
 msgid ""
 "\n"
 "  -s, --search=REGEXP    search in synopsis and description using REGEXP"
 msgstr ""
+"\n"
+"  -s, --search=REGKIF    keresés az összegzésben és a leírásban REGKIF\n"
+"                         használatával"
 
 #: guix/scripts/package.scm:514
 msgid ""
@@ -391,6 +479,9 @@ msgid ""
 "  -I, --list-installed[=REGEXP]\n"
 "                         list installed packages matching REGEXP"
 msgstr ""
+"\n"
+"  -I, --list-installed[=REGKIF]\n"
+"                         a REGKIF-re illeszkedő telepített csomagok listázása"
 
 #: guix/scripts/package.scm:517
 msgid ""
@@ -398,6 +489,9 @@ msgid ""
 "  -A, --list-available[=REGEXP]\n"
 "                         list available packages matching REGEXP"
 msgstr ""
+"\n"
+"  -A, --list-available[=REGKIF]\n"
+"                         a REGKIF-re illeszkedő elérhető csomagok listázása"
 
 #: guix/scripts/package.scm:520
 #, fuzzy
@@ -406,73 +500,77 @@ msgid ""
 "  --show=PACKAGE         show details about PACKAGE"
 msgstr ""
 "\n"
-"  -i, --install=PAKET    PAKET installieren"
+"  -i, --install=CSOMAG   CSOMAG telepítése"
 
 #: guix/scripts/package.scm:767
 #, scheme-format
 msgid "~A: extraneous argument~%"
-msgstr ""
+msgstr "~A: nem odatartozó argumentum~%"
 
 #: guix/scripts/package.scm:782
 #, scheme-format
 msgid "Try \"info '(guix) Invoking guix package'\" for more information.~%"
 msgstr ""
+"További információkért próbálja az „info '(guix) Invoking guix package'”\n"
+"parancsot.~%"
 
 #: guix/scripts/package.scm:804
 #, scheme-format
 msgid "error: while creating directory `~a': ~a~%"
-msgstr ""
+msgstr "hiba: a(z) „~a” könyvtár létrehozása közben: ~a~%"
 
 #: guix/scripts/package.scm:808
 #, scheme-format
 msgid "Please create the `~a' directory, with you as the owner.~%"
-msgstr ""
+msgstr "Hozza létre a(z) „~a” könyvtárat az ön nevében, tulajdonosként.~%"
 
 #: guix/scripts/package.scm:815
 #, scheme-format
 msgid "error: directory `~a' is not owned by you~%"
-msgstr ""
+msgstr "hiba: a(z) „~a” könyvtárnak nem ön a tulajdonosa~%"
 
 #: guix/scripts/package.scm:818
 #, scheme-format
 msgid "Please change the owner of `~a' to user ~s.~%"
-msgstr ""
+msgstr "Változtassa meg a(z) „~a” tulajdonosát erre a felhasználóra: ~s.~%"
 
 #: guix/scripts/package.scm:843
 #, scheme-format
 msgid "deleting ~a~%"
-msgstr ""
+msgstr "~a törlése~%"
 
 #: guix/scripts/package.scm:896 guix/scripts/package.scm:1001
 #, scheme-format
 msgid "invalid syntax: ~a~%"
-msgstr "Unzulässige Syntax: ~a~%"
+msgstr "érvénytelen szintaxis: ~a~%"
 
 #: guix/scripts/package.scm:925
 #, scheme-format
 msgid "nothing to be done~%"
-msgstr "Nichts zu tun~%"
+msgstr "nincs mit tenni~%"
 
 #: guix/scripts/package.scm:948
 #, scheme-format
 msgid "~a package in profile~%"
-msgstr "~a-Paket im Profil~%"
+msgstr "~a csomag a profilban~%"
 
 #: guix/scripts/package.scm:963
 #, scheme-format
 msgid "Generation ~a\t~a"
-msgstr ""
+msgstr "~a generáció\t~a"
 
 #: guix/scripts/package.scm:970
 #, scheme-format
 msgid "~a\t(current)~%"
-msgstr "~a\t(aktuell)~%"
+msgstr "~a\t(jelenlegi)~%"
 
 #: guix/scripts/gc.scm:39
 msgid ""
 "Usage: guix gc [OPTION]... PATHS...\n"
 "Invoke the garbage collector.\n"
 msgstr ""
+"Használat: guix gc [KAPCSOLÓ]… ÚTVONALAK…\n"
+"A szemétgyűjtő meghívása.\n"
 
 #: guix/scripts/gc.scm:41
 msgid ""
@@ -480,47 +578,62 @@ msgid ""
 "  -C, --collect-garbage[=MIN]\n"
 "                         collect at least MIN bytes of garbage"
 msgstr ""
+"\n"
+"  -C, --collect-garbage[=MIN]\n"
+"                         legalább MIN bájt szemét összegyűjtése"
 
 #: guix/scripts/gc.scm:44
 msgid ""
 "\n"
 "  -d, --delete           attempt to delete PATHS"
 msgstr ""
+"\n"
+"  -d, --delete           ÚTVONALAK törlésének kísérlete"
 
 #: guix/scripts/gc.scm:46
 msgid ""
 "\n"
 "      --list-dead        list dead paths"
 msgstr ""
+"\n"
+"      --list-dead        halott útvonalak listázása"
 
 #: guix/scripts/gc.scm:48
 msgid ""
 "\n"
 "      --list-live        list live paths"
 msgstr ""
+"\n"
+"      --list-live        élő útvonalak listázása"
 
 #: guix/scripts/gc.scm:51
 msgid ""
 "\n"
 "      --references       list the references of PATHS"
 msgstr ""
+"\n"
+"      --references       az ÚTVONALAK hivatkozásainak listázása"
 
 #: guix/scripts/gc.scm:53
 msgid ""
 "\n"
 "  -R, --requisites       list the requisites of PATHS"
 msgstr ""
+"\n"
+"  -R, --requisites       az ÚTVONALAK követelményeinek listázása"
 
 #: guix/scripts/gc.scm:55
 msgid ""
 "\n"
 "      --referrers        list the referrers of PATHS"
 msgstr ""
+"\n"
+"      --referrers        az ÚTVONALAK ajánlóinak listázása"
 
 #: guix/scripts/gc.scm:84
 #, scheme-format
 msgid "invalid amount of storage: ~a~%"
-msgstr "Ungültiger Speicher-Wert: ~a~%"
+msgstr "érvénytelen tárolómennyiség: ~a~%"
 
 #: guix/scripts/hash.scm:45
 msgid ""
@@ -530,6 +643,11 @@ msgid ""
 "Supported formats: 'nix-base32' (default), 'base32', and 'base16' ('hex'\n"
 "and 'hexadecimal' can be used as well).\n"
 msgstr ""
+"Használat: guix hash [KAPCSOLÓ] FÁJL\n"
+"A FÁJL kriptográfiai hash-ének visszaadása.\n"
+"\n"
+"Támogatott formátumok: „nix-base32” (alapértelmezett), „base32” és „base16”\n"
+"(„hex” és „hexadecimal” is használható).\n"
 
 #: guix/scripts/hash.scm:52
 msgid ""
@@ -537,12 +655,12 @@ msgid ""
 "  -r, --recursive        compute the hash on FILE recursively"
 msgstr ""
 "\n"
-"  -r, --recursive        errechnet die Prüfsumme der DATEI rekursiv"
+"  -r, --recursive        a FILE hash-ének rekurzív számítása"
 
 #: guix/scripts/hash.scm:103
 #, scheme-format
 msgid "unrecognized option: ~a~%"
-msgstr "Nicht erkannte Option: ~a~%"
+msgstr "ismeretlen kapcsoló: ~a~%"
 
 #: guix/scripts/hash.scm:134 guix/ui.scm:233
 #, scheme-format
@@ -552,134 +670,144 @@ msgstr "~a~%"
 #: guix/scripts/hash.scm:137
 #, scheme-format
 msgid "wrong number of arguments~%"
-msgstr "Falsche Argumentanzahl~%"
+msgstr "nem megfelelő számú argumentum~%"
 
 #: guix/scripts/pull.scm:73
 msgid ""
 "Usage: guix pull [OPTION]...\n"
 "Download and deploy the latest version of Guix.\n"
 msgstr ""
+"Használat: guix pull [KAPCSOLÓ]…\n"
+"A Guix legújabb verziójának letöltése és telepítése.\n"
 
 #: guix/scripts/pull.scm:77
 msgid ""
 "\n"
 "      --url=URL          download the Guix tarball from URL"
 msgstr ""
+"\n"
+"      --url=URL          a Guix tarball letöltése az URL-ről"
 
 #: guix/scripts/pull.scm:79
 msgid ""
 "\n"
 "      --bootstrap        use the bootstrap Guile to build the new Guix"
 msgstr ""
+"\n"
+"      --bootstrap        a Guile rendszertöltő használata az új Guix\n"
+"                         összeállításához"
 
 #: guix/scripts/pull.scm:117
 #, scheme-format
 msgid "~A: unexpected argument~%"
-msgstr "~A: unerwartetes Argument~%"
+msgstr "~A: nem várt argumentum~%"
 
 #: guix/scripts/pull.scm:126
 msgid "failed to download up-to-date source, exiting\n"
-msgstr ""
+msgstr "a legfrissebb forrás letöltése sikertelen, kilépés\n"
 
 #: guix/scripts/pull.scm:145
 #, scheme-format
 msgid "updated ~a successfully deployed under `~a'~%"
-msgstr ""
+msgstr "a(z) ~a frissítése sikeresen telepítve ez alá: „~a”~%"
 
 #: guix/scripts/pull.scm:148
 #, scheme-format
 msgid "failed to update Guix, check the build log~%"
-msgstr ""
+msgstr "a Guix frissítése sikertelen, nézze meg az összeállítási naplót~%"
 
 #: guix/scripts/pull.scm:150
 msgid "Guix already up to date\n"
-msgstr "Guix ist bereits aktuell\n"
+msgstr "A Guix már naprakész\n"
 
 #: guix/scripts/substitute-binary.scm:80
 #, scheme-format
 msgid "authentication and authorization of substitutes disabled!~%"
-msgstr ""
+msgstr "a helyettesítők hitelesítése és felhatalmazása letiltva!~%"
 
 #: guix/scripts/substitute-binary.scm:163
 #, scheme-format
 msgid "download from '~a' failed: ~a, ~s~%"
-msgstr ""
+msgstr "a letöltés sikertelen innen: „~a”: ~a, ~s~%"
 
 #: guix/scripts/substitute-binary.scm:178
 #, scheme-format
 msgid "while fetching ~a: server is unresponsive~%"
-msgstr ""
+msgstr "~a lekérése közben: a kiszolgáló nem válaszol~%"
 
 #: guix/scripts/substitute-binary.scm:180
 #, scheme-format
 msgid "try `--no-substitutes' if the problem persists~%"
-msgstr ""
+msgstr "próbálja a „--no-substitutes” kapcsolót, ha a probléma továbbra is fennáll~%"
 
 #: guix/scripts/substitute-binary.scm:244
 #, scheme-format
 msgid "signature version must be a number: ~a~%"
-msgstr "Signaturversion muss eine Zahl sein: ~a~%"
+msgstr "az aláírás verziójának számnak kell lennie: ~a~%"
 
 #: guix/scripts/substitute-binary.scm:248
 #, scheme-format
 msgid "unsupported signature version: ~a~%"
-msgstr "Signaturversion wird nicht unterstützt: ~a~%"
+msgstr "nem támogatott aláírás verzió: ~a~%"
 
 #: guix/scripts/substitute-binary.scm:256
 #, scheme-format
 msgid "signature is not a valid s-expression: ~s~%"
-msgstr ""
+msgstr "az aláírás nem érvényes s-kifejezés: ~s~%"
 
 #: guix/scripts/substitute-binary.scm:260
 #, scheme-format
 msgid "invalid format of the signature field: ~a~%"
-msgstr ""
+msgstr "az aláírásmező formátuma érvénytelen: ~a~%"
 
 #: guix/scripts/substitute-binary.scm:295
 #, scheme-format
 msgid "invalid signature for '~a'~%"
-msgstr "Ungültige Signatur für »~a«~%"
+msgstr "érvénytelen aláírás ehhez: „~a”~%"
 
 #: guix/scripts/substitute-binary.scm:297
 #, scheme-format
 msgid "hash mismatch for '~a'~%"
-msgstr ""
+msgstr "hash eltérés ennél: „~a”~%"
 
 #: guix/scripts/substitute-binary.scm:299
 #, scheme-format
 msgid "'~a' is signed with an unauthorized key~%"
-msgstr ""
+msgstr "a(z) „~a” egy jogosulatlan kulccsal van aláírva~%"
 
 #: guix/scripts/substitute-binary.scm:301
 #, scheme-format
 msgid "signature on '~a' is corrupt~%"
-msgstr ""
+msgstr "a(z) „~a” aláírása sérült~%"
 
 #: guix/scripts/substitute-binary.scm:338
 #, scheme-format
 msgid "substitute at '~a' lacks a signature~%"
-msgstr ""
+msgstr "a helyettesítő ennél: „~a” hiányol egy aláírást~%"
 
 #: guix/scripts/substitute-binary.scm:526
 #, scheme-format
 msgid "Downloading, please wait...~%"
-msgstr "Wird heruntergeladen, bitte warten …~%"
+msgstr "Letöltés, kérem várjon…~%"
 
 #: guix/scripts/substitute-binary.scm:528
 #, scheme-format
 msgid "(Please consider upgrading Guile to get proper progress report.)~%"
-msgstr ""
+msgstr "(Fontolja meg a Guile frissítését a megfelelő állapotjelentés beszerzéséhez.)~%"
 
 #: guix/scripts/substitute-binary.scm:545
 #, scheme-format
 msgid "host name lookup error: ~a~%"
-msgstr ""
+msgstr "gépnév keresési hiba: ~a~%"
 
 #: guix/scripts/substitute-binary.scm:554
 msgid ""
 "Usage: guix substitute-binary [OPTION]...\n"
 "Internal tool to substitute a pre-built binary to a local build.\n"
 msgstr ""
+"Használat: guix substitute-binary [KAPCSOLÓ]…\n"
+"Belső eszköz egy előre összeállított binárisnak egy helyi összeállítással\n"
+"való helyettesítéséhez.\n"
 
 #: guix/scripts/substitute-binary.scm:556
 msgid ""
@@ -687,6 +815,9 @@ msgid ""
 "      --query            report on the availability of substitutes for the\n"
 "                         store file names passed on the standard input"
 msgstr ""
+"\n"
+"      --query            a helyettesítők elérhetőségének jelentése a\n"
+"                         szabványos bemeneten átadott tároló fájlnevekhez"
 
 #: guix/scripts/substitute-binary.scm:559
 msgid ""
@@ -695,40 +826,46 @@ msgid ""
 "                         download STORE-FILE and store it as a Nar in file\n"
 "                         DESTINATION"
 msgstr ""
+"\n"
+"      --substitute TÁROLÓ-FÁJL CÉL\n"
+"                         TÁROLÓ-FÁJL letöltése és eltárolása Nar formátumban\n"
+"                         a CÉL fájlban"
 
 #: guix/scripts/substitute-binary.scm:604
 msgid "ACL for archive imports seems to be uninitialized, substitutes may be unavailable\n"
 msgstr ""
+"Az ACL előkészítetlennek tűnik az archívum importokhoz, a helyettesítők\n"
+"elérhetetlenek lehetnek\n"
 
 #: guix/scripts/substitute-binary.scm:625
 #, scheme-format
 msgid "failed to look up host '~a' (~a), substituter disabled~%"
-msgstr ""
+msgstr "a(z) „~a” (~a) gép keresése sikertelen, a helyettesítő letiltva~%"
 
 #: guix/scripts/substitute-binary.scm:732
 #, scheme-format
 msgid "~a: unrecognized options~%"
-msgstr "~a: nicht erkannte Optionen~%"
+msgstr "~a: ismeretlen kapcsolók~%"
 
 #: guix/scripts/authenticate.scm:58
 #, scheme-format
 msgid "cannot find public key for secret key '~a'~%"
-msgstr ""
+msgstr "nem található nyilvános kulcs a(z) „~a” titkos kulcshoz~%"
 
 #: guix/scripts/authenticate.scm:78
 #, scheme-format
 msgid "error: invalid signature: ~a~%"
-msgstr "Fehler: ungültige Signatur: ~a~%"
+msgstr "hiba: érvénytelen aláírás: ~a~%"
 
 #: guix/scripts/authenticate.scm:80
 #, scheme-format
 msgid "error: unauthorized public key: ~a~%"
-msgstr "Fehler: nicht autorisierter öffentlicher Schlüssel: ~a~%"
+msgstr "hiba: jogosulatlan nyilvános kulcs: ~a~%"
 
 #: guix/scripts/authenticate.scm:82
 #, scheme-format
 msgid "error: corrupt signature data: ~a~%"
-msgstr "Fehler: Signaturdaten beschädigt: ~a~%"
+msgstr "hiba: sérült aláírás adatok: ~a~%"
 
 #: guix/scripts/authenticate.scm:126
 msgid ""
@@ -736,15 +873,18 @@ msgid ""
 "Sign or verify the signature on the given file.  This tool is meant to\n"
 "be used internally by 'guix-daemon'.\n"
 msgstr ""
+"Használat: guix authenticate KAPCSOLÓ…\n"
+"Aláírás vagy a megadott fájl aláírásának ellenőrzése. Az eszköz célja, hogy\n"
+"a „guix-daemon” belsőleg felhasználja.\n"
 
 #: guix/scripts/authenticate.scm:132
 msgid "wrong arguments"
-msgstr "Falsche Argumente"
+msgstr "hibás argumentumok"
 
 #: guix/scripts/system.scm:74
 #, scheme-format
 msgid "failed to open operating system file '~a': ~a~%"
-msgstr ""
+msgstr "a(z) „~a” operációs rendszer fájl megnyitása sikertelen: ~a~%"
 
 #: guix/scripts/system.scm:78 guix/ui.scm:238
 #, scheme-format
@@ -754,123 +894,131 @@ msgstr "~a: ~a~%"
 #: guix/scripts/system.scm:81
 #, scheme-format
 msgid "failed to load operating system file '~a': ~s~%"
-msgstr ""
+msgstr "a(z) „~a” operációs rendszer fájl betöltése sikertelen: ~s~%"
 
 #: guix/scripts/system.scm:116
 #, scheme-format
 msgid "failed to register '~a' under '~a'~%"
-msgstr ""
+msgstr "a(z) „~a” regisztrálása sikertelen ez alá: „~a”~%"
 
 #: guix/scripts/system.scm:144
 #, scheme-format
 msgid "initializing the current root file system~%"
-msgstr ""
+msgstr "a jelenlegi gyökér fájlrendszer előkészítése~%"
 
 #: guix/scripts/system.scm:162 guix/scripts/system.scm:318
 #, scheme-format
 msgid "failed to install GRUB on device '~a'~%"
-msgstr ""
+msgstr "a GRUB telepítése sikertelen a(z) „~a” eszközre~%"
 
 #: guix/scripts/system.scm:197
 #, scheme-format
 msgid "activating system...~%"
-msgstr "System wird aktiviert …~%"
+msgstr "a rendszer aktiválása…~%"
 
 #: guix/scripts/system.scm:236
 #, scheme-format
 msgid "unrecognized boot parameters for '~a'~%"
-msgstr "Nicht erkannte Startparameter für »~a«~%"
+msgstr "azonosítatlan indítási paraméterek ehhez: „~a”~%"
 
 #: guix/scripts/system.scm:323
 #, scheme-format
 msgid "initializing operating system under '~a'...~%"
-msgstr ""
+msgstr "az operációs rendszer előkészítése „~a” alá…~%"
 
 #: guix/scripts/system.scm:339
 msgid ""
 "Usage: guix system [OPTION] ACTION FILE\n"
 "Build the operating system declared in FILE according to ACTION.\n"
 msgstr ""
+"Használat: guix system [KAPCSOLÓ] MŰVELET FÁJL\n"
+"A FÁJLBAN meghatározott operációs rendszer összeállítása a MŰVELET szerint.\n"
 
 #: guix/scripts/system.scm:342
 msgid "The valid values for ACTION are:\n"
-msgstr "Die gültigen Werte für AKTION sind:\n"
+msgstr "A MŰVELET érvényes értékei a következők:\n"
 
 #: guix/scripts/system.scm:343
 msgid "  - 'reconfigure', switch to a new operating system configuration\n"
-msgstr ""
+msgstr "  - „reconfigure”, átváltás egy új operációs rendszer beállításra\n"
 
 #: guix/scripts/system.scm:345
 msgid "  - 'build', build the operating system without installing anything\n"
-msgstr ""
+msgstr "  - „build”, az operációs rendszer összeállítása bármi telepítése nélkül\n"
 
 #: guix/scripts/system.scm:347
 msgid "  - 'vm', build a virtual machine image that shares the host's store\n"
 msgstr ""
+"  - „vm”, egy virtuális gép lemezkép összeállítása, amely megosztja a gazda\n"
+"              tárolóját\n"
 
 #: guix/scripts/system.scm:349
 msgid "  - 'vm-image', build a freestanding virtual machine image\n"
-msgstr ""
+msgstr "  - „vm-image”, egy szabadon álló virtuális gép lemezkép összeállítása\n"
 
 #: guix/scripts/system.scm:351
 msgid "  - 'disk-image', build a disk image, suitable for a USB stick\n"
-msgstr ""
+msgstr "  - „disk-image”, egy USB-meghajtóhoz megfelelő lemezkép összeállítása\n"
 
 #: guix/scripts/system.scm:353
 msgid "  - 'init', initialize a root file system to run GNU.\n"
-msgstr ""
+msgstr "  - „init”, a gyökér fájlrendszer előkészítése a GNU futtatásához.\n"
 
 #: guix/scripts/system.scm:357
 msgid ""
 "\n"
 "      --image-size=SIZE  for 'vm-image', produce an image of SIZE"
 msgstr ""
+"\n"
+"      --image-size=MÉRET  a „vm-image”-hez, adott MÉRETŰ lemezkép előállítása"
 
 #: guix/scripts/system.scm:359
 msgid ""
 "\n"
 "      --no-grub          for 'init', do not install GRUB"
 msgstr ""
+"\n"
+"      --no-grub          az „init”-hez, ne telepítse a GRUB rendszerbetöltőt"
 
 #: guix/scripts/system.scm:422
 #, scheme-format
 msgid "~a: unknown action~%"
-msgstr "~a: unbekannte Aktion~%"
+msgstr "~a: ismeretlen művelet~%"
 
 #: guix/scripts/system.scm:439
 #, scheme-format
 msgid "wrong number of arguments for action '~a'~%"
-msgstr "Falsche Anzahl an Argumenten für Aktion »~a«~%"
+msgstr "nem megfelelő számú argumentum a(z) „~a” művelethez~%"
 
 #: guix/scripts/system.scm:459
 #, scheme-format
 msgid "no configuration file specified~%"
-msgstr "Keine Konfigurationsdatei angegeben~%"
+msgstr "nincs beállítófájl megadva~%"
 
 #: guix/gnu-maintenance.scm:373
 #, scheme-format
 msgid "signature verification failed for `~a'~%"
-msgstr "Verifizierung der Signatur fehlgeschlagen für »~a«~%"
+msgstr "az aláírás-ellenőrzés sikertelen ennél: „~a”~%"
 
 #: guix/gnu-maintenance.scm:375
 #, scheme-format
 msgid "(could be because the public key is not in your keyring)~%"
-msgstr ""
+msgstr "(azért lehet, mert a nyilvános kulcs nincs a kulcstartón)~%"
 
 #: guix/gnu-maintenance.scm:450
 #, scheme-format
 msgid "~a: could not locate source file"
-msgstr "~a: Quelldatei konnte nicht gefunden werden"
+msgstr "~a: nem található a forrásfájl"
 
 #: guix/gnu-maintenance.scm:455
 #, scheme-format
 msgid "~a: ~a: no `version' field in source; skipping~%"
-msgstr ""
+msgstr "~a: ~a: nincs „version” mező a forrásban; kihagyás~%"
 
 #: guix/ui.scm:131
 #, scheme-format
 msgid "failed to install locale: ~a~%"
-msgstr "Locale konnte nicht installiert werden: ~a~%"
+msgstr "a területi beállítás telepítése sikertelen: ~a~%"
 
 #: guix/ui.scm:150
 msgid ""
@@ -879,6 +1027,11 @@ msgid ""
 "This is free software: you are free to change and redistribute it.\n"
 "There is NO WARRANTY, to the extent permitted by law.\n"
 msgstr ""
+"Copyright © 2014 a Guix szerzői\n"
+"Licenc GPLv3+: GNU GPL 3. vagy újabb verzió <http://gnu.org/licenses/gpl.html>\n"
+"\n"
+"Ez egy szabad szoftver, terjesztheti és/vagy módosíthatja.\n"
+"NINCS GARANCIA, a törvény által engedélyezett mértékig.\n"
 
 #: guix/ui.scm:158
 #, scheme-format
@@ -887,7 +1040,7 @@ msgid ""
 "Report bugs to: ~a."
 msgstr ""
 "\n"
-"Melden Sie Fehler an: ~a."
+"A hibákat ide jelentse: ~a."
 
 #: guix/ui.scm:160
 #, scheme-format
@@ -896,7 +1049,7 @@ msgid ""
 "~a home page: <~a>"
 msgstr ""
 "\n"
-"~a Homepage: <~a>"
+"~a honlap: <~a>"
 
 #: guix/ui.scm:162
 msgid ""
@@ -904,221 +1057,221 @@ msgid ""
 "General help using GNU software: <http://www.gnu.org/gethelp/>"
 msgstr ""
 "\n"
-"Allgemeine Hilfe zu GNU-Software: <http://www.gnu.org/gethelp/>"
+"Általános segítség a GNU szoftverek használatához: <http://www.gnu.org/gethelp/>"
 
 #: guix/ui.scm:169
 #, scheme-format
 msgid "~a: invalid number~%"
-msgstr "~a: ungültige Zahl~%"
+msgstr "~a: érvénytelen szám~%"
 
 #: guix/ui.scm:186
 #, scheme-format
 msgid "invalid number: ~a~%"
-msgstr "Ungültige Zahl: ~a~%"
+msgstr "érvénytelen szám: ~a~%"
 
 #: guix/ui.scm:201
 #, scheme-format
 msgid "unknown unit: ~a~%"
-msgstr "Unbekannte Einheit: ~a~%"
+msgstr "ismeretlen egység: ~a~%"
 
 #: guix/ui.scm:212
 #, scheme-format
 msgid "~a:~a:~a: package `~a' has an invalid input: ~s~%"
-msgstr ""
+msgstr "~a:~a:~a: a(z) „~a” csomagnak érvénytelen bemenete van: ~s~%"
 
 #: guix/ui.scm:219
 #, scheme-format
 msgid "~a: ~a: build system `~a' does not support cross builds~%"
-msgstr ""
+msgstr "~a: ~a: a(z) „~a” összeállítási rendszer nem támogatja a kereszt összeállításokat~%"
 
 #: guix/ui.scm:224
 #, scheme-format
 msgid "failed to connect to `~a': ~a~%"
-msgstr "Verbindung zu »~a« fehlgeschlagen: ~a~%"
+msgstr "sikertelen csatlakozás ehhez: „~a”: ~a~%"
 
 #: guix/ui.scm:229
 #, scheme-format
 msgid "build failed: ~a~%"
-msgstr "Erstellung fehlgeschlagen: ~a~%"
+msgstr "az összeállítás sikertelen: ~a~%"
 
 #: guix/ui.scm:257
 #, scheme-format
 msgid "failed to read expression ~s: ~s~%"
-msgstr "Ausdruck ~s konnte nicht gelesen werden: ~s~%"
+msgstr "a(z) ~s kifejezés olvasása sikertelen: ~s~%"
 
 #: guix/ui.scm:263
 #, scheme-format
 msgid "failed to evaluate expression `~a': ~s~%"
-msgstr ""
+msgstr "a(z) „~a” kifejezés kiértékelése sikertelen: ~s~%"
 
 #: guix/ui.scm:272
 #, scheme-format
 msgid "expression ~s does not evaluate to a package~%"
-msgstr ""
+msgstr "a(z) ~s kifejezés nem értékelhető ki a csomaghoz~%"
 
 #: guix/ui.scm:319
 #, scheme-format
 msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
-msgstr ""
+msgstr "~:[A következő származékot kellene összeállítani:~%~{   ~a~%~}~;~]"
 
 #: guix/ui.scm:324
 #, scheme-format
 msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
-msgstr ""
+msgstr "~:[A következő fájlt kellene letölteni:~%~{   ~a~%~}~;~]"
 
 #: guix/ui.scm:330
 #, scheme-format
 msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
-msgstr ""
+msgstr "~:[A következő származék lesz összeállítva:~%~{   ~a~%~}~;~]"
 
 #: guix/ui.scm:335
 #, scheme-format
 msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
-msgstr "~:[Die folgende Datei wird heruntergeladen:~%~{   ~a~%~}~;~]"
+msgstr "~:[A következő fájl lesz letöltve:~%~{   ~a~%~}~;~]"
 
 #: guix/ui.scm:352
 msgid "<unknown location>"
-msgstr "<unbekannter Ort>"
+msgstr "<ismeretlen hely>"
 
 #: guix/ui.scm:380
 #, scheme-format
 msgid "failed to create configuration directory `~a': ~a~%"
-msgstr "Konfigurationsverzeichnis »~a« konnte nicht angelegt werden: ~a~%"
+msgstr "a(z) „~a” beállítási könyvtár létrehozása sikertelen: ~a~%"
 
 #: guix/ui.scm:475 guix/ui.scm:489
 msgid "unknown"
-msgstr "unbekannt"
+msgstr "ismeretlen"
 
 #: guix/ui.scm:598
 #, scheme-format
 msgid "invalid argument: ~a~%"
-msgstr "Ungültiges Argument: ~a~%"
+msgstr "érvénytelen argumentum: ~a~%"
 
 #: guix/ui.scm:603
 #, scheme-format
 msgid "Try `guix --help' for more information.~%"
-msgstr "Rufen Sie »guix --help« auf, um weitere Informationen zu erhalten.~%"
+msgstr "További információkért próbálja a „guix --help” parancsot.~%"
 
 #: guix/ui.scm:633
 msgid ""
 "Usage: guix COMMAND ARGS...\n"
 "Run COMMAND with ARGS.\n"
 msgstr ""
-"Aufruf: guix BEFEHL ARGUMENTE …\n"
-"BEFEHL mit ARGUMENTEN ausführen.\n"
+"Használat: guix PARANCS ARGUMENTUMOK…\n"
+"A PARANCS futtatása ARGUMENTUMOKKAL.\n"
 
 #: guix/ui.scm:636
 msgid "COMMAND must be one of the sub-commands listed below:\n"
-msgstr "BEFEHL muss einer der unten aufgelisteten Unterbefehle sein:\n"
+msgstr "A PARANCSNAK a lenti listában lévő alparancsok egyikének kell lennie:\n"
 
 #: guix/ui.scm:656
 #, scheme-format
 msgid "guix: ~a: command not found~%"
-msgstr "guix: ~a: Befehl nicht gefunden~%"
+msgstr "guix: ~a: a parancs nem található~%"
 
 #: guix/ui.scm:674
 #, scheme-format
 msgid "guix: missing command name~%"
-msgstr "guix: Befehlsname fehlt~%"
+msgstr "guix: hiányzó parancsnév~%"
 
 #: guix/ui.scm:682
 #, scheme-format
 msgid "guix: unrecognized option '~a'~%"
-msgstr "guix: nicht erkannte Option »~a«~%"
+msgstr "guix: ismeretlen kapcsoló: „~a”~%"
 
 #: guix/http-client.scm:217
 #, scheme-format
 msgid "using Guile ~a, which does not support ~s encoding~%"
-msgstr ""
+msgstr "a Guile ~a használata, amely nem támogatja a(z) ~s kódolást~%"
 
 #: guix/http-client.scm:220
 #, scheme-format
 msgid "download failed; use a newer Guile~%"
-msgstr "Herunterladen fehlgeschlagen, verwenden Sie ein neueres Guile~%"
+msgstr "letöltés sikertelen; használja a Guile újabb verzióját~%"
 
 #: guix/http-client.scm:232
 #, scheme-format
 msgid "following redirection to `~a'...~%"
-msgstr ""
+msgstr "átirányítás követése ide: „~a”…~%"
 
 #: guix/http-client.scm:241
 msgid "download failed"
-msgstr "Herunterladen fehlgeschlagen"
+msgstr "letöltés sikertelen"
 
 #: guix/nar.scm:134
 msgid "unexpected executable file marker"
-msgstr ""
+msgstr "nem várt végrehajtható fájljelölő"
 
 #: guix/nar.scm:141
 msgid "unsupported nar file type"
-msgstr ""
+msgstr "nem támogatott nar fájltípus"
 
 #: guix/nar.scm:209
 msgid "unsupported file type"
-msgstr "Nicht unterstützter Dateityp"
+msgstr "nem támogatott fájltípus"
 
 #: guix/nar.scm:219
 msgid "invalid nar signature"
-msgstr ""
+msgstr "érvénytelen nar aláírás"
 
 #: guix/nar.scm:230
 msgid "invalid nar end-of-file marker"
-msgstr ""
+msgstr "érvénytelen nar fájlvége jelölő"
 
 #: guix/nar.scm:244
 msgid "invalid symlink tokens"
-msgstr ""
+msgstr "érvénytelen szimbolikus link jelsorok"
 
 #: guix/nar.scm:263
 msgid "unexpected directory entry termination"
-msgstr ""
+msgstr "nem várt könyvtárbejegyzés végződés"
 
 #: guix/nar.scm:272
 msgid "unexpected directory inter-entry marker"
-msgstr ""
+msgstr "nem várt könyvtár belső-bejegyzés jelölő"
 
 #: guix/nar.scm:277
 msgid "unsupported nar entry type"
-msgstr ""
+msgstr "nem támogatott nar bejegyzéstípus"
 
 #: guix/nar.scm:376
 msgid "signature is not a valid s-expression"
-msgstr "Signatur ist kein gültiger s-Ausdruck"
+msgstr "az aláírás nem érvényes s-kifejezés"
 
 #: guix/nar.scm:385
 msgid "invalid signature"
-msgstr "Ungültige Signatur"
+msgstr "érvénytelen aláírás"
 
 #: guix/nar.scm:389
 msgid "invalid hash"
-msgstr "Ungültige Prüfsumme"
+msgstr "érvénytelen hash"
 
 #: guix/nar.scm:397
 msgid "unauthorized public key"
-msgstr "Nicht autorisierter öffentlicher Schlüssel"
+msgstr "jogosulatlan nyilvános kulcs"
 
 #: guix/nar.scm:402
 msgid "corrupt signature data"
-msgstr "Signaturdaten beschädigt"
+msgstr "sérült aláírás adatok"
 
 #: guix/nar.scm:422
 msgid "corrupt file set archive"
-msgstr ""
+msgstr "sérült fájlhalmaz archívum"
 
 #: guix/nar.scm:432
 #, scheme-format
 msgid "importing file or directory '~a'...~%"
-msgstr "Datei oder Verzeichnis »~a« wird importiert …~%"
+msgstr "fájl vagy könyvtár importálása: „~a”…~%"
 
 #: guix/nar.scm:441
 #, scheme-format
 msgid "found valid signature for '~a'~%"
-msgstr "Gültige Signatur für »~a« gefunden~%"
+msgstr "érvényes aláírás található ehhez: „~a”~%"
 
 #: guix/nar.scm:448
 msgid "imported file lacks a signature"
-msgstr "Der importierten Datei fehlt eine Signatur"
+msgstr "az importált fájl egy aláírást hiányol"
 
 #: guix/nar.scm:487
 msgid "invalid inter-file archive mark"
-msgstr ""
+msgstr "érvénytelen belső-fájl archívum jelölő"

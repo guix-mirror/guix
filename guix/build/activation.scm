@@ -36,13 +36,14 @@
 ;;;
 ;;; Code:
 
-(define* (add-group name #:key gid password
+(define* (add-group name #:key gid password system?
                     (log-port (current-error-port)))
   "Add NAME as a user group, with the given numeric GID if specified."
   ;; Use 'groupadd' from the Shadow package.
   (format log-port "adding group '~a'...~%" name)
   (let ((args `(,@(if gid `("-g" ,(number->string gid)) '())
                 ,@(if password `("-p" ,password) '())
+                ,@(if system? `("--system") '())
                 ,name)))
     (zero? (apply system* "groupadd" args))))
 
@@ -128,9 +129,11 @@ numeric gid or #f."
 
   ;; Then create the groups.
   (for-each (match-lambda
-             ((name password gid)
+             ((name password gid system?)
               (unless (false-if-exception (getgrnam name))
-                (add-group name #:gid gid #:password password))))
+                (add-group name
+                           #:gid gid #:password password
+                           #:system? system?))))
             groups)
 
   ;; Finally create the other user accounts.

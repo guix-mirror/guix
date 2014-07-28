@@ -78,16 +78,16 @@ interface and is based on GNU Guile.")
 (define-public dfc
   (package
    (name "dfc")
-   (version "3.0.3")
+   (version "3.0.4")
    (source
     (origin
      (method url-fetch)
       (uri (string-append
-            "http://projects.gw-computing.net/attachments/download/78/dfc-"
+            "http://projects.gw-computing.net/attachments/download/79/dfc-"
             version ".tar.gz"))
       (sha256
        (base32
-        "1b4hfqv23l87cb37fxwzfk2sgspkyxpr3ig2hsd23hr6mm982j7z"))))
+        "0zk1ppx93ijimf4sbgqilxxikpsa2gmpbynknyh41xy7jbdjxp0b"))))
    (build-system cmake-build-system)
    (arguments '(#:tests? #f)) ; There are no tests.
    (native-inputs `(("gettext" ,gnu-gettext)))
@@ -101,14 +101,14 @@ graphs and can export its output to different formats.")
 (define-public htop
   (package
    (name "htop")
-   (version "1.0.2")
+   (version "1.0.3")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://sourceforge/htop/"
+            (uri (string-append "http://hisham.hm/htop/releases/"
                   version "/htop-" version ".tar.gz"))
             (sha256
              (base32
-              "18fqrhvnm7h4c3939av8lpiwrwxbyw6hcly0jvq0vkjf0ixnaq7f"))))
+              "0a8qbpsifzjwc4f45xfwm48jhm59g6q5hlib4bf7z13mgy95fp05"))))
    (build-system gnu-build-system)
    (inputs
     `(("ncurses" ,ncurses)))
@@ -617,7 +617,7 @@ system administrator.")
 (define-public sudo
   (package
     (name "sudo")
-    (version "1.8.10p2")
+    (version "1.8.10p3")
     (source (origin
               (method url-fetch)
               (uri
@@ -627,10 +627,10 @@ system administrator.")
                                     version ".tar.gz")))
               (sha256
                (base32
-                "1wbrygz584abmywklq0b4xhqn3s1bjk3rrladslr5nycdpdvhv5s"))))
+                "002l6h27pnhb77b65frhazbhknsxvrsnkpi43j7i0qw1lrgi7nkf"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--with-logpath=/var/log/sudo.log")
+     `(#:configure-flags '("--with-logpath=/var/log/sudo.log")
        #:phases (alist-cons-before
                  'configure 'pre-configure
                  (lambda _
@@ -644,7 +644,18 @@ system administrator.")
                       "")
                      (("^install: (.*)install-sudoers(.*)" _ before after)
                       ;; Don't try to create /etc/sudoers.
-                      (string-append "install: " before after "\n"))))
+                      (string-append "install: " before after "\n")))
+
+                   ;; XXX FIXME sudo 1.8.10p3 was bootstrapped with a
+                   ;; prerelease libtool, which fails on MIPS in the absence
+                   ;; of /usr/bin/file.  As a temporary workaround, we patch
+                   ;; the configure script to hardcode use of the little
+                   ;; endian N32 ABI on MIPS.
+                   ,@(if (equal? "mips64el-linux" (or (%current-target-system)
+                                                      (%current-system)))
+                         '((substitute* "configure"
+                             (("\\$emul") "elf32ltsmipn32")))
+                         '()))
                  %standard-phases)
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
@@ -668,7 +679,7 @@ commands and their arguments.")
 (define-public wpa-supplicant
   (package
     (name "wpa-supplicant")
-    (version "2.1")
+    (version "2.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -677,7 +688,7 @@ commands and their arguments.")
                     ".tar.gz"))
               (sha256
                (base32
-                "0xxjw7lslvql1ykfbwmbhdrnjsjljf59fbwf837418s97dz2wqwi"))))
+                "1vf8jc4yyksbxf86narvsli3vxfbm8nbnim2mdp66nd6d3yvin70"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-replace
@@ -761,4 +772,34 @@ This package provides the 'wpa_supplicant' daemon and the 'wpa_cli' command.")
     (description
      "WakeLan broadcasts a properly formatted UDP packet across the local area
 network, which causes enabled computers to power on.")
+    (license gpl2+)))
+
+(define-public dmidecode
+  (package
+    (name "dmidecode")
+    (version "2.12")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://savannah/dmidecode/dmidecode-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "122hgaw8mpqdfra159lfl6pyk3837giqx6vq42j64fjnbl2z6gwi"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-delete 'configure %standard-phases)
+       #:tests? #f                                ; no 'check' target
+       #:make-flags (list (string-append "prefix="
+                                         (assoc-ref %outputs "out")))))
+    (home-page "http://www.nongnu.org/dmidecode/")
+    (synopsis "Read hardware information from the BIOS")
+    (description
+     "Dmidecode reports information about your system's hardware as described
+in your system BIOS according to the SMBIOS/DMI standard.  This typically
+includes system manufacturer, model name, serial number, BIOS version, asset
+tag as well as a lot of other details of varying level of interest and
+reliability depending on the manufacturer.  This will often include usage
+status for the CPU sockets, expansion slots (e.g. AGP, PCI, ISA) and memory
+module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
     (license gpl2+)))

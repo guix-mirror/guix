@@ -29,6 +29,8 @@ Documentation License''.
                       Managing packages with Guix.
 * guix build: (guix)Invoking guix build
                       Building packages with Guix.
+* guix system: (guix)Invoking guix system
+                      Managing the operating system configuration.
 @end direntry
 
 @titlepage
@@ -67,7 +69,7 @@ package management tool written for the GNU system.
 * Acknowledgments::             Thanks!
 * GNU Free Documentation License::  The license of this manual.
 * Concept Index::               Concepts.
-* Function Index::              Functions.
+* Programming Index::           Data types, functions, and variables.
 @end menu
 
 @c *********************************************************************
@@ -129,7 +131,7 @@ ready to use it.
 Note that this section is concerned with the installation of the package
 manager, which can be done on top of a running GNU/Linux system.  If,
 instead, you want to install the complete GNU operating system,
-@ref{System Installation}.
+@pxref{System Installation}.
 
 The build procedure for Guix is the same as for other GNU software, and
 is not covered here.  Please see the files @file{README} and
@@ -843,6 +845,30 @@ name: elfutils
 name: gmp
 @dots{}
 @end example
+
+@item --show=@var{package}
+Show details about @var{package}, taken from the list of available packages, in
+@code{recutils} format (@pxref{Top, GNU recutils databases,, recutils, GNU
+recutils manual}).
+
+@example
+$ guix package --show=python | recsel -p name,version
+name: python
+version: 2.7.6
+
+name: python
+version: 3.3.5
+@end example
+
+You may also specify the full name of a package to only get details about a
+specific version of it:
+@example
+$ guix package --show=python-3.3.5 | recsel -p name,version
+name: python
+version: 3.3.5
+@end example
+
+
 
 @item --list-installed[=@var{regexp}]
 @itemx -I [@var{regexp}]
@@ -1792,7 +1818,7 @@ As can be guessed, this primitive is cumbersome to use directly.  A
 better approach is to write build scripts in Scheme, of course!  The
 best course of action for that is to write the build code as a
 ``G-expression'', and to pass it to @code{gexp->derivation}.  For more
-information, @ref{G-Expressions}.
+information, @pxref{G-Expressions}.
 
 Once upon a time, @code{gexp->derivation} did not exist and constructing
 derivations with build code written in Scheme was achieved with
@@ -1986,6 +2012,29 @@ like this:
 In this example, the resulting @file{/gnu/store/@dots{}-profile.sh} file
 will references @var{coreutils}, @var{grep}, and @var{sed}, thereby
 preventing them from being garbage-collected during its lifetime.
+@end deffn
+
+@deffn {Monadic Procedure} interned-file @var{file} [@var{name}] @
+         [#:recursive? #t]
+Return the name of @var{file} once interned in the store.  Use
+@var{name} as its store name, or the basename of @var{file} if
+@var{name} is omitted.
+
+When @var{recursive?} is true, the contents of @var{file} are added
+recursively; if @var{file} designates a flat file and @var{recursive?}
+is true, its contents are added, and its permission bits are kept.
+
+The example below adds a file to the store, under two different names:
+
+@example
+(run-with-store (open-connection)
+  (mlet %store-monad ((a (interned-file "README"))
+                      (b (interned-file "README" "LEGU-MIN")))
+    (return (list a b))))
+
+@result{} ("/gnu/store/rwm@dots{}-README" "/gnu/store/44i@dots{}-LEGU-MIN")
+@end example
+
 @end deffn
 
 @deffn {Monadic Procedure} package-file @var{package} [@var{file}] @
@@ -2545,6 +2594,33 @@ The command above specifically updates the @code{emacs} and
 @code{idutils} packages.  The @code{--select} option would have no
 effect in this case.
 
+When considering whether to upgrade a package, it is sometimes
+convenient to know which packages would be affected by the upgrade and
+should be checked for compatibility.  For this the following option may
+be used when passing @command{guix refresh} one or more package names:
+
+@table @code
+
+@item --list-dependent
+@itemx -l
+List top-level dependent packages that would need to be rebuilt as a
+result of upgrading one or more packages.
+
+@end table
+
+Be aware that the @code{--list-dependent} option only
+@emph{approximates} the rebuilds that would be required as a result of
+an upgrade.  More rebuilds might be required under some circumstances.
+
+@example
+$ guix refresh --list-dependent flex
+Building the following 120 packages would ensure 213 dependent packages are rebuilt:
+hop-2.4.0 geiser-0.4 notmuch-0.18 mu-0.9.9.5 cflow-1.4 idutils-4.6 @dots{}
+@end example
+
+The command above lists a set of packages that could be built to check
+for compatibility with an upgraded @code{flex} package.
+
 The following options can be used to customize GnuPG operation:
 
 @table @code
@@ -2620,14 +2696,14 @@ to join!  @ref{Contributing}, for information about how you can help.
 
 This section explains how to install the complete GNU operating system
 on a machine.  The Guix package manager can also be installed on top of
-a running GNU/Linux system, @ref{Installation}.
+a running GNU/Linux system, @pxref{Installation}.
 
 @ifinfo
 @c This paragraph is for people reading this from tty2 of the
 @c installation image.
 You're reading this documentation with an Info reader.  For details on
 how to use it, hit the @key{RET} key (``return'' or ``enter'') on the
-link that follows: @ref{Help,,, info, Info: An Introduction}.  Hit
+link that follows: @pxref{Help,,, info, Info: An Introduction}.  Hit
 @kbd{l} afterwards to come back here.
 @end ifinfo
 
@@ -2658,7 +2734,7 @@ GNOME and KDE.
 
 @item
 Support for encrypted disks, the Logical Volume Manager (LVM), and swap
-devices are missing.
+devices is missing.
 
 @item
 Few system services are currently supported out-of-the-box
@@ -2707,7 +2783,7 @@ its device name.  Assuming that USB stick is known as @file{/dev/sdX},
 copy the image with:
 
 @example
-dd if=gnu-usb-install-20140629.x86_64 of=/dev/sdX
+dd if=gnu-usb-install-@value{VERSION}.x86_64 of=/dev/sdX
 @end example
 
 Access to @file{/dev/sdX} usually requires root privileges.
@@ -2744,13 +2820,27 @@ image does not contain all the software and tools that may be needed.
 Unless this has already been done, you must partition and format the
 target partitions.
 
+Preferably, assign partitions a label so that you can easily and
+reliably refer to them in @code{file-system} declarations (@pxref{File
+Systems}).  This is typically done using the @code{-L} option of
+@command{mkfs.ext4} and related commands.
+
 The installation image includes Parted (@pxref{Overview,,, parted, GNU
 Parted User Manual}), @command{fdisk}, and e2fsprogs, the suite of tools
 to manipulate ext2/ext3/ext4 file systems.
 
+@item
+Once that is done, mount the target root partition under @file{/mnt}.
+
+@item
+Lastly, run @code{deco start cow-store /mnt}.
+
+This will make @file{/gnu/store} copy-on-write, such that packages added
+to it during the installation phase will be written to the target disk
+rather than kept in memory.
+
 @end enumerate
 
-Once that is done, mount the target root partition under @file{/mnt}.
 
 @subsection Proceeding with the Installation
 
@@ -2762,28 +2852,16 @@ It is better to store that file on the target root file system, say, as
 @file{/mnt/etc/config.scm}.
 
 A minimal operating system configuration, with just the bare minimum and
-only a root account would look like this:
+only a root account would look like this (on the installation system,
+this example is available as @file{/etc/configuration-template.scm}):
 
 @example
-(use-modules (gnu))
-
-(operating-system
-  (host-name "foo")
-  (timezone "Europe/Paris")
-  (locale "en_US.UTF-8")
-
-  ;; Assuming /dev/sdX is the target hard disk, and /dev/sdX1 the
-  ;; target root file system.
-  (bootloader (grub-configuration (device "/dev/sdX")))
-  (file-systems (list (file-system
-                        (device "/dev/sdX1")
-                        (mount-point "/")
-                        (type "ext4")))))
+@include os-config.texi
 @end example
 
 @noindent
 For more information on @code{operating-system} declarations,
-@xref{Using the Configuration System}.
+@pxref{Using the Configuration System}.
 
 Once that is done, the new system must be initialized (remember that the
 target root file system is mounted under @file{/mnt}):
@@ -2795,7 +2873,7 @@ guix system init /mnt/etc/config.scm /mnt
 @noindent
 This will copy all the necessary files, and install GRUB on
 @file{/dev/sdX}, unless you pass the @option{--no-grub} option.  For
-more information, @xref{Invoking guix system}.  This command may trigger
+more information, @pxref{Invoking guix system}.  This command may trigger
 downloads or builds of missing packages, which can take some time.
 
 Once that command has completed---and hopefully succeeded!---you can
@@ -2874,10 +2952,11 @@ kernel, initial RAM disk, and boot loader looks like this:
   (locale "fr_FR.UTF-8")
   (bootloader (grub-configuration
                 (device "/dev/sda")))
-  (file-systems (list (file-system
+  (file-systems (cons (file-system
                         (device "/dev/sda1") ; or partition label
                         (mount-point "/")
-                        (type "ext3"))))
+                        (type "ext3"))
+                      %base-file-systems))
   (users (list (user-account
                 (name "alice")
                 (password "")
@@ -2986,7 +3065,9 @@ partitions without having to hard-code their actual device name.
 
 @item @code{flags} (default: @code{'()})
 This is a list of symbols denoting mount flags.  Recognized flags
-include @code{read-only} and @code{bind-mount}.
+include @code{read-only}, @code{bind-mount}, @code{no-dev} (disallow
+access to special files), @code{no-suid} (ignore setuid and setgid
+bits), and @code{no-exec} (disallow program execution.)
 
 @item @code{options} (default: @code{#f})
 This is either @code{#f}, or a string denoting mount options.
@@ -3001,8 +3082,51 @@ instance, for the root file system.
 This Boolean indicates whether the file system needs to be checked for
 errors before being mounted.
 
+@item @code{create-mount-point?} (default: @code{#f})
+When true, the mount point is created if it does not exist yet.
+
 @end table
 @end deftp
+
+The @code{(gnu system file-systems)} exports the following useful
+variables.
+
+@defvr {Scheme Variable} %base-file-systems
+These are essential file systems that are required on normal systems,
+such as @var{%devtmpfs-file-system} (see below.)  Operating system
+declarations should always contain at least these.
+@end defvr
+
+@defvr {Scheme Variable} %devtmpfs-file-system
+The @code{devtmpfs} file system to be mounted on @file{/dev}.  This is a
+requirement for udev (@pxref{Base Services, @code{udev-service}}).
+@end defvr
+
+@defvr {Scheme Variable} %pseudo-terminal-file-system
+This is the file system to be mounted as @file{/dev/pts}.  It supports
+@dfn{pseudo-terminals} created @i{via} @code{openpty} and similar
+functions (@pxref{Pseudo-Terminals,,, libc, The GNU C Library Reference
+Manual}).  Pseudo-terminals are used by terminal emulators such as
+@command{xterm}.
+@end defvr
+
+@defvr {Scheme Variable} %shared-memory-file-system
+This file system is mounted as @file{/dev/shm} and is used to support
+memory sharing across processes (@pxref{Memory-mapped I/O,
+@code{shm_open},, libc, The GNU C Library Reference Manual}).
+@end defvr
+
+@defvr {Scheme Variable} %binary-format-file-system
+The @code{binfmt_misc} file system, which allows handling of arbitrary
+executable file types to be delegated to user space.  This requires the
+@code{binfmt.ko} kernel module to be loaded.
+@end defvr
+
+@defvr {Scheme Variable} %fuse-control-file-system
+The @code{fusectl} file system, which allows unprivileged users to mount
+and unmount user-space FUSE file systems.  This requires the
+@code{fuse.ko} kernel module to be loaded.
+@end defvr
 
 @node User Accounts
 @subsection User Accounts
@@ -3076,6 +3200,10 @@ The group's name.
 @item @code{id} (default: @code{#f})
 The group identifier (a number).  If @code{#f}, a new number is
 automatically allocated when the group is created.
+
+@item @code{system?} (default: @code{#f})
+This Boolean value indicates whether the group is a ``system'' group.
+System groups have low numerical IDs.
 
 @item @code{password} (default: @code{#f})
 What, user groups can have a password?  Well, apparently yes.  Unless
@@ -3193,6 +3321,7 @@ passed to @command{guix-daemon}.
 @deffn {Monadic Procedure} udev-service [#:udev udev]
 Run @var{udev}, which populates the @file{/dev} directory dynamically.
 @end deffn
+
 
 @node Networking Services
 @subsubsection Networking Services
@@ -4040,8 +4169,10 @@ an inspiration for Guix.
 @unnumbered Concept Index
 @printindex cp
 
-@node Function Index
-@unnumbered Function Index
+@node Programming Index
+@unnumbered Programming Index
+@syncodeindex tp fn
+@syncodeindex vr fn
 @printindex fn
 
 @bye

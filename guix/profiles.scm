@@ -22,6 +22,7 @@
   #:use-module (guix records)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix gexp)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 ftw)
@@ -39,21 +40,18 @@
             manifest-entry-name
             manifest-entry-version
             manifest-entry-output
-            manifest-entry-path
+            manifest-entry-item
             manifest-entry-dependencies
 
             manifest-pattern
             manifest-pattern?
 
-            read-manifest
-            write-manifest
-
             manifest-remove
             manifest-installed?
             manifest-matching-entries
-            manifest=?
 
             profile-manifest
+            package->manifest-entry
             profile-derivation
             generation-number
             generation-numbers
@@ -88,11 +86,9 @@
   (version      manifest-entry-version)           ; string
   (output       manifest-entry-output             ; string
                 (default "out"))
-  (path         manifest-entry-path)              ; store path
-  (dependencies manifest-entry-dependencies       ; list of store paths
-                (default '()))
-  (inputs       manifest-entry-inputs             ; list of inputs to build
-                (default '())))                   ; this entry
+  (item         manifest-entry-item)              ; package | store path
+  (dependencies manifest-entry-dependencies       ; (store path | package)*
+                (default '())))
 
 (define-record-type* <manifest-pattern> manifest-pattern
   make-manifest-pattern
@@ -110,17 +106,36 @@
         (call-with-input-file file read-manifest)
         (manifest '()))))
 
-(define (manifest->sexp manifest)
-  "Return a representation of MANIFEST as an sexp."
-  (define (entry->sexp entry)
+(define* (package->manifest-entry package #:optional output)
+  "Return a manifest entry for the OUTPUT of package PACKAGE.  When OUTPUT is
+omitted or #f, use the first output of PACKAGE."
+  (let ((deps (map (match-lambda
+                    ((label package)
+                     `(,package "out"))
+                    ((label package output)
+                     `(,package ,output)))
+                   (package-transitive-propagated-inputs package))))
+    (manifest-entry
+     (name (package-name package))
+     (version (package-version package))
+     (output (or output (car (package-outputs package))))
+     (item package)
+     (dependencies (delete-duplicates deps)))))
+
+(define (manifest->gexp manifest)
+  "Return a representation of MANIFEST as a gexp."
+  (define (entry->gexp entry)
     (match entry
-      (($ <manifest-entry> name version path output (deps ...))
-       (list name version path output deps))))
+      (($ <manifest-entry> name version output (? string? path) (deps ...))
+       #~(#$name #$version #$output #$path #$deps))
+      (($ <manifest-entry> name version output (? package? package) (deps ...))
+       #~(#$name #$version #$output
+                 (ungexp package (or output "out")) #$deps))))
 
   (match manifest
     (($ <manifest> (entries ...))
-     `(manifest (version 1)
-                (packages ,(map entry->sexp entries))))))
+     #~(manifest (version 1)
+                 (packages #$(map entry->gexp entries))))))
 
 (define (sexp->manifest sexp)
   "Parse SEXP as a manifest."
@@ -133,7 +148,7 @@
               (name name)
               (version version)
               (output output)
-              (path path)))
+              (item path)))
            name version output path)))
 
     ;; Version 1 adds a list of propagated inputs to the
@@ -146,7 +161,7 @@
               (name name)
               (version version)
               (output output)
-              (path path)
+              (item path)
               (dependencies deps)))
            name version output path deps)))
 
@@ -156,10 +171,6 @@
 (define (read-manifest port)
   "Return the packages listed in MANIFEST."
   (sexp->manifest (read port)))
-
-(define (write-manifest manifest port)
-  "Write MANIFEST to PORT."
-  (write (manifest->sexp manifest) port))
 
 (define (entry-predicate pattern)
   "Return a procedure that returns #t when passed a manifest entry that
@@ -203,62 +214,41 @@ must be a manifest-pattern."
 
   (filter matches? (manifest-entries manifest)))
 
-(define (manifest=? m1 m2)
-  "Return #t if manifests M1 and M2 are equal.  This differs from 'equal?' in
-that the 'inputs' field is ignored for the comparison, since it is know to
-have no effect on the manifest contents."
-  (equal? (manifest->sexp m1)
-          (manifest->sexp m2)))
-
 
 ;;;
 ;;; Profiles.
 ;;;
 
-(define* (lower-input store input #:optional (system (%current-system)))
-  "Lower INPUT so that it contains derivations instead of packages."
-  (match input
-    ((name (? package? package))
-     `(,name ,(package-derivation store package system)))
-    ((name (? package? package) output)
-     `(,name ,(package-derivation store package system)
-             ,output))
-    (_ input)))
-
-(define (profile-derivation store manifest)
+(define (profile-derivation manifest)
   "Return a derivation that builds a profile (aka. 'user environment') with
 the given MANIFEST."
+  (define inputs
+    (append-map (match-lambda
+                 (($ <manifest-entry> name version
+                                      output (? package? package) deps)
+                  `((,package ,output) ,@deps))
+                 (($ <manifest-entry> name version output path deps)
+                  ;; Assume PATH and DEPS are already valid.
+                  `(,path ,@deps)))
+                (manifest-entries manifest)))
+
   (define builder
-    `(begin
-       (use-modules (ice-9 pretty-print)
-                    (guix build union))
+    #~(begin
+        (use-modules (ice-9 pretty-print)
+                     (guix build union))
 
-       (setvbuf (current-output-port) _IOLBF)
-       (setvbuf (current-error-port) _IOLBF)
+        (setvbuf (current-output-port) _IOLBF)
+        (setvbuf (current-error-port) _IOLBF)
 
-       (let ((output (assoc-ref %outputs "out"))
-             (inputs (map cdr %build-inputs)))
-         (union-build output inputs
-                      #:log-port (%make-void-port "w"))
-         (call-with-output-file (string-append output "/manifest")
-           (lambda (p)
-             (pretty-print ',(manifest->sexp manifest) p))))))
+        (union-build #$output '#$inputs
+                     #:log-port (%make-void-port "w"))
+        (call-with-output-file (string-append #$output "/manifest")
+          (lambda (p)
+            (pretty-print '#$(manifest->gexp manifest) p)))))
 
-  (build-expression->derivation store "profile" builder
-                                #:inputs
-                                (append-map (match-lambda
-                                             (($ <manifest-entry> name version
-                                                 output path deps (inputs ..1))
-                                              (map (cute lower-input store <>)
-                                                   inputs))
-                                             (($ <manifest-entry> name version
-                                                 output path deps)
-                                              ;; Assume PATH and DEPS are
-                                              ;; already valid.
-                                              `((,name ,path) ,@deps)))
-                                            (manifest-entries manifest))
-                                #:modules '((guix build union))
-                                #:local-build? #t))
+  (gexp->derivation "profile" builder
+                    #:modules '((guix build union))
+                    #:local-build? #t))
 
 (define (profile-regexp profile)
   "Return a regular expression that matches PROFILE's name and number."

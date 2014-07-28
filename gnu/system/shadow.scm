@@ -20,6 +20,8 @@
   #:use-module (guix records)
   #:use-module (guix gexp)
   #:use-module (guix monads)
+  #:use-module ((gnu system file-systems)
+                #:select (%tty-gid))
   #:use-module ((gnu packages admin)
                 #:select (shadow))
   #:use-module (gnu packages bash)
@@ -41,6 +43,7 @@
             user-group-name
             user-group-password
             user-group-id
+            user-group-system?
 
             default-skeletons
             skeleton-directory
@@ -73,28 +76,33 @@
   user-group?
   (name           user-group-name)
   (password       user-group-password (default #f))
-  (id             user-group-id (default #f)))
+  (id             user-group-id (default #f))
+  (system?        user-group-system?              ; Boolean
+                  (default #f)))
 
 (define %base-groups
   ;; Default set of groups.
-  (list (user-group (name "root") (id 0))
-        (user-group (name "wheel"))               ; root-like users
-        (user-group (name "users"))               ; normal users
-        (user-group (name "nogroup"))             ; for daemons etc.
+  (let-syntax ((system-group (syntax-rules ()
+                               ((_ args ...)
+                                (user-group (system? #t) args ...)))))
+    (list (system-group (name "root") (id 0))
+          (system-group (name "wheel"))              ; root-like users
+          (system-group (name "users"))              ; normal users
+          (system-group (name "nogroup"))            ; for daemons etc.
 
-        ;; The following groups are conventionally used by things like udev to
-        ;; control access to hardware devices.
-        (user-group (name "tty"))
-        (user-group (name "dialout"))
-        (user-group (name "kmem"))
-        (user-group (name "video"))
-        (user-group (name "audio"))
-        (user-group (name "netdev"))              ; used in avahi-dbus.conf
-        (user-group (name "lp"))
-        (user-group (name "disk"))
-        (user-group (name "floppy"))
-        (user-group (name "cdrom"))
-        (user-group (name "tape"))))
+          ;; The following groups are conventionally used by things like udev to
+          ;; control access to hardware devices.
+          (system-group (name "tty") (id %tty-gid))
+          (system-group (name "dialout"))
+          (system-group (name "kmem"))
+          (system-group (name "video"))
+          (system-group (name "audio"))
+          (system-group (name "netdev"))             ; used in avahi-dbus.conf
+          (system-group (name "lp"))
+          (system-group (name "disk"))
+          (system-group (name "floppy"))
+          (system-group (name "cdrom"))
+          (system-group (name "tape")))))
 
 (define (default-skeletons)
   "Return the default skeleton files for /etc/skel.  These files are copied by

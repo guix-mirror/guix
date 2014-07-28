@@ -181,11 +181,13 @@ as 'needed-for-boot'."
   (sequence %store-monad
             (map (match-lambda
                   (($ <file-system> device title target type flags opts
-                                    #f check?)
+                                    #f check? create?)
                    (file-system-service device target type
                                         #:title title
                                         #:check? check?
-                                        #:options opts)))
+                                        #:create-mount-point? create?
+                                        #:options opts
+                                        #:flags flags)))
                  file-systems)))
 
 (define (essential-services os)
@@ -361,7 +363,8 @@ alias ll='ls -l'
 'active-groups'."
   #~(list #$(user-group-name group)
           #$(user-group-password group)
-          #$(user-group-id group)))
+          #$(user-group-id group)
+          #$(user-group-system? group)))
 
 (define (user-account->gexp account)
   "Turn ACCOUNT, a <user-account> object, into a list-valued gexp suitable for

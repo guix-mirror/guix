@@ -272,14 +272,14 @@ Go.  It also includes runtime support libraries for these languages.")
 
 (define-public gcc-4.9
   (package (inherit gcc-4.7)
-    (version "4.9.0")
+    (version "4.9.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gcc/gcc-"
                                  version "/gcc-" version ".tar.bz2"))
              (sha256
               (base32
-               "0mqjxpw2klskls00lwx1k24pnyzm3whqxg3hk74c3sddgfllgc5r"))))))
+               "0zki3ngi0gsidnmsp88mjl2868cc7cm5wm1vwqw6znja28d7hd6k"))))))
 
 (define (custom-gcc gcc name languages)
   "Return a custom version of GCC that supports LANGUAGES."

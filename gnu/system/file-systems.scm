@@ -28,9 +28,16 @@
             file-system-needed-for-boot?
             file-system-flags
             file-system-options
+            file-system-check?
+            file-system-create-mount-point?
 
             %fuse-control-file-system
-            %binary-format-file-system))
+            %binary-format-file-system
+            %shared-memory-file-system
+            %pseudo-terminal-file-system
+            %devtmpfs-file-system
+
+            %base-file-systems))
 
 ;;; Commentary:
 ;;;
@@ -54,7 +61,9 @@
   (needed-for-boot? file-system-needed-for-boot?  ; Boolean
                     (default #f))
   (check?           file-system-check?            ; Boolean
-                    (default #t)))
+                    (default #t))
+  (create-mount-point? file-system-create-mount-point? ; Boolean
+                       (default #f)))
 
 (define %fuse-control-file-system
   ;; Control file system for Linux' file systems in user-space (FUSE).
@@ -71,5 +80,52 @@
     (mount-point "/proc/sys/fs/binfmt_misc")
     (type "binfmt_misc")
     (check? #f)))
+
+(define %devtmpfs-file-system
+  ;; /dev as a 'devtmpfs' file system, needed for udev.
+  (file-system
+    (device "none")
+    (mount-point "/dev")
+    (type "devtmpfs")
+    (check? #f)
+
+    ;; Mount it from the initrd so /dev/pts & co. can then be mounted over it.
+    (needed-for-boot? #t)))
+
+(define %tty-gid
+  ;; ID of the 'tty' group.  Allocate it statically to make it easy to refer
+  ;; to it from here and from the 'tty' group definitions.
+  996)
+
+(define %pseudo-terminal-file-system
+  ;; The pseudo-terminal file system.  It needs to be mounted so that
+  ;; statfs(2) returns DEVPTS_SUPER_MAGIC like libc's getpt(3) expects (and
+  ;; thus openpty(3) and its users, such as xterm.)
+  (file-system
+    (device "none")
+    (mount-point "/dev/pts")
+    (type "devpts")
+    (check? #f)
+    (needed-for-boot? #f)
+    (create-mount-point? #t)
+    (options (string-append "gid=" (number->string %tty-gid) ",mode=620"))))
+
+(define %shared-memory-file-system
+  ;; Shared memory.
+  (file-system
+    (device "tmpfs")
+    (mount-point "/dev/shm")
+    (type "tmpfs")
+    (check? #f)
+    (flags '(no-suid no-dev))
+    (options "size=50%")                         ;TODO: make size configurable
+    (create-mount-point? #t)))
+
+(define %base-file-systems
+  ;; List of basic file systems to be mounted.  Note that /proc and /sys are
+  ;; currently mounted by the initrd.
+  (list %devtmpfs-file-system
+        %pseudo-terminal-file-system
+        %shared-memory-file-system))
 
 ;;; file-systems.scm ends here

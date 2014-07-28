@@ -24,6 +24,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix profiles)
+  #:use-module (guix monads)
   #:use-module (guix utils)
   #:use-module (guix config)
   #:use-module (guix scripts build)
@@ -82,7 +83,8 @@ return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
 
 (define (link-to-empty-profile generation)
   "Link GENERATION, a string, to the empty profile."
-  (let* ((drv  (profile-derivation (%store) (manifest '())))
+  (let* ((drv  (run-with-store (%store)
+                 (profile-derivation (manifest '()))))
          (prof (derivation->output-path drv "out")))
     (when (not (build-derivations (%store) (list drv)))
           (leave (_ "failed to build the empty profile~%")))
@@ -205,10 +207,14 @@ packages that will/would be installed and removed."
                    remove))))
     (_ #f))
   (match install
-    ((($ <manifest-entry> name version output path _) ..1)
+    ((($ <manifest-entry> name version output item _) ..1)
      (let ((len     (length name))
-           (install (map (cut format #f "   ~a-~a\t~a\t~a" <> <> <> <>)
-                         name version output path)))
+           (install (map (lambda (name version output item)
+                           (format #f "   ~a-~a\t~a\t~a" name version output
+                                   (if (package? item)
+                                       (package-output (%store) item output)
+                                       item)))
+                         name version output item)))
        (if dry-run?
            (format (current-error-port)
                    (N_ "The following package would be installed:~%~{~a~%~}~%"
@@ -252,17 +258,6 @@ RX."
       (string<? (package-name p1)
                 (package-name p2))))
    same-location?))
-
-(define (input->name+path input)
-  "Convert the name/package/sub-drv tuple INPUT to a name/store-path tuple."
-  (let loop ((input input))
-    (match input
-      ((name (? package? package))
-       (loop `(,name ,package "out")))
-      ((name (? package? package) sub-drv)
-       `(,name ,(package-output (%store) package sub-drv)))
-      (_
-       input))))
 
 (define %sigint-prompt
   ;; The prompt to jump to upon SIGINT.
@@ -517,6 +512,8 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   (display (_ "
   -A, --list-available[=REGEXP]
                          list available packages matching REGEXP"))
+  (display (_ "
+  --show=PACKAGE         show details about PACKAGE"))
   (newline)
   (show-build-options-help)
   (newline)
@@ -615,6 +612,11 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                    (values (cons `(query list-available ,(or arg ""))
                                  result)
                            #f)))
+         (option '("show") #t #t
+                 (lambda (opt name arg result arg-handler)
+                   (values (cons `(query show ,arg)
+                                 result)
+                           #f)))
 
          %standard-build-options))
 
@@ -639,22 +641,11 @@ return the new list of manifest entries."
 
     (delete-duplicates deps same?))
 
-  (define (package->manifest-entry p output)
-    ;; Return a manifest entry for the OUTPUT of package P.
-    (check-package-freshness p)
+  (define (package->manifest-entry* package output)
+    (check-package-freshness package)
     ;; When given a package via `-e', install the first of its
     ;; outputs (XXX).
-    (let* ((output (or output (car (package-outputs p))))
-           (path   (package-output (%store) p output))
-           (deps   (deduplicate (package-transitive-propagated-inputs p))))
-      (manifest-entry
-       (name (package-name p))
-       (version (package-version p))
-       (output output)
-       (path path)
-       (dependencies (map input->name+path deps))
-       (inputs (cons (list (package-name p) p output)
-                     deps)))))
+    (package->manifest-entry package output))
 
   (define upgrade-regexps
     (filter-map (match-lambda
@@ -685,7 +676,7 @@ return the new list of manifest entries."
   (define to-upgrade
     (map (match-lambda
           ((package output)
-           (package->manifest-entry package output)))
+           (package->manifest-entry* package output)))
          packages-to-upgrade))
 
   (define packages-to-install
@@ -703,7 +694,7 @@ return the new list of manifest entries."
   (define to-install
     (append (map (match-lambda
                   ((package output)
-                   (package->manifest-entry package output)))
+                   (package->manifest-entry* package output)))
                  packages-to-install)
             (filter-map (match-lambda
                          (('install . (? package?))
@@ -716,7 +707,7 @@ return the new list of manifest entries."
                              (name name)
                              (version version)
                              (output #f)
-                             (path path))))
+                             (item path))))
                          (_ #f))
                         opts)))
 
@@ -742,6 +733,16 @@ removed from MANIFEST."
   "Register PROFILE as a GC root, unless it doesn't need it."
   (unless (string=? profile %current-profile)
     (add-indirect-root store (canonicalize-path profile))))
+
+(define (readlink* file)
+  "Call 'readlink' until the result is not a symlink."
+  (catch 'system-error
+    (lambda ()
+      (readlink* (readlink file)))
+    (lambda args
+      (if (= EINVAL (system-error-errno args))
+          file
+          (apply throw args)))))
 
 
 ;;;
@@ -914,36 +915,41 @@ more information.~%"))
              (when (equal? profile %current-profile)
                (ensure-default-profile))
 
-             (if (manifest=? new manifest)
-                 (format (current-error-port) (_ "nothing to be done~%"))
-                 (let ((prof-drv (profile-derivation (%store) new))
-                       (remove   (manifest-matching-entries manifest remove)))
-                   (show-what-to-remove/install remove install dry-run?)
-                   (show-what-to-build (%store) (list prof-drv)
-                                       #:use-substitutes?
-                                       (assoc-ref opts 'substitutes?)
-                                       #:dry-run? dry-run?)
+             (unless (and (null? install) (null? remove))
+               (let* ((prof-drv (run-with-store (%store)
+                                  (profile-derivation new)))
+                      (prof     (derivation->output-path prof-drv))
+                      (remove   (manifest-matching-entries manifest remove)))
+                 (show-what-to-remove/install remove install dry-run?)
+                 (show-what-to-build (%store) (list prof-drv)
+                                     #:use-substitutes?
+                                     (assoc-ref opts 'substitutes?)
+                                     #:dry-run? dry-run?)
 
-                   (or dry-run?
-                       (let* ((prof   (derivation->output-path prof-drv))
-                              (number (generation-number profile))
+                 (cond
+                  (dry-run? #t)
+                  ((and (file-exists? profile)
+                        (and=> (readlink* profile) (cut string=? prof <>)))
+                   (format (current-error-port) (_ "nothing to be done~%")))
+                  (else
+                   (let* ((number (generation-number profile))
 
-                              ;; Always use NUMBER + 1 for the new profile,
-                              ;; possibly overwriting a "previous future
-                              ;; generation".
-                              (name   (generation-file-name profile
-                                                            (+ 1 number))))
-                         (and (build-derivations (%store) (list prof-drv))
-                              (let ((count (length entries)))
-                                (switch-symlinks name prof)
-                                (switch-symlinks profile name)
-                                (maybe-register-gc-root (%store) profile)
-                                (format #t (N_ "~a package in profile~%"
-                                               "~a packages in profile~%"
-                                               count)
-                                        count)
-                                (display-search-paths entries
-                                                      profile)))))))))))
+                          ;; Always use NUMBER + 1 for the new profile,
+                          ;; possibly overwriting a "previous future
+                          ;; generation".
+                          (name   (generation-file-name profile
+                                                        (+ 1 number))))
+                     (and (build-derivations (%store) (list prof-drv))
+                          (let ((count (length entries)))
+                            (switch-symlinks name prof)
+                            (switch-symlinks profile name)
+                            (maybe-register-gc-root (%store) profile)
+                            (format #t (N_ "~a package in profile~%"
+                                           "~a packages in profile~%"
+                                           count)
+                                    count)
+                            (display-search-paths entries
+                                                  profile))))))))))))
 
   (define (process-query opts)
     ;; Process any query specified by OPTS.  Return #t when a query was
@@ -1040,6 +1046,14 @@ more information.~%"))
            (leave-on-EPIPE
             (for-each (cute package->recutils <> (current-output-port))
                       (find-packages-by-description regexp)))
+           #t))
+
+        (('show requested-name)
+         (let-values (((name version)
+                       (package-name->name+version requested-name)))
+           (leave-on-EPIPE
+            (for-each (cute package->recutils <> (current-output-port))
+                      (find-packages-by-name name version)))
            #t))
 
         (('search-paths)
