@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -36,7 +37,9 @@
   #:use-module ((gnu packages compression)
                 #:renamer (symbol-prefix-proc 'compression:))
   #:use-module (gnu packages xml)
-  #:use-module (gnu packages glib))
+  #:use-module (gnu packages glib)
+  #:use-module (guix utils)
+  #:use-module (srfi srfi-1))
 
 (define-public emacs
   (package
@@ -101,6 +104,17 @@ documentation on all aspects of the system, from basic editing to writing
 large Lisp programs.  It has full Unicode support for nearly all human
 languages.")
     (license gpl3+)))
+
+(define-public emacs-no-x-toolkit
+  (package (inherit emacs)
+    (name "emacs-no-x-toolkit")
+    (synopsis "The extensible, customizable, self-documenting text
+editor (without an X toolkit)" )
+    (inputs (alist-delete "gtk+" (package-inputs emacs)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments emacs)
+       ((#:configure-flags flags)
+        `(cons "--with-x-toolkit=no" ,flags))))))
 
 
 ;;;
