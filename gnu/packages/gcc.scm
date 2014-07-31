@@ -281,10 +281,13 @@ Go.  It also includes runtime support libraries for these languages.")
               (base32
                "0zki3ngi0gsidnmsp88mjl2868cc7cm5wm1vwqw6znja28d7hd6k"))))))
 
-(define (custom-gcc gcc name languages)
+(define* (custom-gcc gcc name languages #:key (separate-lib-output? #t))
   "Return a custom version of GCC that supports LANGUAGES."
   (package (inherit gcc)
     (name name)
+    (outputs (if separate-lib-output?
+                 (package-outputs gcc)
+                 (delete "lib" (package-outputs gcc))))
     (arguments
      (substitute-keyword-arguments `(#:modules ((guix build gnu-build-system)
                                                 (guix build utils)
@@ -302,7 +305,11 @@ Go.  It also includes runtime support libraries for these languages.")
   (custom-gcc gcc-4.8 "gfortran" '("fortran")))
 
 (define-public gccgo-4.8
-  (custom-gcc gcc-4.8 "gccgo" '("go")))
+  (custom-gcc gcc-4.8 "gccgo" '("go")
+              ;; Suppress the separate "lib" output, because otherwise the
+              ;; "lib" and "out" outputs would refer to each other, creating
+              ;; a cyclic dependency.  <http://debbugs.gnu.org/18101>
+              #:separate-lib-output? #f))
 
 (define-public gcc-objc-4.8
   (custom-gcc gcc-4.8 "gcc-objc" '("objc")))
