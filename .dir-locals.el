@@ -29,6 +29,10 @@
    (eval . (put 'call-with-compressed-output-port 'scheme-indent-function 2))
    (eval . (put 'call-with-decompressed-port 'scheme-indent-function 2))
    (eval . (put 'signature-case 'scheme-indent-function 1))
+   (eval . (put 'emacs-batch-eval 'scheme-indent-function 0))
+   (eval . (put 'emacs-batch-edit-file 'scheme-indent-function 1))
+   (eval . (put 'emacs-substitute-sexps 'scheme-indent-function 1))
+   (eval . (put 'emacs-substitute-variables 'scheme-indent-function 1))
 
    (eval . (put 'syntax-parameterize 'scheme-indent-function 1))
    (eval . (put 'with-monad 'scheme-indent-function 1))

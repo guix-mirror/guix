@@ -73,6 +73,7 @@ MODULES =					\
   guix/build/install.scm			\
   guix/build/activation.scm			\
   guix/build/syscalls.scm			\
+  guix/build/emacs-utils.scm			\
   guix/packages.scm				\
   guix/snix.scm					\
   guix/scripts/download.scm			\
