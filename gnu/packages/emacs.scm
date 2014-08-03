@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,6 +35,7 @@
   #:use-module (gnu packages image)
   #:use-module (gnu packages giflib)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages version-control)
   #:use-module ((gnu packages compression)
                 #:renamer (symbol-prefix-proc 'compression:))
   #:use-module (gnu packages xml)
@@ -152,3 +154,53 @@ of the stage in Geiser.  A bundle of Elisp shims orchestrates the dialog
 between the Scheme interpreter, Emacs and, ultimately, the schemer,
 giving her access to live metadata.")
     (license bsd-3)))
+
+(define-public magit
+  (package
+    (name "magit")
+    (version "1.2.0")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "https://github.com/downloads/magit/magit/magit-"
+                                 version ".tar.gz"))
+             (sha256
+              (base32 "1a8vvilhd5y5vmlpsh194qpl4qlg0a1brylfscxcacpfp0cmhlzg"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("texinfo" ,texinfo)))
+    (inputs `(("emacs" ,emacs)
+              ("git" ,git)
+              ("git:gui" ,git "gui")))
+    (arguments
+     `(#:modules ((guix build gnu-build-system)
+                  (guix build utils)
+                  (guix build emacs-utils))
+       #:imported-modules ((guix build gnu-build-system)
+                           (guix build utils)
+                           (guix build emacs-utils))
+       #:tests? #f  ; no check target
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out")))
+            (substitute* "Makefile"
+              (("/usr/local") out)
+              (("/etc") (string-append out "/etc")))))
+        (alist-cons-before
+         'build 'patch-exec-paths
+         (lambda* (#:key inputs #:allow-other-keys)
+           (let ((git (assoc-ref inputs "git"))
+                 (git:gui (assoc-ref inputs "git:gui")))
+             (emacs-substitute-variables "magit.el"
+               ("magit-git-executable" (string-append git "/bin/git"))
+               ("magit-gitk-executable" (string-append git:gui "/bin/gitk")))))
+         %standard-phases))))
+    (home-page "http://magit.github.io/")
+    (synopsis "Emacs interface for the Git version control system")
+    (description
+     "With Magit, you can inspect and modify your Git repositories with Emacs.
+You can review and commit the changes you have made to the tracked files, for
+example, and you can browse the history of past changes.  There is support for
+cherry picking, reverting, merging, rebasing, and other common Git
+operations.")
+    (license gpl3+)))
