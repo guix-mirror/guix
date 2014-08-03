@@ -23,6 +23,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages ncurses)
@@ -154,6 +155,50 @@ of the stage in Geiser.  A bundle of Elisp shims orchestrates the dialog
 between the Scheme interpreter, Emacs and, ultimately, the schemer,
 giving her access to live metadata.")
     (license bsd-3)))
+
+(define-public paredit
+  (package
+    (name "paredit")
+    (version "23")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://mumble.net/~campbell/emacs/paredit-"
+                                 version ".el"))
+             (sha256
+              (base32 "1np882jzvxckljx3cjz4absyzmc5hw65cs21sjmbic82163m9lf8"))))
+    (build-system trivial-build-system)
+    (inputs `(("emacs" ,emacs)))
+    (arguments
+     `(#:modules ((guix build utils)
+                  (guix build emacs-utils))
+       #:builder
+       (begin
+         (use-modules (guix build utils))
+         (use-modules (guix build emacs-utils))
+
+         (let* ((emacs    (string-append (assoc-ref %build-inputs "emacs")
+                                         "/bin/emacs"))
+                (source   (assoc-ref %build-inputs "source"))
+                (lisp-dir (string-append %output
+                                         "/share/emacs/site-lisp"))
+                (target   (string-append lisp-dir "/paredit.el")))
+           (mkdir-p lisp-dir)
+           (copy-file source target)
+           (with-directory-excursion lisp-dir
+             (parameterize ((%emacs emacs))
+               (emacs-batch-eval '(byte-compile-file "paredit.el"))))))))
+    (home-page "http://mumble.net/~campbell/emacs/paredit/")
+    (synopsis "Emacs minor mode for editing parentheses")
+    (description
+     "ParEdit (paredit.el) is a minor mode for performing structured editing
+of S-expression data.  The typical example of this would be Lisp or Scheme
+source code.
+
+ParEdit helps **keep parentheses balanced** and adds many keys for moving
+S-expressions and moving around in S-expressions.  Its behavior can be jarring
+for those who may want transient periods of unbalanced parentheses, such as
+when typing parentheses directly or commenting out code line by line.")
+    (license gpl3+)))
 
 (define-public magit
   (package
