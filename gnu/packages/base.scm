@@ -233,17 +233,15 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.22")
+   (version "8.23")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "04hjzzv434fb8ak3hh3dyhdvg3hqjjwvjmjxqzk1gh2jh6cr8gjv"))
-            (patches (list (search-patch "coreutils-dummy-man.patch")
-                           ;; TODO: remove this patch for >= 8.23
-                           (search-patch "coreutils-skip-nohup.patch")))))
+              "0bdq6yggyl7nkc2pbl6pxhhyx15nyqhz3ds6rfn448n6rxdwlhzc"))
+            (patches (list (search-patch "coreutils-dummy-man.patch")))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)))
