@@ -133,14 +133,14 @@ implementation offers several extensions over the standard utility.")
 (define-public tar
   (package
    (name "tar")
-   (version "1.27.1")
+   (version "1.28")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/tar/tar-"
-                                version ".tar.bz2"))
+                                version ".tar.xz"))
             (sha256
              (base32
-              "1iip0fk0wqhxb0jcwphz43r4fxkx1y7mznnhmlvr618jhp7b63wv"))))
+              "1wi2zwm4c9r3h3b8y4w0nm0qq897kn8kyj9k22ba0iqvxj48vvk4"))))
    (build-system gnu-build-system)
    (synopsis "Managing tar archives")
    (description
