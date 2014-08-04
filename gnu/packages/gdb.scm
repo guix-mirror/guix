@@ -24,7 +24,9 @@
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages pkg-config)
   #:use-module ((guix licenses) #:select (gpl3+))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -33,14 +35,14 @@
 (define-public gdb
   (package
     (name "gdb")
-    (version "7.7.1")
+    (version "7.8")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gdb/gdb-"
-                                 version ".tar.bz2"))
+                                 version ".tar.xz"))
              (sha256
               (base32
-               "199sn1p0gzli6icp9dcvrphdvyi7hm4cc9zhziq0q6vg81h55g8d"))))
+               "0xdqxjj77q60k19hn85msnbv9nchnpzi0lp7z7hm97zpfkhspi29"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ; FIXME "make check" fails on single-processor systems.
@@ -56,14 +58,17 @@
        ("gmp" ,gmp)
        ("readline" ,readline)
        ("ncurses" ,ncurses)
-       ("python" ,python-wrapper)
+       ("guile" ,guile-2.0)
+       ("python" ,python)
+       ("python-wrapper" ,python-wrapper)
        ("dejagnu" ,dejagnu)
 
        ;; Allow use of XML-formatted syscall information.  This enables 'catch
        ;; syscall' and similar commands.
        ("libxml2" ,libxml2)))
     (native-inputs
-      `(("texinfo" ,texinfo)))
+      `(("texinfo" ,texinfo)
+        ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnu.org/software/gdb/")
     (synopsis "The GNU debugger")
     (description
