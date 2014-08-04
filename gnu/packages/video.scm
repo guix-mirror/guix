@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages video)
+  #:use-module (ice-9 match)
   #:use-module ((guix licenses)
                 #:select (gpl2 gpl2+ bsd-3 public-domain))
   #:use-module (guix packages)
@@ -342,20 +344,18 @@ treaming protocols.")
                                      libx11 "/include") ; to detect libx11
                       "--disable-tremor-internal" ; forces external libvorbis
                       (string-append "--prefix=" out)
-                      ;; drop special machine instructions not supported
-                      ;; on all instances of the target
-                      ,@(if (string-prefix? "x86_64"
-                                            (or (%current-target-system)
-                                                (%current-system)))
-                            '()
-                            '("--disable-3dnow"
-                              "--disable-3dnowext"
-                              "--disable-mmx"
-                              "--disable-mmxext"
-                              "--disable-sse"
-                              "--disable-sse2"))
-                      "--disable-ssse3"
-                      "--disable-altivec"
+                      ;; Enable runtime cpu detection where supported,
+                      ;; and choose a suitable target.
+                      ,@(match (or (%current-target-system)
+                                   (%current-system))
+                          ("x86_64-linux"
+                           '("--enable-runtime-cpudetection"
+                             "--target=x86_64-linux"))
+                          ("i686-linux"
+                           '("--enable-runtime-cpudetection"
+                             "--target=i686-linux"))
+                          ("mips64el-linux"
+                           '("--target=mips3-linux")))
                       "--disable-armv5te"
                       "--disable-armv6"
                       "--disable-armv6t2"
