@@ -170,31 +170,11 @@
                       "--enable-libtheora"
                       "--enable-libvorbis"
                       "--enable-libvpx"
-                      ;; drop special machine instructions not supported
-                      ;; on all instances of the target
-                      ,@(if (string-prefix? "x86_64"
-                                            (or (%current-target-system)
-                                                (%current-system)))
-                            '()
-                            '("--disable-amd3dnow"
-                              "--disable-amd3dnowext"
-                              "--disable-mmx"
-                              "--disable-mmxext"
-                              "--disable-sse"
-                              "--disable-sse2"))
-                      "--disable-altivec"
-                      "--disable-sse3"
-                      "--disable-ssse3"
-                      "--disable-sse4"
-                      "--disable-sse42"
-                      "--disable-avx"
-                      "--disable-fma4"
-                      "--disable-avx2"
-                      "--disable-armv5te"
-                      "--disable-armv6"
-                      "--disable-armv6t2"
-                      "--disable-vfp"
-                      "--disable-neon"
+
+                      "--enable-runtime-cpudetect"
+
+                      ;; Runtime cpu detection is not implemented on
+                      ;; MIPS, so we disable some features.
                       "--disable-mips32r2"
                       "--disable-mipsdspr1"
                       "--disable-mipsdspr2"
@@ -270,10 +250,6 @@ audio/video codec library.")
     (arguments
      `(#:configure-flags
        `("--disable-a52" ; FIXME: reenable once available
-         "--disable-mmx" ; FIXME: may be enabled on x86_64
-         "--disable-sse" ; 1-4, no separate options available
-         "--disable-neon"
-         "--disable-altivec"
          ,(string-append "LDFLAGS=-Wl,-rpath -Wl,"
                          (assoc-ref %build-inputs "ffmpeg")
                          "/lib")))) ; needed for the tests
