@@ -32,14 +32,14 @@
 (define-public tor
   (package
     (name "tor")
-    (version "0.2.4.22")
+    (version "0.2.4.23")
     (source (origin
              (method url-fetch)
              (uri (string-append "https://www.torproject.org/dist/tor-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "0k39ppcvld6p08yaf4rpspb34z4f5863j0d605yrm4dqjcp99xvb"))))
+               "0a8l6d82hk4wbn7nlphd3c1maxhgdli8338wbg5r9dk6zcy7k8q5"))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
