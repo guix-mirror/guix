@@ -37,12 +37,12 @@
                (base32
                 "088yh8pxd6q53ssqndydcw1dkq51cjqyahc03lm6iip22cdazcf0"))))
     (build-system cmake-build-system)
-    (native-inputs
+    (inputs
      `(("libusb" ,libusb)))
-    (home-page "http://www.intra2net.com")
+    (home-page "http://www.intra2net.com/en/developer/libftdi/")
     (synopsis "FTDI USB driver with bitbang mode")
     (description
      "libFTDI is a library to talk to FTDI chips: FT232BM,
 FT245BM, FT2232C, FT2232D, FT245R and FT232H including the popular
 bitbangmode.")
-    (license lgpl2.1+)))
+    (license lgpl2.1)))
