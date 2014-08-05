@@ -850,3 +850,36 @@ BIOS/EFI/coreboot/firmware/optionROM images on mainboards,
 network/graphics/storage controller cards, and various other
 programmer devices.")
     (license gpl2)))
+
+(define-public acpica
+  (package
+    (name "acpica")
+    (version "20140724")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://acpica.org/sites/acpica/files/acpica-unix2-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "01vdgrh7dsxrrvg5yd8sxm63cw8210pnsi5qg9g15ac53gn243ac"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("flex" ,flex)
+                     ("bison" ,bison)))
+    (arguments
+     '(#:make-flags (list (string-append "PREFIX=" %output)
+                          "HOST=_LINUX"
+                          "OPT_CFLAGS=-Wall -fno-strict-aliasing")
+       #:tests? #f  ; no 'check' target.
+       #:phases (alist-delete 'configure %standard-phases)))
+    (home-page "http://acpica.org/")
+    (synopsis "ACPICA tools for the development and debug of ACPI tables")
+    (description
+     "The ACPI Component Architecture (ACPICA) project provides an
+OS-independent reference implementation of the Advanced Configuration and
+Power Interface Specification (ACPI).  ACPICA code contains those portions of
+ACPI meant to be directly integrated into the host OS as a kernel-resident
+subsystem, and a small set of tools to assist in developing and debugging ACPI
+tables.  This package contains only the user-space tools needed for ACPI table
+development, not the kernel implementation of ACPI.")
+    (license gpl2)))  ; Dual GPLv2/ACPICA Licence
