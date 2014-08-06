@@ -332,14 +332,14 @@ attachments, create new maildirs, and so on.")
 (define-public notmuch
   (package
     (name "notmuch")
-    (version "0.18")
+    (version "0.18.1")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://notmuchmail.org/releases/notmuch-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "1ia65iazz2hlp3ja57yn0chs27rzsky9kayw74njwmgi9faw3vh9"))))
+                "1pdp9l7yv71d3fjb30qyccva8h03hvg88q4a00yi50v2j70kvmgj"))))
     (build-system gnu-build-system)
     (arguments
      '(#:tests? #f ;; FIXME: Test suite hangs and times out.
