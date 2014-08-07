@@ -207,6 +207,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/rdf.scm				\
   gnu/packages/readline.scm			\
   gnu/packages/recutils.scm			\
+  gnu/packages/rrdtool.scm			\
   gnu/packages/rsync.scm			\
   gnu/packages/rush.scm				\
   gnu/packages/samba.scm			\
