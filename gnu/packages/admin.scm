@@ -883,3 +883,29 @@ subsystem, and a small set of tools to assist in developing and debugging ACPI
 tables.  This package contains only the user-space tools needed for ACPI table
 development, not the kernel implementation of ACPI.")
     (license gpl2)))  ; Dual GPLv2/ACPICA Licence
+
+(define-public stress
+  (package
+    (name "stress")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://debian/pool/main/s/stress/stress_"
+                                  version ".orig.tar.gz"))
+              (sha256
+               (base32
+                "1v9vnzlihqfjsxa93hdbrq72pqqk00dkylmlg8jpxhm7s1w9qfl1"))))
+    (build-system gnu-build-system)
+    (home-page "http://packages.debian.org/wheezy/stress")
+    (synopsis "A tool to impose load on and stress test a computer system")
+    (description
+     "'stress' is a tool that imposes a configurable amount of CPU, memory, I/O,
+or disk stress on a POSIX-compliant operating system and reports any errors it
+detects.
+
+'stress' is not a benchmark.  It is a tool used by system administrators to
+evaluate how well their systems will scale, by kernel programmers to evaluate
+perceived performance characteristics, and by systems programmers to expose
+the classes of bugs which only or more frequently manifest themselves when the
+system is under heavy load.")
+    (license gpl2+)))
