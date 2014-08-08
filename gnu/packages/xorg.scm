@@ -1544,6 +1544,28 @@ tracking.")
     (license license:x11)))
 
 
+;; not part of X11R7.7, required for newer versions of mesa
+(define-public presentproto
+  (package
+    (name "presentproto")
+    (version "1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/proto/presentproto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1kir51aqg9cwazs14ivcldcn3mzadqgykc9cg87rm40zf947sb41"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license (license:x11-style "file://presentproto.h"
+                                "See 'presentproto.h' in the distribution."))))
+
 ;; The package is missing from X11R7.7.
 (define-public printproto
   (package
