@@ -2176,9 +2176,15 @@ tracking.")
           (base32
             "1ivf5n821chckrgp89mpb18zi00v1hyrkc1hr82q0x6g1kpgxq9y"))))
     (build-system gnu-build-system)
-    ;; FIXME: Add required input udev once it is available.
-    (inputs `(("xorg-server" ,xorg-server)))
+    (inputs
+      `(("udev" ,udev)
+        ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-sdkdir="
+                            (assoc-ref %outputs "out")
+                            "/include/xorg"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
