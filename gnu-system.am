@@ -337,6 +337,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/libtool-skip-tests-for-mips.patch	\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
+  gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
   gnu/packages/patches/luit-posix.patch				\
   gnu/packages/patches/m4-gets-undeclared.patch			\
   gnu/packages/patches/m4-readlink-EINVAL.patch			\

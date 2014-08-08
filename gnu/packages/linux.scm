@@ -23,8 +23,7 @@
   #:use-module ((guix licenses)
                 #:hide (zlib))
   #:use-module (gnu packages)
-  #:use-module ((gnu packages compression)
-                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module ((gnu packages compression) #:prefix guix:)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages gperf)
@@ -44,6 +43,9 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages rrdtool)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -1365,4 +1367,77 @@ time.")
 Extensions.  The Wireless Extension is an interface allowing you to set
 Wireless LAN specific parameters and get the specific stats.")
     (home-page "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
+    (license gpl2+)))
+
+(define-public lm-sensors
+  (package
+    (name "lm-sensors")
+    (version "3.3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://dl.lm-sensors.org/lm-sensors/releases/lm_sensors-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1ksgrynxgrq590nb2fwxrl1gwzisjkqlyg3ljfd1al0ibrk6mbjx"))
+              (patches (list (search-patch "lm-sensors-hwmon-attrs.patch")))))
+    (build-system gnu-build-system)
+    (inputs `(("rrdtool" ,rrdtool)
+              ("perl" ,perl)
+              ("kmod" ,kmod)
+              ("gnuplot" ,gnuplot)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("flex" ,flex)
+                     ("bison" ,bison)
+                     ("which" ,which)))
+    (arguments
+     `(#:tests? #f  ; no 'check' target
+       #:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "ETCDIR=" %output "/etc")
+                          (string-append "MANDIR=" %output "/share/man"))
+       #:phases
+       (alist-delete
+        'configure
+        (alist-cons-before
+         'build 'patch-exec-paths
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (substitute* "prog/detect/sensors-detect"
+             (("`uname")
+              (string-append "`" (assoc-ref inputs "coreutils")
+                             "/bin/uname"))
+             (("(`|\")modprobe" all open-quote)
+              (string-append open-quote
+                             (assoc-ref inputs "kmod")
+                             "/bin/modprobe")))
+           (substitute* '("prog/pwm/pwmconfig"
+                          "prog/pwm/fancontrol")
+             (("gnuplot")
+              (string-append (assoc-ref inputs "gnuplot")
+                             "/bin/gnuplot"))
+             (("cat ")
+              (string-append (assoc-ref inputs "coreutils")
+                             "/bin/cat "))
+             (("egrep ")
+              (string-append (assoc-ref inputs "grep")
+                             "/bin/egrep "))
+             (("sed -e")
+              (string-append (assoc-ref inputs "sed")
+                             "/bin/sed -e"))
+             (("cut -d")
+              (string-append (assoc-ref inputs "coreutils")
+                             "/bin/cut -d"))
+             (("sleep ")
+              (string-append (assoc-ref inputs "coreutils")
+                             "/bin/sleep "))
+             (("readlink -f")
+              (string-append (assoc-ref inputs "coreutils")
+                             "/bin/readlink -f"))))
+         %standard-phases))))
+    (home-page "http://www.lm-sensors.org/")
+    (synopsis "Utilities to read temperature/voltage/fan sensors")
+    (description
+     "lm-sensors is a hardware health monitoring package for Linux.  It allows
+you to access information from temperature, voltage, and fan speed sensors.
+It works with most newer systems.")
     (license gpl2+)))
