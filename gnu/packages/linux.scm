@@ -46,6 +46,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages which)
   #:use-module (gnu packages rrdtool)
+  #:use-module (gnu packages gtk)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -1440,4 +1441,41 @@ Wireless LAN specific parameters and get the specific stats.")
      "lm-sensors is a hardware health monitoring package for Linux.  It allows
 you to access information from temperature, voltage, and fan speed sensors.
 It works with most newer systems.")
+    (license gpl2+)))
+
+(define-public xsensors
+  (package
+    (name "xsensors")
+    (version "0.70")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.linuxhardware.org/xsensors/xsensors-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1siplsfgvcxamyqf44h71jx6jdfmvhfm7mh0y1q8ps4zs6pj2zwh"))))
+    (build-system gnu-build-system)
+    (inputs `(("lm-sensors" ,lm-sensors)
+              ("gtk" ,gtk+-2)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:phases (alist-cons-before
+                 'configure 'enable-deprecated
+                 (lambda _
+                   (substitute* "src/Makefile.in"
+                     (("-DGDK_DISABLE_DEPRECATED") "")
+                     (("-DGTK_DISABLE_DEPRECATED") "")))
+                 (alist-cons-before
+                  'configure 'remove-Werror
+                  (lambda _
+                    (substitute* '("configure" "src/Makefile.in")
+                      (("-Werror") "")))
+                  %standard-phases))))
+    (home-page "http://www.linuxhardware.org/xsensors/")
+    (synopsis "Hardware health information viewer")
+    (description
+     "xsensors reads data from the libsensors library regarding hardware
+health such as temperature, voltage and fan speed and displays the information
+in a digital read-out.")
     (license gpl2+)))
