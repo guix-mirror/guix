@@ -331,6 +331,29 @@ tracking.")
     (license license:x11)))
 
 
+;; not part of X11R7.7, required for newer versions of mesa
+(define-public dri3proto
+  (package
+    (name "dri3proto")
+    (version "1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/proto/dri3proto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0x609xvnl8jky5m8jdklw4nymx3irkv32w99dfd8nl800bblkgh1"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license (license:x11-style "file://dri3proto.h"
+                                "See 'dri3proto.h' in the distribution."))))
+
+
 (define-public encodings
   (package
     (name "encodings")
