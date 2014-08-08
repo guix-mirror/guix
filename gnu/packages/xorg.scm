@@ -1696,9 +1696,15 @@ tracking.")
     (build-system gnu-build-system)
     (inputs
       `(("libxkbfile" ,libxkbfile)
+        ("xkeyboard-config" ,xkeyboard-config)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-xkb-config-root="
+                            (assoc-ref %build-inputs "xkeyboard-config")
+                            "/share/X11/xkb"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
