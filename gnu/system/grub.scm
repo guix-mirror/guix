@@ -49,7 +49,7 @@
   (menu-entries    grub-configuration-menu-entries   ; list
                    (default '()))
   (default-entry   grub-configuration-default-entry  ; integer
-                   (default 1))
+                   (default 0))
   (timeout         grub-configuration-timeout        ; integer
                    (default 5)))
 
