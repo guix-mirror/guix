@@ -110,13 +110,13 @@ languages.")
 (define-public geiser
   (package
     (name "geiser")
-    (version "0.4")
+    (version "0.6")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://savannah/geiser/" version
                                  "/geiser-" version ".tar.gz"))
              (sha256
-              (base32 "0ds7zk9b1839l9fsqfsgrby6manvy1cf5bjniiqhxl55h0cr6ijp"))))
+              (base32 "1mrk0bzqcpfhsw6635qznn47nzfy9ps7wrhkpymswdfpw5mdsry5"))))
     (build-system gnu-build-system)
     (inputs `(("guile" ,guile-2.0)
               ("emacs" ,emacs)))
