@@ -104,8 +104,7 @@ return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
   "Roll back to the previous generation of PROFILE."
   (let* ((number              (generation-number profile))
          (previous-number     (previous-generation-number profile number))
-         (previous-generation (generation-file-name profile previous-number))
-         (manifest            (string-append previous-generation "/manifest")))
+         (previous-generation (generation-file-name profile previous-number)))
     (cond ((not (file-exists? profile))                 ; invalid profile
            (leave (_ "profile '~a' does not exist~%")
                   profile))
@@ -623,24 +622,6 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
 (define (options->installable opts manifest)
   "Given MANIFEST, the current manifest, and OPTS, the result of 'args-fold',
 return the new list of manifest entries."
-  (define (deduplicate deps)
-    ;; Remove duplicate entries from DEPS, a list of propagated inputs, where
-    ;; each input is a name/path tuple.
-    (define (same? d1 d2)
-      (match d1
-        ((_ p1)
-         (match d2
-           ((_ p2) (eq? p1 p2))
-           (_      #f)))
-        ((_ p1 out1)
-         (match d2
-           ((_ p2 out2)
-            (and (string=? out1 out2)
-                 (eq? p1 p2)))
-           (_ #f)))))
-
-    (delete-duplicates deps same?))
-
   (define (package->manifest-entry* package output)
     (check-package-freshness package)
     ;; When given a package via `-e', install the first of its
@@ -659,19 +640,18 @@ return the new list of manifest entries."
       (()
        '())
       ((_ ...)
-       (let ((newest (find-newest-available-packages)))
-         (filter-map (match-lambda
-                      (($ <manifest-entry> name version output path _)
-                       (and (any (cut regexp-exec <> name)
-                                 upgrade-regexps)
-                            (upgradeable? name version path)
-                            (let ((output (or output "out")))
-                              (call-with-values
-                                  (lambda ()
-                                    (specification->package+output name output))
-                                list))))
-                      (_ #f))
-                     (manifest-entries manifest))))))
+       (filter-map (match-lambda
+                    (($ <manifest-entry> name version output path _)
+                     (and (any (cut regexp-exec <> name)
+                               upgrade-regexps)
+                          (upgradeable? name version path)
+                          (let ((output (or output "out")))
+                            (call-with-values
+                                (lambda ()
+                                  (specification->package+output name output))
+                              list))))
+                    (_ #f))
+                   (manifest-entries manifest)))))
 
   (define to-upgrade
     (map (match-lambda
@@ -762,11 +742,6 @@ removed from MANIFEST."
                 %default-options
                 #f))
 
-  (define (guile-missing?)
-    ;; Return #t if %GUILE-FOR-BUILD is not available yet.
-    (let ((out (derivation->output-path (%guile-for-build))))
-      (not (valid-path? (%store) out))))
-
   (define (ensure-default-profile)
     ;; Ensure the default profile symlink and directory exist and are
     ;; writable.
@@ -819,7 +794,6 @@ more information.~%"))
     ;; Process any install/remove/upgrade action from OPTS.
 
     (define dry-run? (assoc-ref opts 'dry-run?))
-    (define verbose? (assoc-ref opts 'verbose?))
     (define profile  (assoc-ref opts 'profile))
 
     (define (same-package? entry name output)
@@ -1059,7 +1033,6 @@ more information.~%"))
         (('search-paths)
          (let* ((manifest (profile-manifest profile))
                 (entries  (manifest-entries manifest))
-                (packages (map manifest-entry-name entries))
                 (settings (search-path-environment-variables entries profile
                                                              (const #f))))
            (format #t "~{~a~%~}" settings)
