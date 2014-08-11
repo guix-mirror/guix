@@ -107,9 +107,13 @@ KCONFIGS =					\
   gnu/packages/linux-libre-i686.conf		\
   gnu/packages/linux-libre-x86_64.conf
 
+# Templates, examples.
+EXAMPLES =					\
+  gnu/system/os-config.tmpl
+
 GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
 
-nobase_dist_guilemodule_DATA = $(MODULES) $(KCONFIGS)
+nobase_dist_guilemodule_DATA = $(MODULES) $(KCONFIGS) $(EXAMPLES)
 nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm
 
 # Do we need to provide our own non-broken (srfi srfi-37) module?
