@@ -24,7 +24,6 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages gettext)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages ncurses))
 
@@ -79,9 +78,15 @@ is on expressing the content semantically, avoiding physical markup commands.")
               (sha256
                (base32
                 "1yprv64vrlcbksqv25asplnjg07mbq38lfclp1m5lj8cw878pag8"))
-              (patches (list (search-patch "texi2html-document-encoding.patch")))))
+              (patches
+               (list (search-patch "texi2html-document-encoding.patch")))
+              (snippet
+               ;; This file is modified by the patch above, but reset its
+               ;; timestamp so we don't trigger the rule to update PO files,
+               ;; which would require Gettext.
+               ;; See <http://bugs.gnu.org/18247>.
+               '(utime "texi2html.pl" 0 0 0 0))))
     (build-system gnu-build-system)
-    (native-inputs `(("gettext" ,gnu-gettext)))
     (inputs `(("perl" ,perl)))
     (home-page "http://www.nongnu.org/texi2html/")
     (synopsis "Convert Texinfo to HTML")
