@@ -47,6 +47,7 @@
             manifest-pattern?
 
             manifest-remove
+            manifest-add
             manifest-installed?
             manifest-matching-entries
 
@@ -195,6 +196,25 @@ must be a manifest-pattern."
   (make-manifest (fold remove-entry
                        (manifest-entries manifest)
                        patterns)))
+
+(define (manifest-add manifest entries)
+  "Add a list of manifest ENTRIES to MANIFEST and return new manifest.
+Remove MANIFEST entries that have the same name and output as ENTRIES."
+  (define (same-entry? entry name output)
+    (match entry
+      (($ <manifest-entry> entry-name _ entry-output _ ...)
+       (and (equal? name entry-name)
+            (equal? output entry-output)))))
+
+  (make-manifest
+   (append entries
+           (fold (lambda (entry result)
+                   (match entry
+                     (($ <manifest-entry> name _ out _ ...)
+                      (filter (negate (cut same-entry? <> name out))
+                              result))))
+                 (manifest-entries manifest)
+                 entries))))
 
 (define (manifest-installed? manifest pattern)
   "Return #t if MANIFEST has an entry matching PATTERN (a manifest-pattern),
