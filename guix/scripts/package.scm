@@ -872,19 +872,8 @@ more information.~%"))
            (let* ((manifest (profile-manifest profile))
                   (install  (options->installable opts manifest))
                   (remove   (options->removable opts manifest))
-                  (entries
-                   (append install
-                           (fold (lambda (package result)
-                                   (match package
-                                     (($ <manifest-entry> name _ out _ ...)
-                                      (filter (negate
-                                               (cut same-package? <>
-                                                    name out))
-                                              result))))
-                                 (manifest-entries
-                                  (manifest-remove manifest remove))
-                                 install)))
-                  (new      (make-manifest entries)))
+                  (new      (manifest-add (manifest-remove manifest remove)
+                                          install)))
 
              (when (equal? profile %current-profile)
                (ensure-default-profile))
@@ -914,7 +903,8 @@ more information.~%"))
                           (name   (generation-file-name profile
                                                         (+ 1 number))))
                      (and (build-derivations (%store) (list prof-drv))
-                          (let ((count (length entries)))
+                          (let* ((entries (manifest-entries new))
+                                 (count   (length entries)))
                             (switch-symlinks name prof)
                             (switch-symlinks profile name)
                             (maybe-register-gc-root (%store) profile)
