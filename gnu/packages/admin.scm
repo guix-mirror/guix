@@ -46,6 +46,7 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages groff)
   #:use-module (gnu packages pciutils)
@@ -909,3 +910,33 @@ perceived performance characteristics, and by systems programmers to expose
 the classes of bugs which only or more frequently manifest themselves when the
 system is under heavy load.")
     (license gpl2+)))
+
+(define-public detox
+  (package
+    (name "detox")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/detox/detox-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1y6vvjqsg54kl49cry73jbfhr04s7wjs779vrr9zrq6kww7dkymb"))))
+    (build-system gnu-build-system)
+    ;; Both flex and popt are used in this case for their runtime libraries
+    ;; (libfl and libpopt).
+    (inputs
+     `(("flex" ,flex)
+       ("popt" ,popt)))
+    (arguments
+     `(#:configure-flags `(,(string-append "--with-popt="
+                                           (assoc-ref %build-inputs "popt")))
+       #:tests? #f))                    ;no 'check' target
+    (home-page "http://detox.sourceforge.net")
+    (synopsis "Clean up filenames")
+    (description
+     "Detox is a program that renames files to make them easier to work with
+under Unix and related operating systems.  Spaces and various other unsafe
+characters (such as \"$\") get replaced with \"_\".  ISO 8859-1 (Latin-1)
+characters can be replaced as well, as can UTF-8 characters.")
+    (license bsd-3)))
