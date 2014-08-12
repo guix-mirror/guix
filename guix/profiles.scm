@@ -158,12 +158,20 @@ omitted or #f, use the first output of PACKAGE."
                 ('packages ((name version output path deps) ...)))
      (manifest
       (map (lambda (name version output path deps)
-             (manifest-entry
-              (name name)
-              (version version)
-              (output output)
-              (item path)
-              (dependencies deps)))
+             ;; Up to Guix 0.7 included, dependencies were listed as ("gmp"
+             ;; "/gnu/store/...-gmp") for instance.  Discard the 'label' in
+             ;; such lists.
+             (let ((deps (match deps
+                           (((labels directories) ...)
+                            directories)
+                           ((directories ...)
+                            directories))))
+               (manifest-entry
+                 (name name)
+                 (version version)
+                 (output output)
+                 (item path)
+                 (dependencies deps))))
            name version output path deps)))
 
     (_
