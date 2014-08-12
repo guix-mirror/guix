@@ -9,11 +9,8 @@ top_builddir = ../..
 # These options get passed to xgettext.  We want to catch exclusively package
 # synopses and descriptions.
 XGETTEXT_OPTIONS =				\
-  --no-wrap					\
   --language=Scheme --from-code=UTF-8		\
   --keyword=synopsis --keyword=description
-
-MSGMERGE_OPTIONS = --no-wrap
 
 COPYRIGHT_HOLDER = Ludovic Courtès
 
