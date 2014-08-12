@@ -130,7 +130,6 @@
        "ftp://ftp.piotrkosoft.net/pub/mirrors/ftp.x.org/"
        "ftp://ftp.portal-to-web.de/pub/mirrors/x.org/"
        "ftp://ftp.solnet.ch/mirror/x.org/"
-       "ftp://ftp.sunet.se/pub/X11/"
        "ftp://gd.tuwien.ac.at/X11/"
        "ftp://mi.mirror.garr.it/mirrors/x.org/"
        "ftp://mirror.cict.fr/x.org/"
@@ -161,7 +160,6 @@
        ;; from http://www.imagemagick.org/script/download.php
        ;; (without mirrors that are unavailable or not up to date)
        ;; mirrors keeping old versions at the top level
-       "ftp://ftp.sunet.se/pub/multimedia/graphics/ImageMagick/"
        "ftp://sunsite.icm.edu.pl/packages/ImageMagick/"
        ;; mirrors moving old versions to "legacy"
        "http://mirrors-au.go-parts.com/mirrors/ImageMagick/"
