@@ -796,12 +796,6 @@ more information.~%"))
     (define dry-run? (assoc-ref opts 'dry-run?))
     (define profile  (assoc-ref opts 'profile))
 
-    (define (same-package? entry name output)
-      (match entry
-        (($ <manifest-entry> entry-name _ entry-output _ ...)
-         (and (equal? name entry-name)
-              (equal? output entry-output)))))
-
     (define current-generation-number
       (generation-number profile))
 
