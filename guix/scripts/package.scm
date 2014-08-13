@@ -184,49 +184,6 @@ DURATION-RELATION with the current time."
          filter-by-duration)
         (else #f)))
 
-(define (show-what-to-remove/install remove install dry-run?)
-  "Given the manifest entries listed in REMOVE and INSTALL, display the
-packages that will/would be installed and removed."
-  ;; TODO: Report upgrades more clearly.
-  (match remove
-    ((($ <manifest-entry> name version output path _) ..1)
-     (let ((len    (length name))
-           (remove (map (cut format #f "   ~a-~a\t~a\t~a" <> <> <> <>)
-                        name version output path)))
-       (if dry-run?
-           (format (current-error-port)
-                   (N_ "The following package would be removed:~%~{~a~%~}~%"
-                       "The following packages would be removed:~%~{~a~%~}~%"
-                       len)
-                   remove)
-           (format (current-error-port)
-                   (N_ "The following package will be removed:~%~{~a~%~}~%"
-                       "The following packages will be removed:~%~{~a~%~}~%"
-                       len)
-                   remove))))
-    (_ #f))
-  (match install
-    ((($ <manifest-entry> name version output item _) ..1)
-     (let ((len     (length name))
-           (install (map (lambda (name version output item)
-                           (format #f "   ~a-~a\t~a\t~a" name version output
-                                   (if (package? item)
-                                       (package-output (%store) item output)
-                                       item)))
-                         name version output item)))
-       (if dry-run?
-           (format (current-error-port)
-                   (N_ "The following package would be installed:~%~{~a~%~}~%"
-                       "The following packages would be installed:~%~{~a~%~}~%"
-                       len)
-                   install)
-           (format (current-error-port)
-                   (N_ "The following package will be installed:~%~{~a~%~}~%"
-                       "The following packages will be installed:~%~{~a~%~}~%"
-                       len)
-                   install))))
-    (_ #f)))
-
 
 ;;;
 ;;; Package specifications.
@@ -863,21 +820,23 @@ more information.~%"))
              (_ #f))
             opts))
           (else
-           (let* ((manifest (profile-manifest profile))
-                  (install  (options->installable opts manifest))
-                  (remove   (options->removable opts manifest))
-                  (new      (manifest-add (manifest-remove manifest remove)
-                                          install)))
+           (let* ((manifest    (profile-manifest profile))
+                  (install     (options->installable opts manifest))
+                  (remove      (options->removable opts manifest))
+                  (transaction (manifest-transaction (install install)
+                                                     (remove remove)))
+                  (new         (manifest-perform-transaction
+                                manifest transaction)))
 
              (when (equal? profile %current-profile)
                (ensure-default-profile))
 
              (unless (and (null? install) (null? remove))
                (let* ((prof-drv (run-with-store (%store)
-                                  (profile-derivation new)))
-                      (prof     (derivation->output-path prof-drv))
-                      (remove   (manifest-matching-entries manifest remove)))
-                 (show-what-to-remove/install remove install dry-run?)
+                                                (profile-derivation new)))
+                      (prof     (derivation->output-path prof-drv)))
+                 (manifest-show-transaction (%store) manifest transaction
+                                            #:dry-run? dry-run?)
                  (show-what-to-build (%store) (list prof-drv)
                                      #:use-substitutes?
                                      (assoc-ref opts 'substitutes?)
