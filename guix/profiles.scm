@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix profiles)
+  #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix records)
   #:use-module (guix derivations)
@@ -26,6 +28,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 ftw)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-19)
@@ -50,6 +53,13 @@
             manifest-add
             manifest-installed?
             manifest-matching-entries
+
+            manifest-transaction
+            manifest-transaction?
+            manifest-transaction-install
+            manifest-transaction-remove
+            manifest-perform-transaction
+            manifest-show-transaction
 
             profile-manifest
             package->manifest-entry
@@ -241,6 +251,72 @@ Remove MANIFEST entries that have the same name and output as ENTRIES."
          predicates))
 
   (filter matches? (manifest-entries manifest)))
+
+
+;;;
+;;; Manifest transactions.
+;;;
+
+(define-record-type* <manifest-transaction> manifest-transaction
+  make-manifest-transaction
+  manifest-transaction?
+  (install manifest-transaction-install ; list of <manifest-entry>
+           (default '()))
+  (remove  manifest-transaction-remove  ; list of <manifest-pattern>
+           (default '())))
+
+(define (manifest-perform-transaction manifest transaction)
+  "Perform TRANSACTION on MANIFEST and return new manifest."
+  (let ((install (manifest-transaction-install transaction))
+        (remove  (manifest-transaction-remove transaction)))
+    (manifest-add (manifest-remove manifest remove)
+                  install)))
+
+(define* (manifest-show-transaction store manifest transaction
+                                    #:key dry-run?)
+  "Display what will/would be installed/removed from MANIFEST by TRANSACTION."
+  ;; TODO: Report upgrades more clearly.
+  (let ((install (manifest-transaction-install transaction))
+        (remove  (manifest-matching-entries
+                  manifest (manifest-transaction-remove transaction))))
+    (match remove
+      ((($ <manifest-entry> name version output path _) ..1)
+       (let ((len    (length name))
+             (remove (map (cut format #f "   ~a-~a\t~a\t~a" <> <> <> <>)
+                          name version output path)))
+         (if dry-run?
+             (format (current-error-port)
+                     (N_ "The following package would be removed:~%~{~a~%~}~%"
+                         "The following packages would be removed:~%~{~a~%~}~%"
+                         len)
+                     remove)
+             (format (current-error-port)
+                     (N_ "The following package will be removed:~%~{~a~%~}~%"
+                         "The following packages will be removed:~%~{~a~%~}~%"
+                         len)
+                     remove))))
+      (_ #f))
+    (match install
+      ((($ <manifest-entry> name version output item _) ..1)
+       (let ((len     (length name))
+             (install (map (lambda (name version output item)
+                             (format #f "   ~a-~a\t~a\t~a" name version output
+                                     (if (package? item)
+                                         (package-output store item output)
+                                         item)))
+                           name version output item)))
+         (if dry-run?
+             (format (current-error-port)
+                     (N_ "The following package would be installed:~%~{~a~%~}~%"
+                         "The following packages would be installed:~%~{~a~%~}~%"
+                         len)
+                     install)
+             (format (current-error-port)
+                     (N_ "The following package will be installed:~%~{~a~%~}~%"
+                         "The following packages will be installed:~%~{~a~%~}~%"
+                         len)
+                     install))))
+      (_ #f))))
 
 
 ;;;
