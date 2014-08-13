@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Guy Grant <tadnimi@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,10 +23,14 @@
                 #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module ((gnu packages base)
                 #:select (tar))
-  #:use-module (gnu packages compression))
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages pkg-config))
 
 (define-public ttf-dejavu
   (package
@@ -198,3 +203,41 @@ package provides the TrueType (TTF) files.")
  (PostScript Type0, TrueType, OpenType...) fonts covering the ISO
 10646/Unicode UCS (Universal Character Set).")
    (license license:gpl3+)))
+
+(define-public terminus-font
+  (package
+    (name "terminus-font")
+    (version "4.39")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://sourceforge/project/terminus-font/terminus-font-"
+               version
+               "/terminus-font-"
+               version
+               ".tar.gz"))
+        (sha256
+          (base32
+            "1gzmn7zakvy6yrvmswyjfklnsvqrjm0imhq8rjws8rdkhqwkh21i"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("perl" ,perl)
+       ("bdftopcf" ,bdftopcf)
+       ("font-util", font-util)
+       ("mkfontdir" ,mkfontdir)))
+    (arguments
+     `(#:configure-flags (list
+                          ;; install fonts into subdirectory of package output
+                          ;; instead of font-util-?.?.?/share/fonts/X11
+                          (string-append "--with-fontrootdir="
+                                         %output "/share/fonts/X11"))
+       #:tests? #f)) ;; No test target in tarball
+    (home-page "http://terminus-font.sourceforge.net/")
+    (synopsis "Simple bitmap programming font")
+    (description "Terminus Font is a clean, fixed width bitmap font, designed
+for long (8 and more hours per day) work with computers.")
+    (license
+     (license:x11-style
+      "http://scripts.sil.org/cms/scripts/page.php?item_id=OFL_web"))))
