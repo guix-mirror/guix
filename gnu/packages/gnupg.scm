@@ -168,14 +168,14 @@ specifications are building blocks of S/MIME and TLS.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.0.25")
+    (version "2.0.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "08sqdkybgw4jkdkcyz1bi6y8irj87hpr5b12lkb57kwny1yykaxk"))))
+                "1q5qcl5panrvcvpwvz6nl9gayl5a6vwvfhgdcxqpmbl2qc6y6n3p"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,guix:bzip2)
