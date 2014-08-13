@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -1343,6 +1343,65 @@ from the module-init-tools project.")
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license gpl2+))) ; libudev is under lgpl2.1+
+
+(define-public lvm2
+  (package
+    (name "lvm2")
+    (version "2.02.109")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
+                                  version ".tgz"))
+              (sha256
+               (base32
+                "1rv5ivg0l1w3nwzwdkqixm96h5bzg7ib4rr196ysb2lw42jmpjbv"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (use-modules (guix build utils))
+
+                  ;; Honor sysconfdir.
+                  (substitute* "make.tmpl.in"
+                    (("confdir = .*$")
+                     "confdir = @sysconfdir@\n")
+                    (("DEFAULT_SYS_DIR = @DEFAULT_SYS_DIR@")
+                     "DEFAULT_SYS_DIR = @sysconfdir@"))))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("procps" ,procps)))                       ;tests use 'pgrep'
+    (inputs
+     `(("udev" ,udev)))
+    (arguments
+     '(#:phases (alist-cons-after
+                 'configure 'set-makefile-shell
+                 (lambda _
+                   ;; Use 'sh', not 'bash', so that '. lib/utils.sh' works as
+                   ;; expected.
+                   (setenv "SHELL" (which "sh"))
+
+                   ;; Replace /bin/sh with the right file name.
+                   (patch-makefile-SHELL "make.tmpl"))
+                 %standard-phases)
+
+       #:configure-flags (list (string-append "--sysconfdir="
+                                              (assoc-ref %outputs "out")
+                                              "/etc/lvm")
+                               "--enable-udev_sync"
+                               "--enable-udev_rules")
+
+       ;; The tests use 'mknod', which requires root access.
+       #:tests? #f))
+    (home-page "http://sourceware.org/lvm2/")
+    (synopsis "Logical volume management for Linux")
+    (description
+     "LVM2 is the logical volume management tool set for Linux-based systems.
+This package includes the user-space libraries and tools, including the device
+mapper.  Kernel components are part of Linux-libre.")
+
+    ;; Libraries (liblvm2, libdevmapper) are LGPLv2.1.
+    ;; Command-line tools are GPLv2.
+    (license (list gpl2 lgpl2.1))))
 
 (define-public wireless-tools
   (package
