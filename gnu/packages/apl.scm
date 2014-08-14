@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -23,25 +24,31 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages maths)
+  #:use-module (gnu packages sqlite)
   #:use-module (gnu packages readline))
 
 (define-public apl
   (package
     (name "apl")
-    (version "1.3")
+    (version "1.4")
     (source
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnu/apl/apl-" version ".tar.gz"))
       (sha256
        (base32
-        "1pkwlm0nf5vb8sp9hf9wjmsrsyr4vdpd4kv5y3hzmsgf3wcf8y3i"))))
+        "0fl9l4jb5wpnb54kqkphavi657z1cv15h9qj2rqy2shf33dk3nk9"))))
     (build-system gnu-build-system)
     (home-page "http://www.gnu.org/software/apl/")
     (inputs
      `(("gettext" ,gnu-gettext)
        ("lapack" ,lapack)
+       ("sqlite" ,sqlite)
        ("readline" ,readline)))
+    (arguments
+     `(#:configure-flags (list (string-append
+                                "--with-sqlite3="
+                                (assoc-ref %build-inputs "sqlite")))))
     (synopsis "APL interpreter")
     (description
      "GNU APL is a free interpreter for the programming language APL.  It is
