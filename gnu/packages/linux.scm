@@ -168,7 +168,7 @@
   (origin
     (method url-fetch)
     (uri (string-append "http://www.fsfla.org/svn/fsfla/software/linux-libre/"
-                        "lemote/gnewsense/branches/3.15/100gnu+freedo.patch"))
+                        "lemote/gnewsense/branches/3.16/100gnu+freedo.patch"))
     (sha256
      (base32
       "1hk9swxxc80bmn2zd2qr5ccrjrk28xkypwhl4z0qx4hbivj7qm06"))))
@@ -189,7 +189,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "3.16")
+  (let* ((version "3.16.1")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -262,7 +262,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "0632y5qbr03mlfxbmzf14agzgmjjxgyjnw4g2gqf1sqzj1654alw"))))
+               "1x4y0017l4ndcab4smky2wx0n86r3wyks2r8yyp19ia9ccnl98mf"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
