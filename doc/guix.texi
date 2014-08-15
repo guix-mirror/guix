@@ -1937,6 +1937,33 @@ effect, one must use @code{run-with-store}:
 @result{} /gnu/store/...-profile.sh
 @end example
 
+Note that the @code{(guix monad-repl)} module extends Guile's REPL with
+new ``meta-commands'' to make it easier to deal with monadic procedures:
+@code{run-in-store}, and @code{enter-store-monad}.  The former, is used
+to ``run'' a single monadic value through the store:
+
+@example
+scheme@@(guile-user)> ,run-in-store (package->derivation hello)
+$1 = #<derivation /gnu/store/@dots{}-hello-2.9.drv => @dots{}>
+@end example
+
+The latter enters a recursive REPL, where all the return values are
+automatically run through the store:
+
+@example
+scheme@@(guile-user)> ,enter-store-monad
+store-monad@@(guile-user) [1]> (package->derivation hello)
+$2 = #<derivation /gnu/store/@dots{}-hello-2.9.drv => @dots{}>
+store-monad@@(guile-user) [1]> (text-file "foo" "Hello!")
+$3 = "/gnu/store/@dots{}-foo"
+store-monad@@(guile-user) [1]> ,q
+scheme@@(guile-user)>
+@end example
+
+@noindent
+Note that non-monadic values cannot be returned in the
+@code{store-monad} REPL.
+
 The main syntactic forms to deal with monads in general are described
 below.
 

@@ -37,6 +37,7 @@ MODULES =					\
   guix/download.scm				\
   guix/git-download.scm				\
   guix/monads.scm				\
+  guix/monad-repl.scm				\
   guix/gexp.scm					\
   guix/profiles.scm				\
   guix/serialization.scm			\
