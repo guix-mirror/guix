@@ -548,7 +548,7 @@ on the kernel version number.
 
 @item --lose-logs
 Do not keep build logs.  By default they are kept under
-@code{@var{localstatedir}/nix/log}.
+@code{@var{localstatedir}/guix/log}.
 
 @item --system=@var{system}
 Assume @var{system} as the current system type.  By default it is the
