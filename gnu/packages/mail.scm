@@ -132,7 +132,7 @@ software.")
      `(#:configure-flags (list (string-append "--with-ssl="
                                               (assoc-ref %build-inputs "openssl")))))
     (home-page "http://fetchmail.berlios.de/")
-    (synopsis "Remote-mailr etrieval and forwarding utility")
+    (synopsis "Remote-mail retrieval and forwarding utility")
     (description
      "Fetchmail is a full-featured, robust, well-documented remote-mail
 retrieval and forwarding utility intended to be used over on-demand

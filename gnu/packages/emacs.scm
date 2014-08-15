@@ -364,7 +364,7 @@ operations.")
                ("wget-command" (string-append wget "/bin/wget")))))
          %standard-phases))))
     (home-page "http://www.emacswiki.org/emacs/EmacsWget")
-    (synopsis "A simple file downloader for emacs, based on wget.")
+    (synopsis "Simple file downloader for Emacs based on wget")
     (description
      "emacs-wget is an emacs interface for the wget file downloader.")
     (license gpl2+)))
