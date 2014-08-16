@@ -45,7 +45,8 @@
      ;; Sometimes we end up with two processes concurrently trying to make
      ;; 'libmod_test.la': <http://hydra.gnu.org/build/60266/nixlog/2/raw>.
      ;; Thus, build sequentially.
-     '(#:parallel-build? #f))
+     '(#:parallel-build? #f
+       #:parallel-tests? #f))
     (inputs `(("perl" ,perl)
               ("libtool" ,libtool)))
     (home-page "http://apr.apache.org/")
