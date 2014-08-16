@@ -378,6 +378,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
   gnu/packages/patches/texi2html-document-encoding.patch	\
+  gnu/packages/patches/texi2html-i18n.patch			\
   gnu/packages/patches/udev-gir-libtool.patch			\
   gnu/packages/patches/util-linux-perl.patch			\
   gnu/packages/patches/valgrind-glibc.patch			\

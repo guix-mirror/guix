@@ -79,7 +79,8 @@ is on expressing the content semantically, avoiding physical markup commands.")
                (base32
                 "1yprv64vrlcbksqv25asplnjg07mbq38lfclp1m5lj8cw878pag8"))
               (patches
-               (list (search-patch "texi2html-document-encoding.patch")))
+               (list (search-patch "texi2html-document-encoding.patch")
+                     (search-patch "texi2html-i18n.patch")))
               (snippet
                ;; This file is modified by the patch above, but reset its
                ;; timestamp so we don't trigger the rule to update PO files,
