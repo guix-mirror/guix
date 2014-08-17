@@ -50,8 +50,6 @@
 ;;;
 ;;; Code:
 
-(define _ (cut gettext <> "guix"))
-
 ;; By default, we store patches and bootstrap binaries alongside Guile
 ;; modules.  This is so that these extra files can be found without
 ;; requiring a special setup, such as a specific installation directory
@@ -60,7 +58,7 @@
 
 (define %patch-path
   (make-parameter
-   (map (cut string-append <>  "/gnu/packages/patches")
+   (map (cut string-append <> "/gnu/packages/patches")
         %load-path)))
 
 (define %bootstrap-binaries-path
