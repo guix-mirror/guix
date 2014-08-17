@@ -81,14 +81,20 @@
 (define raw-derivation
   (store-lift derivation))
 
-(define (lower-inputs inputs)
-  "Turn any package from INPUTS into a derivation; return the corresponding
-input list as a monadic value."
+(define* (lower-inputs inputs
+                       #:key system target)
+  "Turn any package from INPUTS into a derivation for SYSTEM; return the
+corresponding input list as a monadic value.  When TARGET is true, use it as
+the cross-compilation target triplet."
   (with-monad %store-monad
     (sequence %store-monad
               (map (match-lambda
                     (((? package? package) sub-drv ...)
-                     (mlet %store-monad ((drv (package->derivation package)))
+                     (mlet %store-monad
+                         ((drv (if target
+                                   (package->cross-derivation package target
+                                                              system)
+                                   (package->derivation package system))))
                        (return `(,drv ,@sub-drv))))
                     (((? origin? origin) sub-drv ...)
                      (mlet %store-monad ((drv (origin->derivation origin)))
@@ -99,7 +105,7 @@ input list as a monadic value."
 
 (define* (gexp->derivation name exp
                            #:key
-                           system
+                           system (target 'current)
                            hash hash-algo recursive?
                            (env-vars '())
                            (modules '())
@@ -107,7 +113,8 @@ input list as a monadic value."
                            references-graphs
                            local-build?)
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
-derivation) on SYSTEM.
+derivation) on SYSTEM.  When TARGET is true, it is used as the
+cross-compilation target triplet for packages referred to by EXP.
 
 Make MODULES available in the evaluation context of EXP; MODULES is a list of
 names of Guile modules from the current search path to be copied in the store,
@@ -118,9 +125,21 @@ The other arguments are as for 'derivation'."
   (define %modules modules)
   (define outputs (gexp-outputs exp))
 
-  (mlet* %store-monad ((inputs   (lower-inputs (gexp-inputs exp)))
+  (mlet* %store-monad (;; The following binding is here to force
+                       ;; '%current-system' and '%current-target-system' to be
+                       ;; looked up at >>= time.
+                       (unused    (return #f))
+
                        (system -> (or system (%current-system)))
-                       (sexp     (gexp->sexp exp))
+                       (target -> (if (eq? target 'current)
+                                      (%current-target-system)
+                                      target))
+                       (inputs   (lower-inputs (gexp-inputs exp)
+                                               #:system system
+                                               #:target target))
+                       (sexp     (gexp->sexp exp
+                                             #:system system
+                                             #:target target))
                        (builder  (text-file (string-append name "-builder")
                                             (object->string sexp)))
                        (modules  (if (pair? %modules)
@@ -199,7 +218,9 @@ The other arguments are as for 'derivation'."
               '()
               (gexp-references exp)))
 
-(define* (gexp->sexp exp)
+(define* (gexp->sexp exp #:key
+                     (system (%current-system))
+                     (target (%current-target-system)))
   "Return (monadically) the sexp corresponding to EXP for the given OUTPUT,
 and in the current monad setting (system type, etc.)"
   (define (reference->sexp ref)
@@ -208,7 +229,10 @@ and in the current monad setting (system type, etc.)"
         (((? derivation? drv) (? string? output))
          (return (derivation->output-path drv output)))
         (((? package? p) (? string? output))
-         (package-file p #:output output))
+         (package-file p
+                       #:output output
+                       #:system system
+                       #:target target))
         (((? origin? o) (? string? output))
          (mlet %store-monad ((drv (origin->derivation o)))
            (return (derivation->output-path drv output))))
@@ -218,7 +242,7 @@ and in the current monad setting (system type, etc.)"
          ;; that trick.
          (return `((@ (guile) getenv) ,output)))
         ((? gexp? exp)
-         (gexp->sexp exp))
+         (gexp->sexp exp #:system system #:target target))
         (((? string? str))
          (return (if (direct-store-path? str) str ref)))
         ((refs ...)

@@ -47,8 +47,11 @@
 ;; Make it the default.
 (%guile-for-build guile-for-build)
 
-(define (gexp->sexp* exp)
-  (run-with-store %store (gexp->sexp exp)
+(define* (gexp->sexp* exp #:optional
+                      (system (%current-system)) target)
+  (run-with-store %store (gexp->sexp exp
+                                     #:system system
+                                     #:target target)
                   #:guile-for-build guile-for-build))
 
 (define-syntax-rule (test-assertm name exp)
@@ -222,6 +225,20 @@
                                      (mkdir (ungexp output)))))))
     (mlet %store-monad ((drv mdrv))
       (return (string=? system (derivation-system drv))))))
+
+(test-assertm "gexp->derivation, cross-compilation"
+  (mlet* %store-monad ((target -> "mips64el-linux")
+                       (exp    -> (gexp (list (ungexp coreutils)
+                                              (ungexp output))))
+                       (xdrv      (gexp->derivation "foo" exp
+                                                    #:target target))
+                       (refs      ((store-lift references)
+                                   (derivation-file-name xdrv)))
+                       (xcu       (package->cross-derivation coreutils
+                                                             target))
+                       (cu        (package->derivation coreutils)))
+    (return (and (member (derivation-file-name xcu) refs)
+                 (not (member (derivation-file-name cu) refs))))))
 
 (define shebang
   (string-append "#!" (derivation->output-path guile-for-build)

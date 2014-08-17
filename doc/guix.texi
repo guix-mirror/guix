@@ -2218,13 +2218,15 @@ below allow you to do that (@pxref{The Store Monad}, for more
 information about monads.)
 
 @deffn {Monadic Procedure} gexp->derivation @var{name} @var{exp} @
-       [#:system (%current-system)] [#:inputs '()] @
+       [#:system (%current-system)] [#:target #f] [#:inputs '()] @
        [#:hash #f] [#:hash-algo #f] @
        [#:recursive? #f] [#:env-vars '()] [#:modules '()] @
        [#:references-graphs #f] [#:local-build? #f] @
        [#:guile-for-build #f]
 Return a derivation @var{name} that runs @var{exp} (a gexp) with
-@var{guile-for-build} (a derivation) on @var{system}.
+@var{guile-for-build} (a derivation) on @var{system}.  When @var{target}
+is true, it is used as the cross-compilation target triplet for packages
+referred to by @var{exp}.
 
 Make @var{modules} available in the evaluation context of @var{EXP};
 @var{MODULES} is a list of names of Guile modules from the current
