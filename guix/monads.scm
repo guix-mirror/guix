@@ -379,8 +379,7 @@ permission bits are kept."
 (define* (package-file package
                        #:optional file
                        #:key
-                       (system (%current-system))
-                       (output "out") target)
+                       system (output "out") target)
   "Return as a monadic value the absolute file name of FILE within the
 OUTPUT directory of PACKAGE.  When FILE is omitted, return the name of the
 OUTPUT directory of PACKAGE.  When TARGET is true, use it as a

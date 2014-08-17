@@ -109,6 +109,20 @@
                       guile)))
     #:guile-for-build (package-derivation %store %bootstrap-guile)))
 
+(test-assert "package-file, default system"
+  ;; The default system should be the one at '>>=' time, not the one at
+  ;; invocation time.  See <http://bugs.gnu.org/18002>.
+  (run-with-store %store
+    (mlet* %store-monad
+        ((system -> (%current-system))
+         (file   (parameterize ((%current-system "foobar64-linux"))
+                   (package-file coreutils "bin/ls")))
+         (cu     (package->derivation coreutils)))
+      (return (string=? file
+                        (string-append (derivation->output-path cu)
+                                       "/bin/ls"))))
+    #:guile-for-build (package-derivation %store %bootstrap-guile)))
+
 (test-assert "package-file + package->cross-derivation"
   (run-with-store %store
     (mlet* %store-monad ((file (package-file coreutils "bin/ls"
