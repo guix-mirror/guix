@@ -59,6 +59,7 @@
             package-file
             origin->derivation
             package->derivation
+            package->cross-derivation
             built-derivations)
   #:replace (imported-modules
              compiled-modules))
@@ -377,13 +378,22 @@ permission bits are kept."
 
 (define* (package-file package
                        #:optional file
-                       #:key (system (%current-system)) (output "out"))
+                       #:key
+                       (system (%current-system))
+                       (output "out") target)
   "Return as a monadic value the absolute file name of FILE within the
 OUTPUT directory of PACKAGE.  When FILE is omitted, return the name of the
-OUTPUT directory of PACKAGE."
+OUTPUT directory of PACKAGE.  When TARGET is true, use it as a
+cross-compilation target triplet."
   (lambda (store)
-    (let* ((drv (package-derivation store package system))
-           (out (derivation->output-path drv output)))
+    (define compute-derivation
+      (if target
+          (cut package-cross-derivation <> <> target <>)
+          package-derivation))
+
+    (let* ((system (or system (%current-system)))
+           (drv    (compute-derivation store package system))
+           (out    (derivation->output-path drv output)))
       (if file
           (string-append out "/" file)
           out))))
@@ -410,6 +420,9 @@ input list as a monadic value."
 
 (define package->derivation
   (store-lift package-derivation))
+
+(define package->cross-derivation
+  (store-lift package-cross-derivation))
 
 (define origin->derivation
   (store-lift package-source-derivation))

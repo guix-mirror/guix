@@ -2065,15 +2065,19 @@ The example below adds a file to the store, under two different names:
 @end deffn
 
 @deffn {Monadic Procedure} package-file @var{package} [@var{file}] @
-       [#:system (%current-system)] [#:output "out"] Return as a monadic
+       [#:system (%current-system)] [#:target #f] @
+       [#:output "out"] Return as a monadic
 value in the absolute file name of @var{file} within the @var{output}
 directory of @var{package}.  When @var{file} is omitted, return the name
-of the @var{output} directory of @var{package}.
+of the @var{output} directory of @var{package}.  When @var{target} is
+true, use it as a cross-compilation target triplet.
 @end deffn
 
 @deffn {Monadic Procedure} package->derivation @var{package} [@var{system}]
-Monadic version of @code{package-derivation} (@pxref{Defining
-Packages}).
+@deffnx {Monadic Procedure} package->cross-derivation @var{package} @
+          @var{target} [@var{system}]
+Monadic version of @code{package-derivation} and
+@code{package-cross-derivation} (@pxref{Defining Packages}).
 @end deffn
 
 
