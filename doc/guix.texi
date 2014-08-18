@@ -2160,8 +2160,32 @@ substituted to the reference to the @var{coreutils} package in the
 actual build code, and @var{coreutils} is automatically made an input to
 the derivation.  Likewise, @code{#$output} (equivalent to @code{(ungexp
 output)}) is replaced by a string containing the derivation's output
-directory name.  The syntactic form to construct gexps is summarized
-below.
+directory name.
+
+@cindex cross compilation
+In a cross-compilation context, it is useful to distinguish between
+references to the @emph{native} build of a package---that can run on the
+host---versus references to cross builds of a package.  To that end, the
+@code{#+} plays the same role as @code{#$}, but is a reference to a
+native package build:
+
+@example
+(gexp->derivation "vi"
+   #~(begin
+       (mkdir #$output)
+       (system* (string-append #+coreutils "/bin/ln")
+                "-s"
+                (string-append #$emacs "/bin/emacs")
+                (string-append #$output "/bin/vi")))
+   #:target "mips64el-linux")
+@end example
+
+@noindent
+In the example above, the native build of @var{coreutils} is used, so
+that @command{ln} can actually run on the host; but then the
+cross-compiled build of @var{emacs} is referenced.
+
+The syntactic form to construct gexps is summarized below.
 
 @deffn {Scheme Syntax} #~@var{exp}
 @deffnx {Scheme Syntax} (gexp @var{exp})
@@ -2190,6 +2214,13 @@ This is like the form above, but referring explicitly to the
 @var{package-or-derivation} produces multiple outputs (@pxref{Packages
 with Multiple Outputs}).
 
+@item #+@var{obj}
+@itemx #+@var{obj}:output
+@itemx (ungexp-native @var{obj})
+@itemx (ungexp-native @var{obj} @var{output})
+Same as @code{ungexp}, but produces a reference to the @emph{native}
+build of @var{obj} when used in a cross compilation context.
+
 @item #$output[:@var{output}]
 @itemx (ungexp output [@var{output}])
 Insert a reference to derivation output @var{output}, or to the main
@@ -2201,6 +2232,11 @@ This only makes sense for gexps passed to @code{gexp->derivation}.
 @itemx (ungexp-splicing @var{lst})
 Like the above, but splices the contents of @var{lst} inside the
 containing list.
+
+@item #+@@@var{lst}
+@itemx (ungexp-native-splicing @var{lst})
+Like the above, but refers to native builds of the objects listed in
+@var{lst}.
 
 @end table
 

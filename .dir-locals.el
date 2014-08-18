@@ -40,11 +40,12 @@
    (eval . (put 'mlet 'scheme-indent-function 2))
    (eval . (put 'run-with-store 'scheme-indent-function 1))
 
-   ;; Recognize '~' and '$', as used for gexps, as quotation symbols.  This
-   ;; notably allows '(' in Paredit to not insert a space when the preceding
-   ;; symbol is one of these.
+   ;; Recognize '~', '+', and '$', as used for gexps, as quotation symbols.
+   ;; This notably allows '(' in Paredit to not insert a space when the
+   ;; preceding symbol is one of these.
    (eval . (modify-syntax-entry ?~ "'"))
-   (eval . (modify-syntax-entry ?$ "'"))))
+   (eval . (modify-syntax-entry ?$ "'"))
+   (eval . (modify-syntax-entry ?+ "'"))))
  (emacs-lisp-mode . ((indent-tabs-mode . nil)))
  (texinfo-mode    . ((indent-tabs-mode . nil)
                      (fill-column . 72))))

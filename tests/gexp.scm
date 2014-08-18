@@ -39,6 +39,7 @@
 
 ;; For white-box testing.
 (define gexp-inputs (@@ (guix gexp) gexp-inputs))
+(define gexp-native-inputs (@@ (guix gexp) gexp-native-inputs))
 (define gexp->sexp  (@@ (guix gexp) gexp->sexp))
 
 (define guile-for-build
@@ -47,10 +48,8 @@
 ;; Make it the default.
 (%guile-for-build guile-for-build)
 
-(define* (gexp->sexp* exp #:optional
-                      (system (%current-system)) target)
+(define* (gexp->sexp* exp #:optional target)
   (run-with-store %store (gexp->sexp exp
-                                     #:system system
                                      #:target target)
                   #:guile-for-build guile-for-build))
 
@@ -137,6 +136,29 @@
                (e3 `(display ,txt)))
            (equal? `(begin ,e0 ,e1 ,e2 ,e3) (gexp->sexp* exp))))))
 
+(test-assert "ungexp + ungexp-native"
+  (let* ((exp    (gexp (list (ungexp-native %bootstrap-guile)
+                             (ungexp coreutils)
+                             (ungexp-native glibc)
+                             (ungexp binutils))))
+         (target "mips64el-linux")
+         (guile  (derivation->output-path
+                  (package-derivation %store %bootstrap-guile)))
+         (cu     (derivation->output-path
+                  (package-cross-derivation %store coreutils target)))
+         (libc   (derivation->output-path
+                  (package-derivation %store glibc)))
+         (bu     (derivation->output-path
+                  (package-cross-derivation %store binutils target))))
+    (and (lset= equal?
+                `((,%bootstrap-guile "out") (,glibc "out"))
+                (gexp-native-inputs exp))
+         (lset= equal?
+                `((,coreutils "out") (,binutils "out"))
+                (gexp-inputs exp))
+         (equal? `(list ,guile ,cu ,libc ,bu)
+                 (gexp->sexp* exp target)))))
+
 (test-assert "input list"
   (let ((exp   (gexp (display
                       '(ungexp (list %bootstrap-guile coreutils)))))
@@ -149,6 +171,28 @@
                 (gexp-inputs exp))
          (equal? `(display '(,guile ,cu))
                  (gexp->sexp* exp)))))
+
+(test-assert "input list + ungexp-native"
+  (let* ((target "mips64el-linux")
+         (exp   (gexp (display
+                       (cons '(ungexp-native (list %bootstrap-guile coreutils))
+                             '(ungexp (list glibc binutils))))))
+         (guile (derivation->output-path
+                 (package-derivation %store %bootstrap-guile)))
+         (cu    (derivation->output-path
+                 (package-derivation %store coreutils)))
+         (xlibc (derivation->output-path
+                 (package-cross-derivation %store glibc target)))
+         (xbu   (derivation->output-path
+                 (package-cross-derivation %store binutils target))))
+    (and (lset= equal?
+                `((,%bootstrap-guile "out") (,coreutils "out"))
+                (gexp-native-inputs exp))
+         (lset= equal?
+                `((,glibc "out") (,binutils "out"))
+                (gexp-inputs exp))
+         (equal? `(display (cons '(,guile ,cu) '(,xlibc ,xbu)))
+                 (gexp->sexp* exp target)))))
 
 (test-assert "input list splicing"
   (let* ((inputs  (list (list glibc "debug") %bootstrap-guile))
@@ -163,6 +207,16 @@
                 (gexp-inputs exp))
          (equal? (gexp->sexp* exp)
                  `(list ,@(cons 5 outputs))))))
+
+(test-assert "input list splicing + ungexp-native-splicing"
+  (let* ((inputs (list (list glibc "debug") %bootstrap-guile))
+         (exp    (gexp (list (ungexp-native-splicing (cons (+ 2 3) inputs))))))
+    (and (lset= equal?
+                `((,glibc "debug") (,%bootstrap-guile "out"))
+                (gexp-native-inputs exp))
+         (null? (gexp-inputs exp))
+         (equal? (gexp->sexp* exp)                ;native
+                 (gexp->sexp* exp "mips64el-linux")))))
 
 (test-assertm "gexp->file"
   (mlet* %store-monad ((exp -> (gexp (display (ungexp %bootstrap-guile))))
@@ -240,6 +294,41 @@
     (return (and (member (derivation-file-name xcu) refs)
                  (not (member (derivation-file-name cu) refs))))))
 
+(test-assertm "gexp->derivation, ungexp-native"
+  (mlet* %store-monad ((target -> "mips64el-linux")
+                       (exp    -> (gexp (list (ungexp-native coreutils)
+                                              (ungexp output))))
+                       (xdrv      (gexp->derivation "foo" exp
+                                                    #:target target))
+                       (drv       (gexp->derivation "foo" exp)))
+    (return (string=? (derivation-file-name drv)
+                      (derivation-file-name xdrv)))))
+
+(test-assertm "gexp->derivation, ungexp + ungexp-native"
+  (mlet* %store-monad ((target -> "mips64el-linux")
+                       (exp    -> (gexp (list (ungexp-native coreutils)
+                                              (ungexp glibc)
+                                              (ungexp output))))
+                       (xdrv      (gexp->derivation "foo" exp
+                                                    #:target target))
+                       (refs      ((store-lift references)
+                                   (derivation-file-name xdrv)))
+                       (xglibc    (package->cross-derivation glibc target))
+                       (cu        (package->derivation coreutils)))
+    (return (and (member (derivation-file-name cu) refs)
+                 (member (derivation-file-name xglibc) refs)))))
+
+(test-assertm "gexp->derivation, ungexp-native + composed gexps"
+  (mlet* %store-monad ((target -> "mips64el-linux")
+                       (exp0   -> (gexp (list 1 2
+                                              (ungexp coreutils))))
+                       (exp    -> (gexp (list 0 (ungexp-native exp0))))
+                       (xdrv      (gexp->derivation "foo" exp
+                                                    #:target target))
+                       (drv       (gexp->derivation "foo" exp)))
+    (return (string=? (derivation-file-name drv)
+                      (derivation-file-name xdrv)))))
+
 (define shebang
   (string-append "#!" (derivation->output-path guile-for-build)
                  "/bin/guile --no-auto-compile"))
@@ -285,8 +374,12 @@
 (test-equal "sugar"
   '(gexp (foo (ungexp bar) (ungexp baz "out")
               (ungexp (chbouib 42))
-              (ungexp-splicing (list x y z))))
-  '#~(foo #$bar #$baz:out #$(chbouib 42) #$@(list x y z)))
+              (ungexp-splicing (list x y z))
+              (ungexp-native foo) (ungexp-native foo "out")
+              (ungexp-native (chbouib 42))
+              (ungexp-native-splicing (list x y z))))
+  '#~(foo #$bar #$baz:out #$(chbouib 42) #$@(list x y z)
+          #+foo #+foo:out #+(chbouib 42) #+@(list x y z)))
 
 (test-end "gexp")
 
