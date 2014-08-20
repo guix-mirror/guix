@@ -132,6 +132,7 @@ The other options should be self-descriptive."
                      "lshd"
                      #:allow-empty-passwords? allow-empty-passwords?)))
              (activate #~(begin
+                           (use-modules (guix build utils))
                            (mkdir-p "/var/spool/lsh")
                            #$(if initialize?
                                  (activation lsh host-key)

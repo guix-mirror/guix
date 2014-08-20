@@ -25,14 +25,14 @@
 (define-public lightning
   (package
     (name "lightning")
-    (version "2.0.4")
+    (version "2.0.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/lightning/lightning-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1lrckrx51d5hrv66bc99fd4b7g2wwn4vr304hwq3glfzhb8jqcdy"))))
+               "0jm9a8ddxc1v9hyzyv4ybg37fjac2yjqv1hkd262wxzqms36mdk5"))))
     (build-system gnu-build-system)
     (synopsis "Library for generating assembly code at runtime")
     (description

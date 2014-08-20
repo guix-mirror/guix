@@ -47,6 +47,7 @@
             manifest-pattern?
 
             manifest-remove
+            manifest-add
             manifest-installed?
             manifest-matching-entries
 
@@ -157,12 +158,20 @@ omitted or #f, use the first output of PACKAGE."
                 ('packages ((name version output path deps) ...)))
      (manifest
       (map (lambda (name version output path deps)
-             (manifest-entry
-              (name name)
-              (version version)
-              (output output)
-              (item path)
-              (dependencies deps)))
+             ;; Up to Guix 0.7 included, dependencies were listed as ("gmp"
+             ;; "/gnu/store/...-gmp") for instance.  Discard the 'label' in
+             ;; such lists.
+             (let ((deps (match deps
+                           (((labels directories) ...)
+                            directories)
+                           ((directories ...)
+                            directories))))
+               (manifest-entry
+                 (name name)
+                 (version version)
+                 (output output)
+                 (item path)
+                 (dependencies deps))))
            name version output path deps)))
 
     (_
@@ -195,6 +204,25 @@ must be a manifest-pattern."
   (make-manifest (fold remove-entry
                        (manifest-entries manifest)
                        patterns)))
+
+(define (manifest-add manifest entries)
+  "Add a list of manifest ENTRIES to MANIFEST and return new manifest.
+Remove MANIFEST entries that have the same name and output as ENTRIES."
+  (define (same-entry? entry name output)
+    (match entry
+      (($ <manifest-entry> entry-name _ entry-output _ ...)
+       (and (equal? name entry-name)
+            (equal? output entry-output)))))
+
+  (make-manifest
+   (append entries
+           (fold (lambda (entry result)
+                   (match entry
+                     (($ <manifest-entry> name _ out _ ...)
+                      (filter (negate (cut same-entry? <> name out))
+                              result))))
+                 (manifest-entries manifest)
+                 entries))))
 
 (define (manifest-installed? manifest pattern)
   "Return #t if MANIFEST has an entry matching PATTERN (a manifest-pattern),

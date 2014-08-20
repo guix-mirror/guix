@@ -24,6 +24,7 @@
                 #:select (package-derivation %current-system))
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
+  #:use-module ((gnu packages base) #:select (coreutils))
   #:use-module (ice-9 match)
   #:use-module (rnrs io ports)
   #:use-module (srfi srfi-1)
@@ -106,6 +107,30 @@
                          (file  (text-file "monadic" guile)))
       (return (equal? (call-with-input-file file get-string-all)
                       guile)))
+    #:guile-for-build (package-derivation %store %bootstrap-guile)))
+
+(test-assert "package-file, default system"
+  ;; The default system should be the one at '>>=' time, not the one at
+  ;; invocation time.  See <http://bugs.gnu.org/18002>.
+  (run-with-store %store
+    (mlet* %store-monad
+        ((system -> (%current-system))
+         (file   (parameterize ((%current-system "foobar64-linux"))
+                   (package-file coreutils "bin/ls")))
+         (cu     (package->derivation coreutils)))
+      (return (string=? file
+                        (string-append (derivation->output-path cu)
+                                       "/bin/ls"))))
+    #:guile-for-build (package-derivation %store %bootstrap-guile)))
+
+(test-assert "package-file + package->cross-derivation"
+  (run-with-store %store
+    (mlet* %store-monad ((file (package-file coreutils "bin/ls"
+                                             #:target "foo64-gnu"))
+                         (xcu  (package->cross-derivation coreutils
+                                                          "foo64-gnu")))
+      (let ((output (derivation->output-path xcu)))
+        (return (string=? file (string-append output "/bin/ls")))))
     #:guile-for-build (package-derivation %store %bootstrap-guile)))
 
 (test-assert "interned-file"

@@ -1,0 +1,31 @@
+Patch derived from discussion at https://savannah.nongnu.org/bugs/?37503
+
+--- texi2html-5.0/texi2html.pl	2010-06-30 17:01:27.000000000 -0500
++++ texi2html-5.0/texi2html.pl	2014-07-09 01:17:57.062990582 -0500
+@@ -2589,7 +2589,12 @@
+     my $state = shift;
+ 
+     # FIXME this should be done only once, for @documentencoding
+-    my $encoding = lc(Texi2HTML::Config::get_conf('DOCUMENT_ENCODING'));
++    my $encoding;
++    my $input_encoding = Texi2HTML::Config::get_conf('documentencoding');
++    if (defined($input_encoding))
++    {
++      $encoding = lc($input_encoding);
++    }
+     if (defined($encoding) and $encoding ne '' and exists($Texi2HTML::Config::t2h_encoding_aliases{$encoding}))
+     {
+        $encoding = $Texi2HTML::Config::t2h_encoding_aliases{$encoding};
+
+Fix failures in test/encodings.
+
+--- texi2html-5.0/texi2html.pl	2014-07-09 01:22:06.000000000 -0500
++++ texi2html-5.0/texi2html.pl	2014-07-10 23:23:47.182097602 -0500
+@@ -53,6 +53,7 @@
+ # for translations
+ #use encoding 'utf8';
+ #use utf8;
++binmode STDERR, ':encoding(utf8)';
+ 
+ #
+ # According to

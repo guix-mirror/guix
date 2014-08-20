@@ -168,14 +168,14 @@ specifications are building blocks of S/MIME and TLS.")
 (define-public gnupg
   (package
     (name "gnupg")
-    (version "2.0.25")
+    (version "2.0.26")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnupg/gnupg/gnupg-" version
                                   ".tar.bz2"))
               (sha256
                (base32
-                "08sqdkybgw4jkdkcyz1bi6y8irj87hpr5b12lkb57kwny1yykaxk"))))
+                "1q5qcl5panrvcvpwvz6nl9gayl5a6vwvfhgdcxqpmbl2qc6y6n3p"))))
     (build-system gnu-build-system)
     (inputs
      `(("bzip2" ,guix:bzip2)
@@ -234,7 +234,7 @@ libskba (working with X.509 certificates and CMS data).")
 (define-public gpgme
   (package
     (name "gpgme")
-    (version "1.4.3")
+    (version "1.5.1")
     (source
      (origin
       (method url-fetch)
@@ -242,7 +242,7 @@ libskba (working with X.509 certificates and CMS data).")
                           ".tar.bz2"))
       (sha256
        (base32
-        "15h429h6pd67iiv580bjmwbkadpxsdppw0xrqpcm4dvm24jc271d"))))
+        "1qqi9bxwxxsc4r15j7drclgp0w8jk9nj3h2fsivk4c7brvw3lbvc"))))
     (build-system gnu-build-system)
     (propagated-inputs
      ;; Needs to be propagated because gpgme.h includes gpg-error.h.
@@ -250,6 +250,7 @@ libskba (working with X.509 certificates and CMS data).")
     (inputs
      `(("gnupg" ,gnupg)
        ("libassuan" ,libassuan)))
+    (arguments '(#:make-flags '("GPG=gpg2")))
     (home-page "http://www.gnupg.org/related_software/gpgme/")
     (synopsis "library providing simplified access to GnuPG functionality")
     (description

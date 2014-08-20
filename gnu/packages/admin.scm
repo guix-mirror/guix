@@ -46,8 +46,12 @@
   #:use-module (gnu packages flex)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages popt)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages groff)
+  #:use-module (gnu packages pciutils)
+  #:use-module (gnu packages libusb)
+  #:use-module (gnu packages libftdi)
   #:use-module (gnu packages xorg))
 
 (define-public dmd
@@ -803,3 +807,136 @@ reliability depending on the manufacturer.  This will often include usage
 status for the CPU sockets, expansion slots (e.g. AGP, PCI, ISA) and memory
 module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
     (license gpl2+)))
+
+(define-public flashrom
+  (package
+    (name "flashrom")
+    (version "0.9.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://download.flashrom.org/releases/flashrom-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1s9pc4yls2s1gcg2ar4q75nym2z5v6lxq36bl6lq26br00nj2mas"))
+              (patches (list (search-patch "flashrom-use-libftdi1.patch")))))
+    (build-system gnu-build-system)
+    (inputs `(("dmidecode" ,dmidecode)
+              ("pciutils" ,pciutils)
+              ("libusb" ,libusb)
+              ("libftdi" ,libftdi)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
+       #:tests? #f   ; no 'check' target
+       #:phases
+       (alist-delete
+        'configure
+        (alist-cons-before
+         'build 'patch-exec-paths
+         (lambda* (#:key inputs #:allow-other-keys)
+           (substitute* "dmi.c"
+             (("\"dmidecode\"")
+              (format #f "~S"
+                      (string-append (assoc-ref inputs "dmidecode")
+                                     "/sbin/dmidecode")))))
+         %standard-phases))))
+    (home-page "http://flashrom.org/")
+    (synopsis "Identify, read, write, erase, and verify ROM/flash chips")
+    (description
+     "flashrom is a utility for identifying, reading, writing,
+verifying and erasing flash chips.  It is designed to flash
+BIOS/EFI/coreboot/firmware/optionROM images on mainboards,
+network/graphics/storage controller cards, and various other
+programmer devices.")
+    (license gpl2)))
+
+(define-public acpica
+  (package
+    (name "acpica")
+    (version "20140724")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://acpica.org/sites/acpica/files/acpica-unix2-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "01vdgrh7dsxrrvg5yd8sxm63cw8210pnsi5qg9g15ac53gn243ac"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("flex" ,flex)
+                     ("bison" ,bison)))
+    (arguments
+     '(#:make-flags (list (string-append "PREFIX=" %output)
+                          "HOST=_LINUX"
+                          "OPT_CFLAGS=-Wall -fno-strict-aliasing")
+       #:tests? #f  ; no 'check' target.
+       #:phases (alist-delete 'configure %standard-phases)))
+    (home-page "http://acpica.org/")
+    (synopsis "ACPICA tools for the development and debug of ACPI tables")
+    (description
+     "The ACPI Component Architecture (ACPICA) project provides an
+OS-independent reference implementation of the Advanced Configuration and
+Power Interface Specification (ACPI).  ACPICA code contains those portions of
+ACPI meant to be directly integrated into the host OS as a kernel-resident
+subsystem, and a small set of tools to assist in developing and debugging ACPI
+tables.  This package contains only the user-space tools needed for ACPI table
+development, not the kernel implementation of ACPI.")
+    (license gpl2)))  ; Dual GPLv2/ACPICA Licence
+
+(define-public stress
+  (package
+    (name "stress")
+    (version "1.0.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://debian/pool/main/s/stress/stress_"
+                                  version ".orig.tar.gz"))
+              (sha256
+               (base32
+                "1v9vnzlihqfjsxa93hdbrq72pqqk00dkylmlg8jpxhm7s1w9qfl1"))))
+    (build-system gnu-build-system)
+    (home-page "http://packages.debian.org/wheezy/stress")
+    (synopsis "A tool to impose load on and stress test a computer system")
+    (description
+     "'stress' is a tool that imposes a configurable amount of CPU, memory, I/O,
+or disk stress on a POSIX-compliant operating system and reports any errors it
+detects.
+
+'stress' is not a benchmark.  It is a tool used by system administrators to
+evaluate how well their systems will scale, by kernel programmers to evaluate
+perceived performance characteristics, and by systems programmers to expose
+the classes of bugs which only or more frequently manifest themselves when the
+system is under heavy load.")
+    (license gpl2+)))
+
+(define-public detox
+  (package
+    (name "detox")
+    (version "1.2.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/detox/detox-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1y6vvjqsg54kl49cry73jbfhr04s7wjs779vrr9zrq6kww7dkymb"))))
+    (build-system gnu-build-system)
+    ;; Both flex and popt are used in this case for their runtime libraries
+    ;; (libfl and libpopt).
+    (inputs
+     `(("flex" ,flex)
+       ("popt" ,popt)))
+    (arguments
+     `(#:configure-flags `(,(string-append "--with-popt="
+                                           (assoc-ref %build-inputs "popt")))
+       #:tests? #f))                    ;no 'check' target
+    (home-page "http://detox.sourceforge.net")
+    (synopsis "Clean up filenames")
+    (description
+     "Detox is a program that renames files to make them easier to work with
+under Unix and related operating systems.  Spaces and various other unsafe
+characters (such as \"$\") get replaced with \"_\".  ISO 8859-1 (Latin-1)
+characters can be replaced as well, as can UTF-8 characters.")
+    (license bsd-3)))

@@ -1,0 +1,1121 @@
+# German translation of guix.
+# Copyright (C) 2014 Free Software Foundation, Inc.
+# This file is distributed under the same license as the guix package.
+#
+# Pavel Fric <pavelfric@seznam.cz>, 2014.
+msgid ""
+msgstr ""
+"Project-Id-Version: guix 0.7-pre1\n"
+"Report-Msgid-Bugs-To: ludo@gnu.org\n"
+"POT-Creation-Date: 2014-07-13 17:06+0200\n"
+"PO-Revision-Date: 2014-07-26 18:06+0200\n"
+"Last-Translator: Pavel Fric <pavelfric@seznam.cz>\n"
+"Language-Team: Czech <translation-team-cs@lists.sourceforge.net>\n"
+"Language: cs\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: gnu/packages.scm:95
+#, scheme-format
+msgid "cannot access `~a': ~a~%"
+msgstr "Nelze přistupovat k »~a«: ~a~%"
+
+#: guix/scripts/build.scm:54 guix/scripts/package.scm:349
+#, scheme-format
+msgid "ambiguous package specification `~a'~%"
+msgstr ""
+
+#: guix/scripts/build.scm:55 guix/scripts/package.scm:351
+#, scheme-format
+msgid "choosing ~a from ~a~%"
+msgstr ""
+
+#: guix/scripts/build.scm:61
+#, scheme-format
+msgid "~A: package not found for version ~a~%"
+msgstr "~A: Balíček nenalezen pro verzi ~a~%"
+
+#: guix/scripts/build.scm:63
+#, scheme-format
+msgid "~A: unknown package~%"
+msgstr "~A: Neznámý balíček~%"
+
+#: guix/scripts/build.scm:86
+#, scheme-format
+msgid "failed to create GC root `~a': ~a~%"
+msgstr "Nepodařilo se vytvořit GC root `~a': ~a~%"
+
+#: guix/scripts/build.scm:123
+msgid ""
+"\n"
+"  -K, --keep-failed      keep build tree of failed builds"
+msgstr ""
+"\n"
+"  -K, --keep-failed      Zachovat sestavovací strom nezdařených sestavení"
+
+#: guix/scripts/build.scm:125
+msgid ""
+"\n"
+"  -n, --dry-run          do not build the derivations"
+msgstr ""
+
+#: guix/scripts/build.scm:127
+msgid ""
+"\n"
+"      --fallback         fall back to building when the substituter fails"
+msgstr ""
+
+#: guix/scripts/build.scm:129
+msgid ""
+"\n"
+"      --no-substitutes   build instead of resorting to pre-built substitutes"
+msgstr ""
+
+#: guix/scripts/build.scm:131
+msgid ""
+"\n"
+"      --no-build-hook    do not attempt to offload builds via the build hook"
+msgstr ""
+
+#: guix/scripts/build.scm:133
+msgid ""
+"\n"
+"      --max-silent-time=SECONDS\n"
+"                         mark the build as failed after SECONDS of silence"
+msgstr ""
+
+#: guix/scripts/build.scm:136
+msgid ""
+"\n"
+"      --timeout=SECONDS  mark the build as failed after SECONDS of activity"
+msgstr ""
+
+#: guix/scripts/build.scm:138
+msgid ""
+"\n"
+"      --verbosity=LEVEL  use the given verbosity LEVEL"
+msgstr ""
+
+#: guix/scripts/build.scm:140
+msgid ""
+"\n"
+"  -c, --cores=N          allow the use of up to N CPU cores for the build"
+msgstr ""
+
+#: guix/scripts/build.scm:206
+#, scheme-format
+msgid "~a: not a number~%"
+msgstr "~a: Není číslo~%"
+
+#: guix/scripts/build.scm:223
+msgid ""
+"Usage: guix build [OPTION]... PACKAGE-OR-DERIVATION...\n"
+"Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"
+msgstr ""
+
+#: guix/scripts/build.scm:225
+msgid ""
+"\n"
+"  -e, --expression=EXPR  build the package or derivation EXPR evaluates to"
+msgstr ""
+
+#: guix/scripts/build.scm:227
+msgid ""
+"\n"
+"  -S, --source           build the packages' source derivations"
+msgstr ""
+
+#: guix/scripts/build.scm:229
+msgid ""
+"\n"
+"  -s, --system=SYSTEM    attempt to build for SYSTEM--e.g., \"i686-linux\""
+msgstr ""
+
+#: guix/scripts/build.scm:231
+msgid ""
+"\n"
+"      --target=TRIPLET   cross-build for TRIPLET--e.g., \"armel-linux-gnu\""
+msgstr ""
+
+#: guix/scripts/build.scm:233
+msgid ""
+"\n"
+"      --with-source=SOURCE\n"
+"                         use SOURCE when building the corresponding package"
+msgstr ""
+
+#: guix/scripts/build.scm:236
+msgid ""
+"\n"
+"  -d, --derivations      return the derivation paths of the given packages"
+msgstr ""
+
+#: guix/scripts/build.scm:238
+msgid ""
+"\n"
+"  -r, --root=FILE        make FILE a symlink to the result, and register it\n"
+"                         as a garbage collector root"
+msgstr ""
+
+#: guix/scripts/build.scm:241
+msgid ""
+"\n"
+"      --log-file         return the log file names for the given derivations"
+msgstr ""
+
+#: guix/scripts/build.scm:246 guix/scripts/download.scm:53
+#: guix/scripts/package.scm:523 guix/scripts/gc.scm:58
+#: guix/scripts/hash.scm:55 guix/scripts/pull.scm:82
+#: guix/scripts/substitute-binary.scm:564 guix/scripts/system.scm:334
+msgid ""
+"\n"
+"  -h, --help             display this help and exit"
+msgstr ""
+"\n"
+"  -h, --help             Ukázat tuto nápovědu a ukončit"
+
+#: guix/scripts/build.scm:248 guix/scripts/download.scm:55
+#: guix/scripts/package.scm:525 guix/scripts/gc.scm:60
+#: guix/scripts/hash.scm:57 guix/scripts/pull.scm:84
+#: guix/scripts/substitute-binary.scm:566 guix/scripts/system.scm:336
+msgid ""
+"\n"
+"  -V, --version          display version information and exit"
+msgstr ""
+"\n"
+"  -V, --version         Ukázat informace o verzi a ukončit"
+
+#: guix/scripts/build.scm:368
+#, scheme-format
+msgid "sources do not match any package:~{ ~a~}~%"
+msgstr ""
+
+#: guix/scripts/build.scm:397 guix/scripts/download.scm:96
+#: guix/scripts/package.scm:756 guix/scripts/gc.scm:122
+#: guix/scripts/pull.scm:115 guix/scripts/system.scm:386
+#, scheme-format
+msgid "~A: unrecognized option~%"
+msgstr "~A: Nerozpoznaná volba~%"
+
+#: guix/scripts/build.scm:425
+#, scheme-format
+msgid "no build log for '~a'~%"
+msgstr "Žádný záznam o sestavení pro »~a«~%"
+
+#: guix/scripts/download.scm:44
+msgid ""
+"Usage: guix download [OPTION] URL\n"
+"Download the file at URL, add it to the store, and print its store path\n"
+"and the hash of its contents.\n"
+"\n"
+"Supported formats: 'nix-base32' (default), 'base32', and 'base16'\n"
+"('hex' and 'hexadecimal' can be used as well).\n"
+msgstr ""
+
+#: guix/scripts/download.scm:50 guix/scripts/hash.scm:50
+msgid ""
+"\n"
+"  -f, --format=FMT       write the hash in the given format"
+msgstr ""
+
+#: guix/scripts/download.scm:73 guix/scripts/hash.scm:75
+#, scheme-format
+msgid "unsupported hash format: ~a~%"
+msgstr "Nepodporovaný formát kontrolního součtu: ~a~%"
+
+#: guix/scripts/download.scm:106
+#, scheme-format
+msgid "~a: failed to parse URI~%"
+msgstr "~a: URI~% se nepodařilo zpracovat"
+
+#: guix/scripts/download.scm:117
+#, scheme-format
+msgid "~a: download failed~%"
+msgstr "~a: Stažení se nezdařilo~%"
+
+#: guix/scripts/package.scm:88
+#, scheme-format
+msgid "failed to build the empty profile~%"
+msgstr "Nepodařilo se vytvořit prázdný profil~%"
+
+#: guix/scripts/package.scm:97
+#, scheme-format
+msgid "switching from generation ~a to ~a~%"
+msgstr ""
+
+#: guix/scripts/package.scm:108 guix/scripts/package.scm:866
+#: guix/scripts/package.scm:978
+#, scheme-format
+msgid "profile '~a' does not exist~%"
+msgstr "Profil »~a« neexistuje~%"
+
+#: guix/scripts/package.scm:112
+#, scheme-format
+msgid "nothing to do: already at the empty profile~%"
+msgstr ""
+
+#: guix/scripts/package.scm:197
+#, scheme-format
+msgid "The following package would be removed:~%~{~a~%~}~%"
+msgstr ""
+
+#: guix/scripts/package.scm:202
+#, scheme-format
+msgid "The following package will be removed:~%~{~a~%~}~%"
+msgstr ""
+
+#: guix/scripts/package.scm:214
+#, scheme-format
+msgid "The following package would be installed:~%~{~a~%~}~%"
+msgstr ""
+
+#: guix/scripts/package.scm:219
+#, scheme-format
+msgid "The following package will be installed:~%~{~a~%~}~%"
+msgstr "Bude nainstalován následující balíček:~%~{~a~%~}~%"
+
+#: guix/scripts/package.scm:339
+#, scheme-format
+msgid "package `~a' lacks output `~a'~%"
+msgstr ""
+
+#: guix/scripts/package.scm:356
+#, scheme-format
+msgid "~a: package not found~%"
+msgstr "~a: Balíček nenalezen~%"
+
+#: guix/scripts/package.scm:391
+#, scheme-format
+msgid "looking for the latest release of GNU ~a..."
+msgstr "Hledá se poslední vydání GNU ~a …"
+
+#: guix/scripts/package.scm:395
+#, scheme-format
+msgid "~a: note: using ~a but ~a is available upstream~%"
+msgstr ""
+
+#: guix/scripts/package.scm:467
+#, scheme-format
+msgid "The following environment variable definitions may be needed:~%"
+msgstr ""
+
+#: guix/scripts/package.scm:483
+msgid ""
+"Usage: guix package [OPTION]... PACKAGES...\n"
+"Install, remove, or upgrade PACKAGES in a single transaction.\n"
+msgstr ""
+
+#: guix/scripts/package.scm:485
+msgid ""
+"\n"
+"  -i, --install=PACKAGE  install PACKAGE"
+msgstr ""
+"\n"
+"  -i, --install=PAKET    Instalovat BALÍČEK"
+
+#: guix/scripts/package.scm:487
+msgid ""
+"\n"
+"  -e, --install-from-expression=EXP\n"
+"                         install the package EXP evaluates to"
+msgstr ""
+
+#: guix/scripts/package.scm:490
+msgid ""
+"\n"
+"  -r, --remove=PACKAGE   remove PACKAGE"
+msgstr ""
+"\n"
+"  -r, --remove=PAKET     Odstranit BALÍČEK"
+
+#: guix/scripts/package.scm:492
+msgid ""
+"\n"
+"  -u, --upgrade[=REGEXP] upgrade all the installed packages matching REGEXP"
+msgstr ""
+
+#: guix/scripts/package.scm:494
+msgid ""
+"\n"
+"      --roll-back        roll back to the previous generation"
+msgstr ""
+
+#: guix/scripts/package.scm:496
+msgid ""
+"\n"
+"      --search-paths     display needed environment variable definitions"
+msgstr ""
+
+#: guix/scripts/package.scm:498
+msgid ""
+"\n"
+"  -l, --list-generations[=PATTERN]\n"
+"                         list generations matching PATTERN"
+msgstr ""
+
+#: guix/scripts/package.scm:501
+msgid ""
+"\n"
+"  -d, --delete-generations[=PATTERN]\n"
+"                         delete generations matching PATTERN"
+msgstr ""
+
+#: guix/scripts/package.scm:504
+msgid ""
+"\n"
+"  -p, --profile=PROFILE  use PROFILE instead of the user's default profile"
+msgstr ""
+
+#: guix/scripts/package.scm:507
+msgid ""
+"\n"
+"      --bootstrap        use the bootstrap Guile to build the profile"
+msgstr ""
+
+#: guix/scripts/package.scm:509 guix/scripts/pull.scm:75
+msgid ""
+"\n"
+"      --verbose          produce verbose output"
+msgstr ""
+
+#: guix/scripts/package.scm:512
+msgid ""
+"\n"
+"  -s, --search=REGEXP    search in synopsis and description using REGEXP"
+msgstr ""
+
+#: guix/scripts/package.scm:514
+msgid ""
+"\n"
+"  -I, --list-installed[=REGEXP]\n"
+"                         list installed packages matching REGEXP"
+msgstr ""
+
+#: guix/scripts/package.scm:517
+msgid ""
+"\n"
+"  -A, --list-available[=REGEXP]\n"
+"                         list available packages matching REGEXP"
+msgstr ""
+
+#: guix/scripts/package.scm:760
+#, scheme-format
+msgid "~A: extraneous argument~%"
+msgstr ""
+
+#: guix/scripts/package.scm:775
+#, scheme-format
+msgid "Try \"info '(guix) Invoking guix package'\" for more information.~%"
+msgstr ""
+
+#: guix/scripts/package.scm:797
+#, scheme-format
+msgid "error: while creating directory `~a': ~a~%"
+msgstr ""
+
+#: guix/scripts/package.scm:801
+#, scheme-format
+msgid "Please create the `~a' directory, with you as the owner.~%"
+msgstr ""
+
+#: guix/scripts/package.scm:808
+#, scheme-format
+msgid "error: directory `~a' is not owned by you~%"
+msgstr ""
+
+#: guix/scripts/package.scm:811
+#, scheme-format
+msgid "Please change the owner of `~a' to user ~s.~%"
+msgstr ""
+
+#: guix/scripts/package.scm:836
+#, scheme-format
+msgid "deleting ~a~%"
+msgstr ""
+
+#: guix/scripts/package.scm:889 guix/scripts/package.scm:994
+#, scheme-format
+msgid "invalid syntax: ~a~%"
+msgstr "Neplatná skladba: ~a~%"
+
+#: guix/scripts/package.scm:918
+#, scheme-format
+msgid "nothing to be done~%"
+msgstr "Nic k dělání~%"
+
+#: guix/scripts/package.scm:941
+#, scheme-format
+msgid "~a package in profile~%"
+msgstr "~a balíček v profilu~%"
+
+#: guix/scripts/package.scm:956
+#, scheme-format
+msgid "Generation ~a\t~a"
+msgstr ""
+
+#: guix/scripts/package.scm:963
+#, scheme-format
+msgid "~a\t(current)~%"
+msgstr "~a\t(aktuální)~%"
+
+#: guix/scripts/gc.scm:39
+msgid ""
+"Usage: guix gc [OPTION]... PATHS...\n"
+"Invoke the garbage collector.\n"
+msgstr ""
+
+#: guix/scripts/gc.scm:41
+msgid ""
+"\n"
+"  -C, --collect-garbage[=MIN]\n"
+"                         collect at least MIN bytes of garbage"
+msgstr ""
+
+#: guix/scripts/gc.scm:44
+msgid ""
+"\n"
+"  -d, --delete           attempt to delete PATHS"
+msgstr ""
+
+#: guix/scripts/gc.scm:46
+msgid ""
+"\n"
+"      --list-dead        list dead paths"
+msgstr ""
+
+#: guix/scripts/gc.scm:48
+msgid ""
+"\n"
+"      --list-live        list live paths"
+msgstr ""
+
+#: guix/scripts/gc.scm:51
+msgid ""
+"\n"
+"      --references       list the references of PATHS"
+msgstr ""
+
+#: guix/scripts/gc.scm:53
+msgid ""
+"\n"
+"  -R, --requisites       list the requisites of PATHS"
+msgstr ""
+
+#: guix/scripts/gc.scm:55
+msgid ""
+"\n"
+"      --referrers        list the referrers of PATHS"
+msgstr ""
+
+#: guix/scripts/gc.scm:84
+#, scheme-format
+msgid "invalid amount of storage: ~a~%"
+msgstr "Neplatná hodnota paměti: ~a~%"
+
+#: guix/scripts/hash.scm:45
+msgid ""
+"Usage: guix hash [OPTION] FILE\n"
+"Return the cryptographic hash of FILE.\n"
+"\n"
+"Supported formats: 'nix-base32' (default), 'base32', and 'base16' ('hex'\n"
+"and 'hexadecimal' can be used as well).\n"
+msgstr ""
+
+#: guix/scripts/hash.scm:52
+msgid ""
+"\n"
+"  -r, --recursive        compute the hash on FILE recursively"
+msgstr ""
+"\n"
+"  -r, --recursive        Spočítat kontrolní součet SOUBORU rekursivně"
+
+#: guix/scripts/hash.scm:103
+#, scheme-format
+msgid "unrecognized option: ~a~%"
+msgstr "Nerozpoznaná volba: ~a~%"
+
+#: guix/scripts/hash.scm:134 guix/ui.scm:233
+#, scheme-format
+msgid "~a~%"
+msgstr "~a~%"
+
+#: guix/scripts/hash.scm:137
+#, scheme-format
+msgid "wrong number of arguments~%"
+msgstr "Nesprávný počet argumentů~%"
+
+#: guix/scripts/pull.scm:73
+msgid ""
+"Usage: guix pull [OPTION]...\n"
+"Download and deploy the latest version of Guix.\n"
+msgstr ""
+
+#: guix/scripts/pull.scm:77
+msgid ""
+"\n"
+"      --url=URL          download the Guix tarball from URL"
+msgstr ""
+
+#: guix/scripts/pull.scm:79
+msgid ""
+"\n"
+"      --bootstrap        use the bootstrap Guile to build the new Guix"
+msgstr ""
+
+#: guix/scripts/pull.scm:117
+#, scheme-format
+msgid "~A: unexpected argument~%"
+msgstr "~A: Neočekávaný argument~%"
+
+#: guix/scripts/pull.scm:126
+msgid "failed to download up-to-date source, exiting\n"
+msgstr ""
+
+#: guix/scripts/pull.scm:145
+#, scheme-format
+msgid "updated ~a successfully deployed under `~a'~%"
+msgstr ""
+
+#: guix/scripts/pull.scm:148
+#, scheme-format
+msgid "failed to update Guix, check the build log~%"
+msgstr ""
+
+#: guix/scripts/pull.scm:150
+msgid "Guix already up to date\n"
+msgstr "Guix je již aktuální\n"
+
+#: guix/scripts/substitute-binary.scm:80
+#, scheme-format
+msgid "authentication and authorization of substitutes disabled!~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:163
+#, scheme-format
+msgid "download from '~a' failed: ~a, ~s~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:178
+#, scheme-format
+msgid "while fetching ~a: server is unresponsive~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:180
+#, scheme-format
+msgid "try `--no-substitutes' if the problem persists~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:244
+#, scheme-format
+msgid "signature version must be a number: ~a~%"
+msgstr "Verze podpisu musí být číslo: ~a~%"
+
+#: guix/scripts/substitute-binary.scm:248
+#, scheme-format
+msgid "unsupported signature version: ~a~%"
+msgstr "Verze podpisu není podporována: ~a~%"
+
+#: guix/scripts/substitute-binary.scm:256
+#, scheme-format
+msgid "signature is not a valid s-expression: ~s~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:260
+#, scheme-format
+msgid "invalid format of the signature field: ~a~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:295
+#, scheme-format
+msgid "invalid signature for '~a'~%"
+msgstr "Neplatný podpis »~a«~%"
+
+#: guix/scripts/substitute-binary.scm:297
+#, scheme-format
+msgid "hash mismatch for '~a'~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:299
+#, scheme-format
+msgid "'~a' is signed with an unauthorized key~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:301
+#, scheme-format
+msgid "signature on '~a' is corrupt~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:338
+#, scheme-format
+msgid "substitute at '~a' lacks a signature~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:526
+#, scheme-format
+msgid "Downloading, please wait...~%"
+msgstr "Stahuje se. Počkejte, prosím …~%"
+
+#: guix/scripts/substitute-binary.scm:528
+#, scheme-format
+msgid "(Please consider upgrading Guile to get proper progress report.)~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:545
+#, scheme-format
+msgid "host name lookup error: ~a~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:554
+msgid ""
+"Usage: guix substitute-binary [OPTION]...\n"
+"Internal tool to substitute a pre-built binary to a local build.\n"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:556
+msgid ""
+"\n"
+"      --query            report on the availability of substitutes for the\n"
+"                         store file names passed on the standard input"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:559
+msgid ""
+"\n"
+"      --substitute STORE-FILE DESTINATION\n"
+"                         download STORE-FILE and store it as a Nar in file\n"
+"                         DESTINATION"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:604
+msgid "ACL for archive imports seems to be uninitialized, substitutes may be unavailable\n"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:625
+#, scheme-format
+msgid "failed to look up host '~a' (~a), substituter disabled~%"
+msgstr ""
+
+#: guix/scripts/substitute-binary.scm:732
+#, scheme-format
+msgid "~a: unrecognized options~%"
+msgstr "~a: Nerozpoznané volby~%"
+
+#: guix/scripts/authenticate.scm:58
+#, scheme-format
+msgid "cannot find public key for secret key '~a'~%"
+msgstr ""
+
+#: guix/scripts/authenticate.scm:78
+#, scheme-format
+msgid "error: invalid signature: ~a~%"
+msgstr "Chyba: Neplatný podpis: ~a~%"
+
+#: guix/scripts/authenticate.scm:80
+#, scheme-format
+msgid "error: unauthorized public key: ~a~%"
+msgstr "Chyba: Neautorizovaný veřejný klíč: ~a~%"
+
+#: guix/scripts/authenticate.scm:82
+#, scheme-format
+msgid "error: corrupt signature data: ~a~%"
+msgstr "Chyba: Data podpisu poškozena: ~a~%"
+
+#: guix/scripts/authenticate.scm:126
+msgid ""
+"Usage: guix authenticate OPTION...\n"
+"Sign or verify the signature on the given file.  This tool is meant to\n"
+"be used internally by 'guix-daemon'.\n"
+msgstr ""
+
+#: guix/scripts/authenticate.scm:132
+msgid "wrong arguments"
+msgstr "Nesprávné argumenty"
+
+#: guix/scripts/system.scm:74
+#, scheme-format
+msgid "failed to open operating system file '~a': ~a~%"
+msgstr ""
+
+#: guix/scripts/system.scm:78 guix/ui.scm:238
+#, scheme-format
+msgid "~a: ~a~%"
+msgstr "~a: ~a~%"
+
+#: guix/scripts/system.scm:81
+#, scheme-format
+msgid "failed to load operating system file '~a': ~s~%"
+msgstr ""
+
+#: guix/scripts/system.scm:111
+#, scheme-format
+msgid "failed to register '~a' under '~a'~%"
+msgstr ""
+
+#: guix/scripts/system.scm:127
+#, scheme-format
+msgid "initializing the current root file system~%"
+msgstr ""
+
+#: guix/scripts/system.scm:151 guix/scripts/system.scm:291
+#, scheme-format
+msgid "failed to install GRUB on device '~a'~%"
+msgstr ""
+
+#: guix/scripts/system.scm:176
+#, scheme-format
+msgid "activating system...~%"
+msgstr "Systém se zapíná …~%"
+
+#: guix/scripts/system.scm:211
+#, scheme-format
+msgid "unrecognized boot parameters for '~a'~%"
+msgstr "Nerozpoznané spouštěcí parametry pro »~a«~%"
+
+#: guix/scripts/system.scm:295
+#, scheme-format
+msgid "initializing operating system under '~a'...~%"
+msgstr ""
+
+#: guix/scripts/system.scm:311
+msgid ""
+"Usage: guix system [OPTION] ACTION FILE\n"
+"Build the operating system declared in FILE according to ACTION.\n"
+msgstr ""
+
+#: guix/scripts/system.scm:314
+msgid "The valid values for ACTION are:\n"
+msgstr "Platné hodnoty pro ČINNOST jsou:\n"
+
+#: guix/scripts/system.scm:315
+msgid "  - 'reconfigure', switch to a new operating system configuration\n"
+msgstr ""
+
+#: guix/scripts/system.scm:317
+msgid "  - 'build', build the operating system without installing anything\n"
+msgstr ""
+
+#: guix/scripts/system.scm:319
+msgid "  - 'vm', build a virtual machine image that shares the host's store\n"
+msgstr ""
+
+#: guix/scripts/system.scm:321
+msgid "  - 'vm-image', build a freestanding virtual machine image\n"
+msgstr ""
+
+#: guix/scripts/system.scm:323
+msgid "  - 'disk-image', build a disk image, suitable for a USB stick\n"
+msgstr ""
+
+#: guix/scripts/system.scm:325
+msgid "  - 'init', initialize a root file system to run GNU.\n"
+msgstr ""
+
+#: guix/scripts/system.scm:329
+msgid ""
+"\n"
+"      --image-size=SIZE  for 'vm-image', produce an image of SIZE"
+msgstr ""
+
+#: guix/scripts/system.scm:331
+msgid ""
+"\n"
+"      --no-grub          for 'init', do not install GRUB"
+msgstr ""
+
+#: guix/scripts/system.scm:394
+#, scheme-format
+msgid "~a: unknown action~%"
+msgstr "~a: Neznámá činnost~%"
+
+#: guix/scripts/system.scm:411
+#, scheme-format
+msgid "wrong number of arguments for action '~a'~%"
+msgstr "Nesprávný počet argumentů pro činnost »~a«~%"
+
+#: guix/scripts/system.scm:431
+#, scheme-format
+msgid "no configuration file specified~%"
+msgstr "Nezadán žádný soubor s nastavením~%"
+
+#: guix/gnu-maintenance.scm:373
+#, scheme-format
+msgid "signature verification failed for `~a'~%"
+msgstr "Ověření podpisu se nezdařilo pro »~a«~%"
+
+#: guix/gnu-maintenance.scm:375
+#, scheme-format
+msgid "(could be because the public key is not in your keyring)~%"
+msgstr ""
+
+#: guix/gnu-maintenance.scm:450
+#, scheme-format
+msgid "~a: could not locate source file"
+msgstr "~a: Zdrojový soubor se nepodařilo najít"
+
+#: guix/gnu-maintenance.scm:455
+#, scheme-format
+msgid "~a: ~a: no `version' field in source; skipping~%"
+msgstr ""
+
+#: guix/ui.scm:131
+#, scheme-format
+msgid "failed to install locale: ~a~%"
+msgstr "Jazyk se nepodařilo nainstalovat: ~a~%"
+
+#: guix/ui.scm:150
+msgid ""
+"Copyright (C) 2014 the Guix authors\n"
+"License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>\n"
+"This is free software: you are free to change and redistribute it.\n"
+"There is NO WARRANTY, to the extent permitted by law.\n"
+msgstr ""
+"Autorské právo (C) 2014 autoři Guixu\n"
+"Povolení GPLv3+: GNU GPL verze 3 nebo pozdější <http://gnu.org/licenses/gpl.html>\n"
+"Toto je svobodný software: Můžete jej volně měnit a dál šířit.\n"
+"Není tu ŽÁDNÁ ZÁRUKA, ve výši povolené zákonem.\n"
+
+#: guix/ui.scm:158
+#, scheme-format
+msgid ""
+"\n"
+"Report bugs to: ~a."
+msgstr ""
+"\n"
+"Chyby hlašte na: ~a."
+
+#: guix/ui.scm:160
+#, scheme-format
+msgid ""
+"\n"
+"~a home page: <~a>"
+msgstr ""
+"\n"
+"~a stránky: <~a>"
+
+#: guix/ui.scm:162
+msgid ""
+"\n"
+"General help using GNU software: <http://www.gnu.org/gethelp/>"
+msgstr ""
+"\n"
+"Všeobecná nápověda k software GNU: <http://www.gnu.org/gethelp/>"
+
+#: guix/ui.scm:169
+#, scheme-format
+msgid "~a: invalid number~%"
+msgstr "~a: Neplatné číslo~%"
+
+#: guix/ui.scm:186
+#, scheme-format
+msgid "invalid number: ~a~%"
+msgstr "Neplatné číslo: ~a~%"
+
+#: guix/ui.scm:201
+#, scheme-format
+msgid "unknown unit: ~a~%"
+msgstr "Neznámá jednotka: ~a~%"
+
+#: guix/ui.scm:212
+#, scheme-format
+msgid "~a:~a:~a: package `~a' has an invalid input: ~s~%"
+msgstr "~a:~a:~a: Balíček `~a' má neplatný vstup: ~s~%"
+
+#: guix/ui.scm:219
+#, scheme-format
+msgid "~a: ~a: build system `~a' does not support cross builds~%"
+msgstr "~a: ~a: Sestavovací systém `~a' nepodporuje křížová sestavení~%"
+
+#: guix/ui.scm:224
+#, scheme-format
+msgid "failed to connect to `~a': ~a~%"
+msgstr "Nepodařilo se spojit s »~a«: ~a~%"
+
+#: guix/ui.scm:229
+#, scheme-format
+msgid "build failed: ~a~%"
+msgstr "Nepodařilo se sestavit: ~a~%"
+
+#: guix/ui.scm:257
+#, scheme-format
+msgid "failed to read expression ~s: ~s~%"
+msgstr "Výraz ~s se nepodařilo přečíst: ~s~%"
+
+#: guix/ui.scm:263
+#, scheme-format
+msgid "failed to evaluate expression `~a': ~s~%"
+msgstr ""
+
+#: guix/ui.scm:272
+#, scheme-format
+msgid "expression ~s does not evaluate to a package~%"
+msgstr ""
+
+#: guix/ui.scm:319
+#, scheme-format
+msgid "~:[The following derivation would be built:~%~{   ~a~%~}~;~]"
+msgstr ""
+
+#: guix/ui.scm:324
+#, scheme-format
+msgid "~:[The following file would be downloaded:~%~{   ~a~%~}~;~]"
+msgstr ""
+
+#: guix/ui.scm:330
+#, scheme-format
+msgid "~:[The following derivation will be built:~%~{   ~a~%~}~;~]"
+msgstr ""
+
+#: guix/ui.scm:335
+#, scheme-format
+msgid "~:[The following file will be downloaded:~%~{   ~a~%~}~;~]"
+msgstr "~:[Bude stažen následující soubor:~%~{   ~a~%~}~;~]"
+
+#: guix/ui.scm:352
+msgid "<unknown location>"
+msgstr "<neznámé místo>"
+
+#: guix/ui.scm:380
+#, scheme-format
+msgid "failed to create configuration directory `~a': ~a~%"
+msgstr "Adresář s nastavením »~a« se nepodařilo vytvořit: ~a~%"
+
+#: guix/ui.scm:461 guix/ui.scm:475
+msgid "unknown"
+msgstr "Neznámý"
+
+#: guix/ui.scm:584
+#, scheme-format
+msgid "invalid argument: ~a~%"
+msgstr "Neplatný argument: ~a~%"
+
+#: guix/ui.scm:589
+#, scheme-format
+msgid "Try `guix --help' for more information.~%"
+msgstr "vyvolejte »guix --help« pro obdržení dalších informací.~%"
+
+#: guix/ui.scm:619
+msgid ""
+"Usage: guix COMMAND ARGS...\n"
+"Run COMMAND with ARGS.\n"
+msgstr ""
+"Použití: guix PŘÍKAZ ARGUMENTY …\n"
+"Spustit PŘÍKAZ s ARGUMENTY.\n"
+
+#: guix/ui.scm:622
+msgid "COMMAND must be one of the sub-commands listed below:\n"
+msgstr "PŘÍKAZ musí být jeden z níže uvedených podpříkazů:\n"
+
+#: guix/ui.scm:642
+#, scheme-format
+msgid "guix: ~a: command not found~%"
+msgstr "guix: ~a: Příkaz nenalezen~%"
+
+#: guix/ui.scm:660
+#, scheme-format
+msgid "guix: missing command name~%"
+msgstr "guix: Chybí název příkazu~%"
+
+#: guix/ui.scm:668
+#, scheme-format
+msgid "guix: unrecognized option '~a'~%"
+msgstr "guix: Nerozpoznaná volba »~a«~%"
+
+#: guix/http-client.scm:217
+#, scheme-format
+msgid "using Guile ~a, which does not support ~s encoding~%"
+msgstr ""
+
+#: guix/http-client.scm:220
+#, scheme-format
+msgid "download failed; use a newer Guile~%"
+msgstr "Stažení se nezdařilo. Použijte novější Guile~%"
+
+#: guix/http-client.scm:232
+#, scheme-format
+msgid "following redirection to `~a'...~%"
+msgstr ""
+
+#: guix/http-client.scm:241
+msgid "download failed"
+msgstr "Stažení se nezdařilo"
+
+#: guix/nar.scm:134
+msgid "unexpected executable file marker"
+msgstr ""
+
+#: guix/nar.scm:141
+msgid "unsupported nar file type"
+msgstr ""
+
+#: guix/nar.scm:209
+msgid "unsupported file type"
+msgstr "Nepodporovaný typ souboru"
+
+#: guix/nar.scm:219
+msgid "invalid nar signature"
+msgstr ""
+
+#: guix/nar.scm:230
+msgid "invalid nar end-of-file marker"
+msgstr ""
+
+#: guix/nar.scm:244
+msgid "invalid symlink tokens"
+msgstr ""
+
+#: guix/nar.scm:263
+msgid "unexpected directory entry termination"
+msgstr ""
+
+#: guix/nar.scm:272
+msgid "unexpected directory inter-entry marker"
+msgstr ""
+
+#: guix/nar.scm:277
+msgid "unsupported nar entry type"
+msgstr ""
+
+#: guix/nar.scm:376
+msgid "signature is not a valid s-expression"
+msgstr "Podpis není platný s-výraz"
+
+#: guix/nar.scm:385
+msgid "invalid signature"
+msgstr "Neplatný podpis"
+
+#: guix/nar.scm:389
+msgid "invalid hash"
+msgstr "Neplatný kontrolní součet"
+
+#: guix/nar.scm:397
+msgid "unauthorized public key"
+msgstr "Neautorizovaný veřejný klíč"
+
+#: guix/nar.scm:402
+msgid "corrupt signature data"
+msgstr "data podpisu poškozena"
+
+#: guix/nar.scm:422
+msgid "corrupt file set archive"
+msgstr ""
+
+#: guix/nar.scm:432
+#, scheme-format
+msgid "importing file or directory '~a'...~%"
+msgstr "Zavádí se soubor nebo adresář »~a« …~%"
+
+#: guix/nar.scm:441
+#, scheme-format
+msgid "found valid signature for '~a'~%"
+msgstr "Nalezen platný podpis pro »~a« ~%"
+
+#: guix/nar.scm:448
+msgid "imported file lacks a signature"
+msgstr "Zavedenému souboru chybí podpis"
+
+#: guix/nar.scm:487
+msgid "invalid inter-file archive mark"
+msgstr ""

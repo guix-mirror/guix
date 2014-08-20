@@ -36,7 +36,7 @@
 (define-public transmission
   (package
     (name "transmission")
-    (version "2.83")
+    (version "2.84")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -44,7 +44,7 @@
                     version ".tar.xz"))
               (sha256
                (base32
-                "0cqlgl6jmjw1caybz6nzh3l8z0jak1dxba01isv72zvy2r8b1qdh"))))
+                "1sxr1magqb5s26yvr5yhs1f7bmir8gl09niafg64lhgfnhv1kz59"))))
     (build-system gnu-build-system)
     (outputs '("out"                      ; library and command-line interface
                "gui"))                    ; graphical user interface

@@ -40,6 +40,13 @@
 
 ;; Example manifest entries.
 
+(define guile-1.8.8
+  (manifest-entry
+    (name "guile")
+    (version "1.8.8")
+    (item "/gnu/store/...")
+    (output "out")))
+
 (define guile-2.0.9
   (manifest-entry
     (name "guile")
@@ -100,6 +107,20 @@
        (and (equal? m1 m2)
             (null? (manifest-entries m3))
             (null? (manifest-entries m4)))))))
+
+(test-assert "manifest-add"
+  (let* ((m0 (manifest '()))
+         (m1 (manifest-add m0 (list guile-1.8.8)))
+         (m2 (manifest-add m1 (list guile-2.0.9)))
+         (m3 (manifest-add m2 (list guile-2.0.9:debug)))
+         (m4 (manifest-add m3 (list guile-2.0.9:debug))))
+    (and (match (manifest-entries m1)
+           ((($ <manifest-entry> "guile" "1.8.8" "out")) #t)
+           (_ #f))
+         (match (manifest-entries m2)
+           ((($ <manifest-entry> "guile" "2.0.9" "out")) #t)
+           (_ #f))
+         (equal? m3 m4))))
 
 (test-assert "profile-derivation"
   (run-with-store %store

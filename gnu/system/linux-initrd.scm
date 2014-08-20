@@ -241,7 +241,7 @@ exception and backtrace!)."
 
   (define virtio-9p-modules
     ;; Modules for the 9p paravirtualized file system.
-    '("9pnet.ko" "9p.ko" "9pnet_virtio.ko"))
+    '("fscache.ko" "9pnet.ko" "9p.ko" "9pnet_virtio.ko"))
 
   (define (file-system-type-predicate type)
     (lambda (fs)

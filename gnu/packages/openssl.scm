@@ -28,14 +28,14 @@
 (define-public openssl
   (package
    (name "openssl")
-   (version "1.0.1h")
+   (version "1.0.1i")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.openssl.org/source/openssl-" version
                                 ".tar.gz"))
             (sha256
              (base32
-              "14yhsgag5as7nhxnw7f0vklwjwa3pmn1i15nmp3f4qxa6sc8l74x"))))
+              "1izwv1wzqdw8aqnvb70jcqpqp0rvkcm22w5c1dm9l1kpr939y5rw"))))
    (build-system gnu-build-system)
    (native-inputs `(("perl" ,perl)))
    (arguments

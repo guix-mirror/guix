@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
@@ -23,8 +23,7 @@
   #:use-module ((guix licenses)
                 #:hide (zlib))
   #:use-module (gnu packages)
-  #:use-module ((gnu packages compression)
-                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module ((gnu packages compression) #:prefix guix:)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages gperf)
@@ -44,6 +43,10 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages check)
+  #:use-module (gnu packages maths)
+  #:use-module (gnu packages which)
+  #:use-module (gnu packages rrdtool)
+  #:use-module (gnu packages gtk)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -165,7 +168,7 @@
   (origin
     (method url-fetch)
     (uri (string-append "http://www.fsfla.org/svn/fsfla/software/linux-libre/"
-                        "lemote/gnewsense/branches/3.15/100gnu+freedo.patch"))
+                        "lemote/gnewsense/branches/3.16/100gnu+freedo.patch"))
     (sha256
      (base32
       "1hk9swxxc80bmn2zd2qr5ccrjrk28xkypwhl4z0qx4hbivj7qm06"))))
@@ -186,7 +189,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "3.15.8")
+  (let* ((version "3.16.1")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -259,7 +262,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1ichq7b08rrfq61i8kpan9vxw9mxcfpcl8cw0a6lbc1ycwzvm7xw"))))
+               "1x4y0017l4ndcab4smky2wx0n86r3wyks2r8yyp19ia9ccnl98mf"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
@@ -1341,6 +1344,65 @@ device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license gpl2+))) ; libudev is under lgpl2.1+
 
+(define-public lvm2
+  (package
+    (name "lvm2")
+    (version "2.02.109")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "ftp://sources.redhat.com/pub/lvm2/releases/LVM2."
+                                  version ".tgz"))
+              (sha256
+               (base32
+                "1rv5ivg0l1w3nwzwdkqixm96h5bzg7ib4rr196ysb2lw42jmpjbv"))
+              (modules '((guix build utils)))
+              (snippet
+               '(begin
+                  (use-modules (guix build utils))
+
+                  ;; Honor sysconfdir.
+                  (substitute* "make.tmpl.in"
+                    (("confdir = .*$")
+                     "confdir = @sysconfdir@\n")
+                    (("DEFAULT_SYS_DIR = @DEFAULT_SYS_DIR@")
+                     "DEFAULT_SYS_DIR = @sysconfdir@"))))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("procps" ,procps)))                       ;tests use 'pgrep'
+    (inputs
+     `(("udev" ,udev)))
+    (arguments
+     '(#:phases (alist-cons-after
+                 'configure 'set-makefile-shell
+                 (lambda _
+                   ;; Use 'sh', not 'bash', so that '. lib/utils.sh' works as
+                   ;; expected.
+                   (setenv "SHELL" (which "sh"))
+
+                   ;; Replace /bin/sh with the right file name.
+                   (patch-makefile-SHELL "make.tmpl"))
+                 %standard-phases)
+
+       #:configure-flags (list (string-append "--sysconfdir="
+                                              (assoc-ref %outputs "out")
+                                              "/etc/lvm")
+                               "--enable-udev_sync"
+                               "--enable-udev_rules")
+
+       ;; The tests use 'mknod', which requires root access.
+       #:tests? #f))
+    (home-page "http://sourceware.org/lvm2/")
+    (synopsis "Logical volume management for Linux")
+    (description
+     "LVM2 is the logical volume management tool set for Linux-based systems.
+This package includes the user-space libraries and tools, including the device
+mapper.  Kernel components are part of Linux-libre.")
+
+    ;; Libraries (liblvm2, libdevmapper) are LGPLv2.1.
+    ;; Command-line tools are GPLv2.
+    (license (list gpl2 lgpl2.1))))
+
 (define-public wireless-tools
   (package
     (name "wireless-tools")
@@ -1365,4 +1427,114 @@ time.")
 Extensions.  The Wireless Extension is an interface allowing you to set
 Wireless LAN specific parameters and get the specific stats.")
     (home-page "http://www.hpl.hp.com/personal/Jean_Tourrilhes/Linux/Tools.html")
+    (license gpl2+)))
+
+(define-public lm-sensors
+  (package
+    (name "lm-sensors")
+    (version "3.3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://dl.lm-sensors.org/lm-sensors/releases/lm_sensors-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1ksgrynxgrq590nb2fwxrl1gwzisjkqlyg3ljfd1al0ibrk6mbjx"))
+              (patches (list (search-patch "lm-sensors-hwmon-attrs.patch")))))
+    (build-system gnu-build-system)
+    (inputs `(("rrdtool" ,rrdtool)
+              ("perl" ,perl)
+              ("kmod" ,kmod)
+              ("gnuplot" ,gnuplot)))
+    (native-inputs `(("pkg-config" ,pkg-config)
+                     ("flex" ,flex)
+                     ("bison" ,bison)
+                     ("which" ,which)))
+    (arguments
+     `(#:tests? #f  ; no 'check' target
+       #:make-flags (list (string-append "PREFIX=" %output)
+                          (string-append "ETCDIR=" %output "/etc")
+                          (string-append "MANDIR=" %output "/share/man"))
+       #:phases
+       (alist-delete
+        'configure
+        (alist-cons-before
+         'build 'patch-exec-paths
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (substitute* "prog/detect/sensors-detect"
+             (("`uname")
+              (string-append "`" (assoc-ref inputs "coreutils")
+                             "/bin/uname"))
+             (("(`|\")modprobe" all open-quote)
+              (string-append open-quote
+                             (assoc-ref inputs "kmod")
+                             "/bin/modprobe")))
+           (substitute* '("prog/pwm/pwmconfig"
+                          "prog/pwm/fancontrol")
+             (("gnuplot")
+              (string-append (assoc-ref inputs "gnuplot")
+                             "/bin/gnuplot"))
+             (("cat ")
+              (string-append (assoc-ref inputs "coreutils")
+                             "/bin/cat "))
+             (("egrep ")
+              (string-append (assoc-ref inputs "grep")
+                             "/bin/egrep "))
+             (("sed -e")
+              (string-append (assoc-ref inputs "sed")
+                             "/bin/sed -e"))
+             (("cut -d")
+              (string-append (assoc-ref inputs "coreutils")
+                             "/bin/cut -d"))
+             (("sleep ")
+              (string-append (assoc-ref inputs "coreutils")
+                             "/bin/sleep "))
+             (("readlink -f")
+              (string-append (assoc-ref inputs "coreutils")
+                             "/bin/readlink -f"))))
+         %standard-phases))))
+    (home-page "http://www.lm-sensors.org/")
+    (synopsis "Utilities to read temperature/voltage/fan sensors")
+    (description
+     "lm-sensors is a hardware health monitoring package for Linux.  It allows
+you to access information from temperature, voltage, and fan speed sensors.
+It works with most newer systems.")
+    (license gpl2+)))
+
+(define-public xsensors
+  (package
+    (name "xsensors")
+    (version "0.70")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://www.linuxhardware.org/xsensors/xsensors-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1siplsfgvcxamyqf44h71jx6jdfmvhfm7mh0y1q8ps4zs6pj2zwh"))))
+    (build-system gnu-build-system)
+    (inputs `(("lm-sensors" ,lm-sensors)
+              ("gtk" ,gtk+-2)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:phases (alist-cons-before
+                 'configure 'enable-deprecated
+                 (lambda _
+                   (substitute* "src/Makefile.in"
+                     (("-DGDK_DISABLE_DEPRECATED") "")
+                     (("-DGTK_DISABLE_DEPRECATED") "")))
+                 (alist-cons-before
+                  'configure 'remove-Werror
+                  (lambda _
+                    (substitute* '("configure" "src/Makefile.in")
+                      (("-Werror") "")))
+                  %standard-phases))))
+    (home-page "http://www.linuxhardware.org/xsensors/")
+    (synopsis "Hardware health information viewer")
+    (description
+     "xsensors reads data from the libsensors library regarding hardware
+health such as temperature, voltage and fan speed and displays the information
+in a digital read-out.")
     (license gpl2+)))

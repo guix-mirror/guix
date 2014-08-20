@@ -37,6 +37,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/autogen.scm			\
   gnu/packages/autotools.scm			\
   gnu/packages/avahi.scm			\
+  gnu/packages/avrdude.scm			\
   gnu/packages/backup.scm			\
   gnu/packages/base.scm				\
   gnu/packages/bash.scm				\
@@ -154,7 +155,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lsh.scm				\
   gnu/packages/lsof.scm				\
   gnu/packages/lua.scm				\
-  gnu/packages/lvm.scm				\
   gnu/packages/lynx.scm				\
   gnu/packages/m4.scm				\
   gnu/packages/man.scm				\
@@ -184,6 +184,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/onc-rpc.scm			\
   gnu/packages/openldap.scm			\
   gnu/packages/openssl.scm			\
+  gnu/packages/orpheus.scm			\
   gnu/packages/package-management.scm		\
   gnu/packages/parallel.scm			\
   gnu/packages/patchutils.scm			\
@@ -207,6 +208,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/rdf.scm				\
   gnu/packages/readline.scm			\
   gnu/packages/recutils.scm			\
+  gnu/packages/rrdtool.scm			\
   gnu/packages/rsync.scm			\
   gnu/packages/rush.scm				\
   gnu/packages/samba.scm			\
@@ -268,7 +270,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/system/file-systems.scm			\
   gnu/system/grub.scm				\
   gnu/system/install.scm			\
-  gnu/system/os-config.tmpl			\
   gnu/system/linux.scm				\
   gnu/system/linux-initrd.scm			\
   gnu/system/shadow.scm				\
@@ -280,6 +281,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
   gnu/packages/patches/avahi-localstatedir.patch		\
+  gnu/packages/patches/avrdude-fix-libusb.patch			\
   gnu/packages/patches/bigloo-gc-shebangs.patch			\
   gnu/packages/patches/binutils-ld-new-dtags.patch		\
   gnu/packages/patches/binutils-loongson-workaround.patch	\
@@ -291,7 +293,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/cpio-gets-undeclared.patch		\
   gnu/packages/patches/cssc-gets-undeclared.patch               \
   gnu/packages/patches/cssc-missing-include.patch               \
-  gnu/packages/patches/curl-fix-test172.patch			\
   gnu/packages/patches/cursynth-wave-rand.patch			\
   gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
@@ -299,6 +300,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/doxygen-tmake.patch			\
   gnu/packages/patches/emacs-configure-sh.patch			\
   gnu/packages/patches/findutils-absolute-paths.patch		\
+  gnu/packages/patches/flashrom-use-libftdi1.patch		\
   gnu/packages/patches/flex-bison-tests.patch			\
   gnu/packages/patches/gawk-shell.patch				\
   gnu/packages/patches/gcc-cross-environment-variables.patch	\
@@ -334,6 +336,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/libtool-skip-tests.patch			\
   gnu/packages/patches/libtool-skip-tests-for-mips.patch	\
   gnu/packages/patches/libssh-CVE-2014-0017.patch		\
+  gnu/packages/patches/lm-sensors-hwmon-attrs.patch		\
   gnu/packages/patches/luit-posix.patch				\
   gnu/packages/patches/m4-gets-undeclared.patch			\
   gnu/packages/patches/m4-readlink-EINVAL.patch			\
@@ -344,6 +347,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/mit-krb5-init-fix.patch			\
   gnu/packages/patches/mpc123-initialize-ao.patch		\
   gnu/packages/patches/module-init-tools-moduledir.patch	\
+  gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
   gnu/packages/patches/patchelf-page-size.patch			\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\
@@ -371,6 +375,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/superlu-dist-scotchmetis.patch		\
   gnu/packages/patches/tcsh-fix-autotest.patch			\
   gnu/packages/patches/teckit-cstdio.patch			\
+  gnu/packages/patches/texi2html-document-encoding.patch	\
+  gnu/packages/patches/texi2html-i18n.patch			\
   gnu/packages/patches/udev-gir-libtool.patch			\
   gnu/packages/patches/util-linux-perl.patch			\
   gnu/packages/patches/valgrind-glibc.patch			\

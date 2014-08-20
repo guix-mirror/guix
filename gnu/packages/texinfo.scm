@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages ncurses))
@@ -64,3 +66,42 @@ is on expressing the content semantically, avoiding physical markup commands.")
                (base32
                 "1rf9ckpqwixj65bw469i634897xwlgkm5i9g2hv3avl6mv7b0a3d"))))
     (inputs `(("ncurses" ,ncurses) ("xz" ,xz)))))
+
+(define-public texi2html
+  (package
+    (name "texi2html")
+    (version "5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://savannah/" name "/" name "-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "1yprv64vrlcbksqv25asplnjg07mbq38lfclp1m5lj8cw878pag8"))
+              (patches
+               (list (search-patch "texi2html-document-encoding.patch")
+                     (search-patch "texi2html-i18n.patch")))
+              (snippet
+               ;; This file is modified by the patch above, but reset its
+               ;; timestamp so we don't trigger the rule to update PO files,
+               ;; which would require Gettext.
+               ;; See <http://bugs.gnu.org/18247>.
+               '(utime "texi2html.pl" 0 0 0 0))))
+    (build-system gnu-build-system)
+    (inputs `(("perl" ,perl)))
+    (home-page "http://www.nongnu.org/texi2html/")
+    (synopsis "Convert Texinfo to HTML")
+    (description
+     "Texi2HTML is a Perl script which converts Texinfo source files to HTML
+output.  It now supports many advanced features, such as internationalization
+and extremely configurable output formats.
+
+Development of Texi2HTML moved to the GNU Texinfo repository in 2010, since it
+was meant to replace the makeinfo implementation in GNU Texinfo.  The route
+forward for authors is, in most cases, to alter manuals and build processes as
+necessary to use the new features of the makeinfo/texi2any implementation of
+GNU Texinfo.  The Texi2HTML maintainers (one of whom is the principal author
+of the GNU Texinfo implementation) do not intend to make further releases of
+Texi2HTML.")
+    ;; Files in /lib under lgpl2.1+ and x11
+    (license gpl2+)))

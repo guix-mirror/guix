@@ -384,11 +384,9 @@ networking values.)  Return #t if INTERFACE is up, #f otherwise."
     (set-network-interface-address sock interface address)
     (set-network-interface-flags sock interface (logior flags IFF_UP))
 
-    (unless (file-exists? "/etc")
-      (mkdir "/etc"))
-    (call-with-output-file "/etc/resolv.conf"
-      (lambda (p)
-        (display "nameserver 10.0.2.3\n" p)))
+    ;; Hello!  We used to create /etc/resolv.conf here, with "nameserver
+    ;; 10.0.2.3\n".  However, with Linux-libre 3.16, we're getting ENOSPC.
+    ;; And since it's actually unnecessary, it's gone.
 
     (logand (network-interface-flags sock interface) IFF_UP)))
 

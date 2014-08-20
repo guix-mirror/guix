@@ -41,7 +41,9 @@
 ;;; S-expressions (sexps), with two differences:
 ;;;
 ;;;   1. References (un-quotations) to derivations or packages in a gexp are
-;;;      replaced by the corresponding output file name;
+;;;      replaced by the corresponding output file name; in addition, the
+;;;      'ungexp-native' unquote-like form allows code to explicitly refer to
+;;;      the native code of a given package, in case of cross-compilation;
 ;;;
 ;;;   2. Gexps embed information about the derivations they refer to.
 ;;;
@@ -52,9 +54,10 @@
 
 ;; "G expressions".
 (define-record-type <gexp>
-  (make-gexp references proc)
+  (make-gexp references natives proc)
   gexp?
   (references gexp-references)                    ; ((DRV-OR-PKG OUTPUT) ...)
+  (natives    gexp-native-references)             ; ((DRV-OR-PKG OUTPUT) ...)
   (proc       gexp-proc))                         ; procedure
 
 (define (write-gexp gexp port)
@@ -65,7 +68,10 @@
   ;; doing things like (ungexp-splicing (gexp ())) because GEXP's procedure
   ;; tries to use 'append' on that, which fails with wrong-type-arg.
   (false-if-exception
-   (write (apply (gexp-proc gexp) (gexp-references gexp)) port))
+   (write (apply (gexp-proc gexp)
+                 (append (gexp-references gexp)
+                         (gexp-native-references gexp)))
+          port))
   (format port " ~a>"
           (number->string (object-address gexp) 16)))
 
@@ -81,14 +87,20 @@
 (define raw-derivation
   (store-lift derivation))
 
-(define (lower-inputs inputs)
-  "Turn any package from INPUTS into a derivation; return the corresponding
-input list as a monadic value."
+(define* (lower-inputs inputs
+                       #:key system target)
+  "Turn any package from INPUTS into a derivation for SYSTEM; return the
+corresponding input list as a monadic value.  When TARGET is true, use it as
+the cross-compilation target triplet."
   (with-monad %store-monad
     (sequence %store-monad
               (map (match-lambda
                     (((? package? package) sub-drv ...)
-                     (mlet %store-monad ((drv (package->derivation package)))
+                     (mlet %store-monad
+                         ((drv (if target
+                                   (package->cross-derivation package target
+                                                              system)
+                                   (package->derivation package system))))
                        (return `(,drv ,@sub-drv))))
                     (((? origin? origin) sub-drv ...)
                      (mlet %store-monad ((drv (origin->derivation origin)))
@@ -99,7 +111,7 @@ input list as a monadic value."
 
 (define* (gexp->derivation name exp
                            #:key
-                           system
+                           system (target 'current)
                            hash hash-algo recursive?
                            (env-vars '())
                            (modules '())
@@ -107,7 +119,8 @@ input list as a monadic value."
                            references-graphs
                            local-build?)
   "Return a derivation NAME that runs EXP (a gexp) with GUILE-FOR-BUILD (a
-derivation) on SYSTEM.
+derivation) on SYSTEM.  When TARGET is true, it is used as the
+cross-compilation target triplet for packages referred to by EXP.
 
 Make MODULES available in the evaluation context of EXP; MODULES is a list of
 names of Guile modules from the current search path to be copied in the store,
@@ -118,9 +131,25 @@ The other arguments are as for 'derivation'."
   (define %modules modules)
   (define outputs (gexp-outputs exp))
 
-  (mlet* %store-monad ((inputs   (lower-inputs (gexp-inputs exp)))
+  (mlet* %store-monad (;; The following binding is here to force
+                       ;; '%current-system' and '%current-target-system' to be
+                       ;; looked up at >>= time.
+                       (unused    (return #f))
+
                        (system -> (or system (%current-system)))
-                       (sexp     (gexp->sexp exp))
+                       (target -> (if (eq? target 'current)
+                                      (%current-target-system)
+                                      target))
+                       (normals  (lower-inputs (gexp-inputs exp)
+                                               #:system system
+                                               #:target target))
+                       (natives  (lower-inputs (gexp-native-inputs exp)
+                                               #:system system
+                                               #:target #f))
+                       (inputs -> (append normals natives))
+                       (sexp     (gexp->sexp exp
+                                             #:system system
+                                             #:target target))
                        (builder  (text-file (string-append name "-builder")
                                             (object->string sexp)))
                        (modules  (if (pair? %modules)
@@ -158,8 +187,9 @@ The other arguments are as for 'derivation'."
                     #:references-graphs references-graphs
                     #:local-build? local-build?)))
 
-(define (gexp-inputs exp)
-  "Return the input list for EXP."
+(define* (gexp-inputs exp #:optional (references gexp-references))
+  "Return the input list for EXP, using REFERENCES to get its list of
+references."
   (define (add-reference-inputs ref result)
     (match ref
       (((? derivation?) (? string?))
@@ -169,7 +199,7 @@ The other arguments are as for 'derivation'."
       (((? origin?) (? string?))
        (cons ref result))
       ((? gexp? exp)
-       (append (gexp-inputs exp) result))
+       (append (gexp-inputs exp references) result))
       (((? string? file))
        (if (direct-store-path? file)
            (cons ref result)
@@ -182,7 +212,10 @@ The other arguments are as for 'derivation'."
 
   (fold-right add-reference-inputs
               '()
-              (gexp-references exp)))
+              (references exp)))
+
+(define gexp-native-inputs
+  (cut gexp-inputs <> gexp-native-references))
 
 (define (gexp-outputs exp)
   "Return the outputs referred to by EXP as a list of strings."
@@ -199,16 +232,21 @@ The other arguments are as for 'derivation'."
               '()
               (gexp-references exp)))
 
-(define* (gexp->sexp exp)
+(define* (gexp->sexp exp #:key
+                     (system (%current-system))
+                     (target (%current-target-system)))
   "Return (monadically) the sexp corresponding to EXP for the given OUTPUT,
 and in the current monad setting (system type, etc.)"
-  (define (reference->sexp ref)
+  (define* (reference->sexp ref #:optional native?)
     (with-monad %store-monad
       (match ref
         (((? derivation? drv) (? string? output))
          (return (derivation->output-path drv output)))
         (((? package? p) (? string? output))
-         (package-file p #:output output))
+         (package-file p
+                       #:output output
+                       #:system system
+                       #:target (if native? #f target)))
         (((? origin? o) (? string? output))
          (mlet %store-monad ((drv (origin->derivation o)))
            (return (derivation->output-path drv output))))
@@ -218,17 +256,22 @@ and in the current monad setting (system type, etc.)"
          ;; that trick.
          (return `((@ (guile) getenv) ,output)))
         ((? gexp? exp)
-         (gexp->sexp exp))
+         (gexp->sexp exp
+                     #:system system
+                     #:target (if native? #f target)))
         (((? string? str))
          (return (if (direct-store-path? str) str ref)))
         ((refs ...)
-         (sequence %store-monad (map reference->sexp refs)))
+         (sequence %store-monad
+                   (map (cut reference->sexp <> native?) refs)))
         (x
          (return x)))))
 
   (mlet %store-monad
       ((args (sequence %store-monad
-                       (map reference->sexp (gexp-references exp)))))
+                       (append (map reference->sexp (gexp-references exp))
+                               (map (cut reference->sexp <> #t)
+                                    (gexp-native-references exp))))))
     (return (apply (gexp-proc exp) args))))
 
 (define (canonicalize-reference ref)
@@ -285,9 +328,28 @@ package/derivation references."
           (_
            result))))
 
+    (define (collect-native-escapes exp)
+      ;; Return all the 'ungexp-native' forms present in EXP.
+      (let loop ((exp    exp)
+                 (result '()))
+        (syntax-case exp (ungexp-native ungexp-native-splicing)
+          ((ungexp-native _)
+           (cons exp result))
+          ((ungexp-native _ _)
+           (cons exp result))
+          ((ungexp-native-splicing _ ...)
+           (cons exp result))
+          ((exp0 exp ...)
+           (let ((result (loop #'exp0 result)))
+             (fold loop result #'(exp ...))))
+          (_
+           result))))
+
     (define (escape->ref exp)
       ;; Turn 'ungexp' form EXP into a "reference".
-      (syntax-case exp (ungexp ungexp-splicing output)
+      (syntax-case exp (ungexp ungexp-splicing
+                        ungexp-native ungexp-native-splicing
+                        output)
         ((ungexp output)
          #'(output-ref "out"))
         ((ungexp output name)
@@ -297,30 +359,49 @@ package/derivation references."
         ((ungexp drv-or-pkg out)
          #'(list drv-or-pkg out))
         ((ungexp-splicing lst)
+         #'lst)
+        ((ungexp-native thing)
+         #'thing)
+        ((ungexp-native drv-or-pkg out)
+         #'(list drv-or-pkg out))
+        ((ungexp-native-splicing lst)
          #'lst)))
+
+    (define (substitute-ungexp exp substs)
+      ;; Given EXP, an 'ungexp' or 'ungexp-native' form, substitute it with
+      ;; the corresponding form in SUBSTS.
+      (match (assoc exp substs)
+        ((_ id)
+         id)
+        (_
+         #'(syntax-error "error: no 'ungexp' substitution"
+                         #'ref))))
+
+    (define (substitute-ungexp-splicing exp substs)
+      (syntax-case exp ()
+        ((exp rest ...)
+         (match (assoc #'exp substs)
+           ((_ id)
+            (with-syntax ((id id))
+              #`(append id
+                        #,(substitute-references #'(rest ...) substs))))
+           (_
+            #'(syntax-error "error: no 'ungexp-splicing' substitution"
+                            #'ref))))))
 
     (define (substitute-references exp substs)
       ;; Return a variant of EXP where all the cars of SUBSTS have been
       ;; replaced by the corresponding cdr.
-      (syntax-case exp (ungexp ungexp-splicing)
+      (syntax-case exp (ungexp ungexp-native
+                        ungexp-splicing ungexp-native-splicing)
         ((ungexp _ ...)
-         (match (assoc exp substs)
-           ((_ id)
-            id)
-           (_
-            #'(syntax-error "error: no 'ungexp' substitution"
-                            #'ref))))
+         (substitute-ungexp exp substs))
+        ((ungexp-native _ ...)
+         (substitute-ungexp exp substs))
         (((ungexp-splicing _ ...) rest ...)
-         (syntax-case exp ()
-           ((exp rest ...)
-            (match (assoc #'exp substs)
-              ((_ id)
-               (with-syntax ((id id))
-                 #`(append id
-                           #,(substitute-references #'(rest ...) substs))))
-              (_
-               #'(syntax-error "error: no 'ungexp-splicing' substitution"
-                               #'ref))))))
+         (substitute-ungexp-splicing exp substs))
+        (((ungexp-native-splicing _ ...) rest ...)
+         (substitute-ungexp-splicing exp substs))
         ((exp0 exp ...)
          #`(cons #,(substitute-references #'exp0 substs)
                  #,(substitute-references #'(exp ...) substs)))
@@ -328,11 +409,15 @@ package/derivation references."
 
     (syntax-case s (ungexp output)
       ((_ exp)
-       (let* ((escapes (delete-duplicates (collect-escapes #'exp)))
+       (let* ((normals (delete-duplicates (collect-escapes #'exp)))
+              (natives (delete-duplicates (collect-native-escapes #'exp)))
+              (escapes (append normals natives))
               (formals (generate-temporaries escapes))
               (sexp    (substitute-references #'exp (zip escapes formals)))
-              (refs    (map escape->ref escapes)))
+              (refs    (map escape->ref normals))
+              (nrefs   (map escape->ref natives)))
          #`(make-gexp (map canonicalize-reference (list #,@refs))
+                      (map canonicalize-reference (list #,@nrefs))
                       (lambda #,formals
                         #,sexp)))))))
 
@@ -385,22 +470,26 @@ its search path."
                          (write '(ungexp exp) port))))
                     #:local-build? #t))
 
-
 
 ;;;
 ;;; Syntactic sugar.
 ;;;
 
 (eval-when (expand load eval)
-  (define (read-ungexp chr port)
-    "Read an 'ungexp' or 'ungexp-splicing' form from PORT."
+  (define* (read-ungexp chr port #:optional native?)
+    "Read an 'ungexp' or 'ungexp-splicing' form from PORT.  When NATIVE? is
+true, use 'ungexp-native' and 'ungexp-native-splicing' instead."
     (define unquote-symbol
       (match (peek-char port)
         (#\@
          (read-char port)
-         'ungexp-splicing)
+         (if native?
+             'ungexp-native-splicing
+             'ungexp-splicing))
         (_
-         'ungexp)))
+         (if native?
+             'ungexp-native
+             'ungexp))))
 
     (match (read port)
       ((? symbol? symbol)
@@ -421,6 +510,7 @@ its search path."
 
   ;; Extend the reader
   (read-hash-extend #\~ read-gexp)
-  (read-hash-extend #\$ read-ungexp))
+  (read-hash-extend #\$ read-ungexp)
+  (read-hash-extend #\+ (cut read-ungexp <> <> #t)))
 
 ;;; gexp.scm ends here

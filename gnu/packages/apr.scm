@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,14 +29,14 @@
 (define-public apr
   (package
     (name "apr")
-    (version "1.4.8")
+    (version "1.5.1")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/apr/apr-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0884csfk3f530yscak0jlr6w929s3ys0n7fpwdg3dii1sgwd5f31"))
+               "1b4qw686bwjn19iyb0lg918q23xxd6s2gnyczhjq992d3m1vwjp9"))
              (patches
               (list (search-patch "apr-skip-getservbyname-test.patch")))
              (patch-flags '("-p0"))))
@@ -44,7 +45,8 @@
      ;; Sometimes we end up with two processes concurrently trying to make
      ;; 'libmod_test.la': <http://hydra.gnu.org/build/60266/nixlog/2/raw>.
      ;; Thus, build sequentially.
-     '(#:parallel-build? #f))
+     '(#:parallel-build? #f
+       #:parallel-tests? #f))
     (inputs `(("perl" ,perl)
               ("libtool" ,libtool)))
     (home-page "http://apr.apache.org/")
@@ -62,14 +64,14 @@ around or take advantage of platform-specific deficiencies or features.")
 (define-public apr-util
   (package
     (name "apr-util")
-    (version "1.5.2")
+    (version "1.5.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://apache/apr/apr-util-"
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "19qjxpckb9p4j9pbk8kcirg6k5vqnjrqhnk9xx2c5m9964p3vkls"))))
+               "0s1rpqjy5xr03k9s4xrsm5wvhj5286vlkf6jvqayw99yy5sb3vbq"))))
     (build-system gnu-build-system)
     (inputs
       `(("apr" ,apr)))

@@ -23,6 +23,7 @@
   #:use-module (guix records)
   #:use-module (guix packages)
   #:use-module (guix derivations)
+  #:use-module (guix profiles)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages which)
@@ -124,29 +125,6 @@
 ;;;
 ;;; Derivation.
 ;;;
-
-(define* (union inputs
-                #:key (guile (%guile-for-build))
-                (name "union"))
-  "Return a derivation that builds the union of INPUTS.  INPUTS is a list of
-input tuples."
-  (define builder
-    #~(begin
-        (use-modules (guix build union))
-
-        (define inputs '#$inputs)
-
-        (setvbuf (current-output-port) _IOLBF)
-        (setvbuf (current-error-port) _IOLBF)
-
-        (format #t "building union `~a' with ~a packages...~%"
-                #$output (length inputs))
-        (union-build #$output inputs)))
-
-  (gexp->derivation name builder
-                    #:modules '((guix build union))
-                    #:guile-for-build guile
-                    #:local-build? #t))
 
 (define* (file-union name files)
   "Return a derivation that builds a directory containing all of FILES.  Each
@@ -294,10 +272,9 @@ alias ll='ls -l'
                   ("sudoers" ,#~#$sudoers)))))
 
 (define (operating-system-profile os)
-  "Return a derivation that builds the default profile of OS."
-  ;; TODO: Replace with a real profile with a manifest.
-  (union (operating-system-packages os)
-         #:name "default-profile"))
+  "Return a derivation that builds the system profile of OS."
+  (profile-derivation (manifest (map package->manifest-entry
+                                     (operating-system-packages os)))))
 
 (define %root-account
   ;; Default root account.

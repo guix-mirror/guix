@@ -331,6 +331,29 @@ tracking.")
     (license license:x11)))
 
 
+;; not part of X11R7.7, required for newer versions of mesa
+(define-public dri3proto
+  (package
+    (name "dri3proto")
+    (version "1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/proto/dri3proto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "0x609xvnl8jky5m8jdklw4nymx3irkv32w99dfd8nl800bblkgh1"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license (license:x11-style "file://dri3proto.h"
+                                "See 'dri3proto.h' in the distribution."))))
+
+
 (define-public encodings
   (package
     (name "encodings")
@@ -1521,6 +1544,28 @@ tracking.")
     (license license:x11)))
 
 
+;; not part of X11R7.7, required for newer versions of mesa
+(define-public presentproto
+  (package
+    (name "presentproto")
+    (version "1.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "mirror://xorg/individual/proto/presentproto-"
+               version
+               ".tar.bz2"))
+        (sha256
+          (base32
+            "1kir51aqg9cwazs14ivcldcn3mzadqgykc9cg87rm40zf947sb41"))))
+    (build-system gnu-build-system)
+    (home-page "http://www.x.org/wiki/")
+    (synopsis "xorg implementation of the X Window System")
+    (description "X.org provides an implementation of the X Window System")
+    (license (license:x11-style "file://presentproto.h"
+                                "See 'presentproto.h' in the distribution."))))
+
 ;; The package is missing from X11R7.7.
 (define-public printproto
   (package
@@ -1696,9 +1741,15 @@ tracking.")
     (build-system gnu-build-system)
     (inputs
       `(("libxkbfile" ,libxkbfile)
+        ("xkeyboard-config" ,xkeyboard-config)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-xkb-config-root="
+                            (assoc-ref %build-inputs "xkeyboard-config")
+                            "/share/X11/xkb"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")
@@ -2170,9 +2221,15 @@ tracking.")
           (base32
             "1ivf5n821chckrgp89mpb18zi00v1hyrkc1hr82q0x6g1kpgxq9y"))))
     (build-system gnu-build-system)
-    ;; FIXME: Add required input udev once it is available.
-    (inputs `(("xorg-server" ,xorg-server)))
+    (inputs
+      `(("udev" ,udev)
+        ("xorg-server" ,xorg-server)))
     (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:configure-flags
+       (list (string-append "--with-sdkdir="
+                            (assoc-ref %outputs "out")
+                            "/include/xorg"))))
     (home-page "http://www.x.org/wiki/")
     (synopsis "xorg implementation of the X Window System")
     (description "X.org provides an implementation of the X Window System")

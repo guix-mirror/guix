@@ -31,15 +31,15 @@
 (define-public mysql
   (package
     (name "mysql")
-    (version "5.1.54")
+    (version "5.1.73")
     (source (origin
              (method url-fetch)
              (uri (string-append
-                   "http://downloads.mysql.com/archives/mysql-5.1/mysql-"
+                   "http://dev.mysql.com/get/Downloads/MySQL-5.1/mysql-"
                    version ".tar.gz"))
              (sha256
               (base32
-               "07xbnwk7h1xya8s6dw34nrv7ampzag8l0l1szd2pc9zyqkzhydw4"))))
+               "1dfwi4ck0vq6sdci6gz0031s7zz5lc3pddqlgm0292s00l9y5sq5"))))
     (build-system gnu-build-system)
     (inputs
      `(("procps" ,procps)

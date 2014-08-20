@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -37,18 +37,14 @@
 (define-public curl
   (package
    (name "curl")
-   (version "7.35.0")
+   (version "7.37.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://curl.haxx.se/download/curl-"
                                 version ".tar.lzma"))
             (sha256
              (base32
-              "14w5cwh6b1426lxkq6kp6h4vxryr4n7wfrrwhny1r4123q7n8ab9"))
-            (patches
-             ;; This patch fixes testcase 172 which uses a hardcoded cookie
-             ;; expiration value which is expired as of Feb 1, 2014.
-             (list (search-patch "curl-fix-test172.patch")))))
+              "10yfh4hy8wbkj43la238hg6h8i9wyp1cvvk8kl0giac1020imn5d"))))
    (build-system gnu-build-system)
    (inputs `(("gnutls" ,gnutls)
              ("gss" ,gss)

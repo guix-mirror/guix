@@ -30,6 +30,7 @@
         ftp-client
         gexp
         monads
+        monad-repl
         packages
         store
         utils))
