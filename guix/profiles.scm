@@ -275,15 +275,34 @@ Remove MANIFEST entries that have the same name and output as ENTRIES."
 (define* (manifest-show-transaction store manifest transaction
                                     #:key dry-run?)
   "Display what will/would be installed/removed from MANIFEST by TRANSACTION."
-  ;; TODO: Report upgrades more clearly.
-  (let ((install (manifest-transaction-install transaction))
-        (remove  (manifest-matching-entries
-                  manifest (manifest-transaction-remove transaction))))
+  (define (package-strings name version output item)
+    (map (lambda (name version output item)
+           (format #f "   ~a-~a\t~a\t~a" name version output
+                   (if (package? item)
+                       (package-output store item output)
+                       item)))
+         name version output item))
+
+  (let* ((remove (manifest-matching-entries
+                  manifest (manifest-transaction-remove transaction)))
+         (install/upgrade (manifest-transaction-install transaction))
+         (install '())
+         (upgrade (append-map
+                   (lambda (entry)
+                     (let ((matching
+                            (manifest-matching-entries
+                             manifest
+                             (list (manifest-pattern
+                                    (name   (manifest-entry-name entry))
+                                    (output (manifest-entry-output entry)))))))
+                       (when (null? matching)
+                         (set! install (cons entry install)))
+                       matching))
+                   install/upgrade)))
     (match remove
-      ((($ <manifest-entry> name version output path _) ..1)
+      ((($ <manifest-entry> name version output item _) ..1)
        (let ((len    (length name))
-             (remove (map (cut format #f "   ~a-~a\t~a\t~a" <> <> <> <>)
-                          name version output path)))
+             (remove (package-strings name version output item)))
          (if dry-run?
              (format (current-error-port)
                      (N_ "The following package would be removed:~%~{~a~%~}~%"
@@ -296,15 +315,26 @@ Remove MANIFEST entries that have the same name and output as ENTRIES."
                          len)
                      remove))))
       (_ #f))
+    (match upgrade
+      ((($ <manifest-entry> name version output item _) ..1)
+       (let ((len     (length name))
+             (upgrade (package-strings name version output item)))
+         (if dry-run?
+             (format (current-error-port)
+                     (N_ "The following package would be upgraded:~%~{~a~%~}~%"
+                         "The following packages would be upgraded:~%~{~a~%~}~%"
+                         len)
+                     upgrade)
+             (format (current-error-port)
+                     (N_ "The following package will be upgraded:~%~{~a~%~}~%"
+                         "The following packages will be upgraded:~%~{~a~%~}~%"
+                         len)
+                     upgrade))))
+      (_ #f))
     (match install
       ((($ <manifest-entry> name version output item _) ..1)
        (let ((len     (length name))
-             (install (map (lambda (name version output item)
-                             (format #f "   ~a-~a\t~a\t~a" name version output
-                                     (if (package? item)
-                                         (package-output store item output)
-                                         item)))
-                           name version output item)))
+             (install (package-strings name version output item)))
          (if dry-run?
              (format (current-error-port)
                      (N_ "The following package would be installed:~%~{~a~%~}~%"
