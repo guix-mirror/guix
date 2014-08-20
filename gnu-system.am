@@ -328,7 +328,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/kmod-module-directory.patch		\
   gnu/packages/patches/libbonobo-activation-test-race.patch	\
   gnu/packages/patches/libevent-dns-tests.patch			\
-  gnu/packages/patches/libffi-mips-n32-fix.patch		\
   gnu/packages/patches/liboop-mips64-deplibs-fix.patch		\
   gnu/packages/patches/libmad-mips-newgcc.patch			\
   gnu/packages/patches/libtheora-config-guess.patch		\
