@@ -89,14 +89,14 @@ lock-free code, experiment with thread programming paradigms, etc.")
 
 (define-public libgc
   (package (inherit libgc-7.2)
-    (version "7.4.0")
+    (version "7.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.hboehm.info/gc/gc_source/gc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "10z2nph62ilab063wygg2lv0jxlsbcf2az9w1lx01jzqj5lzry31"))))
+                "18mg28rr6kwr5clc65k4l4hkyy4kd16amx831sjf8q2lqkbhlck3"))))
 
     ;; New dependencies.
     (native-inputs `(("pkg-config" ,pkg-config)))
