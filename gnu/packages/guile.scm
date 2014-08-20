@@ -121,11 +121,7 @@ without requiring the source code to be rewritten.")
    (native-inputs `(("pkgconfig" ,pkg-config)))
    (inputs `(("libffi" ,libffi)
              ("readline" ,readline)
-
-             ;; TODO: On next core-updates, make Bash input unconditional.
-             ,@(if (%current-target-system)
-                   `(("bash" ,bash))
-                   '())))
+             ("bash" ,bash)))
 
    (propagated-inputs
     `( ;; These ones aren't normally needed here, but since `libguile-2.0.la'
