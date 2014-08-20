@@ -63,7 +63,7 @@ specifications.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.2.15")
+    (version "3.2.16")
     (source (origin
              (method url-fetch)
              (uri
@@ -75,12 +75,8 @@ specifications.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "1fbpr9r1r2y803s3avwjpy1higqsz85dyb302kvmh0i29frwgg9h"))))
+               "1bmwhg8y3mz5w2klclf5dz9502477kaj8r8db7k45fwb9ah3c63q"))))
     (build-system gnu-build-system)
-    (arguments
-     ;; Work around build issue reported at
-     ;; <https://lists.gnu.org/archive/html/guix-devel/2014-03/msg00027.html>.
-     '(#:make-flags '("CPPFLAGS=-DENABLE_RSA_EXPORT")))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
