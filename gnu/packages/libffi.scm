@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,6 +19,7 @@
 
 (define-module (gnu packages libffi)
   #:use-module (gnu packages)
+  #:use-module (gnu packages file)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -43,6 +45,12 @@
               (base32
                "1sznmrhcswwbyqla9y2ximlkzbxks59wjfs3lh7qf8ayranyxzlp"))))
     (build-system gnu-build-system)
+    (native-inputs
+     `(;; 'file' is needed by the pre-release libtool on MIPS.
+       ,@(if (equal? "mips64el-linux" (or (%current-target-system)
+                                          (%current-system)))
+             `(("file" ,file))
+             '())))
     (arguments `(#:phases (alist-cons-after 'install 'post-install
                                             ,post-install-phase
                                             %standard-phases)))
