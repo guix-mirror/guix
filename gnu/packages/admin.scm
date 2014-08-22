@@ -29,7 +29,6 @@
   #:use-module (guix build-system trivial)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
-  #:use-module (gnu packages file)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages linux)
@@ -649,7 +648,18 @@ system administrator.")
                       "")
                      (("^install: (.*)install-sudoers(.*)" _ before after)
                       ;; Don't try to create /etc/sudoers.
-                      (string-append "install: " before after "\n"))))
+                      (string-append "install: " before after "\n")))
+
+                   ;; XXX FIXME sudo 1.8.10p3 was bootstrapped with a
+                   ;; prerelease libtool, which fails on MIPS in the absence
+                   ;; of /usr/bin/file.  As a temporary workaround, we patch
+                   ;; the configure script to hardcode use of the little
+                   ;; endian N32 ABI on MIPS.
+                   ,@(if (equal? "mips64el-linux" (or (%current-target-system)
+                                                      (%current-system)))
+                         '((substitute* "configure"
+                             (("\\$emul") "elf32ltsmipn32")))
+                         '()))
                  %standard-phases)
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but
@@ -659,12 +669,6 @@ system administrator.")
      `(("groff" ,groff)
        ("linux-pam" ,linux-pam)
        ("coreutils" ,coreutils)))
-    (native-inputs
-     `(;; 'file' is needed by the pre-release libtool on MIPS.
-       ,@(if (equal? "mips64el-linux" (or (%current-target-system)
-                                          (%current-system)))
-             `(("file" ,file))
-             '())))
     (home-page "http://www.sudo.ws/")
     (synopsis "Run commands as root")
     (description

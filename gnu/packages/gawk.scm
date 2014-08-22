@@ -20,7 +20,6 @@
 (define-module (gnu packages gawk)
   #:use-module (guix licenses)
   #:use-module (gnu packages bash)
-  #:use-module (gnu packages file)
   #:use-module (gnu packages libsigsegv)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -56,6 +55,17 @@
                           '((substitute* "extension/Makefile.in"
                               (("^.*: check-for-shared-lib-support" match)
                                (string-append "### " match))))
+                          '())
+
+                    ;; XXX FIXME gawk 4.1.1 was bootstrapped with a prerelease
+                    ;; libtool, which fails on MIPS in the absence of
+                    ;; /usr/bin/file.  As a temporary workaround, we patch
+                    ;; the configure script to hardcode use of the little
+                    ;; endian N32 ABI on MIPS.
+                    ,@(if (equal? "mips64el-linux" (or (%current-target-system)
+                                                       (%current-system)))
+                          '((substitute* "extension/configure"
+                              (("\\$emul") "elf32ltsmipn32")))
                           '())))
                 %standard-phases)))
    (inputs `(("libsigsegv" ,libsigsegv)
@@ -63,12 +73,7 @@
              ,@(if (%current-target-system)
                    `(("bash" ,bash))
                    '())))
-   (native-inputs
-    `(;; 'file' is needed by the pre-release libtool on MIPS.
-      ,@(if (equal? "mips64el-linux" (or (%current-target-system)
-                                         (%current-system)))
-            `(("file" ,file))
-            '())))
+
    (home-page "http://www.gnu.org/software/gawk/")
    (synopsis "A text scanning and processing language")
    (description

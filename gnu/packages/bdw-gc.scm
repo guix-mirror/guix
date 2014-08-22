@@ -22,7 +22,6 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (gnu packages file)
   #:use-module (gnu packages pkg-config))
 
 (define-public libgc-7.2
@@ -76,12 +75,6 @@ C or C++ programs, though that is not its primary goal.")
                (base32
                 "1pdm0h1y7bgkczr8byg20r6bq15m5072cqm5pny4f9crc9gn3yh4"))))
     (build-system gnu-build-system)
-    (native-inputs
-     `(;; 'file' is needed by the pre-release libtool on MIPS.
-       ,@(if (equal? "mips64el-linux" (or (%current-target-system)
-                                          (%current-system)))
-             `(("file" ,file))
-             '())))
     (outputs '("out" "debug"))
     (synopsis "Accessing hardware atomic memory update operations")
     (description
@@ -106,13 +99,7 @@ lock-free code, experiment with thread programming paradigms, etc.")
                 "18mg28rr6kwr5clc65k4l4hkyy4kd16amx831sjf8q2lqkbhlck3"))))
 
     ;; New dependencies.
-    (native-inputs
-     `(("pkg-config" ,pkg-config)
-       ;; 'file' is needed by the pre-release libtool on MIPS.
-       ,@(if (equal? "mips64el-linux" (or (%current-target-system)
-                                          (%current-system)))
-             `(("file" ,file))
-             '())))
+    (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("libatomic-ops" ,libatomic-ops)))
 
     ;; 'USE_LIBC_PRIVATES' is now the default.
