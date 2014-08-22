@@ -35,9 +35,6 @@
             (sha256 (base32
                      "01xz106biz6x4h5ilymg5v3367djvgnfp4lm87132cjqdmqgn6b5"))))
    (build-system gnu-build-system)
-   (native-inputs
-    ;; This package depends upon a native install of itself.
-     (if (%current-target-system) `(("file" ,file)) '() ))
    (synopsis "file, a file type guesser")
    (description
     "The file command is a file type guesser, a command-line tool that tells

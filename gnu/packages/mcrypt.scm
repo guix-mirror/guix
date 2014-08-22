@@ -23,8 +23,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages file))
+  #:use-module (gnu packages perl))
 
 (define-public mcrypt
   (package
@@ -68,7 +67,6 @@ them.")
        (base32
         "0gipgb939vy9m66d3k8il98rvvwczyaw2ixr8yn6icds9c3nrsz4"))))
     (build-system gnu-build-system)
-    (native-inputs `(("file" ,file)))
     (home-page "http://mcrypt.sourceforge.net/")
     (synopsis "Encryption algorithm library")
     (description
@@ -95,8 +93,7 @@ XTEA, 3WAY, TWOFISH, BLOWFISH, ARCFOUR, WAKE and more.")
       (patches (list (search-patch "mhash-keygen-test-segfault.patch")))))
     (build-system gnu-build-system)
     (native-inputs
-     `(("file" ,file)
-       ("perl" ,perl)))                 ;for tests
+     `(("perl" ,perl)))                 ;for tests
     (home-page "http://mhash.sourceforge.net/")
     (synopsis "Thread-safe hash library")
     (description
