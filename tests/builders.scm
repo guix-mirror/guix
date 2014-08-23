@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +25,7 @@
   #:use-module (guix utils)
   #:use-module (guix base32)
   #:use-module (guix derivations)
+  #:use-module (guix tests)
   #:use-module ((guix packages)
                 #:select (package-derivation package-native-search-paths))
   #:use-module (gnu packages bootstrap)
@@ -35,11 +36,7 @@
 ;; Test the higher-level builders.
 
 (define %store
-  (false-if-exception (open-connection)))
-
-(when %store
-  ;; Make sure we build everything by ourselves.
-  (set-build-options %store #:use-substitutes? #f))
+  (open-connection-for-tests))
 
 (define %bootstrap-inputs
   ;; Use the bootstrap inputs so it doesn't take ages to run these tests.

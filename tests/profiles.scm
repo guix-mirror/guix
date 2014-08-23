@@ -18,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-profiles)
+  #:use-module (guix tests)
   #:use-module (guix profiles)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -30,14 +31,7 @@
 ;; Test the (guix profiles) module.
 
 (define %store
-  (open-connection))
-
-(define guile-for-build
-  (package-derivation %store %bootstrap-guile))
-
-;; Make it the default.
-(%guile-for-build guile-for-build)
-
+  (open-connection-for-tests))
 
 ;; Example manifest entries.
 

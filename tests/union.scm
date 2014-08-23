@@ -16,8 +16,8 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-
 (define-module (test-union)
+  #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix derivations)
@@ -34,12 +34,7 @@
 ;; Exercise the (guix build union) module.
 
 (define %store
-  (false-if-exception (open-connection)))
-
-(when %store
-  ;; By default, use %BOOTSTRAP-GUILE for the current system.
-  (let ((drv (package-derivation %store %bootstrap-guile)))
-    (%guile-for-build drv)))
+  (open-connection-for-tests))
 
 
 (test-begin "union")

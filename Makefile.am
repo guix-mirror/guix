@@ -99,6 +99,9 @@ MODULES +=					\
 
 endif BUILD_DAEMON_OFFLOAD
 
+# Internal module with test suite support.
+noinst_DATA = guix/tests.scm
+
 # Because of the autoload hack in (guix build download), we must build it
 # first to avoid errors on systems where (gnutls) is unavailable.
 guix/scripts/download.go: guix/build/download.go
@@ -113,7 +116,7 @@ KCONFIGS =					\
 EXAMPLES =					\
   gnu/system/os-config.tmpl
 
-GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go
+GOBJECTS = $(MODULES:%.scm=%.go) guix/config.go guix/tests.go
 
 nobase_dist_guilemodule_DATA = $(MODULES) $(KCONFIGS) $(EXAMPLES)
 nobase_nodist_guilemodule_DATA = $(GOBJECTS) guix/config.scm

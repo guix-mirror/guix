@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-nar)
+  #:use-module (guix tests)
   #:use-module (guix nar)
   #:use-module (guix store)
   #:use-module ((guix hash)
@@ -134,19 +135,10 @@
                     input
                     lstat))
 
-(define (make-random-bytevector n)
-  (let ((bv (make-bytevector n)))
-    (let loop ((i 0))
-      (if (< i n)
-          (begin
-            (bytevector-u8-set! bv i (random 256))
-            (loop (1+ i)))
-          bv))))
-
 (define (populate-file file size)
   (call-with-output-file file
     (lambda (p)
-      (put-bytevector p (make-random-bytevector size)))))
+      (put-bytevector p (random-bytevector size)))))
 
 (define (rm-rf dir)
   (file-system-fold (const #t)                    ; enter?
@@ -165,13 +157,6 @@
   ;; An output directory under $top_builddir.
   (string-append (dirname (search-path %load-path "pre-inst-env"))
                  "/test-nar-" (number->string (getpid))))
-
-;; XXX: Factorize.
-(define %seed
-  (seed->random-state (logxor (getpid) (car (gettimeofday)))))
-
-(define (random-text)
-  (number->string (random (expt 2 256) %seed) 16))
 
 (define-syntax-rule (let/ec k exp...)
   ;; This one appeared in Guile 2.0.9, so provide a copy here.
