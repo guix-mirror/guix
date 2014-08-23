@@ -19,7 +19,8 @@
 
 (define-module (guix svn-download)
   #:use-module (guix records)
-  #:use-module (guix derivations)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix packages)
   #:use-module (ice-9 match)
   #:export (svn-reference
@@ -42,9 +43,15 @@
   (url      svn-reference-url)                    ; string
   (revision svn-reference-revision))              ; number
 
+(define (subversion-package)
+  "Return the default Subversion package."
+  (let ((distro (resolve-interface '(gnu packages version-control))))
+    (module-ref distro 'subversion)))
+
 (define* (svn-fetch store ref hash-algo hash
                     #:optional name
-                    #:key (system (%current-system)) guile svn)
+                    #:key (system (%current-system)) guile
+                    (svn (subversion-package)))
   "Return a fixed-output derivation in STORE that fetches REF, a
 <svn-reference> object.  The output is expected to have recursive hash HASH of
 type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
@@ -58,33 +65,26 @@ type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 
-  (define svn-for-build
-    (match svn
-      ((? package?)
-       (package-derivation store svn system))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages version-control)))
-              (svn    (module-ref distro 'subversion)))
-         (package-derivation store svn system)))))
+  (define build
+    #~(begin
+        (use-modules (guix build svn))
+        (svn-fetch '#$(svn-reference-url ref)
+                   '#$(svn-reference-revision ref)
+                   #$output
+                   #:svn-command (string-append #$svn "/bin/svn"))))
 
-  (let* ((command (string-append (derivation->output-path svn-for-build)
-                                 "/bin/svn"))
-         (builder `(begin
-                     (use-modules (guix build svn))
-                     (svn-fetch ',(svn-reference-url ref)
-                                ',(svn-reference-revision ref)
-                                %output
-                                #:svn-command ',command))))
-    (build-expression->derivation store (or name "svn-checkout") builder
-                                  #:system system
-                                  #:local-build? #t
-                                  #:inputs `(("svn" ,svn-for-build))
-                                  #:hash-algo hash-algo
-                                  #:hash hash
-                                  #:recursive? #t
-                                  #:modules '((guix build svn)
-                                              (guix build utils))
-                                  #:guile-for-build guile-for-build
-                                  #:local-build? #t)))
+  (run-with-store store
+    (gexp->derivation (or name "svn-checkout") build
+                      #:system system
+                      #:local-build? #t
+                      #:hash-algo hash-algo
+                      #:hash hash
+                      #:recursive? #t
+                      #:modules '((guix build svn)
+                                  (guix build utils))
+                      #:guile-for-build guile-for-build
+                      #:local-build? #t)
+    #:guile-for-build guile-for-build
+    #:system system))
 
 ;;; svn-download.scm ends here
