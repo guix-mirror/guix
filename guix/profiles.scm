@@ -25,6 +25,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 ftw)
@@ -353,36 +354,92 @@ Remove MANIFEST entries that have the same name and output as ENTRIES."
 ;;; Profiles.
 ;;;
 
-(define (profile-derivation manifest)
-  "Return a derivation that builds a profile (aka. 'user environment') with
-the given MANIFEST."
-  (define inputs
-    (append-map (match-lambda
-                 (($ <manifest-entry> name version
-                                      output (? package? package) deps)
-                  `((,package ,output) ,@deps))
-                 (($ <manifest-entry> name version output path deps)
-                  ;; Assume PATH and DEPS are already valid.
-                  `(,path ,@deps)))
-                (manifest-entries manifest)))
+(define (manifest-inputs manifest)
+  "Return the list of inputs for MANIFEST.  Each input has one of the
+following forms:
 
-  (define builder
+  (PACKAGE OUTPUT-NAME)
+
+or
+
+  STORE-PATH
+"
+  (append-map (match-lambda
+               (($ <manifest-entry> name version
+                                    output (? package? package) deps)
+                `((,package ,output) ,@deps))
+               (($ <manifest-entry> name version output path deps)
+                ;; Assume PATH and DEPS are already valid.
+                `(,path ,@deps)))
+              (manifest-entries manifest)))
+
+(define (info-dir-file manifest)
+  "Return a derivation that builds the 'dir' file for all the entries of
+MANIFEST."
+  (define texinfo
+    ;; Lazy reference.
+    (module-ref (resolve-interface '(gnu packages texinfo))
+                'texinfo))
+  (define build
     #~(begin
-        (use-modules (ice-9 pretty-print)
-                     (guix build union))
+        (use-modules (guix build utils)
+                     (srfi srfi-1) (srfi srfi-26)
+                     (ice-9 ftw))
 
-        (setvbuf (current-output-port) _IOLBF)
-        (setvbuf (current-error-port) _IOLBF)
+        (define (info-file? file)
+          (or (string-suffix? ".info" file)
+              (string-suffix? ".info.gz" file)))
 
-        (union-build #$output '#$inputs
-                     #:log-port (%make-void-port "w"))
-        (call-with-output-file (string-append #$output "/manifest")
-          (lambda (p)
-            (pretty-print '#$(manifest->gexp manifest) p)))))
+        (define (info-files top)
+          (let ((infodir (string-append top "/share/info")))
+            (map (cut string-append infodir "/" <>)
+                 (scandir infodir info-file?))))
 
-  (gexp->derivation "profile" builder
-                    #:modules '((guix build union))
-                    #:local-build? #t))
+        (define (install-info info)
+          (zero?
+           (system* (string-append #+texinfo "/bin/install-info")
+                    info (string-append #$output "/share/info/dir"))))
+
+        (mkdir-p (string-append #$output "/share/info"))
+        (every install-info
+               (append-map info-files
+                           '#$(manifest-inputs manifest)))))
+
+  ;; Don't depend on Texinfo when there's nothing to do.
+  (if (null? (manifest-entries manifest))
+      (gexp->derivation "info-dir" #~(mkdir #$output))
+      (gexp->derivation "info-dir" build
+                        #:modules '((guix build utils)))))
+
+(define* (profile-derivation manifest #:key (info-dir? #t))
+  "Return a derivation that builds a profile (aka. 'user environment') with
+the given MANIFEST.  The profile includes a top-level Info 'dir' file, unless
+INFO-DIR? is #f."
+  (mlet %store-monad ((info-dir (if info-dir?
+                                    (info-dir-file manifest)
+                                    (return #f))))
+    (define inputs
+      (if info-dir
+          (cons info-dir (manifest-inputs manifest))
+          (manifest-inputs manifest)))
+
+    (define builder
+      #~(begin
+          (use-modules (ice-9 pretty-print)
+                       (guix build union))
+
+          (setvbuf (current-output-port) _IOLBF)
+          (setvbuf (current-error-port) _IOLBF)
+
+          (union-build #$output '#$inputs
+                       #:log-port (%make-void-port "w"))
+          (call-with-output-file (string-append #$output "/manifest")
+            (lambda (p)
+              (pretty-print '#$(manifest->gexp manifest) p)))))
+
+    (gexp->derivation "profile" builder
+                      #:modules '((guix build union))
+                      #:local-build? #t)))
 
 (define (profile-regexp profile)
   "Return a regular expression that matches PROFILE's name and number."

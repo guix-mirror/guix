@@ -744,6 +744,7 @@ more information.~%"))
            (let* ((manifest    (profile-manifest profile))
                   (install     (options->installable opts manifest))
                   (remove      (options->removable opts manifest))
+                  (bootstrap?  (assoc-ref opts 'bootstrap?))
                   (transaction (manifest-transaction (install install)
                                                      (remove remove)))
                   (new         (manifest-perform-transaction
@@ -754,7 +755,9 @@ more information.~%"))
 
              (unless (and (null? install) (null? remove))
                (let* ((prof-drv (run-with-store (%store)
-                                                (profile-derivation new)))
+                                  (profile-derivation
+                                   new
+                                   #:info-dir? (not bootstrap?))))
                       (prof     (derivation->output-path prof-drv)))
                  (manifest-show-transaction (%store) manifest transaction
                                             #:dry-run? dry-run?)
