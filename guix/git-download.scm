@@ -17,8 +17,9 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix git-download)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (guix records)
-  #:use-module (guix derivations)
   #:use-module (guix packages)
   #:autoload   (guix build-system gnu) (standard-inputs)
   #:use-module (ice-9 match)
@@ -46,9 +47,15 @@
   (recursive? git-reference-recursive?   ; whether to recurse into sub-modules
               (default #f)))
 
+(define (git-package)
+  "Return the default Git package."
+  (let ((distro (resolve-interface '(gnu packages version-control))))
+    (module-ref distro 'git)))
+
 (define* (git-fetch store ref hash-algo hash
                     #:optional name
-                    #:key (system (%current-system)) guile git)
+                    #:key (system (%current-system)) guile
+                    (git (git-package)))
   "Return a fixed-output derivation in STORE that fetches REF, a
 <git-reference> object.  The output is expected to have recursive hash HASH of
 type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
@@ -62,15 +69,6 @@ type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 
-  (define git-for-build
-    (match git
-      ((? package?)
-       (package-derivation store git system))
-      (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages version-control)))
-              (git    (module-ref distro 'git)))
-         (package-derivation store git system)))))
-
   (define inputs
     ;; When doing 'git clone --recursive', we need sed, grep, etc. to be
     ;; available so that 'git submodule' works.
@@ -78,36 +76,37 @@ type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
         (standard-inputs (%current-system))
         '()))
 
-  (let* ((command (string-append (derivation->output-path git-for-build)
-                                 "/bin/git"))
-         (builder `(begin
-                     (use-modules (guix build git)
-                                  (guix build utils)
-                                  (ice-9 match))
+  (define build
+    #~(begin
+        (use-modules (guix build git)
+                     (guix build utils)
+                     (ice-9 match))
 
-                     ;; The 'git submodule' commands expects Coreutils, sed,
-                     ;; grep, etc. to be in $PATH.
-                     (set-path-environment-variable "PATH" '("bin")
-                                                    (match %build-inputs
-                                                      (((names . dirs) ...)
-                                                       dirs)))
+        ;; The 'git submodule' commands expects Coreutils, sed,
+        ;; grep, etc. to be in $PATH.
+        (set-path-environment-variable "PATH" '("bin")
+                                       (match '#$inputs
+                                         (((names dirs) ...)
+                                          dirs)))
 
-                     (git-fetch ',(git-reference-url ref)
-                                ',(git-reference-commit ref)
-                                %output
-                                #:recursive? ',(git-reference-recursive? ref)
-                                #:git-command ',command))))
-    (build-expression->derivation store (or name "git-checkout") builder
-                                  #:system system
-                                  #:local-build? #t
-                                  #:inputs `(("git" ,git-for-build)
-                                             ,@inputs)
-                                  #:hash-algo hash-algo
-                                  #:hash hash
-                                  #:recursive? #t
-                                  #:modules '((guix build git)
-                                              (guix build utils))
-                                  #:guile-for-build guile-for-build
-                                  #:local-build? #t)))
+        (git-fetch '#$(git-reference-url ref)
+                   '#$(git-reference-commit ref)
+                   #$output
+                   #:recursive? '#$(git-reference-recursive? ref)
+                   #:git-command (string-append #$git "/bin/git"))))
+
+  (run-with-store store
+    (gexp->derivation (or name "git-checkout") build
+                      #:system system
+                      #:local-build? #t
+                      #:hash-algo hash-algo
+                      #:hash hash
+                      #:recursive? #t
+                      #:modules '((guix build git)
+                                  (guix build utils))
+                      #:guile-for-build guile-for-build
+                      #:local-build? #t)
+    #:guile-for-build guile-for-build
+    #:system system))
 
 ;;; git-download.scm ends here

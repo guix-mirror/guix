@@ -185,7 +185,7 @@
        "http://ftp.debian.org/debian/"))))
 
 (define (gnutls-package)
-  "Return the GnuTLS package for SYSTEM."
+  "Return the default GnuTLS package."
   (let ((module (resolve-interface '(gnu packages gnutls))))
     (module-ref module 'gnutls)))
 
