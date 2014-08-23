@@ -21,7 +21,7 @@
 # Usage: ./pre-inst-env COMMAND ARG...
 #
 # Run COMMAND in a pre-installation environment.  Typical use is
-# "./pre-inst-env guix-build hello".
+# "./pre-inst-env guix build hello".
 
 # By default we may end up with absolute directory names that contain '..',
 # which get into $GUILE_LOAD_PATH, leading to '..' in the module file names
