@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-monads)
+  #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix monads)
   #:use-module (guix derivations)
@@ -34,10 +35,7 @@
 ;; Test the (guix store) module.
 
 (define %store
-  (open-connection))
-
-;; Make sure we build everything by ourselves.
-(set-build-options %store #:use-substitutes? #f)
+  (open-connection-for-tests))
 
 (define %monads
   (list %identity-monad %store-monad))

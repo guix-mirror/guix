@@ -96,7 +96,7 @@ generation.")
 
 (define-public libgcrypt-1.5
   (package (inherit libgcrypt)
-    (version "1.5.3")
+    (version "1.5.4")
     (source
      (origin
       (method url-fetch)
@@ -104,7 +104,7 @@ generation.")
                           version ".tar.bz2"))
       (sha256
        (base32
-        "1lar8y3lh61zl5flljpz540d78g99h4d5idfwrfw8lm3gm737xdw"))))))
+        "0czvqxkzd5y872ipy6s010ifwdwv29sqbnqc4pf56sd486gqvy6m"))))))
 
 (define-public libassuan
   (package

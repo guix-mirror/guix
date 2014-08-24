@@ -22,6 +22,7 @@
   #:use-module (guix gexp)
   #:use-module (guix derivations)
   #:use-module (guix packages)
+  #:use-module (guix tests)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bootstrap)
@@ -35,28 +36,22 @@
 ;; Test the (guix gexp) module.
 
 (define %store
-  (open-connection))
+  (open-connection-for-tests))
 
 ;; For white-box testing.
 (define gexp-inputs (@@ (guix gexp) gexp-inputs))
 (define gexp-native-inputs (@@ (guix gexp) gexp-native-inputs))
 (define gexp->sexp  (@@ (guix gexp) gexp->sexp))
 
-(define guile-for-build
-  (package-derivation %store %bootstrap-guile))
-
-;; Make it the default.
-(%guile-for-build guile-for-build)
-
 (define* (gexp->sexp* exp #:optional target)
   (run-with-store %store (gexp->sexp exp
                                      #:target target)
-                  #:guile-for-build guile-for-build))
+                  #:guile-for-build (%guile-for-build)))
 
 (define-syntax-rule (test-assertm name exp)
   (test-assert name
     (run-with-store %store exp
-                    #:guile-for-build guile-for-build)))
+                    #:guile-for-build (%guile-for-build))))
 
 
 (test-begin "gexp")
@@ -330,7 +325,7 @@
                       (derivation-file-name xdrv)))))
 
 (define shebang
-  (string-append "#!" (derivation->output-path guile-for-build)
+  (string-append "#!" (derivation->output-path (%guile-for-build))
                  "/bin/guile --no-auto-compile"))
 
 ;; If we're going to hit the silly shebang limit (128 chars on Linux-based

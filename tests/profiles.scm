@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -17,6 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-profiles)
+  #:use-module (guix tests)
   #:use-module (guix profiles)
   #:use-module (guix store)
   #:use-module (guix monads)
@@ -26,17 +28,10 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-64))
 
-;; Test the (guix profile) module.
+;; Test the (guix profiles) module.
 
 (define %store
-  (open-connection))
-
-(define guile-for-build
-  (package-derivation %store %bootstrap-guile))
-
-;; Make it the default.
-(%guile-for-build guile-for-build)
-
+  (open-connection-for-tests))
 
 ;; Example manifest entries.
 
@@ -122,12 +117,32 @@
            (_ #f))
          (equal? m3 m4))))
 
+(test-assert "manifest-perform-transaction"
+  (let* ((m0 (manifest (list guile-2.0.9 guile-2.0.9:debug)))
+         (t1 (manifest-transaction
+              (install (list guile-1.8.8))
+              (remove (list (manifest-pattern (name "guile")
+                                              (output "debug"))))))
+         (t2 (manifest-transaction
+              (remove (list (manifest-pattern (name "guile")
+                                              (version "2.0.9")
+                                              (output #f))))))
+         (m1 (manifest-perform-transaction m0 t1))
+         (m2 (manifest-perform-transaction m1 t2))
+         (m3 (manifest-perform-transaction m0 t2)))
+    (and (match (manifest-entries m1)
+           ((($ <manifest-entry> "guile" "1.8.8" "out")) #t)
+           (_ #f))
+         (equal? m1 m2)
+         (null? (manifest-entries m3)))))
+
 (test-assert "profile-derivation"
   (run-with-store %store
     (mlet* %store-monad
         ((entry ->   (package->manifest-entry %bootstrap-guile))
          (guile      (package->derivation %bootstrap-guile))
-         (drv        (profile-derivation (manifest (list entry))))
+         (drv        (profile-derivation (manifest (list entry))
+                                         #:info-dir? #f))
          (profile -> (derivation->output-path drv))
          (bindir ->  (string-append profile "/bin"))
          (_          (built-derivations (list drv))))

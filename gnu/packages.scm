@@ -22,6 +22,8 @@
   #:use-module (guix packages)
   #:use-module (guix ui)
   #:use-module (guix utils)
+  #:use-module ((guix ftp-client) #:select (ftp-open))
+  #:use-module (guix gnu-maintenance)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 vlist)
   #:use-module (ice-9 match)
@@ -41,7 +43,9 @@
 
             package-direct-dependents
             package-transitive-dependents
-            package-covering-dependents))
+            package-covering-dependents
+
+            check-package-freshness))
 
 ;;; Commentary:
 ;;;
@@ -49,8 +53,6 @@
 ;;; (gnu packages ...).
 ;;;
 ;;; Code:
-
-(define _ (cut gettext <> "guix"))
 
 ;; By default, we store patches and bootstrap binaries alongside Guile
 ;; modules.  This is so that these extra files can be found without
@@ -60,7 +62,7 @@
 
 (define %patch-path
   (make-parameter
-   (map (cut string-append <>  "/gnu/packages/patches")
+   (map (cut string-append <> "/gnu/packages/patches")
         %load-path)))
 
 (define %bootstrap-binaries-path
@@ -246,3 +248,81 @@ include all of PACKAGES and all packages that depend on PACKAGES."
      (lambda (node) (vhash-refq dependency-dag node))
      ;; Start with the dependents to avoid including PACKAGES in the result.
      (package-direct-dependents packages))))
+
+
+(define %sigint-prompt
+  ;; The prompt to jump to upon SIGINT.
+  (make-prompt-tag "interruptible"))
+
+(define (call-with-sigint-handler thunk handler)
+  "Call THUNK and return its value.  Upon SIGINT, call HANDLER with the signal
+number in the context of the continuation of the call to this function, and
+return its return value."
+  (call-with-prompt %sigint-prompt
+                    (lambda ()
+                      (sigaction SIGINT
+                        (lambda (signum)
+                          (sigaction SIGINT SIG_DFL)
+                          (abort-to-prompt %sigint-prompt signum)))
+                      (dynamic-wind
+                        (const #t)
+                        thunk
+                        (cut sigaction SIGINT SIG_DFL)))
+                    (lambda (k signum)
+                      (handler signum))))
+
+(define-syntax-rule (waiting exp fmt rest ...)
+  "Display the given message while EXP is being evaluated."
+  (let* ((message (format #f fmt rest ...))
+         (blank   (make-string (string-length message) #\space)))
+    (display message (current-error-port))
+    (force-output (current-error-port))
+    (call-with-sigint-handler
+     (lambda ()
+       (dynamic-wind
+         (const #f)
+         (lambda () exp)
+         (lambda ()
+           ;; Clear the line.
+           (display #\cr (current-error-port))
+           (display blank (current-error-port))
+           (display #\cr (current-error-port))
+           (force-output (current-error-port)))))
+     (lambda (signum)
+       (format (current-error-port) "  interrupted by signal ~a~%" SIGINT)
+       #f))))
+
+(define ftp-open*
+  ;; Memoizing version of `ftp-open'.  The goal is to avoid initiating a new
+  ;; FTP connection for each package, esp. since most of them are to the same
+  ;; server.  This has a noticeable impact when doing "guix upgrade -u".
+  (memoize ftp-open))
+
+(define (check-package-freshness package)
+  "Check whether PACKAGE has a newer version available upstream, and report
+it."
+  ;; TODO: Automatically inject the upstream version when desired.
+
+  (catch #t
+    (lambda ()
+      (when (false-if-exception (gnu-package? package))
+        (let ((name      (package-name package))
+              (full-name (package-full-name package)))
+          (match (waiting (latest-release name
+                                          #:ftp-open ftp-open*
+                                          #:ftp-close (const #f))
+                          (_ "looking for the latest release of GNU ~a...") name)
+            ((latest-version . _)
+             (when (version>? latest-version full-name)
+               (format (current-error-port)
+                       (_ "~a: note: using ~a \
+but ~a is available upstream~%")
+                       (location->string (package-location package))
+                       full-name latest-version)))
+            (_ #t)))))
+    (lambda (key . args)
+      ;; Silently ignore networking errors rather than preventing
+      ;; installation.
+      (case key
+        ((getaddrinfo-error ftp-error) #f)
+        (else (apply throw key args))))))

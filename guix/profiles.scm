@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,14 +19,17 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix profiles)
+  #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (guix records)
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 ftw)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-19)
@@ -50,6 +54,13 @@
             manifest-add
             manifest-installed?
             manifest-matching-entries
+
+            manifest-transaction
+            manifest-transaction?
+            manifest-transaction-install
+            manifest-transaction-remove
+            manifest-perform-transaction
+            manifest-show-transaction
 
             profile-manifest
             package->manifest-entry
@@ -244,39 +255,191 @@ Remove MANIFEST entries that have the same name and output as ENTRIES."
 
 
 ;;;
+;;; Manifest transactions.
+;;;
+
+(define-record-type* <manifest-transaction> manifest-transaction
+  make-manifest-transaction
+  manifest-transaction?
+  (install manifest-transaction-install ; list of <manifest-entry>
+           (default '()))
+  (remove  manifest-transaction-remove  ; list of <manifest-pattern>
+           (default '())))
+
+(define (manifest-perform-transaction manifest transaction)
+  "Perform TRANSACTION on MANIFEST and return new manifest."
+  (let ((install (manifest-transaction-install transaction))
+        (remove  (manifest-transaction-remove transaction)))
+    (manifest-add (manifest-remove manifest remove)
+                  install)))
+
+(define* (manifest-show-transaction store manifest transaction
+                                    #:key dry-run?)
+  "Display what will/would be installed/removed from MANIFEST by TRANSACTION."
+  (define (package-strings name version output item)
+    (map (lambda (name version output item)
+           (format #f "   ~a-~a\t~a\t~a" name version output
+                   (if (package? item)
+                       (package-output store item output)
+                       item)))
+         name version output item))
+
+  (let* ((remove (manifest-matching-entries
+                  manifest (manifest-transaction-remove transaction)))
+         (install/upgrade (manifest-transaction-install transaction))
+         (install '())
+         (upgrade (append-map
+                   (lambda (entry)
+                     (let ((matching
+                            (manifest-matching-entries
+                             manifest
+                             (list (manifest-pattern
+                                    (name   (manifest-entry-name entry))
+                                    (output (manifest-entry-output entry)))))))
+                       (when (null? matching)
+                         (set! install (cons entry install)))
+                       matching))
+                   install/upgrade)))
+    (match remove
+      ((($ <manifest-entry> name version output item _) ..1)
+       (let ((len    (length name))
+             (remove (package-strings name version output item)))
+         (if dry-run?
+             (format (current-error-port)
+                     (N_ "The following package would be removed:~%~{~a~%~}~%"
+                         "The following packages would be removed:~%~{~a~%~}~%"
+                         len)
+                     remove)
+             (format (current-error-port)
+                     (N_ "The following package will be removed:~%~{~a~%~}~%"
+                         "The following packages will be removed:~%~{~a~%~}~%"
+                         len)
+                     remove))))
+      (_ #f))
+    (match upgrade
+      ((($ <manifest-entry> name version output item _) ..1)
+       (let ((len     (length name))
+             (upgrade (package-strings name version output item)))
+         (if dry-run?
+             (format (current-error-port)
+                     (N_ "The following package would be upgraded:~%~{~a~%~}~%"
+                         "The following packages would be upgraded:~%~{~a~%~}~%"
+                         len)
+                     upgrade)
+             (format (current-error-port)
+                     (N_ "The following package will be upgraded:~%~{~a~%~}~%"
+                         "The following packages will be upgraded:~%~{~a~%~}~%"
+                         len)
+                     upgrade))))
+      (_ #f))
+    (match install
+      ((($ <manifest-entry> name version output item _) ..1)
+       (let ((len     (length name))
+             (install (package-strings name version output item)))
+         (if dry-run?
+             (format (current-error-port)
+                     (N_ "The following package would be installed:~%~{~a~%~}~%"
+                         "The following packages would be installed:~%~{~a~%~}~%"
+                         len)
+                     install)
+             (format (current-error-port)
+                     (N_ "The following package will be installed:~%~{~a~%~}~%"
+                         "The following packages will be installed:~%~{~a~%~}~%"
+                         len)
+                     install))))
+      (_ #f))))
+
+
+;;;
 ;;; Profiles.
 ;;;
 
-(define (profile-derivation manifest)
-  "Return a derivation that builds a profile (aka. 'user environment') with
-the given MANIFEST."
-  (define inputs
-    (append-map (match-lambda
-                 (($ <manifest-entry> name version
-                                      output (? package? package) deps)
-                  `((,package ,output) ,@deps))
-                 (($ <manifest-entry> name version output path deps)
-                  ;; Assume PATH and DEPS are already valid.
-                  `(,path ,@deps)))
-                (manifest-entries manifest)))
+(define (manifest-inputs manifest)
+  "Return the list of inputs for MANIFEST.  Each input has one of the
+following forms:
 
-  (define builder
+  (PACKAGE OUTPUT-NAME)
+
+or
+
+  STORE-PATH
+"
+  (append-map (match-lambda
+               (($ <manifest-entry> name version
+                                    output (? package? package) deps)
+                `((,package ,output) ,@deps))
+               (($ <manifest-entry> name version output path deps)
+                ;; Assume PATH and DEPS are already valid.
+                `(,path ,@deps)))
+              (manifest-entries manifest)))
+
+(define (info-dir-file manifest)
+  "Return a derivation that builds the 'dir' file for all the entries of
+MANIFEST."
+  (define texinfo
+    ;; Lazy reference.
+    (module-ref (resolve-interface '(gnu packages texinfo))
+                'texinfo))
+  (define build
     #~(begin
-        (use-modules (ice-9 pretty-print)
-                     (guix build union))
+        (use-modules (guix build utils)
+                     (srfi srfi-1) (srfi srfi-26)
+                     (ice-9 ftw))
 
-        (setvbuf (current-output-port) _IOLBF)
-        (setvbuf (current-error-port) _IOLBF)
+        (define (info-file? file)
+          (or (string-suffix? ".info" file)
+              (string-suffix? ".info.gz" file)))
 
-        (union-build #$output '#$inputs
-                     #:log-port (%make-void-port "w"))
-        (call-with-output-file (string-append #$output "/manifest")
-          (lambda (p)
-            (pretty-print '#$(manifest->gexp manifest) p)))))
+        (define (info-files top)
+          (let ((infodir (string-append top "/share/info")))
+            (map (cut string-append infodir "/" <>)
+                 (scandir infodir info-file?))))
 
-  (gexp->derivation "profile" builder
-                    #:modules '((guix build union))
-                    #:local-build? #t))
+        (define (install-info info)
+          (zero?
+           (system* (string-append #+texinfo "/bin/install-info")
+                    info (string-append #$output "/share/info/dir"))))
+
+        (mkdir-p (string-append #$output "/share/info"))
+        (every install-info
+               (append-map info-files
+                           '#$(manifest-inputs manifest)))))
+
+  ;; Don't depend on Texinfo when there's nothing to do.
+  (if (null? (manifest-entries manifest))
+      (gexp->derivation "info-dir" #~(mkdir #$output))
+      (gexp->derivation "info-dir" build
+                        #:modules '((guix build utils)))))
+
+(define* (profile-derivation manifest #:key (info-dir? #t))
+  "Return a derivation that builds a profile (aka. 'user environment') with
+the given MANIFEST.  The profile includes a top-level Info 'dir' file, unless
+INFO-DIR? is #f."
+  (mlet %store-monad ((info-dir (if info-dir?
+                                    (info-dir-file manifest)
+                                    (return #f))))
+    (define inputs
+      (if info-dir
+          (cons info-dir (manifest-inputs manifest))
+          (manifest-inputs manifest)))
+
+    (define builder
+      #~(begin
+          (use-modules (ice-9 pretty-print)
+                       (guix build union))
+
+          (setvbuf (current-output-port) _IOLBF)
+          (setvbuf (current-error-port) _IOLBF)
+
+          (union-build #$output '#$inputs
+                       #:log-port (%make-void-port "w"))
+          (call-with-output-file (string-append #$output "/manifest")
+            (lambda (p)
+              (pretty-print '#$(manifest->gexp manifest) p)))))
+
+    (gexp->derivation "profile" builder
+                      #:modules '((guix build union))
+                      #:local-build? #t)))
 
 (define (profile-regexp profile)
   "Return a regular expression that matches PROFILE's name and number."

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -16,8 +16,8 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-
 (define-module (test-packages)
+  #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix hash)
@@ -39,11 +39,8 @@
 ;; Test the high-level packaging layer.
 
 (define %store
-  (false-if-exception (open-connection)))
+  (open-connection-for-tests))
 
-(when %store
-  ;; Make sure we build everything by ourselves.
-  (set-build-options %store #:use-substitutes? #f))
 
 
 (test-begin "packages")

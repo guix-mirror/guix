@@ -16,13 +16,13 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-
 (define-module (test-derivations)
   #:use-module (guix derivations)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix hash)
   #:use-module (guix base32)
+  #:use-module (guix tests)
   #:use-module ((guix packages) #:select (package-derivation base32))
   #:use-module ((guix build utils) #:select (executable-file?))
   #:use-module ((gnu packages) #:select (search-bootstrap-binary))
@@ -42,15 +42,7 @@
   #:use-module (ice-9 match))
 
 (define %store
-  (false-if-exception (open-connection)))
-
-(when %store
-  ;; Make sure we build everything by ourselves.
-  (set-build-options %store #:use-substitutes? #f)
-
-  ;; By default, use %BOOTSTRAP-GUILE for the current system.
-  (let ((drv (package-derivation %store %bootstrap-guile)))
-    (%guile-for-build drv)))
+  (open-connection-for-tests))
 
 (define (bootstrap-binary name)
   (let ((bin (search-bootstrap-binary name (%current-system))))

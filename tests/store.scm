@@ -16,8 +16,8 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-
 (define-module (test-store)
+  #:use-module (guix tests)
   #:use-module (guix store)
   #:use-module (guix utils)
   #:use-module (guix hash)
@@ -40,17 +40,7 @@
 ;; Test the (guix store) module.
 
 (define %store
-  (false-if-exception (open-connection)))
-
-(when %store
-  ;; Make sure we build everything by ourselves.
-  (set-build-options %store #:use-substitutes? #f))
-
-(define %seed
-  (seed->random-state (logxor (getpid) (car (gettimeofday)))))
-
-(define (random-text)
-  (number->string (random (expt 2 256) %seed) 16))
+  (open-connection-for-tests))
 
 
 (test-begin "store")

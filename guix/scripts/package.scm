@@ -29,7 +29,6 @@
   #:use-module (guix config)
   #:use-module (guix scripts build)
   #:use-module ((guix build utils) #:select (directory-exists? mkdir-p))
-  #:use-module ((guix ftp-client) #:select (ftp-open))
   #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
@@ -42,7 +41,6 @@
   #:use-module (gnu packages)
   #:use-module ((gnu packages base) #:select (guile-final))
   #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
-  #:use-module (guix gnu-maintenance)
   #:export (specification->package+output
             guix-package))
 
@@ -184,49 +182,6 @@ DURATION-RELATION with the current time."
          filter-by-duration)
         (else #f)))
 
-(define (show-what-to-remove/install remove install dry-run?)
-  "Given the manifest entries listed in REMOVE and INSTALL, display the
-packages that will/would be installed and removed."
-  ;; TODO: Report upgrades more clearly.
-  (match remove
-    ((($ <manifest-entry> name version output path _) ..1)
-     (let ((len    (length name))
-           (remove (map (cut format #f "   ~a-~a\t~a\t~a" <> <> <> <>)
-                        name version output path)))
-       (if dry-run?
-           (format (current-error-port)
-                   (N_ "The following package would be removed:~%~{~a~%~}~%"
-                       "The following packages would be removed:~%~{~a~%~}~%"
-                       len)
-                   remove)
-           (format (current-error-port)
-                   (N_ "The following package will be removed:~%~{~a~%~}~%"
-                       "The following packages will be removed:~%~{~a~%~}~%"
-                       len)
-                   remove))))
-    (_ #f))
-  (match install
-    ((($ <manifest-entry> name version output item _) ..1)
-     (let ((len     (length name))
-           (install (map (lambda (name version output item)
-                           (format #f "   ~a-~a\t~a\t~a" name version output
-                                   (if (package? item)
-                                       (package-output (%store) item output)
-                                       item)))
-                         name version output item)))
-       (if dry-run?
-           (format (current-error-port)
-                   (N_ "The following package would be installed:~%~{~a~%~}~%"
-                       "The following packages would be installed:~%~{~a~%~}~%"
-                       len)
-                   install)
-           (format (current-error-port)
-                   (N_ "The following package will be installed:~%~{~a~%~}~%"
-                       "The following packages will be installed:~%~{~a~%~}~%"
-                       len)
-                   install))))
-    (_ #f)))
-
 
 ;;;
 ;;; Package specifications.
@@ -257,48 +212,6 @@ RX."
       (string<? (package-name p1)
                 (package-name p2))))
    same-location?))
-
-(define %sigint-prompt
-  ;; The prompt to jump to upon SIGINT.
-  (make-prompt-tag "interruptible"))
-
-(define (call-with-sigint-handler thunk handler)
-  "Call THUNK and return its value.  Upon SIGINT, call HANDLER with the signal
-number in the context of the continuation of the call to this function, and
-return its return value."
-  (call-with-prompt %sigint-prompt
-                    (lambda ()
-                      (sigaction SIGINT
-                        (lambda (signum)
-                          (sigaction SIGINT SIG_DFL)
-                          (abort-to-prompt %sigint-prompt signum)))
-                      (dynamic-wind
-                        (const #t)
-                        thunk
-                        (cut sigaction SIGINT SIG_DFL)))
-                    (lambda (k signum)
-                      (handler signum))))
-
-(define-syntax-rule (waiting exp fmt rest ...)
-  "Display the given message while EXP is being evaluated."
-  (let* ((message (format #f fmt rest ...))
-         (blank   (make-string (string-length message) #\space)))
-    (display message (current-error-port))
-    (force-output (current-error-port))
-    (call-with-sigint-handler
-     (lambda ()
-       (dynamic-wind
-         (const #f)
-         (lambda () exp)
-         (lambda ()
-           ;; Clear the line.
-           (display #\cr (current-error-port))
-           (display blank (current-error-port))
-           (display #\cr (current-error-port))
-           (force-output (current-error-port)))))
-     (lambda (signum)
-       (format (current-error-port) "  interrupted by signal ~a~%" SIGINT)
-       #f))))
 
 (define-syntax-rule (leave-on-EPIPE exp ...)
   "Run EXP... in a context when EPIPE errors are caught and lead to 'exit'
@@ -362,41 +275,6 @@ an output path different than CURRENT-PATH."
                                    (package-derivation (%store) pkg))))
               (not (string=? current-path candidate-path))))))
     (#f #f)))
-
-(define ftp-open*
-  ;; Memoizing version of `ftp-open'.  The goal is to avoid initiating a new
-  ;; FTP connection for each package, esp. since most of them are to the same
-  ;; server.  This has a noticeable impact when doing "guix upgrade -u".
-  (memoize ftp-open))
-
-(define (check-package-freshness package)
-  "Check whether PACKAGE has a newer version available upstream, and report
-it."
-  ;; TODO: Automatically inject the upstream version when desired.
-
-  (catch #t
-    (lambda ()
-      (when (false-if-exception (gnu-package? package))
-        (let ((name      (package-name package))
-              (full-name (package-full-name package)))
-          (match (waiting (latest-release name
-                                          #:ftp-open ftp-open*
-                                          #:ftp-close (const #f))
-                          (_ "looking for the latest release of GNU ~a...") name)
-            ((latest-version . _)
-             (when (version>? latest-version full-name)
-               (format (current-error-port)
-                       (_ "~a: note: using ~a \
-but ~a is available upstream~%")
-                       (location->string (package-location package))
-                       full-name latest-version)))
-            (_ #t)))))
-    (lambda (key . args)
-      ;; Silently ignore networking errors rather than preventing
-      ;; installation.
-      (case key
-        ((getaddrinfo-error ftp-error) #f)
-        (else (apply throw key args))))))
 
 
 ;;;
@@ -863,21 +741,26 @@ more information.~%"))
              (_ #f))
             opts))
           (else
-           (let* ((manifest (profile-manifest profile))
-                  (install  (options->installable opts manifest))
-                  (remove   (options->removable opts manifest))
-                  (new      (manifest-add (manifest-remove manifest remove)
-                                          install)))
+           (let* ((manifest    (profile-manifest profile))
+                  (install     (options->installable opts manifest))
+                  (remove      (options->removable opts manifest))
+                  (bootstrap?  (assoc-ref opts 'bootstrap?))
+                  (transaction (manifest-transaction (install install)
+                                                     (remove remove)))
+                  (new         (manifest-perform-transaction
+                                manifest transaction)))
 
              (when (equal? profile %current-profile)
                (ensure-default-profile))
 
              (unless (and (null? install) (null? remove))
                (let* ((prof-drv (run-with-store (%store)
-                                  (profile-derivation new)))
-                      (prof     (derivation->output-path prof-drv))
-                      (remove   (manifest-matching-entries manifest remove)))
-                 (show-what-to-remove/install remove install dry-run?)
+                                  (profile-derivation
+                                   new
+                                   #:info-dir? (not bootstrap?))))
+                      (prof     (derivation->output-path prof-drv)))
+                 (manifest-show-transaction (%store) manifest transaction
+                                            #:dry-run? dry-run?)
                  (show-what-to-build (%store) (list prof-drv)
                                      #:use-substitutes?
                                      (assoc-ref opts 'substitutes?)
