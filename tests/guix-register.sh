@@ -43,13 +43,28 @@ $new_file
 0
 EOF
 
-# Make sure it's valid, and delete it.
+# Register an idendical file, and make sure it gets deduplicated.
+new_file2="$new_file-duplicate"
+cat "$new_file" > "$new_file2"
+guix-register <<EOF
+$new_file2
+
+0
+EOF
+
+guile -c "
+  (exit (= (stat:ino (stat \"$new_file\"))
+           (stat:ino (stat \"$new_file2\"))))"
+
+# Make sure both are valid, and delete them.
 guile -c "
    (use-modules (guix store))
    (define s (open-connection))
    (exit (and (valid-path? s \"$new_file\")
+              (valid-path? s \"$new_file2\")
               (null? (references s \"$new_file\"))
-              (pair? (delete-paths s (list \"$new_file\")))))"
+              (null? (references s \"$new_file2\"))
+              (pair? (delete-paths s (list \"$new_file\" \"$new_file2\")))))"
 
 
 #

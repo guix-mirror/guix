@@ -57,6 +57,7 @@ information about which store files are valid, and what their \
 references are.";
 
 #define GUIX_OPT_STATE_DIRECTORY 1
+#define GUIX_OPT_DEDUPLICATE 2
 
 static const struct argp_option options[] =
   {
@@ -64,12 +65,17 @@ static const struct argp_option options[] =
       "Open the store that lies under DIRECTORY" },
     { "state-directory", GUIX_OPT_STATE_DIRECTORY, "DIRECTORY", 0,
       "Use DIRECTORY as the state directory of the target store" },
+    { "no-deduplication", GUIX_OPT_DEDUPLICATE, 0, 0,
+      "Disable automatic deduplication of registered store items" },
     { 0, 0, 0, 0, 0 }
   };
 
 
 /* Prefix of the store being populated.  */
 static std::string prefix;
+
+/* Whether to deduplicate the registered store items.  */
+static bool deduplication = true;
 
 /* Parse a single option. */
 static error_t
@@ -96,6 +102,10 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	settings.nixDBPath = state_dir + "/db";
 	break;
       }
+
+    case GUIX_OPT_DEDUPLICATE:
+      deduplication = false;
+      break;
 
     case ARGP_KEY_ARG:
       {
@@ -136,6 +146,7 @@ static struct argp argp = { options, parse_opt, 0, doc };
    This is really meant as an internal format.  */
 static void
 register_validity (LocalStore *store, std::istream &input,
+		   bool optimize = true,
 		   bool reregister = true, bool hashGiven = false,
 		   bool canonicalise = true)
 {
@@ -176,6 +187,19 @@ register_validity (LocalStore *store, std::istream &input,
     }
 
   store->registerValidPaths (infos);
+
+  /* XXX: When PREFIX is non-empty, store->linksDir points to the original
+     store's '.links' directory, which means 'optimisePath' would try to link
+     to that instead of linking to the target store.  Thus, disable
+     deduplication in this case.  */
+  if (optimize && prefix.empty ())
+    {
+      /* Make sure deduplication is enabled.  */
+      settings.autoOptimiseStore = true;
+
+      foreach (ValidPathInfos::const_iterator, i, infos)
+	store->optimisePath (i->path);
+    }
 }
 
 
@@ -200,17 +224,17 @@ main (int argc, char *argv[])
     {
       argp_parse (&argp, argc, argv, 0, 0, 0);
 
-      /* Instantiate the store.  This creates any missing directories among
-	 'settings.nixStore', 'settings.nixDBPath', etc.  */
-      LocalStore store;
-
       if (!prefix.empty ())
 	/* Under the --prefix tree, the final name of the store will be
 	   NIX_STORE_DIR.  Set it here so that the database uses file names
 	   prefixed by NIX_STORE_DIR and not PREFIX + NIX_STORE_DIR.  */
 	settings.nixStore = NIX_STORE_DIR;
 
-      register_validity (&store, *input);
+      /* Instantiate the store.  This creates any missing directories among
+	 'settings.nixStore', 'settings.nixDBPath', etc.  */
+      LocalStore store;
+
+      register_validity (&store, *input, deduplication);
     }
   catch (std::exception &e)
     {
