@@ -393,7 +393,7 @@ MANIFEST."
         (define (info-files top)
           (let ((infodir (string-append top "/share/info")))
             (map (cut string-append infodir "/" <>)
-                 (scandir infodir info-file?))))
+                 (or (scandir infodir info-file?) '()))))
 
         (define (install-info info)
           (zero?
