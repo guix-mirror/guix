@@ -70,7 +70,7 @@ To do so:
 
 Guix does the high-level preparation of a /derivation/.  A derivation is
 the promise of a build; it is stored as a text file under
-=/nix/store/xxx.drv=.  The (guix derivations) module provides the
+=/gnu/store/xxx.drv=.  The (guix derivations) module provides the
 `derivation' primitive, as well as higher-level wrappers such as
 `build-expression->derivation'.
 
