@@ -384,7 +384,8 @@ library for working with executable and object formats is also included.")
                 (("use_ldconfig=yes")
                  "use_ldconfig=no")))
             (modules '((guix build utils)))
-            (patches (list (search-patch "glibc-ldd-x86_64.patch")))))
+            (patches (list (search-patch "glibc-CVE-2014-5119.patch")
+                           (search-patch "glibc-ldd-x86_64.patch")))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc

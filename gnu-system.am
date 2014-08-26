@@ -311,6 +311,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/glib-tests-prlimit.patch			\
   gnu/packages/patches/glib-tests-timer.patch			\
   gnu/packages/patches/glibc-bootstrap-system.patch		\
+  gnu/packages/patches/glibc-CVE-2014-5119.patch		\
   gnu/packages/patches/glibc-ldd-x86_64.patch			\
   gnu/packages/patches/gnunet-fix-scheduler.patch		\
   gnu/packages/patches/gnunet-fix-tests.patch    		\
