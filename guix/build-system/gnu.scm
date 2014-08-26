@@ -209,8 +209,8 @@ listed in REFS."
   "Return the list of (NAME PACKAGE OUTPUT) or (NAME PACKAGE) tuples of
 standard packages used as implicit inputs of the GNU build system."
 
-  ;; Resolve (gnu packages base) lazily to hide circular dependency.
-  (let ((distro (resolve-module '(gnu packages base))))
+  ;; Resolve (gnu packages commencement) lazily to hide circular dependency.
+  (let ((distro (resolve-module '(gnu packages commencement))))
     (module-ref distro '%final-inputs)))
 
 (define* (inputs-search-paths inputs
@@ -347,7 +347,7 @@ are allowed to refer to."
       ;; ((and (? string?) (? derivation-path?))
       ;;  guile)
       (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages base)))
+       (let* ((distro (resolve-interface '(gnu packages commencement)))
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 
@@ -533,7 +533,7 @@ platform."
       ;; ((and (? string?) (? derivation-path?))
       ;;  guile)
       (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages base)))
+       (let* ((distro (resolve-interface '(gnu packages commencement)))
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 

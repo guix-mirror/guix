@@ -339,7 +339,7 @@
 (test-assert "GNU Make, bootstrap"
   ;; GNU Make is the first program built during bootstrap; we choose it
   ;; here so that the test doesn't last for too long.
-  (let ((gnu-make (@@ (gnu packages base) gnu-make-boot0)))
+  (let ((gnu-make (@@ (gnu packages commencement) gnu-make-boot0)))
     (and (package? gnu-make)
          (or (location? (package-location gnu-make))
              (not (package-location gnu-make)))

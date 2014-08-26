@@ -39,7 +39,8 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
   #:use-module (gnu packages)
-  #:use-module ((gnu packages base) #:select (guile-final))
+  #:use-module (gnu packages base)
+  #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
   #:export (specification->package+output
             guix-package))
@@ -914,8 +915,9 @@ more information.~%"))
             (set-build-options-from-command-line (%store) opts)
 
             (parameterize ((%guile-for-build
-                            (package-derivation (%store)
-                                                (if (assoc-ref opts 'bootstrap?)
-                                                    %bootstrap-guile
-                                                    guile-final))))
+                            (package-derivation
+                             (%store)
+                             (if (assoc-ref opts 'bootstrap?)
+                                 %bootstrap-guile
+                                 (canonical-package guile-2.0)))))
               (process-actions opts)))))))

@@ -27,7 +27,7 @@
   #:use-module ((gnu packages linux)
                 #:select (udev kbd e2fsprogs))
   #:use-module ((gnu packages base)
-                #:select (glibc-final))
+                #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
   #:use-module ((guix build linux-initrd)
                 #:select (mount-flags->bit-mask))
@@ -324,7 +324,7 @@ the ``message of the day''."
                                #:allow-empty-passwords? allow-empty-passwords?
                                #:motd motd)))))))
 
-(define* (nscd-service #:key (glibc glibc-final))
+(define* (nscd-service #:key (glibc (canonical-package glibc)))
   "Return a service that runs libc's name service cache daemon (nscd)."
   (with-monad %store-monad
     (return (service

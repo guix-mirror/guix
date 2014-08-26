@@ -19,7 +19,8 @@
 (define-module (gnu services xorg)
   #:use-module (gnu services)
   #:use-module (gnu system linux)                 ; 'pam-service'
-  #:use-module ((gnu packages base) #:select (guile-final))
+  #:use-module ((gnu packages base) #:select (canonical-package))
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages slim)
@@ -40,7 +41,7 @@
 ;;; Code:
 
 (define* (xorg-start-command #:key
-                             (guile guile-final)
+                             (guile (canonical-package guile-2.0))
                              (xorg-server xorg-server))
   "Return a derivation that builds a GUILE script to start the X server from
 XORG-SERVER.  Usually the X server is started by a login manager."
@@ -89,7 +90,7 @@ EndSection
     (gexp->script "start-xorg" script)))
 
 (define* (xinitrc #:key
-                  (guile guile-final)
+                  (guile (canonical-package guile-2.0))
                   (ratpoison ratpoison)
                   (windowmaker windowmaker))
   "Return a system-wide xinitrc script that starts the specified X session."

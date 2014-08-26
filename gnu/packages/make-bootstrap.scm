@@ -23,6 +23,7 @@
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module ((gnu packages) #:select (search-patch))
+  #:use-module ((gnu packages commencement) #:select (%final-inputs))
   #:use-module (gnu packages base)
   #:use-module (gnu packages cross-base)
   #:use-module (gnu packages bash)

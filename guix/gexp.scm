@@ -429,7 +429,7 @@ package/derivation references."
 (define (default-guile)
   ;; Lazily resolve 'guile-final'.  This module must not refer to (gnu …)
   ;; modules directly, to avoid circular dependencies, hence this hack.
-  (module-ref (resolve-interface '(gnu packages base))
+  (module-ref (resolve-interface '(gnu packages commencement))
               'guile-final))
 
 (define* (gexp->script name exp

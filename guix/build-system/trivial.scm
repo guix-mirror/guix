@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -32,7 +32,7 @@
     ((and (? string?) (? derivation-path?))
      guile)
     (#f                                         ; the default
-     (let* ((distro (resolve-interface '(gnu packages base)))
+     (let* ((distro (resolve-interface '(gnu packages commencement)))
             (guile  (module-ref distro 'guile-final)))
        (package-derivation store guile system)))))
 

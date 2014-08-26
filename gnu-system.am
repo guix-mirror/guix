@@ -54,6 +54,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cflow.scm			\
   gnu/packages/check.scm			\
   gnu/packages/cmake.scm			\
+  gnu/packages/commencement.scm			\
   gnu/packages/compression.scm			\
   gnu/packages/complexity.scm			\
   gnu/packages/conkeror.scm			\

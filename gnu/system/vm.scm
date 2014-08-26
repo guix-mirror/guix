@@ -25,9 +25,9 @@
   #:use-module (guix monads)
   #:use-module ((guix build vm)
                 #:select (qemu-command))
-  #:use-module ((gnu packages base)
-                #:select (%final-inputs))
+  #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
+  #:use-module (gnu packages gawk)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages less)
   #:use-module (gnu packages qemu)
@@ -152,7 +152,7 @@ made available under the /xchg CIFS share."
                                            (cons #$compiled
                                                  %load-compiled-path))
                                      (primitive-load #$user-builder))))
-       (coreutils -> (car (assoc-ref %final-inputs "coreutils")))
+       (coreutils -> (canonical-package coreutils))
        (initrd       (if initrd                   ; use the default initrd?
                          (return initrd)
                          (base-initrd %linux-vm-file-systems
@@ -227,8 +227,8 @@ the image."
 
         (let ((inputs
                '#$(append (list qemu parted grub e2fsprogs util-linux)
-                          (map (compose car (cut assoc-ref %final-inputs <>))
-                               '("sed" "grep" "coreutils" "findutils" "gawk"))
+                          (map canonical-package
+                               (list sed grep coreutils findutils gawk))
                           (if register-closures? (list guix) '())))
 
               ;; This variable is unused but allows us to add INPUTS-TO-COPY

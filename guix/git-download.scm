@@ -65,7 +65,7 @@ type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
       ((? package?)
        (package-derivation store guile system))
       (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages base)))
+       (let* ((distro (resolve-interface '(gnu packages commencement)))
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 

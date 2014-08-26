@@ -21,6 +21,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages commencement)
   #:use-module (gnu packages linux)
   #:use-module (guix packages)
   #:use-module (guix download)

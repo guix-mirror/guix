@@ -46,14 +46,14 @@
        (map (match-lambda
              ((name package)
               (list name (package-derivation %store package))))
-            (@@ (gnu packages base) %boot0-inputs))))
+            (@@ (gnu packages commencement) %boot0-inputs))))
 
 (define %bootstrap-search-paths
   ;; Search path specifications that go with %BOOTSTRAP-INPUTS.
   (append-map (match-lambda
                ((name package _ ...)
                 (package-native-search-paths package)))
-              (@@ (gnu packages base) %boot0-inputs)))
+              (@@ (gnu packages commencement) %boot0-inputs)))
 
 (define network-reachable?
   (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV)))
