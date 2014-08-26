@@ -324,8 +324,7 @@ held."
         (rename-file source target)
 
         ;; Register TARGET.  As a side effect, it resets the timestamps of all
-        ;; its files, recursively.  However, it doesn't attempt to deduplicate
-        ;; its files like 'importPaths' does (FIXME).
+        ;; its files, recursively, and runs a deduplication pass.
         (register-path target
                        #:references references
                        #:deriver deriver))
