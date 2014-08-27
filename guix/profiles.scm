@@ -376,10 +376,11 @@ or
 (define (info-dir-file manifest)
   "Return a derivation that builds the 'dir' file for all the entries of
 MANIFEST."
-  (define texinfo
-    ;; Lazy reference.
-    (module-ref (resolve-interface '(gnu packages texinfo))
-                'texinfo))
+  (define texinfo                                 ;lazy reference
+    (module-ref (resolve-interface '(gnu packages texinfo)) 'texinfo))
+  (define gzip                                    ;lazy reference
+    (module-ref (resolve-interface '(gnu packages compression)) 'gzip))
+
   (define build
     #~(begin
         (use-modules (guix build utils)
@@ -396,6 +397,7 @@ MANIFEST."
                  (or (scandir infodir info-file?) '()))))
 
         (define (install-info info)
+          (setenv "PATH" (string-append #+gzip "/bin")) ;for info.gz files
           (zero?
            (system* (string-append #+texinfo "/bin/install-info")
                     info (string-append #$output "/share/info/dir"))))
