@@ -581,6 +581,7 @@ management tools it provides.
 @menu
 * Features::                    How Guix will make your life brighter.
 * Invoking guix package::       Package installation, removal, etc.
+* Emacs Interface::             Package management from Emacs.
 * Substitutes::                 Downloading pre-built binaries.
 * Packages with Multiple Outputs::  Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
@@ -954,6 +955,8 @@ Consequently, this command must be used with care.
 Finally, since @command{guix package} may actually start build
 processes, it supports all the common build options that @command{guix
 build} supports (@pxref{Invoking guix build, common build options}).
+
+@include emacs.texi
 
 @node Substitutes
 @section Substitutes

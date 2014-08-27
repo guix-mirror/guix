@@ -105,3 +105,8 @@ GTAGS
 /nix-setuid-helper
 /nix/scripts/guix-authenticate
 /nix/scripts/offload
+/emacs/Makefile.in
+/emacs/Makefile
+/emacs/guix-autoloads.el
+/emacs/guix-helper.scm
+/emacs/guix-init.el

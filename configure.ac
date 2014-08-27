@@ -174,4 +174,11 @@ AC_CONFIG_FILES([scripts/guix], [chmod +x scripts/guix])
 AC_CONFIG_FILES([pre-inst-env], [chmod +x pre-inst-env])
 AC_CONFIG_FILES([test-env],     [chmod +x test-env])
 
+dnl Emacs interface.
+AM_PATH_LISPDIR
+emacsuidir="${guilemoduledir}/guix/emacs"
+AC_SUBST([emacsuidir])
+AC_CONFIG_FILES([emacs/guix-init.el
+                 emacs/guix-helper.scm])
+
 AC_OUTPUT

@@ -277,6 +277,10 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --with-nix-prefix="$(NIX_PREFIX)"		\
   --enable-daemon
 
+dist_emacsui_DATA = emacs/guix-main.scm
+nodist_emacsui_DATA = emacs/guix-helper.scm
+include emacs.am
+
 dist-hook: sync-descriptions gen-ChangeLog assert-no-store-file-names
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained
 
