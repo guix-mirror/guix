@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -47,6 +47,8 @@
                      (perl (default-perl))
                      (search-paths '())
                      (tests? #t)
+                     (parallel-build? #t)
+                     (parallel-tests? #t)
                      (make-maker-flags ''())
                      (phases '(@ (guix build perl-build-system)
                                  %standard-phases))
@@ -79,6 +81,8 @@ provides a `Makefile.PL' file as its build system."
                    #:system ,system
                    #:test-target "test"
                    #:tests? ,tests?
+                   #:parallel-build? ,parallel-build?
+                   #:parallel-tests? ,parallel-tests?
                    #:outputs %outputs
                    #:inputs %build-inputs)))
 
@@ -89,7 +93,7 @@ provides a `Makefile.PL' file as its build system."
       ((and (? string?) (? derivation-path?))
        guile)
       (#f                                         ; the default
-       (let* ((distro (resolve-interface '(gnu packages base)))
+       (let* ((distro (resolve-interface '(gnu packages commencement)))
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 

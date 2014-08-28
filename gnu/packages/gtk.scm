@@ -466,8 +466,10 @@ application suites.")
     (inputs
      `(("guile-lib" ,guile-lib)
        ("expat" ,expat)
-       ("cairo" ,cairo)
        ("guile" ,guile-2.0)))
+    (propagated-inputs
+     ;; The .pc file refers to 'cairo'.
+     `(("cairo" ,cairo)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.nongnu.org/guile-cairo/")

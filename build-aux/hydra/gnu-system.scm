@@ -53,6 +53,7 @@
              (gnu packages compression)
              (gnu packages multiprecision)
              (gnu packages make-bootstrap)
+             (gnu packages commencement)
              (gnu system)
              (gnu system vm)
              (gnu system install)

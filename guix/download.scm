@@ -205,8 +205,8 @@ must be a list of symbol/URL-list pairs."
   (define guile-for-build
     (package-derivation store
                         (or guile
-                            (let ((distro
-                                   (resolve-interface '(gnu packages base))))
+                            (let ((distro (resolve-interface
+                                           '(gnu packages commencement))))
                               (module-ref distro 'guile-final)))
                         system))
 

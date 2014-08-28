@@ -444,7 +444,7 @@ connection."
   (define (default-guile)
     ;; Lazily resolve 'guile-final'.  This module must not refer to (gnu …)
     ;; modules directly, to avoid circular dependencies, hence this hack.
-    (module-ref (resolve-interface '(gnu packages base))
+    (module-ref (resolve-interface '(gnu packages commencement))
                 'guile-final))
 
   (parameterize ((%guile-for-build (or guile-for-build

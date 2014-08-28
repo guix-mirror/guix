@@ -24,7 +24,7 @@
              (guix packages)
              (guix derivations)
              (guix ui)
-             (gnu packages base)
+             (gnu packages commencement)
              (ice-9 match)
              (srfi srfi-1)
              (srfi srfi-26))

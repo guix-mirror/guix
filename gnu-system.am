@@ -54,6 +54,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/cflow.scm			\
   gnu/packages/check.scm			\
   gnu/packages/cmake.scm			\
+  gnu/packages/commencement.scm			\
   gnu/packages/compression.scm			\
   gnu/packages/complexity.scm			\
   gnu/packages/conkeror.scm			\
@@ -233,9 +234,10 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/time.scm				\
   gnu/packages/tmux.scm				\
   gnu/packages/tor.scm				\
-  gnu/packages/uucp.scm				\
+  gnu/packages/unclutter.scm			\
   gnu/packages/unrtf.scm			\
   gnu/packages/upnp.scm				\
+  gnu/packages/uucp.scm				\
   gnu/packages/valgrind.scm			\
   gnu/packages/version-control.scm		\
   gnu/packages/video.scm			\

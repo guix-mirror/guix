@@ -26,6 +26,7 @@
   #:use-module (guix profiles)
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages which)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
@@ -198,7 +199,7 @@ explicitly appear in OS."
   ;; Default set of packages globally visible.  It should include anything
   ;; required for basic administrator tasks.
   (cons* procps psmisc which less zile nano
-         guile-final (@ (gnu packages admin) dmd) guix
+         (@ (gnu packages admin) dmd) guix
          lsof                                 ;for Guix's 'list-runtime-roots'
          util-linux inetutils isc-dhcp
          net-tools                        ; XXX: remove when Inetutils suffices
@@ -212,7 +213,7 @@ explicitly appear in OS."
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
          (map canonical-package
-              (list bash coreutils findutils grep sed))))
+              (list guile-2.0 bash coreutils findutils grep sed))))
 
 (define %default-issue
   ;; Default contents for /etc/issue.

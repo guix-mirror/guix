@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,6 +24,7 @@
   #:use-module (guix derivations)
   #:use-module (guix download)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap)
                 #:select (%bootstrap-guile))
   #:use-module (gnu packages compression)
@@ -128,7 +129,7 @@ Download and deploy the latest version of Guix.\n"))
                         (package-derivation store
                                             (if (assoc-ref opts 'bootstrap?)
                                                 %bootstrap-guile
-                                                guile-final)))
+                                                (canonical-package guile-2.0))))
                        (current-build-output-port
                         (if (assoc-ref opts 'verbose?)
                             (current-error-port)

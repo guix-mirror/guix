@@ -51,3 +51,16 @@ deterministic or generalized LR parser from an annotated, context-free
 grammar.  It is versatile enough to have many applications, from parsers for
 simple tools through complex programming languages.")
     (license gpl3+)))
+
+(define-public bison-2.7
+  (package (inherit bison)
+    (version "2.7")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://gnu/bison/bison-"
+                          version ".tar.xz"))
+      (sha256
+       (base32
+        "1zd77ilmpv5mi3kr55jrj6ncqlcnyhpianhrwzak2q28cv2cbn23"))))))
+

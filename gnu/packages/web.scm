@@ -24,8 +24,9 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix git-download)
-  #:use-module (guix build-system perl)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
+  #:use-module (guix build-system cmake)
   #:use-module (gnu packages apr)
   #:use-module (gnu packages asciidoc)
   #:use-module (gnu packages docbook)
@@ -110,7 +111,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
 (define-public libwebsockets
   (package
     (name "libwebsockets")
-    (version "1.2")
+    (version "1.3")
     (source (origin
               ;; The project does not publish tarballs, so we have to take
               ;; things from Git.
@@ -118,29 +119,19 @@ parse JSON formatted strings back into the C representation of JSON objects.")
               (uri (git-reference
                     (url "git://git.libwebsockets.org/libwebsockets")
                     (commit (string-append "v" version
-                                           "-chrome26-firefox18"))))
+                                           "-chrome37-firefox30"))))
               (sha256
                (base32
-                "1293hbz8qj4p27m1qjf8dn97r10xjyiwdpq491m87zi025s558cl"))
+                "12fqh2d2098mgf0ls19p9lzibpsqhv7mc5rn1yvrbfnazmcr40g4"))
               (file-name (string-append name "-" version))))
 
-    ;; The package has both CMake and GNU build systems, but the latter is
-    ;; apparently better supported (CMake-generated makefiles lack an
-    ;; 'install' target, for instance.)
-    (build-system gnu-build-system)
-
+    (build-system cmake-build-system)
     (arguments
-     '(#:phases (alist-cons-before
-                 'configure 'bootstrap
-                 (lambda _
-                   (chmod "libwebsockets-api-doc.html" #o666)
-                   (zero? (system* "./autogen.sh")))
-                 %standard-phases)))
+     ;; XXX: The thing lacks a 'make test' target, because CMakeLists.txt
+     ;; doesn't use 'add_test', and it's unclear how to run the test suite.
+     '(#:tests? #f))
 
-    (native-inputs `(("autoconf" ,autoconf)
-                     ("automake" ,automake)
-                     ("libtool" ,libtool "bin")
-                     ("perl" ,perl)))             ; to build the HTML doc
+    (native-inputs `(("perl" ,perl)))             ; to build the HTML doc
     (inputs `(("zlib" ,zlib)
               ("openssl" ,openssl)))
     (synopsis "WebSockets library written in C")

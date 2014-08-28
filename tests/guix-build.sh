@@ -31,18 +31,18 @@ if guix build -e '(@ (gnu packages bootstrap) %bootstrap-glibc)' -S
 then false; else true; fi
 
 # Should pass.
-guix build -e '(@@ (gnu packages base) %bootstrap-guile)' |	\
+guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)' |	\
     grep -e '-guile-'
 guix build hello -d |				\
     grep -e '-hello-[0-9\.]\+\.drv$'
 
 # Should all return valid log files.
-drv="`guix build -d -e '(@@ (gnu packages base) %bootstrap-guile)'`"
-out="`guix build -e '(@@ (gnu packages base) %bootstrap-guile)'`"
+drv="`guix build -d -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'`"
+out="`guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'`"
 log="`guix build --log-file $drv`"
 echo "$log" | grep log/.*guile.*drv
 test -f "$log"
-test "`guix build -e '(@@ (gnu packages base) %bootstrap-guile)' --log-file`" \
+test "`guix build -e '(@@ (gnu packages bootstrap) %bootstrap-guile)' --log-file`" \
     = "$log"
 test "`guix build --log-file guile-bootstrap`" = "$log"
 test "`guix build --log-file $out`" = "$log"
@@ -53,11 +53,11 @@ if guix build hello-0.0.1 -n; then false; else true; fi
 # Keep a symlink to the result, registered as a root.
 result="t-result-$$"
 guix build -r "$result"					\
-    -e '(@@ (gnu packages base) %bootstrap-guile)'
+    -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'
 test -x "$result/bin/guile"
 
 # Should fail, because $result already exists.
-if guix build -r "$result" -e '(@@ (gnu packages base) %bootstrap-guile)'
+if guix build -r "$result" -e '(@@ (gnu packages bootstrap) %bootstrap-guile)'
 then false; else true; fi
 
 rm -f "$result"

@@ -4131,9 +4131,9 @@ the GNU Build System: Guile, Bash, Coreutils, etc.
 
 And voilà!  At this point we have the complete set of build tools that
 the GNU Build System expects.  These are in the @code{%final-inputs}
-variables of the @code{(gnu packages base)} module, and are implicitly
-used by any package that uses @code{gnu-build-system} (@pxref{Defining
-Packages}).
+variable of the @code{(gnu packages commencement)} module, and are
+implicitly used by any package that uses @code{gnu-build-system}
+(@pxref{Defining Packages}).
 
 
 @unnumberedsubsec Building the Bootstrap Binaries

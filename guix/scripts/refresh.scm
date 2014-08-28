@@ -27,7 +27,7 @@
   #:use-module (guix gnu-maintenance)
   #:use-module (guix gnupg)
   #:use-module (gnu packages)
-  #:use-module ((gnu packages base) #:select (%final-inputs))
+  #:use-module ((gnu packages commencement) #:select (%final-inputs))
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 vlist)

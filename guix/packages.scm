@@ -291,7 +291,7 @@ corresponds to the arguments expected by `set-path-environment-variable'."
 
 (define (default-guile)
   "Return the default Guile package for SYSTEM."
-  (let ((distro (resolve-interface '(gnu packages base))))
+  (let ((distro (resolve-interface '(gnu packages commencement))))
     (module-ref distro 'guile-final)))
 
 (define* (patch-and-repack store source patches
