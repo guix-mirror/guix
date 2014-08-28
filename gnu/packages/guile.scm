@@ -34,6 +34,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages ed)
   #:use-module (gnu packages which)
+  #:use-module (gnu packages gtk)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -358,5 +359,36 @@ http:://json.org specification. These are the main features:
 - Unicode support for strings.
 - Allows JSON pretty printing.")
     (license lgpl3+)))
+
+(define-public guile-charting
+  (package
+    (name "guile-charting")
+    (version "0.1.1")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://wingolog.org/pub/guile-charting/"
+                                  "guile-charting-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1l8xcqq4cp67jzxnmf07ivsgq23mfmi00zz1s8bnv2zkb0ab9475"))
+              (modules '((guix build utils)))
+              (snippet
+               ;; Remove dependency from guile-charting.texi to
+               ;; guile-chartingscmfiles to avoid rebuild the doc (which is
+               ;; unnecessary and fails with "failed to match any pattern in
+               ;; form define-macro-with-docs" as of Guile 2.0.11.)
+               '(substitute* "doc/Makefile.in"
+                  (("^(.+):(.*) \\$\\(doc\\)scmfiles(.*$)" _ target dep1 dep2)
+                   (string-append target ":" dep1 " " dep2 "\n"))))))
+    (build-system gnu-build-system)
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (inputs `(("guile" ,guile-2.0)
+              ("guile-cairo" ,guile-cairo)))
+    (home-page "http://wingolog.org/software/guile-charting/")
+    (synopsis "Create charts and graphs in Guile")
+    (description
+     "Guile-Charting is a Guile Scheme library to create bar charts and graphs
+using the Cairo drawing library.")
+    (license lgpl2.1+)))
 
 ;;; guile.scm ends here
