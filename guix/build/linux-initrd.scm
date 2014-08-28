@@ -229,8 +229,11 @@ the following:
   • 'any', in which case SPEC can be anything.
 "
   (define max-trials
-    ;; Number of times we retry partition label resolution.
-    7)
+    ;; Number of times we retry partition label resolution, 1 second per
+    ;; trial.  Note: somebody reported a delay of 16 seconds (!) before their
+    ;; USB key would be detected by the kernel, so we must wait for at least
+    ;; this long.
+    20)
 
   (define canonical-title
     ;; The realm of canonicalization.
@@ -254,6 +257,8 @@ the following:
              (if (> count max-trials)
                  (error "failed to resolve partition label" spec)
                  (begin
+                   (format #t "waiting for partition '~a' to appear...~%"
+                           spec)
                    (sleep 1)
                    (loop (+ 1 count))))))))
     ;; TODO: Add support for UUIDs.
