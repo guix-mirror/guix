@@ -121,3 +121,23 @@ matching a regular expression.")
      "This package provides the 'IO::Pty' and 'IO::Tty' Perl interfaces to
 pseudo ttys.")
     (license (package-license perl))))
+
+(define-public perl-archive-zip
+  (package
+    (name "perl-archive-zip")
+    (version "1.30")
+    (source 
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AD/ADAMK/Archive-Zip-" 
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0633zah5z9njiqnvy3vh42fjymncmil1jdfb7d18w8xpfzzp5d7q"))))
+    (build-system perl-build-system)
+    (synopsis "Perl API to zip files")
+    (description "The Archive::Zip module allows a Perl program to create,
+manipulate, read, and write Zip archive files.")
+    (home-page "http://search.cpan.org/~phred/Archive-Zip-1.37/lib/Archive/Zip.pm")
+    (license (package-license perl))))
