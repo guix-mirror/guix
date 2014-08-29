@@ -55,6 +55,14 @@
                           '((substitute* "extension/Makefile.in"
                               (("^.*: check-for-shared-lib-support" match)
                                (string-append "### " match))))
+                          '())
+
+                    ;; XXX FIXME prerelease libtool fails on MIPS in the
+                    ;; absence of /usr/bin/file.
+                    ,@(if (equal? "mips64el-linux" (or (%current-target-system)
+                                                       (%current-system)))
+                          '((substitute* "extension/configure"
+                              (("/usr/bin/file") (which "file"))))
                           '())))
                 %standard-phases)))
    (inputs `(("libsigsegv" ,libsigsegv)
