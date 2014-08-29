@@ -316,8 +316,17 @@ hook."
        (let ((root-directory (string-append %state-directory
                                             "/gcroots/tmp")))
          (false-if-exception (mkdir root-directory))
-         (symlink ,file
-                  (string-append root-directory "/" ,%gc-root-file)))))
+         (catch 'system-error
+           (lambda ()
+             (symlink ,file
+                      (string-append root-directory "/" ,%gc-root-file)))
+           (lambda args
+             ;; If FILE already exists, we can assume that either it's a stale
+             ;; reference (which is fine), or another process is already
+             ;; building the derivation represented by FILE (which is fine
+             ;; too.)  Thus, do nothing in that case.
+             (unless (= EEXIST (system-error-errno args))
+               (apply throw args)))))))
 
   (let ((pipe (remote-pipe machine OPEN_READ
                            `("guile" "-c" ,(object->string script)))))
