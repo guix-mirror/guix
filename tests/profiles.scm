@@ -26,6 +26,7 @@
   #:use-module (guix derivations)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-64))
 
 ;; Test the (guix profiles) module.
@@ -52,6 +53,13 @@
 (define guile-2.0.9:debug
   (manifest-entry (inherit guile-2.0.9)
     (output "debug")))
+
+(define glibc
+  (manifest-entry
+    (name "glibc")
+    (version "2.19")
+    (item "/gnu/store/...")
+    (output "out")))
 
 
 (test-begin "profiles")
@@ -135,6 +143,17 @@
            (_ #f))
          (equal? m1 m2)
          (null? (manifest-entries m3)))))
+
+(test-assert "manifest-transaction-effects"
+  (let* ((m0 (manifest (list guile-1.8.8)))
+         (t  (manifest-transaction
+              (install (list guile-2.0.9 glibc))
+              (remove (list (manifest-pattern (name "coreutils")))))))
+    (let-values (((remove install upgrade)
+                  (manifest-transaction-effects m0 t)))
+      (and (null? remove)
+           (equal? (list glibc) install)
+           (equal? (list guile-2.0.9) upgrade)))))
 
 (test-assert "profile-derivation"
   (run-with-store %store

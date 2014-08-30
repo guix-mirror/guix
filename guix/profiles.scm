@@ -32,6 +32,7 @@
   #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
   #:export (manifest make-manifest
@@ -60,6 +61,7 @@
             manifest-transaction-install
             manifest-transaction-remove
             manifest-perform-transaction
+            manifest-transaction-effects
             manifest-show-transaction
 
             profile-manifest
@@ -266,6 +268,35 @@ Remove MANIFEST entries that have the same name and output as ENTRIES."
   (remove  manifest-transaction-remove  ; list of <manifest-pattern>
            (default '())))
 
+(define (manifest-transaction-effects manifest transaction)
+  "Compute the effect of applying TRANSACTION to MANIFEST.  Return 3 values:
+the list of packages that would be removed, installed, or upgraded when
+applying TRANSACTION to MANIFEST."
+  (define (manifest-entry->pattern entry)
+    (manifest-pattern
+      (name   (manifest-entry-name entry))
+      (output (manifest-entry-output entry))))
+
+  (let loop ((input    (manifest-transaction-install transaction))
+             (install '())
+             (upgrade '()))
+    (match input
+      (()
+       (let ((remove (manifest-transaction-remove transaction)))
+         (values (manifest-matching-entries manifest remove)
+                 (reverse install) (reverse upgrade))))
+      ((entry rest ...)
+       ;; Check whether installing ENTRY corresponds to the installation of a
+       ;; new package or to an upgrade.
+
+       ;; XXX: When the exact same output directory is installed, we're not
+       ;; really upgrading anything.  Add a check for that case.
+       (let* ((pattern  (manifest-entry->pattern entry))
+              (upgrade? (manifest-installed? manifest pattern)))
+         (loop rest
+               (if upgrade? install (cons entry install))
+               (if upgrade? (cons entry upgrade) upgrade)))))))
+
 (define (manifest-perform-transaction manifest transaction)
   "Perform TRANSACTION on MANIFEST and return new manifest."
   (let ((install (manifest-transaction-install transaction))
@@ -284,22 +315,8 @@ Remove MANIFEST entries that have the same name and output as ENTRIES."
                        item)))
          name version output item))
 
-  (let* ((remove (manifest-matching-entries
-                  manifest (manifest-transaction-remove transaction)))
-         (install/upgrade (manifest-transaction-install transaction))
-         (install '())
-         (upgrade (append-map
-                   (lambda (entry)
-                     (let ((matching
-                            (manifest-matching-entries
-                             manifest
-                             (list (manifest-pattern
-                                    (name   (manifest-entry-name entry))
-                                    (output (manifest-entry-output entry)))))))
-                       (when (null? matching)
-                         (set! install (cons entry install)))
-                       matching))
-                   install/upgrade)))
+  (let-values (((remove install upgrade)
+                (manifest-transaction-effects manifest transaction)))
     (match remove
       ((($ <manifest-entry> name version output item _) ..1)
        (let ((len    (length name))
