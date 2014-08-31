@@ -249,6 +249,9 @@ main (int argc, char *argv[])
   settings.useChroot = false;
 #endif
 
+  /* Turn automatic deduplication on by default.  */
+  settings.autoOptimiseStore = true;
+
   argvSaved = argv;
 
   try
@@ -324,6 +327,10 @@ main (int argc, char *argv[])
 	    }
 	}
 #endif
+
+      printMsg (lvlDebug,
+		format ("automatic deduplication set to %1%")
+		% settings.autoOptimiseStore);
 
       printMsg (lvlDebug,
 		format ("listening on `%1%'") % settings.nixDaemonSocketFile);
