@@ -305,10 +305,12 @@ current settings and report only settings not already effective."
         ;; Use 'find-best-packages-by-name' and not 'find-packages-by-name';
         ;; the former traverses the module tree only once and then allows for
         ;; efficient access via a vhash.
-        (match (or (find-best-packages-by-name name version)
-                   (find-best-packages-by-name name #f))
+        (match (find-best-packages-by-name name version)
           ((p _ ...) p)
-          (_ #f)))))
+          (_
+           (match (find-best-packages-by-name name #f)
+             ((p _ ...) p)
+             (_ #f)))))))
 
     (define search-path-definition
       (match-lambda
