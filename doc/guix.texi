@@ -1459,7 +1459,10 @@ definitions like the one above may be automatically converted from the
 Nixpkgs distribution using the @command{guix import} command.}, the
 package may actually be built using the @code{guix build} command-line
 tool (@pxref{Invoking guix build}).  @xref{Packaging Guidelines}, for
-more information on how to test package definitions.
+more information on how to test package definitions, and
+@ref{Invoking guix lint}, for information on how to check a definition
+for style conformance.
+
 
 Eventually, updating the package definition to a new upstream version
 can be partly automated by the @command{guix refresh} command
@@ -2328,6 +2331,7 @@ programming interface of Guix in a convenient way.
 * Invoking guix download::      Downloading a file and printing its hash.
 * Invoking guix hash::          Computing the cryptographic hash of a file.
 * Invoking guix refresh::       Updating package definitions.
+* Invoking guix lint::          Finding errors in package definitions.
 @end menu
 
 @node Invoking guix build
@@ -2705,6 +2709,29 @@ for in @code{$PATH}.
 
 @end table
 
+@node Invoking guix lint
+@section Invoking @command{guix lint}
+The @command{guix lint} is meant to help package developers avoid common
+errors and use a consistent style.  It runs a few checks on a given set of
+packages in order to find common mistakes in their definitions.
+
+The general syntax is:
+
+@example
+guix lint @var{options} @var{package}@dots{}
+@end example
+
+If no package is given on the command line, then all packages are checked.
+The @var{options} may be zero or more of the following:
+
+@table @code
+
+@item --list-checkers
+@itemx -l
+List and describe all the available checkers that will be run on packages
+and exit.
+
+@end table
 
 @c *********************************************************************
 @node GNU Distribution

@@ -89,6 +89,7 @@ MODULES =					\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
   guix/scripts/system.scm			\
+  guix/scripts/lint.scm				\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
@@ -159,7 +160,8 @@ SCM_TESTS =					\
   tests/nar.scm					\
   tests/union.scm				\
   tests/profiles.scm				\
-  tests/syscalls.scm
+  tests/syscalls.scm				\
+  tests/lint.scm
 
 SH_TESTS =					\
   tests/guix-build.sh				\
