@@ -1,6 +1,6 @@
 #!/bin/sh
 # GNU Guix --- Functional package management for GNU
-# Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+# Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 #
 # This file is part of GNU Guix.
 #
@@ -65,7 +65,16 @@ done
 rm -fv "$top_srcdir/nix/libstore/schema.sql.hh"
 
 cp -v "$top_srcdir/nix-upstream/COPYING" "$top_srcdir/nix"
-cp -v "$top_srcdir/nix-upstream/AUTHORS" "$top_srcdir/nix"
+
+# Generate an 'AUTHORS' file since upstream Nix no longer has one.
+cat > "$top_srcdir/nix/AUTHORS" <<EOF
+Most of the code is this directory was written by the following people for
+the Nix project (http://nixos.org/nix).  Thank you!
+
+EOF
+( cd "$top_srcdir/nix-upstream" ; git shortlog --summary )	\
+    | sed -'es/^ *[0-9]\+\(.*\)/   \1/g'			\
+    >> "$top_srcdir/nix/AUTHORS"
 
 # Substitutions.
 sed -i "$top_srcdir/nix/libstore/gc.cc"					\
