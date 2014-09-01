@@ -2948,7 +2948,7 @@ more information, @pxref{Invoking guix system}.  This command may trigger
 downloads or builds of missing packages, which can take some time.
 
 Once that command has completed---and hopefully succeeded!---you can
-unmount @file{/mnt} and boot into the new system.  Cross fingers, and
+run @command{reboot} and boot into the new system.  Cross fingers, and
 join us on @code{#guix} on the Freenode IRC network or on
 @file{guix-devel@@gnu.org} to share your experience---good or not so
 good.
@@ -3534,6 +3534,10 @@ system declaration like this:
 (initrd (cut base-initrd <>
              #:extra-modules '("my.ko" "modules.ko")))
 @end example
+
+@noindent
+Note that for the example above, the SRFI-26 module needs to be imported
+(@pxref{SRFI-26,,, guile, GNU Guile Reference Manual}).
 
 It also handles common use cases that involves using the system as a
 QEMU guest, or as a ``live'' system whose root file system is volatile.
