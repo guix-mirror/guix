@@ -333,7 +333,9 @@ replacement if PORT is not Unicode-capable."
   "Display what will/would be installed/removed from MANIFEST by TRANSACTION."
   (define (package-strings name version output item)
     (map (lambda (name version output item)
-           (format #f "   ~a-~a\t~a\t~a" name version output
+           (format #f "   ~a~:[:~a~;~*~]\t~a\t~a"
+                   name
+                   (equal? output "out") output version
                    (if (package? item)
                        (package-output store item output)
                        item)))
@@ -343,9 +345,9 @@ replacement if PORT is not Unicode-capable."
     (right-arrow (current-error-port)))
 
   (define (upgrade-string name old-version new-version output item)
-    (format #f "   ~a\t~a ~a ~a\t~a\t~a" name
+    (format #f "   ~a~:[:~a~;~*~]\t~a ~a ~a\t~a"
+            name (equal? output "out") output
             old-version → new-version
-            output
             (if (package? item)
                 (package-output store item output)
                 item)))
@@ -353,7 +355,7 @@ replacement if PORT is not Unicode-capable."
   (let-values (((remove install upgrade)
                 (manifest-transaction-effects manifest transaction)))
     (match remove
-      ((($ <manifest-entry> name version output item _) ..1)
+      ((($ <manifest-entry> name version output item) ..1)
        (let ((len    (length name))
              (remove (package-strings name version output item)))
          (if dry-run?
