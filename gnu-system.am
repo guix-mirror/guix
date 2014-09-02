@@ -199,6 +199,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/pkg-config.scm			\
   gnu/packages/plotutils.scm			\
   gnu/packages/popt.scm				\
+  gnu/packages/postgresql.scm			\
   gnu/packages/pth.scm				\
   gnu/packages/pulseaudio.scm			\
   gnu/packages/pretty-print.scm			\
