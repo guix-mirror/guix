@@ -53,6 +53,7 @@
 
             manifest-remove
             manifest-add
+            manifest-lookup
             manifest-installed?
             manifest-matching-entries
 
@@ -237,11 +238,16 @@ Remove MANIFEST entries that have the same name and output as ENTRIES."
                  (manifest-entries manifest)
                  entries))))
 
+(define (manifest-lookup manifest pattern)
+  "Return the first item of MANIFEST that matches PATTERN, or #f if there is
+no match.."
+  (find (entry-predicate pattern)
+        (manifest-entries manifest)))
+
 (define (manifest-installed? manifest pattern)
   "Return #t if MANIFEST has an entry matching PATTERN (a manifest-pattern),
 #f otherwise."
-  (->bool (find (entry-predicate pattern)
-                (manifest-entries manifest))))
+  (->bool (manifest-lookup manifest pattern)))
 
 (define (manifest-matching-entries manifest patterns)
   "Return all the entries of MANIFEST that match one of the PATTERNS."
@@ -271,7 +277,9 @@ Remove MANIFEST entries that have the same name and output as ENTRIES."
 (define (manifest-transaction-effects manifest transaction)
   "Compute the effect of applying TRANSACTION to MANIFEST.  Return 3 values:
 the list of packages that would be removed, installed, or upgraded when
-applying TRANSACTION to MANIFEST."
+applying TRANSACTION to MANIFEST.  Upgrades are represented as pairs where the
+head is the entry being upgraded and the tail is the entry that will replace
+it."
   (define (manifest-entry->pattern entry)
     (manifest-pattern
       (name   (manifest-entry-name entry))
@@ -292,10 +300,12 @@ applying TRANSACTION to MANIFEST."
        ;; XXX: When the exact same output directory is installed, we're not
        ;; really upgrading anything.  Add a check for that case.
        (let* ((pattern  (manifest-entry->pattern entry))
-              (upgrade? (manifest-installed? manifest pattern)))
+              (previous (manifest-lookup manifest pattern)))
          (loop rest
-               (if upgrade? install (cons entry install))
-               (if upgrade? (cons entry upgrade) upgrade)))))))
+               (if previous install (cons entry install))
+               (if previous
+                   (alist-cons previous entry upgrade)
+                   upgrade)))))))
 
 (define (manifest-perform-transaction manifest transaction)
   "Perform TRANSACTION on MANIFEST and return new manifest."
@@ -303,6 +313,20 @@ applying TRANSACTION to MANIFEST."
         (remove  (manifest-transaction-remove transaction)))
     (manifest-add (manifest-remove manifest remove)
                   install)))
+
+(define (right-arrow port)
+  "Return either a string containing the 'RIGHT ARROW' character, or an ASCII
+replacement if PORT is not Unicode-capable."
+  (with-fluids ((%default-port-encoding (port-encoding port)))
+    (let ((arrow "→"))
+      (catch 'encoding-error
+        (lambda ()
+          (with-fluids ((%default-port-conversion-strategy 'error))
+            (with-output-to-string
+              (lambda ()
+                (display arrow)))))
+        (lambda (key . args)
+          ">")))))
 
 (define* (manifest-show-transaction store manifest transaction
                                     #:key dry-run?)
@@ -314,6 +338,17 @@ applying TRANSACTION to MANIFEST."
                        (package-output store item output)
                        item)))
          name version output item))
+
+  (define →                        ;an arrow that can be represented on stderr
+    (right-arrow (current-error-port)))
+
+  (define (upgrade-string name old-version new-version output item)
+    (format #f "   ~a\t~a ~a ~a\t~a\t~a" name
+            old-version → new-version
+            output
+            (if (package? item)
+                (package-output store item output)
+                item)))
 
   (let-values (((remove install upgrade)
                 (manifest-transaction-effects manifest transaction)))
@@ -334,9 +369,11 @@ applying TRANSACTION to MANIFEST."
                      remove))))
       (_ #f))
     (match upgrade
-      ((($ <manifest-entry> name version output item _) ..1)
+      (((($ <manifest-entry> name old-version)
+         . ($ <manifest-entry> _ new-version output item)) ..1)
        (let ((len     (length name))
-             (upgrade (package-strings name version output item)))
+             (upgrade (map upgrade-string
+                           name old-version new-version output item)))
          (if dry-run?
              (format (current-error-port)
                      (N_ "The following package would be upgraded:~%~{~a~%~}~%"
