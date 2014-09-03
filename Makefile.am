@@ -62,7 +62,6 @@ MODULES =					\
   guix/build/git.scm				\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
-  guix/build/linux-initrd.scm			\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
   guix/build/utils.scm				\
@@ -70,9 +69,6 @@ MODULES =					\
   guix/build/pull.scm				\
   guix/build/rpath.scm				\
   guix/build/svn.scm				\
-  guix/build/vm.scm				\
-  guix/build/install.scm			\
-  guix/build/activation.scm			\
   guix/build/syscalls.scm			\
   guix/build/emacs-utils.scm			\
   guix/packages.scm				\

@@ -16,10 +16,10 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix build vm)
+(define-module (gnu build vm)
   #:use-module (guix build utils)
-  #:use-module (guix build linux-initrd)
-  #:use-module (guix build install)
+  #:use-module (gnu build linux-initrd)
+  #:use-module (gnu build install)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)

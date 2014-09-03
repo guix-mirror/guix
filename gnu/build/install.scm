@@ -16,9 +16,8 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix build install)
+(define-module (gnu build install)
   #:use-module (guix build utils)
-  #:use-module (guix build install)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match)
   #:export (install-grub

@@ -75,7 +75,7 @@ initrd."
   (mlet* %store-monad ((source   (imported-modules modules))
                        (compiled (compiled-modules modules)))
     (define builder
-      ;; TODO: Move most of this code to (guix build linux-initrd).
+      ;; TODO: Move most of this code to (gnu build linux-initrd).
       #~(begin
           (use-modules (guix build utils)
                        (ice-9 pretty-print)
@@ -277,7 +277,7 @@ exception and backtrace!)."
 
   (expression->initrd
    #~(begin
-       (use-modules (guix build linux-initrd)
+       (use-modules (gnu build linux-initrd)
                     (guix build utils)
                     (srfi srfi-26))
 
@@ -293,7 +293,7 @@ exception and backtrace!)."
                     #:volatile-root? '#$volatile-root?))
    #:name "base-initrd"
    #:modules '((guix build utils)
-               (guix build linux-initrd))
+               (gnu build linux-initrd))
    #:to-copy helper-packages
    #:linux linux-libre
    #:linux-modules linux-modules))

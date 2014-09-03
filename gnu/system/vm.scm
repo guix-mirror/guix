@@ -23,7 +23,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix monads)
-  #:use-module ((guix build vm)
+  #:use-module ((gnu build vm)
                 #:select (qemu-command))
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
@@ -112,9 +112,9 @@ input tuple.  The output file name is when building for SYSTEM."
                                              (qemu qemu-headless)
                                              (env-vars '())
                                              (modules
-                                              '((guix build vm)
-                                                (guix build install)
-                                                (guix build linux-initrd)
+                                              '((gnu build vm)
+                                                (gnu build install)
+                                                (gnu build linux-initrd)
                                                 (guix build utils)))
                                              (guile-for-build
                                               (%guile-for-build))
@@ -164,7 +164,7 @@ made available under the /xchg CIFS share."
       ;; Code that launches the VM that evaluates EXP.
       #~(begin
           (use-modules (guix build utils)
-                       (guix build vm))
+                       (gnu build vm))
 
           (let ((inputs  '#$(list qemu coreutils))
                 (linux   (string-append #$linux "/bzImage"))
@@ -222,7 +222,7 @@ the image."
    (expression->derivation-in-linux-vm
     name
     #~(begin
-        (use-modules (guix build vm)
+        (use-modules (gnu build vm)
                      (guix build utils))
 
         (let ((inputs

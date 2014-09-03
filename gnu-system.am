@@ -28,7 +28,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/acl.scm				\
   gnu/packages/admin.scm			\
   gnu/packages/algebra.scm			\
-  gnu/packages/aidc.scm 			\
+  gnu/packages/aidc.scm				\
   gnu/packages/apl.scm				\
   gnu/packages/apr.scm				\
   gnu/packages/asciidoc.scm			\
@@ -58,7 +58,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/compression.scm			\
   gnu/packages/complexity.scm			\
   gnu/packages/conkeror.scm			\
-  gnu/packages/cook.scm 			\
+  gnu/packages/cook.scm				\
   gnu/packages/cpio.scm				\
   gnu/packages/cppi.scm				\
   gnu/packages/cross-base.scm			\
@@ -151,7 +151,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/lightning.scm			\
   gnu/packages/links.scm			\
   gnu/packages/linux.scm			\
-  gnu/packages/lisp.scm			\
+  gnu/packages/lisp.scm				\
   gnu/packages/lout.scm				\
   gnu/packages/lsh.scm				\
   gnu/packages/lsof.scm				\
@@ -180,7 +180,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/nettle.scm			\
   gnu/packages/node.scm				\
   gnu/packages/noweb.scm			\
-  gnu/packages/nvi.scm                          \
+  gnu/packages/nvi.scm				\
   gnu/packages/ocaml.scm			\
   gnu/packages/ocrad.scm			\
   gnu/packages/onc-rpc.scm			\
@@ -277,7 +277,13 @@ GNU_SYSTEM_MODULES =				\
   gnu/system/linux.scm				\
   gnu/system/linux-initrd.scm			\
   gnu/system/shadow.scm				\
-  gnu/system/vm.scm
+  gnu/system/vm.scm				\
+						\
+  gnu/build/activation.scm			\
+  gnu/build/install.scm				\
+  gnu/build/linux-initrd.scm			\
+  gnu/build/vm.scm
+
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
 dist_patch_DATA =						\
