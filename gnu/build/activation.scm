@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu build activation)
-  #:use-module (gnu build linux-initrd)
+  #:use-module (gnu build linux-boot)
   #:use-module (guix build utils)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)

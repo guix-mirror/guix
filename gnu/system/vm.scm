@@ -114,7 +114,7 @@ input tuple.  The output file name is when building for SYSTEM."
                                              (modules
                                               '((gnu build vm)
                                                 (gnu build install)
-                                                (gnu build linux-initrd)
+                                                (gnu build linux-boot)
                                                 (guix build utils)))
                                              (guile-for-build
                                               (%guile-for-build))

@@ -363,7 +363,7 @@ stateful part of OS, including user accounts and groups, special directories,
 etc."
   (define %modules
     '((gnu build activation)
-      (gnu build linux-initrd)
+      (gnu build linux-boot)
       (guix build utils)))
 
   (define (service-activations services)

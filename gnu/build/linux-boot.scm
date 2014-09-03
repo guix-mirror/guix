@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu build linux-initrd)
+(define-module (gnu build linux-boot)
   #:use-module (rnrs io ports)
   #:use-module (rnrs bytevectors)
   #:use-module (system foreign)
