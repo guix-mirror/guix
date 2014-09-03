@@ -995,3 +995,29 @@ files.")
 
 (define-public python2-exif-read
   (package-with-python2 python-exif-read))
+
+(define-public python-pyld
+  (package
+    (name "python-pyld")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://pypi.python.org/packages/source/P/PyLD/PyLD-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "1l9ymj85fsvayqplinzpk0kyiq6m74ps9xd3a9fhlxfn1rldf8x8"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments `(#:tests? #f)) ; no tests
+    (home-page "http://github.com/digitalbazaar/pyld")
+    (synopsis "Python implementation of the JSON-LD specification")
+    (description
+     "PyLD is an implementation of the JSON-LD specification.")
+    (license bsd-3)))
+
+(define-public python2-pyld
+  (package-with-python2 python-pyld))
