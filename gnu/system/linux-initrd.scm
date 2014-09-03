@@ -75,9 +75,10 @@ initrd."
   (mlet* %store-monad ((source   (imported-modules modules))
                        (compiled (compiled-modules modules)))
     (define builder
-      ;; TODO: Move most of this code to (gnu build linux-boot).
+      ;; TODO: Move most of this code to (gnu build linux-initrd).
       #~(begin
-          (use-modules (guix build utils)
+          (use-modules (gnu build linux-initrd)
+                       (guix build utils)
                        (ice-9 pretty-print)
                        (ice-9 popen)
                        (ice-9 match)
@@ -87,9 +88,7 @@ initrd."
                        (rnrs bytevectors)
                        ((system foreign) #:select (sizeof)))
 
-          (let ((cpio    (string-append #$cpio "/bin/cpio"))
-                (gzip    (string-append #$gzip "/bin/gzip"))
-                (modules #$source)
+          (let ((modules #$source)
                 (gos     #$compiled)
                 (scm-dir (string-append "share/guile/" (effective-version)))
                 (go-dir  (format #f ".cache/guile/ccache/~a-~a-~a-~a"
@@ -162,39 +161,13 @@ initrd."
               (for-each (cut utime <> 0 0 0 0)
                         (find-files "." ".*"))
 
-              (system* cpio "--version")
-              (let ((pipe (open-pipe* OPEN_WRITE cpio "-o"
-                                      "-O" (string-append #$output "/initrd")
-                                      "-H" "newc" "--null")))
-                (define print0
-                  (let ((len (string-length "./")))
-                    (lambda (file)
-                      (format pipe "~a\0" (string-drop file len)))))
-
-                ;; Note: as per `ramfs-rootfs-initramfs.txt', always add
-                ;; directory entries before the files that are inside of it: "The
-                ;; Linux kernel cpio extractor won't create files in a directory
-                ;; that doesn't exist, so the directory entries must go before
-                ;; the files that go in those directories."
-                (file-system-fold (const #t)
-                                  (lambda (file stat result) ; leaf
-                                    (print0 file))
-                                  (lambda (dir stat result) ; down
-                                    (unless (string=? dir ".")
-                                      (print0 dir)))
-                                  (const #f)         ; up
-                                  (const #f)         ; skip
-                                  (const #f)
-                                  #f
-                                  ".")
-
-                (and (zero? (close-pipe pipe))
-                     (with-directory-excursion #$output
-                       (and (zero? (system* gzip "--best" "initrd"))
-                            (rename-file "initrd.gz" "initrd")))))))))
+              (write-cpio-archive (string-append #$output "/initrd") "."
+                                  #:cpio (string-append #$cpio "/bin/cpio")
+                                  #:gzip (string-append #$gzip "/bin/gzip"))))))
 
    (gexp->derivation name builder
-                     #:modules '((guix build utils)))))
+                     #:modules '((guix build utils)
+                                 (gnu build linux-initrd)))))
 
 (define (file-system->spec fs)
   "Return a list corresponding to file-system FS that can be passed to the

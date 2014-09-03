@@ -283,6 +283,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/build/file-systems.scm			\
   gnu/build/install.scm				\
   gnu/build/linux-boot.scm			\
+  gnu/build/linux-initrd.scm			\
   gnu/build/vm.scm
 
 
