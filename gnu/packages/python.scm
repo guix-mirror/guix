@@ -968,3 +968,30 @@ technique that encourages collaboration between developers, QA and
 non-technical or business participants in a software project.  Behave uses
 tests written in a natural language style, backed up by Python code.")
     (license x11)))
+
+(define-public python-exif-read
+  (package
+    (name "python-exif-read")
+    (version "1.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://pypi.python.org/packages/source/E/ExifRead/ExifRead-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "17c627gcdmyc05hz4zk8qs4pjgw6rc68qzjzgz8gh1cmpsd7acf1"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments `(#:tests? #f)) ; no tests
+    (home-page "https://github.com/ianare/exif-py")
+    (synopsis "Python library to extract EXIF data from image files")
+    (description
+     "ExifRead is a Python library to extract EXIF data from tiff and jpeg
+files.")
+    (license bsd-3)))
+
+(define-public python2-exif-read
+  (package-with-python2 python-exif-read))
