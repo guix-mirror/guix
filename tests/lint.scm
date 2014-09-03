@@ -39,10 +39,10 @@
            (home-page #f) (license #f) ))
 
 (define (call-with-warnings thunk)
-       (let ((port (open-output-string)))
-         (parameterize ((guix-warning-port port))
-           (thunk))
-         (get-output-string port)))
+  (let ((port (open-output-string)))
+    (parameterize ((guix-warning-port port))
+      (thunk))
+    (get-output-string port)))
 
 (test-assert "synopsis: ends with a period"
   (->bool

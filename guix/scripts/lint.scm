@@ -81,10 +81,10 @@ Run a set of checkers on the specified package; if none is specified, run the ch
   ;; provided MESSAGE.
   (let ((loc (or (package-field-location package field)
                  (package-location package))))
-    (warning (_ "~a: ~a: ~a~%")
-             (location->string loc)
-             (package-full-name package)
-             message)))
+    (format (guix-warning-port) (_ "~a: ~a: ~a~%")
+            (location->string loc)
+            (package-full-name package)
+            message)))
 
 
 ;;;
