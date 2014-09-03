@@ -364,6 +364,7 @@ etc."
   (define %modules
     '((gnu build activation)
       (gnu build linux-boot)
+      (gnu build file-systems)
       (guix build utils)))
 
   (define (service-activations services)

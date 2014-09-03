@@ -293,7 +293,8 @@ exception and backtrace!)."
                     #:volatile-root? '#$volatile-root?))
    #:name "base-initrd"
    #:modules '((guix build utils)
-               (gnu build linux-boot))
+               (gnu build linux-boot)
+               (gnu build file-systems))
    #:to-copy helper-packages
    #:linux linux-libre
    #:linux-modules linux-modules))

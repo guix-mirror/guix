@@ -280,6 +280,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/system/vm.scm				\
 						\
   gnu/build/activation.scm			\
+  gnu/build/file-systems.scm			\
   gnu/build/install.scm				\
   gnu/build/linux-boot.scm			\
   gnu/build/vm.scm
