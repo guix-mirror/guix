@@ -1074,3 +1074,28 @@ is used by the Requests library to verify HTTPS requests.")
      "Requests is a Python HTTP client library.  It aims to be easier to use
 than Python’s urllib2 library.")
     (license asl2.0)))
+
+(define-public python-jsonschema
+  (package
+    (name "python-jsonschema")
+    (version "2.4.0")
+    (source (origin
+             (method url-fetch)
+             (uri
+              (string-append
+               "https://pypi.python.org/packages/source/j/jsonschema/jsonschema-"
+               version ".tar.gz"))
+             (sha256
+              (base32
+               "1yik3031ziygvq66rj3mzfqdgxj29sg1bkfc46wsgi7lnbqs560j"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/Julian/jsonschema")
+    (synopsis "Implementation of JSON Schema for Python")
+    (description
+     "Jsonschema is an implementation of JSON Schema for Python.")
+    (license expat)))
+
+(define-public python2-jsonschema
+  (package-with-python2 python-jsonschema))
