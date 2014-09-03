@@ -1021,3 +1021,30 @@ files.")
 
 (define-public python2-pyld
   (package-with-python2 python-pyld))
+
+(define-public python-certifi
+  (package
+    (name "python-certifi")
+    (version "14.05.14")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://pypi.python.org/packages/source/c/certifi/certifi-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "0s8vxzfz6s4m6fvxc7z25k9j35w0rh6jkw3wwcd1az1mssncn6qy"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments `(#:tests? #f)) ; no tests
+    (home-page "http://python-requests.org/")
+    (synopsis "Python CA certificate bundle")
+    (description
+     "Certifi is a Python library that contains a CA certificate bundle, which
+is used by the Requests library to verify HTTPS requests.")
+    (license asl2.0)))
+
+(define-public python2-certifi
+  (package-with-python2 python-certifi))
