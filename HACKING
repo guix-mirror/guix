@@ -89,6 +89,13 @@ in the form of patches as produced by ‘git format-patch’ sent to
 guix-devel@gnu.org.  Please write commit logs in the [[http://www.gnu.org/prep/standards/html_node/Change-Logs.html#Change-Logs][GNU ChangeLog
 format]]; you can check the commit history for examples.
 
+Before submitting a patch that adds or modifies a package definition, please
+run ‘guix lint PACKAGE’, where PACKAGE is the name of the new or modified
+package, and fix any errors it reports.  In addition, please make sure the
+package builds on your platform, using ‘guix build’.  You may also want to
+check that dependent package (if applicable) are not affected by the change;
+‘guix refresh --list-dependent PACKAGE’ will help you do that.
+
 When posting a patch to the mailing list, use "[PATCH] ..." as a subject.  You
 may use your email client or the ‘git send-mail’ command.
 
