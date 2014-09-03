@@ -1048,3 +1048,29 @@ is used by the Requests library to verify HTTPS requests.")
 
 (define-public python2-certifi
   (package-with-python2 python-certifi))
+
+(define-public python2-requests
+  (package
+    (name "python2-requests")
+    (version "2.4.0")
+    (source (origin
+             (method url-fetch)
+             (uri
+              (string-append
+               "https://pypi.python.org/packages/source/r/requests/requests-"
+               version ".tar.gz"))
+             (sha256
+              (base32
+               "0gknlfx1wakrrm1zi8gi03x2lzj4dsns0vjw0nsmgqvkphyf01vh"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-certifi" ,python-certifi)))
+    (arguments `(#:tests? #f ; no tests
+                 #:python ,python-2))
+    (home-page "http://python-requests.org/")
+    (synopsis "Python HTTP library")
+    (description
+     "Requests is a Python HTTP client library.  It aims to be easier to use
+than Python’s urllib2 library.")
+    (license asl2.0)))
