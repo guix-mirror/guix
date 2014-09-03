@@ -45,4 +45,4 @@
     (description
      "Perform basic numeric, textual and statistical operations on plain text
 files.  Designed to work within standard pipelines without additional code.")
-    (license gpl3)))
+    (license gpl3+)))
