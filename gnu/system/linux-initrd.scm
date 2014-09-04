@@ -68,12 +68,10 @@ initrd."
   ;; General Linux overview in `Documentation/early-userspace/README' and
   ;; `Documentation/filesystems/ramfs-rootfs-initramfs.txt'.
 
-  (define (string->regexp str)
-    ;; Return a regexp that matches STR exactly.
-    (string-append "^" (regexp-quote str) "$"))
-
-  (mlet* %store-monad ((source   (imported-modules modules))
-                       (compiled (compiled-modules modules)))
+  (mlet %store-monad ((source     (imported-modules modules))
+                      (compiled   (compiled-modules modules))
+                      (module-dir (flat-linux-module-directory linux
+                                                               linux-modules)))
     (define builder
       ;; TODO: Move most of this code to (gnu build linux-initrd).
       #~(begin
@@ -126,23 +124,8 @@ initrd."
                             #:output-file (string-append go-dir "/init.go"))
 
               ;; Copy Linux modules.
-              (let* ((linux      #$linux)
-                     (module-dir (and linux
-                                      (string-append linux "/lib/modules"))))
-                (mkdir "modules")
-                #$@(map (lambda (module)
-                          #~(match (find-files module-dir
-                                               #$(string->regexp module))
-                              ((file)
-                               (format #t "copying '~a'...~%" file)
-                               (copy-file file (string-append "modules/"
-                                                              #$module)))
-                              (()
-                               (error "module not found" #$module module-dir))
-                              ((_ ...)
-                               (error "several modules by that name"
-                                      #$module module-dir))))
-                        linux-modules))
+              (mkdir "modules")
+              (copy-recursively #$module-dir "modules")
 
               (let ((store   #$(string-append "." (%store-prefix)))
                     (to-copy '#$to-copy))
@@ -168,6 +151,37 @@ initrd."
    (gexp->derivation name builder
                      #:modules '((guix build utils)
                                  (gnu build linux-initrd)))))
+
+(define (flat-linux-module-directory linux modules)
+  "Return a flat directory containing the Linux kernel modules listed in
+MODULES and taken from LINUX."
+  (define build-exp
+    #~(begin
+        (use-modules (ice-9 match) (ice-9 regex)
+                     (guix build utils))
+
+        (define (string->regexp str)
+          ;; Return a regexp that matches STR exactly.
+          (string-append "^" (regexp-quote str) "$"))
+
+        (define module-dir
+          (string-append #$linux "/lib/modules"))
+
+        (mkdir #$output)
+        (for-each (lambda (module)
+                    (match (find-files module-dir (string->regexp module))
+                      ((file)
+                       (format #t "copying '~a'...~%" file)
+                       (copy-file file (string-append #$output "/" module)))
+                      (()
+                       (error "module not found" module module-dir))
+                      ((_ ...)
+                       (error "several modules by that name"
+                              module module-dir))))
+                  '#$modules)))
+
+  (gexp->derivation "linux-modules" build-exp
+                    #:modules '((guix build utils))))
 
 (define (file-system->spec fs)
   "Return a list corresponding to file-system FS that can be passed to the
