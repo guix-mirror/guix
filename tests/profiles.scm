@@ -167,7 +167,7 @@
                              (with-error-to-string
                               (lambda ()
                                 (manifest-show-transaction store m t)))))
-             (string-match "guile\t1.8.8 > 2.0.9"
+             (string-match "guile\t1.8.8 -> 2.0.9"
                            (with-fluids ((%default-port-encoding "ISO-8859-1"))
                              (with-error-to-string
                               (lambda ()

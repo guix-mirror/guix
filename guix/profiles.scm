@@ -326,7 +326,7 @@ replacement if PORT is not Unicode-capable."
               (lambda ()
                 (display arrow)))))
         (lambda (key . args)
-          ">")))))
+          "->")))))
 
 (define* (manifest-show-transaction store manifest transaction
                                     #:key dry-run?)
