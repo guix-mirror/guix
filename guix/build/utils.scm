@@ -582,7 +582,7 @@ When KEEP-MTIME? is true, the atime/mtime of FILE are kept unchanged."
 
   (let ((st (stat file)))
    (substitute* file
-     (("^ *SHELL[[:blank:]]*=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)[[:blank:]]*(.*)$"
+     (("^ *SHELL[[:blank:]]*=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)(.*)$"
        _ dir shell args)
       (let* ((old (string-append dir shell))
              (new (or (find-shell shell) old)))
@@ -590,7 +590,7 @@ When KEEP-MTIME? is true, the atime/mtime of FILE are kept unchanged."
           (format (current-error-port)
                   "patch-makefile-SHELL: ~a: changing `SHELL' from `~a' to `~a'~%"
                   file old new))
-        (string-append "SHELL = " new " " args))))
+        (string-append "SHELL = " new args))))
 
    (when keep-mtime?
      (set-file-time file st))))
