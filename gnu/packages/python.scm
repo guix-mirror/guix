@@ -1099,3 +1099,32 @@ than Python’s urllib2 library.")
 
 (define-public python2-jsonschema
   (package-with-python2 python-jsonschema))
+
+(define-public python-unidecode
+  (package
+    (name "python-unidecode")
+    (version "0.04.16")
+    (source (origin
+             (method url-fetch)
+             (uri
+              (string-append
+               "https://pypi.python.org/packages/source/U/Unidecode/Unidecode-"
+               version ".tar.gz"))
+             (sha256
+              (base32
+               "0yv56vc49rvippyxgxvcyz7jklc07ky38rcspax7p00sgmriiljc"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://pypi.python.org/pypi/Unidecode")
+    (synopsis "ASCII transliterations of Unicode text")
+    (description
+     "Unidecode provides ASCII transliterations of Unicode text.  Unidecode is
+useful when integrating with legacy code that doesn't support Unicode, or for
+ease of entry of non-Roman names on a US keyboard, or when constructing ASCII
+machine identifiers from human-readable Unicode strings that should still be
+somewhat intelligeble.")
+    (license gpl2+)))
+
+(define-public python2-unidecode
+  (package-with-python2 python-unidecode))
