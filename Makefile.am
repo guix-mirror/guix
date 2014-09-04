@@ -64,6 +64,7 @@ MODULES =					\
   guix/build/gnu-dist.scm			\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
+  guix/build/store-copy.scm			\
   guix/build/utils.scm				\
   guix/build/union.scm				\
   guix/build/pull.scm				\

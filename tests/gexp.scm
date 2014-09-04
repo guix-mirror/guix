@@ -324,6 +324,44 @@
     (return (string=? (derivation-file-name drv)
                       (derivation-file-name xdrv)))))
 
+(test-assertm "gexp->derivation, store copy"
+  (let ((build-one #~(call-with-output-file #$output
+                       (lambda (port)
+                         (display "This is the one." port))))
+        (build-two (lambda (one)
+                     #~(begin
+                         (mkdir #$output)
+                         (symlink #$one (string-append #$output "/one"))
+                         (call-with-output-file (string-append #$output "/two")
+                           (lambda (port)
+                             (display "This is the second one." port))))))
+        (build-drv (lambda (two)
+                     #~(begin
+                         (use-modules (guix build store-copy))
+
+                         (mkdir #$output)
+                         '#$two                   ;make it an input
+                         (populate-store '("graph") #$output)))))
+    (mlet* %store-monad ((one (gexp->derivation "one" build-one))
+                         (two (gexp->derivation "two" (build-two one)))
+                         (dir -> (derivation->output-path two))
+                         (drv (gexp->derivation "store-copy" (build-drv two)
+                                                #:references-graphs
+                                                `(("graph" . ,dir))
+                                                #:modules
+                                                '((guix build store-copy)
+                                                  (guix build utils))))
+                         (ok? (built-derivations (list drv)))
+                         (out -> (derivation->output-path drv)))
+      (let ((one (derivation->output-path one))
+            (two (derivation->output-path two)))
+        (return (and ok?
+                     (file-exists? (string-append out "/" one))
+                     (file-exists? (string-append out "/" two))
+                     (file-exists? (string-append out "/" two "/two"))
+                     (string=? (readlink (string-append out "/" two "/one"))
+                               one)))))))
+
 (define shebang
   (string-append "#!" (derivation->output-path (%guile-for-build))
                  "/bin/guile --no-auto-compile"))
