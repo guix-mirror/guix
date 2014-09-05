@@ -1154,6 +1154,36 @@ subprocess and see the output as well as any file modifications.")
 (define-public python2-scripttest
   (package-with-python2 python-scripttest))
 
+(define-public python-testtools
+  (package
+    (name "python-testtools")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/t/testtools/testtools-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1dyml28ykpl5jb9khdmcdvhy1cxqingys6qvj2k04fzlaj6z3bbx"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-mimeparse" ,python-mimeparse)
+       ("python-extras" ,python-extras)))
+    (home-page "https://github.com/testing-cabal/testtools")
+    (synopsis
+     "Extensions to the Python standard library unit testing framework")
+    (description
+     "Testtools extends the Python standard library unit testing framework to
+provide matchers, more debugging information, and cross-Python
+compatibility.")
+    (license psfl)))
+
+(define-public python2-testtools
+  (package-with-python2 python-testtools))
+
 (define-public behave
   (package
     (name "behave")
