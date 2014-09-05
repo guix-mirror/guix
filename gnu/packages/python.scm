@@ -1696,3 +1696,29 @@ environments and back.")
 
 (define-public python2-virtualenv
   (package-with-python2 python-virtualenv))
+
+(define-public python-markupsafe
+  (package
+    (name "python-markupsafe")
+    (version "0.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/M/MarkupSafe/MarkupSafe-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1hvip33wva3fnmvfp9x5klqri7hpl1hkgqmjbss18nmrb7zimv54"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/mitsuhiko/markupsafe")
+    (synopsis "XML/HTML/XHTML markup safe string implementation for Python")
+    (description
+     "Markupsafe provides an XML/HTML/XHTML markup safe string implementation
+for Python.")
+    (license bsd-3)))
+
+(define-public python2-markupsafe
+  (package-with-python2 python-markupsafe))
