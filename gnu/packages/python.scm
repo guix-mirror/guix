@@ -22,8 +22,8 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-3 bsd-style cc0 expat x11 x11-style
-                          gpl2 gpl2+ lgpl2.0+ lgpl2.1+
+                #:select (asl2.0 bsd-3 bsd-2 bsd-style cc0 expat x11 x11-style
+                          gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1+
                           psfl public-domain))
   #:use-module ((guix licenses) #:select (zlib)
                                 #:renamer (symbol-prefix-proc 'license:))
@@ -1749,3 +1749,34 @@ written in pure Python.")
 
 (define-public python2-jinja2
   (package-with-python2 python-jinja2))
+
+(define-public python-docutils
+  (package
+    (name "python-docutils")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/d/docutils/docutils-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1ylnjnw1x4b2y7blr6x35ncdzn69k253kw4cdkv6asdb21w73ny7"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     '(#:tests? #f)) ; no setup.py test command
+    (home-page "http://docutils.sourceforge.net/")
+    (synopsis "Python Documentation Utilities")
+    (description
+     "Docutils is a modular system for processing documentation into useful
+formats, such as HTML, XML, and LaTeX.  For input Docutils supports
+reStructuredText.")
+    ;; Most of the source code is public domain, but some source files are
+    ;; licensed under the PFSL, BSD 2-clause, and GPLv3+ licenses.
+    (license (list public-domain psfl bsd-2 gpl3+))))
+
+(define-public python2-docutils
+  (package-with-python2 python-docutils))
