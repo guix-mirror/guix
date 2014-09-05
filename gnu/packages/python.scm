@@ -1805,3 +1805,32 @@ reStructuredText.")
 
 (define-public python2-pygments
   (package-with-python2 python-pygments))
+
+(define-public python-sphinx
+  (package
+    (name "python-sphinx")
+    (version "1.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/S/Sphinx/Sphinx-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "011xizm3jnmf4cvs5i6kgf6c5nn046h79i8j0vd0f27yw9j3p4wl"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-jinja2" ,python-jinja2)
+       ("python-docutils" ,python-docutils)
+       ("python-pygments" ,python-pygments)))
+    (home-page "http://sphinx-doc.org/")
+    (synopsis "Python documentation generator")
+    (description "Sphinx is a tool that makes it easy to create documentation
+for Python projects or other documents consisting of multiple reStructuredText
+sources.")
+    (license bsd-3)))
+
+(define-public python2-sphinx
+  (package-with-python2 python-sphinx))
