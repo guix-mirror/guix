@@ -1127,6 +1127,33 @@ and many external plugins.")
 (define-public python2-pytest
   (package-with-python2 python-pytest))
 
+(define-public python-scripttest
+  (package
+    (name "python-scripttest")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/scripttest/scripttest-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0f4w84k8ck82syys7yg9maz93mqzc8p5ymis941x034v44jzq74m"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-pytest" ,python-pytest)))
+    (home-page "http://pythonpaste.org/scripttest/")
+    (synopsis "Python library to test command-line scripts")
+    (description "Scripttest is a Python helper library for testing
+interactive command-line applications.  With it you can run a script in a
+subprocess and see the output as well as any file modifications.")
+    (license expat)))
+
+(define-public python2-scripttest
+  (package-with-python2 python-scripttest))
+
 (define-public behave
   (package
     (name "behave")
