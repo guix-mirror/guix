@@ -1722,3 +1722,30 @@ for Python.")
 
 (define-public python2-markupsafe
   (package-with-python2 python-markupsafe))
+
+(define-public python-jinja2
+  (package
+    (name "python-jinja2")
+    (version "2.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/J/Jinja2/Jinja2-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1nwg9yfqgy421lncnm63k1zf9xkd1klc0jm0fr4p3dad01fsq91f"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-markupsafe" ,python-markupsafe)))
+    (home-page "http://jinja.pocoo.org/")
+    (synopsis "Python template engine")
+    (description
+     "Jinja2 is a small but fast and easy to use stand-alone template engine
+written in pure Python.")
+    (license bsd-3)))
+
+(define-public python2-jinja2
+  (package-with-python2 python-jinja2))
