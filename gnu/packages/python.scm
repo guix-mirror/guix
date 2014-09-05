@@ -939,6 +939,34 @@ In short, SCons is an easier, more reliable and faster way to build
 software.")
     (license x11)))
 
+(define-public python-extras
+  (package
+    (name "python-extras")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/e/extras/extras-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1h7zx4dfyclalg0fqnfjijpn0f793a9mx8sy3b27gd31nr6dhq3s"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     ;; error in setup.cfg: command 'test' has no such option 'buffer'
+     '(#:tests? #f))
+    (home-page "https://github.com/testing-cabal/extras")
+    (synopsis "Useful extensions to the Python standard library")
+    (description
+     "Extras is a set of extensions to the Python standard library.")
+    (license expat)))
+
+(define-public python2-extras
+  (package-with-python2 python-extras))
+
 (define-public python-mimeparse
   (package
     (name "python-mimeparse")
