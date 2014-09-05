@@ -1065,6 +1065,32 @@ standard library.")
      `(#:python ,python-2
        #:tests? #f)))) ; no setup.py test command
 
+(define-public python-py
+  (package
+    (name "python-py")
+    (version "1.4.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/py/py-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1jkhffpai419v5rickm2vz86p9bkg3b3kcm2k4bi5wfajhw2m3xs"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pylib.readthedocs.org/")
+    (synopsis "Python library for parsing, I/O, instrospection, and logging")
+    (description
+     "Py is a Python library for file name parsing, .ini file parsing, I/O,
+code introspection, and logging.")
+    (license expat)))
+
+(define-public python2-py
+  (package-with-python2 python-py))
+
 (define-public behave
   (package
     (name "behave")
