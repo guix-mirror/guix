@@ -56,6 +56,9 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages zip)
+  #:use-module (gnu packages xiph)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages lua)
   #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
@@ -657,5 +660,76 @@ for common mesh file formats, and collision detection.")
     (synopsis "Main game data for the Minetest game engine")
     (description
      "Game data for the Minetest infinite-world block sandox game.")
+    (home-page "http://minetest.net")
+    (license license:lgpl2.1+)))
+
+(define-public minetest
+  (package
+    (name "minetest")
+    (version "0.4.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/minetest/minetest/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1xxv0g83iqszjgwnbdcbsprqg76cb6jnbsh5qhm7lcwx4wy2y2k2"))
+              ;; This patch will be included in future upstream releases.
+              ;; See: https://github.com/minetest/minetest/commit/fd5eaae2babb322f8a3e2acab55a12e218814c8e
+              (patches (list (search-patch "minetest-subgame-env-var.patch")))))
+    (build-system cmake-build-system)
+    (arguments
+     '(#:modules ((guix build utils)
+                  (guix build cmake-build-system)
+                  (ice-9 match))
+       #:phases (alist-cons-before
+                 'configure 'set-cpath
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (use-modules (ice-9 match))
+                   ;; Adjust the CPATH so that cmake can find irrlicht,
+                   ;; openal, and curl headers.
+                   (set-path-environment-variable "CPATH"
+                                                  '("include/AL"
+                                                    "include/irrlicht"
+                                                    "include/curl"
+                                                    "include")
+                                                  (map (match-lambda
+                                                        ((_ . dir) dir))
+                                                       inputs)))
+                 %standard-phases)
+       #:configure-flags '("-DRUN_IN_PLACE=0"
+                           "-DENABLE_FREETYPE=1"
+                           "-DENABLE_GETTEXT=1")
+       #:tests? #f)) ; no check target
+    (native-search-paths
+     (list (search-path-specification
+            (variable "MINETEST_SUBGAME_PATH")
+            (directories '("share/minetest/games")))))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
+    (inputs
+     `(("irrlicht" ,irrlicht)
+       ("libpng" ,libpng)
+       ("libjpeg-8" ,libjpeg-8)
+       ("libxxf86vm" ,libxxf86vm)
+       ("mesa" ,mesa)
+       ("libogg" ,libogg)
+       ("libvorbis" ,libvorbis)
+       ("openal" ,openal)
+       ("freetype" ,(@ (gnu packages fontutils) freetype))
+       ("curl" ,curl)
+       ("luajit" ,luajit)
+       ("gettext" ,gnu-gettext)
+       ("sqlite" ,sqlite)))
+    (propagated-inputs
+     `(("minetest-data" ,minetest-data)))
+    (synopsis "Infinite-world block sandbox game")
+    (description
+     "Minetest is a sandbox construction game.  Players can create and destroy
+various types of blocks in a three-dimensional open world.  This allows
+forming structures in every possible creation, on multiplayer servers or as a
+single player.  Mods and texture packs allow players to personalize the game
+in different ways.")
     (home-page "http://minetest.net")
     (license license:lgpl2.1+)))
