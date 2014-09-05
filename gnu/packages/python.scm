@@ -1091,6 +1091,42 @@ code introspection, and logging.")
 (define-public python2-py
   (package-with-python2 python-py))
 
+(define-public python-pytest
+  (package
+    (name "python-pytest")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/pytest/pytest-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0g2w4p0n42wvz8rq4k6gnzpkakgz3g8sfanxk8jrsra9675snkcr"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; One of the tests involves the /usr directory, so it fails.
+        '(substitute* "testing/test_argcomplete.py"
+           (("def test_remove_dir_prefix\\(self\\):")
+            "@pytest.mark.xfail\n    def test_remove_dir_prefix(self):")))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-py" ,python-py)
+       ("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)))
+    (home-page "http://pytest.org")
+    (synopsis "Python testing library")
+    (description
+     "Pytest is a testing tool that provides auto-discovery of test modules
+and functions, detailed info on failing assert statements, modular fixtures,
+and many external plugins.")
+    (license expat)))
+
+(define-public python2-pytest
+  (package-with-python2 python-pytest))
+
 (define-public behave
   (package
     (name "behave")
