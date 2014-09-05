@@ -1268,6 +1268,34 @@ protocol.")
 (define-public python2-subunit
   (package-with-python2 python-subunit))
 
+(define-public python-fixtures
+  (package
+    (name "python-fixtures")
+    (version "0.3.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/f/fixtures/fixtures-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0x9r2gwilcig5g54k60bxzg96zabizq1855lrprlb4zckalp9asc"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     '(#:tests? #f)) ; no setup.py test command
+    (home-page "https://launchpad.net/python-fixtures")
+    (synopsis "Python test fixture library")
+    (description
+     "Fixtures provides a way to create reusable state, useful when writing
+Python tests.")
+    (license (list bsd-3 asl2.0)))) ; at user's option
+
+(define-public python2-fixtures
+  (package-with-python2 python-fixtures))
+
 (define-public behave
   (package
     (name "behave")
