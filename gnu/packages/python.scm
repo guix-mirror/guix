@@ -939,6 +939,35 @@ In short, SCons is an easier, more reliable and faster way to build
 software.")
     (license x11)))
 
+(define-public python-mimeparse
+  (package
+    (name "python-mimeparse")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/python-mimeparse/python-mimeparse-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1hyxg09kaj02ri0rmwjqi86wk4nd1akvv7n0dx77azz76wga4s9w"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     '(#:tests? #f)) ; no setup.py test command
+    (home-page
+     "https://github.com/dbtsai/python-mimeparse")
+    (synopsis "Python library for parsing MIME types.")
+    (description
+     "Mimeparse provides basic functions for parsing MIME type names and
+matching them against a list of media-ranges.")
+    (license expat)))
+
+(define-public python2-mimeparse
+  (package-with-python2 python-mimeparse))
+
 (define-public behave
   (package
     (name "behave")
