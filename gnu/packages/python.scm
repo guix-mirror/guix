@@ -1023,6 +1023,48 @@ matching them against a list of media-ranges.")
 (define-public python2-nose
   (package-with-python2 python-nose))
 
+(define-public python-unittest2
+  (package
+    (name "python-unittest2")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/u/unittest2py3k/unittest2py3k-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "00yl6lskygcrddx5zspkhr0ibgvpknl4678kkm6s626539grq93q"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pypi.python.org/pypi/unittest2")
+    (synopsis "Python unit testing library")
+    (description
+     "Unittest2 is a replacement for the unittest module in the Python
+standard library.")
+    (license psfl)))
+
+(define-public python2-unittest2
+  (package (inherit python-unittest2)
+    (name "python2-unittest2")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/u/unittest2/unittest2-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0wbs4i4x3x7klr3v35ss6p9mcqz883i1xgcpkhvl7n2lyv6yhpda"))))
+    (inputs
+     `(("python2-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f)))) ; no setup.py test command
+
 (define-public behave
   (package
     (name "behave")
