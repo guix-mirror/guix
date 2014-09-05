@@ -1184,6 +1184,34 @@ compatibility.")
 (define-public python2-testtools
   (package-with-python2 python-testtools))
 
+(define-public python-testscenarios
+  (package
+    (name "python-testscenarios")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/t/testscenarios/testscenarios-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1671jvrvqlmbnc42j7pc5y6vc37q44aiwrq0zic652pxyy2fxvjg"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-testtools" ,python-testtools)
+       ("python-mimeparse" ,python-mimeparse)))
+    (home-page "https://launchpad.net/testscenarios")
+    (synopsis "Pyunit extension for dependency injection")
+    (description
+     "Testscenarios provides clean dependency injection for Python unittest
+style tests.")
+    (license (list bsd-3 asl2.0)))) ; at the user's option
+
+(define-public python2-testscenarios
+  (package-with-python2 python-testscenarios))
+
 (define-public behave
   (package
     (name "behave")
