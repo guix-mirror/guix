@@ -1669,3 +1669,30 @@ environments and back.")
 
 (define-public python2-itsdangerous
   (package-with-python2 python-itsdangerous))
+
+(define-public python-virtualenv
+  (package
+    (name "python-virtualenv")
+    (version "1.11.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/v/virtualenv/virtualenv-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1xq4prmg25n9cz5zcvbqx68lmc3kl39by582vd8pzs9f3qalqyiy"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (home-page "https://virtualenv.pypa.io/")
+    (synopsis "Virtual Python environment builder")
+    (description
+     "Virtualenv is a tool to create isolated Python environments.")
+    (license expat)))
+
+(define-public python2-virtualenv
+  (package-with-python2 python-virtualenv))
