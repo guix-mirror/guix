@@ -1239,6 +1239,35 @@ use of resources by test cases.")
 (define-public python2-testresources
   (package-with-python2 python-testresources))
 
+(define-public python-subunit
+  (package
+    (name "python-subunit")
+    (version "0.0.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/python-subunit/python-subunit-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1nkw9wfbvizmpajbj3in8ns07g7lwkiv8hip14jjlwk3cacls6jv"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-testtools" ,python-testtools)
+       ("python-mimeparse" ,python-mimeparse)
+       ("python-testscenarios" ,python-testscenarios)))
+    (home-page "http://launchpad.net/subunit")
+    (synopsis "Python implementation of the subunit protocol")
+    (description
+     "Python-subunit is a Python implementation of the subunit test streaming
+protocol.")
+    (license (list bsd-3 asl2.0)))) ; at the user's option
+
+(define-public python2-subunit
+  (package-with-python2 python-subunit))
+
 (define-public behave
   (package
     (name "behave")
