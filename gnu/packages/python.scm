@@ -1570,3 +1570,31 @@ somewhat intelligeble.")
 
 (define-public python2-unidecode
   (package-with-python2 python-unidecode))
+
+(define-public python-pyjwt
+  (package
+    (name "python-pyjwt")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/P/PyJWT/PyJWT-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1ahqblfy2sj3xz34wsa48cn9rp0dspzq56p54i5znmws3b8gml6g"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     '(#:tests? #f)) ; test suite doesn't work
+    (home-page "http://github.com/progrium/pyjwt")
+    (synopsis "JSON Web Token implementation in Python")
+    (description
+     "PyJWT is a JSON Web Token implementation written in Python.")
+    (license expat)))
+
+(define-public python2-pyjwt
+  (package-with-python2 python-pyjwt))
+
