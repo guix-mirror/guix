@@ -1780,3 +1780,28 @@ reStructuredText.")
 
 (define-public python2-docutils
   (package-with-python2 python-docutils))
+
+(define-public python-pygments
+  (package
+    (name "python-pygments")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/P/Pygments/Pygments-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1h11r6ss8waih51vcksfvzghfxiav2f8svc0812fa5kmyz5d97kr"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pygments.org/")
+    (synopsis "Syntax highlighting")
+    (description
+     "Pygments is a syntax highlighting package written in Python.")
+    (license bsd-2)))
+
+(define-public python2-pygments
+  (package-with-python2 python-pygments))
