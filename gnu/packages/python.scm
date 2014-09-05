@@ -1212,6 +1212,33 @@ style tests.")
 (define-public python2-testscenarios
   (package-with-python2 python-testscenarios))
 
+(define-public python-testresources
+  (package
+    (name "python-testresources")
+    (version "0.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/t/testresources/testresources-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0cbj3plbllyz42c4b5xxgwaa7mml54lakslrn4kkhinxhdri22md"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://launchpad.net/testresources")
+    (synopsis
+     "Pyunit extension for managing test resources")
+    (description
+     "Testresources is an extension to Python's unittest to allow declarative
+use of resources by test cases.")
+    (license (list bsd-3 asl2.0)))) ; at the user's option
+
+(define-public python2-testresources
+  (package-with-python2 python-testresources))
+
 (define-public behave
   (package
     (name "behave")
