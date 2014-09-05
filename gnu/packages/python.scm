@@ -1598,3 +1598,48 @@ somewhat intelligeble.")
 (define-public python2-pyjwt
   (package-with-python2 python-pyjwt))
 
+(define-public python-oauthlib
+  (package
+    (name "python-oauthlib")
+    (version "0.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://pypi.python.org/packages/source/o/oauthlib/oauthlib-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "1yaj3j64la4arwsbhbfmpnickzh3jpg9nlpyg409v8pp24isn48a"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-pyjwt" ,python-pyjwt)
+       ("python-pycrypto" ,python-pycrypto)
+       ("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)))
+    (home-page "https://github.com/idan/oauthlib")
+    (synopsis "OAuth implementation for Python")
+    (description
+     "Oauthlib is a generic, spec-compliant, thorough implementation of the
+OAuth request-signing logic.")
+    (license bsd-3)))
+
+(define-public python2-oauthlib
+  (let ((base (package-with-python2 python-oauthlib)))
+    (package
+      (inherit base)
+      (name "python2-oauthlib")
+      (version "0.6.3")
+      (source (origin
+                (method url-fetch)
+                (uri
+                 (string-append
+                  "https://pypi.python.org/packages/source/o/oauthlib/oauthlib-"
+                  version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1yaj3j64la4arwsbhbfmpnickzh3jpg9nlpyg409v8pp24isn48a"))))
+      (inputs
+       (append (package-inputs base)
+               `(("python2-unittest2" ,python2-unittest2)))))))
