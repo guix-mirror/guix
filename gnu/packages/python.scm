@@ -1296,6 +1296,36 @@ Python tests.")
 (define-public python2-fixtures
   (package-with-python2 python-fixtures))
 
+(define-public python-testrepository
+  (package
+    (name "python-testrepository")
+    (version "0.0.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/t/testrepository/testrepository-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1ssqb07c277010i6gzzkbdd46gd9mrj0bi0i8vn560n2k2y4j93m"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-testtools" ,python-testtools)
+       ("python-subunit" ,python-subunit)
+       ("python-fixtures" ,python-fixtures)
+       ("python-mimeparse" ,python-mimeparse)))
+    (home-page "https://launchpad.net/testrepository")
+    (synopsis "Database for Python test results")
+    (description "Testrepository provides a database of test results which can
+be used as part of a developer's workflow to check things such as what tests
+have failed since the last commit or what tests are currently failing.")
+    (license (list bsd-3 asl2.0)))) ; at user's option
+
+(define-public python2-testrepository
+  (package-with-python2 python-testrepository))
+
 (define-public behave
   (package
     (name "behave")
