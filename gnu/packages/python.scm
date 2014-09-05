@@ -23,7 +23,7 @@
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
                 #:select (asl2.0 bsd-3 bsd-style cc0 expat x11 x11-style
-                          gpl2 gpl2+ lgpl2.1+
+                          gpl2 gpl2+ lgpl2.0+ lgpl2.1+
                           psfl public-domain))
   #:use-module ((guix licenses) #:select (zlib)
                                 #:renamer (symbol-prefix-proc 'license:))
@@ -995,6 +995,33 @@ matching them against a list of media-ranges.")
 
 (define-public python2-mimeparse
   (package-with-python2 python-mimeparse))
+
+(define-public python-nose
+  (package
+    (name "python-nose")
+    (version "1.3.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/n/nose/nose-"
+               version ".tar.gz"))
+        (sha256
+          (base32
+            "00qymfgwg4iam4xi0w9bnv7lcb3fypq1hzfafzgs1rfmwaj67g3n"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     '(#:tests? #f)) ; FIXME: test suite fails
+    (home-page "http://readthedocs.org/docs/nose/")
+    (synopsis "Python testing library")
+    (description
+     "Nose extends the unittest library to make testing easier.")
+    (license lgpl2.0+)))
+
+(define-public python2-nose
+  (package-with-python2 python-nose))
 
 (define-public behave
   (package
