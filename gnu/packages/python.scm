@@ -1643,3 +1643,29 @@ OAuth request-signing logic.")
       (inputs
        (append (package-inputs base)
                `(("python2-unittest2" ,python2-unittest2)))))))
+
+(define-public python-itsdangerous
+  (package
+    (name "python-itsdangerous")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/i/itsdangerous/itsdangerous-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "06856q6x675ly542ig0plbqcyab6ksfzijlyf1hzhgg3sgwgrcyb"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/mitsuhiko/itsdangerous")
+    (synopsis "Python library for passing data to/from untrusted environments")
+    (description
+     "Itsdangerous provides various helpers to pass trusted data to untrusted
+environments and back.")
+    (license bsd-3)))
+
+(define-public python2-itsdangerous
+  (package-with-python2 python-itsdangerous))
