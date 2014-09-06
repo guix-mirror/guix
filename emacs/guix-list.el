@@ -448,6 +448,11 @@ This macro defines the following functions:
           (upgrade . ?U)
           (delete  . ?D)))
 
+(defface guix-package-list-installed
+  '((t :inherit guix-package-info-installed-outputs))
+  "Face used if there are installed outputs for the current package."
+  :group 'guix-package-list)
+
 (defface guix-package-list-obsolete
   '((t :inherit guix-package-info-obsolete))
   "Face used if a package is obsolete."
@@ -478,10 +483,13 @@ likely)."
 
 (defun guix-package-list-get-name (name entry)
   "Return NAME of the package ENTRY.
-Colorize it with `guix-package-list-obsolete' if needed."
+Colorize it with `guix-package-list-installed' or
+`guix-package-list-obsolete' if needed."
   (guix-get-string name
-                   (when (guix-get-key-val entry 'obsolete)
-                     'guix-package-list-obsolete)))
+                   (cond ((guix-get-key-val entry 'obsolete)
+                          'guix-package-list-obsolete)
+                         ((guix-get-key-val entry 'installed)
+                          'guix-package-list-installed))))
 
 (defun guix-package-list-get-installed-outputs (installed &optional _)
   "Return string with outputs from INSTALLED entries."
