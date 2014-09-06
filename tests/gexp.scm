@@ -335,19 +335,16 @@
                          (call-with-output-file (string-append #$output "/two")
                            (lambda (port)
                              (display "This is the second one." port))))))
-        (build-drv (lambda (two)
-                     #~(begin
-                         (use-modules (guix build store-copy))
+        (build-drv #~(begin
+                       (use-modules (guix build store-copy))
 
-                         (mkdir #$output)
-                         '#$two                   ;make it an input
-                         (populate-store '("graph") #$output)))))
+                       (mkdir #$output)
+                       (populate-store '("graph") #$output))))
     (mlet* %store-monad ((one (gexp->derivation "one" build-one))
                          (two (gexp->derivation "two" (build-two one)))
-                         (dir -> (derivation->output-path two))
-                         (drv (gexp->derivation "store-copy" (build-drv two)
+                         (drv (gexp->derivation "store-copy" build-drv
                                                 #:references-graphs
-                                                `(("graph" . ,dir))
+                                                `(("graph" ,two))
                                                 #:modules
                                                 '((guix build store-copy)
                                                   (guix build utils))))
@@ -361,6 +358,43 @@
                      (file-exists? (string-append out "/" two "/two"))
                      (string=? (readlink (string-append out "/" two "/one"))
                                one)))))))
+
+(test-assertm "gexp->derivation #:references-graphs"
+  (mlet* %store-monad
+      ((one (text-file "one" "hello, world"))
+       (two (gexp->derivation "two"
+                              #~(symlink #$one #$output:chbouib)))
+       (drv (gexp->derivation "ref-graphs"
+                              #~(begin
+                                  (use-modules (guix build store-copy))
+                                  (with-output-to-file #$output
+                                    (lambda ()
+                                      (write (call-with-input-file "guile"
+                                               read-reference-graph))))
+                                  (with-output-to-file #$output:one
+                                    (lambda ()
+                                      (write (call-with-input-file "one"
+                                               read-reference-graph))))
+                                  (with-output-to-file #$output:two
+                                    (lambda ()
+                                      (write (call-with-input-file "two"
+                                               read-reference-graph)))))
+                              #:references-graphs `(("one" ,one)
+                                                    ("two" ,two "chbouib")
+                                                    ("guile" ,%bootstrap-guile))
+                              #:modules '((guix build store-copy)
+                                          (guix build utils))))
+       (ok? (built-derivations (list drv)))
+       (guile-drv  (package->derivation %bootstrap-guile))
+       (g-one   -> (derivation->output-path drv "one"))
+       (g-two   -> (derivation->output-path drv "two"))
+       (g-guile -> (derivation->output-path drv)))
+    (return (and ok?
+                 (equal? (call-with-input-file g-one read) (list one))
+                 (equal? (call-with-input-file g-two read)
+                         (list one (derivation->output-path two "chbouib")))
+                 (equal? (call-with-input-file g-guile read)
+                         (list (derivation->output-path guile-drv)))))))
 
 (define shebang
   (string-append "#!" (derivation->output-path (%guile-for-build))

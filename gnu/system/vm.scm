@@ -219,48 +219,46 @@ INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
 all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
 register INPUTS in the store database of the image so that Guix can be used in
 the image."
-  (mlet %store-monad
-      ((graph (sequence %store-monad (map input->name+output inputs))))
-   (expression->derivation-in-linux-vm
-    name
-    #~(begin
-        (use-modules (gnu build vm)
-                     (guix build utils))
+  (expression->derivation-in-linux-vm
+   name
+   #~(begin
+       (use-modules (gnu build vm)
+                    (guix build utils))
 
-        (let ((inputs
-               '#$(append (list qemu parted grub e2fsprogs util-linux)
-                          (map canonical-package
-                               (list sed grep coreutils findutils gawk))
-                          (if register-closures? (list guix) '())))
+       (let ((inputs
+              '#$(append (list qemu parted grub e2fsprogs util-linux)
+                         (map canonical-package
+                              (list sed grep coreutils findutils gawk))
+                         (if register-closures? (list guix) '())))
 
-              ;; This variable is unused but allows us to add INPUTS-TO-COPY
-              ;; as inputs.
-              (to-register
-                '#$(map (match-lambda
-                         ((name thing) thing)
-                         ((name thing output) `(,thing ,output)))
-                        inputs)))
+             ;; This variable is unused but allows us to add INPUTS-TO-COPY
+             ;; as inputs.
+             (to-register
+              '#$(map (match-lambda
+                       ((name thing) thing)
+                       ((name thing output) `(,thing ,output)))
+                      inputs)))
 
-          (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+         (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
 
-          (let ((graphs '#$(match inputs
-                             (((names . _) ...)
-                              names))))
-            (initialize-hard-disk "/dev/vda"
-                                  #:system-directory #$os-derivation
-                                  #:grub.cfg #$grub-configuration
-                                  #:closures graphs
-                                  #:copy-closures? #$copy-inputs?
-                                  #:register-closures? #$register-closures?
-                                  #:disk-image-size #$disk-image-size
-                                  #:file-system-type #$file-system-type
-                                  #:file-system-label #$file-system-label)
-            (reboot))))
-    #:system system
-    #:make-disk-image? #t
-    #:disk-image-size disk-image-size
-    #:disk-image-format disk-image-format
-    #:references-graphs graph)))
+         (let ((graphs '#$(match inputs
+                            (((names . _) ...)
+                             names))))
+           (initialize-hard-disk "/dev/vda"
+                                 #:system-directory #$os-derivation
+                                 #:grub.cfg #$grub-configuration
+                                 #:closures graphs
+                                 #:copy-closures? #$copy-inputs?
+                                 #:register-closures? #$register-closures?
+                                 #:disk-image-size #$disk-image-size
+                                 #:file-system-type #$file-system-type
+                                 #:file-system-label #$file-system-label)
+           (reboot))))
+   #:system system
+   #:make-disk-image? #t
+   #:disk-image-size disk-image-size
+   #:disk-image-format disk-image-format
+   #:references-graphs inputs))
 
 
 ;;;

@@ -2278,6 +2278,22 @@ search path to be copied in the store, compiled, and made available in
 the load path during the execution of @var{exp}---e.g., @code{((guix
 build utils) (guix build gnu-build-system))}.
 
+When @var{references-graphs} is true, it must be a list of tuples of one of the
+following forms:
+
+@example
+(@var{file-name} @var{package})
+(@var{file-name} @var{package} @var{output})
+(@var{file-name} @var{derivation})
+(@var{file-name} @var{derivation} @var{output})
+(@var{file-name} @var{store-item})
+@end example
+
+The right-hand-side of each element of @var{references-graphs} is automatically made
+an input of the build process of @var{exp}.  In the build environment, each
+@var{file-name} contains the reference graph of the corresponding item, in a simple
+text format.
+
 The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn
 

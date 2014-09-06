@@ -109,6 +109,17 @@ the cross-compilation target triplet."
                      (return input)))
                    inputs))))
 
+(define* (lower-reference-graphs graphs #:key system target)
+  "Given GRAPHS, a list of (FILE-NAME INPUT ...) lists for use as a
+#:reference-graphs argument, lower it such that each INPUT is replaced by the
+corresponding derivation."
+  (match graphs
+    (((file-names . inputs) ...)
+     (mlet %store-monad ((inputs (lower-inputs inputs
+                                               #:system system
+                                               #:target target)))
+       (return (map cons file-names inputs))))))
+
 (define* (gexp->derivation name exp
                            #:key
                            system (target 'current)
@@ -127,9 +138,37 @@ names of Guile modules from the current search path to be copied in the store,
 compiled, and made available in the load path during the execution of
 EXP---e.g., '((guix build utils) (guix build gnu-build-system)).
 
+When REFERENCES-GRAPHS is true, it must be a list of tuples of one of the
+following forms:
+
+  (FILE-NAME PACKAGE)
+  (FILE-NAME PACKAGE OUTPUT)
+  (FILE-NAME DERIVATION)
+  (FILE-NAME DERIVATION OUTPUT)
+  (FILE-NAME STORE-ITEM)
+
+The right-hand-side of each element of REFERENCES-GRAPHS is automatically made
+an input of the build process of EXP.  In the build environment, each
+FILE-NAME contains the reference graph of the corresponding item, in a simple
+text format.
+
+In that case, the reference graph of each store path is exported in
+the build environment in the corresponding file, in a simple text format.
+
 The other arguments are as for 'derivation'."
   (define %modules modules)
   (define outputs (gexp-outputs exp))
+
+  (define (graphs-file-names graphs)
+    ;; Return a list of (FILE-NAME . STORE-PATH) pairs made from GRAPHS.
+    (map (match-lambda
+           ((file-name (? derivation? drv))
+            (cons file-name (derivation->output-path drv)))
+           ((file-name (? derivation? drv) sub-drv)
+            (cons file-name (derivation->output-path drv sub-drv)))
+           ((file-name thing)
+            (cons file-name thing)))
+         graphs))
 
   (mlet* %store-monad (;; The following binding is here to force
                        ;; '%current-system' and '%current-target-system' to be
@@ -162,6 +201,11 @@ The other arguments are as for 'derivation'."
                                                        #:system system
                                                        #:guile guile-for-build)
                                      (return #f)))
+                       (graphs   (if references-graphs
+                                     (lower-reference-graphs references-graphs
+                                                             #:system system
+                                                             #:target target)
+                                     (return #f)))
                        (guile    (if guile-for-build
                                      (return guile-for-build)
                                      (package->derivation (default-guile)
@@ -182,9 +226,12 @@ The other arguments are as for 'derivation'."
                                (,builder)
                                ,@(if modules
                                      `((,modules) (,compiled) ,@inputs)
-                                     inputs))
+                                     inputs)
+                               ,@(match graphs
+                                   (((_ . inputs) ...) inputs)
+                                   (_ '())))
                     #:hash hash #:hash-algo hash-algo #:recursive? recursive?
-                    #:references-graphs references-graphs
+                    #:references-graphs (and=> graphs graphs-file-names)
                     #:local-build? local-build?)))
 
 (define* (gexp-inputs exp #:optional (references gexp-references))
