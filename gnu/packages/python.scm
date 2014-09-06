@@ -1354,6 +1354,33 @@ executed.")
 (define-public python2-coverage
   (package-with-python2 python-coverage))
 
+(define-public python-discover
+  (package
+    (name "python-discover")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/d/discover/discover-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0y8d0zwiqar51kxj8lzmkvwc3b8kazb04gk5zcb4nzg5k68zmhq5"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pypi.python.org/pypi/discover/")
+    (synopsis
+     "Python test discovery for unittest")
+    (description
+     "Discover provides test discovery for unittest, a feature that has been
+backported from Python 2.7 for Python 2.4+")
+    (license bsd-3)))
+
+(define-public python2-discover
+  (package-with-python2 python-discover))
+
 (define-public behave
   (package
     (name "behave")
