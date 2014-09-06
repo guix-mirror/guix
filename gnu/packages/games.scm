@@ -28,6 +28,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages base)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages gettext)
@@ -55,6 +56,7 @@
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages zip)
+  #:use-module (guix build-system trivial)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system trivial))
@@ -617,3 +619,43 @@ management, character animation, particle and other special effects, support
 for common mesh file formats, and collision detection.")
     (home-page "http://irrlicht.sourceforge.net/")
     (license license:zlib)))
+
+(define minetest-data
+  (package
+    (name "minetest-data")
+    (version "0.4.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "https://github.com/minetest/minetest_game/archive/"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "09mr71kl7mf4ihszqz1vnwk814p7fvqknad150iic2340a7qzf0i"))))
+    (build-system trivial-build-system)
+    (native-inputs
+     `(("source" ,source)
+       ("tar" ,tar)
+       ("gzip" ,(@ (gnu packages compression) gzip))))
+    (arguments
+     `(#:modules ((guix build utils))
+       #:builder (begin
+                   (use-modules (guix build utils))
+                   (let ((tar (string-append (assoc-ref %build-inputs "tar")
+                                             "/bin/tar"))
+                         (install-dir (string-append
+                                       %output
+                                       "/share/minetest/games/minetest_game"))
+                         (path (string-append (assoc-ref %build-inputs
+                                                         "gzip")
+                                              "/bin")))
+                     (setenv "PATH" path)
+                     (system* tar "xvf" (assoc-ref %build-inputs "source"))
+                     (chdir (string-append "minetest_game-" ,version))
+                     (mkdir-p install-dir)
+                     (copy-recursively "." install-dir)))))
+    (synopsis "Main game data for the Minetest game engine")
+    (description
+     "Game data for the Minetest infinite-world block sandox game.")
+    (home-page "http://minetest.net")
+    (license license:lgpl2.1+)))
