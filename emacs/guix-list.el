@@ -303,10 +303,13 @@ Interactively, put a general mark on all lines."
   (interactive '(general))
   (guix-list-for-each-line #'guix-list-mark mark-name))
 
-(defun guix-list-unmark ()
-  "Unmark the current line and move to the next line."
-  (interactive)
-  (guix-list-mark 'empty t))
+(defun guix-list-unmark (&optional arg)
+  "Unmark the current line and move to the next line.
+With ARG, unmark all lines."
+  (interactive "P")
+  (if arg
+      (guix-list-unmark-all)
+    (guix-list-mark 'empty t)))
 
 (defun guix-list-unmark-backward ()
   "Move up one line and unmark it."
@@ -344,7 +347,6 @@ Same as `tabulated-list-sort', but also restore marks after sorting."
     (define-key map (kbd "*")   'guix-list-mark)
     (define-key map (kbd "M")   'guix-list-mark-all)
     (define-key map (kbd "u")   'guix-list-unmark)
-    (define-key map (kbd "U")   'guix-list-unmark-all)
     (define-key map (kbd "DEL") 'guix-list-unmark-backward)
     (define-key map [remap tabulated-list-sort] 'guix-list-sort)
     map)
@@ -478,8 +480,9 @@ likely)."
   (define-key map (kbd "RET") 'guix-package-list-describe)
   (define-key map (kbd "x")   'guix-package-list-execute)
   (define-key map (kbd "i")   'guix-package-list-mark-install)
-  (define-key map (kbd "^")   'guix-package-list-mark-upgrade)
-  (define-key map (kbd "d")   'guix-package-list-mark-delete))
+  (define-key map (kbd "d")   'guix-package-list-mark-delete)
+  (define-key map (kbd "U")   'guix-package-list-mark-upgrade)
+  (define-key map (kbd "^")   'guix-package-list-mark-upgrades))
 
 (defun guix-package-list-get-name (name entry)
   "Return NAME of the package ENTRY.
@@ -505,24 +508,33 @@ Colorize it with `guix-package-list-installed' or
              (eq guix-search-type 'generation))
     (error "Action marks are disabled for lists of 'generation packages'")))
 
+(defun guix-package-list-mark-outputs (mark default
+                                       &optional prompt available)
+  "Mark the current package with MARK and move to the next line.
+If PROMPT is non-nil, use it to ask a user for outputs from
+AVAILABLE list, otherwise mark all DEFAULT outputs."
+  (let ((outputs (if prompt
+                     (guix-completing-read-multiple
+                      prompt available nil t)
+                   default)))
+    (apply #'guix-list-mark mark t outputs)))
+
 (defun guix-package-list-mark-install (&optional arg)
   "Mark the current package for installation and move to the next line.
 With ARG, prompt for the outputs to install (several outputs may
 be separated with \",\")."
   (interactive "P")
   (guix-package-list-marking-check)
-  (let* ((entry (guix-list-current-entry))
-         (available (guix-get-key-val entry 'outputs))
+  (let* ((entry     (guix-list-current-entry))
+         (all       (guix-get-key-val entry 'outputs))
          (installed (guix-get-installed-outputs entry))
-         (to-install (if arg
-                         (guix-completing-read-multiple
-                          "Output(s) to install: " available nil t)
-                       '("out")))
-         (to-install (cl-set-difference to-install installed
-                                        :test #'string=)))
-    (if to-install
-        (apply #'guix-list-mark 'install t to-install)
-      (user-error "This package is already installed"))))
+         (available (cl-set-difference all installed :test #'string=)))
+    (or available
+        (user-error "This package is already installed"))
+    (guix-package-list-mark-outputs
+     'install '("out")
+     (and arg "Output(s) to install: ")
+     available)))
 
 (defun guix-package-list-mark-delete (&optional arg)
   "Mark the current package for deletion and move to the next line.
@@ -534,23 +546,47 @@ be separated with \",\")."
          (installed (guix-get-installed-outputs entry)))
     (or installed
         (user-error "This package is not installed"))
-    (let ((to-delete (when arg
-                       (guix-completing-read-multiple
-                        "Output(s) to delete: " installed nil t))))
-      (if to-delete
-          (apply #'guix-list-mark 'delete t to-delete)
-        (guix-package-list-mark-delete-simple)))))
+    (guix-package-list-mark-outputs
+     'delete installed
+     (and arg "Output(s) to delete: ")
+     installed)))
 
-(defun guix-package-list-mark-upgrade ()
-  "Mark the current package for upgrading and move to the next line."
-  (interactive)
+(defun guix-package-list-mark-upgrade (&optional arg)
+  "Mark the current package for upgrading and move to the next line.
+With ARG, prompt for the outputs to upgrade (several outputs may
+be separated with \",\")."
+  (interactive "P")
   (guix-package-list-marking-check)
-  (let ((entry (guix-list-current-entry)))
-    (or (guix-get-installed-outputs entry)
+  (let* ((entry (guix-list-current-entry))
+         (installed (guix-get-installed-outputs entry)))
+    (or installed
         (user-error "This package is not installed"))
     (when (or (guix-get-key-val entry 'obsolete)
               (y-or-n-p "This package is not obsolete.  Try to upgrade it anyway? "))
-      (guix-package-list-mark-upgrade-simple))))
+      (guix-package-list-mark-outputs
+       'upgrade installed
+       (and arg "Output(s) to upgrade: ")
+       installed))))
+
+(defun guix-package-list-mark-upgrades ()
+  "Mark all obsolete packages for upgrading."
+  (interactive)
+  (guix-package-list-marking-check)
+  (let ((obsolete (cl-remove-if-not
+                   (lambda (entry)
+                     (guix-get-key-val entry 'obsolete))
+                   guix-entries)))
+    (guix-list-for-each-line
+     (lambda ()
+       (let* ((id (guix-list-current-id))
+              (entry (cl-find-if
+                      (lambda (entry)
+                        (equal id (guix-get-key-val entry 'id)))
+                      obsolete)))
+         (when entry
+           (apply #'guix-list-mark
+                  'upgrade nil
+                  (guix-get-installed-outputs entry))))))))
 
 (defun guix-package-list-execute ()
   "Perform actions on the marked packages."

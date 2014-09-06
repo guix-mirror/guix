@@ -163,11 +163,9 @@ Mark the current entry.
 @item M
 Mark all entries.
 @item u
-Unmark the current entry.
+Unmark the current entry (with prefix, unmark all entries).
 @item @key{DEL}
 Unmark backward.
-@item U
-Unmark all entries.
 @item S
 Sort entries by a specified column.
 @end table
@@ -179,12 +177,16 @@ A ``package-list'' buffer additionally provides the following bindings:
 Describe marked packages (display available information in a
 ``package-info'' buffer).
 @item i
-Mark a package for installation (with prefix, prompt for output(s) to
-install).
+Mark "out" of the current package for installation (with prefix, prompt
+for output(s) to install).
 @item d
-Mark a package for deletion.
+Mark all installed outputs of the current package for deletion (with
+prefix, prompt for output(s) to delete).
+@item U
+Mark all installed outputs of the current package for upgrading (with
+prefix, prompt for output(s) to upgrade).
 @item ^
-Mark a package for upgrading.
+Mark all obsolete packages for upgrading.
 @item x
 Execute actions on marked packages.
 @end table
