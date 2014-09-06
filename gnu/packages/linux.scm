@@ -1092,7 +1092,16 @@ UnionFS-FUSE additionally supports copy-on-write.")
                                   libs " dl)"))))))
     (arguments
      '(#:tests? #f
-       #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")))
+       #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")
+       #:phases (alist-cons-after
+                 'install 'post-install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (exe (string-append out "/bin/unionfs")))
+                     ;; By default, 'unionfs' keeps references to
+                     ;; $glibc/share/locale and similar stuff.  Remove them.
+                     (remove-store-references exe)))
+                 %standard-phases)))
     (inputs `(("fuse" ,fuse-static)))))
 
 (define-public sshfs-fuse
