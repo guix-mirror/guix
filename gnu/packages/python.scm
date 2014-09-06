@@ -1326,6 +1326,34 @@ have failed since the last commit or what tests are currently failing.")
 (define-public python2-testrepository
   (package-with-python2 python-testrepository))
 
+(define-public python-coverage
+  (package
+    (name "python-coverage")
+    (version "3.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/c/coverage/coverage-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0knlbq79g2ww6xzsyknj9rirrgrgc983dpa2d9nkdf31mb2a3bni"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://nedbatchelder.com/code/coverage")
+    (synopsis "Code coverage measurement for Python")
+    (description
+     "Coverage measures code coverage, typically during test execution.  It
+uses the code analysis tools and tracing hooks provided in the Python standard
+library to determine which lines are executable, and which have been
+executed.")
+    (license bsd-3)))
+
+(define-public python2-coverage
+  (package-with-python2 python-coverage))
+
 (define-public behave
   (package
     (name "behave")
