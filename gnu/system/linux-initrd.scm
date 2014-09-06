@@ -68,6 +68,12 @@ initrd."
   ;; General Linux overview in `Documentation/early-userspace/README' and
   ;; `Documentation/filesystems/ramfs-rootfs-initramfs.txt'.
 
+  (define graph-files
+    (unfold-right zero?
+                  number->string
+                  1-
+                  (length to-copy)))
+
   (mlet %store-monad ((source     (imported-modules modules))
                       (compiled   (compiled-modules modules))
                       (module-dir (flat-linux-module-directory linux
@@ -77,6 +83,7 @@ initrd."
       #~(begin
           (use-modules (gnu build linux-initrd)
                        (guix build utils)
+                       (guix build store-copy)
                        (ice-9 pretty-print)
                        (ice-9 popen)
                        (ice-9 match)
@@ -98,6 +105,7 @@ initrd."
                                  (effective-version))))
             (mkdir #$output)
             (mkdir "contents")
+
             (with-directory-excursion "contents"
               (copy-recursively #$guile ".")
               (call-with-output-file "init"
@@ -127,17 +135,9 @@ initrd."
               (mkdir "modules")
               (copy-recursively #$module-dir "modules")
 
-              (let ((store   #$(string-append "." (%store-prefix)))
-                    (to-copy '#$to-copy))
-                (unless (null? to-copy)
-                  (mkdir-p store))
-                ;; XXX: Should we do export-references-graph?
-                (for-each (lambda (input)
-                            (let ((target
-                                   (string-append store "/"
-                                                  (basename input))))
-                              (copy-recursively input target)))
-                          to-copy))
+              ;; Populate the initrd's store.
+              (with-directory-excursion ".."
+                (populate-store '#$graph-files "contents"))
 
               ;; Reset the timestamps of all the files that will make it in the
               ;; initrd.
@@ -150,7 +150,9 @@ initrd."
 
    (gexp->derivation name builder
                      #:modules '((guix build utils)
-                                 (gnu build linux-initrd)))))
+                                 (guix build store-copy)
+                                 (gnu build linux-initrd))
+                     #:references-graphs (zip graph-files to-copy))))
 
 (define (flat-linux-module-directory linux modules)
   "Return a flat directory containing the Linux kernel modules listed in
