@@ -496,14 +496,16 @@ its search path."
                            (format port
                                    "#!~a/bin/guile --no-auto-compile~%!#~%"
                                    (ungexp guile))
+
+                           ;; Write the 'eval-when' form so that it can be
+                           ;; compiled.
                            (write
-                            '(set! %load-path
-                                   (cons (ungexp modules) %load-path))
-                            port)
-                           (write
-                            '(set! %load-compiled-path
-                                   (cons (ungexp compiled)
-                                         %load-compiled-path))
+                            '(eval-when (expand load eval)
+                               (set! %load-path
+                                    (cons (ungexp modules) %load-path))
+                               (set! %load-compiled-path
+                                     (cons (ungexp compiled)
+                                           %load-compiled-path)))
                             port)
                            (write '(ungexp exp) port)
                            (chmod port #o555)))))))
