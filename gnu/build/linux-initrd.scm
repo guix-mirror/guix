@@ -35,9 +35,11 @@
                              (cpio "cpio") (gzip "gzip"))
   "Write a cpio archive containing DIRECTORY to file OUTPUT, using CPIO.  When
 COMPRESS? is true, compress it using GZIP.  On success, return OUTPUT."
+
+  ;; Note: don't use '--no-absolute-filenames' since that strips leading
+  ;; slashes from symlink targets.
   (let ((pipe (open-pipe* OPEN_WRITE cpio "-o" "-O" output
-                          "-H" "newc" "--null"
-                          "--no-absolute-filenames")))
+                          "-H" "newc" "--null")))
     (define (print0 file)
       (format pipe "~a\0" file))
 
