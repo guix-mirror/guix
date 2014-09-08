@@ -24,7 +24,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages maths)
-  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages readline))
 
 (define-public apl

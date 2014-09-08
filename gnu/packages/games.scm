@@ -38,7 +38,7 @@
   #:use-module (gnu packages readline)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages sdl)
   #:use-module (gnu packages texinfo)
   #:use-module (guix build-system gnu))

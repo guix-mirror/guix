@@ -30,7 +30,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pciutils)
-  #:use-module (gnu packages bdb)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)

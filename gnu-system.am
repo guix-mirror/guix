@@ -41,7 +41,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/backup.scm			\
   gnu/packages/base.scm				\
   gnu/packages/bash.scm				\
-  gnu/packages/bdb.scm				\
   gnu/packages/bdw-gc.scm			\
   gnu/packages/bittorrent.scm			\
   gnu/packages/bison.scm			\
@@ -67,6 +66,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/curl.scm				\
   gnu/packages/cursynth.scm			\
   gnu/packages/cyrus-sasl.scm			\
+  gnu/packages/databases.scm			\
   gnu/packages/datamash.scm			\
   gnu/packages/dc.scm				\
   gnu/packages/dejagnu.scm			\
@@ -172,7 +172,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mpi.scm				\
   gnu/packages/multiprecision.scm		\
   gnu/packages/mtools.scm			\
-  gnu/packages/mysql.scm			\
   gnu/packages/nano.scm				\
   gnu/packages/ncdu.scm				\
   gnu/packages/ncurses.scm			\
@@ -199,7 +198,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/pkg-config.scm			\
   gnu/packages/plotutils.scm			\
   gnu/packages/popt.scm				\
-  gnu/packages/postgresql.scm			\
   gnu/packages/pth.scm				\
   gnu/packages/pulseaudio.scm			\
   gnu/packages/pretty-print.scm			\
@@ -210,7 +208,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ratpoison.scm			\
   gnu/packages/rdf.scm				\
   gnu/packages/readline.scm			\
-  gnu/packages/recutils.scm			\
   gnu/packages/rrdtool.scm			\
   gnu/packages/rsync.scm			\
   gnu/packages/rush.scm				\
@@ -224,7 +221,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/skribilo.scm			\
   gnu/packages/slim.scm				\
   gnu/packages/smalltalk.scm			\
-  gnu/packages/sqlite.scm			\
   gnu/packages/ssh.scm				\
   gnu/packages/stalonetray.scm			\
   gnu/packages/swig.scm				\
