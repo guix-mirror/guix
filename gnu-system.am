@@ -256,6 +256,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/yasm.scm				\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
+  gnu/packages/zsh.scm				\
 						\
   gnu/services.scm				\
   gnu/services/avahi.scm			\
