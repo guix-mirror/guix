@@ -36,8 +36,6 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tcl)
-  #:use-module ((gnu packages base)
-                #:select (tar))
   #:use-module ((gnu packages compression)
                 #:select (gzip))
   #:use-module ((gnu packages openssl)
