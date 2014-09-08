@@ -28,7 +28,7 @@
   #:use-module (guix profiles)
   #:use-module (guix scripts build)
   #:use-module (guix build utils)
-  #:use-module (guix build install)
+  #:use-module (gnu build install)
   #:use-module (gnu system)
   #:use-module (gnu system vm)
   #:use-module (gnu system grub)

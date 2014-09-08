@@ -27,7 +27,7 @@
 (define-public datamash
   (package
     (name "datamash")
-    (version "1.0.5")
+    (version "1.0.6")
     (source
      (origin
       (method url-fetch)
@@ -35,7 +35,7 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0f4rbbhl18fb851npza9cl8biynzr081f37ih2xsbvjlyrxhnz6b"))))
+        "0621a1xyf8gvcks0vb26g72dm4zh1s6y3a4cc5nnnl5m8mfc4m01"))))
     (native-inputs
      `(("which" ,which)                 ;for tests
        ("perl" ,perl)))                 ;for help2man
@@ -45,4 +45,4 @@
     (description
      "Perform basic numeric, textual and statistical operations on plain text
 files.  Designed to work within standard pipelines without additional code.")
-    (license gpl3)))
+    (license gpl3+)))

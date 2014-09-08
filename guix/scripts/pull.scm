@@ -38,15 +38,21 @@
   "http://git.savannah.gnu.org/cgit/guix.git/snapshot/guix-master.tar.gz"
   )
 
-(define (unpack store tarball)
+(define* (unpack store tarball #:key verbose?)
   "Return a derivation that unpacks TARBALL into STORE and compiles Scheme
 files."
   (define builder
-    '(begin
+    `(begin
        (use-modules (guix build pull))
 
        (build-guix (assoc-ref %outputs "out")
                    (assoc-ref %build-inputs "tarball")
+
+                   ;; XXX: This is not perfect, enabling VERBOSE? means
+                   ;; building a different derivation.
+                   #:debug-port (if ',verbose?
+                                    (current-error-port)
+                                    (%make-void-port "w"))
                    #:tar (assoc-ref %build-inputs "tar")
                    #:gzip (assoc-ref %build-inputs "gzip")
                    #:gcrypt (assoc-ref %build-inputs "gcrypt"))))
@@ -129,13 +135,10 @@ Download and deploy the latest version of Guix.\n"))
                         (package-derivation store
                                             (if (assoc-ref opts 'bootstrap?)
                                                 %bootstrap-guile
-                                                (canonical-package guile-2.0))))
-                       (current-build-output-port
-                        (if (assoc-ref opts 'verbose?)
-                            (current-error-port)
-                            (%make-void-port "w"))))
+                                                (canonical-package guile-2.0)))))
           (let* ((config-dir (config-directory))
-                 (source     (unpack store tarball))
+                 (source     (unpack store tarball
+                                     #:verbose? (assoc-ref opts 'verbose?)))
                  (source-dir (derivation->output-path source)))
             (if (show-what-to-build store (list source))
                 (if (build-derivations store (list source))

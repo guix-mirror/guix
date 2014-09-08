@@ -189,7 +189,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
      #f)))
 
 (define-public linux-libre
-  (let* ((version "3.16.1")
+  (let* ((version "3.16.2")
          (build-phase
           '(lambda* (#:key system inputs #:allow-other-keys #:rest args)
              ;; Apply the neat patch.
@@ -262,7 +262,7 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
              (uri (linux-libre-urls version))
              (sha256
               (base32
-               "1x4y0017l4ndcab4smky2wx0n86r3wyks2r8yyp19ia9ccnl98mf"))))
+               "1p08cqy6427yi808fpbwbb4zbwhnkibj2i1wbrfa5rjhd4vnnffz"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)
                      ("bc" ,bc)
@@ -1092,7 +1092,16 @@ UnionFS-FUSE additionally supports copy-on-write.")
                                   libs " dl)"))))))
     (arguments
      '(#:tests? #f
-       #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")))
+       #:configure-flags '("-DCMAKE_EXE_LINKER_FLAGS=-static")
+       #:phases (alist-cons-after
+                 'install 'post-install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let* ((out (assoc-ref outputs "out"))
+                          (exe (string-append out "/bin/unionfs")))
+                     ;; By default, 'unionfs' keeps references to
+                     ;; $glibc/share/locale and similar stuff.  Remove them.
+                     (remove-store-references exe)))
+                 %standard-phases)))
     (inputs `(("fuse" ,fuse-static)))))
 
 (define-public sshfs-fuse

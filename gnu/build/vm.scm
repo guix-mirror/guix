@@ -16,14 +16,13 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix build vm)
+(define-module (gnu build vm)
   #:use-module (guix build utils)
-  #:use-module (guix build linux-initrd)
-  #:use-module (guix build install)
+  #:use-module (guix build store-copy)
+  #:use-module (gnu build linux-boot)
+  #:use-module (gnu build install)
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
-  #:use-module (ice-9 rdelim)
-  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:export (qemu-command
             load-in-linux-vm
@@ -111,20 +110,6 @@ the #:references-graphs parameter of 'derivation'."
         (mkdir output)
         (copy-recursively "xchg" output))))
 
-(define (read-reference-graph port)
-  "Return a list of store paths from the reference graph at PORT.
-The data at PORT is the format produced by #:references-graphs."
-  (let loop ((line   (read-line port))
-             (result '()))
-    (cond ((eof-object? line)
-           (delete-duplicates result))
-          ((string-prefix? "/" line)
-           (loop (read-line port)
-                 (cons line result)))
-          (else
-           (loop (read-line port)
-                 result)))))
-
 (define* (initialize-partition-table device partition-size
                                      #:key
                                      (label-type "msdos")
@@ -139,26 +124,6 @@ success."
                           (format #f "~aB" offset)
                           (format #f "~aB" partition-size)))
     (error "failed to create partition table")))
-
-(define* (populate-store reference-graphs target)
-  "Populate the store under directory TARGET with the items specified in
-REFERENCE-GRAPHS, a list of reference-graph files."
-  (define store
-    (string-append target (%store-directory)))
-
-  (define (things-to-copy)
-    ;; Return the list of store files to copy to the image.
-    (define (graph-from-file file)
-      (call-with-input-file file read-reference-graph))
-
-    (delete-duplicates (append-map graph-from-file reference-graphs)))
-
-  (mkdir-p store)
-  (chmod store #o1775)
-  (for-each (lambda (thing)
-              (copy-recursively thing
-                                (string-append target thing)))
-            (things-to-copy)))
 
 (define MS_BIND 4096)                             ; <sys/mounts.h> again!
 

@@ -151,6 +151,28 @@
          ;; the contents.
          (valid-path? %store (derivation->output-path drv)))))
 
+(test-assert "identical files are deduplicated"
+  (let* ((build1  (add-text-to-store %store "one.sh"
+                                     "echo hello, world > \"$out\"\n"
+                                     '()))
+         (build2  (add-text-to-store %store "two.sh"
+                                     "# Hey!\necho hello, world > \"$out\"\n"
+                                     '()))
+         (drv1    (derivation %store "foo"
+                              %bash `(,build1)
+                              #:inputs `((,%bash) (,build1))))
+         (drv2    (derivation %store "bar"
+                              %bash `(,build2)
+                              #:inputs `((,%bash) (,build2)))))
+    (and (build-derivations %store (list drv1 drv2))
+         (let ((file1 (derivation->output-path drv1))
+               (file2 (derivation->output-path drv2)))
+           (and (valid-path? %store file1) (valid-path? %store file2)
+                (string=? (call-with-input-file file1 get-string-all)
+                          "hello, world\n")
+                (= (stat:ino (lstat file1))
+                   (stat:ino (lstat file2))))))))
+
 (test-assert "fixed-output-derivation?"
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
                                         "echo -n hello > $out" '()))

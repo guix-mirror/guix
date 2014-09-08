@@ -506,14 +506,16 @@ Unless @code{--lose-logs} is used, all the build logs are kept in the
 @var{localstatedir}.  To save space, the daemon automatically compresses
 them with bzip2 by default.  This option disables that.
 
-@item --disable-store-optimization
+@item --disable-deduplication
+@cindex deduplication
 Disable automatic file ``deduplication'' in the store.
 
 By default, files added to the store are automatically ``deduplicated'':
-if a newly added file is identical as another one found in the store,
-the daemon makes the new file a hard link to the other file.  This
-slightly increases the input/output load at the end of a build process.
-This option disables this.
+if a newly added file is identical to another one found in the store,
+the daemon makes the new file a hard link to the other file.  This can
+noticeably reduce disk usage, at the expense of slightly increasde
+input/output load at the end of a build process.  This option disables
+this optimization.
 
 @item --gc-keep-outputs[=yes|no]
 Tell whether the garbage collector (GC) must keep outputs of live
@@ -579,6 +581,7 @@ management tools it provides.
 @menu
 * Features::                    How Guix will make your life brighter.
 * Invoking guix package::       Package installation, removal, etc.
+* Emacs Interface::             Package management from Emacs.
 * Substitutes::                 Downloading pre-built binaries.
 * Packages with Multiple Outputs::  Single source package, multiple outputs.
 * Invoking guix gc::            Running the garbage collector.
@@ -952,6 +955,8 @@ Consequently, this command must be used with care.
 Finally, since @command{guix package} may actually start build
 processes, it supports all the common build options that @command{guix
 build} supports (@pxref{Invoking guix build, common build options}).
+
+@include emacs.texi
 
 @node Substitutes
 @section Substitutes
@@ -1457,7 +1462,10 @@ definitions like the one above may be automatically converted from the
 Nixpkgs distribution using the @command{guix import} command.}, the
 package may actually be built using the @code{guix build} command-line
 tool (@pxref{Invoking guix build}).  @xref{Packaging Guidelines}, for
-more information on how to test package definitions.
+more information on how to test package definitions, and
+@ref{Invoking guix lint}, for information on how to check a definition
+for style conformance.
+
 
 Eventually, updating the package definition to a new upstream version
 can be partly automated by the @command{guix refresh} command
@@ -2270,6 +2278,22 @@ search path to be copied in the store, compiled, and made available in
 the load path during the execution of @var{exp}---e.g., @code{((guix
 build utils) (guix build gnu-build-system))}.
 
+When @var{references-graphs} is true, it must be a list of tuples of one of the
+following forms:
+
+@example
+(@var{file-name} @var{package})
+(@var{file-name} @var{package} @var{output})
+(@var{file-name} @var{derivation})
+(@var{file-name} @var{derivation} @var{output})
+(@var{file-name} @var{store-item})
+@end example
+
+The right-hand-side of each element of @var{references-graphs} is automatically made
+an input of the build process of @var{exp}.  In the build environment, each
+@var{file-name} contains the reference graph of the corresponding item, in a simple
+text format.
+
 The other arguments are as for @code{derivation} (@pxref{Derivations}).
 @end deffn
 
@@ -2326,6 +2350,7 @@ programming interface of Guix in a convenient way.
 * Invoking guix download::      Downloading a file and printing its hash.
 * Invoking guix hash::          Computing the cryptographic hash of a file.
 * Invoking guix refresh::       Updating package definitions.
+* Invoking guix lint::          Finding errors in package definitions.
 @end menu
 
 @node Invoking guix build
@@ -2703,6 +2728,29 @@ for in @code{$PATH}.
 
 @end table
 
+@node Invoking guix lint
+@section Invoking @command{guix lint}
+The @command{guix lint} is meant to help package developers avoid common
+errors and use a consistent style.  It runs a few checks on a given set of
+packages in order to find common mistakes in their definitions.
+
+The general syntax is:
+
+@example
+guix lint @var{options} @var{package}@dots{}
+@end example
+
+If no package is given on the command line, then all packages are checked.
+The @var{options} may be zero or more of the following:
+
+@table @code
+
+@item --list-checkers
+@itemx -l
+List and describe all the available checkers that will be run on packages
+and exit.
+
+@end table
 
 @c *********************************************************************
 @node GNU Distribution
@@ -2946,7 +2994,7 @@ more information, @pxref{Invoking guix system}.  This command may trigger
 downloads or builds of missing packages, which can take some time.
 
 Once that command has completed---and hopefully succeeded!---you can
-unmount @file{/mnt} and boot into the new system.  Cross fingers, and
+run @command{reboot} and boot into the new system.  Cross fingers, and
 join us on @code{#guix} on the Freenode IRC network or on
 @file{guix-devel@@gnu.org} to share your experience---good or not so
 good.
@@ -3532,6 +3580,10 @@ system declaration like this:
 (initrd (cut base-initrd <>
              #:extra-modules '("my.ko" "modules.ko")))
 @end example
+
+@noindent
+Note that for the example above, the SRFI-26 module needs to be imported
+(@pxref{SRFI-26,,, guile, GNU Guile Reference Manual}).
 
 It also handles common use cases that involves using the system as a
 QEMU guest, or as a ``live'' system whose root file system is volatile.

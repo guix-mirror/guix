@@ -324,6 +324,78 @@
     (return (string=? (derivation-file-name drv)
                       (derivation-file-name xdrv)))))
 
+(test-assertm "gexp->derivation, store copy"
+  (let ((build-one #~(call-with-output-file #$output
+                       (lambda (port)
+                         (display "This is the one." port))))
+        (build-two (lambda (one)
+                     #~(begin
+                         (mkdir #$output)
+                         (symlink #$one (string-append #$output "/one"))
+                         (call-with-output-file (string-append #$output "/two")
+                           (lambda (port)
+                             (display "This is the second one." port))))))
+        (build-drv #~(begin
+                       (use-modules (guix build store-copy))
+
+                       (mkdir #$output)
+                       (populate-store '("graph") #$output))))
+    (mlet* %store-monad ((one (gexp->derivation "one" build-one))
+                         (two (gexp->derivation "two" (build-two one)))
+                         (drv (gexp->derivation "store-copy" build-drv
+                                                #:references-graphs
+                                                `(("graph" ,two))
+                                                #:modules
+                                                '((guix build store-copy)
+                                                  (guix build utils))))
+                         (ok? (built-derivations (list drv)))
+                         (out -> (derivation->output-path drv)))
+      (let ((one (derivation->output-path one))
+            (two (derivation->output-path two)))
+        (return (and ok?
+                     (file-exists? (string-append out "/" one))
+                     (file-exists? (string-append out "/" two))
+                     (file-exists? (string-append out "/" two "/two"))
+                     (string=? (readlink (string-append out "/" two "/one"))
+                               one)))))))
+
+(test-assertm "gexp->derivation #:references-graphs"
+  (mlet* %store-monad
+      ((one (text-file "one" "hello, world"))
+       (two (gexp->derivation "two"
+                              #~(symlink #$one #$output:chbouib)))
+       (drv (gexp->derivation "ref-graphs"
+                              #~(begin
+                                  (use-modules (guix build store-copy))
+                                  (with-output-to-file #$output
+                                    (lambda ()
+                                      (write (call-with-input-file "guile"
+                                               read-reference-graph))))
+                                  (with-output-to-file #$output:one
+                                    (lambda ()
+                                      (write (call-with-input-file "one"
+                                               read-reference-graph))))
+                                  (with-output-to-file #$output:two
+                                    (lambda ()
+                                      (write (call-with-input-file "two"
+                                               read-reference-graph)))))
+                              #:references-graphs `(("one" ,one)
+                                                    ("two" ,two "chbouib")
+                                                    ("guile" ,%bootstrap-guile))
+                              #:modules '((guix build store-copy)
+                                          (guix build utils))))
+       (ok? (built-derivations (list drv)))
+       (guile-drv  (package->derivation %bootstrap-guile))
+       (g-one   -> (derivation->output-path drv "one"))
+       (g-two   -> (derivation->output-path drv "two"))
+       (g-guile -> (derivation->output-path drv)))
+    (return (and ok?
+                 (equal? (call-with-input-file g-one read) (list one))
+                 (equal? (call-with-input-file g-two read)
+                         (list one (derivation->output-path two "chbouib")))
+                 (equal? (call-with-input-file g-guile read)
+                         (list (derivation->output-path guile-drv)))))))
+
 (define shebang
   (string-append "#!" (derivation->output-path (%guile-for-build))
                  "/bin/guile --no-auto-compile"))

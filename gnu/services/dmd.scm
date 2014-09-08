@@ -35,7 +35,7 @@
   (define modules
     ;; Extra modules visible to dmd.conf.
     '((guix build syscalls)
-      (guix build linux-initrd)
+      (gnu build file-systems)
       (guix build utils)))
 
   (mlet %store-monad ((modules  (imported-modules modules))
@@ -50,7 +50,7 @@
           (use-modules (ice-9 ftw)
                        (guix build syscalls)
                        (guix build utils)
-                       ((guix build linux-initrd)
+                       ((gnu build file-systems)
                         #:select (check-file-system canonicalize-device-spec)))
 
           (register-services

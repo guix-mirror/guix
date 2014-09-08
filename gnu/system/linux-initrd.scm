@@ -68,16 +68,22 @@ initrd."
   ;; General Linux overview in `Documentation/early-userspace/README' and
   ;; `Documentation/filesystems/ramfs-rootfs-initramfs.txt'.
 
-  (define (string->regexp str)
-    ;; Return a regexp that matches STR exactly.
-    (string-append "^" (regexp-quote str) "$"))
+  (define graph-files
+    (unfold-right zero?
+                  number->string
+                  1-
+                  (length to-copy)))
 
-  (mlet* %store-monad ((source   (imported-modules modules))
-                       (compiled (compiled-modules modules)))
+  (mlet %store-monad ((source     (imported-modules modules))
+                      (compiled   (compiled-modules modules))
+                      (module-dir (flat-linux-module-directory linux
+                                                               linux-modules)))
     (define builder
-      ;; TODO: Move most of this code to (guix build linux-initrd).
+      ;; TODO: Move most of this code to (gnu build linux-initrd).
       #~(begin
-          (use-modules (guix build utils)
+          (use-modules (gnu build linux-initrd)
+                       (guix build utils)
+                       (guix build store-copy)
                        (ice-9 pretty-print)
                        (ice-9 popen)
                        (ice-9 match)
@@ -87,9 +93,7 @@ initrd."
                        (rnrs bytevectors)
                        ((system foreign) #:select (sizeof)))
 
-          (let ((cpio    (string-append #$cpio "/bin/cpio"))
-                (gzip    (string-append #$gzip "/bin/gzip"))
-                (modules #$source)
+          (let ((modules #$source)
                 (gos     #$compiled)
                 (scm-dir (string-append "share/guile/" (effective-version)))
                 (go-dir  (format #f ".cache/guile/ccache/~a-~a-~a-~a"
@@ -101,6 +105,7 @@ initrd."
                                  (effective-version))))
             (mkdir #$output)
             (mkdir "contents")
+
             (with-directory-excursion "contents"
               (copy-recursively #$guile ".")
               (call-with-output-file "init"
@@ -127,74 +132,58 @@ initrd."
                             #:output-file (string-append go-dir "/init.go"))
 
               ;; Copy Linux modules.
-              (let* ((linux      #$linux)
-                     (module-dir (and linux
-                                      (string-append linux "/lib/modules"))))
-                (mkdir "modules")
-                #$@(map (lambda (module)
-                          #~(match (find-files module-dir
-                                               #$(string->regexp module))
-                              ((file)
-                               (format #t "copying '~a'...~%" file)
-                               (copy-file file (string-append "modules/"
-                                                              #$module)))
-                              (()
-                               (error "module not found" #$module module-dir))
-                              ((_ ...)
-                               (error "several modules by that name"
-                                      #$module module-dir))))
-                        linux-modules))
+              (mkdir "modules")
+              (copy-recursively #$module-dir "modules")
 
-              (let ((store   #$(string-append "." (%store-prefix)))
-                    (to-copy '#$to-copy))
-                (unless (null? to-copy)
-                  (mkdir-p store))
-                ;; XXX: Should we do export-references-graph?
-                (for-each (lambda (input)
-                            (let ((target
-                                   (string-append store "/"
-                                                  (basename input))))
-                              (copy-recursively input target)))
-                          to-copy))
+              ;; Populate the initrd's store.
+              (with-directory-excursion ".."
+                (populate-store '#$graph-files "contents"))
 
               ;; Reset the timestamps of all the files that will make it in the
               ;; initrd.
               (for-each (cut utime <> 0 0 0 0)
                         (find-files "." ".*"))
 
-              (system* cpio "--version")
-              (let ((pipe (open-pipe* OPEN_WRITE cpio "-o"
-                                      "-O" (string-append #$output "/initrd")
-                                      "-H" "newc" "--null")))
-                (define print0
-                  (let ((len (string-length "./")))
-                    (lambda (file)
-                      (format pipe "~a\0" (string-drop file len)))))
-
-                ;; Note: as per `ramfs-rootfs-initramfs.txt', always add
-                ;; directory entries before the files that are inside of it: "The
-                ;; Linux kernel cpio extractor won't create files in a directory
-                ;; that doesn't exist, so the directory entries must go before
-                ;; the files that go in those directories."
-                (file-system-fold (const #t)
-                                  (lambda (file stat result) ; leaf
-                                    (print0 file))
-                                  (lambda (dir stat result) ; down
-                                    (unless (string=? dir ".")
-                                      (print0 dir)))
-                                  (const #f)         ; up
-                                  (const #f)         ; skip
-                                  (const #f)
-                                  #f
-                                  ".")
-
-                (and (zero? (close-pipe pipe))
-                     (with-directory-excursion #$output
-                       (and (zero? (system* gzip "--best" "initrd"))
-                            (rename-file "initrd.gz" "initrd")))))))))
+              (write-cpio-archive (string-append #$output "/initrd") "."
+                                  #:cpio (string-append #$cpio "/bin/cpio")
+                                  #:gzip (string-append #$gzip "/bin/gzip"))))))
 
    (gexp->derivation name builder
-                     #:modules '((guix build utils)))))
+                     #:modules '((guix build utils)
+                                 (guix build store-copy)
+                                 (gnu build linux-initrd))
+                     #:references-graphs (zip graph-files to-copy))))
+
+(define (flat-linux-module-directory linux modules)
+  "Return a flat directory containing the Linux kernel modules listed in
+MODULES and taken from LINUX."
+  (define build-exp
+    #~(begin
+        (use-modules (ice-9 match) (ice-9 regex)
+                     (guix build utils))
+
+        (define (string->regexp str)
+          ;; Return a regexp that matches STR exactly.
+          (string-append "^" (regexp-quote str) "$"))
+
+        (define module-dir
+          (string-append #$linux "/lib/modules"))
+
+        (mkdir #$output)
+        (for-each (lambda (module)
+                    (match (find-files module-dir (string->regexp module))
+                      ((file)
+                       (format #t "copying '~a'...~%" file)
+                       (copy-file file (string-append #$output "/" module)))
+                      (()
+                       (error "module not found" module module-dir))
+                      ((_ ...)
+                       (error "several modules by that name"
+                              module module-dir))))
+                  '#$modules)))
+
+  (gexp->derivation "linux-modules" build-exp
+                    #:modules '((guix build utils))))
 
 (define (file-system->spec fs)
   "Return a list corresponding to file-system FS that can be passed to the
@@ -277,7 +266,7 @@ exception and backtrace!)."
 
   (expression->initrd
    #~(begin
-       (use-modules (guix build linux-initrd)
+       (use-modules (gnu build linux-boot)
                     (guix build utils)
                     (srfi srfi-26))
 
@@ -293,7 +282,8 @@ exception and backtrace!)."
                     #:volatile-root? '#$volatile-root?))
    #:name "base-initrd"
    #:modules '((guix build utils)
-               (guix build linux-initrd))
+               (gnu build linux-boot)
+               (gnu build file-systems))
    #:to-copy helper-packages
    #:linux linux-libre
    #:linux-modules linux-modules))

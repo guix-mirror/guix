@@ -22,8 +22,8 @@
 
 (define-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (asl2.0 bsd-3 bsd-style cc0 expat x11 x11-style
-                          gpl2 gpl2+ lgpl2.1+
+                #:select (asl2.0 bsd-3 bsd-2 bsd-style cc0 expat x11 x11-style
+                          gpl2 gpl2+ gpl3+ lgpl2.0+ lgpl2.1+
                           psfl public-domain))
   #:use-module ((guix licenses) #:select (zlib)
                                 #:renamer (symbol-prefix-proc 'license:))
@@ -939,6 +939,448 @@ In short, SCons is an easier, more reliable and faster way to build
 software.")
     (license x11)))
 
+(define-public python-extras
+  (package
+    (name "python-extras")
+    (version "0.0.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/e/extras/extras-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1h7zx4dfyclalg0fqnfjijpn0f793a9mx8sy3b27gd31nr6dhq3s"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     ;; error in setup.cfg: command 'test' has no such option 'buffer'
+     '(#:tests? #f))
+    (home-page "https://github.com/testing-cabal/extras")
+    (synopsis "Useful extensions to the Python standard library")
+    (description
+     "Extras is a set of extensions to the Python standard library.")
+    (license expat)))
+
+(define-public python2-extras
+  (package-with-python2 python-extras))
+
+(define-public python-mimeparse
+  (package
+    (name "python-mimeparse")
+    (version "0.1.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/python-mimeparse/python-mimeparse-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1hyxg09kaj02ri0rmwjqi86wk4nd1akvv7n0dx77azz76wga4s9w"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     '(#:tests? #f)) ; no setup.py test command
+    (home-page
+     "https://github.com/dbtsai/python-mimeparse")
+    (synopsis "Python library for parsing MIME types.")
+    (description
+     "Mimeparse provides basic functions for parsing MIME type names and
+matching them against a list of media-ranges.")
+    (license expat)))
+
+(define-public python2-mimeparse
+  (package-with-python2 python-mimeparse))
+
+(define-public python-nose
+  (package
+    (name "python-nose")
+    (version "1.3.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append
+               "https://pypi.python.org/packages/source/n/nose/nose-"
+               version ".tar.gz"))
+        (sha256
+          (base32
+            "00qymfgwg4iam4xi0w9bnv7lcb3fypq1hzfafzgs1rfmwaj67g3n"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     '(#:tests? #f)) ; FIXME: test suite fails
+    (home-page "http://readthedocs.org/docs/nose/")
+    (synopsis "Python testing library")
+    (description
+     "Nose extends the unittest library to make testing easier.")
+    (license lgpl2.0+)))
+
+(define-public python2-nose
+  (package-with-python2 python-nose))
+
+(define-public python-unittest2
+  (package
+    (name "python-unittest2")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/u/unittest2py3k/unittest2py3k-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "00yl6lskygcrddx5zspkhr0ibgvpknl4678kkm6s626539grq93q"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pypi.python.org/pypi/unittest2")
+    (synopsis "Python unit testing library")
+    (description
+     "Unittest2 is a replacement for the unittest module in the Python
+standard library.")
+    (license psfl)))
+
+(define-public python2-unittest2
+  (package (inherit python-unittest2)
+    (name "python2-unittest2")
+    (version "0.5.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/u/unittest2/unittest2-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0wbs4i4x3x7klr3v35ss6p9mcqz883i1xgcpkhvl7n2lyv6yhpda"))))
+    (inputs
+     `(("python2-setuptools" ,python-setuptools)))
+    (arguments
+     `(#:python ,python-2
+       #:tests? #f)))) ; no setup.py test command
+
+(define-public python-py
+  (package
+    (name "python-py")
+    (version "1.4.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/py/py-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1jkhffpai419v5rickm2vz86p9bkg3b3kcm2k4bi5wfajhw2m3xs"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pylib.readthedocs.org/")
+    (synopsis "Python library for parsing, I/O, instrospection, and logging")
+    (description
+     "Py is a Python library for file name parsing, .ini file parsing, I/O,
+code introspection, and logging.")
+    (license expat)))
+
+(define-public python2-py
+  (package-with-python2 python-py))
+
+(define-public python-pytest
+  (package
+    (name "python-pytest")
+    (version "2.6.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/pytest/pytest-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0g2w4p0n42wvz8rq4k6gnzpkakgz3g8sfanxk8jrsra9675snkcr"))
+       (modules '((guix build utils)))
+       (snippet
+        ;; One of the tests involves the /usr directory, so it fails.
+        '(substitute* "testing/test_argcomplete.py"
+           (("def test_remove_dir_prefix\\(self\\):")
+            "@pytest.mark.xfail\n    def test_remove_dir_prefix(self):")))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-py" ,python-py)
+       ("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)))
+    (home-page "http://pytest.org")
+    (synopsis "Python testing library")
+    (description
+     "Pytest is a testing tool that provides auto-discovery of test modules
+and functions, detailed info on failing assert statements, modular fixtures,
+and many external plugins.")
+    (license expat)))
+
+(define-public python2-pytest
+  (package-with-python2 python-pytest))
+
+(define-public python-scripttest
+  (package
+    (name "python-scripttest")
+    (version "1.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/s/scripttest/scripttest-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0f4w84k8ck82syys7yg9maz93mqzc8p5ymis941x034v44jzq74m"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-pytest" ,python-pytest)))
+    (home-page "http://pythonpaste.org/scripttest/")
+    (synopsis "Python library to test command-line scripts")
+    (description "Scripttest is a Python helper library for testing
+interactive command-line applications.  With it you can run a script in a
+subprocess and see the output as well as any file modifications.")
+    (license expat)))
+
+(define-public python2-scripttest
+  (package-with-python2 python-scripttest))
+
+(define-public python-testtools
+  (package
+    (name "python-testtools")
+    (version "1.0.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/t/testtools/testtools-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1dyml28ykpl5jb9khdmcdvhy1cxqingys6qvj2k04fzlaj6z3bbx"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-mimeparse" ,python-mimeparse)
+       ("python-extras" ,python-extras)))
+    (home-page "https://github.com/testing-cabal/testtools")
+    (synopsis
+     "Extensions to the Python standard library unit testing framework")
+    (description
+     "Testtools extends the Python standard library unit testing framework to
+provide matchers, more debugging information, and cross-Python
+compatibility.")
+    (license psfl)))
+
+(define-public python2-testtools
+  (package-with-python2 python-testtools))
+
+(define-public python-testscenarios
+  (package
+    (name "python-testscenarios")
+    (version "0.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/t/testscenarios/testscenarios-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1671jvrvqlmbnc42j7pc5y6vc37q44aiwrq0zic652pxyy2fxvjg"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-testtools" ,python-testtools)
+       ("python-mimeparse" ,python-mimeparse)))
+    (home-page "https://launchpad.net/testscenarios")
+    (synopsis "Pyunit extension for dependency injection")
+    (description
+     "Testscenarios provides clean dependency injection for Python unittest
+style tests.")
+    (license (list bsd-3 asl2.0)))) ; at the user's option
+
+(define-public python2-testscenarios
+  (package-with-python2 python-testscenarios))
+
+(define-public python-testresources
+  (package
+    (name "python-testresources")
+    (version "0.2.7")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/t/testresources/testresources-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0cbj3plbllyz42c4b5xxgwaa7mml54lakslrn4kkhinxhdri22md"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://launchpad.net/testresources")
+    (synopsis
+     "Pyunit extension for managing test resources")
+    (description
+     "Testresources is an extension to Python's unittest to allow declarative
+use of resources by test cases.")
+    (license (list bsd-3 asl2.0)))) ; at the user's option
+
+(define-public python2-testresources
+  (package-with-python2 python-testresources))
+
+(define-public python-subunit
+  (package
+    (name "python-subunit")
+    (version "0.0.21")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/p/python-subunit/python-subunit-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1nkw9wfbvizmpajbj3in8ns07g7lwkiv8hip14jjlwk3cacls6jv"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-testtools" ,python-testtools)
+       ("python-mimeparse" ,python-mimeparse)
+       ("python-testscenarios" ,python-testscenarios)))
+    (home-page "http://launchpad.net/subunit")
+    (synopsis "Python implementation of the subunit protocol")
+    (description
+     "Python-subunit is a Python implementation of the subunit test streaming
+protocol.")
+    (license (list bsd-3 asl2.0)))) ; at the user's option
+
+(define-public python2-subunit
+  (package-with-python2 python-subunit))
+
+(define-public python-fixtures
+  (package
+    (name "python-fixtures")
+    (version "0.3.16")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/f/fixtures/fixtures-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0x9r2gwilcig5g54k60bxzg96zabizq1855lrprlb4zckalp9asc"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     '(#:tests? #f)) ; no setup.py test command
+    (home-page "https://launchpad.net/python-fixtures")
+    (synopsis "Python test fixture library")
+    (description
+     "Fixtures provides a way to create reusable state, useful when writing
+Python tests.")
+    (license (list bsd-3 asl2.0)))) ; at user's option
+
+(define-public python2-fixtures
+  (package-with-python2 python-fixtures))
+
+(define-public python-testrepository
+  (package
+    (name "python-testrepository")
+    (version "0.0.20")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/t/testrepository/testrepository-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1ssqb07c277010i6gzzkbdd46gd9mrj0bi0i8vn560n2k2y4j93m"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-testtools" ,python-testtools)
+       ("python-subunit" ,python-subunit)
+       ("python-fixtures" ,python-fixtures)
+       ("python-mimeparse" ,python-mimeparse)))
+    (home-page "https://launchpad.net/testrepository")
+    (synopsis "Database for Python test results")
+    (description "Testrepository provides a database of test results which can
+be used as part of a developer's workflow to check things such as what tests
+have failed since the last commit or what tests are currently failing.")
+    (license (list bsd-3 asl2.0)))) ; at user's option
+
+(define-public python2-testrepository
+  (package-with-python2 python-testrepository))
+
+(define-public python-coverage
+  (package
+    (name "python-coverage")
+    (version "3.7.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/c/coverage/coverage-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0knlbq79g2ww6xzsyknj9rirrgrgc983dpa2d9nkdf31mb2a3bni"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://nedbatchelder.com/code/coverage")
+    (synopsis "Code coverage measurement for Python")
+    (description
+     "Coverage measures code coverage, typically during test execution.  It
+uses the code analysis tools and tracing hooks provided in the Python standard
+library to determine which lines are executable, and which have been
+executed.")
+    (license bsd-3)))
+
+(define-public python2-coverage
+  (package-with-python2 python-coverage))
+
+(define-public python-discover
+  (package
+    (name "python-discover")
+    (version "0.4.0")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/d/discover/discover-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0y8d0zwiqar51kxj8lzmkvwc3b8kazb04gk5zcb4nzg5k68zmhq5"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pypi.python.org/pypi/discover/")
+    (synopsis
+     "Python test discovery for unittest")
+    (description
+     "Discover provides test discovery for unittest, a feature that has been
+backported from Python 2.7 for Python 2.4+")
+    (license bsd-3)))
+
+(define-public python2-discover
+  (package-with-python2 python-discover))
+
 (define-public behave
   (package
     (name "behave")
@@ -968,3 +1410,427 @@ technique that encourages collaboration between developers, QA and
 non-technical or business participants in a software project.  Behave uses
 tests written in a natural language style, backed up by Python code.")
     (license x11)))
+
+(define-public python-exif-read
+  (package
+    (name "python-exif-read")
+    (version "1.4.2")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://pypi.python.org/packages/source/E/ExifRead/ExifRead-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "17c627gcdmyc05hz4zk8qs4pjgw6rc68qzjzgz8gh1cmpsd7acf1"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments `(#:tests? #f)) ; no tests
+    (home-page "https://github.com/ianare/exif-py")
+    (synopsis "Python library to extract EXIF data from image files")
+    (description
+     "ExifRead is a Python library to extract EXIF data from tiff and jpeg
+files.")
+    (license bsd-3)))
+
+(define-public python2-exif-read
+  (package-with-python2 python-exif-read))
+
+(define-public python-pyld
+  (package
+    (name "python-pyld")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://pypi.python.org/packages/source/P/PyLD/PyLD-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "1l9ymj85fsvayqplinzpk0kyiq6m74ps9xd3a9fhlxfn1rldf8x8"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments `(#:tests? #f)) ; no tests
+    (home-page "http://github.com/digitalbazaar/pyld")
+    (synopsis "Python implementation of the JSON-LD specification")
+    (description
+     "PyLD is an implementation of the JSON-LD specification.")
+    (license bsd-3)))
+
+(define-public python2-pyld
+  (package-with-python2 python-pyld))
+
+(define-public python-certifi
+  (package
+    (name "python-certifi")
+    (version "14.05.14")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://pypi.python.org/packages/source/c/certifi/certifi-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "0s8vxzfz6s4m6fvxc7z25k9j35w0rh6jkw3wwcd1az1mssncn6qy"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments `(#:tests? #f)) ; no tests
+    (home-page "http://python-requests.org/")
+    (synopsis "Python CA certificate bundle")
+    (description
+     "Certifi is a Python library that contains a CA certificate bundle, which
+is used by the Requests library to verify HTTPS requests.")
+    (license asl2.0)))
+
+(define-public python2-certifi
+  (package-with-python2 python-certifi))
+
+(define-public python2-requests
+  (package
+    (name "python2-requests")
+    (version "2.4.0")
+    (source (origin
+             (method url-fetch)
+             (uri
+              (string-append
+               "https://pypi.python.org/packages/source/r/requests/requests-"
+               version ".tar.gz"))
+             (sha256
+              (base32
+               "0gknlfx1wakrrm1zi8gi03x2lzj4dsns0vjw0nsmgqvkphyf01vh"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-certifi" ,python-certifi)))
+    (arguments `(#:tests? #f ; no tests
+                 #:python ,python-2))
+    (home-page "http://python-requests.org/")
+    (synopsis "Python HTTP library")
+    (description
+     "Requests is a Python HTTP client library.  It aims to be easier to use
+than Python’s urllib2 library.")
+    (license asl2.0)))
+
+(define-public python-jsonschema
+  (package
+    (name "python-jsonschema")
+    (version "2.4.0")
+    (source (origin
+             (method url-fetch)
+             (uri
+              (string-append
+               "https://pypi.python.org/packages/source/j/jsonschema/jsonschema-"
+               version ".tar.gz"))
+             (sha256
+              (base32
+               "1yik3031ziygvq66rj3mzfqdgxj29sg1bkfc46wsgi7lnbqs560j"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/Julian/jsonschema")
+    (synopsis "Implementation of JSON Schema for Python")
+    (description
+     "Jsonschema is an implementation of JSON Schema for Python.")
+    (license expat)))
+
+(define-public python2-jsonschema
+  (package-with-python2 python-jsonschema))
+
+(define-public python-unidecode
+  (package
+    (name "python-unidecode")
+    (version "0.04.16")
+    (source (origin
+             (method url-fetch)
+             (uri
+              (string-append
+               "https://pypi.python.org/packages/source/U/Unidecode/Unidecode-"
+               version ".tar.gz"))
+             (sha256
+              (base32
+               "0yv56vc49rvippyxgxvcyz7jklc07ky38rcspax7p00sgmriiljc"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "https://pypi.python.org/pypi/Unidecode")
+    (synopsis "ASCII transliterations of Unicode text")
+    (description
+     "Unidecode provides ASCII transliterations of Unicode text.  Unidecode is
+useful when integrating with legacy code that doesn't support Unicode, or for
+ease of entry of non-Roman names on a US keyboard, or when constructing ASCII
+machine identifiers from human-readable Unicode strings that should still be
+somewhat intelligeble.")
+    (license gpl2+)))
+
+(define-public python2-unidecode
+  (package-with-python2 python-unidecode))
+
+(define-public python-pyjwt
+  (package
+    (name "python-pyjwt")
+    (version "0.2.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/P/PyJWT/PyJWT-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1ahqblfy2sj3xz34wsa48cn9rp0dspzq56p54i5znmws3b8gml6g"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     '(#:tests? #f)) ; test suite doesn't work
+    (home-page "http://github.com/progrium/pyjwt")
+    (synopsis "JSON Web Token implementation in Python")
+    (description
+     "PyJWT is a JSON Web Token implementation written in Python.")
+    (license expat)))
+
+(define-public python2-pyjwt
+  (package-with-python2 python-pyjwt))
+
+(define-public python-oauthlib
+  (package
+    (name "python-oauthlib")
+    (version "0.6.3")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append
+                "https://pypi.python.org/packages/source/o/oauthlib/oauthlib-"
+                version ".tar.gz"))
+              (sha256
+               (base32
+                "1yaj3j64la4arwsbhbfmpnickzh3jpg9nlpyg409v8pp24isn48a"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-pyjwt" ,python-pyjwt)
+       ("python-pycrypto" ,python-pycrypto)
+       ("python-nose" ,python-nose)
+       ("python-mock" ,python-mock)))
+    (home-page "https://github.com/idan/oauthlib")
+    (synopsis "OAuth implementation for Python")
+    (description
+     "Oauthlib is a generic, spec-compliant, thorough implementation of the
+OAuth request-signing logic.")
+    (license bsd-3)))
+
+(define-public python2-oauthlib
+  (let ((base (package-with-python2 python-oauthlib)))
+    (package
+      (inherit base)
+      (name "python2-oauthlib")
+      (version "0.6.3")
+      (source (origin
+                (method url-fetch)
+                (uri
+                 (string-append
+                  "https://pypi.python.org/packages/source/o/oauthlib/oauthlib-"
+                  version ".tar.gz"))
+                (sha256
+                 (base32
+                  "1yaj3j64la4arwsbhbfmpnickzh3jpg9nlpyg409v8pp24isn48a"))))
+      (inputs
+       (append (package-inputs base)
+               `(("python2-unittest2" ,python2-unittest2)))))))
+
+(define-public python-itsdangerous
+  (package
+    (name "python-itsdangerous")
+    (version "0.24")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/i/itsdangerous/itsdangerous-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "06856q6x675ly542ig0plbqcyab6ksfzijlyf1hzhgg3sgwgrcyb"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/mitsuhiko/itsdangerous")
+    (synopsis "Python library for passing data to/from untrusted environments")
+    (description
+     "Itsdangerous provides various helpers to pass trusted data to untrusted
+environments and back.")
+    (license bsd-3)))
+
+(define-public python2-itsdangerous
+  (package-with-python2 python-itsdangerous))
+
+(define-public python-virtualenv
+  (package
+    (name "python-virtualenv")
+    (version "1.11.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/v/virtualenv/virtualenv-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1xq4prmg25n9cz5zcvbqx68lmc3kl39by582vd8pzs9f3qalqyiy"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-mock" ,python-mock)
+       ("python-nose" ,python-nose)))
+    (home-page "https://virtualenv.pypa.io/")
+    (synopsis "Virtual Python environment builder")
+    (description
+     "Virtualenv is a tool to create isolated Python environments.")
+    (license expat)))
+
+(define-public python2-virtualenv
+  (package-with-python2 python-virtualenv))
+
+(define-public python-markupsafe
+  (package
+    (name "python-markupsafe")
+    (version "0.23")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/M/MarkupSafe/MarkupSafe-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1hvip33wva3fnmvfp9x5klqri7hpl1hkgqmjbss18nmrb7zimv54"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://github.com/mitsuhiko/markupsafe")
+    (synopsis "XML/HTML/XHTML markup safe string implementation for Python")
+    (description
+     "Markupsafe provides an XML/HTML/XHTML markup safe string implementation
+for Python.")
+    (license bsd-3)))
+
+(define-public python2-markupsafe
+  (package-with-python2 python-markupsafe))
+
+(define-public python-jinja2
+  (package
+    (name "python-jinja2")
+    (version "2.7.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/J/Jinja2/Jinja2-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1nwg9yfqgy421lncnm63k1zf9xkd1klc0jm0fr4p3dad01fsq91f"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-markupsafe" ,python-markupsafe)))
+    (home-page "http://jinja.pocoo.org/")
+    (synopsis "Python template engine")
+    (description
+     "Jinja2 is a small but fast and easy to use stand-alone template engine
+written in pure Python.")
+    (license bsd-3)))
+
+(define-public python2-jinja2
+  (package-with-python2 python-jinja2))
+
+(define-public python-docutils
+  (package
+    (name "python-docutils")
+    (version "0.12")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/d/docutils/docutils-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1ylnjnw1x4b2y7blr6x35ncdzn69k253kw4cdkv6asdb21w73ny7"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (arguments
+     '(#:tests? #f)) ; no setup.py test command
+    (home-page "http://docutils.sourceforge.net/")
+    (synopsis "Python Documentation Utilities")
+    (description
+     "Docutils is a modular system for processing documentation into useful
+formats, such as HTML, XML, and LaTeX.  For input Docutils supports
+reStructuredText.")
+    ;; Most of the source code is public domain, but some source files are
+    ;; licensed under the PFSL, BSD 2-clause, and GPLv3+ licenses.
+    (license (list public-domain psfl bsd-2 gpl3+))))
+
+(define-public python2-docutils
+  (package-with-python2 python-docutils))
+
+(define-public python-pygments
+  (package
+    (name "python-pygments")
+    (version "1.6")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/P/Pygments/Pygments-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "1h11r6ss8waih51vcksfvzghfxiav2f8svc0812fa5kmyz5d97kr"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)))
+    (home-page "http://pygments.org/")
+    (synopsis "Syntax highlighting")
+    (description
+     "Pygments is a syntax highlighting package written in Python.")
+    (license bsd-2)))
+
+(define-public python2-pygments
+  (package-with-python2 python-pygments))
+
+(define-public python-sphinx
+  (package
+    (name "python-sphinx")
+    (version "1.2.3")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "https://pypi.python.org/packages/source/S/Sphinx/Sphinx-"
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "011xizm3jnmf4cvs5i6kgf6c5nn046h79i8j0vd0f27yw9j3p4wl"))))
+    (build-system python-build-system)
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("python-jinja2" ,python-jinja2)
+       ("python-docutils" ,python-docutils)
+       ("python-pygments" ,python-pygments)))
+    (home-page "http://sphinx-doc.org/")
+    (synopsis "Python documentation generator")
+    (description "Sphinx is a tool that makes it easy to create documentation
+for Python projects or other documents consisting of multiple reStructuredText
+sources.")
+    (license bsd-3)))
+
+(define-public python2-sphinx
+  (package-with-python2 python-sphinx))

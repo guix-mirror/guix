@@ -362,9 +362,10 @@ alias ll='ls -l'
 stateful part of OS, including user accounts and groups, special directories,
 etc."
   (define %modules
-    '((guix build activation)
-      (guix build utils)
-      (guix build linux-initrd)))
+    '((gnu build activation)
+      (gnu build linux-boot)
+      (gnu build file-systems)
+      (guix build utils)))
 
   (define (service-activations services)
     ;; Return the activation scripts for SERVICES.
@@ -399,7 +400,7 @@ etc."
                       (set! %load-compiled-path
                             (cons #$compiled %load-compiled-path)))
 
-                    (use-modules (guix build activation))
+                    (use-modules (gnu build activation))
 
                     ;; Populate /etc.
                     (activate-etc #$etc)

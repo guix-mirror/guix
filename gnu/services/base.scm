@@ -29,7 +29,7 @@
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
-  #:use-module ((guix build linux-initrd)
+  #:use-module ((gnu build file-systems)
                 #:select (mount-flags->bit-mask))
   #:use-module (guix gexp)
   #:use-module (guix monads)

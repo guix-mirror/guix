@@ -62,17 +62,14 @@ MODULES =					\
   guix/build/git.scm				\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
-  guix/build/linux-initrd.scm			\
   guix/build/perl-build-system.scm		\
   guix/build/python-build-system.scm		\
+  guix/build/store-copy.scm			\
   guix/build/utils.scm				\
   guix/build/union.scm				\
   guix/build/pull.scm				\
   guix/build/rpath.scm				\
   guix/build/svn.scm				\
-  guix/build/vm.scm				\
-  guix/build/install.scm			\
-  guix/build/activation.scm			\
   guix/build/syscalls.scm			\
   guix/build/emacs-utils.scm			\
   guix/packages.scm				\
@@ -89,6 +86,7 @@ MODULES =					\
   guix/scripts/authenticate.scm			\
   guix/scripts/refresh.scm			\
   guix/scripts/system.scm			\
+  guix/scripts/lint.scm				\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
@@ -159,7 +157,8 @@ SCM_TESTS =					\
   tests/nar.scm					\
   tests/union.scm				\
   tests/profiles.scm				\
-  tests/syscalls.scm
+  tests/syscalls.scm				\
+  tests/lint.scm
 
 SH_TESTS =					\
   tests/guix-build.sh				\
@@ -278,6 +277,10 @@ AM_DISTCHECK_CONFIGURE_FLAGS =			\
   --with-libgcrypt-libdir="$(LIBGCRYPT_LIBDIR)"	\
   --with-nix-prefix="$(NIX_PREFIX)"		\
   --enable-daemon
+
+dist_emacsui_DATA = emacs/guix-main.scm
+nodist_emacsui_DATA = emacs/guix-helper.scm
+include emacs.am
 
 dist-hook: sync-descriptions gen-ChangeLog assert-no-store-file-names
 distcheck-hook: assert-binaries-available assert-final-inputs-self-contained

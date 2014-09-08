@@ -62,7 +62,7 @@ builds derivations on behalf of its clients.";
 #define GUIX_OPT_CACHE_FAILURES 4
 #define GUIX_OPT_LOSE_LOGS 5
 #define GUIX_OPT_DISABLE_LOG_COMPRESSION 6
-#define GUIX_OPT_DISABLE_STORE_OPTIMIZATION 7
+#define GUIX_OPT_DISABLE_DEDUPLICATION 7
 #define GUIX_OPT_IMPERSONATE_LINUX_26 8
 #define GUIX_OPT_DEBUG 9
 #define GUIX_OPT_CHROOT_DIR 10
@@ -106,8 +106,14 @@ static const struct argp_option options[] =
       "Do not keep build logs" },
     { "disable-log-compression", GUIX_OPT_DISABLE_LOG_COMPRESSION, 0, 0,
       "Disable compression of the build logs" },
-    { "disable-store-optimization", GUIX_OPT_DISABLE_STORE_OPTIMIZATION, 0, 0,
+
+    /* '--disable-deduplication' was known as '--disable-store-optimization'
+       up to Guix 0.7 included, so keep the alias around.  */
+    { "disable-deduplication", GUIX_OPT_DISABLE_DEDUPLICATION, 0, 0,
       "Disable automatic file \"deduplication\" in the store" },
+    { "disable-store-optimization", GUIX_OPT_DISABLE_DEDUPLICATION, 0,
+      OPTION_ALIAS | OPTION_HIDDEN, NULL },
+
     { "impersonate-linux-2.6", GUIX_OPT_IMPERSONATE_LINUX_26, 0, 0,
       "Impersonate Linux 2.6"
 #ifndef HAVE_SYS_PERSONALITY_H
@@ -163,7 +169,7 @@ parse_opt (int key, char *arg, struct argp_state *state)
     case GUIX_OPT_BUILD_USERS_GROUP:
       settings.buildUsersGroup = arg;
       break;
-    case GUIX_OPT_DISABLE_STORE_OPTIMIZATION:
+    case GUIX_OPT_DISABLE_DEDUPLICATION:
       settings.autoOptimiseStore = false;
       break;
     case GUIX_OPT_CACHE_FAILURES:
@@ -249,6 +255,9 @@ main (int argc, char *argv[])
   settings.useChroot = false;
 #endif
 
+  /* Turn automatic deduplication on by default.  */
+  settings.autoOptimiseStore = true;
+
   argvSaved = argv;
 
   try
@@ -324,6 +333,10 @@ main (int argc, char *argv[])
 	    }
 	}
 #endif
+
+      printMsg (lvlDebug,
+		format ("automatic deduplication set to %1%")
+		% settings.autoOptimiseStore);
 
       printMsg (lvlDebug,
 		format ("listening on `%1%'") % settings.nixDaemonSocketFile);

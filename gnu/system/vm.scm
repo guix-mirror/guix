@@ -23,7 +23,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module (guix monads)
-  #:use-module ((guix build vm)
+  #:use-module ((gnu build vm)
                 #:select (qemu-command))
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
@@ -112,10 +112,12 @@ input tuple.  The output file name is when building for SYSTEM."
                                              (qemu qemu-headless)
                                              (env-vars '())
                                              (modules
-                                              '((guix build vm)
-                                                (guix build install)
-                                                (guix build linux-initrd)
-                                                (guix build utils)))
+                                              '((gnu build vm)
+                                                (gnu build install)
+                                                (gnu build linux-boot)
+                                                (gnu build file-systems)
+                                                (guix build utils)
+                                                (guix build store-copy)))
                                              (guile-for-build
                                               (%guile-for-build))
 
@@ -164,7 +166,7 @@ made available under the /xchg CIFS share."
       ;; Code that launches the VM that evaluates EXP.
       #~(begin
           (use-modules (guix build utils)
-                       (guix build vm))
+                       (gnu build vm))
 
           (let ((inputs  '#$(list qemu coreutils))
                 (linux   (string-append #$linux "/bzImage"))
@@ -217,48 +219,46 @@ INPUTS is a list of inputs (as for packages).  When COPY-INPUTS? is true, copy
 all of INPUTS into the image being built.  When REGISTER-CLOSURES? is true,
 register INPUTS in the store database of the image so that Guix can be used in
 the image."
-  (mlet %store-monad
-      ((graph (sequence %store-monad (map input->name+output inputs))))
-   (expression->derivation-in-linux-vm
-    name
-    #~(begin
-        (use-modules (guix build vm)
-                     (guix build utils))
+  (expression->derivation-in-linux-vm
+   name
+   #~(begin
+       (use-modules (gnu build vm)
+                    (guix build utils))
 
-        (let ((inputs
-               '#$(append (list qemu parted grub e2fsprogs util-linux)
-                          (map canonical-package
-                               (list sed grep coreutils findutils gawk))
-                          (if register-closures? (list guix) '())))
+       (let ((inputs
+              '#$(append (list qemu parted grub e2fsprogs util-linux)
+                         (map canonical-package
+                              (list sed grep coreutils findutils gawk))
+                         (if register-closures? (list guix) '())))
 
-              ;; This variable is unused but allows us to add INPUTS-TO-COPY
-              ;; as inputs.
-              (to-register
-                '#$(map (match-lambda
-                         ((name thing) thing)
-                         ((name thing output) `(,thing ,output)))
-                        inputs)))
+             ;; This variable is unused but allows us to add INPUTS-TO-COPY
+             ;; as inputs.
+             (to-register
+              '#$(map (match-lambda
+                       ((name thing) thing)
+                       ((name thing output) `(,thing ,output)))
+                      inputs)))
 
-          (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
+         (set-path-environment-variable "PATH" '("bin" "sbin") inputs)
 
-          (let ((graphs '#$(match inputs
-                             (((names . _) ...)
-                              names))))
-            (initialize-hard-disk "/dev/vda"
-                                  #:system-directory #$os-derivation
-                                  #:grub.cfg #$grub-configuration
-                                  #:closures graphs
-                                  #:copy-closures? #$copy-inputs?
-                                  #:register-closures? #$register-closures?
-                                  #:disk-image-size #$disk-image-size
-                                  #:file-system-type #$file-system-type
-                                  #:file-system-label #$file-system-label)
-            (reboot))))
-    #:system system
-    #:make-disk-image? #t
-    #:disk-image-size disk-image-size
-    #:disk-image-format disk-image-format
-    #:references-graphs graph)))
+         (let ((graphs '#$(match inputs
+                            (((names . _) ...)
+                             names))))
+           (initialize-hard-disk "/dev/vda"
+                                 #:system-directory #$os-derivation
+                                 #:grub.cfg #$grub-configuration
+                                 #:closures graphs
+                                 #:copy-closures? #$copy-inputs?
+                                 #:register-closures? #$register-closures?
+                                 #:disk-image-size #$disk-image-size
+                                 #:file-system-type #$file-system-type
+                                 #:file-system-label #$file-system-label)
+           (reboot))))
+   #:system system
+   #:make-disk-image? #t
+   #:disk-image-size disk-image-size
+   #:disk-image-format disk-image-format
+   #:references-graphs inputs))
 
 
 ;;;

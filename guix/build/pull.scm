@@ -21,6 +21,7 @@
   #:use-module (system base compile)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
@@ -47,43 +48,70 @@ normally, and 1 if an exception is raised."
     (pid
      #t)))
 
+(define* (report-build-progress total completed cont
+                                #:optional (log-port (current-error-port)))
+  "Report that COMPLETED out of TOTAL files have been completed, and call
+CONT."
+  (display #\cr log-port)
+  (format log-port "compiling...\t~5,1f% of ~d files" ;FIXME: i18n
+          (* 100. (/ completed total)) total)
+  (force-output log-port)
+  (cont))
+
 (define* (p-for-each proc lst
-                     #:optional (max-processes (current-processor-count)))
+                     #:optional (max-processes (current-processor-count))
+                     #:key (progress report-build-progress))
   "Invoke PROC for each element of LST in a separate process, using up to
-MAX-PROCESSES processes in parallel.  Raise an error if one of the processes
-exit with non-zero."
+MAX-PROCESSES processes in parallel.  Call PROGRESS at each step, passing it
+the continuation.  Raise an error if one of the processes exit with non-zero."
+  (define total
+    (length lst))
+
   (define (wait-for-one-process)
     (match (waitpid WAIT_ANY)
       ((_ . status)
        (unless (zero? (status:exit-val status))
          (error "process failed" proc status)))))
 
-  (let loop ((lst   lst)
-             (running 0))
+  (let loop ((lst       lst)
+             (running   0)
+             (completed 0))
     (match lst
       (()
        (or (zero? running)
-           (begin
+           (let ((running   (- running 1))
+                 (completed (+ completed 1)))
              (wait-for-one-process)
-             (loop lst (- running 1)))))
+             (progress total completed
+                       (lambda ()
+                         (loop lst running completed))))))
       ((head . tail)
        (if (< running max-processes)
-           (begin
+           (let ((running (+ 1 running)))
              (call-with-process (cut proc head))
-             (loop tail (+ running 1)))
-           (begin
+             (progress total completed
+                       (lambda ()
+                         (loop tail running completed))))
+           (let ((running   (- running 1))
+                 (completed (+ completed 1)))
              (wait-for-one-process)
-             (loop lst (- running 1))))))))
+             (progress total completed
+                       (lambda ()
+                         (loop lst running completed)))))))))
 
 (define* (build-guix out tarball
-                     #:key tar gzip gcrypt)
-  "Build and install Guix in directory OUT using source from TARBALL."
+                     #:key tar gzip gcrypt
+                     (debug-port (%make-void-port "w")))
+  "Build and install Guix in directory OUT using source from TARBALL.  Write
+any debugging output to DEBUG-PORT."
   (setvbuf (current-output-port) _IOLBF)
   (setvbuf (current-error-port) _IOLBF)
 
   (setenv "PATH" (string-append tar "/bin:" gzip "/bin"))
 
-  (system* "tar" "xvf" tarball)
+  (format debug-port "extracting '~a'...~%" tarball)
+  (system* "tar" "xf" tarball)
+
   (match (scandir "." (lambda (name)
                         (and (not (member name '("." "..")))
                              (file-is-directory? name))))
@@ -92,11 +120,13 @@ exit with non-zero."
     (x
      (error "tarball did not produce a single source directory" x)))
 
-  (format #t "copying and compiling Guix to `~a'...~%" out)
+  (format #t "copying and compiling to '~a'...~%" out)
 
   ;; Copy everything under guix/ and gnu/ plus {guix,gnu}.scm.
-  (copy-recursively "guix" (string-append out "/guix"))
-  (copy-recursively "gnu" (string-append out "/gnu"))
+  (copy-recursively "guix" (string-append out "/guix")
+                    #:log debug-port)
+  (copy-recursively "gnu" (string-append out "/gnu")
+                    #:log debug-port)
   (copy-file "guix.scm" (string-append out "/guix.scm"))
   (copy-file "gnu.scm" (string-append out "/gnu.scm"))
 
@@ -121,12 +151,12 @@ exit with non-zero."
   (p-for-each (lambda (file)
                 (let ((go (string-append (string-drop-right file 4)
                                          ".go")))
-                  (format (current-error-port)
-                          "compiling '~a'...~%" file)
-                  (compile-file file
-                                #:output-file go
-                                #:opts
-                                %auto-compilation-options)))
+                  (format debug-port "~%compiling '~a'...~%" file)
+                  (parameterize ((current-warning-port debug-port))
+                    (compile-file file
+                                  #:output-file go
+                                  #:opts
+                                  %auto-compilation-options))))
 
               (filter (cut string-suffix? ".scm" <>)
 
@@ -144,6 +174,7 @@ exit with non-zero."
   (delete-file (string-append out "/guix/config.scm"))
   (delete-file (string-append out "/guix/config.go"))
 
+  (newline)
   #t)
 
 ;;; pull.scm ends here

@@ -181,7 +181,8 @@ determined."
                       #:key (error-port (current-error-port)) (quote? #t))
   "Run COMMAND (a string list) on MACHINE, assuming an lsh gateway has been
 set up.  When QUOTE? is true, perform shell-quotation of all the elements of
-COMMAND."
+COMMAND.  Return either a pipe opened with MODE, or #f if the lsh client could
+not be started."
   (define (shell-quote str)
     ;; Sort-of shell-quote STR so it can be passed as an argument to the
     ;; shell.
@@ -315,8 +316,17 @@ hook."
        (let ((root-directory (string-append %state-directory
                                             "/gcroots/tmp")))
          (false-if-exception (mkdir root-directory))
-         (symlink ,file
-                  (string-append root-directory "/" ,%gc-root-file)))))
+         (catch 'system-error
+           (lambda ()
+             (symlink ,file
+                      (string-append root-directory "/" ,%gc-root-file)))
+           (lambda args
+             ;; If FILE already exists, we can assume that either it's a stale
+             ;; reference (which is fine), or another process is already
+             ;; building the derivation represented by FILE (which is fine
+             ;; too.)  Thus, do nothing in that case.
+             (unless (= EEXIST (system-error-errno args))
+               (apply throw args)))))))
 
   (let ((pipe (remote-pipe machine OPEN_READ
                            `("guile" "-c" ,(object->string script)))))
@@ -535,7 +545,7 @@ allowed on MACHINE."
          (line (read-line pipe)))
     (close-pipe pipe)
     (if (eof-object? line)
-        1.
+        +inf.0    ;MACHINE does not respond, so assume it is infinitely loaded
         (match (string-tokenize line)
           ((one five fifteen . _)
            (let* ((raw        (string->number five))
@@ -546,7 +556,7 @@ allowed on MACHINE."
                      (build-machine-name machine) raw normalized)
              normalized))
           (_
-           1.)))))
+           +inf.0)))))           ;something's fishy about MACHINE, so avoid it
 
 (define (machine-less-loaded? m1 m2)
   "Return #t if the load on M1 is lower than that on M2."

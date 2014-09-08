@@ -52,19 +52,23 @@ To do so:
   - Install the dependencies (see 'Requirements' above) and build tools using
     Guix:
 
-      guix package --install={autoconf,automake,bzip2,gcc-toolchain,gettext,guile,libgcrypt,pkg-config,sqlite}
+      guix package --install autoconf automake bzip2 gcc-toolchain gettext \
+                             guile libgcrypt pkg-config sqlite
 
-  - set the environment variables that Guix recommends you to set during the
+  - Set the environment variables that Guix recommends you to set during the
     package installation process:
       ACLOCAL_PATH, CPATH, LIBRARY_PATH, PKG_CONFIG_PATH
 
-  - set the PATH environment variable to refer to the profile:
+  - Set the PATH environment variable to refer to the profile:
       PATH=$HOME/.guix-profile/bin:$PATH
 
-  - re-run the configure script passing it the option
-    `--with-libgcrypt-prefix=$HOME/.guix-profile/'
+  - Re-run the 'configure' script passing it the option
+    '--with-libgcrypt-prefix=$HOME/.guix-profile/', as well as
+    '--localstatedir=/somewhere', where '/somewhere' is the 'localstatedir'
+    value of the currently installed Guix (failing to do that would lead the
+    new Guix to consider the store to be empty!).
 
-  - run "make" and "make install"
+  - Run "make", "make check", and "make install".
 
 * How It Works
 

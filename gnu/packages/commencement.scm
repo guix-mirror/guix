@@ -744,6 +744,10 @@ COREUTILS-FINAL vs. COREUTILS, etc."
                    (union-build (assoc-ref %outputs "debug")
                                 (list (assoc-ref %build-inputs
                                                  "libc-debug"))))))
+
+    (native-search-paths (package-native-search-paths gcc))
+    (search-paths (package-search-paths gcc))
+
     (license (package-license gcc))
     (synopsis "Complete GCC tool chain for C/C++ development")
     (description

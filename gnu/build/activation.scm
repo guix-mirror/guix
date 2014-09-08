@@ -16,9 +16,9 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix build activation)
+(define-module (gnu build activation)
+  #:use-module (gnu build linux-boot)
   #:use-module (guix build utils)
-  #:use-module (guix build linux-initrd)
   #:use-module (ice-9 ftw)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)

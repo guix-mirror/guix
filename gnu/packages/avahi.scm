@@ -68,3 +68,25 @@
 network.  It is an implementation of the mDNS (for \"Multicast DNS\") and
 DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
     (license lgpl2.1+)))
+
+(define-public nss-mdns
+  (package
+    (name "nss-mdns")
+    (version "0.10")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://0pointer.de/lennart/projects/nss-mdns/nss-mdns-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0vgs6j0qsl0mwzh5a0m0bykr7x6bx79vnbyn0r3q289rghp3qs0y"))))
+    (build-system gnu-build-system)
+    (home-page "http://0pointer.de/lennart/projects/nss-mdns/")
+    (synopsis "The mDNS Name Service Switch (NSS) plug-in")
+    (description
+     "'nss-mdns' is a plug-in for the Name Service Switch (NSS) functionality
+of the GNU C Library, providing host name resolution via Multicast DNS (mDNS).
+It allows for name resolution by programs in the ad-hoc mDNS domain
+'.local'.")
+    (license lgpl2.1+)))

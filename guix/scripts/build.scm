@@ -33,34 +33,13 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
-  #:autoload   (gnu packages) (find-best-packages-by-name)
+  #:autoload   (gnu packages) (specification->package)
   #:autoload   (guix download) (download-to-store)
   #:export (%standard-build-options
             set-build-options-from-command-line
             show-build-options-help
 
             guix-build))
-
-(define (specification->package spec)
-  "Return a package matching SPEC.  SPEC may be a package name, or a package
-name followed by a hyphen and a version number.  If the version number is not
-present, return the preferred newest version."
-  (let-values (((name version)
-                (package-name->name+version spec)))
-    (match (find-best-packages-by-name name version)
-      ((p)                                      ; one match
-       p)
-      ((p x ...)                                ; several matches
-       (warning (_ "ambiguous package specification `~a'~%") spec)
-       (warning (_ "choosing ~a from ~a~%")
-                (package-full-name p)
-                (location->string (package-location p)))
-       p)
-      (_                                        ; no matches
-       (if version
-           (leave (_ "~A: package not found for version ~a~%")
-                  name version)
-           (leave (_ "~A: unknown package~%") name))))))
 
 (define (register-root store paths root)
   "Register ROOT as an indirect GC root for all of PATHS."
