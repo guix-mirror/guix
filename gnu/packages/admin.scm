@@ -37,7 +37,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tcl)
   #:use-module ((gnu packages compression)
-                #:select (gzip))
+                #:renamer (symbol-prefix-proc 'c:))
   #:use-module ((gnu packages openssl)
                 #:renamer (symbol-prefix-proc 'o:))
   #:use-module (gnu packages bison)
@@ -50,6 +50,7 @@
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libftdi)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages xorg))
 
 (define-public dmd
@@ -307,7 +308,7 @@ allow automatic login and starting any app.")
                                     '("services" "protocols" "rpc")))
                      #t))))
     (native-inputs `(("tar" ,tar)
-                     ("gzip" ,gzip)))
+                     ("gzip" ,c:gzip)))
     (synopsis "IANA protocol, port, and RPC number assignments")
     (description
      "This package provides the /etc/services, /etc/protocols, and /etc/rpc
@@ -938,3 +939,31 @@ under Unix and related operating systems.  Spaces and various other unsafe
 characters (such as \"$\") get replaced with \"_\".  ISO 8859-1 (Latin-1)
 characters can be replaced as well, as can UTF-8 characters.")
     (license bsd-3)))
+
+(define-public testdisk
+  (package
+    (name "testdisk")
+    (version "6.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.cgsecurity.org/testdisk-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0v1jap83f5h99zv01v3qmqm160d36n4ysi0gyq7xzb3mqgmw75x5"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(;; ("ntfs" ,ntfs)
+       ("util-linux" ,util-linux)
+       ("openssl" ,o:openssl)
+       ("zlib" ,c:zlib)
+       ("e2fsprogs" ,e2fsprogs)
+       ("libjpeg" ,libjpeg)
+       ("ncurses" ,ncurses)))
+    (home-page "http://www.cgsecurity.org/wiki/TestDisk")
+    (synopsis "Data recovery tool")
+    (description
+     "TestDisk is a program for data recovery, primarily designed to help
+recover lost partitions and/or make non-booting disks bootable again.")
+    (license gpl2+)))
+
