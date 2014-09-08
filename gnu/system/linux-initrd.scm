@@ -54,15 +54,14 @@
                              (name "guile-initrd")
                              (system (%current-system))
                              (modules '())
-                             (to-copy '())
                              (linux #f)
                              (linux-modules '()))
   "Return a derivation that builds a Linux initrd (a gzipped cpio archive)
-containing GUILE and that evaluates EXP, a G-expression, upon booting.
+containing GUILE and that evaluates EXP, a G-expression, upon booting.  All
+the derivations referenced by EXP are automatically copied to the initrd.
 
 LINUX-MODULES is a list of '.ko' file names to be copied from LINUX into the
-initrd.  TO-COPY is a list of additional derivations or packages to copy to
-the initrd.  MODULES is a list of Guile module names to be embedded in the
+initrd.  MODULES is a list of Guile module names to be embedded in the
 initrd."
 
   ;; General Linux overview in `Documentation/early-userspace/README' and
@@ -71,15 +70,8 @@ initrd."
   (mlet* %store-monad ((init       (gexp->script "init" exp
                                                  #:modules modules
                                                  #:guile guile))
-                       (to-copy -> (cons init to-copy))
                        (module-dir (flat-linux-module-directory linux
                                                                 linux-modules)))
-    (define graph-files
-      (unfold-right zero?
-                    number->string
-                    1-
-                    (length to-copy)))
-
     (define builder
       #~(begin
           (use-modules (gnu build linux-initrd))
@@ -88,7 +80,7 @@ initrd."
           (build-initrd (string-append #$output "/initrd")
                         #:guile #$guile
                         #:init #$init
-                        #:references-graphs '#$graph-files
+                        #:references-graphs '("closure")
                         #:linux-module-directory #$module-dir
                         #:cpio (string-append #$cpio "/bin/cpio")
                         #:gzip (string-append #$gzip "/bin/gzip"))))
@@ -97,7 +89,7 @@ initrd."
                      #:modules '((guix build utils)
                                  (guix build store-copy)
                                  (gnu build linux-initrd))
-                     #:references-graphs (zip graph-files to-copy))))
+                     #:references-graphs `(("closure" ,init)))))
 
 (define (flat-linux-module-directory linux modules)
   "Return a flat directory containing the Linux kernel modules listed in
@@ -229,7 +221,6 @@ exception and backtrace!)."
    #:modules '((guix build utils)
                (gnu build linux-boot)
                (gnu build file-systems))
-   #:to-copy helper-packages
    #:linux linux-libre
    #:linux-modules linux-modules))
 
