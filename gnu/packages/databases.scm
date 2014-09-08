@@ -33,8 +33,9 @@
   #:use-module (gnu packages algebra)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl3+ x11-style bsd-style
+                #:select (gpl2 gpl3+ lgpl3+ x11-style bsd-style
                           public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -243,3 +244,40 @@ zero-configuration, transactional SQL database engine. SQLite is the most
 widely deployed SQL database engine in the world. The source code for SQLite is
 in the public domain.")
    (license public-domain)))
+
+(define-public tdb
+  (package
+    (name "tdb")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://samba.org/ftp/tdb/tdb-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "085sd2kii72fr0c4pdc7c7m0xk34nc66wnjp21c83dss826y9gh4"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     ;; The 'configure' script is a wrapper for Waf and
+                     ;; doesn't recognize things like '--enable-fast-install'.
+                     (zero? (system* "./configure"
+                                     (string-append "--prefix=" out)))))
+                 %standard-phases)))
+    (native-inputs
+     `(;; TODO: Build the documentation.
+       ;; ("docbook-xsl" ,docbook-xsl)
+       ;; ("libxml2" ,libxml2)
+       ;; ("libxslt" ,libxslt)
+       ("python" ,python-2)))                     ;for the Waf build system
+    (home-page "http://tdb.samba.org/")
+    (synopsis "TDB, the trivial database")
+    (description
+     "TDB is a Trivial Database.  In concept, it is very much like GDBM,
+and BSD's DB except that it allows multiple simultaneous writers and uses
+locking internally to keep writers from trampling on each other.  TDB is also
+extremely small.")
+    (license lgpl3+)))
