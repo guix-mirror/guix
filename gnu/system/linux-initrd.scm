@@ -68,85 +68,77 @@ initrd."
   ;; General Linux overview in `Documentation/early-userspace/README' and
   ;; `Documentation/filesystems/ramfs-rootfs-initramfs.txt'.
 
-  (define graph-files
-    (unfold-right zero?
-                  number->string
-                  1-
-                  (length to-copy)))
+  (mlet* %store-monad ((init       (gexp->script "init" exp
+                                                 #:modules modules
+                                                 #:guile guile))
+                       (to-copy -> (cons init to-copy))
+                       (module-dir (flat-linux-module-directory linux
+                                                                linux-modules)))
+    (define graph-files
+      (unfold-right zero?
+                    number->string
+                    1-
+                    (length to-copy)))
 
-  (mlet %store-monad ((source     (imported-modules modules))
-                      (compiled   (compiled-modules modules))
-                      (module-dir (flat-linux-module-directory linux
-                                                               linux-modules)))
     (define builder
       ;; TODO: Move most of this code to (gnu build linux-initrd).
       #~(begin
           (use-modules (gnu build linux-initrd)
                        (guix build utils)
                        (guix build store-copy)
-                       (ice-9 pretty-print)
-                       (ice-9 popen)
-                       (ice-9 match)
-                       (ice-9 ftw)
-                       (srfi srfi-26)
                        (system base compile)
                        (rnrs bytevectors)
                        ((system foreign) #:select (sizeof)))
 
-          (let ((modules #$source)
-                (gos     #$compiled)
-                (scm-dir (string-append "share/guile/" (effective-version)))
-                (go-dir  (format #f ".cache/guile/ccache/~a-~a-~a-~a"
-                                 (effective-version)
-                                 (if (eq? (native-endianness) (endianness little))
-                                     "LE"
-                                     "BE")
-                                 (sizeof '*)
-                                 (effective-version))))
-            (mkdir #$output)
-            (mkdir "contents")
+          (mkdir #$output)
+          (mkdir "contents")
 
-            (with-directory-excursion "contents"
-              (copy-recursively #$guile ".")
-              (call-with-output-file "init"
-                (lambda (p)
-                  (format p "#!/bin/guile -ds~%!#~%" #$guile)
-                  (pretty-print '#$exp p)))
-              (chmod "init" #o555)
-              (chmod "bin/guile" #o555)
+          (with-directory-excursion "contents"
+            ;; Copy Linux modules.
+            (mkdir "modules")
+            (copy-recursively #$module-dir "modules")
 
-              ;; Copy Guile modules.
-              (chmod scm-dir #o777)
-              (copy-recursively modules scm-dir
-                                #:follow-symlinks? #t)
-              (copy-recursively gos (string-append "lib/guile/"
-                                                   (effective-version) "/ccache")
-                                #:follow-symlinks? #t)
+            ;; Populate the initrd's store.
+            (with-directory-excursion ".."
+              (populate-store '#$graph-files "contents"))
 
-              ;; Compile `init'.
+            ;; Make '/init'.
+            (symlink #$init "init")
+
+            ;; Compile it.
+            (let* ((init    (readlink "init"))
+                   (scm-dir (string-append "share/guile/" (effective-version)))
+                   (go-dir  (format #f ".cache/guile/ccache/~a-~a-~a-~a/~a"
+                                    (effective-version)
+                                    (if (eq? (native-endianness) (endianness little))
+                                        "LE"
+                                        "BE")
+                                    (sizeof '*)
+                                    (effective-version)
+                                    (dirname init))))
               (mkdir-p go-dir)
-              (set! %load-path (cons modules %load-path))
-              (set! %load-compiled-path (cons gos %load-compiled-path))
-              (compile-file "init"
+              (compile-file init
                             #:opts %auto-compilation-options
-                            #:output-file (string-append go-dir "/init.go"))
+                            #:output-file (string-append go-dir "/"
+                                                         (basename init)
+                                                         ".go")))
 
-              ;; Copy Linux modules.
-              (mkdir "modules")
-              (copy-recursively #$module-dir "modules")
+            ;; This hack allows Guile to find out where it is.  See
+            ;; 'guile-relocatable.patch'.
+            (mkdir-p "proc/self")
+            (symlink (string-append #$guile "/bin/guile") "proc/self/exe")
+            (readlink "proc/self/exe")
 
-              ;; Populate the initrd's store.
-              (with-directory-excursion ".."
-                (populate-store '#$graph-files "contents"))
+            ;; Reset the timestamps of all the files that will make it in the
+            ;; initrd.
+            (for-each (lambda (file)
+                        (unless (eq? 'symlink (stat:type (lstat file)))
+                          (utime file 0 0 0 0)))
+                      (find-files "." ".*"))
 
-              ;; Reset the timestamps of all the files that will make it in the
-              ;; initrd.
-              (for-each (cut utime <> 0 0 0 0)
-                        (find-files "." ".*"))
-
-              (write-cpio-archive (string-append #$output "/initrd") "."
-                                  #:cpio (string-append #$cpio "/bin/cpio")
-                                  #:gzip (string-append #$gzip "/bin/gzip"))))))
+            (write-cpio-archive (string-append #$output "/initrd") "."
+                                #:cpio (string-append #$cpio "/bin/cpio")
+                                #:gzip (string-append #$gzip "/bin/gzip")))))
 
    (gexp->derivation name builder
                      #:modules '((guix build utils)

@@ -221,6 +221,7 @@ networking values.)  Return #t if INTERFACE is up, #f otherwise."
 (define (load-linux-module* file)
   "Load Linux module from FILE, the name of a `.ko' file."
   (define (slurp module)
+    ;; TODO: Use 'mmap' to reduce memory usage.
     (call-with-input-file file get-bytevector-all))
 
   (load-linux-module (slurp file)))
