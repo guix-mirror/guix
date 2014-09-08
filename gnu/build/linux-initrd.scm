@@ -104,23 +104,18 @@ This is similar to what 'compiled-file-name' in (system base compile) does."
 (define* (build-initrd output
                        #:key
                        guile init
-                       linux-module-directory
                        (references-graphs '())
                        (cpio "cpio")
                        (gzip "gzip"))
   "Write an initial RAM disk (initrd) to OUTPUT.  The initrd starts the script
 at INIT, running GUILE.  It contains all the items referred to by
-REFERENCES-GRAPHS, plus the Linux modules from LINUX-MODULE-DIRECTORY."
+REFERENCES-GRAPHS."
   (mkdir "contents")
 
   ;; Copy the closures of all the items referenced in REFERENCES-GRAPHS.
   (populate-store references-graphs "contents")
 
   (with-directory-excursion "contents"
-    ;; Copy Linux modules.
-    (mkdir "modules")
-    (copy-recursively linux-module-directory "modules")
-
     ;; Make '/init'.
     (symlink init "init")
 

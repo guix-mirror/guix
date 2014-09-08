@@ -3616,16 +3616,14 @@ program to run in that initrd.
 
 @deffn {Monadic Procedure} expression->initrd @var{exp} @
        [#:guile %guile-static-stripped] [#:name "guile-initrd"] @
-       [#:modules '()] [#:linux #f] @
-       [#:linux-modules '()]
+       [#:modules '()]
 Return a derivation that builds a Linux initrd (a gzipped cpio archive)
 containing @var{guile} and that evaluates @var{exp}, a G-expression,
 upon booting.  All the derivations referenced by @var{exp} are
 automatically copied to the initrd.
 
-@var{linux-modules} is a list of @file{.ko} file names to be copied from
-@var{linux} into the initrd.  @var{modules} is a list of Guile module
-names to be embedded in the initrd.
+@var{modules} is a list of Guile module names to be embedded in the
+initrd.
 @end deffn
 
 @node Invoking guix system
