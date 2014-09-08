@@ -81,64 +81,17 @@ initrd."
                     (length to-copy)))
 
     (define builder
-      ;; TODO: Move most of this code to (gnu build linux-initrd).
       #~(begin
-          (use-modules (gnu build linux-initrd)
-                       (guix build utils)
-                       (guix build store-copy)
-                       (system base compile)
-                       (rnrs bytevectors)
-                       ((system foreign) #:select (sizeof)))
+          (use-modules (gnu build linux-initrd))
 
           (mkdir #$output)
-          (mkdir "contents")
-
-          (with-directory-excursion "contents"
-            ;; Copy Linux modules.
-            (mkdir "modules")
-            (copy-recursively #$module-dir "modules")
-
-            ;; Populate the initrd's store.
-            (with-directory-excursion ".."
-              (populate-store '#$graph-files "contents"))
-
-            ;; Make '/init'.
-            (symlink #$init "init")
-
-            ;; Compile it.
-            (let* ((init    (readlink "init"))
-                   (scm-dir (string-append "share/guile/" (effective-version)))
-                   (go-dir  (format #f ".cache/guile/ccache/~a-~a-~a-~a/~a"
-                                    (effective-version)
-                                    (if (eq? (native-endianness) (endianness little))
-                                        "LE"
-                                        "BE")
-                                    (sizeof '*)
-                                    (effective-version)
-                                    (dirname init))))
-              (mkdir-p go-dir)
-              (compile-file init
-                            #:opts %auto-compilation-options
-                            #:output-file (string-append go-dir "/"
-                                                         (basename init)
-                                                         ".go")))
-
-            ;; This hack allows Guile to find out where it is.  See
-            ;; 'guile-relocatable.patch'.
-            (mkdir-p "proc/self")
-            (symlink (string-append #$guile "/bin/guile") "proc/self/exe")
-            (readlink "proc/self/exe")
-
-            ;; Reset the timestamps of all the files that will make it in the
-            ;; initrd.
-            (for-each (lambda (file)
-                        (unless (eq? 'symlink (stat:type (lstat file)))
-                          (utime file 0 0 0 0)))
-                      (find-files "." ".*"))
-
-            (write-cpio-archive (string-append #$output "/initrd") "."
-                                #:cpio (string-append #$cpio "/bin/cpio")
-                                #:gzip (string-append #$gzip "/bin/gzip")))))
+          (build-initrd (string-append #$output "/initrd")
+                        #:guile #$guile
+                        #:init #$init
+                        #:references-graphs '#$graph-files
+                        #:linux-module-directory #$module-dir
+                        #:cpio (string-append #$cpio "/bin/cpio")
+                        #:gzip (string-append #$gzip "/bin/gzip"))))
 
    (gexp->derivation name builder
                      #:modules '((guix build utils)
