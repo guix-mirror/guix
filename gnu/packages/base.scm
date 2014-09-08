@@ -357,14 +357,14 @@ library for working with executable and object formats is also included.")
 (define-public glibc
   (package
    (name "glibc")
-   (version "2.19")
+   (version "2.20")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "18m2dssd6ja5arxmdxinc90xvpqcsnqjfwmjl2as07j0i3srff9d"))
+              "19bbyfc2gcxr9rihrkkbd3p362i608yhlyrr7icqsa6cmr16sjzq"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -373,8 +373,7 @@ library for working with executable and object formats is also included.")
                 (("use_ldconfig=yes")
                  "use_ldconfig=no")))
             (modules '((guix build utils)))
-            (patches (list (search-patch "glibc-CVE-2014-5119.patch")
-                           (search-patch "glibc-ldd-x86_64.patch")))))
+            (patches (list (search-patch "glibc-ldd-x86_64.patch")))))
    (build-system gnu-build-system)
 
    ;; Glibc's <limits.h> refers to <linux/limit.h>, for instance, so glibc
@@ -405,10 +404,10 @@ library for working with executable and object formats is also included.")
                            (assoc-ref %build-inputs "linux-headers")
                            "/include")
 
-            ;; The default is to assume a 2.4 Linux interface, but we'll
-            ;; always use something newer.  See "kernel-features.h" in the
-            ;; GNU libc for details.
-            "--enable-kernel=2.6.30"
+            ;; This is the default for most architectures as of GNU libc 2.20,
+            ;; but we specify it explicitly for clarity and consistency.  See
+            ;; "kernel-features.h" in the GNU libc for details.
+            "--enable-kernel=2.6.32"
 
             ;; Use our Bash instead of /bin/sh.
             (string-append "BASH_SHELL="
