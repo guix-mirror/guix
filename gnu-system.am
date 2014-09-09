@@ -249,6 +249,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
   gnu/packages/wordnet.scm			\
+  gnu/packages/wv.scm				\
   gnu/packages/xiph.scm				\
   gnu/packages/xlockmore.scm			\
   gnu/packages/xml.scm				\
