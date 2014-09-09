@@ -24,6 +24,7 @@
 GNU_SYSTEM_MODULES =				\
   gnu.scm					\
   gnu/packages.scm				\
+  gnu/packages/abiword.scm			\
   gnu/packages/acct.scm				\
   gnu/packages/acl.scm				\
   gnu/packages/admin.scm			\
@@ -290,6 +291,12 @@ GNU_SYSTEM_MODULES =				\
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
 dist_patch_DATA =						\
+  gnu/packages/patches/abiword-explictly-cast-bools.patch	\
+  gnu/packages/patches/abiword-link-plugins-against-backend.patch	\
+  gnu/packages/patches/abiword-no-include-glib-internal-headers.patch	\
+  gnu/packages/patches/abiword-pass-no-undefined-to-linker.patch	\
+  gnu/packages/patches/abiword-use-proper-png-api.patch		\
+  gnu/packages/patches/abiword-wmf-version-lookup-fix.patch	\
   gnu/packages/patches/alsa-lib-mips-atomic-fix.patch		\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\

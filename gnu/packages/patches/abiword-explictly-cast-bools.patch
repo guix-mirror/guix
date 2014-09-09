@@ -1,0 +1,93 @@
+As of JPEG-9, the type 'boolean' is an enumeration, but since glib defines
+TRUE and FALSE as numeric constants and this is C++, they need to be explicitly
+casted.
+
+--- a/src/af/util/xp/ut_jpeg.cpp	2009-07-08 19:33:53.000000000 +0200
++++ b/src/af/util/xp/ut_jpeg.cpp	2014-09-06 19:55:55.876997404 +0200
+@@ -102,7 +102,7 @@
+ 	src->pub.next_input_byte = src->sourceBuf->getPointer (src->pos);
+ 	src->pub.bytes_in_buffer = src->sourceBuf->getLength ();
+ 	
+-	return TRUE;
++	return (boolean)TRUE;
+ }
+ 
+ /*
+@@ -161,7 +161,7 @@
+ 	/* set the data source */
+ 	_JPEG_ByteBufSrc (&cinfo, pBB);
+ 
+-	jpeg_read_header(&cinfo, TRUE);
++	jpeg_read_header(&cinfo, (boolean)TRUE);
+ 	jpeg_start_decompress(&cinfo);
+     iImageWidth = cinfo.output_width;
+     iImageHeight = cinfo.output_height;
+@@ -189,7 +189,7 @@
+ 	/* set the data source */
+ 	_JPEG_ByteBufSrc (&cinfo, pBB);
+ 
+-	jpeg_read_header(&cinfo, TRUE);
++	jpeg_read_header(&cinfo, (boolean)TRUE);
+ 	jpeg_start_decompress(&cinfo);
+     
+ 	int row_stride = cinfo.output_width * cinfo.output_components;
+
+
+In the following file, we also need to reverse header include order: JPEG needs
+to be included before Glib, which is included by "abiword-garble.h" for this fix
+to work.
+
+The JPEG header needs the types FILE and size_t, we can get them from cstdio.
+
+--- a/plugins/garble/xp/abiword-garble-jpeg.cpp	2009-09-05 17:49:53.000000000 +0200
++++ b/plugins/garble/xp/abiword-garble-jpeg.cpp	2014-09-07 21:28:49.364008571 +0200
+@@ -20,12 +20,14 @@
+  * 02111-1307, USA.
+  */
+ 
+-#include "abiword-garble.h"
++#include <cstdio>
+ 
+ extern "C" {
+ 	#include <jpeglib.h>
+ }
+ 
++#include "abiword-garble.h"
++
+ //-----------------------------------------------------------------------------
+ typedef struct {
+ 	struct jpeg_destination_mgr pub;
+@@ -49,7 +51,7 @@
+     mem_dest_ptr dest = (mem_dest_ptr) cinfo->dest;
+     dest->pub.next_output_byte = dest->buf;
+     dest->pub.free_in_buffer = dest->bufsize;
+-    return FALSE;
++    return (boolean)FALSE;
+ }
+ 
+ //-----------------------------------------------------------------------------
+@@ -96,7 +98,7 @@
+ 	cinfo.image_width = (JDIMENSION) w;
+ 	cinfo.image_height = (JDIMENSION) h;
+ 	jpeg_set_defaults (&cinfo);
+-	jpeg_set_quality ( &cinfo, 50, TRUE );
++	jpeg_set_quality ( &cinfo, 50, (boolean)TRUE );
+ 	cinfo.dest = (struct jpeg_destination_mgr *) (*cinfo.mem->alloc_small)((j_common_ptr)&cinfo, JPOOL_PERMANENT, sizeof(mem_destination_mgr));
+     dest = (mem_dest_ptr) cinfo.dest;
+     dest->pub.init_destination    = _jpeg_init_destination;
+@@ -105,7 +107,7 @@
+     dest->buf      = (JOCTET*)data;
+     dest->bufsize  = length;
+     dest->jpegsize = 0;
+-	jpeg_start_compress (&cinfo, TRUE);
++	jpeg_start_compress (&cinfo, (boolean)TRUE);
+ 
+ 	// write data
+ 	for (int i=0; i<h; ++i)
+@@ -121,4 +123,4 @@
+ 		free( dib[i] );
+ 	free( dib );
+ 	return true;
+-}
+\ No newline at end of file
++}

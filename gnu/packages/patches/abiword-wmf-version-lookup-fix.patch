@@ -1,0 +1,28 @@
+The way the configure script determines the version of libwmf is by temporarily
+making dots separator characters, but since the file name of the program which
+returns the version contains dots in Guix (the version in the store entry name),
+doing it this way will always fail.
+
+This is a simple guix-specific fix for the problem.
+
+--- a/configure	2010-06-13 23:17:37.000000000 +0200
++++ b/configure	2014-09-08 17:31:52.102371800 +0200
+@@ -21140,13 +21140,11 @@
+ $as_echo "$as_me: WARNING: wmf plugin: program libwmf-config not found in path" >&2;}
+ 		fi
+ 	else
+-		IFS_old="$IFS"
+-		IFS='.'
+-		set -- `$libwmfconfig --version`
+-		libwmf_major_found="${1}"
+-		libwmf_minor_found="${2}"
+-		libwmf_micro_found="${3}"
+-		IFS="$IFS_old"
++		libwmf_fullver_found=`$libwmfconfig --version`
++		libwmf_major_found=$(echo $libwmf_fullver_found |  cut -d . -f 1)
++		libwmf_minor_found=$(echo $libwmf_fullver_found |  cut -d . -f 2)
++		libwmf_micro_found=$(echo $libwmf_fullver_found |  cut -d . -f 3)
++
+ 		if test "$libwmf_major_found" -gt "$libwmf_major_req"; then
+ 			wmf_deps="yes"
+ 		elif test "$libwmf_major_found" -eq "$libwmf_major_req" &&
