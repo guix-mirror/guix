@@ -86,6 +86,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/fontutils.scm			\
   gnu/packages/freeipmi.scm			\
   gnu/packages/ftp.scm				\
+  gnu/packages/fribidi.scm			\
   gnu/packages/games.scm			\
   gnu/packages/gawk.scm				\
   gnu/packages/gcal.scm				\
