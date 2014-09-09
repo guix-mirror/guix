@@ -70,6 +70,7 @@
             operating-system-profile
             operating-system-grub.cfg
 
+            %setuid-programs
             %base-packages))
 
 ;;; Commentary:
