@@ -32,16 +32,13 @@
   (package
     (name "wv")
     (version "1.2.4")
-    (source
-      (origin
-        (method url-fetch)
-        (uri
-          (string-append
-            "http://sourceforge.net/projects/" name "/files/wv/" version
-            "/wv-" version ".tar.gz/download"))
-        (file-name (string-append "wv-" version ".tar.gz"))
-        (sha256
-          (base32 "1mn2ax6qjy3pvixlnvbkn6ymy6y4l2wxrr4brjaczm121s8hjcb7"))))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/wvware/wv/" version
+                                  "/wv-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1mn2ax6qjy3pvixlnvbkn6ymy6y4l2wxrr4brjaczm121s8hjcb7"))))
 
     (build-system gnu-build-system)
     (arguments
