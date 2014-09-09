@@ -36,7 +36,7 @@
   #:use-module (gnu packages popt)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages readline)
-  #:use-module (gnu packages wvware)
+  #:use-module (gnu packages wv)
   #:use-module (gnu packages xml))
 
 (define-public abiword
@@ -92,7 +92,7 @@
         ("ots" ,ots)
         ("popt" ,popt)
         ("readline" ,readline)
-        ("wvware" ,wvware)
+        ("wv" ,wv)
         ("zlib" ,zlib)))
     (native-inputs
       `(("intltool" ,intltool)
