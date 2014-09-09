@@ -131,12 +131,9 @@ collection of tools for doing simple manipulations of TIFF images.")
     (source
       (origin
         (method url-fetch)
-        (uri
-          (string-append
-            "http://sourceforge.net/projects/wvware/files/" name "/" version
-            "/" name "-" version ".tar.gz/download"))
-        (file-name
-          (string-append name "-" version ".tar.gz"))
+        (uri (string-append "mirror://sourceforge/wvware/"
+                            name "/" version
+                            "/" name "-" version ".tar.gz"))
         (sha256
           (base32 "1y3wba4q8pl7kr51212jwrsz1x6nslsx1gsjml1x0i8549lmqd2v"))))
 
