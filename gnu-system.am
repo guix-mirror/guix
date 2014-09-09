@@ -78,6 +78,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ed.scm				\
   gnu/packages/elf.scm				\
   gnu/packages/emacs.scm			\
+  gnu/packages/enchant.scm			\
   gnu/packages/file.scm				\
   gnu/packages/fish.scm				\
   gnu/packages/flex.scm				\
