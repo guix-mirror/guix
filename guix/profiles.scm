@@ -321,10 +321,10 @@ replacement if PORT is not Unicode-capable."
     (let ((arrow "→"))
       (catch 'encoding-error
         (lambda ()
-          (with-fluids ((%default-port-conversion-strategy 'error))
-            (with-output-to-string
-              (lambda ()
-                (display arrow)))))
+          (call-with-output-string
+            (lambda (port)
+              (set-port-conversion-strategy! port 'error)
+              (display arrow port))))
         (lambda (key . args)
           "->")))))
 
