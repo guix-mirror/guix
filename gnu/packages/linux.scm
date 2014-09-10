@@ -613,6 +613,9 @@ MIDI functionality to the Linux-based operating system.")
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
      '(#:configure-flags (list "--disable-xmlto"
+
+                               ;; The udev rule is responsible for restoring
+                               ;; the volume.
                                (string-append "--with-udev-rules-dir="
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))
@@ -1397,7 +1400,13 @@ time.")
                                               (assoc-ref %outputs "out")
                                               "/etc/lvm")
                                "--enable-udev_sync"
-                               "--enable-udev_rules")
+                               "--enable-udev_rules"
+
+                               ;; Make sure programs such as 'dmsetup' can
+                               ;; find libdevmapper.so.
+                               (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))
 
        ;; The tests use 'mknod', which requires root access.
        #:tests? #f))
