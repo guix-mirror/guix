@@ -155,7 +155,14 @@ numeric gid or #f."
                 (let ((target (string-append "/etc/" file))
                       (source (string-append "/etc/static/" file)))
                   (rm-f target)
-                  (symlink source target)))
+
+                  ;; Things such as /etc/sudoers must be regular files, not
+                  ;; symlinks; furthermore, they could be modified behind our
+                  ;; back---e.g., with 'visudo'.  Thus, make a copy instead of
+                  ;; symlinking them.
+                  (if (file-is-directory? source)
+                      (symlink source target)
+                      (copy-file source target))))
               (scandir etc
                        (lambda (file)
                          (not (member file '("." ".."))))
