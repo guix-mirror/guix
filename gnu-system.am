@@ -249,6 +249,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/w3m.scm				\
   gnu/packages/wdiff.scm			\
   gnu/packages/web.scm				\
+  gnu/packages/weechat.scm			\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
   gnu/packages/wordnet.scm			\
