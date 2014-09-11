@@ -3,4 +3,4 @@
 gnu/packages/base.scm
 gnu/packages/guile.scm
 gnu/packages/lout.scm
-gnu/packages/recutils.scm
+gnu/packages/databases.scm
