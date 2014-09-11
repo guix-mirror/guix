@@ -25,7 +25,7 @@
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (udev kbd e2fsprogs))
+                #:select (udev kbd e2fsprogs lvm2))
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
@@ -479,9 +479,41 @@ passed to @command{guix-daemon}."
                                  (id 30000))))
              (activate activate)))))
 
-(define* (udev-service #:key (udev udev))
-  "Run @var{udev}, which populates the @file{/dev} directory dynamically."
-  (with-monad %store-monad
+(define (udev-rules-union packages)
+  "Return the union of the @code{lib/udev/rules.d} directories found in each
+item of @var{packages}."
+  (define build
+    #~(begin
+        (use-modules (guix build union)
+                     (guix build utils)
+                     (srfi srfi-1)
+                     (srfi srfi-26))
+
+        (define %standard-locations
+          '("/lib/udev/rules.d" "/libexec/udev/rules.d"))
+
+        (define (rules-sub-directory directory)
+          ;; Return the sub-directory of DIRECTORY containing udev rules, or
+          ;; #f if none was found.
+          (find directory-exists?
+                (map (cut string-append directory <>) %standard-locations)))
+
+        (mkdir-p (string-append #$output "/lib/udev"))
+        (union-build (string-append #$output "/lib/udev/rules.d")
+                     (filter-map rules-sub-directory '#$packages))))
+
+  (gexp->derivation "udev-rules" build
+                    #:modules '((guix build union)
+                                (guix build utils))
+                    #:local-build? #t))
+
+(define* (udev-service #:key (udev udev) (rules '()))
+  "Run @var{udev}, which populates the @file{/dev} directory dynamically.  Get
+extra rules from the packages listed in @var{rules}."
+  (mlet* %store-monad ((rules     (udev-rules-union (cons udev rules)))
+                       (udev.conf (text-file* "udev.conf"
+                                              "udev_rules=\"" rules
+                                              "/lib/udev/rules.d\"\n")))
     (return (service
              (provision '(udev))
 
@@ -512,6 +544,8 @@ passed to @command{guix-daemon}."
                         ;; Allow udev to find the modules.
                         (setenv "LINUX_MODULE_DIRECTORY"
                                 "/run/booted-system/kernel/lib/modules")
+
+                        (setenv "UDEV_CONFIG_FILE" #$udev.conf)
 
                         (let ((pid (primitive-fork)))
                           (case pid
@@ -555,6 +589,9 @@ This is the GNU operating system, welcome!\n\n")))
           (syslog-service)
           (guix-service)
           (nscd-service)
-          (udev-service))))
+
+          ;; By default, enable the udev rules of LVM2.  They are needed as
+          ;; soon as LVM2 or the device-mapper is used.
+          (udev-service #:rules (list lvm2)))))
 
 ;;; base.scm ends here
