@@ -131,6 +131,7 @@ initrd code."
                       volatile-root?
                       (extra-modules '())
                       guile-modules-in-chroot?)
+  ;; TODO: Support boot-time device mappings.
   "Return a monadic derivation that builds a generic initrd.  FILE-SYSTEMS is
 a list of file-systems to be mounted by the initrd, possibly in addition to
 the root file system specified on the kernel command line via '--root'.

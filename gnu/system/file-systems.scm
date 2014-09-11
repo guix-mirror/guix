@@ -37,7 +37,13 @@
             %pseudo-terminal-file-system
             %devtmpfs-file-system
 
-            %base-file-systems))
+            %base-file-systems
+
+            mapped-device
+            mapped-device?
+            mapped-device-source
+            mapped-device-target
+            mapped-device-command))
 
 ;;; Commentary:
 ;;;
@@ -127,5 +133,18 @@
   (list %devtmpfs-file-system
         %pseudo-terminal-file-system
         %shared-memory-file-system))
+
+
+
+;;;
+;;; Mapped devices, for Linux's device-mapper.
+;;;
+
+(define-record-type* <mapped-device> mapped-device
+  make-mapped-device
+  mapped-device?
+  (source    mapped-device-source)                ;string
+  (target    mapped-device-target)                ;string
+  (command   mapped-device-command))              ;source target -> gexp
 
 ;;; file-systems.scm ends here

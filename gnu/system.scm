@@ -44,6 +44,7 @@
   #:use-module (gnu system linux)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu system file-systems)
+  #:autoload   (gnu packages cryptsetup) (cryptsetup)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -64,6 +65,7 @@
             operating-system-packages
             operating-system-timezone
             operating-system-locale
+            operating-system-mapped-devices
             operating-system-file-systems
             operating-system-activation-script
 
@@ -72,7 +74,9 @@
             operating-system-grub.cfg
 
             %setuid-programs
-            %base-packages))
+            %base-packages
+
+            luks-device-mapping))
 
 ;;; Commentary:
 ;;;
@@ -96,6 +100,8 @@
   (hosts-file operating-system-hosts-file         ; M item | #f
               (default #f))
 
+  (mapped-devices operating-system-mapped-devices ; list of <mapped-device>
+                  (default '()))
   (file-systems operating-system-file-systems)    ; list of fs
 
   (users operating-system-users                   ; list of user accounts
@@ -152,6 +158,13 @@ file."
 ;;; Services.
 ;;;
 
+(define (luks-device-mapping source target)
+  "Return a gexp that maps SOURCE to TARGET as a LUKS device, using
+'cryptsetup'."
+  #~(zero? (system* (string-append #$cryptsetup "/sbin/cryptsetup")
+                    "open" "--type" "luks"
+                    #$source #$target)))
+
 (define (other-file-system-services os)
   "Return file system services for the file systems of OS that are not marked
 as 'needed-for-boot'."
@@ -161,30 +174,58 @@ as 'needed-for-boot'."
                   (string=? "/" (file-system-mount-point fs))))
             (operating-system-file-systems os)))
 
+  (define (device-mappings fs)
+    (filter (lambda (md)
+              (string=? (string-append "/dev/mapper/"
+                                       (mapped-device-target md))
+                        (file-system-device fs)))
+            (operating-system-mapped-devices os)))
+
+  (define (requirements fs)
+    (map (lambda (md)
+           (symbol-append 'device-mapping-
+                          (string->symbol (mapped-device-target md))))
+         (device-mappings fs)))
+
   (sequence %store-monad
-            (map (match-lambda
-                  (($ <file-system> device title target type flags opts
-                                    #f check? create?)
-                   (file-system-service device target type
-                                        #:title title
-                                        #:check? check?
-                                        #:create-mount-point? create?
-                                        #:options opts
-                                        #:flags flags)))
+            (map (lambda (fs)
+                   (match fs
+                     (($ <file-system> device title target type flags opts
+                                       #f check? create?)
+                      (file-system-service device target type
+                                           #:title title
+                                           #:requirements (requirements fs)
+                                           #:check? check?
+                                           #:create-mount-point? create?
+                                           #:options opts
+                                           #:flags flags))))
                  file-systems)))
+
+(define (device-mapping-services os)
+  "Return the list of device-mapping services for OS as a monadic list."
+  (sequence %store-monad
+            (map (lambda (md)
+                   (let ((source  (mapped-device-source md))
+                         (target  (mapped-device-target md))
+                         (command (mapped-device-command md)))
+                     (device-mapping-service target
+                                             (command source target))))
+                 (operating-system-mapped-devices os))))
 
 (define (essential-services os)
   "Return the list of essential services for OS.  These are special services
 that implement part of what's declared in OS are responsible for low-level
 bookkeeping."
-  (mlet* %store-monad ((root-fs   (root-file-system-service))
+  (mlet* %store-monad ((mappings  (device-mapping-services os))
+                       (root-fs   (root-file-system-service))
                        (other-fs  (other-file-system-services os))
                        (procs     (user-processes-service
                                    (map (compose first service-provision)
                                         other-fs)))
                        (host-name (host-name-service
                                    (operating-system-host-name os))))
-    (return (cons* host-name procs root-fs other-fs))))
+    (return (cons* host-name procs root-fs
+                   (append other-fs mappings)))))
 
 (define (operating-system-services os)
   "Return all the services of OS, including \"internal\" services that do not
@@ -490,6 +531,8 @@ we're running in the final root."
               boot?))
             (operating-system-file-systems os)))
 
+  ;; TODO: Pass the mapped devices required by boot-time file systems to the
+  ;; initrd.
   (mlet %store-monad
       ((initrd ((operating-system-initrd os) boot-file-systems)))
     (return #~(string-append #$initrd "/initrd"))))

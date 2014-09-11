@@ -38,6 +38,7 @@
   #:use-module (ice-9 format)
   #:export (root-file-system-service
             file-system-service
+            device-mapping-service
             user-processes-service
             host-name-service
             console-font-service
@@ -99,18 +100,20 @@ This service must be the root of the service dependency graph so that its
 
 (define* (file-system-service device target type
                               #:key (flags '()) (check? #t)
-                              create-mount-point? options (title 'any))
+                              create-mount-point? options (title 'any)
+                              (requirements '()))
   "Return a service that mounts DEVICE on TARGET as a file system TYPE with
 OPTIONS.  TITLE is a symbol specifying what kind of name DEVICE is: 'label for
 a partition label, 'device for a device file name, or 'any.  When CHECK? is
 true, check the file system before mounting it.  When CREATE-MOUNT-POINT? is
 true, create TARGET if it does not exist yet.  FLAGS is a list of symbols,
-such as 'read-only' etc."
+such as 'read-only' etc.  Optionally, REQUIREMENTS may be a list of service
+names such as device-mapping services."
   (with-monad %store-monad
     (return
      (service
       (provision (list (symbol-append 'file-system- (string->symbol target))))
-      (requirement '(root-file-system))
+      (requirement `(root-file-system ,@requirements))
       (documentation "Check, mount, and unmount the given file system.")
       (start #~(lambda args
                  (let ((device (canonicalize-device-spec #$device '#$title)))
@@ -566,6 +569,21 @@ extra rules from the packages listed in @var{rules}."
                                       "settle")
                              pid)))))
              (stop #~(make-kill-destructor))))))
+
+(define (device-mapping-service target command)
+  "Return a service that maps device @var{target}, a string such as
+@code{\"home\"} (meaning @code{/dev/mapper/home}), by executing @var{command},
+a gexp."
+  (with-monad %store-monad
+    (return (service
+             (provision (list (symbol-append 'device-mapping-
+                                             (string->symbol target))))
+             (requirement '(udev))
+             (documentation "Map a device node using Linux's device mapper.")
+             (start #~(lambda ()
+                        #$command))
+             (stop #~(const #f))
+             (respawn? #f)))))
 
 (define %base-services
   ;; Convenience variable holding the basic services.
