@@ -252,7 +252,7 @@ This is the GNU system.  Welcome.\n")
 
        ;; TODO: Generate bashrc from packages' search-paths.
        (bashrc    (text-file* "bashrc"  "
-export PS1='\\u@\\h\\$ '
+export PS1='\\u@\\h \\w\\$ '
 
 export LC_ALL=\"" locale "\"
 export TZ=\"" timezone "\"
