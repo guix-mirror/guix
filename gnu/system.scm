@@ -55,6 +55,7 @@
             operating-system-user-services
             operating-system-packages
             operating-system-host-name
+            operating-system-hosts-file
             operating-system-kernel
             operating-system-initrd
             operating-system-users
@@ -92,6 +93,8 @@
           (default base-initrd))
 
   (host-name operating-system-host-name)          ; string
+  (hosts-file operating-system-hosts-file         ; M item | #f
+              (default #f))
 
   (file-systems operating-system-file-systems)    ; list of fs
 
@@ -221,12 +224,19 @@ explicitly appear in OS."
   "
 This is the GNU system.  Welcome.\n")
 
+(define (default-/etc/hosts host-name)
+  "Return the default /etc/hosts file."
+  (text-file "hosts"
+             (string-append "localhost 127.0.0.1\n"
+                            host-name " 127.0.0.1\n")))
+
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
                         (issue "Hello!\n")
                         (skeletons '())
                         (pam-services '())
                         (profile "/run/current-system/profile")
+                        hosts-file
                         (sudoers ""))
   "Return a derivation that builds the static part of the /etc directory."
   (mlet* %store-monad
@@ -269,6 +279,7 @@ alias ll='ls -l'
                   ("skel" ,#~#$skel)
                   ("shells" ,#~#$shells)
                   ("profile" ,#~#$bashrc)
+                  ("hosts" ,#~#$hosts-file)
                   ("localtime" ,#~(string-append #$tzdata "/share/zoneinfo/"
                                                  #$timezone))
                   ("sudoers" ,#~#$sudoers)))))
@@ -311,12 +322,15 @@ alias ll='ls -l'
                       (append (operating-system-pam-services os)
                               (append-map service-pam-services services))))
        (profile-drv (operating-system-profile os))
-       (skeletons   (operating-system-skeletons os)))
+       (skeletons   (operating-system-skeletons os))
+       (/etc/hosts  (or (operating-system-hosts-file os)
+                        (default-/etc/hosts (operating-system-host-name os)))))
    (etc-directory #:pam-services pam-services
                   #:skeletons skeletons
                   #:issue (operating-system-issue os)
                   #:locale (operating-system-locale os)
                   #:timezone (operating-system-timezone os)
+                  #:hosts-file /etc/hosts
                   #:sudoers (operating-system-sudoers os)
                   #:profile profile-drv)))
 
