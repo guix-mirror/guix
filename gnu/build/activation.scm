@@ -147,35 +147,41 @@ numeric gid or #f."
   ;; /etc is a mixture of static and dynamic settings.  Here is where we
   ;; initialize it from the static part.
 
+  (define (rm-f file)
+    (false-if-exception (delete-file file)))
+
   (format #t "populating /etc from ~a...~%" etc)
-  (let ((rm-f (lambda (f)
-                (false-if-exception (delete-file f)))))
-    (rm-f "/etc/static")
-    (symlink etc "/etc/static")
-    (for-each (lambda (file)
-                (let ((target (string-append "/etc/" file))
-                      (source (string-append "/etc/static/" file)))
-                  (rm-f target)
 
-                  ;; Things such as /etc/sudoers must be regular files, not
-                  ;; symlinks; furthermore, they could be modified behind our
-                  ;; back---e.g., with 'visudo'.  Thus, make a copy instead of
-                  ;; symlinking them.
-                  (if (file-is-directory? source)
-                      (symlink source target)
-                      (copy-file source target))))
-              (scandir etc
-                       (lambda (file)
-                         (not (member file '("." ".."))))
+  (rm-f "/etc/static")
+  (symlink etc "/etc/static")
+  (for-each (lambda (file)
+              (let ((target (string-append "/etc/" file))
+                    (source (string-append "/etc/static/" file)))
+                (rm-f target)
 
-                       ;; The default is 'string-locale<?', but we don't have
-                       ;; it when run from the initrd's statically-linked
-                       ;; Guile.
-                       string<?))
+                ;; Things such as /etc/sudoers must be regular files, not
+                ;; symlinks; furthermore, they could be modified behind our
+                ;; back---e.g., with 'visudo'.  Thus, make a copy instead of
+                ;; symlinking them.
+                (if (file-is-directory? source)
+                    (symlink source target)
+                    (copy-file source target))
 
-    ;; Prevent ETC from being GC'd.
-    (rm-f "/var/guix/gcroots/etc-directory")
-    (symlink etc "/var/guix/gcroots/etc-directory")))
+                ;; XXX: Dirty hack to meet sudo's expectations.
+                (when (string=? (basename target) "sudoers")
+                  (chmod target #o440))))
+            (scandir etc
+                     (lambda (file)
+                       (not (member file '("." ".."))))
+
+                     ;; The default is 'string-locale<?', but we don't have
+                     ;; it when run from the initrd's statically-linked
+                     ;; Guile.
+                     string<?))
+
+  ;; Prevent ETC from being GC'd.
+  (rm-f "/var/guix/gcroots/etc-directory")
+  (symlink etc "/var/guix/gcroots/etc-directory"))
 
 (define %setuid-directory
   ;; Place where setuid programs are stored.
