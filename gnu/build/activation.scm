@@ -152,8 +152,6 @@ numeric gid or #f."
     (rm-f "/etc/static")
     (symlink etc "/etc/static")
     (for-each (lambda (file)
-                ;; TODO: Handle 'shadow' specially so that changed
-                ;; password aren't lost.
                 (let ((target (string-append "/etc/" file))
                       (source (string-append "/etc/static/" file)))
                   (rm-f target)
