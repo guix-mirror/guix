@@ -175,7 +175,8 @@ authenticate to run COMMAND."
           ;; These programs are setuid-root.
           (map (cut unix-pam-service <>
                     #:allow-empty-passwords? allow-empty-passwords?)
-               '("su" "passwd" "sudo"))
+               '("su" "passwd" "sudo"
+                 "xlock" "xscreensaver"))
 
           ;; These programs are not setuid-root, and we want root to be able
           ;; to run them without having to authenticate (notably because
