@@ -113,7 +113,6 @@ STORE."
     ("/var/guix/gcroots/current-system" -> "/run/current-system")
 
     (directory "/bin")
-    ("/bin/sh" -> "/run/current-system/profile/bin/bash")
     (directory "/tmp" 0 0 #o1777)                 ; sticky bit
 
     (directory "/root" 0 0)                       ; an exception

@@ -26,6 +26,7 @@
   #:export (activate-users+groups
             activate-etc
             activate-setuid-programs
+            activate-/bin/sh
             activate-current-system))
 
 ;;; Commentary:
@@ -213,6 +214,11 @@ copy SOURCE to TARGET."
       (mkdir-p %setuid-directory))
 
   (for-each make-setuid-program programs))
+
+(define (activate-/bin/sh shell)
+  "Change /bin/sh to point to SHELL."
+  (symlink shell "/bin/sh.new")
+  (rename-file "/bin/sh.new" "/bin/sh"))
 
 (define %current-system
   ;; The system that is current (a symlink.)  This is not necessarily the same

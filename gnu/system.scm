@@ -417,6 +417,11 @@ etc."
 
                     (use-modules (gnu build activation))
 
+                    ;; Make sure /bin/sh is valid and current.
+                    (activate-/bin/sh
+                     (string-append #$(canonical-package bash)
+                                    "/bin/sh"))
+
                     ;; Populate /etc.
                     (activate-etc #$etc)
 
