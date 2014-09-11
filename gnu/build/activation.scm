@@ -175,19 +175,24 @@ numeric gid or #f."
   ;; Place where setuid programs are stored.
   "/run/setuid-programs")
 
+(define (link-or-copy source target)
+  "Attempt to make TARGET a hard link to SOURCE; if it fails, fall back to
+copy SOURCE to TARGET."
+  (catch 'system-error
+    (lambda ()
+      (link source target))
+    (lambda args
+      ;; Perhaps SOURCE and TARGET live in a different file system, so copy
+      ;; SOURCE.
+      (copy-file source target))))
+
 (define (activate-setuid-programs programs)
   "Turn PROGRAMS, a list of file names, into setuid programs stored under
 %SETUID-DIRECTORY."
   (define (make-setuid-program prog)
     (let ((target (string-append %setuid-directory
                                  "/" (basename prog))))
-      (catch 'system-error
-        (lambda ()
-          (link prog target))
-        (lambda args
-          ;; Perhaps PROG and TARGET live in a different file system, so copy
-          ;; PROG.
-          (copy-file prog target)))
+      (link-or-copy prog target)
       (chown target 0 0)
       (chmod target #o6555)))
 
