@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -19,7 +19,7 @@
 
 (define-module (gnu packages openldap)
   #:use-module (gnu packages autotools)
-  #:use-module (gnu packages bdb)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages cyrus-sasl)
   #:use-module (gnu packages gnupg)

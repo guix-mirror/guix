@@ -26,6 +26,7 @@
   #:export (activate-users+groups
             activate-etc
             activate-setuid-programs
+            activate-/bin/sh
             activate-current-system))
 
 ;;; Commentary:
@@ -146,34 +147,56 @@ numeric gid or #f."
   ;; /etc is a mixture of static and dynamic settings.  Here is where we
   ;; initialize it from the static part.
 
+  (define (rm-f file)
+    (false-if-exception (delete-file file)))
+
   (format #t "populating /etc from ~a...~%" etc)
-  (let ((rm-f (lambda (f)
-                (false-if-exception (delete-file f)))))
-    (rm-f "/etc/static")
-    (symlink etc "/etc/static")
-    (for-each (lambda (file)
-                ;; TODO: Handle 'shadow' specially so that changed
-                ;; password aren't lost.
-                (let ((target (string-append "/etc/" file))
-                      (source (string-append "/etc/static/" file)))
-                  (rm-f target)
-                  (symlink source target)))
-              (scandir etc
-                       (lambda (file)
-                         (not (member file '("." ".."))))
 
-                       ;; The default is 'string-locale<?', but we don't have
-                       ;; it when run from the initrd's statically-linked
-                       ;; Guile.
-                       string<?))
+  (rm-f "/etc/static")
+  (symlink etc "/etc/static")
+  (for-each (lambda (file)
+              (let ((target (string-append "/etc/" file))
+                    (source (string-append "/etc/static/" file)))
+                (rm-f target)
 
-    ;; Prevent ETC from being GC'd.
-    (rm-f "/var/guix/gcroots/etc-directory")
-    (symlink etc "/var/guix/gcroots/etc-directory")))
+                ;; Things such as /etc/sudoers must be regular files, not
+                ;; symlinks; furthermore, they could be modified behind our
+                ;; back---e.g., with 'visudo'.  Thus, make a copy instead of
+                ;; symlinking them.
+                (if (file-is-directory? source)
+                    (symlink source target)
+                    (copy-file source target))
+
+                ;; XXX: Dirty hack to meet sudo's expectations.
+                (when (string=? (basename target) "sudoers")
+                  (chmod target #o440))))
+            (scandir etc
+                     (lambda (file)
+                       (not (member file '("." ".."))))
+
+                     ;; The default is 'string-locale<?', but we don't have
+                     ;; it when run from the initrd's statically-linked
+                     ;; Guile.
+                     string<?))
+
+  ;; Prevent ETC from being GC'd.
+  (rm-f "/var/guix/gcroots/etc-directory")
+  (symlink etc "/var/guix/gcroots/etc-directory"))
 
 (define %setuid-directory
   ;; Place where setuid programs are stored.
   "/run/setuid-programs")
+
+(define (link-or-copy source target)
+  "Attempt to make TARGET a hard link to SOURCE; if it fails, fall back to
+copy SOURCE to TARGET."
+  (catch 'system-error
+    (lambda ()
+      (link source target))
+    (lambda args
+      ;; Perhaps SOURCE and TARGET live in a different file system, so copy
+      ;; SOURCE.
+      (copy-file source target))))
 
 (define (activate-setuid-programs programs)
   "Turn PROGRAMS, a list of file names, into setuid programs stored under
@@ -181,13 +204,7 @@ numeric gid or #f."
   (define (make-setuid-program prog)
     (let ((target (string-append %setuid-directory
                                  "/" (basename prog))))
-      (catch 'system-error
-        (lambda ()
-          (link prog target))
-        (lambda args
-          ;; Perhaps PROG and TARGET live in a different file system, so copy
-          ;; PROG.
-          (copy-file prog target)))
+      (link-or-copy prog target)
       (chown target 0 0)
       (chmod target #o6555)))
 
@@ -203,6 +220,11 @@ numeric gid or #f."
       (mkdir-p %setuid-directory))
 
   (for-each make-setuid-program programs))
+
+(define (activate-/bin/sh shell)
+  "Change /bin/sh to point to SHELL."
+  (symlink shell "/bin/sh.new")
+  (rename-file "/bin/sh.new" "/bin/sh"))
 
 (define %current-system
   ;; The system that is current (a symlink.)  This is not necessarily the same

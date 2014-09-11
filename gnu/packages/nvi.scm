@@ -18,7 +18,7 @@
 
 (define-module (gnu packages nvi)
   #:use-module (gnu packages)
-  #:use-module (gnu packages bdb)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages ncurses)
   #:use-module (guix packages)
   #:use-module (guix download)

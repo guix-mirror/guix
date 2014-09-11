@@ -19,6 +19,9 @@
 (define-module (gnu packages image)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
+  #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -110,3 +113,36 @@ collection of tools for doing simple manipulations of TIFF images.")
    (license (license:bsd-style "file://COPYRIGHT"
                                "See COPYRIGHT in the distribution."))
    (home-page "http://www.libtiff.org/")))
+
+(define-public libwmf
+  (package
+    (name "libwmf")
+    (version "0.2.8.4")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "mirror://sourceforge/wvware/"
+                            name "/" version
+                            "/" name "-" version ".tar.gz"))
+        (sha256
+          (base32 "1y3wba4q8pl7kr51212jwrsz1x6nslsx1gsjml1x0i8549lmqd2v"))))
+
+    (build-system gnu-build-system)
+    (inputs
+      `(("freetype" ,freetype)
+        ("libjpeg" ,libjpeg)
+        ("libpng",libpng)
+        ("libxml2" ,libxml2)
+        ("zlib" ,zlib)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)))
+    (synopsis "Library for reading images in the Microsoft WMF format")
+    (description
+      "libwmf is a library for reading vector images in Microsoft's native
+Windows Metafile Format (WMF) and for either (a) displaying them in, e.g., an X
+window; or (b) converting them to more standard/free file formats such as, e.g.,
+the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
+    (home-page "http://wvware.sourceforge.net/libwmf.html")
+
+    ;; 'COPYING' is the GPLv2, but file headers say LGPLv2.0+.
+    (license license:lgpl2.0+)))

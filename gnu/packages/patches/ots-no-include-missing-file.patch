@@ -1,0 +1,14 @@
+The file $(top_srcdir)/gtk-doc.make doesn't exist, so don't include it.
+
+--- a/doc/Makefile.in	2007-04-08 20:17:25.000000000 +0200
++++ b/doc/Makefile.in	2014-09-06 23:19:41.413397662 +0200
+@@ -240,9 +240,6 @@
+ distclean-generic clean-generic maintainer-clean-generic clean \
+ mostlyclean distclean maintainer-clean
+ 
+-
+-include $(top_srcdir)/gtk-doc.make
+-
+ # Tell versions [3.59,3.63) of GNU make to not export all variables.
+ # Otherwise a system limit (for SysV at least) may be exceeded.
+ .NOEXPORT:

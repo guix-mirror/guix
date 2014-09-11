@@ -24,6 +24,7 @@
 GNU_SYSTEM_MODULES =				\
   gnu.scm					\
   gnu/packages.scm				\
+  gnu/packages/abiword.scm			\
   gnu/packages/acct.scm				\
   gnu/packages/acl.scm				\
   gnu/packages/admin.scm			\
@@ -41,7 +42,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/backup.scm			\
   gnu/packages/base.scm				\
   gnu/packages/bash.scm				\
-  gnu/packages/bdb.scm				\
   gnu/packages/bdw-gc.scm			\
   gnu/packages/bittorrent.scm			\
   gnu/packages/bison.scm			\
@@ -67,6 +67,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/curl.scm				\
   gnu/packages/cursynth.scm			\
   gnu/packages/cyrus-sasl.scm			\
+  gnu/packages/databases.scm			\
   gnu/packages/datamash.scm			\
   gnu/packages/dc.scm				\
   gnu/packages/dejagnu.scm			\
@@ -78,6 +79,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ed.scm				\
   gnu/packages/elf.scm				\
   gnu/packages/emacs.scm			\
+  gnu/packages/enchant.scm			\
   gnu/packages/file.scm				\
   gnu/packages/fish.scm				\
   gnu/packages/flex.scm				\
@@ -86,6 +88,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/fontutils.scm			\
   gnu/packages/freeipmi.scm			\
   gnu/packages/ftp.scm				\
+  gnu/packages/fribidi.scm			\
   gnu/packages/games.scm			\
   gnu/packages/gawk.scm				\
   gnu/packages/gcal.scm				\
@@ -172,7 +175,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mpi.scm				\
   gnu/packages/multiprecision.scm		\
   gnu/packages/mtools.scm			\
-  gnu/packages/mysql.scm			\
   gnu/packages/nano.scm				\
   gnu/packages/ncdu.scm				\
   gnu/packages/ncurses.scm			\
@@ -187,6 +189,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/openldap.scm			\
   gnu/packages/openssl.scm			\
   gnu/packages/orpheus.scm			\
+  gnu/packages/ots.scm				\
   gnu/packages/package-management.scm		\
   gnu/packages/parallel.scm			\
   gnu/packages/patchutils.scm			\
@@ -199,7 +202,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/pkg-config.scm			\
   gnu/packages/plotutils.scm			\
   gnu/packages/popt.scm				\
-  gnu/packages/postgresql.scm			\
   gnu/packages/pth.scm				\
   gnu/packages/pulseaudio.scm			\
   gnu/packages/pretty-print.scm			\
@@ -210,7 +212,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ratpoison.scm			\
   gnu/packages/rdf.scm				\
   gnu/packages/readline.scm			\
-  gnu/packages/recutils.scm			\
   gnu/packages/rrdtool.scm			\
   gnu/packages/rsync.scm			\
   gnu/packages/rush.scm				\
@@ -224,7 +225,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/skribilo.scm			\
   gnu/packages/slim.scm				\
   gnu/packages/smalltalk.scm			\
-  gnu/packages/sqlite.scm			\
   gnu/packages/ssh.scm				\
   gnu/packages/stalonetray.scm			\
   gnu/packages/swig.scm				\
@@ -249,9 +249,11 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/w3m.scm				\
   gnu/packages/wdiff.scm			\
   gnu/packages/web.scm				\
+  gnu/packages/weechat.scm			\
   gnu/packages/wget.scm				\
   gnu/packages/which.scm			\
   gnu/packages/wordnet.scm			\
+  gnu/packages/wv.scm				\
   gnu/packages/xiph.scm				\
   gnu/packages/xlockmore.scm			\
   gnu/packages/xml.scm				\
@@ -260,6 +262,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/yasm.scm				\
   gnu/packages/zile.scm				\
   gnu/packages/zip.scm				\
+  gnu/packages/zsh.scm				\
 						\
   gnu/services.scm				\
   gnu/services/avahi.scm			\
@@ -289,6 +292,12 @@ GNU_SYSTEM_MODULES =				\
 
 patchdir = $(guilemoduledir)/gnu/packages/patches
 dist_patch_DATA =						\
+  gnu/packages/patches/abiword-explictly-cast-bools.patch	\
+  gnu/packages/patches/abiword-link-plugins-against-backend.patch	\
+  gnu/packages/patches/abiword-no-include-glib-internal-headers.patch	\
+  gnu/packages/patches/abiword-pass-no-undefined-to-linker.patch	\
+  gnu/packages/patches/abiword-use-proper-png-api.patch		\
+  gnu/packages/patches/abiword-wmf-version-lookup-fix.patch	\
   gnu/packages/patches/alsa-lib-mips-atomic-fix.patch		\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
@@ -362,6 +371,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/module-init-tools-moduledir.patch	\
   gnu/packages/patches/nvi-assume-preserve-path.patch           \
   gnu/packages/patches/orpheus-cast-errors-and-includes.patch	\
+  gnu/packages/patches/ots-no-include-missing-file.patch	\
   gnu/packages/patches/patchelf-page-size.patch			\
   gnu/packages/patches/patchutils-xfail-gendiff-tests.patch	\
   gnu/packages/patches/perl-no-sys-dirs.patch			\

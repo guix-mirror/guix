@@ -428,7 +428,9 @@ exec " #$qemu "/bin/" #$(qemu-command (%current-system))
   "--system=" #$os-drv " --load=" #$os-drv "/boot --root=/dev/vda1\" \
   -serial stdio \
   -drive file=" #$image
-  ",if=virtio,cache=writeback,werror=report,readonly\n")
+  ",if=virtio,cache=writeback,werror=report,readonly \
+  -m 256
+\n")
              port)
             (chmod port #o555))))
 

@@ -36,10 +36,8 @@
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages tcl)
-  #:use-module ((gnu packages base)
-                #:select (tar))
   #:use-module ((gnu packages compression)
-                #:select (gzip))
+                #:renamer (symbol-prefix-proc 'c:))
   #:use-module ((gnu packages openssl)
                 #:renamer (symbol-prefix-proc 'o:))
   #:use-module (gnu packages bison)
@@ -52,6 +50,7 @@
   #:use-module (gnu packages pciutils)
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages libftdi)
+  #:use-module (gnu packages image)
   #:use-module (gnu packages xorg))
 
 (define-public dmd
@@ -309,7 +308,7 @@ allow automatic login and starting any app.")
                                     '("services" "protocols" "rpc")))
                      #t))))
     (native-inputs `(("tar" ,tar)
-                     ("gzip" ,gzip)))
+                     ("gzip" ,c:gzip)))
     (synopsis "IANA protocol, port, and RPC number assignments")
     (description
      "This package provides the /etc/services, /etc/protocols, and /etc/rpc
@@ -929,3 +928,68 @@ under Unix and related operating systems.  Spaces and various other unsafe
 characters (such as \"$\") get replaced with \"_\".  ISO 8859-1 (Latin-1)
 characters can be replaced as well, as can UTF-8 characters.")
     (license bsd-3)))
+
+(define-public testdisk
+  (package
+    (name "testdisk")
+    (version "6.14")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.cgsecurity.org/testdisk-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0v1jap83f5h99zv01v3qmqm160d36n4ysi0gyq7xzb3mqgmw75x5"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(;; ("ntfs" ,ntfs)
+       ("util-linux" ,util-linux)
+       ("openssl" ,o:openssl)
+       ("zlib" ,c:zlib)
+       ("e2fsprogs" ,e2fsprogs)
+       ("libjpeg" ,libjpeg)
+       ("ncurses" ,ncurses)))
+    (home-page "http://www.cgsecurity.org/wiki/TestDisk")
+    (synopsis "Data recovery tool")
+    (description
+     "TestDisk is a program for data recovery, primarily designed to help
+recover lost partitions and/or make non-booting disks bootable again.")
+    (license gpl2+)))
+
+(define-public direvent
+  (package
+    (name "direvent")
+    (version "5.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/direvent/direvent-"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1i14131y6m8wvirz6piw4zxz2q1kbpl0lniv5kl55rx4k372dg8z"))
+              (modules '((guix build utils)))
+              (snippet '(substitute* "tests/testsuite"
+                          (("#![[:blank:]]?/bin/sh")
+                           "#!$SHELL")))))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-cons-before
+                 'build 'patch-/bin/sh
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; Use the right shell when executing the watcher.
+                   (let ((bash (assoc-ref inputs "bash")))
+                     (substitute* "src/direvent.c"
+                       (("\"/bin/sh\"")
+                        (string-append "\"" bash "/bin/sh\"")))))
+                 %standard-phases)))
+    (home-page "http://www.gnu.org/software/direvent/")
+    (synopsis "Daemon to monitor directories for events such as file removal")
+    (description
+     "A daemon that monitors directories for events, such as creating,
+deleting or modifying files.  It can monitor different sets of directories for
+different events.  When an event is detected, direvent calls a specified
+external program with information about the event, such as the location
+within the file system where it occurred.  Thus, \"direvent\" provides an easy
+way to react immediately if given files undergo changes, for example, to
+track changes in important system configuration files.")
+    (license gpl3+)))

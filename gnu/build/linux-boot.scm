@@ -221,6 +221,7 @@ networking values.)  Return #t if INTERFACE is up, #f otherwise."
 (define (load-linux-module* file)
   "Load Linux module from FILE, the name of a `.ko' file."
   (define (slurp module)
+    ;; TODO: Use 'mmap' to reduce memory usage.
     (call-with-input-file file get-bytevector-all))
 
   (load-linux-module (slurp file)))
@@ -342,10 +343,11 @@ bailing out.~%root contents: ~s~%" (scandir "/"))
                       volatile-root?
                       (mounts '()))
   "This procedure is meant to be called from an initrd.  Boot a system by
-first loading LINUX-MODULES, then setting up QEMU guest networking if
-QEMU-GUEST-NETWORKING? is true, mounting the file systems specified in MOUNTS,
-and finally booting into the new root if any.  The initrd supports kernel
-command-line options '--load', '--root', and '--repl'.
+first loading LINUX-MODULES (a list of absolute file names of '.ko' files),
+then setting up QEMU guest networking if QEMU-GUEST-NETWORKING? is true,
+mounting the file systems specified in MOUNTS, and finally booting into the
+new root if any.  The initrd supports kernel command-line options '--load',
+'--root', and '--repl'.
 
 Mount the root file system, specified by the '--root' command-line argument,
 if any.
@@ -383,9 +385,7 @@ to it are lost."
          (start-repl))
 
        (display "loading kernel modules...\n")
-       (for-each (compose load-linux-module*
-                          (cut string-append "/modules/" <>))
-                 linux-modules)
+       (for-each load-linux-module* linux-modules)
 
        (when qemu-guest-networking?
          (unless (configure-qemu-networking)

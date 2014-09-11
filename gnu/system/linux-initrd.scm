@@ -34,6 +34,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-26)
   #:export (expression->initrd
             base-initrd))
 
@@ -53,106 +54,37 @@
                              (gzip gzip)
                              (name "guile-initrd")
                              (system (%current-system))
-                             (modules '())
-                             (to-copy '())
-                             (linux #f)
-                             (linux-modules '()))
+                             (modules '()))
   "Return a derivation that builds a Linux initrd (a gzipped cpio archive)
-containing GUILE and that evaluates EXP, a G-expression, upon booting.
+containing GUILE and that evaluates EXP, a G-expression, upon booting.  All
+the derivations referenced by EXP are automatically copied to the initrd.
 
-LINUX-MODULES is a list of '.ko' file names to be copied from LINUX into the
-initrd.  TO-COPY is a list of additional derivations or packages to copy to
-the initrd.  MODULES is a list of Guile module names to be embedded in the
-initrd."
+MODULES is a list of Guile module names to be embedded in the initrd."
 
   ;; General Linux overview in `Documentation/early-userspace/README' and
   ;; `Documentation/filesystems/ramfs-rootfs-initramfs.txt'.
 
-  (define graph-files
-    (unfold-right zero?
-                  number->string
-                  1-
-                  (length to-copy)))
-
-  (mlet %store-monad ((source     (imported-modules modules))
-                      (compiled   (compiled-modules modules))
-                      (module-dir (flat-linux-module-directory linux
-                                                               linux-modules)))
+  (mlet %store-monad ((init (gexp->script "init" exp
+                                          #:modules modules
+                                          #:guile guile)))
     (define builder
-      ;; TODO: Move most of this code to (gnu build linux-initrd).
       #~(begin
-          (use-modules (gnu build linux-initrd)
-                       (guix build utils)
-                       (guix build store-copy)
-                       (ice-9 pretty-print)
-                       (ice-9 popen)
-                       (ice-9 match)
-                       (ice-9 ftw)
-                       (srfi srfi-26)
-                       (system base compile)
-                       (rnrs bytevectors)
-                       ((system foreign) #:select (sizeof)))
+          (use-modules (gnu build linux-initrd))
 
-          (let ((modules #$source)
-                (gos     #$compiled)
-                (scm-dir (string-append "share/guile/" (effective-version)))
-                (go-dir  (format #f ".cache/guile/ccache/~a-~a-~a-~a"
-                                 (effective-version)
-                                 (if (eq? (native-endianness) (endianness little))
-                                     "LE"
-                                     "BE")
-                                 (sizeof '*)
-                                 (effective-version))))
-            (mkdir #$output)
-            (mkdir "contents")
-
-            (with-directory-excursion "contents"
-              (copy-recursively #$guile ".")
-              (call-with-output-file "init"
-                (lambda (p)
-                  (format p "#!/bin/guile -ds~%!#~%" #$guile)
-                  (pretty-print '#$exp p)))
-              (chmod "init" #o555)
-              (chmod "bin/guile" #o555)
-
-              ;; Copy Guile modules.
-              (chmod scm-dir #o777)
-              (copy-recursively modules scm-dir
-                                #:follow-symlinks? #t)
-              (copy-recursively gos (string-append "lib/guile/"
-                                                   (effective-version) "/ccache")
-                                #:follow-symlinks? #t)
-
-              ;; Compile `init'.
-              (mkdir-p go-dir)
-              (set! %load-path (cons modules %load-path))
-              (set! %load-compiled-path (cons gos %load-compiled-path))
-              (compile-file "init"
-                            #:opts %auto-compilation-options
-                            #:output-file (string-append go-dir "/init.go"))
-
-              ;; Copy Linux modules.
-              (mkdir "modules")
-              (copy-recursively #$module-dir "modules")
-
-              ;; Populate the initrd's store.
-              (with-directory-excursion ".."
-                (populate-store '#$graph-files "contents"))
-
-              ;; Reset the timestamps of all the files that will make it in the
-              ;; initrd.
-              (for-each (cut utime <> 0 0 0 0)
-                        (find-files "." ".*"))
-
-              (write-cpio-archive (string-append #$output "/initrd") "."
-                                  #:cpio (string-append #$cpio "/bin/cpio")
-                                  #:gzip (string-append #$gzip "/bin/gzip"))))))
+          (mkdir #$output)
+          (build-initrd (string-append #$output "/initrd")
+                        #:guile #$guile
+                        #:init #$init
+                        ;; Copy everything INIT refers to into the initrd.
+                        #:references-graphs '("closure")
+                        #:cpio (string-append #$cpio "/bin/cpio")
+                        #:gzip (string-append #$gzip "/bin/gzip"))))
 
    (gexp->derivation name builder
                      #:modules '((guix build utils)
                                  (guix build store-copy)
                                  (gnu build linux-initrd))
-                     #:references-graphs (zip graph-files to-copy))))
+                     #:references-graphs `(("closure" ,init)))))
 
 (define (flat-linux-module-directory linux modules)
   "Return a flat directory containing the Linux kernel modules listed in
@@ -199,6 +131,7 @@ initrd code."
                       volatile-root?
                       (extra-modules '())
                       guile-modules-in-chroot?)
+  ;; TODO: Support boot-time device mappings.
   "Return a monadic derivation that builds a generic initrd.  FILE-SYSTEMS is
 a list of file-systems to be mounted by the initrd, possibly in addition to
 the root file system specified on the kernel command line via '--root'.
@@ -264,28 +197,29 @@ exception and backtrace!)."
             (list unionfs-fuse/static)
             '())))
 
-  (expression->initrd
-   #~(begin
-       (use-modules (gnu build linux-boot)
-                    (guix build utils)
-                    (srfi srfi-26))
+  (mlet %store-monad ((kodir (flat-linux-module-directory linux-libre
+                                                          linux-modules)))
+    (expression->initrd
+     #~(begin
+         (use-modules (gnu build linux-boot)
+                      (guix build utils)
+                      (srfi srfi-26))
 
-       (with-output-to-port (%make-void-port "w")
-         (lambda ()
-           (set-path-environment-variable "PATH" '("bin" "sbin")
-                                          '#$helper-packages)))
+         (with-output-to-port (%make-void-port "w")
+           (lambda ()
+             (set-path-environment-variable "PATH" '("bin" "sbin")
+                                            '#$helper-packages)))
 
-       (boot-system #:mounts '#$(map file-system->spec file-systems)
-                    #:linux-modules '#$linux-modules
-                    #:qemu-guest-networking? #$qemu-networking?
-                    #:guile-modules-in-chroot? '#$guile-modules-in-chroot?
-                    #:volatile-root? '#$volatile-root?))
-   #:name "base-initrd"
-   #:modules '((guix build utils)
-               (gnu build linux-boot)
-               (gnu build file-systems))
-   #:to-copy helper-packages
-   #:linux linux-libre
-   #:linux-modules linux-modules))
+         (boot-system #:mounts '#$(map file-system->spec file-systems)
+                      #:linux-modules (map (lambda (file)
+                                             (string-append #$kodir "/" file))
+                                           '#$linux-modules)
+                      #:qemu-guest-networking? #$qemu-networking?
+                      #:guile-modules-in-chroot? '#$guile-modules-in-chroot?
+                      #:volatile-root? '#$volatile-root?))
+     #:name "base-initrd"
+     #:modules '((guix build utils)
+                 (gnu build linux-boot)
+                 (gnu build file-systems)))))
 
 ;;; linux-initrd.scm ends here

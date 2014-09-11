@@ -1,0 +1,65 @@
+
+Patch the two Makefile to also create liblua.so
+Original patch by Allan McRae <allan@archlinux.org>
+for Archlinux
+
+
+diff -ruN lua-5.1.5/Makefile lua-5.1.5-new/Makefile
+--- lua-5.1.5/Makefile	2012-02-10 10:50:23.000000000 +0100
++++ lua-5.1.5-new/Makefile	2014-09-10 20:17:28.913951433 +0200
+@@ -43,7 +43,7 @@
+ # What to install.
+ TO_BIN= lua luac
+ TO_INC= lua.h luaconf.h lualib.h lauxlib.h ../etc/lua.hpp
+-TO_LIB= liblua.a
++TO_LIB= liblua.a liblua.so liblua.so.${V}
+ TO_MAN= lua.1 luac.1
+ 
+ # Lua version and release.
+@@ -53,7 +53,7 @@
+ all:	$(PLAT)
+ 
+ $(PLATS) clean:
+-	cd src && $(MAKE) $@
++	cd src && $(MAKE) $@ V=$(V) R=$(R)
+ 
+ test:	dummy
+ 	src/lua test/hello.lua
+diff -ruN lua-5.1.5/src/Makefile lua-5.1.5-new/src/Makefile
+--- lua-5.1.5/src/Makefile	2012-02-13 21:41:22.000000000 +0100
++++ lua-5.1.5-new/src/Makefile	2014-09-10 20:16:09.982952152 +0200
+@@ -8,7 +8,7 @@
+ PLAT= none
+ 
+ CC= gcc
+-CFLAGS= -O2 -Wall $(MYCFLAGS)
++CFLAGS= -O2 -Wall $(MYCFLAGS) -fPIC
+ AR= ar rcu
+ RANLIB= ranlib
+ RM= rm -f
+@@ -34,9 +34,10 @@
+ 
+ LUAC_T=	luac
+ LUAC_O=	luac.o print.o
++LUA_SO= liblua.so
+ 
+ ALL_O= $(CORE_O) $(LIB_O) $(LUA_O) $(LUAC_O)
+-ALL_T= $(LUA_A) $(LUA_T) $(LUAC_T)
++ALL_T= $(LUA_A) $(LUA_T) $(LUAC_T) $(LUA_SO)
+ ALL_A= $(LUA_A)
+ 
+ default: $(PLAT)
+@@ -57,6 +58,13 @@
+ $(LUAC_T): $(LUAC_O) $(LUA_A)
+ 	$(CC) -o $@ $(MYLDFLAGS) $(LUAC_O) $(LUA_A) $(LIBS)
+ 
++$(LUA_SO): $(CORE_O) $(LIB_O)
++	$(CC) -shared -ldl -Wl,-soname,$(LUA_SO).$(V) -o $@.$(R) $? -lm $(MYLDFLAGS)
++	ln -sf $(LUA_SO).$(R) $(LUA_SO).$(V)
++	ln -sf $(LUA_SO).$(R) $(LUA_SO)
++
++
++
+ clean:
+ 	$(RM) $(ALL_T) $(ALL_O)
+ 

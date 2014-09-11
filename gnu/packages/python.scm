@@ -36,7 +36,7 @@
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages elf)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages zip)
   #:use-module (gnu packages multiprecision)
   #:use-module (guix packages)

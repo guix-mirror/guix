@@ -75,7 +75,8 @@ for configuration, scripting, and rapid prototyping.")
              (uri (string-append "http://www.lua.org/ftp/lua-"
                                  version ".tar.gz"))
              (sha256
-              (base32 "0cskd4w0g6rdm2q8q3i4n1h3j8kylhs3rq8mxwl9vwlmlxbgqh16"))))))
+              (base32 "0cskd4w0g6rdm2q8q3i4n1h3j8kylhs3rq8mxwl9vwlmlxbgqh16"))
+             (patches (list (search-patch "lua51-liblua-so.patch")))))))
 
 (define-public luajit
   (package

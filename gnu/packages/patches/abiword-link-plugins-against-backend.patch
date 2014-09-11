@@ -1,0 +1,639 @@
+Link plugins against libabiword. This is because --no-undefined is passed to
+the linker when linking and without libabiword, it would fail.
+
+--- a/plugins/aiksaurus/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/aiksaurus/Makefile.in	2014-09-06 14:58:36.480413350 +0200
+@@ -422,7 +422,8 @@
+ plugin_LTLIBRARIES = aiksaurus.la
+ aiksaurus_la_LIBADD = \
+ 	$(platform_lib) \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ aiksaurus_la_LDFLAGS = \
+ 	$(AIKSAURUS_LIBS) \
+
+--- a/plugins/applix/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/applix/Makefile.in	2014-09-06 14:58:54.416413938 +0200
+@@ -425,7 +425,8 @@
+ @APPLIX_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @APPLIX_BUILTIN_FALSE@plugin_LTLIBRARIES = applix.la
+ applix_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ applix_la_LDFLAGS = \
+ 	$(APPLIX_LIBS) \
+
+--- a/plugins/babelfish/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/babelfish/Makefile.in	2014-09-06 14:59:09.220414422 +0200
+@@ -425,7 +425,8 @@
+ @BABELFISH_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @BABELFISH_BUILTIN_FALSE@plugin_LTLIBRARIES = babelfish.la
+ babelfish_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ babelfish_la_LDFLAGS = \
+ 	$(BABELFISH_LIBS) \
+
+--- a/plugins/bmp/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/bmp/Makefile.in	2014-09-06 14:59:53.928415886 +0200
+@@ -425,7 +425,8 @@
+ @BMP_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @BMP_BUILTIN_FALSE@plugin_LTLIBRARIES = bmp.la
+ bmp_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ bmp_la_LDFLAGS = \
+ 	$(BMP_LIBS) \
+
+--- a/plugins/clarisworks/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/clarisworks/Makefile.in	2014-09-06 15:00:06.148416286 +0200
+@@ -427,7 +427,8 @@
+ @CLARISWORKS_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @CLARISWORKS_BUILTIN_FALSE@plugin_LTLIBRARIES = clarisworks.la
+ clarisworks_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ clarisworks_la_LDFLAGS = \
+ 	$(CLARISWORKS_LIBS) \
+
+--- a/plugins/collab/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/collab/Makefile.in	2014-09-06 15:02:04.000420145 +0200
+@@ -428,7 +428,8 @@
+ @TOOLKIT_COCOA_FALSE@plugin_LTLIBRARIES = collab.la
+ @TOOLKIT_COCOA_FALSE@collab_la_LIBADD = \
+ @TOOLKIT_COCOA_FALSE@	backends/libbackends.la \
+-@TOOLKIT_COCOA_FALSE@	core/libcore.la
++@TOOLKIT_COCOA_FALSE@	core/libcore.la \
++@TOOLKIT_COCOA_FALSE@	@top_builddir@/src/libabiword-2.8.la
+ 
+ @TOOLKIT_COCOA_FALSE@collab_la_LDFLAGS = \
+ @TOOLKIT_COCOA_FALSE@	$(COLLAB_LIBS) \
+
+--- a/plugins/command/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/command/Makefile.in	2014-09-06 15:02:41.208421363 +0200
+@@ -420,7 +420,8 @@
+ @TOOLKIT_COCOA_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @TOOLKIT_COCOA_FALSE@plugin_LTLIBRARIES = command.la
+ @TOOLKIT_COCOA_FALSE@command_la_LIBADD = \
+-@TOOLKIT_COCOA_FALSE@	xp/libxp.la
++@TOOLKIT_COCOA_FALSE@	xp/libxp.la \
++@TOOLKIT_COCOA_FALSE@	@top_builddir@/src/libabiword-2.8.la
+ 
+ @TOOLKIT_COCOA_FALSE@command_la_LDFLAGS = \
+ @TOOLKIT_COCOA_FALSE@	$(COMMAND_LIBS) \
+
+--- a/plugins/docbook/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/docbook/Makefile.in	2014-09-06 15:02:52.128421720 +0200
+@@ -425,7 +425,8 @@
+ @DOCBOOK_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @DOCBOOK_BUILTIN_FALSE@plugin_LTLIBRARIES = docbook.la
+ docbook_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ docbook_la_LDFLAGS = \
+ 	$(DOCBOOK_LIBS) \
+
+--- a/plugins/eml/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/eml/Makefile.in	2014-09-06 15:03:02.760422068 +0200
+@@ -425,7 +425,8 @@
+ @EML_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @EML_BUILTIN_FALSE@plugin_LTLIBRARIES = eml.la
+ eml_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ eml_la_LDFLAGS = \
+ 	$(EML_LIBS) \
+
+--- a/plugins/freetranslation/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/freetranslation/Makefile.in	2014-09-06 15:03:17.656422556 +0200
+@@ -427,7 +427,8 @@
+ @FREETRANSLATION_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @FREETRANSLATION_BUILTIN_FALSE@plugin_LTLIBRARIES = freetranslation.la
+ freetranslation_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ freetranslation_la_LDFLAGS = \
+ 	$(FREETRANSLATION_LIBS) \
+
+--- a/plugins/garble/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/garble/Makefile.in	2014-09-06 15:03:48.192423556 +0200
+@@ -427,7 +427,8 @@
+ @TOOLKIT_COCOA_FALSE@plugin_LTLIBRARIES = garble.la
+ @TOOLKIT_COCOA_FALSE@garble_la_LIBADD = \
+ @TOOLKIT_COCOA_FALSE@	xp/libxp.la \
+-@TOOLKIT_COCOA_FALSE@	$(GARBLE_LIBS) $(PNG_LIBS) -ljpeg
++@TOOLKIT_COCOA_FALSE@	$(GARBLE_LIBS) $(PNG_LIBS) -ljpeg \
++@TOOLKIT_COCOA_FALSE@	@top_builddir@/src/libabiword-2.8.la
+ 
+ @TOOLKIT_COCOA_FALSE@garble_la_LDFLAGS = \
+ @TOOLKIT_COCOA_FALSE@	$(GARBLE_LIBS) \
+
+--- a/plugins/gda/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/gda/Makefile.in	2014-09-06 15:04:08.012424205 +0200
+@@ -419,7 +419,8 @@
+ plugindir = $(ABIWORD_PLUGINSDIR)
+ plugin_LTLIBRARIES = gda.la
+ gda_la_LIBADD = \
+-	unix/libunix.la
++	unix/libunix.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ gda_la_LDFLAGS = \
+ 	$(GDA_LIBS) \
+
+--- a/plugins/gdict/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/gdict/Makefile.in	2014-09-06 15:04:37.888425183 +0200
+@@ -423,7 +423,8 @@
+ @GDICT_BUILTIN_FALSE@@TOOLKIT_GTK_TRUE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @GDICT_BUILTIN_FALSE@@TOOLKIT_GTK_TRUE@plugin_LTLIBRARIES = gdict.la
+ @TOOLKIT_GTK_TRUE@gdict_la_LIBADD = \
+-@TOOLKIT_GTK_TRUE@	unix/libunix.la
++@TOOLKIT_GTK_TRUE@	unix/libunix.la \
++@TOOLKIT_GTK_TRUE@	@top_builddir@/src/libabiword-2.8.la
+ 
+ @TOOLKIT_GTK_TRUE@gdict_la_LDFLAGS = \
+ @TOOLKIT_GTK_TRUE@	$(GDICT_LIBS) \
+
+--- a/plugins/gimp/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/gimp/Makefile.in	2014-09-06 15:04:47.380425494 +0200
+@@ -425,7 +425,8 @@
+ @GIMP_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @GIMP_BUILTIN_FALSE@plugin_LTLIBRARIES = gimp.la
+ gimp_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ gimp_la_LDFLAGS = \
+ 	$(GIMP_LIBS) \
+
+--- a/plugins/goffice/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/goffice/Makefile.in	2014-09-06 15:04:57.660425830 +0200
+@@ -419,7 +419,8 @@
+ plugindir = $(ABIWORD_PLUGINSDIR)
+ plugin_LTLIBRARIES = goffice.la
+ goffice_la_LIBADD = \
+-	unix/libunix.la
++	unix/libunix.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ goffice_la_LDFLAGS = \
+ 	$(GOFFICE_LIBS) \
+
+--- a/plugins/google/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/google/Makefile.in	2014-09-06 15:05:06.852426131 +0200
+@@ -425,7 +425,8 @@
+ @GOOGLE_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @GOOGLE_BUILTIN_FALSE@plugin_LTLIBRARIES = google.la
+ google_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ google_la_LDFLAGS = \
+ 	$(GOOGLE_LIBS) \
+
+--- a/plugins/grammar/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/grammar/Makefile.in	2014-09-06 15:05:19.840426556 +0200
+@@ -424,7 +424,8 @@
+ plugin_LTLIBRARIES = grammar.la
+ grammar_la_LIBADD = \
+ 	linkgrammarwrap/liblinkgrammarwrap.la \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ grammar_la_LDFLAGS = \
+ 	$(GRAMMAR_LIBS) \
+
+--- a/plugins/hancom/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/hancom/Makefile.in	2014-09-06 15:05:29.684426879 +0200
+@@ -425,7 +425,8 @@
+ @HANCOM_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @HANCOM_BUILTIN_FALSE@plugin_LTLIBRARIES = hancom.la
+ hancom_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ hancom_la_LDFLAGS = \
+ 	$(HANCOM_LIBS) \
+
+--- a/plugins/hrtext/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/hrtext/Makefile.in	2014-09-06 15:05:41.244427257 +0200
+@@ -425,7 +425,8 @@
+ @HRTEXT_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @HRTEXT_BUILTIN_FALSE@plugin_LTLIBRARIES = hrtext.la
+ hrtext_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ hrtext_la_LDFLAGS = \
+ 	$(HRTEXT_LIBS) \
+
+--- a/plugins/iscii/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/iscii/Makefile.in	2014-09-06 15:05:52.660427631 +0200
+@@ -425,7 +425,8 @@
+ @ISCII_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @ISCII_BUILTIN_FALSE@plugin_LTLIBRARIES = iscii.la
+ iscii_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ iscii_la_LDFLAGS = \
+ 	$(ISCII_LIBS) \
+
+--- a/plugins/kword/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/kword/Makefile.in	2014-09-06 15:06:01.260427912 +0200
+@@ -425,7 +425,8 @@
+ @KWORD_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @KWORD_BUILTIN_FALSE@plugin_LTLIBRARIES = kword.la
+ kword_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ kword_la_LDFLAGS = \
+ 	$(KWORD_LIBS) \
+
+--- a/plugins/latex/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/latex/Makefile.in	2014-09-06 15:06:13.212428304 +0200
+@@ -426,7 +426,8 @@
+ @LATEX_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @LATEX_BUILTIN_FALSE@plugin_LTLIBRARIES = latex.la
+ latex_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ latex_la_LDFLAGS = \
+ 	$(LATEX_LIBS) \
+
+--- a/plugins/loadbindings/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/loadbindings/Makefile.in	2014-09-06 15:06:27.340428766 +0200
+@@ -427,7 +427,8 @@
+ @LOADBINDINGS_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @LOADBINDINGS_BUILTIN_FALSE@plugin_LTLIBRARIES = loadbindings.la
+ loadbindings_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ loadbindings_la_LDFLAGS = \
+ 	$(LOADBINDINGS_LIBS) \
+
+--- a/plugins/mathview/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/mathview/Makefile.in	2014-09-06 15:06:35.428429031 +0200
+@@ -423,7 +423,8 @@
+ plugin_LTLIBRARIES = mathview.la
+ mathview_la_LIBADD = \
+ 	itex2mml/libitex2mml.la \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ mathview_la_LDFLAGS = \
+ 	$(MATHVIEW_LIBS) \
+
+--- a/plugins/mht/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/mht/Makefile.in	2014-09-06 15:06:47.516429427 +0200
+@@ -422,7 +422,8 @@
+ plugindir = $(ABIWORD_PLUGINSDIR)
+ plugin_LTLIBRARIES = mht.la
+ mht_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ mht_la_LDFLAGS = \
+ 	$(MHT_LIBS) \
+
+--- a/plugins/mif/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/mif/Makefile.in	2014-09-06 15:07:03.496429950 +0200
+@@ -425,7 +425,8 @@
+ @MIF_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @MIF_BUILTIN_FALSE@plugin_LTLIBRARIES = mif.la
+ mif_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ mif_la_LDFLAGS = \
+ 	$(MIF_LIBS) \
+
+--- a/plugins/mswrite/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/mswrite/Makefile.in	2014-09-06 15:07:15.700430349 +0200
+@@ -425,7 +425,8 @@
+ @MSWRITE_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @MSWRITE_BUILTIN_FALSE@plugin_LTLIBRARIES = mswrite.la
+ mswrite_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ mswrite_la_LDFLAGS = \
+ 	$(MSWRITE_LIBS) \
+
+--- a/plugins/opendocument/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/opendocument/Makefile.in	2014-09-06 15:07:26.668430709 +0200
+@@ -430,7 +430,8 @@
+ opendocument_la_LIBADD = \
+ 	common/libcommon.la \
+ 	exp/libexp.la \
+-	imp/libimp.la
++	imp/libimp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ opendocument_la_LDFLAGS = \
+ 	$(OPENDOCUMENT_LIBS) \
+
+--- a/plugins/openwriter/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/openwriter/Makefile.in	2014-09-06 15:07:40.272431154 +0200
+@@ -426,7 +426,8 @@
+ @OPENWRITER_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @OPENWRITER_BUILTIN_FALSE@plugin_LTLIBRARIES = openwriter.la
+ openwriter_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ openwriter_la_LDFLAGS = \
+ 	$(OPENWRITER_LIBS) \
+
+--- a/plugins/openxml/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/openxml/Makefile.in	2014-09-06 15:08:44.312433251 +0200
+@@ -428,7 +428,8 @@
+ openxml_la_LIBADD = \
+ 	common/libcommon.la \
+ 	imp/libimp.la \
+-	exp/libexp.la
++	exp/libexp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ openxml_la_LDFLAGS = \
+ 	$(OPENXML_LIBS) \
+
+--- a/plugins/opml/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/opml/Makefile.in	2014-09-06 15:08:58.424433713 +0200
+@@ -425,7 +425,8 @@
+ @OPML_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @OPML_BUILTIN_FALSE@plugin_LTLIBRARIES = opml.la
+ opml_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ opml_la_LDFLAGS = \
+ 	$(OPML_LIBS) \
+
+--- a/plugins/ots/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/ots/Makefile.in	2014-09-06 15:09:08.164434031 +0200
+@@ -419,7 +419,8 @@
+ plugindir = $(ABIWORD_PLUGINSDIR)
+ plugin_LTLIBRARIES = ots.la
+ ots_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ ots_la_LDFLAGS = \
+ 	$(OTS_LIBS) \
+
+--- a/plugins/paint/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/paint/Makefile.in	2014-09-06 15:09:38.912435038 +0200
+@@ -426,7 +426,8 @@
+ @PAINT_BUILTIN_FALSE@plugin_LTLIBRARIES = paint.la
+ paint_la_LIBADD = \
+ 	@PLATFORM@/lib@PLATFORM@.la \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ paint_la_LDFLAGS = \
+ 	$(PAINT_LIBS) \
+
+--- a/plugins/passepartout/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/passepartout/Makefile.in	2014-09-06 15:09:46.744435295 +0200
+@@ -427,7 +427,8 @@
+ @PASSEPARTOUT_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @PASSEPARTOUT_BUILTIN_FALSE@plugin_LTLIBRARIES = passepartout.la
+ passepartout_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ passepartout_la_LDFLAGS = \
+ 	$(PASSEPARTOUT_LIBS) \
+
+--- a/plugins/pdb/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/pdb/Makefile.in	2014-09-06 15:09:54.484435548 +0200
+@@ -425,7 +425,8 @@
+ @PDB_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @PDB_BUILTIN_FALSE@plugin_LTLIBRARIES = pdb.la
+ pdb_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ pdb_la_LDFLAGS = \
+ 	$(PDB_LIBS) \
+
+--- a/plugins/pdf/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/pdf/Makefile.in	2014-09-06 15:10:04.444435874 +0200
+@@ -425,7 +425,8 @@
+ @PDF_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @PDF_BUILTIN_FALSE@plugin_LTLIBRARIES = pdf.la
+ pdf_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ pdf_la_LDFLAGS = \
+ 	$(PDF_LIBS) \
+
+--- a/plugins/presentation/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/presentation/Makefile.in	2014-09-06 15:10:13.112436158 +0200
+@@ -427,7 +427,8 @@
+ @PRESENTATION_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @PRESENTATION_BUILTIN_FALSE@plugin_LTLIBRARIES = presentation.la
+ presentation_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ presentation_la_LDFLAGS = \
+ 	$(PRESENTATION_LIBS) \
+
+--- a/plugins/psion/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/psion/Makefile.in	2014-09-06 15:10:22.176436455 +0200
+@@ -421,7 +421,8 @@
+ plugindir = $(ABIWORD_PLUGINSDIR)
+ plugin_LTLIBRARIES = psion.la
+ psion_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ psion_la_LDFLAGS = \
+ 	$(PSION_LIBS) \
+
+--- a/plugins/rsvg/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/rsvg/Makefile.in	2014-09-06 15:10:37.632436961 +0200
+@@ -425,7 +425,8 @@
+ plugin_LTLIBRARIES = rsvg.la
+ rsvg_la_LIBADD = \
+ 	xp/libxp.la \
+-	$(RSVG_LIBS) $(PNG_LIBS)
++	$(RSVG_LIBS) $(PNG_LIBS) \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ rsvg_la_LDFLAGS = \
+ 	-avoid-version \
+
+--- a/plugins/s5/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/s5/Makefile.in	2014-09-06 15:10:46.652437256 +0200
+@@ -425,7 +425,8 @@
+ @S5_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @S5_BUILTIN_FALSE@plugin_LTLIBRARIES = s5.la
+ s5_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ s5_la_LDFLAGS = \
+ 	$(S5_LIBS) \
+
+--- a/plugins/sdw/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/sdw/Makefile.in	2014-09-06 15:10:58.072437630 +0200
+@@ -425,7 +425,8 @@
+ @SDW_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @SDW_BUILTIN_FALSE@plugin_LTLIBRARIES = sdw.la
+ sdw_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ sdw_la_LDFLAGS = \
+ 	$(SDW_LIBS) \
+
+--- a/plugins/t602/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/t602/Makefile.in	2014-09-06 15:11:06.224437897 +0200
+@@ -425,7 +425,8 @@
+ @T602_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @T602_BUILTIN_FALSE@plugin_LTLIBRARIES = t602.la
+ t602_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ t602_la_LDFLAGS = \
+ 	$(T602_LIBS) \
+
+--- a/plugins/urldict/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/urldict/Makefile.in	2014-09-06 15:11:14.404438165 +0200
+@@ -425,7 +425,8 @@
+ @URLDICT_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @URLDICT_BUILTIN_FALSE@plugin_LTLIBRARIES = urldict.la
+ urldict_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ urldict_la_LDFLAGS = \
+ 	$(URLDICT_LIBS) \
+
+--- a/plugins/wikipedia/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/wikipedia/Makefile.in	2014-09-06 15:11:22.064438415 +0200
+@@ -425,7 +425,8 @@
+ @WIKIPEDIA_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @WIKIPEDIA_BUILTIN_FALSE@plugin_LTLIBRARIES = wikipedia.la
+ wikipedia_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ wikipedia_la_LDFLAGS = \
+ 	$(WIKIPEDIA_LIBS) \
+
+--- a/plugins/wmf/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/wmf/Makefile.in	2014-09-06 15:11:31.348438719 +0200
+@@ -422,7 +422,8 @@
+ plugindir = $(ABIWORD_PLUGINSDIR)
+ plugin_LTLIBRARIES = wmf.la
+ wmf_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ wmf_la_LDFLAGS = \
+ 	$(WMF_LIBS) \
+
+--- a/plugins/wml/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/wml/Makefile.in	2014-09-06 15:11:40.168439008 +0200
+@@ -425,7 +425,8 @@
+ @WML_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @WML_BUILTIN_FALSE@plugin_LTLIBRARIES = wml.la
+ wml_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ wml_la_LDFLAGS = \
+ 	$(WML_LIBS) \
+
+--- a/plugins/wordperfect/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/wordperfect/Makefile.in	2014-09-06 15:11:50.336439341 +0200
+@@ -423,7 +423,8 @@
+ plugindir = $(ABIWORD_PLUGINSDIR)
+ plugin_LTLIBRARIES = wordperfect.la
+ wordperfect_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ wordperfect_la_LDFLAGS = \
+ 	$(WORDPERFECT_LIBS) \
+
+--- a/plugins/wpg/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/wpg/Makefile.in	2014-09-06 15:12:11.328440028 +0200
+@@ -422,7 +422,8 @@
+ plugindir = $(ABIWORD_PLUGINSDIR)
+ plugin_LTLIBRARIES = wpg.la
+ wpg_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ wpg_la_LDFLAGS = \
+ 	$(WPG_LIBS) \
+
+--- a/plugins/xslfo/Makefile.in	2014-09-06 11:25:35.000000000 +0200
++++ b/plugins/xslfo/Makefile.in	2014-09-06 15:12:44.984441130 +0200
+@@ -425,7 +425,8 @@
+ @XSLFO_BUILTIN_FALSE@plugindir = $(ABIWORD_PLUGINSDIR)
+ @XSLFO_BUILTIN_FALSE@plugin_LTLIBRARIES = xslfo.la
+ xslfo_la_LIBADD = \
+-	xp/libxp.la
++	xp/libxp.la \
++	@top_builddir@/src/libabiword-2.8.la
+ 
+ xslfo_la_LDFLAGS = \
+ 	$(XSLFO_LIBS) \

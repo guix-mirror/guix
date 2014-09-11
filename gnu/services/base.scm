@@ -25,7 +25,7 @@
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (udev kbd e2fsprogs))
+                #:select (udev kbd e2fsprogs lvm2))
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
@@ -38,6 +38,7 @@
   #:use-module (ice-9 format)
   #:export (root-file-system-service
             file-system-service
+            device-mapping-service
             user-processes-service
             host-name-service
             console-font-service
@@ -99,18 +100,20 @@ This service must be the root of the service dependency graph so that its
 
 (define* (file-system-service device target type
                               #:key (flags '()) (check? #t)
-                              create-mount-point? options (title 'any))
+                              create-mount-point? options (title 'any)
+                              (requirements '()))
   "Return a service that mounts DEVICE on TARGET as a file system TYPE with
 OPTIONS.  TITLE is a symbol specifying what kind of name DEVICE is: 'label for
 a partition label, 'device for a device file name, or 'any.  When CHECK? is
 true, check the file system before mounting it.  When CREATE-MOUNT-POINT? is
 true, create TARGET if it does not exist yet.  FLAGS is a list of symbols,
-such as 'read-only' etc."
+such as 'read-only' etc.  Optionally, REQUIREMENTS may be a list of service
+names such as device-mapping services."
   (with-monad %store-monad
     (return
      (service
       (provision (list (symbol-append 'file-system- (string->symbol target))))
-      (requirement '(root-file-system))
+      (requirement `(root-file-system ,@requirements))
       (documentation "Check, mount, and unmount the given file system.")
       (start #~(lambda args
                  (let ((device (canonicalize-device-spec #$device '#$title)))
@@ -479,9 +482,41 @@ passed to @command{guix-daemon}."
                                  (id 30000))))
              (activate activate)))))
 
-(define* (udev-service #:key (udev udev))
-  "Run @var{udev}, which populates the @file{/dev} directory dynamically."
-  (with-monad %store-monad
+(define (udev-rules-union packages)
+  "Return the union of the @code{lib/udev/rules.d} directories found in each
+item of @var{packages}."
+  (define build
+    #~(begin
+        (use-modules (guix build union)
+                     (guix build utils)
+                     (srfi srfi-1)
+                     (srfi srfi-26))
+
+        (define %standard-locations
+          '("/lib/udev/rules.d" "/libexec/udev/rules.d"))
+
+        (define (rules-sub-directory directory)
+          ;; Return the sub-directory of DIRECTORY containing udev rules, or
+          ;; #f if none was found.
+          (find directory-exists?
+                (map (cut string-append directory <>) %standard-locations)))
+
+        (mkdir-p (string-append #$output "/lib/udev"))
+        (union-build (string-append #$output "/lib/udev/rules.d")
+                     (filter-map rules-sub-directory '#$packages))))
+
+  (gexp->derivation "udev-rules" build
+                    #:modules '((guix build union)
+                                (guix build utils))
+                    #:local-build? #t))
+
+(define* (udev-service #:key (udev udev) (rules '()))
+  "Run @var{udev}, which populates the @file{/dev} directory dynamically.  Get
+extra rules from the packages listed in @var{rules}."
+  (mlet* %store-monad ((rules     (udev-rules-union (cons udev rules)))
+                       (udev.conf (text-file* "udev.conf"
+                                              "udev_rules=\"" rules
+                                              "/lib/udev/rules.d\"\n")))
     (return (service
              (provision '(udev))
 
@@ -513,6 +548,8 @@ passed to @command{guix-daemon}."
                         (setenv "LINUX_MODULE_DIRECTORY"
                                 "/run/booted-system/kernel/lib/modules")
 
+                        (setenv "UDEV_CONFIG_FILE" #$udev.conf)
+
                         (let ((pid (primitive-fork)))
                           (case pid
                             ((0)
@@ -532,6 +569,21 @@ passed to @command{guix-daemon}."
                                       "settle")
                              pid)))))
              (stop #~(make-kill-destructor))))))
+
+(define (device-mapping-service target command)
+  "Return a service that maps device @var{target}, a string such as
+@code{\"home\"} (meaning @code{/dev/mapper/home}), by executing @var{command},
+a gexp."
+  (with-monad %store-monad
+    (return (service
+             (provision (list (symbol-append 'device-mapping-
+                                             (string->symbol target))))
+             (requirement '(udev))
+             (documentation "Map a device node using Linux's device mapper.")
+             (start #~(lambda ()
+                        #$command))
+             (stop #~(const #f))
+             (respawn? #f)))))
 
 (define %base-services
   ;; Convenience variable holding the basic services.
@@ -555,6 +607,9 @@ This is the GNU operating system, welcome!\n\n")))
           (syslog-service)
           (guix-service)
           (nscd-service)
-          (udev-service))))
+
+          ;; By default, enable the udev rules of LVM2.  They are needed as
+          ;; soon as LVM2 or the device-mapper is used.
+          (udev-service #:rules (list lvm2)))))
 
 ;;; base.scm ends here

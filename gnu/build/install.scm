@@ -56,18 +56,38 @@ MOUNT-POINT."
   "Evaluate DIRECTIVE, an sexp describing a file or directory to create under
 directory TARGET."
   (let loop ((directive directive))
-    (match directive
-      (('directory name)
-       (mkdir-p (string-append target name)))
-      (('directory name uid gid)
-       (let ((dir (string-append target name)))
-         (mkdir-p dir)
-         (chown dir uid gid)))
-      (('directory name uid gid mode)
-       (loop `(directory ,name ,uid ,gid))
-       (chmod (string-append target name) mode))
-      ((new '-> old)
-       (symlink old (string-append target new))))))
+    (catch 'system-error
+      (lambda ()
+        (match directive
+          (('directory name)
+           (mkdir-p (string-append target name)))
+          (('directory name uid gid)
+           (let ((dir (string-append target name)))
+             (mkdir-p dir)
+             (chown dir uid gid)))
+          (('directory name uid gid mode)
+           (loop `(directory ,name ,uid ,gid))
+           (chmod (string-append target name) mode))
+          ((new '-> old)
+           (let try ()
+             (catch 'system-error
+               (lambda ()
+                 (symlink old (string-append target new)))
+               (lambda args
+                 ;; When doing 'guix system init' on the current '/', some
+                 ;; symlinks may already exists.  Override them.
+                 (if (= EEXIST (system-error-errno args))
+                     (begin
+                       (delete-file (string-append target new))
+                       (try))
+                     (apply throw args))))))))
+      (lambda args
+        ;; Usually we can only get here when installing to an existing root,
+        ;; as with 'guix system init foo.scm /'.
+        (format (current-error-port)
+                "error: failed to evaluate directive: ~s~%"
+                directive)
+        (apply throw args)))))
 
 (define (directives store)
   "Return a list of directives to populate the root file system that will host
@@ -93,7 +113,6 @@ STORE."
     ("/var/guix/gcroots/current-system" -> "/run/current-system")
 
     (directory "/bin")
-    ("/bin/sh" -> "/run/current-system/profile/bin/bash")
     (directory "/tmp" 0 0 #o1777)                 ; sticky bit
 
     (directory "/root" 0 0)                       ; an exception
@@ -106,6 +125,7 @@ includes /etc, /var, /run, /bin/sh, etc., and all the symlinks to SYSTEM."
             (directives (%store-directory)))
 
   ;; Add system generation 1.
+  (false-if-exception (delete-file "/var/guix/profiles/system-1-link"))
   (symlink system
            (string-append target "/var/guix/profiles/system-1-link")))
 

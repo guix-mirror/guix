@@ -35,7 +35,7 @@
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages pulseaudio)
-  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages video)
   #:use-module (gnu packages xiph)
   #:export (libmpdclient

@@ -30,7 +30,7 @@
   #:use-module (gnu packages libusb)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pciutils)
-  #:use-module (gnu packages bdb)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python)
@@ -613,6 +613,9 @@ MIDI functionality to the Linux-based operating system.")
     (arguments
      ;; XXX: Disable man page creation until we have DocBook.
      '(#:configure-flags (list "--disable-xmlto"
+
+                               ;; The udev rule is responsible for restoring
+                               ;; the volume.
                                (string-append "--with-udev-rules-dir="
                                               (assoc-ref %outputs "out")
                                               "/lib/udev/rules.d"))
@@ -1397,7 +1400,13 @@ time.")
                                               (assoc-ref %outputs "out")
                                               "/etc/lvm")
                                "--enable-udev_sync"
-                               "--enable-udev_rules")
+                               "--enable-udev_rules"
+
+                               ;; Make sure programs such as 'dmsetup' can
+                               ;; find libdevmapper.so.
+                               (string-append "LDFLAGS=-Wl,-rpath="
+                                              (assoc-ref %outputs "out")
+                                              "/lib"))
 
        ;; The tests use 'mknod', which requires root access.
        #:tests? #f))

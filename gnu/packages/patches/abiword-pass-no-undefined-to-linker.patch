@@ -1,0 +1,608 @@
+gcc/g++ chokes on --no-undefined, so instead pass it directly to the linker.
+
+--- a/plugins/loadbindings/Makefile.in	2010-06-13 23:17:48.000000000 +0200
++++ b/plugins/loadbindings/Makefile.in	2014-09-06 11:03:21.151951221 +0200
+@@ -433,7 +433,7 @@
+ 	$(LOADBINDINGS_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ loadbindings_la_SOURCES = 
+ nodist_EXTRA_loadbindings_la_SOURCES = dummy.cpp
+
+--- a/plugins/pdf/Makefile.in	2010-06-13 23:17:53.000000000 +0200
++++ b/plugins/pdf/Makefile.in	2014-09-06 11:03:21.207951223 +0200
+@@ -431,7 +431,7 @@
+ 	$(PDF_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ pdf_la_SOURCES = 
+ nodist_EXTRA_pdf_la_SOURCES = dummy.cpp
+
+--- a/plugins/xslfo/Makefile.in	2010-06-13 23:17:55.000000000 +0200
++++ b/plugins/xslfo/Makefile.in	2014-09-06 11:03:21.227951224 +0200
+@@ -431,7 +431,7 @@
+ 	$(XSLFO_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ xslfo_la_SOURCES = 
+ nodist_EXTRA_xslfo_la_SOURCES = dummy.cpp
+
+--- a/plugins/gda/Makefile.in	2010-06-13 23:17:45.000000000 +0200
++++ b/plugins/gda/Makefile.in	2014-09-06 11:03:21.251951225 +0200
+@@ -425,7 +425,7 @@
+ 	$(GDA_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ gda_la_SOURCES = 
+ EXTRA_DIST = \
+
+--- a/plugins/wikipedia/Makefile.in	2010-06-13 23:17:54.000000000 +0200
++++ b/plugins/wikipedia/Makefile.in	2014-09-06 11:03:21.271951225 +0200
+@@ -431,7 +431,7 @@
+ 	$(WIKIPEDIA_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ wikipedia_la_SOURCES = 
+ nodist_EXTRA_wikipedia_la_SOURCES = dummy.cpp
+
+--- a/plugins/collab/Makefile.in	2010-06-13 23:17:41.000000000 +0200
++++ b/plugins/collab/Makefile.in	2014-09-06 11:03:21.291951226 +0200
+@@ -435,7 +435,7 @@
+ @TOOLKIT_COCOA_FALSE@	$(SYSTEM_LIBS) \
+ @TOOLKIT_COCOA_FALSE@	-avoid-version \
+ @TOOLKIT_COCOA_FALSE@	-module \
+-@TOOLKIT_COCOA_FALSE@	-no-undefined
++@TOOLKIT_COCOA_FALSE@	-Wl,--no-undefined
+ 
+ @TOOLKIT_COCOA_FALSE@collab_la_SOURCES = 
+ @TOOLKIT_COCOA_FALSE@nodist_EXTRA_collab_la_SOURCES = dummy.cpp
+
+--- a/plugins/paint/Makefile.in	2010-06-13 23:17:52.000000000 +0200
++++ b/plugins/paint/Makefile.in	2014-09-06 11:03:21.315951227 +0200
+@@ -432,7 +432,7 @@
+ 	$(PAINT_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ paint_la_SOURCES = 
+ nodist_EXTRA_paint_la_SOURCES = dummy.cpp
+
+--- a/plugins/garble/Makefile.in	2010-06-13 23:17:45.000000000 +0200
++++ b/plugins/garble/Makefile.in	2014-09-06 11:03:21.335951227 +0200
+@@ -433,7 +433,7 @@
+ @TOOLKIT_COCOA_FALSE@	$(GARBLE_LIBS) \
+ @TOOLKIT_COCOA_FALSE@	-avoid-version \
+ @TOOLKIT_COCOA_FALSE@	-module \
+-@TOOLKIT_COCOA_FALSE@	-no-undefined
++@TOOLKIT_COCOA_FALSE@	-Wl,--no-undefined
+ 
+ @TOOLKIT_COCOA_FALSE@garble_la_SOURCES = 
+ @TOOLKIT_COCOA_FALSE@nodist_EXTRA_garble_la_SOURCES = dummy.cpp
+
+--- a/plugins/latex/Makefile.in	2010-06-13 23:17:48.000000000 +0200
++++ b/plugins/latex/Makefile.in	2014-09-06 11:03:21.359951228 +0200
+@@ -432,7 +432,7 @@
+ 	$(LATEX_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ latex_la_SOURCES = 
+ nodist_EXTRA_latex_la_SOURCES = dummy.cpp
+
+--- a/plugins/mht/Makefile.in	2010-06-13 23:17:49.000000000 +0200
++++ b/plugins/mht/Makefile.in	2014-09-06 11:03:21.379951229 +0200
+@@ -428,7 +428,7 @@
+ 	$(MHT_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ mht_la_SOURCES = 
+ nodist_EXTRA_mht_la_SOURCES = dummy.cpp
+
+--- a/plugins/google/Makefile.in	2010-06-13 23:17:46.000000000 +0200
++++ b/plugins/google/Makefile.in	2014-09-06 11:03:21.399951230 +0200
+@@ -431,7 +431,7 @@
+ 	$(GOOGLE_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ google_la_SOURCES = 
+ nodist_EXTRA_google_la_SOURCES = dummy.cpp
+
+--- a/plugins/babelfish/Makefile.in	2010-06-13 23:17:40.000000000 +0200
++++ b/plugins/babelfish/Makefile.in	2014-09-06 11:03:21.419951230 +0200
+@@ -431,7 +431,7 @@
+ 	$(BABELFISH_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ babelfish_la_SOURCES = 
+ nodist_EXTRA_babelfish_la_SOURCES = dummy.cpp
+
+--- a/plugins/opendocument/Makefile.in	2010-06-13 23:17:50.000000000 +0200
++++ b/plugins/opendocument/Makefile.in	2014-09-06 11:03:21.443951231 +0200
+@@ -436,7 +436,7 @@
+ 	$(OPENDOCUMENT_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ opendocument_la_SOURCES = 
+ 
+--- a/plugins/opml/Makefile.in	2010-06-13 23:17:51.000000000 +0200
++++ b/plugins/opml/Makefile.in	2014-09-06 11:03:21.463951232 +0200
+@@ -431,7 +431,7 @@
+ 	$(OPML_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ opml_la_SOURCES = 
+ nodist_EXTRA_opml_la_SOURCES = dummy.cpp
+
+--- a/plugins/gimp/Makefile.in	2010-06-13 23:17:46.000000000 +0200
++++ b/plugins/gimp/Makefile.in	2014-09-06 11:03:21.483951232 +0200
+@@ -431,7 +431,7 @@
+ 	$(GIMP_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ gimp_la_SOURCES = 
+ nodist_EXTRA_gimp_la_SOURCES = dummy.cpp
+
+--- a/plugins/mswrite/Makefile.in	2010-06-13 23:17:49.000000000 +0200
++++ b/plugins/mswrite/Makefile.in	2014-09-06 11:03:21.507951233 +0200
+@@ -431,7 +431,7 @@
+ 	$(MSWRITE_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ mswrite_la_SOURCES = 
+ nodist_EXTRA_mswrite_la_SOURCES = dummy.cpp
+
+--- a/plugins/wordperfect/Makefile.in	2010-06-13 23:17:55.000000000 +0200
++++ b/plugins/wordperfect/Makefile.in	2014-09-06 11:03:21.527951234 +0200
+@@ -429,7 +429,7 @@
+ 	$(WORDPERFECT_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ wordperfect_la_SOURCES = 
+ nodist_EXTRA_wordperfect_la_SOURCES = dummy.cpp
+
+--- a/plugins/pdb/Makefile.in	2010-06-13 23:17:53.000000000 +0200
++++ b/plugins/pdb/Makefile.in	2014-09-06 11:03:21.547951234 +0200
+@@ -431,7 +431,7 @@
+ 	$(PDB_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ pdb_la_SOURCES = 
+ nodist_EXTRA_pdb_la_SOURCES = dummy.cpp
+
+--- a/plugins/ots/Makefile.in	2010-06-13 23:17:52.000000000 +0200
++++ b/plugins/ots/Makefile.in	2014-09-06 11:03:21.571951235 +0200
+@@ -425,7 +425,7 @@
+ 	$(OTS_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ ots_la_SOURCES = 
+ EXTRA_DIST = \
+
+--- a/plugins/wml/Makefile.in	2010-06-13 23:17:55.000000000 +0200
++++ b/plugins/wml/Makefile.in	2014-09-06 11:03:21.591951236 +0200
+@@ -431,7 +431,7 @@
+ 	$(WML_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ wml_la_SOURCES = 
+ nodist_EXTRA_wml_la_SOURCES = dummy.cpp
+
+--- a/plugins/bmp/Makefile.in	2010-06-13 23:17:40.000000000 +0200
++++ b/plugins/bmp/Makefile.in	2014-09-06 11:03:21.615951237 +0200
+@@ -431,7 +431,7 @@
+ 	$(BMP_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ bmp_la_SOURCES = 
+ nodist_EXTRA_bmp_la_SOURCES = dummy.cpp
+
+--- a/plugins/applix/Makefile.in	2010-06-13 23:17:40.000000000 +0200
++++ b/plugins/applix/Makefile.in	2014-09-06 11:03:21.635951237 +0200
+@@ -431,7 +431,7 @@
+ 	$(APPLIX_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ applix_la_SOURCES = 
+ 
+--- a/plugins/iscii/Makefile.in	2010-06-13 23:17:47.000000000 +0200
++++ b/plugins/iscii/Makefile.in	2014-09-06 11:03:21.659951238 +0200
+@@ -431,7 +431,7 @@
+ 	$(ISCII_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ iscii_la_SOURCES = 
+ nodist_EXTRA_iscii_la_SOURCES = dummy.cpp
+
+--- a/plugins/gdict/Makefile.in	2010-06-13 23:17:46.000000000 +0200
++++ b/plugins/gdict/Makefile.in	2014-09-06 11:03:21.679951239 +0200
+@@ -429,7 +429,7 @@
+ @TOOLKIT_GTK_TRUE@	$(GDICT_LIBS) \
+ @TOOLKIT_GTK_TRUE@	-avoid-version \
+ @TOOLKIT_GTK_TRUE@	-module \
+-@TOOLKIT_GTK_TRUE@	-no-undefined
++@TOOLKIT_GTK_TRUE@	-Wl,--no-undefined
+ 
+ @TOOLKIT_GTK_TRUE@gdict_la_SOURCES = 
+ @TOOLKIT_GTK_TRUE@EXTRA_DIST = \
+
+--- a/plugins/openwriter/Makefile.in	2010-06-13 23:17:50.000000000 +0200
++++ b/plugins/openwriter/Makefile.in	2014-09-06 11:03:21.699951239 +0200
+@@ -432,7 +432,7 @@
+ 	$(OPENWRITER_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ openwriter_la_SOURCES = 
+ nodist_EXTRA_openwriter_la_SOURCES = dummy.cpp
+
+--- a/plugins/sdw/Makefile.in	2010-06-13 23:17:54.000000000 +0200
++++ b/plugins/sdw/Makefile.in	2014-09-06 11:03:21.723951240 +0200
+@@ -431,7 +431,7 @@
+ 	$(SDW_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ sdw_la_SOURCES = 
+ nodist_EXTRA_sdw_la_SOURCES = dummy.cpp
+
+--- a/plugins/grammar/Makefile.in	2010-06-13 23:17:47.000000000 +0200
++++ b/plugins/grammar/Makefile.in	2014-09-06 11:03:21.747951241 +0200
+@@ -430,7 +430,7 @@
+ 	$(GRAMMAR_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ nodist_EXTRA_grammar_la_SOURCES = dummy.cpp
+ grammar_la_SOURCES = 
+
+--- a/plugins/urldict/Makefile.in	2010-06-13 23:17:54.000000000 +0200
++++ b/plugins/urldict/Makefile.in	2014-09-06 11:03:21.779951242 +0200
+@@ -431,7 +431,7 @@
+ 	$(URLDICT_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ urldict_la_SOURCES = 
+ nodist_EXTRA_urldict_la_SOURCES = dummy.cpp
+
+--- a/plugins/wmf/Makefile.in	2010-06-13 23:17:55.000000000 +0200
++++ b/plugins/wmf/Makefile.in	2014-09-06 11:03:21.799951243 +0200
+@@ -428,7 +428,7 @@
+ 	$(WMF_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ wmf_la_SOURCES = 
+ nodist_EXTRA_wmf_la_SOURCES = dummy.cpp
+
+--- a/plugins/mif/Makefile.in	2010-06-13 23:17:49.000000000 +0200
++++ b/plugins/mif/Makefile.in	2014-09-06 11:03:21.819951243 +0200
+@@ -431,7 +431,7 @@
+ 	$(MIF_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ mif_la_SOURCES = 
+ nodist_EXTRA_mif_la_SOURCES = dummy.cpp
+
+--- a/plugins/eml/Makefile.in	2010-06-13 23:17:45.000000000 +0200
++++ b/plugins/eml/Makefile.in	2014-09-06 11:03:21.843951244 +0200
+@@ -431,7 +431,7 @@
+ 	$(EML_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ eml_la_SOURCES = 
+ nodist_EXTRA_eml_la_SOURCES = dummy.cpp
+
+--- a/plugins/openxml/Makefile.in	2010-06-13 23:17:51.000000000 +0200
++++ b/plugins/openxml/Makefile.in	2014-09-06 11:03:21.863951245 +0200
+@@ -434,7 +434,7 @@
+ 	$(OPENXML_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ openxml_la_SOURCES = 
+ nodist_EXTRA_openxml_la_SOURCES = dummy.cpp
+
+--- a/plugins/goffice/Makefile.in	2010-06-13 23:17:46.000000000 +0200
++++ b/plugins/goffice/Makefile.in	2014-09-06 11:03:21.883951245 +0200
+@@ -425,7 +425,7 @@
+ 	$(GOFFICE_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ goffice_la_SOURCES = 
+ EXTRA_DIST = \
+
+--- a/plugins/passepartout/Makefile.in	2010-06-13 23:17:52.000000000 +0200
++++ b/plugins/passepartout/Makefile.in	2014-09-06 11:03:21.907951246 +0200
+@@ -433,7 +433,7 @@
+ 	$(PASSEPARTOUT_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ passepartout_la_SOURCES = 
+ nodist_EXTRA_passepartout_la_SOURCES = dummy.cpp
+
+--- a/plugins/clarisworks/Makefile.in	2010-06-13 23:17:41.000000000 +0200
++++ b/plugins/clarisworks/Makefile.in	2014-09-06 11:03:21.927951247 +0200
+@@ -433,7 +433,7 @@
+ 	$(CLARISWORKS_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ clarisworks_la_SOURCES = 
+ nodist_EXTRA_clarisworks_la_SOURCES = dummy.cpp
+
+--- a/plugins/command/Makefile.in	2010-06-13 23:17:44.000000000 +0200
++++ b/plugins/command/Makefile.in	2014-09-06 11:03:21.947951247 +0200
+@@ -426,7 +426,7 @@
+ @TOOLKIT_COCOA_FALSE@	$(COMMAND_LIBS) \
+ @TOOLKIT_COCOA_FALSE@	-avoid-version \
+ @TOOLKIT_COCOA_FALSE@	-module \
+-@TOOLKIT_COCOA_FALSE@	-no-undefined
++@TOOLKIT_COCOA_FALSE@	-Wl,--no-undefined
+ 
+ @TOOLKIT_COCOA_FALSE@command_la_SOURCES = 
+ all: all-recursive
+
+--- a/plugins/presentation/Makefile.in	2010-06-13 23:17:53.000000000 +0200
++++ b/plugins/presentation/Makefile.in	2014-09-06 11:03:21.971951248 +0200
+@@ -433,7 +433,7 @@
+ 	$(PRESENTATION_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ presentation_la_SOURCES = 
+ nodist_EXTRA_presentation_la_SOURCES = dummy.cpp
+
+--- a/plugins/psion/Makefile.in	2010-06-13 23:17:53.000000000 +0200
++++ b/plugins/psion/Makefile.in	2014-09-06 11:03:21.991951249 +0200
+@@ -427,7 +427,7 @@
+ 	$(PSION_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ psion_la_SOURCES = 
+ EXTRA_DIST = \
+
+--- a/plugins/rsvg/Makefile.in	2010-06-13 23:17:53.000000000 +0200
++++ b/plugins/rsvg/Makefile.in	2014-09-06 11:03:22.011951250 +0200
+@@ -430,7 +430,7 @@
+ rsvg_la_LDFLAGS = \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ rsvg_la_SOURCES = 
+ nodist_EXTRA_rsvg_la_SOURCES = dummy.cpp
+
+--- a/plugins/wpg/Makefile.in	2010-06-13 23:17:55.000000000 +0200
++++ b/plugins/wpg/Makefile.in	2014-09-06 11:03:22.035951250 +0200
+@@ -428,7 +428,7 @@
+ 	$(WPG_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ wpg_la_SOURCES = 
+ nodist_EXTRA_wpg_la_SOURCES = dummy.cpp
+
+--- a/plugins/t602/Makefile.in	2010-06-13 23:17:54.000000000 +0200
++++ b/plugins/t602/Makefile.in	2014-09-06 11:03:22.055951251 +0200
+@@ -431,7 +431,7 @@
+ 	$(T602_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ t602_la_SOURCES = 
+ nodist_EXTRA_t602_la_SOURCES = dummy.cpp
+
+--- a/plugins/docbook/Makefile.in	2010-06-13 23:17:44.000000000 +0200
++++ b/plugins/docbook/Makefile.in	2014-09-06 11:03:22.075951252 +0200
+@@ -431,7 +431,7 @@
+ 	$(DOCBOOK_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ docbook_la_SOURCES = 
+ nodist_EXTRA_docbook_la_SOURCES = dummy.cpp
+
+--- a/plugins/hrtext/Makefile.in	2010-06-13 23:17:47.000000000 +0200
++++ b/plugins/hrtext/Makefile.in	2014-09-06 11:03:22.099951252 +0200
+@@ -431,7 +431,7 @@
+ 	$(HRTEXT_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ hrtext_la_SOURCES = 
+ nodist_EXTRA_hrtext_la_SOURCES = dummy.cpp 
+
+--- a/plugins/s5/Makefile.in	2010-06-13 23:17:54.000000000 +0200
++++ b/plugins/s5/Makefile.in	2014-09-06 11:03:22.119951253 +0200
+@@ -431,7 +431,7 @@
+ 	$(S5_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ s5_la_SOURCES = 
+ nodist_EXTRA_s5_la_SOURCES = dummy.cpp
+
+--- a/plugins/hancom/Makefile.in	2010-06-13 23:17:47.000000000 +0200
++++ b/plugins/hancom/Makefile.in	2014-09-06 11:03:22.143951254 +0200
+@@ -431,7 +431,7 @@
+ 	$(HANCOM_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ hancom_la_SOURCES = 
+ nodist_EXTRA_hancom_la_SOURCES = dummy.cpp
+
+--- a/plugins/aiksaurus/Makefile.in	2010-06-13 23:17:40.000000000 +0200
++++ b/plugins/aiksaurus/Makefile.in	2014-09-06 11:03:22.163951255 +0200
+@@ -428,7 +428,7 @@
+ 	$(AIKSAURUS_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ aiksaurus_la_SOURCES = 
+ all: all-recursive
+
+--- a/plugins/kword/Makefile.in	2010-06-13 23:17:48.000000000 +0200
++++ b/plugins/kword/Makefile.in	2014-09-06 11:03:22.183951255 +0200
+@@ -431,7 +431,7 @@
+ 	$(KWORD_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ kword_la_SOURCES = 
+ nodist_EXTRA_kword_la_SOURCES = dummy.cpp
+
+--- a/plugins/freetranslation/Makefile.in	2010-06-13 23:17:45.000000000 +0200
++++ b/plugins/freetranslation/Makefile.in	2014-09-06 11:03:22.207951256 +0200
+@@ -433,7 +433,7 @@
+ 	$(FREETRANSLATION_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ freetranslation_la_SOURCES = 
+ nodist_EXTRA_freetranslation_la_SOURCES = dummy.cpp
+
+--- a/plugins/mathview/Makefile.in	2010-06-13 23:17:48.000000000 +0200
++++ b/plugins/mathview/Makefile.in	2014-09-06 11:03:22.227951257 +0200
+@@ -429,7 +429,7 @@
+ 	$(MATHVIEW_LIBS) \
+ 	-avoid-version \
+ 	-module \
+-	-no-undefined
++	-Wl,--no-undefined
+ 
+ nodist_EXTRA_mathview_la_SOURCES = dummy.cpp
+ mathview_la_SOURCES = 
+
+--- a/src/Makefile.in	2014-09-06 08:42:45.000000000 +0200
++++ b/src/Makefile.in	2014-09-06 11:17:48.287979611 +0200
+@@ -538,7 +538,7 @@
+ 
+ @TOOLKIT_COCOA_TRUE@AbiWord_LDFLAGS = \
+ @TOOLKIT_COCOA_TRUE@	$(DEPS_LIBS) \
+-@TOOLKIT_COCOA_TRUE@	--no-undefined \
++@TOOLKIT_COCOA_TRUE@	-Wl,--no-undefined \
+ @TOOLKIT_COCOA_TRUE@	-avoid-version \
+ @TOOLKIT_COCOA_TRUE@	-export-dynamic \
+ @TOOLKIT_COCOA_TRUE@	-headerpad_max_install_names 
+@@ -554,7 +554,7 @@
+ 
+ @TOOLKIT_COCOA_FALSE@abiword_LDFLAGS = \
+ @TOOLKIT_COCOA_FALSE@	$(platform_ldflags) \
+-@TOOLKIT_COCOA_FALSE@	--no-undefined      \
++@TOOLKIT_COCOA_FALSE@	-Wl,--no-undefined      \
+ @TOOLKIT_COCOA_FALSE@	-avoid-version      \
+ @TOOLKIT_COCOA_FALSE@	-export-dynamic
+ 

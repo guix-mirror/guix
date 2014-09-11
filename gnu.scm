@@ -36,7 +36,8 @@
         (gnu services)
         (gnu services base)
         (gnu packages)
-        (gnu packages base)))
+        (gnu packages base)
+        (guix gexp)))                             ; so gexps can be used
 
     (for-each (let ((i (module-public-interface (current-module))))
                 (lambda (m)

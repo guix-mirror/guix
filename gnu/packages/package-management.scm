@@ -27,7 +27,7 @@
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages compression) #:select (bzip2 gzip))
   #:use-module (gnu packages gnupg)
-  #:use-module (gnu packages sqlite)
+  #:use-module (gnu packages databases)
   #:use-module (gnu packages graphviz)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
