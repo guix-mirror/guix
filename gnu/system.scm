@@ -291,6 +291,10 @@ This is the GNU system.  Welcome.\n")
 /run/current-system/profile/bin/bash\n"))
        (issue      (text-file "issue" issue))
 
+       ;; For now, generate a basic config so that /etc/hosts is honored.
+       (nsswitch   (text-file "nsswitch.conf"
+                              "hosts: files dns\n"))
+
        ;; TODO: Generate bashrc from packages' search-paths.
        (bashrc    (text-file* "bashrc"  "
 export PS1='\\u@\\h \\w\\$ '
@@ -317,6 +321,7 @@ alias ll='ls -l'
                   ("pam.d" ,#~#$pam.d)
                   ("login.defs" ,#~#$login.defs)
                   ("issue" ,#~#$issue)
+                  ("nsswitch.conf" ,#~#$nsswitch)
                   ("skel" ,#~#$skel)
                   ("shells" ,#~#$shells)
                   ("profile" ,#~#$bashrc)
