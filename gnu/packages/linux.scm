@@ -1326,6 +1326,7 @@ from the module-init-tools project.")
     (license gpl2+))) ; library under lgpl2.1+
 
 (define-public udev
+  ;; The last pre-systemd version.
   (package
     (name "udev")
     (version "182")
@@ -1369,6 +1370,21 @@ from the module-init-tools project.")
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license gpl2+))) ; libudev is under lgpl2.1+
+
+(define-public eudev
+  ;; The post-systemd fork, maintained by Gentoo.
+  (package (inherit udev)
+    (name "eudev")
+    (version "1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://dev.gentoo.org/~blueness/eudev/eudev-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1w6f8h7fhjz3prs630f8gawv7jx74zi600z0pm997kkp24pyj5wg"))))
+    (home-page "http://www.gentoo.org/proj/en/eudev/")))
 
 (define-public lvm2
   (package
