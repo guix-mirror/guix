@@ -500,7 +500,12 @@ slabtop, and skill.")
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("texinfo" ,texinfo)))    ; for the libext2fs Info manual
     (arguments
-     '(#:phases (alist-cons-before
+     '(;; The 'blkid' command and library are already provided by util-linux,
+       ;; which is the preferred source for them (see, e.g.,
+       ;; <http://git.buildroot.net/buildroot/commit/?id=e1ffc2f791b336339909c90559b7db40b455f172>.)
+       #:configure-flags '("--disable-blkid")
+
+       #:phases (alist-cons-before
                  'configure 'patch-shells
                  (lambda _
                    (substitute* "configure"
