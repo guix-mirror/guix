@@ -378,7 +378,16 @@ providing the system administrator with some help in common tasks.")
               (sha256
                (base32
                 "1rpgghf7n0zx0cdy8hibr41wvkm2qp1yvd8ab1rxr193l1jmgcir"))
-              (patches (list (search-patch "util-linux-perl.patch")))))
+              (patches (list (search-patch "util-linux-perl.patch")))
+              (modules '((guix build utils)))
+              (snippet
+               ;; We take the 'logger' program from GNU Inetutils, so remove
+               ;; it from here.
+               '(substitute* "misc-utils/Makefile.in"
+                  (("PROGRAMS =(.*) logger(.*)" _ before after)
+                   (string-append "PROGRAMS =" before " " after))
+                  (("MANS =(.*) logger\\.1(.*)" _ before after)
+                   (string-append "MANS =" before " " after))))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--disable-use-tty-group"
