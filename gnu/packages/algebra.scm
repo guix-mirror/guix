@@ -154,6 +154,57 @@ GP2C, the GP to C compiler, translates GP scripts to PARI programs.")
    (license gpl2)
    (home-page "http://pari.math.u-bordeaux.fr/")))
 
+(define-public flint
+  (package
+   (name "flint")
+   (version "2.4.4")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "http://flintlib.org/flint-"
+                  version ".tar.gz"))
+            (sha256 (base32
+                     "1isv1sfv8sg3qvf0d99apdfi3jnql95xfzszcawdf1pgjj9rwyf4"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("gmp" ,gmp)
+      ("mpfr" ,mpfr)))
+   (arguments
+    `(#:phases
+        (alist-replace
+         'configure
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out"))
+                 (gmp (assoc-ref inputs "gmp"))
+                 (mpfr (assoc-ref inputs "mpfr")))
+             ;; Drop test failing with gmp-6 due to changed invertibility
+             ;; of 0 in Z/1 Z, which according to the flint authors has no
+             ;; impact on flint.
+             ;; FIXME: Drop with later version.
+             (delete-file "fmpz/test/t-invmod.c")
+             ;; do not pass "--enable-fast-install", which makes the
+             ;; homebrew configure process fail
+             (zero? (system*
+                     "./configure"
+                     (string-append "--prefix=" out)
+                     (string-append "--with-gmp=" gmp)
+                     (string-append "--with-mpfr=" mpfr)))))
+         %standard-phases)))
+   (synopsis "Fast library for number theory")
+   (description
+    "FLINT is a C library for number theory.  It supports arithmetic
+with numbers, polynomials, power series and matrices over many base
+rings, including multiprecision integers and rationals, integers
+modulo n, p-adic numbers, finite fields (prime and non-prime order)
+and real and complex numbers (via the Arb extension library).
+
+Operations that can be performed include conversions, arithmetic,
+GCDs, factoring, solving linear systems, and evaluating special
+functions.  In addition, FLINT provides various low-level routines for
+fast arithmetic.")
+   (license gpl2+)
+   (home-page "http://flintlib.org/")))
+
 (define-public bc
   (package
     (name "bc")
