@@ -236,8 +236,13 @@ copy SOURCE to TARGET."
   "Return the '--system' argument passed on the kernel command line."
   (find-long-option "--system" (linux-command-line)))
 
-(define* (activate-current-system #:optional (system (boot-time-system)))
+(define* (activate-current-system
+          #:optional (system (or (getenv "GUIX_NEW_SYSTEM")
+                                 (boot-time-system))))
   "Atomically make SYSTEM the current system."
+  ;; The 'GUIX_NEW_SYSTEM' environment variable is used as a way for 'guix
+  ;; system reconfigure' to pass the file name of the new system.
+
   (format #t "making '~a' the current system...~%" system)
 
   ;; Atomically make SYSTEM current.
