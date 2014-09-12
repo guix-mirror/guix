@@ -268,8 +268,8 @@ This is the GNU system.  Welcome.\n")
 (define (default-/etc/hosts host-name)
   "Return the default /etc/hosts file."
   (text-file "hosts"
-             (string-append "localhost 127.0.0.1\n"
-                            host-name " 127.0.0.1\n")))
+             (string-append "127.0.0.1 localhost " host-name "\n"
+                            "::1       localhost " host-name "\n")))
 
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
