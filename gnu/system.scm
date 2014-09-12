@@ -36,6 +36,9 @@
   #:use-module (gnu packages zile)
   #:use-module (gnu packages nano)
   #:use-module (gnu packages lsof)
+  #:use-module (gnu packages gawk)
+  #:use-module (gnu packages compression)
+  #:autoload   (gnu packages cryptsetup) (cryptsetup)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
   #:use-module (gnu services base)
@@ -44,7 +47,6 @@
   #:use-module (gnu system linux)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu system file-systems)
-  #:autoload   (gnu packages cryptsetup) (cryptsetup)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -246,7 +248,7 @@ explicitly appear in OS."
   (cons* procps psmisc which less zile nano
          (@ (gnu packages admin) dmd) guix
          lsof                                 ;for Guix's 'list-runtime-roots'
-         util-linux inetutils isc-dhcp
+         util-linux inetutils isc-dhcp wireless-tools
          net-tools                        ; XXX: remove when Inetutils suffices
 
          ;; Get 'insmod' & co. from kmod, not module-init-tools, since udev
@@ -258,7 +260,8 @@ explicitly appear in OS."
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
          (map canonical-package
-              (list guile-2.0 bash coreutils findutils grep sed))))
+              (list guile-2.0 bash coreutils findutils grep sed
+                    gawk tar gzip bzip2 xz lzip))))
 
 (define %default-issue
   ;; Default contents for /etc/issue.
