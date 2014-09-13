@@ -256,7 +256,7 @@ data types.")
     (build-system python-build-system)
     (arguments `(#:tests? #f)) ; no test target
     (home-page "https://launchpad.net/pytz")
-    (synopsis "The Python timezone library.")
+    (synopsis "Python timezone library")
     (description
      "This library allows accurate and cross platform timezone calculations
 using Python 2.4 or higher and provides access to the Olson timezone database.")
@@ -336,7 +336,7 @@ API for locking files.")
     (build-system python-build-system)
     (arguments '(#:test-target "check"))
     (home-page "http://code.google.com/m/mock/")
-    (synopsis "A Python Mocking and Patching Library for Testing")
+    (synopsis "Python mocking and patching library for testing")
     (description
      "Mock is a library for testing in Python.  It allows you to replace parts
 of your system under test with mock objects and make assertions about how they
@@ -714,8 +714,7 @@ Python 3.3+.")
                           ; linking with libpython3.3m
        #:tests? #f)) ; no check target
     (home-page "http://pyicu.osafoundation.org/")
-    (synopsis
-     "Python extension wrapping the ICU C++ API.")
+    (synopsis "Python extension wrapping the ICU C++ API")
     (description
      "PyICU is a python extension wrapping the ICU C++ API.")
     (license x11)))
@@ -987,7 +986,7 @@ software.")
      '(#:tests? #f)) ; no setup.py test command
     (home-page
      "https://github.com/dbtsai/python-mimeparse")
-    (synopsis "Python library for parsing MIME types.")
+    (synopsis "Python library for parsing MIME types")
     (description
      "Mimeparse provides basic functions for parsing MIME type names and
 matching them against a list of media-ranges.")

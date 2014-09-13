@@ -49,6 +49,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
@@ -509,7 +510,12 @@ slabtop, and skill.")
     (native-inputs `(("pkg-config" ,pkg-config)
                      ("texinfo" ,texinfo)))    ; for the libext2fs Info manual
     (arguments
-     '(#:phases (alist-cons-before
+     '(;; The 'blkid' command and library are already provided by util-linux,
+       ;; which is the preferred source for them (see, e.g.,
+       ;; <http://git.buildroot.net/buildroot/commit/?id=e1ffc2f791b336339909c90559b7db40b455f172>.)
+       #:configure-flags '("--disable-blkid")
+
+       #:phases (alist-cons-before
                  'configure 'patch-shells
                  (lambda _
                    (substitute* "configure"
@@ -717,7 +723,7 @@ packet filter.")
     (home-page
      "http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2")
     (synopsis
-     "A collection of utilities for controlling TCP/IP networking and traffic control in Linux")
+     "Utilities for controlling TCP/IP networking and traffic in Linux")
     (description
      "Iproute2 is a collection of utilities for controlling TCP/IP
 networking and traffic with the Linux kernel.
@@ -1013,9 +1019,11 @@ processes currently causing I/O.")
                                (string-append "INIT_D_PATH="
                                               (assoc-ref %outputs "out")
                                               "/etc/init.d")
+
+                               ;; The rule makes /dev/fuse 666.
                                (string-append "UDEV_RULES_PATH="
                                               (assoc-ref %outputs "out")
-                                              "/etc/udev"))
+                                              "/lib/udev/rules.d"))
       #:phases (alist-cons-before
                 'build 'set-file-names
                 (lambda* (#:key inputs #:allow-other-keys)
@@ -1321,6 +1329,7 @@ from the module-init-tools project.")
     (license gpl2+))) ; library under lgpl2.1+
 
 (define-public udev
+  ;; The last pre-systemd version.
   (package
     (name "udev")
     (version "182")
@@ -1364,6 +1373,26 @@ from the module-init-tools project.")
 device nodes from /dev/, handles hotplug events and loads drivers at boot
 time.")
     (license gpl2+))) ; libudev is under lgpl2.1+
+
+(define-public eudev
+  ;; The post-systemd fork, maintained by Gentoo.
+  (package (inherit udev)
+    (name "eudev")
+    (version "1.9")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://dev.gentoo.org/~blueness/eudev/eudev-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1w6f8h7fhjz3prs630f8gawv7jx74zi600z0pm997kkp24pyj5wg"))
+              (patches (list (search-patch "eudev-rules-directory.patch")))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments udev)
+       ((#:configure-flags flags)
+        `(cons "--enable-libkmod" ,flags))))
+    (home-page "http://www.gentoo.org/proj/en/eudev/")))
 
 (define-public lvm2
   (package

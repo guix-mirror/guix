@@ -144,7 +144,7 @@ protocol.")
               ("libmpdclient" ,libmpdclient)
               ("ncurses" ,ncurses)))
     (native-inputs `(("pkg-config" ,pkg-config)))
-    (synopsis "A curses Music Player Daemon client")
+    (synopsis "Curses Music Player Daemon client")
     (description "ncmpc is a fully featured MPD client, which runs in a
 terminal using ncurses.")
     (home-page "http://www.musicpd.org/clients/ncmpc/")

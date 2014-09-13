@@ -71,7 +71,7 @@
        ("texinfo" ,texinfo)
        ("texlive" ,texlive)))
     (home-page "http://www.gnu.org/software/gcl")
-    (synopsis "A Common Lisp implementation")
+    (synopsis "Common Lisp implementation")
     (description "GCL is an implementation of the Common Lisp language.  It
 features the ability to compile to native object code and to load native
 object code modules directly into its lisp core.  It also features a

@@ -199,6 +199,9 @@ it atomically, and then run OS's activation script."
       ;; The activation script may change $PATH, among others, so protect
       ;; against that.
       (return (save-environment-excursion
+               ;; Tell 'activate-current-system' what the new system is.
+               (setenv "GUIX_NEW_SYSTEM" system)
+
                (primitive-load (derivation->output-path script))))
 
       ;; TODO: Run 'deco reload ...'.

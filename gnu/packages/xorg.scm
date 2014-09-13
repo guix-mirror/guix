@@ -70,7 +70,7 @@
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://xeyes.sourcearchive.com/")
-    (synopsis "A follow the mouse X demo")
+    (synopsis "Follow-the-mouse X demo")
     (description "Xeyes is a demo program for x.org. It shows eyes
 following the mouse.")
     (license license:x11)))

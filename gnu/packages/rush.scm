@@ -42,7 +42,7 @@
     (synopsis "Restricted user (login) shell")
     (description
      "GNU Rush is a restricted user shell, for systems on which users are to
-be provided with only limited functionality or resources. Administrators set
+be provided with only limited functionality or resources.  Administrators set
 user rights via a configuration file which can be used to limit, for example,
 the commands that can be executed, CPU time, or virtual memory usage.")
     (license gpl3+)))

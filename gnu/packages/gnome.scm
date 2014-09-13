@@ -484,7 +484,7 @@ the API")
                      ("glib" ,glib "bin")))
     (propagated-inputs `(("pangox-compat" ,pangox-compat)))
     (home-page "https://projects.gnome.org/gtkglext")
-    (synopsis "OpenGL extension to GTK+.")
+    (synopsis "OpenGL extension to GTK+")
     (description "GtkGLExt is an OpenGL extension to GTK+. It provides
 additional GDK objects which support OpenGL rendering in GTK+ and GtkWidget
 API add-ons to make GTK+ widgets OpenGL-capable.")

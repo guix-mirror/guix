@@ -336,8 +336,8 @@ Go.  It also includes runtime support libraries for these languages.")
     (inputs `(("gmp" ,gmp)))
     (home-page "http://isl.gforge.inria.fr/")
     (synopsis
-     "A library for manipulating sets and relations of integer points bounded
-by linear constraints")
+     "Manipulating sets and relations of integer points \
+bounded by linear constraints")
     (description
      "isl is a library for manipulating sets and relations of integer points
 bounded by linear constraints. Supported operations on sets include
@@ -371,7 +371,7 @@ dependence analysis and bounds on piecewise step-polynomials.")
               ("isl" ,isl)))
     (arguments '(#:configure-flags '("--with-isl=system")))
     (home-page "http://www.cloog.org/")
-    (synopsis "A library to generate code for scanning Z-polyhedra")
+    (synopsis "Library to generate code for scanning Z-polyhedra")
     (description
      "CLooG is a free software library to generate code for scanning
 Z-polyhedra.  That is, it finds a code (e.g., in C, FORTRAN...) that

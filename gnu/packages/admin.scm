@@ -886,7 +886,7 @@ development, not the kernel implementation of ACPI.")
                 "1v9vnzlihqfjsxa93hdbrq72pqqk00dkylmlg8jpxhm7s1w9qfl1"))))
     (build-system gnu-build-system)
     (home-page "http://packages.debian.org/wheezy/stress")
-    (synopsis "A tool to impose load on and stress test a computer system")
+    (synopsis "Impose load on and stress test a computer system")
     (description
      "'stress' is a tool that imposes a configurable amount of CPU, memory, I/O,
 or disk stress on a POSIX-compliant operating system and reports any errors it
@@ -986,10 +986,10 @@ recover lost partitions and/or make non-booting disks bootable again.")
     (synopsis "Daemon to monitor directories for events such as file removal")
     (description
      "A daemon that monitors directories for events, such as creating,
-deleting or modifying files.  It can monitor different sets of directories for
+deleting or modifying files. It can monitor different sets of directories for
 different events.  When an event is detected, direvent calls a specified
 external program with information about the event, such as the location
-within the file system where it occurred.  Thus, \"direvent\" provides an easy
-way to react immediately if given files undergo changes, for example, to
+within the file system where it occurred.  Thus, \"direvent\" provides an
+easy way to react immediately if given files undergo changes, for example, to
 track changes in important system configuration files.")
     (license gpl3+)))

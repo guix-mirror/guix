@@ -75,7 +75,7 @@
                      ;; ("inetutils" ,inetutils)
                      ("ed" ,ed)))
     (home-page "http://miller.emu.id.au/pmiller/software/cook")
-    (synopsis "A tool for constructing files")
+    (synopsis "Tool for constructing files")
     (description "Cook is a tool for constructing files. It is given a set of
 files to create, and recipes of how to create them. In any non-trivial program
 there will be prerequisites to performing the actions necessary to creating

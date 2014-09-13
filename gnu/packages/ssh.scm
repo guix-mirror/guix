@@ -272,7 +272,7 @@ libssh library.")
                           flags))))
         %standard-phases)))
     (home-page "http://www.agroman.net/corkscrew")
-    (synopsis "A tool for tunneling SSH through HTTP proxies")
+    (synopsis "Tunneling SSH through HTTP proxies")
     (description
      "Corkscrew allows creating TCP tunnels through HTTP proxies.  WARNING:
 At the moment only plain text authentication is supported, should you require

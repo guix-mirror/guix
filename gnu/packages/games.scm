@@ -100,7 +100,7 @@ representation of the playing board.")
      "GNUbik is a puzzle game in which you must manipulate a cube to make
 each of its faces have a uniform color.  The game is customizable, allowing
 you to set the size of the cube (the default is 3x3) or to change the colors.
- You may even apply photos to the faces instead of colors.  The game is
+You may even apply photos to the faces instead of colors.  The game is
 scriptable with Guile.")
     (license gpl3+)))
 

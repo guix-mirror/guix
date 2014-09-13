@@ -139,7 +139,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                                (string-append out "/share/info/mysql.info")))))
                  %standard-phases)))
     (home-page "http://www.mysql.com/")
-    (synopsis "A fast, easy to use, and popular database")
+    (synopsis "Fast, easy to use, and popular database")
     (description
      "MySQL is a fast, reliable, and easy to use relational database
 management system that supports the standardized Structured Query
@@ -204,8 +204,8 @@ pictures, sounds, or video.")
      "GNU Recutils is a set of tools and libraries for creating and
 manipulating text-based, human-editable databases.  Despite being text-based,
 databases created with Recutils carry all of the expected features such as
-unique fields, primary keys, time stamps and more. Many different field types
-are supported, as is encryption.")
+unique fields, primary keys, time stamps and more.  Many different field
+types are supported, as is encryption.")
     (license gpl3+)
     (home-page "http://www.gnu.org/software/recutils/")))
 

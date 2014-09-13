@@ -47,6 +47,16 @@
                          result))
                    '())))
 
+(define (escape-quotes str)
+  "Replace any quote character in STR by an escaped quote character."
+  (list->string
+   (string-fold-right (lambda (chr result)
+                        (match chr
+                          (#\" (cons* #\\ #\"result))
+                          (_   (cons chr result))))
+                      '()
+                      str)))
+
 ;; Iterate over GNU packages.  Report those whose synopsis defers from that
 ;; found upstream.
 (for-each (match-lambda
@@ -69,7 +79,7 @@
                          (not (string=? (fill-paragraph upstream 100)
                                         (fill-paragraph downstream 100))))
                 (format (guix-warning-port)
-                        "~a: ~a: proposed description:~%      ~a~%"
+                        "~a: ~a: proposed description:~%     \"~a\"~%"
                         (location->string loc) (package-name package)
-                        (fill-paragraph upstream 77 7))))))
+                        (fill-paragraph (escape-quotes upstream) 77 7))))))
           gnus)

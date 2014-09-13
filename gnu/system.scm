@@ -36,6 +36,9 @@
   #:use-module (gnu packages zile)
   #:use-module (gnu packages nano)
   #:use-module (gnu packages lsof)
+  #:use-module (gnu packages gawk)
+  #:use-module (gnu packages compression)
+  #:autoload   (gnu packages cryptsetup) (cryptsetup)
   #:use-module (gnu services)
   #:use-module (gnu services dmd)
   #:use-module (gnu services base)
@@ -44,7 +47,6 @@
   #:use-module (gnu system linux)
   #:use-module (gnu system linux-initrd)
   #:use-module (gnu system file-systems)
-  #:autoload   (gnu packages cryptsetup) (cryptsetup)
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
@@ -246,19 +248,20 @@ explicitly appear in OS."
   (cons* procps psmisc which less zile nano
          (@ (gnu packages admin) dmd) guix
          lsof                                 ;for Guix's 'list-runtime-roots'
-         util-linux inetutils isc-dhcp
+         util-linux inetutils isc-dhcp wireless-tools
          net-tools                        ; XXX: remove when Inetutils suffices
 
          ;; Get 'insmod' & co. from kmod, not module-init-tools, since udev
          ;; already depends on it anyway.
-         kmod udev
+         kmod eudev
 
          e2fsprogs kbd
 
          ;; The packages below are also in %FINAL-INPUTS, so take them from
          ;; there to avoid duplication.
          (map canonical-package
-              (list guile-2.0 bash coreutils findutils grep sed))))
+              (list guile-2.0 bash coreutils findutils grep sed
+                    diffutils gawk tar gzip bzip2 xz lzip))))
 
 (define %default-issue
   ;; Default contents for /etc/issue.
@@ -268,8 +271,8 @@ This is the GNU system.  Welcome.\n")
 (define (default-/etc/hosts host-name)
   "Return the default /etc/hosts file."
   (text-file "hosts"
-             (string-append "localhost 127.0.0.1\n"
-                            host-name " 127.0.0.1\n")))
+             (string-append "127.0.0.1 localhost " host-name "\n"
+                            "::1       localhost " host-name "\n")))
 
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
@@ -290,6 +293,10 @@ This is the GNU system.  Welcome.\n")
 /run/current-system/profile/bin/sh
 /run/current-system/profile/bin/bash\n"))
        (issue      (text-file "issue" issue))
+
+       ;; For now, generate a basic config so that /etc/hosts is honored.
+       (nsswitch   (text-file "nsswitch.conf"
+                              "hosts: files dns\n"))
 
        ;; TODO: Generate bashrc from packages' search-paths.
        (bashrc    (text-file* "bashrc"  "
@@ -317,6 +324,7 @@ alias ll='ls -l'
                   ("pam.d" ,#~#$pam.d)
                   ("login.defs" ,#~#$login.defs)
                   ("issue" ,#~#$issue)
+                  ("nsswitch.conf" ,#~#$nsswitch)
                   ("skel" ,#~#$skel)
                   ("shells" ,#~#$shells)
                   ("profile" ,#~#$bashrc)

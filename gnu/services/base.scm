@@ -25,7 +25,7 @@
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (udev kbd e2fsprogs lvm2))
+                #:select (eudev kbd e2fsprogs lvm2 fuse alsa-utils))
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
@@ -510,7 +510,7 @@ item of @var{packages}."
                                 (guix build utils))
                     #:local-build? #t))
 
-(define* (udev-service #:key (udev udev) (rules '()))
+(define* (udev-service #:key (udev eudev) (rules '()))
   "Run @var{udev}, which populates the @file{/dev} directory dynamically.  Get
 extra rules from the packages listed in @var{rules}."
   (mlet* %store-monad ((rules     (udev-rules-union (cons udev rules)))
@@ -527,8 +527,16 @@ extra rules from the packages listed in @var{rules}."
 
              (documentation "Populate the /dev directory, dynamically.")
              (start #~(lambda ()
+                        (define find
+                          (@ (srfi srfi-1) find))
+
                         (define udevd
-                          (string-append #$udev "/libexec/udev/udevd"))
+                          ;; Choose the right 'udevd'.
+                          (find file-exists?
+                                (map (lambda (suffix)
+                                       (string-append #$udev suffix))
+                                     '("/libexec/udev/udevd" ;udev
+                                       "/sbin/udevd"))))     ;eudev
 
                         (define (wait-for-udevd)
                           ;; Wait until someone's listening on udevd's control
@@ -548,7 +556,9 @@ extra rules from the packages listed in @var{rules}."
                         (setenv "LINUX_MODULE_DIRECTORY"
                                 "/run/booted-system/kernel/lib/modules")
 
+                        ;; The first one is for udev, the second one for eudev.
                         (setenv "UDEV_CONFIG_FILE" #$udev.conf)
+                        (setenv "EUDEV_RULES_DIRECTORY" #$rules)
 
                         (let ((pid (primitive-fork)))
                           (case pid
@@ -608,8 +618,9 @@ This is the GNU operating system, welcome!\n\n")))
           (guix-service)
           (nscd-service)
 
-          ;; By default, enable the udev rules of LVM2.  They are needed as
-          ;; soon as LVM2 or the device-mapper is used.
-          (udev-service #:rules (list lvm2)))))
+          ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
+          ;; used, so enable them by default.  The FUSE and ALSA rules are
+          ;; less critical, but handy.
+          (udev-service #:rules (list lvm2 fuse alsa-utils)))))
 
 ;;; base.scm ends here

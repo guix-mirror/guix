@@ -50,6 +50,6 @@
      "Ed is a line-oriented text editor: rather than offering an overview of
 a document, ed performs editing one line at a time.  It can be executed both
 interactively and via shell scripts.  Its method of command input allows
-complex tasks to be performed in an automated way. GNU ed offers several
+complex tasks to be performed in an automated way.  GNU ed offers several
 extensions over the standard utility.")
     (license gpl3+)))

@@ -57,7 +57,7 @@
                                                      "/share/man/man1")))))
                   (alist-delete 'configure %standard-phases)))))
     (home-page "http://www.lua.org/")
-    (synopsis "An embeddable scripting language.")
+    (synopsis "Embeddable scripting language")
     (description
      "Lua is a powerful, fast, lightweight, embeddable scripting language.  Lua
 combines simple procedural syntax with powerful data description constructs

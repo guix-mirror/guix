@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -49,7 +49,7 @@
     ;; TODO: Recommend `torsocks' since `torify' needs it.
 
     (home-page "http://www.torproject.org/")
-    (synopsis "An anonymous network router to improve privacy on the Internet")
+    (synopsis "Anonymous network router to improve privacy on the Internet")
     (description
      "Tor protects you by bouncing your communications around a distributed
 network of relays run by volunteers all around the world: it prevents

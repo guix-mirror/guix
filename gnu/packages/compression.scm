@@ -228,7 +228,7 @@ than gzip and 15 % smaller output than bzip2.")
     (arguments '(#:configure-flags '("--enable-shared")))
     (home-page "http://www.oberhumer.com/opensource/lzo")
     (synopsis
-     "A data compresion library suitable for real-time data de-/compression")
+     "Data compresion library suitable for real-time data de-/compression")
     (description
      "LZO is a data compression library which is suitable for data
 de-/compression in real-time.  This means it favours speed over

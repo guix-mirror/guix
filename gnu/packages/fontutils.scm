@@ -87,7 +87,7 @@ anti-aliased glyph bitmap generation with 256 gray levels.")
               (string-append "--with-add-fonts="
                              (assoc-ref %build-inputs "gs-fonts")
                              "/share/fonts"))))
-   (synopsis "Fontconfig, a library for configuring and customising font access.")
+   (synopsis "Library for configuring and customizing font access")
    (description
     "Fontconfig can discover new fonts when installed automatically;
 perform font name substitution, so that appropriate alternative fonts can
@@ -118,7 +118,7 @@ high quality, anti-aliased and subpixel rendered text on a display.")
     `(#:tests? #f ; no test target
       #:make-flags
       '("without_doc")))
-   (synopsis "T1lib, a library for generating bitmaps from type 1 fonts.")
+   (synopsis "Library for generating bitmaps from Type 1 fonts")
    (description
     "T1lib is a library for generating/rasterising bitmaps from Type 1 fonts.
 It is based on the code of the X11 rasteriser of the X11 project.
