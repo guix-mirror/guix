@@ -527,8 +527,16 @@ extra rules from the packages listed in @var{rules}."
 
              (documentation "Populate the /dev directory, dynamically.")
              (start #~(lambda ()
+                        (define find
+                          (@ (srfi srfi-1) find))
+
                         (define udevd
-                          (string-append #$udev "/libexec/udev/udevd"))
+                          ;; Choose the right 'udevd'.
+                          (find file-exists?
+                                (map (lambda (suffix)
+                                       (string-append #$udev suffix))
+                                     '("/libexec/udev/udevd" ;udev
+                                       "/sbin/udevd"))))     ;eudev
 
                         (define (wait-for-udevd)
                           ;; Wait until someone's listening on udevd's control
@@ -548,7 +556,9 @@ extra rules from the packages listed in @var{rules}."
                         (setenv "LINUX_MODULE_DIRECTORY"
                                 "/run/booted-system/kernel/lib/modules")
 
+                        ;; The first one is for udev, the second one for eudev.
                         (setenv "UDEV_CONFIG_FILE" #$udev.conf)
+                        (setenv "EUDEV_RULES_DIRECTORY" #$rules)
 
                         (let ((pid (primitive-fork)))
                           (case pid
