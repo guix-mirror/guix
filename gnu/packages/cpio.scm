@@ -39,9 +39,9 @@
     (home-page "https://www.gnu.org/software/cpio/")
     (synopsis "Manage cpio and tar file archives")
     (description
-     "GNU cpio copies files into or out of cpio or tar archives. Indeed,
+     "GNU cpio copies files into or out of cpio or tar archives.  Indeed,
 many formats are supported, including legacy formats.  The format is
-determined automatically by the program and is handled appropriately. 
+determined automatically by the program and is handled appropriately.
 Furthermore, the location of the archive is not important.  It can be another
 file on the drive, a tape, or data on a pipe.")
     (license gpl3+)))

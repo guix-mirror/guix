@@ -48,7 +48,7 @@
     (description
      "GNU Pth is a portable library providing non-preemptive, priority-based
 scheduling for multiple execution threads.  Each thread has its own
-program-counter, run-time stack, signal mask and errno variable. Threads are
+program-counter, run-time stack, signal mask and errno variable.  Threads are
 scheduled in a cooperative way, rather than in the standard preemptive way,
 such that they are managed according to priority and events.  However, Pth
 also features emulation of POSIX.1c threads (\"pthreads\") for backwards

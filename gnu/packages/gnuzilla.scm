@@ -137,6 +137,6 @@
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description
      "IceCat is the GNU version of the Firefox browser.  It is entirely free
-software, which does not recommend non-free plugins and addons. It also
+software, which does not recommend non-free plugins and addons.  It also
 features built-in privacy-protecting features.")
     (license license:mpl2.0))) ; and others, see toolkit/content/license.html

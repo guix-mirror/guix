@@ -204,8 +204,8 @@ pictures, sounds, or video.")
      "GNU Recutils is a set of tools and libraries for creating and
 manipulating text-based, human-editable databases.  Despite being text-based,
 databases created with Recutils carry all of the expected features such as
-unique fields, primary keys, time stamps and more. Many different field types
-are supported, as is encryption.")
+unique fields, primary keys, time stamps and more.  Many different field
+types are supported, as is encryption.")
     (license gpl3+)
     (home-page "http://www.gnu.org/software/recutils/")))
 

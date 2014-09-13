@@ -103,10 +103,10 @@
     (synopsis "Functional package manager for installed software packages and versions")
     (description
      "GNU Guix is a functional package manager for the GNU system, and is
-also a distribution thereof.  It includes a virtual machine image. Besides
+also a distribution thereof.  It includes a virtual machine image.  Besides
 the usual package management features, it also supports transactional
-upgrades and roll-backs, per-user profiles, and much more. It is based on the
-Nix package manager.")
+upgrades and roll-backs, per-user profiles, and much more.  It is based on
+the Nix package manager.")
     (license gpl3+)))
 
 (define-public guix guix-0.7)

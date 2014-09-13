@@ -79,6 +79,6 @@
    (description
     "Gawk is the GNU implementation of Awk, a specialized programming
 language for the easy manipulation of formatted text, such as tables of data.
- Gawk features many extensions beyond the traditional implementation,
+Gawk features many extensions beyond the traditional implementation,
 including network access, sorting, and large libraries.")
    (license gpl3+)))

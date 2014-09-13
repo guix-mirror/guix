@@ -351,10 +351,11 @@ change.  GNU make offers many powerful extensions over the standard utility.")
    (synopsis "Binary utilities: bfd gas gprof ld")
    (description
     "GNU Binutils is a collection of tools for working with binary files.
-Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler. Other
-tools include programs to display binary profiling information, list the
-strings in a binary file, and utilities for working with archives.  The \"bfd\"
-library for working with executable and object formats is also included.")
+Perhaps the most notable are \"ld\", a linker, and \"as\", an assembler.
+Other tools include programs to display binary profiling information, list
+the strings in a binary file, and utilities for working with archives.  The
+\"bfd\" library for working with executable and object formats is also
+included.")
    (license gpl3+)
    (home-page "http://www.gnu.org/software/binutils/")))
 

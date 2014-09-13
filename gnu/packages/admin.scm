@@ -997,10 +997,10 @@ recover lost partitions and/or make non-booting disks bootable again.")
     (synopsis "Daemon to monitor directories for events such as file removal")
     (description
      "A daemon that monitors directories for events, such as creating,
-deleting or modifying files.  It can monitor different sets of directories for
+deleting or modifying files. It can monitor different sets of directories for
 different events.  When an event is detected, direvent calls a specified
 external program with information about the event, such as the location
-within the file system where it occurred.  Thus, \"direvent\" provides an easy
-way to react immediately if given files undergo changes, for example, to
+within the file system where it occurred.  Thus, \"direvent\" provides an
+easy way to react immediately if given files undergo changes, for example, to
 track changes in important system configuration files.")
     (license gpl3+)))

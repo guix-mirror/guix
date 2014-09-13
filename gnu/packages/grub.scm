@@ -101,7 +101,7 @@
     (description
      "GRUB is a multiboot bootloader.  It is used for initially loading the
 kernel of an operating system and then transferring control to it. The kernel
-then goes on to load the rest of the operating system. As a multiboot
+then goes on to load the rest of the operating system.  As a multiboot
 bootloader, GRUB handles the presence of multiple operating systems installed
 on the same computer; upon booting the computer, the user is presented with a
 menu to select one of the installed operating systems.")

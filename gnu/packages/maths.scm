@@ -179,11 +179,11 @@ LP/MIP solver is included in the package.")
     (synopsis "Statistical analysis")
     (description
      "GNU PSPP is a statistical analysis program.  It can perform
-descriptive statistics, T-tests, linear regression and non-parametric tests. 
-It features both a graphical interface as well as command-line input. PSPP is
-designed to interoperate with Gnumeric, LibreOffice and OpenOffice.  Data can
-be imported from spreadsheets, text files and database sources and it can be
-output in text, PostScript, PDF or HTML.")
+descriptive statistics, T-tests, linear regression and non-parametric tests.
+It features both a graphical interface as well as command-line input.  PSPP
+is designed to interoperate with Gnumeric, LibreOffice and OpenOffice.  Data
+can be imported from spreadsheets, text files and database sources and it can
+be output in text, PostScript, PDF or HTML.")
     (license license:gpl3+)))
 
 (define-public lapack
