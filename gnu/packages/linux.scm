@@ -49,6 +49,7 @@
   #:use-module (gnu packages gtk)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake)
   #:use-module (guix build-system python)
@@ -1377,6 +1378,10 @@ time.")
               (sha256
                (base32
                 "1w6f8h7fhjz3prs630f8gawv7jx74zi600z0pm997kkp24pyj5wg"))))
+    (arguments
+     (substitute-keyword-arguments (package-arguments udev)
+       ((#:configure-flags flags)
+        `(cons "--enable-libkmod" ,flags))))
     (home-page "http://www.gentoo.org/proj/en/eudev/")))
 
 (define-public lvm2
