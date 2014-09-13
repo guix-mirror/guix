@@ -25,7 +25,7 @@
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (udev kbd e2fsprogs lvm2))
+                #:select (udev kbd e2fsprogs lvm2 fuse alsa-utils))
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
@@ -608,8 +608,9 @@ This is the GNU operating system, welcome!\n\n")))
           (guix-service)
           (nscd-service)
 
-          ;; By default, enable the udev rules of LVM2.  They are needed as
-          ;; soon as LVM2 or the device-mapper is used.
-          (udev-service #:rules (list lvm2)))))
+          ;; The LVM2 rules are needed as soon as LVM2 or the device-mapper is
+          ;; used, so enable them by default.  The FUSE and ALSA rules are
+          ;; less critical, but handy.
+          (udev-service #:rules (list lvm2 fuse alsa-utils)))))
 
 ;;; base.scm ends here
