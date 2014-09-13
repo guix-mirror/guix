@@ -1,13 +1,13 @@
-# Serbian translation of guix.
+# Serbian translation of guix-packages.
 # Copyright (C) 2014 Free Software Foundation, Inc.
 # This file is distributed under the same license as the guix package.
-# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2013-2014.
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2013—2014.
 msgid ""
 msgstr ""
-"Project-Id-Version: guix-0.6-pre1\n"
+"Project-Id-Version: guix-packages-0.7-pre1\n"
 "Report-Msgid-Bugs-To: ludo@gnu.org\n"
-"POT-Creation-Date: 2014-07-14 11:59+0200\n"
-"PO-Revision-Date: 2014-06-19 08:51+0200\n"
+"POT-Creation-Date: 2014-06-25 22:55+0200\n"
+"PO-Revision-Date: 2014-09-13 11:01+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <(nothing)>\n"
 "Language: sr\n"
@@ -257,7 +257,7 @@ msgstr ""
 
 #: gnu/packages/base.scm:1264
 msgid "Complete GCC tool chain for C/C++ development"
-msgstr ""
+msgstr "Потпуни ГЦЦ скуп алата за Ц/Ц++ развој"
 
 #: gnu/packages/base.scm:1266
 msgid ""
@@ -265,6 +265,9 @@ msgid ""
 "be installed in user profiles.  This includes GCC, as well as libc (headers\n"
 "and binaries, plus debugging symbols in the 'debug' output), and Binutils."
 msgstr ""
+"Овај пакет садржи потпуни ГЦЦ скуп алата за Ц/Ц++ развој\n"
+"за инсталирање у корисничким профилима.  Укључује ГЦЦ, као и „libc“ (заглавља\n"
+"и извршне, плус симболе прочишћавања у „debug“ излазу), и „Binutils“."
 
 #: gnu/packages/guile.scm:99 gnu/packages/guile.scm:166
 msgid "Scheme implementation intended especially for extensions"
