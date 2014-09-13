@@ -1377,7 +1377,8 @@ time.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1w6f8h7fhjz3prs630f8gawv7jx74zi600z0pm997kkp24pyj5wg"))))
+                "1w6f8h7fhjz3prs630f8gawv7jx74zi600z0pm997kkp24pyj5wg"))
+              (patches (list (search-patch "eudev-rules-directory.patch")))))
     (arguments
      (substitute-keyword-arguments (package-arguments udev)
        ((#:configure-flags flags)

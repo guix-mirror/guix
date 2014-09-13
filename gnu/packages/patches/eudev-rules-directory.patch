@@ -1,0 +1,36 @@
+Add $EUDEV_RULES_DIRECTORY to the list of rules directories.
+
+The old udev 182 supported $UDEV_CONFIG_FILE, which in turn allowed
+the search path to be customized, but eudev no longer has this, hence
+this hack.
+
+--- eudev-1.9/src/udev/udev-rules.c	2014-09-13 10:21:59.615980259 +0200
++++ eudev-1.9/src/udev/udev-rules.c	2014-09-13 10:24:13.839976335 +0200
+@@ -46,15 +46,11 @@
+         };
+ };
+ 
+-static const char* const rules_dirs[] = {
++static const char* rules_dirs[] = {
+         UDEV_CONF_DIR "/rules.d",
+         UDEV_RULES_DIR,
+-        "/run/udev/rules.d",
+         UDEV_LIBEXEC_DIR "/rules.d",
+-#ifdef HAVE_SPLIT_USR
+-        "/lib/udev/rules.d",
+-        "/usr/lib/udev/rules.d",
+-#endif
++	NULL,			  /* placeholder for $EUDEV_RULES_DIRECTORY */
+         NULL};
+ 
+ struct udev_rules {
+@@ -1637,6 +1633,9 @@
+ 
+         udev_rules_check_timestamp(rules);
+ 
++	/* Allow the user to specify an additional rules directory.  */
++	rules_dirs[3] = getenv("EUDEV_RULES_DIRECTORY");
++
+         r = conf_files_list_strv(&files, ".rules", NULL, rules_dirs);
+         if (r < 0) {
+                 log_error("failed to enumerate rules files: %s", strerror(-r));
