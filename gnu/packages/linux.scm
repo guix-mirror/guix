@@ -1009,9 +1009,11 @@ processes currently causing I/O.")
                                (string-append "INIT_D_PATH="
                                               (assoc-ref %outputs "out")
                                               "/etc/init.d")
+
+                               ;; The rule makes /dev/fuse 666.
                                (string-append "UDEV_RULES_PATH="
                                               (assoc-ref %outputs "out")
-                                              "/etc/udev"))
+                                              "/lib/udev/rules.d"))
       #:phases (alist-cons-before
                 'build 'set-file-names
                 (lambda* (#:key inputs #:allow-other-keys)
