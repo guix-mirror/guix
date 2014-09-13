@@ -261,7 +261,7 @@ Scheme and C programs and between Scheme and Java programs.")
               ("which" ,which)
               ("patchelf" ,patchelf)))
     (home-page "http://hop.inria.fr/")
-    (synopsis "A multi-tier programming language for the Web 2.0")
+    (synopsis "Multi-tier programming language for the Web 2.0")
     (description
      "HOP is a multi-tier programming language for the Web 2.0 and the
 so-called diffuse Web.  It is designed for programming interactive web

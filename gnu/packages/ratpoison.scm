@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,7 +57,7 @@
       `(("perl" ,perl)
         ("pkg-config" ,pkg-config)))
     (home-page "http://www.nongnu.org/ratpoison/")
-    (synopsis "A simple mouse-free tiling window manager")
+    (synopsis "Simple mouse-free tiling window manager")
     (description
      "Ratpoison is a simple window manager with no fat library
 dependencies, no fancy graphics, no window decorations, and no

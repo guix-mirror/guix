@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -75,7 +75,7 @@
                    '())))
 
    (home-page "http://www.gnu.org/software/gawk/")
-   (synopsis "A text scanning and processing language")
+   (synopsis "Text scanning and processing language")
    (description
     "Gawk is the GNU implementation of Awk, a specialized programming
 language for the easy manipulation of formatted text, such as tables of data.

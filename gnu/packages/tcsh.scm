@@ -68,7 +68,7 @@
              (symlink "tcsh" "csh"))))
          %standard-phases))))
     (home-page "http://www.tcsh.org/")
-    (synopsis "A Unix shell based on csh")
+    (synopsis "Unix shell based on csh")
     (description
      "Tcsh is an enhanced, but completely compatible version of the Berkeley
 UNIX C shell (csh). It is a command language interpreter usable both as an

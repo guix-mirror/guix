@@ -42,7 +42,7 @@
      `(("libevent" ,libevent)
        ("ncurses" ,ncurses)))
     (home-page "http://tmux.sourceforge.net/")
-    (synopsis "A terminal multiplexer")
+    (synopsis "Terminal multiplexer")
     (description
      "tmux is a terminal multiplexer: it enables a number of terminals (or
 windows), each running a separate program, to be created, accessed, and

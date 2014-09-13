@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -118,8 +118,7 @@
 
        #:test-target "test"))
     (home-page "http://expect.nist.gov/")
-    (synopsis
-     "A tool for automating interactive applications")
+    (synopsis "Tool for automating interactive applications")
     (description
      "Expect is a tool for automating interactive applications such as
 telnet, ftp, passwd, fsck, rlogin, tip, etc.  Expect really makes this

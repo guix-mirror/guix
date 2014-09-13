@@ -104,7 +104,7 @@ joystick, and graphics hardware.")
     (build-system gnu-build-system)
     (inputs `(("alsa-lib" ,alsa-lib)
               ("libx11" ,libx11)))
-    (synopsis "Library for module sound formats.")
+    (synopsis "Library for module sound formats")
     (description
      "MikMod is able to play a wide range of module formats, as well as
 digital sound files. It can take advantage of particular features of your

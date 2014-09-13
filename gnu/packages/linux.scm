@@ -714,7 +714,7 @@ packet filter.")
     (home-page
      "http://www.linuxfoundation.org/collaborate/workgroups/networking/iproute2")
     (synopsis
-     "A collection of utilities for controlling TCP/IP networking and traffic control in Linux")
+     "Utilities for controlling TCP/IP networking and traffic in Linux")
     (description
      "Iproute2 is a collection of utilities for controlling TCP/IP
 networking and traffic with the Linux kernel.

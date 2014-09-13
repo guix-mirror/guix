@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Taylan Ulrich Bayirli/Kammer <taylanbayirli@gmail.com>
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -114,6 +114,7 @@ languages.")
 
 (define-public emacs-no-x-toolkit
   (package (inherit emacs)
+    (location (source-properties->location (current-source-location)))
     (name "emacs-no-x-toolkit")
     (synopsis "The extensible, customizable, self-documenting text
 editor (without an X toolkit)" )

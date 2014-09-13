@@ -139,7 +139,7 @@ SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
                                (string-append out "/share/info/mysql.info")))))
                  %standard-phases)))
     (home-page "http://www.mysql.com/")
-    (synopsis "A fast, easy to use, and popular database")
+    (synopsis "Fast, easy to use, and popular database")
     (description
      "MySQL is a fast, reliable, and easy to use relational database
 management system that supports the standardized Structured Query

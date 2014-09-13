@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,8 +39,7 @@
      ;; Report them upstream.
      '(#:tests? #f))
     (home-page "http://www.nongnu.org/libunwind")
-    (synopsis
-     "A portable and efficient API to determine the call-chain of a program")
+    (synopsis "Determining the call chain of a program")
     (description
      "The primary goal of this project is to define a portable and efficient C
 programming interface (API) to determine the call-chain of a program.  The API

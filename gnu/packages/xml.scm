@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -45,7 +45,7 @@
                "11pblz61zyxh68s5pdcbhc30ha1b2vfjd83aiwfg4vc15x3hadw2"))))
     (build-system gnu-build-system)
     (home-page "http://www.libexpat.org/")
-    (synopsis "A stream-oriented XML parser library written in C")
+    (synopsis "Stream-oriented XML parser library written in C")
     (description
      "Expat is an XML parser library written in C.  It is a
 stream-oriented parser in which an application registers handlers for
