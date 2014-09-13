@@ -25,7 +25,7 @@
   #:use-module (gnu system linux)                 ; 'pam-service', etc.
   #:use-module (gnu packages admin)
   #:use-module ((gnu packages linux)
-                #:select (udev kbd e2fsprogs lvm2 fuse alsa-utils))
+                #:select (eudev kbd e2fsprogs lvm2 fuse alsa-utils))
   #:use-module ((gnu packages base)
                 #:select (canonical-package glibc))
   #:use-module (gnu packages package-management)
@@ -510,7 +510,7 @@ item of @var{packages}."
                                 (guix build utils))
                     #:local-build? #t))
 
-(define* (udev-service #:key (udev udev) (rules '()))
+(define* (udev-service #:key (udev eudev) (rules '()))
   "Run @var{udev}, which populates the @file{/dev} directory dynamically.  Get
 extra rules from the packages listed in @var{rules}."
   (mlet* %store-monad ((rules     (udev-rules-union (cons udev rules)))

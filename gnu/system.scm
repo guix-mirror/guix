@@ -253,7 +253,7 @@ explicitly appear in OS."
 
          ;; Get 'insmod' & co. from kmod, not module-init-tools, since udev
          ;; already depends on it anyway.
-         kmod udev
+         kmod eudev
 
          e2fsprogs kbd
 
