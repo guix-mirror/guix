@@ -3449,6 +3449,12 @@ Run @var{udev}, which populates the @file{/dev} directory dynamically.
 The @code{(gnu system networking)} module provides services to configure
 the network interface.
 
+@cindex DHCP, networking service
+@deffn {Monadic Procedure} dhcp-client-service [#:dhcp @var{isc-dhcp}]
+Return a service that runs @var{dhcp}, a Dynamic Host Configuration
+Protocol (DHCP) client, on all the non-loopback network interfaces.
+@end deffn
+
 @deffn {Monadic Procedure} static-networking-service @var{interface} @var{ip} @
        [#:gateway #f] [#:name-services @code{'()}]
 Return a service that starts @var{interface} with address @var{ip}.  If

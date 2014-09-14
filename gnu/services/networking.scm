@@ -25,6 +25,7 @@
   #:use-module (guix gexp)
   #:use-module (guix monads)
   #:export (static-networking-service
+            dhcp-client-service
             tor-service))
 
 ;;; Commentary:
@@ -93,6 +94,38 @@ gateway."
                                            "del" "-net" "default")
                                 #t)))))
       (respawn? #f)))))
+
+(define* (dhcp-client-service #:key (dhcp isc-dhcp))
+  "Return a service that runs @var{dhcp}, a Dynamic Host Configuration
+Protocol (DHCP) client, on all the non-loopback network interfaces."
+
+  (define dhclient
+    #~(string-append #$dhcp "/sbin/dhclient"))
+
+  (define pid-file
+    "/var/run/dhclient.pid")
+
+  (with-monad %store-monad
+    (return (service
+             (documentation
+              "Set up networking via DHCP.")
+             (requirement '(user-processes udev))
+             (provision '(networking))
+             (start #~(lambda _
+                        ;; When invoked without any arguments, 'dhclient'
+                        ;; discovers all non-loopback interfaces *that are
+                        ;; up*.  However, the relevant interfaces are
+                        ;; typically down at this point.  Thus we perform our
+                        ;; own interface discovery here.
+                        (let* ((valid? (negate loopback-network-interface?))
+                               (ifaces (filter valid?
+                                               (all-network-interfaces)))
+                               (pid    (fork+exec-command
+                                        (cons* #$dhclient "-pf" #$pid-file
+                                               ifaces))))
+                          (and (zero? (cdr (waitpid pid)))
+                               (call-with-input-file #$pid-file read)))))
+             (stop #~(make-kill-destructor))))))
 
 (define* (tor-service #:key (tor tor))
   "Return a service to run the @uref{https://torproject.org,Tor} daemon.
