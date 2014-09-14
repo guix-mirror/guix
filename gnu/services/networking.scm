@@ -50,9 +50,15 @@ gateway."
   (with-monad %store-monad
     (return
      (service
+
+      ;; Unless we're providing the loopback interface, wait for udev to be up
+      ;; and running so that INTERFACE is actually usable.
+      (requirement (if (memq 'loopback provision)
+                       '()
+                       '(udev)))
+
       (documentation
-       (string-append "Set up networking on the '" interface
-                      "' interface using a static IP address."))
+       "Bring up the networking interface using a static IP address.")
       (provision provision)
       (start #~(lambda _
                  ;; Return #t if successfully started.
