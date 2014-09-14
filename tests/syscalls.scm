@@ -18,7 +18,8 @@
 
 (define-module (test-syscalls)
   #:use-module (guix build syscalls)
-  #:use-module (srfi srfi-64))
+  #:use-module (srfi srfi-64)
+  #:use-module (ice-9 match))
 
 ;; Test the (guix build syscalls) module, although there's not much that can
 ;; actually be tested without being root.
@@ -41,6 +42,11 @@
     (lambda args
       ;; Both return values have been encountered in the wild.
       (memv (system-error-errno args) (list EPERM ENOENT)))))
+
+(test-assert "network-interfaces"
+  (match (network-interfaces)
+    (((? string? names) ..1)
+     (member "lo" names))))
 
 (test-end)
 

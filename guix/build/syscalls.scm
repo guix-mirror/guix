@@ -30,7 +30,8 @@
             MS_MOVE
             mount
             umount
-            processes))
+            processes
+            network-interfaces))
 
 ;;; Commentary:
 ;;;
@@ -179,5 +180,69 @@ user-land process."
                              pid)))
                     (scandir "/proc"))
         <))
+
+
+;;;
+;;; Network interfaces.
+;;;
+
+(define SIOCGIFCONF                               ;from <bits/ioctls.h>
+  (if (string-contains %host-type "linux")
+      #x8912                                      ;GNU/Linux
+      #xf00801a4))                                ;GNU/Hurd
+
+(define ifconf-struct
+  ;; 'struct ifconf', from <net/if.h>.
+  (list int                                       ;int ifc_len
+        '*))                                      ;struct ifreq *ifc_ifcu
+
+(define ifreq-struct-size
+  ;; 'struct ifreq' begins with a char array containing the interface name,
+  ;; followed by a bunch of stuff.  This is its size in bytes.
+  (if (= 8 (sizeof '*))
+      40
+      32))
+
+(define %ioctl
+  ;; The most terrible interface, live from Scheme.
+  (pointer->procedure int
+                      (dynamic-func "ioctl" (dynamic-link))
+                      (list int unsigned-long '*)))
+
+(define (bytevector->string-list bv stride len)
+  "Return the null-terminated strings found in BV every STRIDE bytes.  Read at
+most LEN bytes from BV."
+  (let loop ((bytes  (take (bytevector->u8-list bv)
+                           (min len (bytevector-length bv))))
+             (result '()))
+    (match bytes
+      (()
+       (reverse result))
+      (_
+       (loop (drop bytes stride)
+             (cons (list->string (map integer->char
+                                      (take-while (negate zero?) bytes)))
+                   result))))))
+
+(define* (network-interfaces #:optional sock)
+  "Return the list of existing network interfaces."
+  (let* ((close? (not sock))
+         (sock   (or sock (socket SOCK_STREAM AF_INET 0)))
+         (len    (* ifreq-struct-size 10))
+         (reqs   (make-bytevector len))
+         (conf   (make-c-struct ifconf-struct
+                                (list len (bytevector->pointer reqs))))
+         (ret    (%ioctl (fileno sock) SIOCGIFCONF conf))
+         (err    (errno)))
+    (when close?
+      (close-port sock))
+    (if (zero? ret)
+        (bytevector->string-list reqs ifreq-struct-size
+                                 (match (parse-c-struct conf ifconf-struct)
+                                   ((len . _) len)))
+        (throw 'system-error "network-interface-list"
+               "network-interface-list: ~A"
+               (list (strerror err))
+               (list err)))))
 
 ;;; syscalls.scm ends here
