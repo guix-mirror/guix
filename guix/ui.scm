@@ -25,6 +25,7 @@
   #:use-module (guix packages)
   #:use-module (guix build-system)
   #:use-module (guix derivations)
+  #:use-module ((guix build utils) #:select (mkdir-p))
   #:use-module ((guix licenses) #:select (license? license-name))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
@@ -370,15 +371,13 @@ exists.  Honor the XDG specs,
                     (cut string-append <> "/guix"))))
     (catch 'system-error
       (lambda ()
-        (mkdir dir)
+        (mkdir-p dir)
         dir)
       (lambda args
-        (match (system-error-errno args)
-          ((or EEXIST 0)
-           dir)
-          (err
-           (leave (_ "failed to create configuration directory `~a': ~a~%")
-                  dir (strerror err))))))))
+        (let ((err (system-error-errno args)))
+          ;; ERR is necessarily different from EEXIST.
+          (leave (_ "failed to create configuration directory `~a': ~a~%")
+                 dir (strerror err)))))))
 
 (define* (fill-paragraph str width #:optional (column 0))
   "Fill STR such that each line contains at most WIDTH characters, assuming
