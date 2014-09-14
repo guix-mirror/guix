@@ -18,6 +18,7 @@
 
 (define-module (test-syscalls)
   #:use-module (guix build syscalls)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
@@ -43,10 +44,15 @@
       ;; Both return values have been encountered in the wild.
       (memv (system-error-errno args) (list EPERM ENOENT)))))
 
+(test-assert "all-network-interfaces"
+  (match (all-network-interfaces)
+    (((? string? names) ..1)
+     (member "lo" names))))
+
 (test-assert "network-interfaces"
   (match (network-interfaces)
     (((? string? names) ..1)
-     (member "lo" names))))
+     (lset<= string=? names (all-network-interfaces)))))
 
 (test-assert "network-interface-flags"
   (let* ((sock  (socket SOCK_STREAM AF_INET 0))

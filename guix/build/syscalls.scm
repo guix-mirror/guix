@@ -21,6 +21,7 @@
   #:use-module (rnrs bytevectors)
   #:use-module (srfi srfi-1)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 match)
   #:use-module (ice-9 ftw)
   #:export (errno
@@ -35,6 +36,7 @@
             IFF_UP
             IFF_BROADCAST
             IFF_LOOPBACK
+            all-network-interfaces
             network-interfaces
             network-interface-flags
             loopback-network-interface?))
@@ -244,7 +246,8 @@ most LEN bytes from BV."
                    result))))))
 
 (define* (network-interfaces #:optional sock)
-  "Return the list of existing network interfaces."
+  "Return the list of existing network interfaces.  This is typically limited
+to interfaces that are currently up."
   (let* ((close? (not sock))
          (sock   (or sock (socket SOCK_STREAM AF_INET 0)))
          (len    (* ifreq-struct-size 10))
@@ -263,6 +266,26 @@ most LEN bytes from BV."
                "network-interface-list: ~A"
                (list (strerror err))
                (list err)))))
+
+(define %interface-line
+  ;; Regexp matching an interface line in Linux's /proc/net/dev.
+  (make-regexp "^[[:blank:]]*([[:alnum:]]+): .*$"))
+
+(define (all-network-interfaces)
+  "Return all the registered network interfaces, including those that are not
+up."
+  (call-with-input-file "/proc/net/dev"           ;XXX: Linux-specific
+    (lambda (port)
+      (let loop ((interfaces '()))
+        (let ((line (read-line port)))
+          (cond ((eof-object? line)
+                 (reverse interfaces))
+                ((regexp-exec %interface-line line)
+                 =>
+                 (lambda (match)
+                   (loop (cons (match:substring match 1) interfaces))))
+                (else
+                 (loop interfaces))))))))
 
 (define (network-interface-flags socket name)
   "Return a number that is the bit-wise or of 'IFF*' flags for network
