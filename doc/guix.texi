@@ -3254,7 +3254,10 @@ User accounts are specified with the @code{user-account} form:
 (user-account
   (name "alice")
   (group "users")
-  (supplementary-groups '("wheel"))  ; allow use of sudo, etc.
+  (supplementary-groups '("wheel"   ;allow use of sudo, etc.
+                          "audio"   ;sound card
+                          "video"   ;video devices such as webcams
+                          "cdrom")) ;the good ol' CD-ROM
   (comment "Bob's sister")
   (home-directory "/home/alice"))
 @end example
