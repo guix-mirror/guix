@@ -48,6 +48,23 @@
     (((? string? names) ..1)
      (member "lo" names))))
 
+(test-assert "network-interface-flags"
+  (let* ((sock  (socket SOCK_STREAM AF_INET 0))
+         (flags (network-interface-flags sock "lo")))
+    (close-port sock)
+    (and (not (zero? (logand flags IFF_LOOPBACK)))
+         (not (zero? (logand flags IFF_UP))))))
+
+(test-equal "loopback-network-interface?"
+  ENODEV
+  (and (loopback-network-interface? "lo")
+       (catch 'system-error
+         (lambda ()
+           (loopback-network-interface? "nonexistent")
+           #f)
+         (lambda args
+           (system-error-errno args)))))
+
 (test-end)
 
 

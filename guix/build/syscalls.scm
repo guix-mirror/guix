@@ -31,7 +31,13 @@
             mount
             umount
             processes
-            network-interfaces))
+
+            IFF_UP
+            IFF_BROADCAST
+            IFF_LOOPBACK
+            network-interfaces
+            network-interface-flags
+            loopback-network-interface?))
 
 ;;; Commentary:
 ;;;
@@ -190,6 +196,18 @@ user-land process."
   (if (string-contains %host-type "linux")
       #x8912                                      ;GNU/Linux
       #xf00801a4))                                ;GNU/Hurd
+(define SIOCGIFFLAGS
+  (if (string-contains %host-type "linux")
+      #x8913                                      ;GNU/Linux
+      #xc4804191))                                ;GNU/Hurd
+
+;; Flags and constants from <net/if.h>.
+
+(define IFF_UP #x1)                               ;Interface is up
+(define IFF_BROADCAST #x2)                        ;Broadcast address valid.
+(define IFF_LOOPBACK #x8)                         ;Is a loopback net.
+
+(define IF_NAMESIZE 16)                           ;maximum interface name size
 
 (define ifconf-struct
   ;; 'struct ifconf', from <net/if.h>.
@@ -197,8 +215,9 @@ user-land process."
         '*))                                      ;struct ifreq *ifc_ifcu
 
 (define ifreq-struct-size
-  ;; 'struct ifreq' begins with a char array containing the interface name,
-  ;; followed by a bunch of stuff.  This is its size in bytes.
+  ;; 'struct ifreq' begins with an array of IF_NAMESIZE bytes containing the
+  ;; interface name (nul-terminated), followed by a bunch of stuff.  This is
+  ;; its size in bytes.
   (if (= 8 (sizeof '*))
       40
       32))
@@ -244,5 +263,33 @@ most LEN bytes from BV."
                "network-interface-list: ~A"
                (list (strerror err))
                (list err)))))
+
+(define (network-interface-flags socket name)
+  "Return a number that is the bit-wise or of 'IFF*' flags for network
+interface NAME."
+  (let ((req (make-bytevector ifreq-struct-size)))
+    (bytevector-copy! (string->utf8 name) 0 req 0
+                      (min (string-length name) (- IF_NAMESIZE 1)))
+    (let* ((ret (%ioctl (fileno socket) SIOCGIFFLAGS
+                        (bytevector->pointer req)))
+           (err (errno)))
+      (if (zero? ret)
+
+          ;; The 'ifr_flags' field is IF_NAMESIZE bytes after the beginning of
+          ;; 'struct ifreq', and it's a short int.
+          (bytevector-sint-ref req IF_NAMESIZE (native-endianness)
+                               (sizeof short))
+
+          (throw 'system-error "network-interface-flags"
+                 "network-interface-flags on ~A: ~A"
+                 (list name (strerror err))
+                 (list err))))))
+
+(define (loopback-network-interface? name)
+  "Return true if NAME designates a loopback network interface."
+  (let* ((sock  (socket SOCK_STREAM AF_INET 0))
+         (flags (network-interface-flags sock name)))
+    (close-port sock)
+    (not (zero? (logand flags IFF_LOOPBACK)))))
 
 ;;; syscalls.scm ends here
