@@ -25,6 +25,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 format)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:re-export (alist-cons
