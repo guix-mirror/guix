@@ -205,6 +205,49 @@ fast arithmetic.")
    (license gpl2+)
    (home-page "http://flintlib.org/")))
 
+(define-public arb
+  (package
+   (name "arb")
+   (version "2.2.0")
+   (source (origin
+            (method url-fetch)
+            (uri (string-append
+                  "https://github.com/fredrik-johansson/arb/archive/"
+                  version ".tar.gz"))
+            (sha256 (base32
+                     "0a8cgzznkmr59ngj4di9a37b5h4i00gbnixnxlwd34bcbflvjzyr"))))
+   (build-system gnu-build-system)
+   (inputs
+    `(("flint" ,flint)
+      ("gmp" ,gmp)
+      ("mpfr" ,mpfr)))
+   (arguments
+    `(#:phases
+        (alist-replace
+         'configure
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let ((out (assoc-ref outputs "out"))
+                 (flint (assoc-ref inputs "flint"))
+                 (gmp (assoc-ref inputs "gmp"))
+                 (mpfr (assoc-ref inputs "mpfr")))
+             ;; do not pass "--enable-fast-install", which makes the
+             ;; homebrew configure process fail
+             (zero? (system*
+                     "./configure"
+                     (string-append "--prefix=" out)
+                     (string-append "--with-flint=" flint)
+                     (string-append "--with-gmp=" gmp)
+                     (string-append "--with-mpfr=" mpfr)))))
+         %standard-phases)))
+   (synopsis "Arbitrary precision floating-point ball arithmetic")
+   (description
+    "Arb is a C library for arbitrary-precision floating-point ball
+arithmetic.  It supports efficient high-precision computation with
+polynomials, power series, matrices and special functions over the
+real and complex numbers, with automatic, rigorous error control.")
+   (license gpl2+)
+   (home-page "http://fredrikj.net/arb/")))
+
 (define-public bc
   (package
     (name "bc")
