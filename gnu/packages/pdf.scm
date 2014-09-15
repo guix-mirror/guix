@@ -35,6 +35,7 @@
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages lua)
+  #:use-module (gnu packages curl)
   #:use-module (srfi srfi-1))
 
 (define-public poppler
@@ -159,3 +160,69 @@ it easy to modify them and write the changes to disk.  It is primarily useful
 for applications that wish to do lower level manipulation of PDF, such as
 extracting content or merging files.")
     (license license:lgpl2.0+)))
+
+(define-public mupdf
+  (package
+    (name "mupdf")
+    (version "1.5")
+    (source
+      (origin
+        (method url-fetch)
+        (uri (string-append "http://mupdf.com/downloads/" name "-" version
+                            "-source.tar.gz"))
+        (sha256
+          (base32 "0sl47zqf4c9fhs4h5zg046vixjmwgy4vhljhr5g4md733nash7z4"))
+        (patches
+          (list (search-patch "mupdf-buildsystem-fix.patch")))
+        (modules '((guix build utils)))
+        (snippet
+          '(begin
+            ;; Don't build the bundled-in third party libraries.
+            (delete-file-recursively "thirdparty")
+
+            ;; Make the scripts for finding openjpeg build details executable.
+            (chmod "ojp2_cppflags.sh" #o0755)
+            (chmod "ojp2_ldflags.sh" #o0755)))))
+
+    (build-system gnu-build-system)
+    (inputs
+      `(("curl" ,curl)
+        ("freetype" ,freetype)
+        ("jbig2dec" ,jbig2dec)
+        ("libjpeg" ,libjpeg)
+        ("libx11" ,libx11)
+        ("libxext" ,libxext)
+        ("openjpeg" ,openjpeg)
+        ("openssl" ,openssl)
+        ("zlib" ,zlib)))
+    (native-inputs
+      `(("pkg-config" ,pkg-config)))
+    (arguments
+      ;; Trying to run `$ make check' results in a no rule fault.
+      '(#:tests? #f
+
+        #:modules ((guix build gnu-build-system)
+                     (guix build utils)
+                     (srfi srfi-1))
+        #:phases (alist-replace
+                   'build
+                   (lambda _ (zero? (system* "make" "XCFLAGS=-fpic")))
+                   (alist-replace
+                     'install
+                     (lambda* (#:key outputs #:allow-other-keys)
+                       (let ((out (assoc-ref outputs "out")))
+                         (zero? (system* "make" (string-append "prefix=" out)
+                                         "install"))))
+                     (alist-delete 'configure %standard-phases)))))
+    (home-page "http://mupdf.com")
+    (synopsis "A lightweight PDF viewer and toolkit")
+    (description
+      "MuPDF is a C library that implements a PDF and XPS parsing and
+rendering engine.  It is used primarily to render pages into bitmaps,
+but also provides support for other operations such as searching and
+listing the table of contents and hyperlinks.
+
+The library ships with a rudimentary X11 viewer, and a set of command
+line tools for batch rendering (pdfdraw), examining the file structure
+(pdfshow), and rewriting files (pdfclean).")
+    (license license:agpl3+)))

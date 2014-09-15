@@ -1,0 +1,69 @@
+Since openjpeg doesn't seem to ship with a .pc file, provide an alternative.
+
+--- a/ojp2_cppflags.sh	1970-01-01 01:00:00.000000000 +0100
++++ b/ojp2_cppflags.sh	2014-09-13 22:56:38.842418777 +0200
+@@ -0,0 +1,7 @@
++#!/bin/sh
++
++# Return the preprocessor flags to link against openjpeg.
++
++cpppath=$(echo ${NIX_STORE}/*-openjpeg-*/include/openjpeg-*)
++
++echo -I$cpppath
+
+--- a/ojp2_ldflags.sh	1970-01-01 01:00:00.000000000 +0100
++++ b/ojp2_ldflags.sh	2014-09-13 22:56:38.842418777 +0200
+@@ -0,0 +1,7 @@
++#!/bin/sh
++
++# Return the linker flags to link against openjpeg.
++
++ldpath=$(echo ${NIX_STORE}/*-openjpeg-*/lib)
++
++echo -L$ldpath -lopenjp2
+
+Make use of the above alternatives, compile with gcc.
+
+--- a/Makerules	2014-09-14 09:13:40.729149860 +0200
++++ b/Makerules	2014-09-14 09:17:06.425156595 +0200
+@@ -75,12 +75,14 @@
+ 
+ SYS_FREETYPE_CFLAGS = $(shell pkg-config --cflags freetype2)
+ SYS_FREETYPE_LIBS = $(shell pkg-config --libs freetype2)
+-SYS_OPENJPEG_CFLAGS = $(shell pkg-config --cflags libopenjp2)
+-SYS_OPENJPEG_LIBS = $(shell pkg-config --libs libopenjp2)
++SYS_OPENJPEG_CFLAGS = $(shell ./ojp2_cppflags.sh)
++SYS_OPENJPEG_LIBS = $(shell ./ojp2_ldflags.sh)
+ SYS_JBIG2DEC_LIBS = -ljbig2dec
+ SYS_JPEG_LIBS = -ljpeg
+ SYS_ZLIB_LIBS = -lz
+ 
++CC = gcc
++
+ endif
+ 
+ # The following section is an example of how to simply do cross-compilation
+
+Remove the -x11 from the built binaries, since X11 is implied on GNU. (This
+might change when Wayland gets more popular)
+
+--- a/Makefile	2014-06-10 17:09:28.000000000 +0200
++++ b/Makefile	2014-09-14 09:57:10.381235299 +0200
+@@ -255,7 +255,7 @@
+ 	$(LINK_CMD)
+ 
+ ifeq "$(HAVE_X11)" "yes"
+-MUVIEW_X11 := $(OUT)/mupdf-x11
++MUVIEW_X11 := $(OUT)/mupdf
+ MUVIEW_X11_OBJ := $(addprefix $(OUT)/platform/x11/, x11_main.o x11_image.o pdfapp.o)
+ $(MUVIEW_X11_OBJ) : $(FITZ_HDR) $(PDF_HDR)
+ $(MUVIEW_X11) : $(MUPDF_LIB) $(THIRD_LIBS)
+@@ -263,7 +263,7 @@
+ 	$(LINK_CMD) $(X11_LIBS)
+ 
+ ifeq "$(HAVE_CURL)" "yes"
+-MUVIEW_X11_CURL := $(OUT)/mupdf-x11-curl
++MUVIEW_X11_CURL := $(OUT)/mupdf-curl
+ MUVIEW_X11_CURL_OBJ := $(addprefix $(OUT)/platform/x11/curl/, x11_main.o x11_image.o pdfapp.o curl_stream.o)
+ $(MUVIEW_X11_CURL_OBJ) : $(FITZ_HDR) $(PDF_HDR)
+ $(MUVIEW_X11_CURL) : $(MUPDF_LIB) $(THIRD_LIBS) $(CURL_LIB)
