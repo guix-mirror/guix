@@ -23,7 +23,11 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages perl))
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages python)
+  #:use-module (gnu packages ncurses)
+  #:use-module (gnu packages version-control)
+  #:use-module (gnu packages curl))
 
 (define-public ocaml
   (package
@@ -78,3 +82,64 @@ an emphasis on expressiveness and safety. Developed for more than 20 years at
 Inria it benefits from one of the most advanced type systems and supports
 functional, imperative and object-oriented styles of programming.")
     (license (list qpl gpl2))))
+
+(define-public opam
+  (package
+    (name "opam")
+    (version "1.1.1")
+    (source (origin
+              (method url-fetch)
+              ;; Use the '-full' version, which includes all the dependencies.
+              (uri (string-append
+                    "https://github.com/ocaml/opam/releases/download/"
+                    version "/opam-full-" version ".tar.gz")
+               ;; (string-append "https://github.com/ocaml/opam/archive/"
+               ;;                    version ".tar.gz")
+               )
+              (sha256
+               (base32
+                "1frzqkx6yn1pnyd9qz3bv3rbwv74bmc1xji8kl41r1dkqzfl3xqv"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(;; Sometimes, 'make -jX' would fail right after ./configure with
+       ;; "Fatal error: exception End_of_file".
+       #:parallel-build? #f
+
+       ;; For some reason, 'ocp-build' needs $TERM to be set.
+       #:make-flags '("TERM=screen")
+       #:test-target "tests"
+
+       ;; FIXME: There's an obscure test failure:
+       ;;   …/_obuild/opam/opam.asm install P1' failed.
+       #:tests? #f
+
+       #:phases (alist-cons-before
+                 'build 'pre-build
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (let ((bash (assoc-ref inputs "bash")))
+                     (substitute* "src/core/opamSystem.ml"
+                       (("\"/bin/sh\"")
+                        (string-append "\"" bash "/bin/sh\"")))))
+                 (alist-cons-before
+                  'check 'pre-check
+                  (lambda _
+                    (setenv "HOME" (getcwd))
+                    (and (system "git config --global user.email guix@gnu.org")
+                         (system "git config --global user.name Guix")))
+                  %standard-phases))))
+    (native-inputs
+     `(("git" ,git)                               ;for the tests
+       ("python" ,python)))                       ;for the tests
+    (inputs
+     `(("ocaml" ,ocaml)
+       ("ncurses" ,ncurses)
+       ("curl" ,curl)))
+    (home-page "http://opam.ocamlpro.com/")
+    (synopsis "Package manager for OCaml")
+    (description
+     "OPAM is a tool to manage OCaml packages.  It supports multiple
+simultaneous compiler installations, flexible package constraints, and a
+Git-friendly development workflow.")
+
+    ;; The 'LICENSE' file waives some requirements compared to LGPLv3.
+    (license lgpl3)))
