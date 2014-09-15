@@ -350,6 +350,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/hop-bigloo-4.0b.patch			\
   gnu/packages/patches/icu4c-test-date-format.patch		\
   gnu/packages/patches/inkscape-stray-comma.patch               \
+  gnu/packages/patches/jbig2dec-ignore-testtest.patch		\
   gnu/packages/patches/kmod-module-directory.patch		\
   gnu/packages/patches/libbonobo-activation-test-race.patch	\
   gnu/packages/patches/libevent-dns-tests.patch			\

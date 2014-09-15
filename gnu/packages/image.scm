@@ -156,3 +156,32 @@ the W3C's XML-based Scaleable Vector Graphic (SVG) format.")
 
     ;; 'COPYING' is the GPLv2, but file headers say LGPLv2.0+.
     (license license:lgpl2.0+)))
+
+(define-public jbig2dec
+  (package
+    (name "jbig2dec")
+    (version "0.11")
+    (source
+      (origin
+        (method url-fetch)
+        (uri             ;; The link on the homepage is dead.
+          (string-append "http://distfiles.gentoo.org/distfiles/" name "-"
+                          version ".tar.gz"))
+        (sha256
+          (base32 "1ffhgmf2fqzk0h4k736pp06z7q5y4x41fg844bd6a9vgncq86bby"))
+        (patches (list (search-patch "jbig2dec-ignore-testtest.patch")))))
+
+    (build-system gnu-build-system)
+    (synopsis "Decoder of the JBIG2 image compression format")
+    (description
+      "JBIG2 is designed for lossy or lossless encoding of 'bilevel'
+(1-bit monochrome) images at moderately high resolution, and in
+particular scanned paper documents.  In this domain it is very
+efficient, offering compression ratios on the order of 100:1.
+
+This is a decoder only implementation, and currently is in the alpha
+stage, meaning it doesn't completely work yet.  However, it is
+maintaining parity with available encoders, so it is useful for real
+work.")
+    (home-page "http://jbig2dec.sourceforge.net/")
+    (license license:gpl2+)))
