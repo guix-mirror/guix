@@ -215,7 +215,7 @@ extracting content or merging files.")
                                          "install"))))
                      (alist-delete 'configure %standard-phases)))))
     (home-page "http://mupdf.com")
-    (synopsis "A lightweight PDF viewer and toolkit")
+    (synopsis "Lightweight PDF viewer and toolkit")
     (description
       "MuPDF is a C library that implements a PDF and XPS parsing and
 rendering engine.  It is used primarily to render pages into bitmaps,
