@@ -23,10 +23,12 @@
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages ghostscript)         ;lcms
   #:use-module ((guix licenses) #:renamer (symbol-prefix-proc 'license:))
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system cmake))
 
 (define-public libpng
   (package
@@ -185,3 +187,39 @@ maintaining parity with available encoders, so it is useful for real
 work.")
     (home-page "http://jbig2dec.sourceforge.net/")
     (license license:gpl2+)))
+
+(define-public openjpeg
+  (package
+    (name "openjpeg")
+    (version "2.0.0")
+    (source
+      (origin
+        (method url-fetch)
+        (uri
+          (string-append "http://openjpeg.googlecode.com/files/" name "-"
+                         version ".tar.gz"))
+        (sha256
+          (base32 "1n05yrmscpgksrh2kfh12h18l0lw9j03mgmvwcg3hm8m0lwgak9k"))))
+
+    (build-system cmake-build-system)
+    (arguments
+      ;; Trying to run `$ make check' results in a no rule fault.
+      '(#:tests? #f))
+    (inputs
+      `(("lcms" ,lcms)
+        ("libpng" ,libpng)
+        ("libtiff" ,libtiff)
+        ("zlib" ,zlib)))
+    (synopsis "JPEG 2000 codec")
+    (description
+      "The OpenJPEG library is a JPEG 2000 codec written in C.  It has
+been developed in order to promote the use of JPEG 2000, the new
+still-image compression standard from the Joint Photographic Experts
+Group (JPEG).
+
+In addition to the basic codec, various other features are under
+development, among them the JP2 and MJ2 (Motion JPEG 2000) file formats,
+an indexing tool useful for the JPIP protocol, JPWL-tools for
+error-resilience, a Java-viewer for j2k-images, ...")
+    (home-page "http://jbig2dec.sourceforge.net/")
+    (license license:bsd-2)))
