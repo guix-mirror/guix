@@ -121,7 +121,14 @@ rates. ")
                    version ".tar.xz"))
              (sha256
               (base32
-               "0fgrr8v7yfh0byhzdv4c87v9lkj8g7gpjm8r9xrbvpa92a5kmhcr"))))
+               "0fgrr8v7yfh0byhzdv4c87v9lkj8g7gpjm8r9xrbvpa92a5kmhcr"))
+             (modules '((guix build utils)))
+             (snippet
+              ;; Disable console-kit support by default since it's deprecated
+              ;; anyway.
+              '(substitute* "src/daemon/default.pa.in"
+                 (("load-module module-console-kit" all)
+                  (string-append "#" all "\n"))))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/var" ;"--sysconfdir=/etc"
