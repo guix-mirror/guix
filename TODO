@@ -3,25 +3,11 @@
 #+TITLE: What's left to do?
 #+STARTUP: content hidestars
 
-Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 
   Copying and distribution of this file, with or without modification,
   are permitted in any medium without royalty provided the copyright
   notice and this notice are preserved.
-
-* integrate needed Nix code
-
-** MAYBE Add a substituter that uses the GNUnet DHT or [[http://libswift.org][libswift]]
-
-Would be neat if binaries could be pushed to and pulled from the GNUnet DHT or
-rather libswift (since DHTs aren’t suited for large payloads).  Guix users
-would sign their binaries, and define which binaries they trust.
-
-Use UPnP and similar to traverse NAT, like ‘filegive’ does.
-
-** Add a remote build hook
-
-Like scripts/build-remote.pl in Nix.
 
 * Add `guix publish' to publish the store using Guile's web server
 
@@ -30,16 +16,18 @@ Ideally, extend .nix-cache-info to include the server's public key, and also
 reply to requests for .narinfo.sig.
 Optionally, use Guile-Avahi to publish the service.
 
+* MAYBE Add a substituter that uses the GNUnet DHT or [[http://libswift.org][libswift]]
+
+Would be neat if binaries could be pushed to and pulled from the GNUnet DHT or
+rather libswift (since DHTs aren’t suited for large payloads).  Guix users
+would sign their binaries, and define which binaries they trust.
+
+Use UPnP and similar to traverse NAT, like ‘filegive’ does.
+
 * user interface
-** Add a package.el (Emacs) back-end
-
-package.el is quite monolithic, but we may be able to reuse/extend
-‘package-menu-mode’ or at least ‘tabulated-list-mode’.
-
 ** add guile-ncurses interface
 
 * extend <package>
-
 ** add ‘recommends’ field
 
 For instance, glibc, binutils, gcc, and ld-wrapper would recommend each other.
@@ -76,15 +64,10 @@ The Guildhall is Guile’s packaging system.  It should be easy to add a
 ‘guildhall-build-system’ that does the right thing based on guildhall
 recipes.
 
-* add ‘allowed-references’ in <package>
-
-[[file:~/src/nix/src/libstore/build.cc::if%20(drv.env.find("allowedReferences")%20!%3D%20drv.env.end())%20{][See how Nix implements that internally]].
-
 * union
 
-Support sophisticated collision handling when building a union: check
-whether the colliding files are identical, honor per-package priorities,
-etc.
+Support sophisticated collision handling when building a union: honor
+per-package priorities, etc.
 
 * add GUIX_ALLOW_EXPENSIVE_TESTS
 
@@ -96,7 +79,6 @@ run when that is defined.
 Would download a substitute, and compare its contents against a (hopefully
 locally-built) copy.
 
-
 * guix build utils
 ** MAYBE Change ‘ld-wrapper’ to add RPATH for libs passed by file name
 
@@ -107,13 +89,9 @@ locally-built) copy.
 See [[https://github.com/NixOS/nixpkgs/commit/d1662d715514e6ef9d3dc29f132f1b3d8e608a18][Shea Levy's `replace-dependency' in Nixpkgs]].
 
 * distro
-** port to new GNU/Linux platforms, notably ‘mipsel64-linux’
 ** port to GNU/Hurd, aka. ‘i686-gnu’
 
 Problems include that current glibc releases do not build on GNU/Hurd.
 In addition, there haven’t been stable releases of GNU Mach, MiG, and
 Hurd, which would be a pre-condition.
 
-** make a bootable GNU/Linux-Libre distro, with OS configuration EDSL
-
-Similar in spirit to /etc/nixos/configuration.nix.
