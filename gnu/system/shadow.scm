@@ -95,6 +95,7 @@
           (system-group (name "tty") (id %tty-gid))
           (system-group (name "dialout"))
           (system-group (name "kmem"))
+          (system-group (name "input"))              ; input devices, from udev
           (system-group (name "video"))
           (system-group (name "audio"))
           (system-group (name "netdev"))             ; used in avahi-dbus.conf
