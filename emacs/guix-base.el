@@ -1,4 +1,4 @@
-;;; guix-base.el --- Common definitions
+;;; guix-base.el --- Common definitions   -*- lexical-binding: t -*-
 
 ;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 
@@ -179,6 +179,14 @@ PARAM is a name of the entry parameter.
 VAL is a value of this parameter.")
 (put 'guix-entries 'permanent-local t)
 
+(defvar-local guix-buffer-type nil
+  "Type of the current buffer.")
+(put 'guix-buffer-type 'permanent-local t)
+
+(defvar-local guix-entry-type nil
+  "Type of the current entry.")
+(put 'guix-entry-type 'permanent-local t)
+
 (defvar-local guix-search-type nil
   "Type of the current search.")
 (put 'guix-search-type 'permanent-local t)
@@ -187,41 +195,31 @@ VAL is a value of this parameter.")
   "Values of the current search.")
 (put 'guix-search-vals 'permanent-local t)
 
-(defsubst guix-set-vars (entries search-type search-vals)
-  (setq guix-entries entries
+(defsubst guix-set-vars (entries buffer-type entry-type
+                         search-type search-vals)
+  (setq guix-entries     entries
+        guix-buffer-type buffer-type
+        guix-entry-type  entry-type
         guix-search-type search-type
         guix-search-vals search-vals))
 
-(defmacro guix-define-buffer-type (buf-type entry-type &rest args)
-  "Define common stuff for BUF-TYPE buffers for displaying entries.
+(defun guix-get-symbol (postfix buffer-type &optional entry-type)
+  (intern (concat "guix-"
+                  (when entry-type
+                    (concat (symbol-name entry-type) "-"))
+                  (symbol-name buffer-type) "-" postfix)))
 
-ENTRY-TYPE is a type of displayed entries (see
-`guix-get-entries').
+(defmacro guix-define-buffer-type (buf-type entry-type &rest args)
+  "Define common for BUF-TYPE buffers for displaying ENTRY-TYPE entries.
 
 In the text below TYPE means ENTRY-TYPE-BUF-TYPE.
 
-This macro defines `guix-TYPE-mode', a custom group, several user
-variables and the following functions:
-
-  - `guix-TYPE-get-params-for-receiving'
-  - `guix-TYPE-revert'
-  - `guix-TYPE-redisplay'
-  - `guix-TYPE-make-history-item'
-  - `guix-TYPE-set'
-  - `guix-TYPE-show'
-  - `guix-TYPE-get-show'
+This macro defines `guix-TYPE-mode', a custom group and several
+user variables.
 
 The following stuff should be defined outside this macro:
 
   - `guix-BUF-TYPE-mode' - parent mode for the defined mode.
-
-  - `guix-BUF-TYPE-insert-entries' - function for inserting
-  entries in the current buffer; it is called with 2 arguments:
-  entries of the form of `guix-entries' and ENTRY-TYPE.
-
-  - `guix-BUF-TYPE-get-displayed-params' - function returning a
-  list of parameters displayed in the current buffer; it is
-  called with ENTRY-TYPE as argument.
 
   - `guix-TYPE-mode-initialize' (optional) - function for
   additional mode settings; it is called without arguments.
@@ -252,15 +250,8 @@ following keywords are available:
          (mode-init-fun  (intern (concat prefix "-mode-initialize")))
          (buf-name-var   (intern (concat prefix "-buffer-name")))
          (revert-var     (intern (concat prefix "-revert-no-confirm")))
-         (revert-fun     (intern (concat prefix "-revert")))
-         (redisplay-fun  (intern (concat prefix "-redisplay")))
          (history-var    (intern (concat prefix "-history-size")))
-         (history-fun    (intern (concat prefix "-make-history-item")))
          (params-var     (intern (concat prefix "-required-params")))
-         (params-fun     (intern (concat prefix "-get-params-for-receiving")))
-         (set-fun        (intern (concat prefix "-set")))
-         (show-fun       (intern (concat prefix "-show")))
-         (get-show-fun   (intern (concat prefix "-get-show")))
          (revert-val     nil)
          (history-val    20)
          (params-val     '(id)))
@@ -309,7 +300,7 @@ following keywords are available:
        (define-derived-mode ,mode ,parent-mode ,(concat "Guix-" Buf-type-str)
          ,(concat "Major mode for displaying information about " entry-str ".\n\n"
                   "\\{" mode-map-str "}")
-         (setq-local revert-buffer-function ',revert-fun)
+         (setq-local revert-buffer-function 'guix-revert-buffer)
          (setq-local guix-history-size ,history-var)
          (and (fboundp ',mode-init-fun) (,mode-init-fun)))
 
@@ -317,88 +308,140 @@ following keywords are available:
          (define-key map (kbd "l") 'guix-history-back)
          (define-key map (kbd "r") 'guix-history-forward)
          (define-key map (kbd "g") 'revert-buffer)
-         (define-key map (kbd "R") ',redisplay-fun)
-         (define-key map (kbd "C-c C-z") 'guix-switch-to-repl))
-
-       (defun ,params-fun ()
-         ,(concat "Return " entry-type-str " parameters that should be received.")
-         (unless (equal ,params-var 'all)
-           (cl-union ,params-var
-                     (,(intern (concat "guix-" buf-type-str "-get-displayed-params"))
-                      ',entry-type))))
-
-       (defun ,revert-fun (_ignore-auto noconfirm)
-         "Update information in the current buffer.
-The function is suitable for `revert-buffer-function'.
-See `revert-buffer' for the meaning of NOCONFIRM."
-         (when (or ,revert-var
-                   noconfirm
-                   (y-or-n-p "Update current information? "))
-           (let ((entries (guix-get-entries ',entry-type guix-search-type
-                                            guix-search-vals (,params-fun))))
-             (,set-fun entries guix-search-type guix-search-vals t))))
-
-       (defun ,redisplay-fun ()
-         "Redisplay current information.
-This function will not update the information, use
-\"\\[revert-buffer]\" if you want the full update."
-         (interactive)
-         (,show-fun guix-entries)
-         (guix-result-message guix-entries ',entry-type
-                              guix-search-type guix-search-vals))
-
-       (defun ,history-fun ()
-         "Make and return a history item for the current buffer."
-         (list (lambda (entries search-type search-vals)
-                 (,show-fun entries)
-                 (guix-set-vars entries search-type search-vals)
-                 (guix-result-message entries ',entry-type
-                                      search-type search-vals))
-               guix-entries guix-search-type guix-search-vals))
-
-       (defun ,set-fun (entries search-type search-vals &optional history-replace)
-         ,(concat "Set up the " buf-str " for displaying " entry-str ".\n\n"
-                  "Display ENTRIES, set variables and make history item.\n\n"
-                  "ENTRIES should have a form of `guix-entries'.\n\n"
-                  "See `guix-get-entries' for the meaning of SEARCH-TYPE and\n"
-                  "SEARCH-VALS.\n\n"
-                  "If HISTORY-REPLACE is non-nil, replace current history item,\n"
-                  "otherwise add the new one.")
-         (when entries
-           (let ((buf (if (eq major-mode ',mode)
-                          (current-buffer)
-                        (get-buffer-create ,buf-name-var))))
-             (with-current-buffer buf
-               (,show-fun entries)
-               (guix-set-vars entries search-type search-vals)
-               (funcall (if history-replace
-                            #'guix-history-replace
-                          #'guix-history-add)
-                        (,history-fun)))
-             (pop-to-buffer buf
-                            '((display-buffer-reuse-window
-                               display-buffer-same-window)))))
-         (guix-result-message entries ',entry-type
-                              search-type search-vals))
-
-       (defun ,show-fun (entries)
-         ,(concat "Display " entry-type-str " ENTRIES in the current " buf-str ".")
-         (let ((inhibit-read-only t))
-           (erase-buffer)
-           (,mode)
-           (,(intern (concat "guix-" buf-type-str "-insert-entries"))
-            entries ',entry-type)
-           (goto-char (point-min))))
-
-       (defun ,get-show-fun (search-type &rest search-vals)
-         ,(concat "Search for " entry-str " and show results in the " buf-str ".\n"
-                  "See `guix-get-entries' for the meaning of SEARCH-TYPE and\n"
-                  "SEARCH-VALS.")
-         (let ((entries (guix-get-entries ',entry-type search-type
-                                          search-vals (,params-fun))))
-           (,set-fun entries search-type search-vals))))))
+         (define-key map (kbd "R") 'guix-redisplay-buffer)
+         (define-key map (kbd "C-c C-z") 'guix-switch-to-repl)))))
 
 (put 'guix-define-buffer-type 'lisp-indent-function 'defun)
+
+
+;;; Getting info about packages and generations
+
+(defun guix-get-entries (entry-type search-type search-vals
+                         &optional params)
+  "Search for entries of ENTRY-TYPE.
+
+Call an appropriate scheme function and return a list of the
+form of `guix-entries'.
+
+ENTRY-TYPE should be one of the following symbols: `package' or
+`generation'.
+
+SEARCH-TYPE may be one of the following symbols:
+
+- If ENTRY-TYPE is `package' or `output': `id', `name', `regexp',
+  `all-available', `newest-available', `installed', `obsolete',
+  `generation'.
+
+- If ENTRY-TYPE is `generation': `id', `last', `all'.
+
+PARAMS is a list of parameters for receiving.  If nil, get
+information with all available parameters."
+  (guix-eval-read (guix-make-guile-expression
+                   'get-entries
+                   guix-current-profile params
+                   entry-type search-type search-vals)))
+
+(defun guix-get-show-entries (buffer-type entry-type search-type
+                                          &rest search-vals)
+  "Search for ENTRY-TYPE entries and show results in BUFFER-TYPE buffer.
+See `guix-get-entries' for the meaning of SEARCH-TYPE and SEARCH-VALS."
+  (let ((entries (guix-get-entries entry-type search-type search-vals
+                                   (guix-get-params-for-receiving
+                                    buffer-type entry-type))))
+    (guix-set-buffer entries buffer-type entry-type
+                     search-type search-vals)))
+
+(defun guix-set-buffer (entries buffer-type entry-type search-type
+                        search-vals &optional history-replace)
+  "Set up BUFFER-TYPE buffer for displaying ENTRY-TYPE ENTRIES.
+
+Display ENTRIES, set variables and make history item.
+ENTRIES should have a form of `guix-entries'.
+
+See `guix-get-entries' for the meaning of SEARCH-TYPE and SEARCH-VALS.
+
+If HISTORY-REPLACE is non-nil, replace current history item,
+otherwise add the new one."
+  (when entries
+    (let ((buf (if (eq major-mode (guix-get-symbol
+                                   "mode" buffer-type entry-type))
+                   (current-buffer)
+                 (get-buffer-create
+                  (symbol-value
+                   (guix-get-symbol "buffer-name"
+                                    buffer-type entry-type))))))
+      (with-current-buffer buf
+        (guix-show-entries entries buffer-type entry-type)
+        (guix-set-vars entries buffer-type entry-type
+                       search-type search-vals)
+        (funcall (if history-replace
+                     #'guix-history-replace
+                   #'guix-history-add)
+                 (guix-make-history-item)))
+      (pop-to-buffer buf
+                     '((display-buffer-reuse-window
+                        display-buffer-same-window)))))
+  (guix-result-message entries entry-type search-type search-vals))
+
+(defun guix-show-entries (entries buffer-type entry-type)
+  "Display ENTRY-TYPE ENTRIES in the current BUFFER-TYPE buffer."
+  (let ((inhibit-read-only t))
+    (erase-buffer)
+    (funcall (symbol-function (guix-get-symbol
+                               "mode" buffer-type entry-type)))
+    (funcall (guix-get-symbol "insert-entries" buffer-type)
+             entries entry-type)
+    (goto-char (point-min))))
+
+(defun guix-history-call (entries buffer-type entry-type
+                          search-type search-vals)
+  "Function called for moving by history."
+  (guix-show-entries entries buffer-type entry-type)
+  (guix-set-vars entries buffer-type entry-type
+                 search-type search-vals)
+  (guix-result-message entries entry-type search-type search-vals))
+
+(defun guix-make-history-item ()
+  "Make and return a history item for the current buffer."
+  (list #'guix-history-call
+        guix-entries guix-buffer-type guix-entry-type
+        guix-search-type guix-search-vals))
+
+(defun guix-get-params-for-receiving (buffer-type entry-type)
+  "Return parameters that should be received for BUFFER-TYPE, ENTRY-TYPE."
+  (let* ((required-var (guix-get-symbol "required-params"
+                                        buffer-type entry-type))
+         (required (symbol-value required-var)))
+    (unless (equal required 'all)
+      (cl-union required
+                (funcall (guix-get-symbol "get-displayed-params"
+                                          buffer-type)
+                         entry-type)))))
+
+(defun guix-revert-buffer (_ignore-auto noconfirm)
+  "Update information in the current buffer.
+The function is suitable for `revert-buffer-function'.
+See `revert-buffer' for the meaning of NOCONFIRM."
+  (when (or noconfirm
+            (symbol-value
+             (guix-get-symbol "revert-no-confirm"
+                              guix-buffer-type guix-entry-type))
+            (y-or-n-p "Update current information? "))
+    (let ((entries (guix-get-entries
+                    guix-entry-type guix-search-type guix-search-vals
+                    (guix-get-params-for-receiving guix-buffer-type
+                                                   guix-entry-type))))
+      (guix-set-buffer entries guix-buffer-type guix-entry-type
+                       guix-search-type guix-search-vals t))))
+
+(defun guix-redisplay-buffer ()
+  "Redisplay current information.
+This function will not update the information, use
+\"\\[revert-buffer]\" if you want the full update."
+  (interactive)
+  (guix-show-entries guix-entries guix-buffer-type guix-entry-type)
+  (guix-result-message guix-entries guix-entry-type
+                       guix-search-type guix-search-vals))
 
 
 ;;; Messages
@@ -465,33 +508,6 @@ This function will not update the information, use
           (list (cons count 'count)
                 (cons val 'val)))
     (apply #'message format args)))
-
-
-;;; Getting info about packages and generations
-
-(defun guix-get-entries (entry-type search-type search-vals &optional params)
-  "Search for entries of ENTRY-TYPE.
-
-Call an appropriate scheme function and return a list of the
-form of `guix-entries'.
-
-ENTRY-TYPE should be one of the following symbols: `package' or
-`generation'.
-
-SEARCH-TYPE may be one of the following symbols:
-
-- If ENTRY-TYPE is `package': `id', `name', `regexp',
-  `all-available', `newest-available', `installed', `obsolete',
-  `generation'.
-
-- If ENTRY-TYPE is `generation': `id', `last', `all'.
-
-PARAMS is a list of parameters for receiving.  If nil, get
-information with all available parameters."
-  (guix-eval-read (guix-make-guile-expression
-                   'get-entries
-                   guix-current-profile params
-                   entry-type search-type search-vals)))
 
 
 ;;; Actions on packages and generations

@@ -343,6 +343,7 @@ Same as `tabulated-list-sort', but also restore marks after sorting."
 (defvar guix-list-mode-map
   (let ((map (make-sparse-keymap)))
     (set-keymap-parent map tabulated-list-mode-map)
+    (define-key map (kbd "RET") 'guix-list-describe)
     (define-key map (kbd "m")   'guix-list-mark)
     (define-key map (kbd "*")   'guix-list-mark)
     (define-key map (kbd "M")   'guix-list-mark-all)
@@ -371,16 +372,12 @@ following keywords are available:
 
 This macro defines the following functions:
 
-  - `guix-ENTRY-TYPE-describe' - display marked entries in info buffer.
-
   - `guix-ENTRY-TYPE-mark-MARK-NAME' functions for each mark
     specified in `:marks' argument."
   (let* ((entry-type-str (symbol-name entry-type))
-         (entry-str      (concat entry-type-str " entries"))
          (prefix         (concat "guix-" entry-type-str "-list"))
          (mode-str       (concat prefix "-mode"))
          (init-fun       (intern (concat prefix "-mode-initialize")))
-         (describe-fun   (intern (concat prefix "-describe")))
          (marks-var      (intern (concat prefix "-mark-alist")))
          (marks-val      nil)
          (sort-key       nil)
@@ -409,22 +406,6 @@ This macro defines the following functions:
                         (guix-list-mark ',mark-name t))))
                  marks-val)
 
-       (defun ,describe-fun (&optional arg)
-         ,(concat "Describe " entry-str " marked with a general mark.\n"
-                  "If no entry is marked, describe the current " entry-type-str ".\n"
-                  "With prefix (if ARG is non-nil), describe the " entry-str "\n"
-                  "marked with any mark.")
-         (interactive "P")
-         (let* ((ids (or (apply #'guix-list-get-marked-id-list
-                                (unless arg '(general)))
-                         (list (guix-list-current-id))))
-                (count (length ids)))
-           (when (or (<= count guix-list-describe-warning-count)
-                     (y-or-n-p (format "Do you really want to describe %d entries? "
-                                       count)))
-             (,(intern (concat "guix-" entry-type-str "-info-get-show"))
-              'id ids))))
-
        (defun ,init-fun ()
          ,(concat "Initial settings for `" mode-str "'.")
          ,(when sort-key
@@ -438,6 +419,21 @@ This macro defines the following functions:
          (tabulated-list-init-header)))))
 
 (put 'guix-list-define-entry-type 'lisp-indent-function 'defun)
+
+(defun guix-list-describe (&optional arg)
+  "Describe entries marked with a general mark.
+If no entries are marked, describe the current entry.
+With prefix (if ARG is non-nil), describe entries marked with any mark."
+  (interactive "P")
+  (let* ((ids (or (apply #'guix-list-get-marked-id-list
+                         (unless arg '(general)))
+                  (list (guix-list-current-id))))
+         (count (length ids)))
+    (when (or (<= count guix-list-describe-warning-count)
+              (y-or-n-p (format "Do you really want to describe %d entries? "
+                                count)))
+      (apply #'guix-get-show-entries
+             'info guix-entry-type 'id ids))))
 
 
 ;;; Displaying packages
@@ -477,7 +473,6 @@ likely)."
   :group 'guix-package-list)
 
 (let ((map guix-package-list-mode-map))
-  (define-key map (kbd "RET") 'guix-package-list-describe)
   (define-key map (kbd "x")   'guix-package-list-execute)
   (define-key map (kbd "i")   'guix-package-list-mark-install)
   (define-key map (kbd "d")   'guix-package-list-mark-delete)
@@ -617,13 +612,14 @@ The specification is suitable for `guix-process-package-actions'."
 
 (let ((map guix-generation-list-mode-map))
   (define-key map (kbd "RET") 'guix-generation-list-show-packages)
-  (define-key map (kbd "i")   'guix-generation-list-describe)
+  (define-key map (kbd "i")   'guix-list-describe)
   (define-key map (kbd "d")   'guix-generation-list-mark-delete-simple))
 
 (defun guix-generation-list-show-packages ()
   "List installed packages for the generation at point."
   (interactive)
-  (guix-package-list-get-show 'generation (guix-list-current-id)))
+  (guix-get-show-entries 'list 'package 'generation
+                         (guix-list-current-id)))
 
 (provide 'guix-list)
 

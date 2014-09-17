@@ -427,7 +427,8 @@ Propertize package button with FACE."
   (guix-insert-button
    name face
    (lambda (btn)
-     (guix-package-info-get-show 'name (button-label btn)))
+     (guix-get-show-entries 'info 'package 'name
+                            (button-label btn)))
    "Describe this package"))
 
 
@@ -532,8 +533,6 @@ ENTRY is an alist with package info."
   "Face used for a number of a generation."
   :group 'guix-generation-info)
 
-(declare-function guix-package-list-get-show "guix-list" t t)
-
 (defun guix-generation-info-insert-number (number &optional _)
   "Insert generation NUMBER and action buttons."
   (guix-info-insert-val-default number 'guix-generation-info-number)
@@ -541,8 +540,8 @@ ENTRY is an alist with package info."
   (guix-info-insert-action-button
    "Packages"
    (lambda (btn)
-     (guix-package-list-get-show 'generation
-                                 (button-get btn 'number)))
+     (guix-get-show-entries 'list 'package 'generation
+                            (button-get btn 'number)))
    "Show installed packages for this generation"
    'number number)
   (guix-info-insert-indent)

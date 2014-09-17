@@ -28,6 +28,7 @@
 
 ;;; Code:
 
+(require 'guix-base)
 (require 'guix-list)
 (require 'guix-info)
 
@@ -40,12 +41,6 @@
   "If non-nil, list a package even if it is the only matching result.
 If nil, show a single package in the info buffer."
   :type 'boolean
-  :group 'guix)
-
-(defcustom guix-show-generations-function 'guix-generation-list-get-show
-  "Default function used to display generations."
-  :type '(choice (function-item guix-generation-list-get-show)
-                 (function-item guix-generation-info-get-show))
   :group 'guix)
 
 (defvar guix-search-params '(name synopsis description)
@@ -62,22 +57,31 @@ SEARCH-VALS.
 
 Results are displayed in the list buffer, unless a single package
 is found and `guix-list-single-package' is nil."
-  (let* ((list-params (guix-package-list-get-params-for-receiving))
-         (packages (guix-get-entries 'package search-type
-                                     search-vals list-params)))
+  (let* ((list-params (guix-get-params-for-receiving
+                       'list 'package))
+         (packages (guix-get-entries 'package
+                                     search-type search-vals
+                                     list-params)))
     (if (or guix-list-single-package
             (cdr packages))
-        (guix-package-list-set packages search-type search-vals)
-      (let ((info-params (guix-package-info-get-params-for-receiving)))
-        (unless (equal list-params info-params)
-          ;; If we don't have required info, we should receive it again
-          (setq packages (guix-get-entries 'package search-type
-                                           search-vals info-params))))
-      (guix-package-info-set packages search-type search-vals))))
+        (guix-set-buffer packages 'list 'package
+                         search-type search-vals)
+      (let* ((info-params (guix-get-params-for-receiving
+                           'info 'package))
+             (packages (if (equal list-params info-params)
+                           packages
+                         ;; If we don't have required info, we should
+                         ;; receive it again
+                         (guix-get-entries 'package
+                                           search-type search-vals
+                                           info-params))))
+        (guix-set-buffer packages 'info 'package
+                         search-type search-vals)))))
 
 (defun guix-get-show-generations (search-type &rest search-vals)
   "Search for generations and show results."
-  (apply guix-show-generations-function search-type search-vals))
+  (apply #'guix-get-show-entries
+         'list 'generation search-type search-vals))
 
 ;;;###autoload
 (defun guix-search-by-name (name)
