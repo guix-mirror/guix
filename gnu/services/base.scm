@@ -182,6 +182,8 @@ stopped before 'kill' is called."
                                              (@ (ice-9 rdelim) read-string))))
                              '()))
 
+                       (define lset= (@ (srfi srfi-1) lset=))
+
                        ;; When this happens, all the processes have been
                        ;; killed, including 'deco', so DMD-OUTPUT-PORT and
                        ;; thus CURRENT-OUTPUT-PORT are dangling.
@@ -205,6 +207,15 @@ stopped before 'kill' is called."
                              (sleep #$grace-delay)
                              (kill-except omitted-pids SIGKILL)
                              (delete-file #$%do-not-kill-file)))
+
+                       (let wait ()
+                         (let ((pids (processes)))
+                           (unless (lset= = pids (cons 1 omitted-pids))
+                             (format #t "waiting for process termination\
+ (processes left: ~s)~%"
+                                     pids)
+                             (sleep 2)
+                             (wait))))
 
                        (display "all processes have been terminated\n")
                        #f))
