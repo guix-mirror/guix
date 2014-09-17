@@ -137,6 +137,10 @@ names such as device-mapping services."
       (stop #~(lambda args
                 ;; Normally there are no processes left at this point, so
                 ;; TARGET can be safely unmounted.
+
+                ;; Make sure PID 1 doesn't keep TARGET busy.
+                (chdir "/")
+
                 (umount #$target)
                 #f))))))
 
