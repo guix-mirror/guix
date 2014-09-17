@@ -1,0 +1,25 @@
+GCC bug fix for <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=61801>.
+Initially discussed at
+ <http://lists.gnu.org/archive/html/guix-devel/2014-09/msg00283.html>.
+Patch from <https://gcc.gnu.org/viewcvs/gcc?view=revision&revision=212740>.
+
+2014-07-17  Richard Biener  <rguenther@suse.de>
+
+        PR rtl-optimization/61801
+
+        * sched-deps.c (sched_analyze_2): For ASM_OPERANDS and
+        ASM_INPUT don't set reg_pending_barrier if it appears in a
+        debug-insn.
+
+--- gcc-4_8-branch/gcc/sched-deps.c	2014/07/17 07:48:49	212739
++++ gcc-4_8-branch/gcc/sched-deps.c	2014/07/17 07:49:44	212740
+@@ -2744,7 +2744,8 @@
+ 	   Consider for instance a volatile asm that changes the fpu rounding
+ 	   mode.  An insn should not be moved across this even if it only uses
+ 	   pseudo-regs because it might give an incorrectly rounded result.  */
+-	if (code != ASM_OPERANDS || MEM_VOLATILE_P (x))
++	if ((code != ASM_OPERANDS || MEM_VOLATILE_P (x))
++	    && !DEBUG_INSN_P (insn))
+ 	  reg_pending_barrier = TRUE_BARRIER;
+ 
+ 	/* For all ASM_OPERANDS, we must traverse the vector of input operands.
