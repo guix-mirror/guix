@@ -87,6 +87,12 @@ then
     trap "kill $daemon_pid ; rm -rf $NIX_STATE_DIR" EXIT
 fi
 
+# Avoid issues that could stem from l10n, such as language/encoding
+# mismatches.
+unset LANGUAGE
+LC_MESSAGES=C
+export LC_MESSAGES
+
 storedir="@storedir@"
 prefix="@prefix@"
 datarootdir="@datarootdir@"
