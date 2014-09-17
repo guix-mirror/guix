@@ -600,8 +600,9 @@ REPLACEMENT."
   "Call PROC with a name of a temporary file and open output port to that
 file; close the file and delete it when leaving the dynamic extent of this
 call."
-  (let* ((template (string-copy "guix-file.XXXXXX"))
-         (out      (mkstemp! template)))
+  (let* ((directory (or (getenv "TMPDIR") "/tmp"))
+         (template  (string-append directory "/guix-file.XXXXXX"))
+         (out       (mkstemp! template)))
     (dynamic-wind
       (lambda ()
         #t)
