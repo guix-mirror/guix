@@ -578,7 +578,12 @@ extra rules from the packages listed in @var{rules}."
                              (system* (string-append #$udev "/bin/udevadm")
                                       "settle")
                              pid)))))
-             (stop #~(make-kill-destructor))))))
+             (stop #~(make-kill-destructor))
+
+             ;; When halting the system, 'udev' is actually killed by
+             ;; 'user-processes', i.e., before its own 'stop' method was
+             ;; called.  Thus, make sure it is not respawned.
+             (respawn? #f)))))
 
 (define (device-mapping-service target command)
   "Return a service that maps device @var{target}, a string such as
