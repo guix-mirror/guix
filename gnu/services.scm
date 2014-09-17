@@ -17,6 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu services)
+  #:use-module (guix gexp)
   #:use-module (guix records)
   #:export (service?
             service
@@ -47,9 +48,9 @@
                  (default '()))
   (respawn?      service-respawn?                 ; Boolean
                  (default #t))
-  (start         service-start)                   ; g-expression
-  (stop          service-stop                     ; g-expression
-                 (default #f))
+  (start         service-start)                   ; g-expression (procedure)
+  (stop          service-stop                     ; g-expression (procedure)
+                 (default #~(const #f)))
   (user-accounts service-user-accounts            ; list of <user-account>
                  (default '()))
   (user-groups   service-user-groups              ; list of <user-groups>
