@@ -35,8 +35,12 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://0pointer.de/lennart/projects/libcanberra/libcanberra-"
-                          version ".tar.xz"))
+
+      ;; This used to be at 0pointer.de but it vanished.
+      (uri (string-append
+            "http://pkgs.fedoraproject.org/repo/pkgs/libcanberra/libcanberra-"
+            version ".tar.xz/34cb7e4430afaf6f447c4ebdb9b42072/libcanberra-"
+            version ".tar.xz"))
       (sha256
        (base32
         "0wps39h8rx2b00vyvkia5j40fkak3dpipp1kzilqla0cgvk73dn2"))))
