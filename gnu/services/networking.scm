@@ -107,10 +107,16 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
 
   (with-monad %store-monad
     (return (service
-             (documentation
-              "Set up networking via DHCP.")
+             (documentation "Set up networking via DHCP.")
              (requirement '(user-processes udev))
+
+             ;; XXX: Running with '-nw' ("no wait") avoids blocking for a
+             ;; minute when networking is unavailable, but also means that the
+             ;; interface is not up yet when 'start' completes.  To wait for
+             ;; the interface to be ready, one should instead monitor udev
+             ;; events.
              (provision '(networking))
+
              (start #~(lambda _
                         ;; When invoked without any arguments, 'dhclient'
                         ;; discovers all non-loopback interfaces *that are
@@ -121,7 +127,8 @@ Protocol (DHCP) client, on all the non-loopback network interfaces."
                                (ifaces (filter valid?
                                                (all-network-interfaces)))
                                (pid    (fork+exec-command
-                                        (cons* #$dhclient "-pf" #$pid-file
+                                        (cons* #$dhclient "-nw"
+                                               "-pf" #$pid-file
                                                ifaces))))
                           (and (zero? (cdr (waitpid pid)))
                                (call-with-input-file #$pid-file read)))))
