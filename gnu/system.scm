@@ -160,12 +160,23 @@ file."
 ;;; Services.
 ;;;
 
-(define (luks-device-mapping source target)
+(define (open-luks-device source target)
   "Return a gexp that maps SOURCE to TARGET as a LUKS device, using
 'cryptsetup'."
   #~(zero? (system* (string-append #$cryptsetup "/sbin/cryptsetup")
                     "open" "--type" "luks"
                     #$source #$target)))
+
+(define (close-luks-device source target)
+  "Return a gexp that closes TARGET, a LUKS device."
+  #~(zero? (system* (string-append #$cryptsetup "/sbin/cryptsetup")
+                    "close" #$target)))
+
+(define luks-device-mapping
+  ;; The type of LUKS mapped devices.
+  (mapped-device-kind
+   (open open-luks-device)
+   (close close-luks-device)))
 
 (define (other-file-system-services os)
   "Return file system services for the file systems of OS that are not marked
@@ -207,11 +218,14 @@ as 'needed-for-boot'."
   "Return the list of device-mapping services for OS as a monadic list."
   (sequence %store-monad
             (map (lambda (md)
-                   (let ((source  (mapped-device-source md))
-                         (target  (mapped-device-target md))
-                         (command (mapped-device-command md)))
+                   (let* ((source (mapped-device-source md))
+                          (target (mapped-device-target md))
+                          (type   (mapped-device-type md))
+                          (open   (mapped-device-kind-open type))
+                          (close  (mapped-device-kind-close type)))
                      (device-mapping-service target
-                                             (command source target))))
+                                             (open source target)
+                                             (close source target))))
                  (operating-system-mapped-devices os))))
 
 (define (essential-services os)

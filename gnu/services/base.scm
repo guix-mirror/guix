@@ -600,19 +600,18 @@ extra rules from the packages listed in @var{rules}."
              ;; called.  Thus, make sure it is not respawned.
              (respawn? #f)))))
 
-(define (device-mapping-service target command)
+(define (device-mapping-service target open close)
   "Return a service that maps device @var{target}, a string such as
-@code{\"home\"} (meaning @code{/dev/mapper/home}), by executing @var{command},
-a gexp."
+@code{\"home\"} (meaning @code{/dev/mapper/home}).  Evaluate @var{open}, a
+gexp, to open it, and evaluate @var{close} to close it."
   (with-monad %store-monad
     (return (service
              (provision (list (symbol-append 'device-mapping-
                                              (string->symbol target))))
              (requirement '(udev))
              (documentation "Map a device node using Linux's device mapper.")
-             (start #~(lambda ()
-                        #$command))
-             (stop #~(const #f))
+             (start #~(lambda () #$open))
+             (stop #~(lambda _ (not #$close)))
              (respawn? #f)))))
 
 (define %base-services
