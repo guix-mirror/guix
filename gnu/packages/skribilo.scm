@@ -43,6 +43,22 @@
      '(#:configure-flags (list (string-append "--with-guilemoduledir="
                                               (assoc-ref %outputs "out")
                                               "/share/guile/site/2.0"))
+
+       #:phases (alist-cons-before
+                 'configure 'pre-configure
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   ;; Make sure the 'skribilo' command gets to see
+                   ;; Guile-Reader, even if Guile-Reader is not in the search
+                   ;; path.
+                   (let ((reader (assoc-ref inputs "guile-reader")))
+                     (substitute* "src/skribilo.in"
+                       (("^exec (.*) -c" _ things)
+                        (string-append "exec " things
+                                       " -L " reader "/share/guile/site/2.0"
+                                       " -C " reader "/share/guile/site/2.0"
+                                       " -c")))))
+                 %standard-phases)
+
        #:parallel-build? #f))
     ;; TODO: Add Ploticus.
     (inputs `(("guile" ,guile-2.0)
