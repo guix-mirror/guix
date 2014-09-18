@@ -103,7 +103,8 @@
           (system-group (name "disk"))
           (system-group (name "floppy"))
           (system-group (name "cdrom"))
-          (system-group (name "tape")))))
+          (system-group (name "tape"))
+          (system-group (name "kvm")))))             ; for /dev/kvm
 
 (define (default-skeletons)
   "Return the default skeleton files for /etc/skel.  These files are copied by

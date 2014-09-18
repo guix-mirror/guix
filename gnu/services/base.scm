@@ -418,7 +418,7 @@ starting at FIRST-UID, and under GID."
                        ;; guix-daemon expects GROUP to be listed as a
                        ;; supplementary group too:
                        ;; <http://lists.gnu.org/archive/html/bug-guix/2013-01/msg00239.html>.
-                       (supplementary-groups (list group))
+                       (supplementary-groups (list group "kvm"))
 
                        (comment (format #f "Guix Build User ~2d" n))
                        (home-directory "/var/empty")
@@ -526,10 +526,31 @@ item of @var{packages}."
                                 (guix build utils))
                     #:local-build? #t))
 
+(define* (kvm-udev-rule)
+  "Return a directory with a udev rule that changes the group of
+@file{/dev/kvm} to \"kvm\" and makes it #o660."
+  ;; Apparently QEMU-KVM used to ship this rule, but now we have to add it by
+  ;; ourselves.
+  (gexp->derivation "kvm-udev-rules"
+                    #~(begin
+                        (use-modules (guix build utils))
+
+                        (define rules.d
+                          (string-append #$output "/lib/udev/rules.d"))
+
+                        (mkdir-p rules.d)
+                        (call-with-output-file
+                            (string-append rules.d "/90-kvm.rules")
+                          (lambda (port)
+                            (display "\
+KERNEL==\"kvm\", GROUP=\"kvm\", MODE=\"0660\"\n" port))))
+                    #:modules '((guix build utils))))
+
 (define* (udev-service #:key (udev eudev) (rules '()))
   "Run @var{udev}, which populates the @file{/dev} directory dynamically.  Get
 extra rules from the packages listed in @var{rules}."
-  (mlet* %store-monad ((rules     (udev-rules-union (cons udev rules)))
+  (mlet* %store-monad ((kvm       (kvm-udev-rule))
+                       (rules     (udev-rules-union (cons* udev kvm rules)))
                        (udev.conf (text-file* "udev.conf"
                                               "udev_rules=\"" rules
                                               "/lib/udev/rules.d\"\n")))
