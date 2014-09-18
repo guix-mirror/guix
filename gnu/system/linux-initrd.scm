@@ -129,8 +129,7 @@ initrd code."
                       qemu-networking?
                       virtio?
                       volatile-root?
-                      (extra-modules '())
-                      guile-modules-in-chroot?)
+                      (extra-modules '()))
   ;; TODO: Support boot-time device mappings.
   "Return a monadic derivation that builds a generic initrd.  FILE-SYSTEMS is
 a list of file-systems to be mounted by the initrd, possibly in addition to
@@ -146,12 +145,7 @@ to it are lost.
 The initrd is automatically populated with all the kernel modules necessary
 for FILE-SYSTEMS and for the given options.  However, additional kernel
 modules can be listed in EXTRA-MODULES.  They will be added to the initrd, and
-loaded at boot time in the order in which they appear.
-
-When GUILE-MODULES-IN-CHROOT? is true, make core Guile modules available in
-the new root.  This is necessary is the file specified as '--load' needs
-access to these modules (which is the case if it wants to even just print an
-exception and backtrace!)."
+loaded at boot time in the order in which they appear."
   (define virtio-modules
     ;; Modules for Linux para-virtualized devices, for use in QEMU guests.
     '("virtio.ko" "virtio_ring.ko" "virtio_pci.ko"
@@ -215,7 +209,6 @@ exception and backtrace!)."
                                              (string-append #$kodir "/" file))
                                            '#$linux-modules)
                       #:qemu-guest-networking? #$qemu-networking?
-                      #:guile-modules-in-chroot? '#$guile-modules-in-chroot?
                       #:volatile-root? '#$volatile-root?))
      #:name "base-initrd"
      #:modules '((guix build utils)

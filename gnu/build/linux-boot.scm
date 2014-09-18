@@ -339,7 +339,6 @@ bailing out.~%root contents: ~s~%" (scandir "/"))
 (define* (boot-system #:key
                       (linux-modules '())
                       qemu-guest-networking?
-                      guile-modules-in-chroot?
                       volatile-root?
                       (mounts '()))
   "This procedure is meant to be called from an initrd.  Boot a system by
@@ -353,9 +352,6 @@ Mount the root file system, specified by the '--root' command-line argument,
 if any.
 
 MOUNTS must be a list suitable for 'mount-file-system'.
-
-When GUILE-MODULES-IN-CHROOT? is true, make core Guile modules available in
-the new root.
 
 When VOLATILE-ROOT? is true, the root file system is writable but any changes
 to it are lost."
@@ -410,19 +406,6 @@ to it are lost."
        ;; Mount the specified file systems.
        (for-each mount-file-system
                  (remove root-mount-point? mounts))
-
-       (when guile-modules-in-chroot?
-         ;; Copy the directories that contain .scm and .go files so that the
-         ;; child process in the chroot can load modules (we would bind-mount
-         ;; them but for some reason that fails with EINVAL -- XXX).
-         (mkdir-p "/root/share")
-         (mkdir-p "/root/lib")
-         (mount "none" "/root/share" "tmpfs")
-         (mount "none" "/root/lib" "tmpfs")
-         (copy-recursively "/share" "/root/share"
-                           #:log (%make-void-port "w"))
-         (copy-recursively "/lib" "/root/lib"
-                           #:log (%make-void-port "w")))
 
        (if to-load
            (begin

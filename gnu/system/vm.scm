@@ -159,8 +159,7 @@ made available under the /xchg CIFS share."
                          (return initrd)
                          (base-initrd %linux-vm-file-systems
                                       #:virtio? #t
-                                      #:qemu-networking? #t
-                                      #:guile-modules-in-chroot? #t))))
+                                      #:qemu-networking? #t))))
 
     (define builder
       ;; Code that launches the VM that evaluates EXP.
