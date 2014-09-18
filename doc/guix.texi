@@ -3040,6 +3040,7 @@ instance to support new system services.
 @menu
 * Using the Configuration System::  Customizing your GNU system.
 * File Systems::                Configuring file system mounts.
+* Mapped Devices::              Block device extra processing.
 * User Accounts::               Specifying user accounts.
 * Services::                    Specifying system services.
 * Setuid Programs::             Programs running with root privileges.
@@ -3243,6 +3244,69 @@ executable file types to be delegated to user space.  This requires the
 The @code{fusectl} file system, which allows unprivileged users to mount
 and unmount user-space FUSE file systems.  This requires the
 @code{fuse.ko} kernel module to be loaded.
+@end defvr
+
+@node Mapped Devices
+@subsection Mapped Devices
+
+@cindex device mapping
+@cindex mapped devices
+The Linux kernel has a notion of @dfn{device mapping}: a block device,
+such as a hard disk partition, can be @dfn{mapped} into another device,
+with additional processing over the data that flows through
+it@footnote{Note that the GNU@tie{}Hurd makes no difference between the
+concept of a ``mapped device'' and that of a file system: both boil down
+to @emph{translating} input/output operations made on a file to
+operations on its backing store.  Thus, the Hurd implements mapped
+devices, like file systems, using the generic @dfn{translator} mechanism
+(@pxref{Translators,,, hurd, The GNU Hurd Reference Manual}).}.  A
+typical example is encryption device mapping: all writes to the mapped
+device are encrypted, and all reads are deciphered, transparently.
+
+Mapped devices are declared using the @code{mapped-device} form:
+
+@example
+(mapped-device
+  (source "/dev/sda3")
+  (target "home")
+  (type luks-device-mapping))
+@end example
+
+@noindent
+@cindex disk encryption
+@cindex LUKS
+This example specifies a mapping from @file{/dev/sda3} to
+@file{/dev/mapper/home} using LUKS---the
+@url{http://code.google.com/p/cryptsetup,Linux Unified Key Setup}, a
+standard mechanism for disk encryption.  The @file{/dev/mapper/home}
+device can then be used as the @code{device} of a @code{file-system}
+declaration (@pxref{File Systems}).  The @code{mapped-device} form is
+detailed below.
+
+@deftp {Data Type} mapped-device
+Objects of this type represent device mappings that will be made when
+the system boots up.
+
+@table @code
+@item source
+This string specifies the name of the block device to be mapped, such as
+@code{"/dev/sda3"}.
+
+@item target
+This string specifies the name of the mapping to be established.  For
+example, specifying @code{"my-partition"} will lead to the creation of
+the @code{"/dev/mapper/my-partition"} device.
+
+@item type
+This must be a @code{mapped-device-kind} object, which specifies how
+@var{source} is mapped to @var{target}.
+@end table
+@end deftp
+
+@defvr {Scheme Variable} luks-device-mapping
+This defines LUKS block device encryption using the @command{cryptsetup}
+command, from the same-named package.  This relies on the
+@code{dm-crypt} Linux kernel module.
 @end defvr
 
 @node User Accounts
