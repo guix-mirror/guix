@@ -44,6 +44,22 @@
       ;; Both return values have been encountered in the wild.
       (memv (system-error-errno args) (list EPERM ENOENT)))))
 
+(test-assert "swapon, ENOENT/EPERM"
+  (catch 'system-error
+    (lambda ()
+      (swapon "/does-not-exist")
+      #f)
+    (lambda args
+      (memv (system-error-errno args) (list EPERM ENOENT)))))
+
+(test-assert "swapoff, EINVAL/EPERM"
+  (catch 'system-error
+    (lambda ()
+      (swapoff "/does-not-exist")
+      #f)
+    (lambda args
+      (memv (system-error-errno args) (list EPERM EINVAL)))))
+
 (test-assert "all-network-interfaces"
   (match (all-network-interfaces)
     (((? string? names) ..1)

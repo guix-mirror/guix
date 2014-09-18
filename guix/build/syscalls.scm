@@ -31,6 +31,8 @@
             MS_MOVE
             mount
             umount
+            swapon
+            swapoff
             processes
 
             IFF_UP
@@ -163,6 +165,30 @@ constants from <sys/mount.h>."
                  (list err)))
         (when update-mtab?
           (remove-from-mtab target))))))
+
+(define swapon
+  (let* ((ptr  (dynamic-func "swapon" (dynamic-link)))
+         (proc (pointer->procedure int ptr (list '* int))))
+    (lambda* (device #:optional (flags 0))
+      "Use the block special device at DEVICE for swapping."
+      (let ((ret (proc (string->pointer device) flags))
+            (err (errno)))
+        (unless (zero? ret)
+          (throw 'system-error "swapon" "~S: ~A"
+                 (list device (strerror err))
+                 (list err)))))))
+
+(define swapoff
+  (let* ((ptr  (dynamic-func "swapoff" (dynamic-link)))
+         (proc (pointer->procedure int ptr '(*))))
+    (lambda (device)
+      "Stop using block special device DEVICE for swapping."
+      (let ((ret (proc (string->pointer device)))
+            (err (errno)))
+        (unless (zero? ret)
+          (throw 'system-error "swapff" "~S: ~A"
+                 (list device (strerror err))
+                 (list err)))))))
 
 (define (kernel? pid)
   "Return #t if PID designates a \"kernel thread\" rather than a normal
