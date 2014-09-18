@@ -105,6 +105,8 @@
   (mapped-devices operating-system-mapped-devices ; list of <mapped-device>
                   (default '()))
   (file-systems operating-system-file-systems)    ; list of fs
+  (swap-devices operating-system-swap-devices     ; list of strings
+                (default '()))
 
   (users operating-system-users                   ; list of user accounts
          (default '()))
@@ -228,6 +230,11 @@ as 'needed-for-boot'."
                                              (close source target))))
                  (operating-system-mapped-devices os))))
 
+(define (swap-services os)
+  "Return the list of swap services for OS as a monadic list."
+  (sequence %store-monad
+            (map swap-service (operating-system-swap-devices os))))
+
 (define (essential-services os)
   "Return the list of essential services for OS.  These are special services
 that implement part of what's declared in OS are responsible for low-level
@@ -235,13 +242,14 @@ bookkeeping."
   (mlet* %store-monad ((mappings  (device-mapping-services os))
                        (root-fs   (root-file-system-service))
                        (other-fs  (other-file-system-services os))
+                       (swaps     (swap-services os))
                        (procs     (user-processes-service
                                    (map (compose first service-provision)
                                         other-fs)))
                        (host-name (host-name-service
                                    (operating-system-host-name os))))
     (return (cons* host-name procs root-fs
-                   (append other-fs mappings)))))
+                   (append other-fs mappings swaps)))))
 
 (define (operating-system-services os)
   "Return all the services of OS, including \"internal\" services that do not

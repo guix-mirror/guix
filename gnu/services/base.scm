@@ -39,6 +39,7 @@
   #:export (root-file-system-service
             file-system-service
             device-mapping-service
+            swap-service
             user-processes-service
             host-name-service
             console-font-service
@@ -612,6 +613,27 @@ gexp, to open it, and evaluate @var{close} to close it."
              (documentation "Map a device node using Linux's device mapper.")
              (start #~(lambda () #$open))
              (stop #~(lambda _ (not #$close)))
+             (respawn? #f)))))
+
+(define (swap-service device)
+  "Return a service that uses @var{device} as a swap device."
+  (define requirement
+    (if (string-prefix? "/dev/mapper/" device)
+        (list (symbol-append 'device-mapping-
+                             (string->symbol (basename device))))
+        '()))
+
+  (with-monad %store-monad
+    (return (service
+             (provision (list (symbol-append 'swap- (string->symbol device))))
+             (requirement `(udev ,@requirement))
+             (documentation "Enable the given swap device.")
+             (start #~(lambda ()
+                        (swapon #$device)
+                        #t))
+             (stop #~(lambda _
+                       (swapoff #$device)
+                       #f))
              (respawn? #f)))))
 
 (define %base-services
