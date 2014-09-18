@@ -2850,8 +2850,7 @@ The system does not yet provide graphical desktop environments such as
 GNOME and KDE.
 
 @item
-Support for encrypted disks, the Logical Volume Manager (LVM), and swap
-devices is missing.
+Support for the Logical Volume Manager (LVM) is missing.
 
 @item
 Few system services are currently supported out-of-the-box
