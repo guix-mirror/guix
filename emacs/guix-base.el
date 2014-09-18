@@ -323,8 +323,8 @@ following keywords are available:
 Call an appropriate scheme function and return a list of the
 form of `guix-entries'.
 
-ENTRY-TYPE should be one of the following symbols: `package' or
-`generation'.
+ENTRY-TYPE should be one of the following symbols: `package',
+`output' or `generation'.
 
 SEARCH-TYPE may be one of the following symbols:
 
@@ -337,7 +337,7 @@ SEARCH-TYPE may be one of the following symbols:
 PARAMS is a list of parameters for receiving.  If nil, get
 information with all available parameters."
   (guix-eval-read (guix-make-guile-expression
-                   'get-entries
+                   'entries
                    guix-current-profile params
                    entry-type search-type search-vals)))
 
@@ -563,9 +563,9 @@ See `guix-process-package-actions' for details."
   (or (null guix-operation-confirm)
       (let* ((entries (guix-get-entries
                        'package 'id
-                       (list (append (mapcar #'car install)
-                                     (mapcar #'car upgrade)
-                                     (mapcar #'car remove)))
+                       (append (mapcar #'car install)
+                               (mapcar #'car upgrade)
+                               (mapcar #'car remove))
                        '(id name version location)))
              (install-strings (guix-get-package-strings install entries))
              (upgrade-strings (guix-get-package-strings upgrade entries))

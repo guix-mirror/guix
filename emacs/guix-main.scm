@@ -20,17 +20,9 @@
 
 ;; Information about packages and generations is passed to the elisp
 ;; side in the form of alists of parameters (such as ‘name’ or
-;; ‘version’) and their values.  These alists are called "entries" in
-;; this code.  So to distinguish, just "package" in the name of a
-;; function means a guile object ("package" record) while
-;; "package entry" means alist of package parameters and values (see
-;; ‘package-param-alist’).
-;;
-;; "Entry" is probably not the best name for such alists, because there
-;; already exists "manifest-entry" which has nothing to do with the
-;; "entry" described above.  Do not be confused :)
+;; ‘version’) and their values.
 
-;; ‘get-entries’ function is the “entry point” for the elisp side to get
+;; ‘entries’ procedure is the “entry point” for the elisp side to get
 ;; information about packages and generations.
 
 ;; Since name/version pair is not necessarily unique, we use
@@ -43,10 +35,6 @@
 ;; Important: as object addresses live only during guile session, elisp
 ;; part should take care about updating information after "Guix REPL" is
 ;; restarted (TODO!)
-;;
-;; ‘installed’ parameter of a package entry contains information about
-;; installed outputs.  It is a list of "installed entries" (see
-;; ‘package-installed-param-alist’).
 
 ;; To speed-up the process of getting information, the following
 ;; auxiliary variables are used:
@@ -55,10 +43,6 @@
 ;;
 ;; - `%package-table' - Hash table of
 ;;   "name+version key"/"list of packages" pairs.
-;;
-;; - `%current-manifest-entries-table' - Hash table of
-;;   "name+version key"/"list of manifest entries" pairs.  This variable
-;;   is set by `set-current-manifest-maybe!' when it is needed.
 
 ;;; Code:
 
@@ -82,6 +66,9 @@
   (and (not (null? lst))
        (first lst)))
 
+(define (list-maybe obj)
+  (if (list? obj) obj (list obj)))
+
 (define full-name->name+version package-name->name+version)
 (define (name+version->full-name name version)
   (string-append name "-" version))
@@ -96,9 +83,6 @@
 
 (define name+version->key cons)
 (define key->name+version car+cdr)
-
-(define %current-manifest #f)
-(define %current-manifest-entries-table #f)
 
 (define %packages
   (fold-packages (lambda (pkg res)
@@ -119,33 +103,165 @@
      %packages)
     table))
 
-;; FIXME get rid of this function!
-(define (set-current-manifest-maybe! profile)
-  (define (manifest-entries->hash-table entries)
-    (let ((entries-table (make-hash-table (length entries))))
-      (for-each (lambda (entry)
-                  (let* ((key (name+version->key
-                               (manifest-entry-name entry)
-                               (manifest-entry-version entry)))
-                         (ref (hash-ref entries-table key)))
-                    (hash-set! entries-table key
-                               (if ref (cons entry ref) (list entry)))))
+(define (manifest-entry->name+version+output entry)
+  (values
+   (manifest-entry-name    entry)
+   (manifest-entry-version entry)
+   (manifest-entry-output  entry)))
+
+(define (manifest-entries->hash-table entries)
+  "Return a hash table of name keys and lists of matching manifest ENTRIES."
+  (let ((table (make-hash-table (length entries))))
+    (for-each (lambda (entry)
+                (let* ((key (manifest-entry-name entry))
+                       (ref (hash-ref table key)))
+                  (hash-set! table key
+                             (if ref (cons entry ref) (list entry)))))
+              entries)
+    table))
+
+(define (manifest=? m1 m2)
+  (or (eq? m1 m2)
+      (equal? m1 m2)))
+
+(define manifest->hash-table
+  (let ((current-manifest #f)
+        (current-table #f))
+    (lambda (manifest)
+      "Return a hash table of name keys and matching MANIFEST entries."
+      (unless (manifest=? manifest current-manifest)
+        (set! current-manifest manifest)
+        (set! current-table (manifest-entries->hash-table
+                             (manifest-entries manifest))))
+      current-table)))
+
+(define* (manifest-entries-by-name manifest name #:optional version output)
+  "Return a list of MANIFEST entries matching NAME, VERSION and OUTPUT."
+  (let ((entries (or (hash-ref (manifest->hash-table manifest) name)
+                     '())))
+    (if (or version output)
+        (filter (lambda (entry)
+                  (and (or (not version)
+                           (equal? version (manifest-entry-version entry)))
+                       (or (not output)
+                           (equal? output  (manifest-entry-output entry)))))
                 entries)
-      entries-table))
+        entries)))
 
-  (when profile
-    (let ((manifest (profile-manifest profile)))
-      (unless (and (manifest? %current-manifest)
-                   (equal? manifest %current-manifest))
-        (set! %current-manifest manifest)
-        (set! %current-manifest-entries-table
-              (manifest-entries->hash-table
-               (manifest-entries manifest)))))))
+(define (manifest-entry-by-output entries output)
+  "Return a manifest entry from ENTRIES matching OUTPUT."
+  (find (lambda (entry)
+          (string= output (manifest-entry-output entry)))
+        entries))
 
-(define (manifest-entries-by-name+version name version)
-  (or (hash-ref %current-manifest-entries-table
-                (name+version->key name version))
-      '()))
+(define (fold-manifest-by-name manifest proc init)
+  "Fold over MANIFEST entries.
+Call (PROC NAME VERSION ENTRIES RESULT), using INIT as the initial value
+of RESULT.  ENTRIES is a list of manifest entries with NAME/VERSION."
+  (hash-fold (lambda (name entries res)
+               (proc name (manifest-entry-version (car entries))
+                     entries res))
+             init
+             (manifest->hash-table manifest)))
+
+(define* (object-transformer param-alist #:optional (params '()))
+  "Return procedure transforming objects into alist of parameter/value pairs.
+
+PARAM-ALIST is alist of available parameters (symbols) and procedures
+returning values of these parameters.  Each procedure is applied to
+objects.
+
+PARAMS is list of parameters from PARAM-ALIST that should be returned by
+a resulting procedure.  If PARAMS is not specified or is an empty list,
+use all available parameters.
+
+Example:
+
+  (let* ((alist `((plus1 . ,1+) (minus1 . ,1-) (mul2 . ,(cut * 2 <>))))
+         (number->alist (object-transformer alist '(plus1 mul2))))
+    (number->alist 8))
+  =>
+  ((plus1 . 9) (mul2 . 16))
+"
+  (let* ((use-all-params (null? params))
+         (alist (filter-map (match-lambda
+                             ((param . proc)
+                              (and (or use-all-params
+                                       (memq param params))
+                                   (cons param proc)))
+                             (_ #f))
+                            param-alist)))
+    (lambda objects
+      (map (match-lambda
+            ((param . proc)
+             (cons param (apply proc objects))))
+           alist))))
+
+(define %manifest-entry-param-alist
+  `((output       . ,manifest-entry-output)
+    (path         . ,manifest-entry-item)
+    (dependencies . ,manifest-entry-dependencies)))
+
+(define manifest-entry->sexp
+  (object-transformer %manifest-entry-param-alist))
+
+(define (manifest-entries->sexps entries)
+  (map manifest-entry->sexp entries))
+
+(define (package-inputs-names inputs)
+  "Return a list of full names of the packages from package INPUTS."
+  (filter-map (match-lambda
+               ((_ (? package? package))
+                (package-full-name package))
+               (_ #f))
+              inputs))
+
+(define (package-license-names package)
+  "Return a list of license names of the PACKAGE."
+  (filter-map (lambda (license)
+                (and (license? license)
+                     (license-name license)))
+              (list-maybe (package-license package))))
+
+(define (package-unique? package)
+  "Return #t if PACKAGE is a single package with such name/version."
+  (null? (cdr (packages-by-name (package-name package)
+                                (package-version package)))))
+
+(define %package-param-alist
+  `((id                . ,object-address)
+    (package-id        . ,object-address)
+    (name              . ,package-name)
+    (version           . ,package-version)
+    (license           . ,package-license-names)
+    (synopsis          . ,package-synopsis)
+    (description       . ,package-description)
+    (home-url          . ,package-home-page)
+    (outputs           . ,package-outputs)
+    (non-unique        . ,(negate package-unique?))
+    (inputs            . ,(lambda (pkg)
+                            (package-inputs-names
+                             (package-inputs pkg))))
+    (native-inputs     . ,(lambda (pkg)
+                            (package-inputs-names
+                             (package-native-inputs pkg))))
+    (propagated-inputs . ,(lambda (pkg)
+                            (package-inputs-names
+                             (package-propagated-inputs pkg))))
+    (location          . ,(lambda (pkg)
+                            (location->string (package-location pkg))))))
+
+(define (package-param package param)
+  "Return a value of a PACKAGE PARAM."
+  (and=> (assq-ref %package-param-alist param)
+         (cut <> package)))
+
+
+;;; Finding packages.
+
+(define (package-by-address address)
+  (and=> (vhash-assq address %packages)
+         cdr))
 
 (define (packages-by-name+version name version)
   (or (hash-ref %package-table
@@ -157,23 +273,11 @@
       (lambda () (full-name->name+version full-name))
     packages-by-name+version))
 
-(define (package-by-address address)
-  (and=> (vhash-assq address %packages)
-         cdr))
-
 (define (packages-by-id id)
   (if (integer? id)
       (let ((pkg (package-by-address id)))
         (if pkg (list pkg) '()))
       (packages-by-full-name id)))
-
-(define (package-by-id id)
-  (first-or-false (packages-by-id id)))
-
-(define (newest-package-by-id id)
-  (and=> (id->name+version id)
-         (lambda (name)
-           (first-or-false (find-best-packages-by-name name #f)))))
 
 (define (id->name+version id)
   (if (integer? id)
@@ -183,166 +287,43 @@
                        (package-version pkg))))
       (full-name->name+version id)))
 
-(define (fold-manifest-entries proc init)
-  "Fold over `%current-manifest-entries-table'.
-Call (PROC NAME VERSION ENTRIES RESULT) for each element of the hash
-table, using INIT as the initial value of RESULT."
-  (hash-fold (lambda (key entries res)
-               (let-values (((name version) (key->name+version key)))
-                 (proc name version entries res)))
-             init
-             %current-manifest-entries-table))
+(define (package-by-id id)
+  (first-or-false (packages-by-id id)))
 
-(define (fold-object proc init obj)
-  (fold proc init
-        (if (list? obj) obj (list obj))))
+(define (newest-package-by-id id)
+  (and=> (id->name+version id)
+         (lambda (name)
+           (first-or-false (find-best-packages-by-name name #f)))))
 
-(define* (object-transformer param-alist #:optional (params '()))
-  "Return function for transforming an object into alist of parameters/values.
-
-PARAM-ALIST is alist of available object parameters (symbols) and functions
-returning values of these parameters.  Each function is called with object as
-a single argument.
-
-PARAMS is list of parameters from PARAM-ALIST that should be returned by a
-resulting function.  If PARAMS is not specified or is an empty list, use all
-available parameters.
-
-Example:
-
-  (let ((alist `((plus1 . ,1+) (minus1 . ,1-) (mul2 . ,(cut * 2 <>))))
-        (number->alist (object-transformer alist '(plus1 mul2))))
-    (number->alist 8))
-  =>
-  ((plus1 . 9) (mul2 . 16))
-"
-  (let ((alist (let ((use-all-params (null? params)))
-                 (filter-map (match-lambda
-                              ((param . fun)
-                               (and (or use-all-params
-                                        (memq param params))
-                                    (cons param fun)))
-                              (_ #f))
-                             param-alist))))
-    (lambda (object)
-      (map (match-lambda
-            ((param . fun)
-             (cons param (fun object))))
-           alist))))
-
-(define package-installed-param-alist
-  (list
-   (cons 'output       manifest-entry-output)
-   (cons 'path         manifest-entry-item)
-   (cons 'dependencies manifest-entry-dependencies)))
-
-(define manifest-entry->installed-entry
-  (object-transformer package-installed-param-alist))
-
-(define (manifest-entries->installed-entries entries)
-  (map manifest-entry->installed-entry entries))
-
-(define (installed-entries-by-name+version name version)
-  (manifest-entries->installed-entries
-   (manifest-entries-by-name+version name version)))
-
-(define (installed-entries-by-package package)
-  (installed-entries-by-name+version (package-name package)
-                                     (package-version package)))
-
-(define (package-inputs-names inputs)
-  "Return list of full names of the packages from package INPUTS."
-  (filter-map (match-lambda
-               ((_ (? package? package))
-                (package-full-name package))
-               (_ #f))
-              inputs))
-
-(define (package-license-names package)
-  "Return list of license names of the PACKAGE."
-  (fold-object (lambda (license res)
-                 (if (license? license)
-                     (cons (license-name license) res)
-                     res))
-               '()
-               (package-license package)))
-
-(define (package-unique? package)
-  "Return #t if PACKAGE is a single package with such name/version."
-  (null? (cdr (packages-by-name+version (package-name package)
-                                        (package-version package)))))
-
-(define package-param-alist
-  (list
-   (cons 'id                object-address)
-   (cons 'name              package-name)
-   (cons 'version           package-version)
-   (cons 'license           package-license-names)
-   (cons 'synopsis          package-synopsis)
-   (cons 'description       package-description)
-   (cons 'home-url          package-home-page)
-   (cons 'outputs           package-outputs)
-   (cons 'non-unique        (negate package-unique?))
-   (cons 'inputs            (lambda (pkg) (package-inputs-names
-                                      (package-inputs pkg))))
-   (cons 'native-inputs     (lambda (pkg) (package-inputs-names
-                                      (package-native-inputs pkg))))
-   (cons 'propagated-inputs (lambda (pkg) (package-inputs-names
-                                      (package-propagated-inputs pkg))))
-   (cons 'location          (lambda (pkg) (location->string
-                                      (package-location pkg))))
-   (cons 'installed         installed-entries-by-package)))
-
-(define (package-param package param)
-  "Return the value of a PACKAGE PARAM."
-  (define (accessor param)
-    (and=> (assq param package-param-alist)
-           cdr))
-  (and=> (accessor param)
-         (cut <> package)))
-
-(define (matching-package-entries ->entry predicate)
-  "Return list of package entries for the matching packages.
-PREDICATE is called on each package."
+(define (matching-packages predicate)
   (fold-packages (lambda (pkg res)
                    (if (predicate pkg)
-                       (cons (->entry pkg) res)
+                       (cons pkg res)
                        res))
                  '()))
 
-(define (make-obsolete-package-entry name version entries)
-  "Return package entry for an obsolete package with NAME and VERSION.
-ENTRIES is a list of manifest entries used to get installed info."
-  `((id        . ,(name+version->full-name name version))
-    (name      . ,name)
-    (version   . ,version)
-    (outputs   . ,(map manifest-entry-output entries))
-    (obsolete  . #t)
-    (installed . ,(manifest-entries->installed-entries entries))))
+(define (filter-packages-by-output packages output)
+  (filter (lambda (package)
+            (member output (package-outputs package)))
+          packages))
 
-(define (package-entries-by-name+version ->entry name version)
-  "Return list of package entries for packages with NAME and VERSION."
-  (let ((packages (packages-by-name+version name version)))
-    (if (null? packages)
-        (let ((entries (manifest-entries-by-name+version name version)))
-          (if (null? entries)
-              '()
-              (list (make-obsolete-package-entry name version entries))))
-        (map ->entry packages))))
+(define* (packages-by-name name #:optional version output)
+  "Return a list of packages matching NAME, VERSION and OUTPUT."
+  (let ((packages (if version
+                      (packages-by-name+version name version)
+                      (matching-packages
+                       (lambda (pkg) (string=? name (package-name pkg)))))))
+    (if output
+        (filter-packages-by-output packages output)
+        packages)))
 
-(define (package-entries-by-spec profile ->entry spec)
-  "Return list of package entries for packages with name specification SPEC."
-  (set-current-manifest-maybe! profile)
-  (let-values (((name version)
-                (full-name->name+version spec)))
-    (if version
-        (package-entries-by-name+version ->entry name version)
-        (matching-package-entries
-         ->entry
-         (lambda (pkg) (string=? name (package-name pkg)))))))
+(define (manifest-entry->packages entry)
+  (call-with-values
+      (lambda () (manifest-entry->name+version+output entry))
+    packages-by-name))
 
-(define (package-entries-by-regexp profile ->entry regexp match-params)
-  "Return list of package entries for packages matching REGEXP string.
+(define (packages-by-regexp regexp match-params)
+  "Return a list of packages matching REGEXP string.
 MATCH-PARAMS is a list of parameters that REGEXP can match."
   (define (package-match? package regexp)
     (any (lambda (param)
@@ -350,88 +331,311 @@ MATCH-PARAMS is a list of parameters that REGEXP can match."
              (and (string? val) (regexp-exec regexp val))))
          match-params))
 
-  (set-current-manifest-maybe! profile)
   (let ((re (make-regexp regexp regexp/icase)))
-    (matching-package-entries ->entry (cut package-match? <> re))))
+    (matching-packages (cut package-match? <> re))))
 
-(define (package-entries-by-ids profile ->entry ids)
-  "Return list of package entries for packages matching KEYS.
-IDS may be an object-address, a full-name or a list of such elements."
-  (set-current-manifest-maybe! profile)
-  (fold-object
-   (lambda (id res)
-     (if (integer? id)
-         (let ((pkg (package-by-address id)))
-           (if pkg
-               (cons (->entry pkg) res)
-               res))
-         (let ((entries (package-entries-by-spec #f ->entry id)))
-           (if (null? entries)
-               res
-               (append res entries)))))
-   '()
-   ids))
+(define (all-available-packages)
+  "Return a list of all available packages."
+  (matching-packages (const #t)))
 
-(define (newest-available-package-entries profile ->entry)
-  "Return list of package entries for the newest available packages."
-  (set-current-manifest-maybe! profile)
+(define (newest-available-packages)
+  "Return a list of the newest available packages."
   (vhash-fold (lambda (name elem res)
                 (match elem
-                  ((version newest pkgs ...)
-                   (cons (->entry newest) res))))
+                  ((_ newest pkgs ...)
+                   (cons newest res))))
               '()
               (find-newest-available-packages)))
 
-(define (all-available-package-entries profile ->entry)
-  "Return list of package entries for all available packages."
-  (set-current-manifest-maybe! profile)
-  (matching-package-entries ->entry (const #t)))
+
+;;; Making package/output patterns.
 
-(define (manifest-package-entries ->entry)
-  "Return list of package entries for the current manifest."
-  (fold-manifest-entries
+(define (specification->package-pattern specification)
+  (call-with-values
+      (lambda ()
+        (full-name->name+version specification))
+    list))
+
+(define (specification->output-pattern specification)
+  (call-with-values
+      (lambda ()
+        (package-specification->name+version+output specification #f))
+    list))
+
+(define (id->package-pattern id)
+  (if (integer? id)
+      (package-by-address id)
+      (specification->package-pattern id)))
+
+(define (id->output-pattern id)
+  "Return an output pattern by output ID.
+ID should be '<package-address>:<output>' or '<name>-<version>:<output>'."
+  (let-values (((name version output)
+                (package-specification->name+version+output id)))
+    (if version
+        (list name version output)
+        (list (package-by-address (string->number name))
+              output))))
+
+(define (specifications->package-patterns . specifications)
+  (map specification->package-pattern specifications))
+
+(define (specifications->output-patterns . specifications)
+  (map specification->output-pattern specifications))
+
+(define (ids->package-patterns . ids)
+  (map id->package-pattern ids))
+
+(define (ids->output-patterns . ids)
+  (map id->output-pattern ids))
+
+(define* (manifest-patterns-result packages res obsolete-pattern
+                                   #:optional installed-pattern)
+  "Auxiliary procedure for 'manifest-package-patterns' and
+'manifest-output-patterns'."
+  (if (null? packages)
+      (cons (obsolete-pattern) res)
+      (if installed-pattern
+          ;; We don't need duplicates for a list of installed packages,
+          ;; so just take any (car) package.
+          (cons (installed-pattern (car packages)) res)
+          res)))
+
+(define* (manifest-package-patterns manifest #:optional obsolete-only?)
+  "Return a list of package patterns for MANIFEST entries.
+If OBSOLETE-ONLY? is #f, use all entries, otherwise make patterns only
+for obsolete packages."
+  (fold-manifest-by-name
+   manifest
    (lambda (name version entries res)
-     ;; We don't care about duplicates for the list of
-     ;; installed packages, so just take any package (car)
-     ;; matching name+version
-     (cons (car (package-entries-by-name+version ->entry name version))
-           res))
+     (manifest-patterns-result (packages-by-name name version)
+                               res
+                               (lambda () (list name version entries))
+                               (and (not obsolete-only?)
+                                    (cut list <> entries))))
    '()))
 
-(define (installed-package-entries profile ->entry)
-  "Return list of package entries for all installed packages."
-  (set-current-manifest-maybe! profile)
-  (manifest-package-entries ->entry))
+(define* (manifest-output-patterns manifest #:optional obsolete-only?)
+  "Return a list of output patterns for MANIFEST entries.
+If OBSOLETE-ONLY? is #f, use all entries, otherwise make patterns only
+for obsolete packages."
+  (fold (lambda (entry res)
+          (manifest-patterns-result (manifest-entry->packages entry)
+                                    res
+                                    (lambda () entry)
+                                    (and (not obsolete-only?)
+                                         (cut list <> entry))))
+        '()
+        (manifest-entries manifest)))
 
-(define (generation-package-entries profile ->entry generation)
-  "Return list of package entries for packages from GENERATION."
-  (set-current-manifest-maybe!
-   (generation-file-name profile generation))
-  (manifest-package-entries ->entry))
+(define (obsolete-package-patterns manifest)
+  (manifest-package-patterns manifest #t))
 
-(define (obsolete-package-entries profile _)
-  "Return list of package entries for obsolete packages."
-  (set-current-manifest-maybe! profile)
-  (fold-manifest-entries
-   (lambda (name version entries res)
-     (let ((packages (packages-by-name+version name version)))
-       (if (null? packages)
-           (cons (make-obsolete-package-entry name version entries) res)
-           res)))
-   '()))
+(define (obsolete-output-patterns manifest)
+  (manifest-output-patterns manifest #t))
 
 
-;;; Generation entries
+;;; Transforming package/output patterns into alists.
 
-(define (profile-generations profile)
-  "Return list of generations for PROFILE."
-  (let ((generations (generation-numbers profile)))
-    (if (equal? generations '(0))
-        '()
-        generations)))
+(define (obsolete-package-sexp name version entries)
+  "Return an alist with information about obsolete package.
+ENTRIES is a list of installed manifest entries."
+  `((id        . ,(name+version->full-name name version))
+    (name      . ,name)
+    (version   . ,version)
+    (outputs   . ,(map manifest-entry-output entries))
+    (obsolete  . #t)
+    (installed . ,(manifest-entries->sexps entries))))
+
+(define (package-pattern-transformer manifest params)
+  "Return 'package-pattern->package-sexps' procedure."
+  (define package->sexp
+    (object-transformer %package-param-alist params))
+
+  (define* (sexp-by-package package #:optional
+                            (entries (manifest-entries-by-name
+                                      manifest
+                                      (package-name package)
+                                      (package-version package))))
+    (cons (cons 'installed (manifest-entries->sexps entries))
+          (package->sexp package)))
+
+  (define (->sexps pattern)
+    (match pattern
+      ((? package? package)
+       (list (sexp-by-package package)))
+      (((? package? package) entries)
+       (list (sexp-by-package package entries)))
+      ((name version entries)
+       (list (obsolete-package-sexp
+              name version entries)))
+      ((name version)
+       (let ((packages (packages-by-name name version)))
+         (if (null? packages)
+             (let ((entries (manifest-entries-by-name
+                             manifest name version)))
+               (if (null? entries)
+                   '()
+                   (list (obsolete-package-sexp
+                          name version entries))))
+             (map sexp-by-package packages))))))
+
+  ->sexps)
+
+(define (output-pattern-transformer manifest params)
+  "Return 'output-pattern->output-sexps' procedure."
+  (define package->sexp
+    (object-transformer (alist-delete 'id %package-param-alist)
+                        params))
+
+  (define manifest-entry->sexp
+    (object-transformer (alist-delete 'output %manifest-entry-param-alist)
+                        params))
+
+  (define* (output-sexp pkg-alist pkg-address output
+                        #:optional entry)
+    (let ((entry-alist (if entry
+                           (manifest-entry->sexp entry)
+                           '()))
+          (base `((id        . ,(string-append
+                                 (number->string pkg-address)
+                                 ":" output))
+                  (output    . ,output)
+                  (installed . ,(->bool entry)))))
+      (append entry-alist base pkg-alist)))
+
+  (define (obsolete-output-sexp entry)
+    (let-values (((name version output)
+                  (manifest-entry->name+version+output entry)))
+      (let ((base `((id         . ,(make-package-specification
+                                    name version output))
+                    (package-id . ,(name+version->full-name name version))
+                    (name       . ,name)
+                    (version    . ,version)
+                    (output     . ,output)
+                    (obsolete   . #t)
+                    (installed  . #t))))
+        (append (manifest-entry->sexp entry) base))))
+
+  (define* (sexps-by-package package #:optional output
+                             (entries (manifest-entries-by-name
+                                       manifest
+                                       (package-name package)
+                                       (package-version package))))
+    ;; Assuming that PACKAGE has this OUTPUT.
+    (let ((pkg-alist (package->sexp package))
+          (address (object-address package))
+          (outputs (if output
+                       (list output)
+                       (package-outputs package))))
+      (map (lambda (output)
+             (output-sexp pkg-alist address output
+                          (manifest-entry-by-output entries output)))
+           outputs)))
+
+  (define* (sexps-by-manifest-entry entry #:optional
+                                    (packages (manifest-entry->packages
+                                               entry)))
+    (if (null? packages)
+        (list (obsolete-output-sexp entry))
+        (map (lambda (package)
+               (output-sexp (package->sexp package)
+                            (object-address package)
+                            (manifest-entry-output entry)
+                            entry))
+             packages)))
+
+  (define (->sexps pattern)
+    (match pattern
+      ((? package? package)
+       (sexps-by-package package))
+      ((package (? string? output))
+       (sexps-by-package package output))
+      ((? manifest-entry? entry)
+       (list (obsolete-output-sexp entry)))
+      ((package entry)
+       (sexps-by-manifest-entry entry (list package)))
+      ((name version output)
+       (let ((packages (packages-by-name name version output)))
+         (if (null? packages)
+             (let ((entries (manifest-entries-by-name
+                             manifest name version output)))
+               (append-map (cut sexps-by-manifest-entry <>)
+                           entries))
+             (append-map (cut sexps-by-package <> output)
+                         packages))))))
+
+  ->sexps)
+
+(define (entry-type-error entry-type)
+  (error (format #f "Wrong entry-type '~a'" entry-type)))
+
+(define (search-type-error entry-type search-type)
+  (error (format #f "Wrong search type '~a' for entry-type '~a'"
+                 search-type entry-type)))
+
+(define %pattern-transformers
+  `((package . ,package-pattern-transformer)
+    (output  . ,output-pattern-transformer)))
+
+(define (pattern-transformer entry-type)
+  (assq-ref %pattern-transformers entry-type))
+
+;; All procedures from inner alists are called with (MANIFEST . SEARCH-VALS)
+;; as arguments; see `package/output-sexps'.
+(define %patterns-makers
+  (let* ((apply-to-rest         (lambda (proc)
+                                  (lambda (_ . rest) (apply proc rest))))
+         (apply-to-first        (lambda (proc)
+                                  (lambda (first . _) (proc first))))
+         (manifest-package-proc (apply-to-first manifest-package-patterns))
+         (manifest-output-proc  (apply-to-first manifest-output-patterns))
+         (regexp-proc           (lambda (_ regexp params . __)
+                                  (packages-by-regexp regexp params)))
+         (all-proc              (lambda _ (all-available-packages)))
+         (newest-proc           (lambda _ (newest-available-packages))))
+    `((package
+       (id               . ,(apply-to-rest ids->package-patterns))
+       (name             . ,(apply-to-rest specifications->package-patterns))
+       (installed        . ,manifest-package-proc)
+       (generation       . ,manifest-package-proc)
+       (obsolete         . ,(apply-to-first obsolete-package-patterns))
+       (regexp           . ,regexp-proc)
+       (all-available    . ,all-proc)
+       (newest-available . ,newest-proc))
+      (output
+       (id               . ,(apply-to-rest ids->output-patterns))
+       (name             . ,(apply-to-rest specifications->output-patterns))
+       (installed        . ,manifest-output-proc)
+       (generation       . ,manifest-output-proc)
+       (obsolete         . ,(apply-to-first obsolete-output-patterns))
+       (regexp           . ,regexp-proc)
+       (all-available    . ,all-proc)
+       (newest-available . ,newest-proc)))))
+
+(define (patterns-maker entry-type search-type)
+  (or (and=> (assq-ref %patterns-makers entry-type)
+             (cut assq-ref <> search-type))
+      (search-type-error entry-type search-type)))
+
+(define (package/output-sexps profile params entry-type
+                              search-type search-vals)
+  "Return information about packages or package outputs.
+See 'entry-sexps' for details."
+  (let* ((profile (if (eq? search-type 'generation)
+                      (generation-file-name profile (car search-vals))
+                      profile))
+         (manifest (profile-manifest profile))
+         (patterns (apply (patterns-maker entry-type search-type)
+                          manifest search-vals))
+         (->sexps ((pattern-transformer entry-type) manifest params)))
+    (append-map ->sexps patterns)))
+
+
+;;; Getting information about generations.
 
 (define (generation-param-alist profile)
-  "Return alist of generation parameters and functions for PROFILE."
+  "Return an alist of generation parameters and procedures for PROFILE."
   (list
    (cons 'id          identity)
    (cons 'number      identity)
@@ -440,77 +644,86 @@ IDS may be an object-address, a full-name or a list of such elements."
    (cons 'time        (lambda (gen)
                         (time-second (generation-time profile gen))))))
 
-(define (matching-generation-entries profile ->entry predicate)
-  "Return list of generation entries for the matching generations.
-PREDICATE is called on each generation."
-  (filter-map (lambda (gen)
-                (and (predicate gen) (->entry gen)))
-              (profile-generations profile)))
+(define (matching-generations profile predicate)
+  "Return a list of PROFILE generations matching PREDICATE."
+  (filter predicate (profile-generations profile)))
 
-(define (last-generation-entries profile ->entry number)
-  "Return list of last NUMBER generation entries.
-If NUMBER is 0 or less, return all generation entries."
+(define (last-generations profile number)
+  "Return a list of last NUMBER generations.
+If NUMBER is 0 or less, return all generations."
   (let ((generations (profile-generations profile))
         (number (if (<= number 0) +inf.0 number)))
-    (map ->entry
-         (if (> (length generations) number)
-             (list-head  (reverse generations) number)
-             generations))))
+    (if (> (length generations) number)
+        (list-head  (reverse generations) number)
+        generations)))
 
-(define (all-generation-entries profile ->entry)
-  "Return list of all generation entries."
-  (last-generation-entries profile ->entry +inf.0))
+(define (find-generations profile search-type search-vals)
+  "Find PROFILE's generations matching SEARCH-TYPE and SEARCH-VALS."
+  (case search-type
+    ((id)
+     (matching-generations profile (cut memq <> (car search-vals))))
+    ((last)
+     (last-generations profile (car search-vals)))
+    ((all)
+     (last-generations profile +inf.0))
+    (else (search-type-error "generation" search-type))))
 
-(define (generation-entries-by-ids profile ->entry ids)
-  "Return list of generation entries for generations matching IDS.
-IDS is a list of generation numbers."
-  (matching-generation-entries profile ->entry (cut memq <> ids)))
-
-
-;;; Getting package/generation entries
-
-(define %package-entries-functions
-  (alist->vhash
-   `((id               . ,package-entries-by-ids)
-     (name             . ,package-entries-by-spec)
-     (regexp           . ,package-entries-by-regexp)
-     (all-available    . ,all-available-package-entries)
-     (newest-available . ,newest-available-package-entries)
-     (installed        . ,installed-package-entries)
-     (obsolete         . ,obsolete-package-entries)
-     (generation       . ,generation-package-entries))
-   hashq))
-
-(define %generation-entries-functions
-  (alist->vhash
-   `((id   . ,generation-entries-by-ids)
-     (last . ,last-generation-entries)
-     (all  . ,all-generation-entries))
-   hashq))
-
-(define (get-entries profile params entry-type search-type search-vals)
-  "Return list of entries.
-ENTRY-TYPE and SEARCH-TYPE define a search function that should be
-applied to PARAMS and VALS."
-  (let-values (((vhash ->entry)
-                (case entry-type
-                  ((package)
-                   (values %package-entries-functions
-                           (object-transformer
-                            package-param-alist params)))
-                  ((generation)
-                   (values %generation-entries-functions
-                           (object-transformer
-                            (generation-param-alist profile) params)))
-                  (else (format (current-error-port)
-                                "Wrong entry type '~a'" entry-type)))))
-    (match (vhash-assq search-type vhash)
-      ((key . fun)
-       (apply fun profile ->entry search-vals))
-      (_ '()))))
+(define (generation-sexps profile params search-type search-vals)
+  "Return information about generations.
+See 'entry-sexps' for details."
+  (let ((generations (find-generations profile search-type search-vals))
+        (->sexp (object-transformer (generation-param-alist profile)
+                                    params)))
+    (map ->sexp generations)))
 
 
-;;; Actions
+;;; Getting package/output/generation entries (alists).
+
+(define (entries profile params entry-type search-type search-vals)
+  "Return information about entries.
+
+ENTRY-TYPE is a symbol defining a type of returning information.  Should
+be: 'package', 'output' or 'generation'.
+
+SEARCH-TYPE and SEARCH-VALS define how to get the information.
+SEARCH-TYPE should be one of the following symbols:
+
+- If ENTRY-TYPE is 'package' or 'output':
+  'id', 'name', 'regexp', 'all-available', 'newest-available',
+  'installed', 'obsolete', 'generation'.
+
+- If ENTRY-TYPE is 'generation':
+  'id', 'last', 'all'.
+
+PARAMS is a list of parameters for receiving.  If it is an empty list,
+get information with all available parameters, which are:
+
+- If ENTRY-TYPE is 'package':
+  'id', 'name', 'version', 'outputs', 'license', 'synopsis',
+  'description', 'home-url', 'inputs', 'native-inputs',
+  'propagated-inputs', 'location', 'installed'.
+
+- If ENTRY-TYPE is 'output':
+  'id', 'package-id', 'name', 'version', 'output', 'license',
+  'synopsis', 'description', 'home-url', 'inputs', 'native-inputs',
+  'propagated-inputs', 'location', 'installed', 'path', 'dependencies'.
+
+- If ENTRY-TYPE is 'generation':
+  'id', 'number', 'prev-number', 'path', 'time'.
+
+Returning value is a list of alists.  Each alist consists of
+parameter/value pairs."
+  (case entry-type
+    ((package output)
+     (package/output-sexps profile params entry-type
+                           search-type search-vals))
+    ((generation)
+     (generation-sexps profile params
+                       search-type search-vals))
+    (else (entry-type-error entry-type))))
+
+
+;;; Package actions.
 
 (define* (package->manifest-entry* package #:optional output)
   (and package
@@ -600,4 +813,3 @@ OUTPUTS is a list of package outputs (may be an empty list)."
                                   "~a packages in profile~%"
                                   count)
                            count)))))))))
-

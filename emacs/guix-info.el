@@ -512,7 +512,8 @@ ENTRY is an alist with package info."
                     (button-get btn 'output)))))
      (concat type-str " '" full-name "'")
      'action-type type
-     'id (guix-get-key-val entry 'id)
+     'id (or (guix-get-key-val entry 'package-id)
+             (guix-get-key-val entry 'id))
      'output output)))
 
 (defun guix-package-info-insert-output-path (path &optional _)
