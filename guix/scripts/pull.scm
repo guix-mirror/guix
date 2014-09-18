@@ -23,6 +23,8 @@
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix download)
+  #:use-module (guix gexp)
+  #:use-module (guix monads)
   #:use-module (gnu packages base)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap)
@@ -38,34 +40,27 @@
   "http://git.savannah.gnu.org/cgit/guix.git/snapshot/guix-master.tar.gz"
   )
 
-(define* (unpack store tarball #:key verbose?)
+(define* (unpack tarball #:key verbose?)
   "Return a derivation that unpacks TARBALL into STORE and compiles Scheme
 files."
   (define builder
-    `(begin
-       (use-modules (guix build pull))
+    #~(begin
+        (use-modules (guix build pull))
 
-       (build-guix (assoc-ref %outputs "out")
-                   (assoc-ref %build-inputs "tarball")
+        (build-guix #$output #$tarball
 
-                   ;; XXX: This is not perfect, enabling VERBOSE? means
-                   ;; building a different derivation.
-                   #:debug-port (if ',verbose?
-                                    (current-error-port)
-                                    (%make-void-port "w"))
-                   #:tar (assoc-ref %build-inputs "tar")
-                   #:gzip (assoc-ref %build-inputs "gzip")
-                   #:gcrypt (assoc-ref %build-inputs "gcrypt"))))
+                    ;; XXX: This is not perfect, enabling VERBOSE? means
+                    ;; building a different derivation.
+                    #:debug-port (if #$verbose?
+                                     (current-error-port)
+                                     (%make-void-port "w"))
+                    #:tar #$tar
+                    #:gzip #$gzip
+                    #:gcrypt #$libgcrypt)))
 
-  (build-expression->derivation store "guix-latest" builder
-                                #:inputs
-                                `(("tar" ,(package-derivation store tar))
-                                  ("gzip" ,(package-derivation store gzip))
-                                  ("gcrypt" ,(package-derivation store
-                                                                 libgcrypt))
-                                  ("tarball" ,tarball))
-                                #:modules '((guix build pull)
-                                            (guix build utils))))
+  (gexp->derivation "guix-latest" builder
+                    #:modules '((guix build pull)
+                                (guix build utils))))
 
 
 ;;;
@@ -114,6 +109,33 @@ Download and deploy the latest version of Guix.\n"))
                 (lambda args
                   (show-version-and-exit "guix pull")))))
 
+(define what-to-build
+  (store-lift show-what-to-build))
+(define indirect-root-added
+  (store-lift add-indirect-root))
+
+(define* (build-and-install tarball config-dir
+                            #:key verbose?)
+  "Build the tool from TARBALL, and install it in CONFIG-DIR."
+  (mlet* %store-monad ((source        (unpack tarball #:verbose? verbose?))
+                       (source-dir -> (derivation->output-path source))
+                       (to-do?        (what-to-build (list source))))
+    (if to-do?
+        (mlet* %store-monad ((built? (built-derivations (list source))))
+          (if built?
+              (mlet* %store-monad
+                  ((latest -> (string-append config-dir "/latest"))
+                   (done      (indirect-root-added latest)))
+                (switch-symlinks latest source-dir)
+                (format #t
+                        (_ "updated ~a successfully deployed under `~a'~%")
+                        %guix-package-name latest)
+                (return #t))
+              (leave (_ "failed to update Guix, check the build log~%"))))
+        (begin
+          (display (_ "Guix already up to date\n"))
+          (return #t)))))
+
 (define (guix-pull . args)
   (define (parse-options)
     ;; Return the alist of option values.
@@ -136,20 +158,6 @@ Download and deploy the latest version of Guix.\n"))
                                             (if (assoc-ref opts 'bootstrap?)
                                                 %bootstrap-guile
                                                 (canonical-package guile-2.0)))))
-          (let* ((config-dir (config-directory))
-                 (source     (unpack store tarball
-                                     #:verbose? (assoc-ref opts 'verbose?)))
-                 (source-dir (derivation->output-path source)))
-            (if (show-what-to-build store (list source))
-                (if (build-derivations store (list source))
-                    (let ((latest (string-append config-dir "/latest")))
-                      (add-indirect-root store latest)
-                      (switch-symlinks latest source-dir)
-                      (format #t
-                              (_ "updated ~a successfully deployed under `~a'~%")
-                              %guix-package-name latest)
-                      #t)
-                    (leave (_ "failed to update Guix, check the build log~%")))
-                (begin
-                  (display (_ "Guix already up to date\n"))
-                  #t))))))))
+          (run-with-store store
+            (build-and-install tarball (config-directory)
+                               #:verbose? (assoc-ref opts 'verbose?))))))))
