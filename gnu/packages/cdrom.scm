@@ -163,7 +163,7 @@ files.")
     (synopsis "audio CD reading utility which includes extra data verification features")
     (description "Cdparanoia retrieves audio tracks from CDDA capable CDROM
 drives.  The data can be saved to a file or directed to standard output
-in WAV, AIFF, AIFF-C or raw format.  Most ATAPI, SCSI and  several
+in WAV, AIFF, AIFF-C or raw format.  Most ATAPI, SCSI and several
 proprietary CDROM drive makes are supported; cdparanoia can determine if the
 target drive is CDDA capable.  In addition to simple reading, cdparanoia adds
 extra-robust data verification, synchronization, error handling and scratch

@@ -273,7 +273,7 @@ plotting engine by third-party applications like Octave.")
          %standard-phases)))
     (outputs '("out" "bin" "lib" "include"))
     (home-page "http://www.hdfgroup.org")
-    (synopsis "Management suite for  extremely large and complex data")
+    (synopsis "Management suite for extremely large and complex data")
     (description "HDF5 is a suite that makes possible the management of
 extremely large and complex data collections.")
     (license (license:x11-style
