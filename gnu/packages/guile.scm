@@ -363,30 +363,21 @@ http:://json.org specification. These are the main features:
 (define-public guile-charting
   (package
     (name "guile-charting")
-    (version "0.1.1")
+    (version "0.2.0")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://wingolog.org/pub/guile-charting/"
                                   "guile-charting-" version ".tar.gz"))
               (sha256
                (base32
-                "1l8xcqq4cp67jzxnmf07ivsgq23mfmi00zz1s8bnv2zkb0ab9475"))
+                "0w5qiyv9v0ip5li22x762bm48g8xnw281w66iyw094zdw611pb2m"))
               (modules '((guix build utils)))
               (snippet
                '(begin
-                  ;; Use the standard versioned location for modules.
-                  (substitute* '("Makefile.in" "charting/Makefile.in")
-                    (("/share/guile/site")
-                     "/share/guile/site/2.0"))
-
-                  ;; Remove dependency from guile-charting.texi to
-                  ;; guile-chartingscmfiles to avoid rebuild the doc (which is
-                  ;; unnecessary and fails with "failed to match any pattern
-                  ;; in form define-macro-with-docs" as of Guile 2.0.11.)
-                  (substitute* "doc/Makefile.in"
-                    (("^(.+):(.*) \\$\\(doc\\)scmfiles(.*$)" _ target
-                      dep1 dep2)
-                     (string-append target ":" dep1 " " dep2 "\n")))))))
+                  ;; Use the standard location for modules.
+                  (substitute* "Makefile.in"
+                    (("godir = .*$")
+                     "godir = $(moddir)\n"))))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)))
     (inputs `(("guile" ,guile-2.0)))
