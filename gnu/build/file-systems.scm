@@ -233,7 +233,7 @@ the following:
   (define fsck
     (string-append "fsck." type))
 
-  (let ((status (system* fsck "-v" "-p" device)))
+  (let ((status (system* fsck "-v" "-p" "-C" "0" device)))
     (match (status:exit-val status)
       (0
        #t)
