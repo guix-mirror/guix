@@ -595,7 +595,8 @@ extra rules from the packages listed in @var{rules}."
 
                         ;; The first one is for udev, the second one for eudev.
                         (setenv "UDEV_CONFIG_FILE" #$udev.conf)
-                        (setenv "EUDEV_RULES_DIRECTORY" #$rules)
+                        (setenv "EUDEV_RULES_DIRECTORY"
+                                (string-append #$rules "/lib/udev/rules.d"))
 
                         (let ((pid (primitive-fork)))
                           (case pid
