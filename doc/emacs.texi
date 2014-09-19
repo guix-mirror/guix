@@ -104,6 +104,14 @@ many last generations.
 
 @end table
 
+By default commands for displaying packages display each output on a
+separate line.  If you prefer to see a list of packages (i.e.@: a list
+with a package per line), use the following setting:
+
+@example
+(setq guix-package-list-type 'package)
+@end example
+
 It is possible to change the currently used profile with
 @kbd{M-x@tie{}guix-set-current-profile}.  This has the same effect as
 specifying @code{--profile} option for @command{guix package}
@@ -177,18 +185,15 @@ A ``package-list'' buffer additionally provides the following bindings:
 Describe marked packages (display available information in a
 ``package-info'' buffer).
 @item i
-Mark "out" of the current package for installation (with prefix, prompt
-for output(s) to install).
+Mark the current package for installation.
 @item d
-Mark all installed outputs of the current package for deletion (with
-prefix, prompt for output(s) to delete).
+Mark the current package for deletion.
 @item U
-Mark all installed outputs of the current package for upgrading (with
-prefix, prompt for output(s) to upgrade).
+Mark the current package for upgrading.
 @item ^
 Mark all obsolete packages for upgrading.
 @item x
-Execute actions on marked packages.
+Execute actions on the marked packages.
 @end table
 
 A ``generation-list'' buffer additionally provides the following
@@ -244,6 +249,7 @@ all) and faces.
 
 @menu
 * Guile and Build Options: emacs Build Options.	Specifying how packages are built.
+* Buffer Names: emacs Buffer Names.	Names of Guix buffers.
 * Keymaps: emacs Keymaps.		Configuring key bindings.
 * Appearance: emacs Appearance.		Settings for visual appearance.
 @end menu
@@ -270,6 +276,39 @@ build}).
 
 @end table
 
+@node emacs Buffer Names
+@subsubsection Buffer Names
+
+Default names of ``guix.el'' buffers (``*Guix@tie{}@dots{}*'') may be
+changed with the following variables:
+
+@table @code
+@item guix-package-list-buffer-name
+@item guix-output-list-buffer-name
+@item guix-generation-list-buffer-name
+@item guix-package-info-buffer-name
+@item guix-output-info-buffer-name
+@item guix-generation-info-buffer-name
+@item guix-repl-buffer-name
+@item guix-internal-repl-buffer-name
+@item guix-temp-buffer-name
+@end table
+
+For example if you want to display all types of results in a single
+buffer (in such case you will probably use a history (@kbd{l}/@kbd{r})
+extensively), you may do it like this:
+
+@example
+(let ((name "Guix Universal"))
+  (setq
+   guix-package-list-buffer-name    name
+   guix-output-list-buffer-name     name
+   guix-generation-list-buffer-name name
+   guix-package-info-buffer-name    name
+   guix-output-info-buffer-name     name
+   guix-generation-info-buffer-name name))
+@end example
+
 @node emacs Keymaps
 @subsubsection Keymaps
 
@@ -283,6 +322,9 @@ Parent keymap with general keys for ``list'' buffers.
 @item guix-package-list-mode-map
 Keymap with specific keys for ``package-list'' buffers.
 
+@item guix-output-list-mode-map
+Keymap with specific keys for ``output-list'' buffers.
+
 @item guix-generation-list-mode-map
 Keymap with specific keys for ``generation-list'' buffers.
 
@@ -291,6 +333,9 @@ Parent keymap with general keys for ``info'' buffers.
 
 @item guix-package-info-mode-map
 Keymap with specific keys for ``package-info'' buffers.
+
+@item guix-output-info-mode-map
+Keymap with specific keys for ``output-info'' buffers.
 
 @item guix-generation-info-mode-map
 Keymap with specific keys for ``generation-info'' buffers.

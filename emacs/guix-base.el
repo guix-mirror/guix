@@ -87,6 +87,22 @@ Interactively, prompt for PATH.  With prefix, use
      (path              . "Installed path")
      (dependencies      . "Dependencies")
      (output            . "Output"))
+    (output
+     (id                . "ID")
+     (name              . "Name")
+     (version           . "Version")
+     (license           . "License")
+     (synopsis          . "Synopsis")
+     (description       . "Description")
+     (home-url          . "Home page")
+     (output            . "Output")
+     (inputs            . "Inputs")
+     (native-inputs     . "Native inputs")
+     (propagated-inputs . "Propagated inputs")
+     (location          . "Location")
+     (installed         . "Installed")
+     (path              . "Installed path")
+     (dependencies      . "Dependencies"))
     (generation
      (id                . "ID")
      (number            . "Number")
@@ -129,6 +145,14 @@ Each element of the list has a form:
   (cl-find-if (lambda (entry)
                 (equal id (guix-get-key-val entry 'id)))
               entries))
+
+(defun guix-get-package-id-and-output-by-output-id (oid)
+  "Return list (PACKAGE-ID OUTPUT) by output id OID."
+  (cl-multiple-value-bind (pid-str output)
+      (split-string oid ":")
+    (let ((pid (string-to-number pid-str)))
+      (list (if (= 0 pid) pid-str pid)
+            output))))
 
 
 ;;; Location of the packages
@@ -227,6 +251,9 @@ The following stuff should be defined outside this macro:
 Remaining argument (ARGS) should have a form [KEYWORD VALUE] ...  The
 following keywords are available:
 
+  - `:buffer-name' - default value for the defined
+    `guix-TYPE-buffer-name' variable.
+
   - `:required' - default value for the defined
     `guix-TYPE-required-params' variable.
 
@@ -252,6 +279,7 @@ following keywords are available:
          (revert-var     (intern (concat prefix "-revert-no-confirm")))
          (history-var    (intern (concat prefix "-history-size")))
          (params-var     (intern (concat prefix "-required-params")))
+         (buf-name-val   (format "*Guix %s %s*" Entry-type-str Buf-type-str))
          (revert-val     nil)
          (history-val    20)
          (params-val     '(id)))
@@ -262,6 +290,7 @@ following keywords are available:
 	(`:required     (setq params-val (pop args)))
 	(`:history-size (setq history-val (pop args)))
 	(`:revert       (setq revert-val (pop args)))
+        (`:buffer-name  (setq buf-name-val (pop args)))
 	(_ (pop args))))
 
     `(progn
@@ -270,8 +299,7 @@ following keywords are available:
          :prefix ,(concat prefix "-")
          :group ',(intern (concat "guix-" buf-type-str)))
 
-       (defcustom ,buf-name-var ,(format "*Guix %s %s*"
-                                         Entry-type-str Buf-type-str)
+       (defcustom ,buf-name-var ,buf-name-val
          ,(concat "Default name of the " buf-str " for displaying " entry-str ".")
          :type 'string
          :group ',group)
@@ -470,8 +498,8 @@ This function will not update the information, use
       (many "%d newest available packages." count))
      (installed
       (0 "No installed packages.")
-      (1 "A single installed package.")
-      (many "%d installed packages." count))
+      (1 "A single package installed.")
+      (many "%d packages installed." count))
      (obsolete
       (0 "No obsolete packages.")
       (1 "A single obsolete package.")
@@ -480,6 +508,39 @@ This function will not update the information, use
       (0 "No packages installed in generation %d." val)
       (1 "A single package installed in generation %d." val)
       (many "%d packages installed in generation %d." count val)))
+    (output
+     (id
+      (0 "Package outputs not found.")
+      (1 "")
+      (many "%d package outputs." count))
+     (name
+      (0 "The package output '%s' not found." val)
+      (1 "A single package output with name '%s'." val)
+      (many "%d package outputs with '%s' name." count val))
+     (regexp
+      (0 "No package outputs matching '%s'." val)
+      (1 "A single package output matching '%s'." val)
+      (many "%d package outputs matching '%s'." count val))
+     (all-available
+      (0 "No package outputs are available for some reason.")
+      (1 "A single available package output (that's strange).")
+      (many "%d available package outputs." count))
+     (newest-available
+      (0 "No package outputs are available for some reason.")
+      (1 "A single newest available package output (that's strange).")
+      (many "%d newest available package outputs." count))
+     (installed
+      (0 "No installed package outputs.")
+      (1 "A single package output installed.")
+      (many "%d package outputs installed." count))
+     (obsolete
+      (0 "No obsolete package outputs.")
+      (1 "A single obsolete package output.")
+      (many "%d obsolete package outputs." count))
+     (generation
+      (0 "No package outputs installed in generation %d." val)
+      (1 "A single package output installed in generation %d." val)
+      (many "%d package outputs installed in generation %d." count val)))
     (generation
      (id
       (0 "Generations not found.")

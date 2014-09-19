@@ -117,6 +117,23 @@ number of characters, it will be split into several lines.")
                         guix-info-insert-title-simple)
      (dependencies      guix-package-info-insert-output-dependencies
                         guix-info-insert-title-simple))
+    (output
+     (name              guix-package-info-name)
+     (version           guix-output-info-insert-version)
+     (output            guix-output-info-insert-output)
+     (path              guix-package-info-insert-output-path
+                        guix-info-insert-title-simple)
+     (dependencies      guix-package-info-insert-output-dependencies
+                        guix-info-insert-title-simple)
+     (license           guix-package-info-license)
+     (synopsis          guix-package-info-synopsis)
+     (description       guix-package-info-insert-description
+                        guix-info-insert-title-simple)
+     (home-url          guix-info-insert-url)
+     (inputs            guix-package-info-insert-inputs)
+     (native-inputs     guix-package-info-insert-native-inputs)
+     (propagated-inputs guix-package-info-insert-propagated-inputs)
+     (location          guix-package-info-insert-location))
     (generation
      (number            guix-generation-info-insert-number)
      (path              guix-info-insert-file-path)
@@ -141,6 +158,8 @@ argument.")
 (defvar guix-info-displayed-params
   '((package name version synopsis outputs location home-url
              license inputs native-inputs propagated-inputs description)
+    (output name version output synopsis path dependencies location home-url
+            license inputs native-inputs propagated-inputs description)
     (installed path dependencies)
     (generation number prev-number time path))
   "List of displayed entry parameters.
@@ -520,9 +539,38 @@ ENTRY is an alist with package info."
   "Insert PATH of the installed output."
   (guix-info-insert-val-simple path #'guix-info-insert-file-path))
 
-(defun guix-package-info-insert-output-dependencies (deps &optional _)
-  "Insert dependencies DEPS of the installed output."
-  (guix-info-insert-val-simple deps #'guix-info-insert-file-path))
+(defalias 'guix-package-info-insert-output-dependencies
+  'guix-package-info-insert-output-path)
+
+
+;;; Displaying outputs
+
+(guix-define-buffer-type info output
+  :buffer-name "*Guix Package Info*"
+  :required (id package-id installed non-unique))
+
+(defun guix-output-info-insert-version (version entry)
+  "Insert output VERSION and obsolete text if needed at point."
+  (guix-info-insert-val-default version
+                                'guix-package-info-version)
+  (and (guix-get-key-val entry 'obsolete)
+       (guix-package-info-insert-obsolete-text)))
+
+(defun guix-output-info-insert-output (output entry)
+  "Insert OUTPUT and action buttons at point."
+  (let* ((installed (guix-get-key-val entry 'installed))
+         (obsolete  (guix-get-key-val entry 'obsolete))
+         (action-type (if installed 'delete 'install)))
+    (guix-info-insert-val-default
+     output
+     (if installed
+         'guix-package-info-installed-outputs
+       'guix-package-info-uninstalled-outputs))
+    (guix-info-insert-indent)
+    (guix-package-info-insert-action-button action-type entry output)
+    (when obsolete
+      (guix-info-insert-indent)
+      (guix-package-info-insert-action-button 'upgrade entry output))))
 
 
 ;;; Displaying generations

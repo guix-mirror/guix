@@ -55,6 +55,12 @@ entries, he will be prompted for confirmation."
      (outputs 13 t)
      (installed 13 t)
      (synopsis 30 nil))
+    (output
+     (name 20 t)
+     (version 10 nil)
+     (output 9 t)
+     (installed 12 t)
+     (synopsis 30 nil))
     (generation
      (number 5
              ,(lambda (a b) (guix-list-sort-numerically 0 a b))
@@ -82,6 +88,10 @@ this list have a priority.")
      (synopsis    . guix-list-get-one-line)
      (description . guix-list-get-one-line)
      (installed   . guix-package-list-get-installed-outputs))
+    (output
+     (name        . guix-package-list-get-name)
+     (synopsis    . guix-list-get-one-line)
+     (description . guix-list-get-one-line))
     (generation
      (time . guix-list-get-time)
      (path . guix-list-get-file-path)))
@@ -420,20 +430,23 @@ This macro defines the following functions:
 
 (put 'guix-list-define-entry-type 'lisp-indent-function 'defun)
 
+(defun guix-list-describe-maybe (entry-type ids)
+  "Describe ENTRY-TYPE entries in info buffer using list of IDS."
+  (let ((count (length ids)))
+    (when (or (<= count guix-list-describe-warning-count)
+              (y-or-n-p (format "Do you really want to describe %d entries? "
+                                count)))
+      (apply #'guix-get-show-entries 'info entry-type 'id ids))))
+
 (defun guix-list-describe (&optional arg)
   "Describe entries marked with a general mark.
 If no entries are marked, describe the current entry.
 With prefix (if ARG is non-nil), describe entries marked with any mark."
   (interactive "P")
-  (let* ((ids (or (apply #'guix-list-get-marked-id-list
-                         (unless arg '(general)))
-                  (list (guix-list-current-id))))
-         (count (length ids)))
-    (when (or (<= count guix-list-describe-warning-count)
-              (y-or-n-p (format "Do you really want to describe %d entries? "
-                                count)))
-      (apply #'guix-get-show-entries
-             'info guix-entry-type 'id ids))))
+  (let ((ids (or (apply #'guix-list-get-marked-id-list
+                        (unless arg '(general)))
+                 (list (guix-list-current-id)))))
+    (guix-list-describe-maybe guix-entry-type ids)))
 
 
 ;;; Displaying packages
@@ -454,6 +467,15 @@ With prefix (if ARG is non-nil), describe entries marked with any mark."
 (defface guix-package-list-obsolete
   '((t :inherit guix-package-info-obsolete))
   "Face used if a package is obsolete."
+  :group 'guix-package-list)
+
+(defcustom guix-package-list-type 'output
+  "Define how to display packages in a list buffer.
+May be a symbol `package' or `output' (if `output', display each
+output on a separate line; if `package', display each package on
+a separate line)."
+  :type '(choice (const :tag "List of packages" package)
+                 (const :tag "List of outputs" output))
   :group 'guix-package-list)
 
 (defcustom guix-package-list-generation-marking-enabled nil
@@ -499,7 +521,8 @@ Colorize it with `guix-package-list-installed' or
 (defun guix-package-list-marking-check ()
   "Signal an error if marking is disabled for the current buffer."
   (when (and (not guix-package-list-generation-marking-enabled)
-             (derived-mode-p 'guix-package-list-mode)
+             (or (derived-mode-p 'guix-package-list-mode)
+                 (derived-mode-p 'guix-output-list-mode))
              (eq guix-search-type 'generation))
     (error "Action marks are disabled for lists of 'generation packages'")))
 
@@ -563,9 +586,10 @@ be separated with \",\")."
        (and arg "Output(s) to upgrade: ")
        installed))))
 
-(defun guix-package-list-mark-upgrades ()
-  "Mark all obsolete packages for upgrading."
-  (interactive)
+(defun guix-list-mark-package-upgrades (fun)
+  "Mark all obsolete packages for upgrading.
+Use FUN to perform marking of the current line.  FUN should
+accept an entry as argument."
   (guix-package-list-marking-check)
   (let ((obsolete (cl-remove-if-not
                    (lambda (entry)
@@ -579,19 +603,31 @@ be separated with \",\")."
                         (equal id (guix-get-key-val entry 'id)))
                       obsolete)))
          (when entry
-           (apply #'guix-list-mark
-                  'upgrade nil
-                  (guix-get-installed-outputs entry))))))))
+           (funcall fun entry)))))))
+
+(defun guix-package-list-mark-upgrades ()
+  "Mark all obsolete packages for upgrading."
+  (interactive)
+  (guix-list-mark-package-upgrades
+   (lambda (entry)
+     (apply #'guix-list-mark
+            'upgrade nil
+            (guix-get-installed-outputs entry)))))
+
+(defun guix-list-execute-package-actions (fun)
+  "Perform actions on the marked packages.
+Use FUN to define actions suitable for `guix-process-package-actions'.
+FUN should accept action-type as argument."
+  (let ((actions (delq nil
+                       (mapcar fun '(install delete upgrade)))))
+    (if actions
+        (apply #'guix-process-package-actions actions)
+      (user-error "No operations specified"))))
 
 (defun guix-package-list-execute ()
   "Perform actions on the marked packages."
   (interactive)
-  (let ((actions (delq nil
-                       (mapcar #'guix-package-list-make-action
-                               '(install delete upgrade)))))
-    (if actions
-        (apply #'guix-process-package-actions actions)
-      (user-error "No operations specified"))))
+  (guix-list-execute-package-actions #'guix-package-list-make-action))
 
 (defun guix-package-list-make-action (action-type)
   "Return action specification for the packages marked with ACTION-TYPE.
@@ -599,6 +635,104 @@ Return nil, if there are no packages marked with ACTION-TYPE.
 The specification is suitable for `guix-process-package-actions'."
   (let ((specs (guix-list-get-marked-args action-type)))
     (and specs (cons action-type specs))))
+
+
+;;; Displaying outputs
+
+(guix-define-buffer-type list output
+  :buffer-name "*Guix Package List*")
+
+(guix-list-define-entry-type output
+  :sort-key name
+  :marks ((install . ?I)
+          (upgrade . ?U)
+          (delete  . ?D)))
+
+(defcustom guix-output-list-describe-type 'package
+  "Define how to describe outputs in a list buffer.
+May be a symbol `package' or `output' (if `output', describe only
+marked outputs; if `package', describe all outputs of the marked
+packages)."
+  :type '(choice (const :tag "Describe packages" package)
+                 (const :tag "Describe outputs" output))
+  :group 'guix-output-list)
+
+(let ((map guix-output-list-mode-map))
+  (define-key map (kbd "RET") 'guix-output-list-describe)
+  (define-key map (kbd "x")   'guix-output-list-execute)
+  (define-key map (kbd "i")   'guix-output-list-mark-install)
+  (define-key map (kbd "d")   'guix-output-list-mark-delete)
+  (define-key map (kbd "U")   'guix-output-list-mark-upgrade)
+  (define-key map (kbd "^")   'guix-output-list-mark-upgrades))
+
+(defun guix-output-list-mark-install ()
+  "Mark the current output for installation and move to the next line."
+  (interactive)
+  (guix-package-list-marking-check)
+  (let* ((entry     (guix-list-current-entry))
+         (installed (guix-get-key-val entry 'installed)))
+    (if installed
+        (user-error "This output is already installed")
+      (guix-list-mark 'install t))))
+
+(defun guix-output-list-mark-delete ()
+  "Mark the current output for deletion and move to the next line."
+  (interactive)
+  (guix-package-list-marking-check)
+  (let* ((entry     (guix-list-current-entry))
+         (installed (guix-get-key-val entry 'installed)))
+    (if installed
+        (guix-list-mark 'delete t)
+      (user-error "This output is not installed"))))
+
+(defun guix-output-list-mark-upgrade ()
+  "Mark the current output for deletion and move to the next line."
+  (interactive)
+  (guix-package-list-marking-check)
+  (let* ((entry     (guix-list-current-entry))
+         (installed (guix-get-key-val entry 'installed)))
+    (or installed
+        (user-error "This output is not installed"))
+    (when (or (guix-get-key-val entry 'obsolete)
+              (y-or-n-p "This output is not obsolete.  Try to upgrade it anyway? "))
+      (guix-list-mark 'upgrade t))))
+
+(defun guix-output-list-mark-upgrades ()
+  "Mark all obsolete package outputs for upgrading."
+  (interactive)
+  (guix-list-mark-package-upgrades
+   (lambda (_) (guix-list-mark 'upgrade))))
+
+(defun guix-output-list-execute ()
+  "Perform actions on the marked outputs."
+  (interactive)
+  (guix-list-execute-package-actions #'guix-output-list-make-action))
+
+(defun guix-output-list-make-action (action-type)
+  "Return action specification for the outputs marked with ACTION-TYPE.
+Return nil, if there are no outputs marked with ACTION-TYPE.
+The specification is suitable for `guix-process-output-actions'."
+  (let ((ids (guix-list-get-marked-id-list action-type)))
+    (and ids (cons action-type
+                   (mapcar #'guix-get-package-id-and-output-by-output-id
+                           ids)))))
+
+(defun guix-output-list-describe (&optional arg)
+  "Describe outputs or packages marked with a general mark.
+If no entries are marked, describe the current output or package.
+With prefix (if ARG is non-nil), describe entries marked with any mark.
+Also see `guix-output-list-describe-type'."
+  (interactive "P")
+  (if (eq guix-output-list-describe-type 'output)
+      (guix-list-describe arg)
+    (let* ((oids (or (apply #'guix-list-get-marked-id-list
+                            (unless arg '(general)))
+                     (list (guix-list-current-id))))
+           (pids (mapcar (lambda (oid)
+                           (car (guix-get-package-id-and-output-by-output-id
+                                 oid)))
+                         oids)))
+      (guix-list-describe-maybe 'package (cl-remove-duplicates pids)))))
 
 
 ;;; Displaying generations
@@ -618,7 +752,7 @@ The specification is suitable for `guix-process-package-actions'."
 (defun guix-generation-list-show-packages ()
   "List installed packages for the generation at point."
   (interactive)
-  (guix-get-show-entries 'list 'package 'generation
+  (guix-get-show-entries 'list guix-package-list-type 'generation
                          (guix-list-current-id)))
 
 (provide 'guix-list)

@@ -58,24 +58,24 @@ SEARCH-VALS.
 Results are displayed in the list buffer, unless a single package
 is found and `guix-list-single-package' is nil."
   (let* ((list-params (guix-get-params-for-receiving
-                       'list 'package))
-         (packages (guix-get-entries 'package
+                       'list guix-package-list-type))
+         (packages (guix-get-entries guix-package-list-type
                                      search-type search-vals
                                      list-params)))
     (if (or guix-list-single-package
             (cdr packages))
-        (guix-set-buffer packages 'list 'package
+        (guix-set-buffer packages 'list guix-package-list-type
                          search-type search-vals)
       (let* ((info-params (guix-get-params-for-receiving
-                           'info 'package))
+                           'info guix-package-list-type))
              (packages (if (equal list-params info-params)
                            packages
                          ;; If we don't have required info, we should
                          ;; receive it again
-                         (guix-get-entries 'package
+                         (guix-get-entries guix-package-list-type
                                            search-type search-vals
                                            info-params))))
-        (guix-set-buffer packages 'info 'package
+        (guix-set-buffer packages 'info guix-package-list-type
                          search-type search-vals)))))
 
 (defun guix-get-show-generations (search-type &rest search-vals)
