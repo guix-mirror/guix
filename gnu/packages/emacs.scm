@@ -79,7 +79,7 @@
 
        ;; TODO: Add the optional dependencies.
        ("xlibs" ,libx11)
-       ("gtk+" ,gtk+-2)
+       ("gtk+" ,gtk+)
        ("libXft" ,libxft)
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
