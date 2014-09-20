@@ -34,6 +34,7 @@
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages ssh)
@@ -56,7 +57,8 @@
         "0l14nrhbgkyjgvh339bbhnm6hrdwrjadphq1jmpi0mcgcdbdfh8x"))))
     (build-system python-build-system)
     (native-inputs
-     `(("python2-setuptools" ,python2-setuptools)))
+     `(("python2-setuptools" ,python2-setuptools)
+       ("util-linux" ,util-linux)))     ;setsid command, for the tests
     (inputs
      `(("python" ,python-2)
        ("librsync" ,librsync)
