@@ -49,7 +49,13 @@
    (arguments
     '(#:configure-flags (list (string-append "--with-plugindir="
                                              (assoc-ref %outputs "out")
-                                             "/lib/sasl2"))))
+                                             "/lib/sasl2"))
+
+      ;; The 'plugins' directory has shared source files, such as
+      ;; 'plugin_common.c'.  When building the shared libraries there, libtool
+      ;; ends up doing "ln -s plugin_common.lo plugin_common.o", which can
+      ;; fail with EEXIST when building things in parallel.
+      #:parallel-build? #f))
    (synopsis "Cyrus SASL, an implementation of the Simple Authentication Security Layer framework")
    (description
     "SASL (Simple Authentication Security Layer) is an Internet
