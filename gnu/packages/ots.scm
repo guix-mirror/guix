@@ -45,6 +45,10 @@
         (list (search-patch "ots-no-include-missing-file.patch")))))
 
     (build-system gnu-build-system)
+    (arguments
+     ;; With '-jN', the rule to build the 'ots' command can be triggered
+     ;; before libots-1.la has been built.
+     '(#:parallel-build? #f))
     (inputs
       `(("glib" ,glib)
         ("popt" ,popt)
