@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -25,6 +26,7 @@
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xiph))
 
@@ -46,12 +48,13 @@
         "0wps39h8rx2b00vyvkia5j40fkak3dpipp1kzilqla0cgvk73dn2"))))
     (build-system gnu-build-system)
     (inputs
-     ;; FIXME: Add optional inputs udev and pulse.
      `(("alsa-lib" ,alsa-lib)
        ("gstreamer" ,gstreamer)
        ("gtk+" ,gtk+)
        ("libtool" ,libtool)
-       ("libvorbis" ,libvorbis)))
+       ("libvorbis" ,libvorbis)
+       ("pulseaudio" ,pulseaudio)
+       ("udev" ,eudev)))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "http://0pointer.de/lennart/projects/libcanberra/")
