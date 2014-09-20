@@ -25,6 +25,7 @@
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gstreamer)
   #:use-module (gnu packages gtk)
+  #:use-module (gnu packages glib)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages pkg-config)
@@ -66,3 +67,23 @@ Specifications, for generating event sounds on free desktops, such as
 GNOME.  It comes with several backends (ALSA, PulseAudio, OSS, GStreamer,
 null) and is designed to be portable.")
     (license lgpl2.1+)))
+
+(define-public sound-theme-freedesktop
+  (package
+    (name "sound-theme-freedesktop")
+    (version "0.8")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://people.freedesktop.org/~mccann/dist/"
+                                  name "-" version ".tar.bz2"))
+              (sha256
+               (base32
+                "054abv4gmfk9maw93fis0bf605rc56dah7ys5plc4pphxqh8nlfb"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("intltool" ,intltool)))
+    (synopsis "Audio samples for use as a desktop sound theme")
+    (description
+     "This package provides audio samples that can be used by libcanberra as
+sounds for various system events.")
+    (license #f)
+    (home-page "http://www.freedesktop.org/wiki/Specifications/sound-theme-spec/")))
