@@ -610,22 +610,25 @@ allowed on MACHINE."
                   (list machine1 slot1)
                   (list machine2 slot2))))))))
 
-    (let ((machines+slots (sort machines+slots
-                                (undecorate machine-less-loaded-or-faster?))))
+    (let loop ((machines+slots
+                (sort machines+slots
+                      (undecorate machine-less-loaded-or-faster?))))
       (match machines+slots
-        (((best slot) (others slots) ...)
-         ;; Release slots from the uninteresting machines.
-         (for-each release-build-slot slots)
-
+        (((best slot) others ...)
          ;; Return the best machine unless it's already overloaded.
          (if (< (machine-load best) 2.)
+             (match others
+               (((machines slots) ...)
+                ;; Release slots from the uninteresting machines.
+                (for-each release-build-slot slots)
+
+                ;; Prevent SLOT from being GC'd.
+                (set! %slots (cons slot %slots))
+                best))
              (begin
-               ;; Prevent SLOT from being GC'd.
-               (set! %slots (cons slot %slots))
-               best)
-             (begin
+               ;; BEST is overloaded, so try the next one.
                (release-build-slot slot)
-               #f)))
+               (loop others))))
         (() #f)))))
 
 (define* (process-request wants-local? system drv features
