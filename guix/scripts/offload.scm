@@ -534,10 +534,6 @@ success, #f otherwise."
                (build-requirements-features requirements)
                (build-machine-features machine))))
 
-(define (machine-faster? m1 m2)
-  "Return #t if M1 is faster than M2."
-  (> (build-machine-speed m1) (build-machine-speed m2)))
-
 (define (machine-load machine)
   "Return the load of MACHINE, divided by the number of parallel builds
 allowed on MACHINE."
@@ -558,14 +554,16 @@ allowed on MACHINE."
           (_
            +inf.0)))))           ;something's fishy about MACHINE, so avoid it
 
-(define (machine-less-loaded? m1 m2)
-  "Return #t if the load on M1 is lower than that on M2."
-  (< (machine-load m1) (machine-load m2)))
+(define (machine-power-factor m)
+  "Return a factor that aggregates the speed and load of M.  The higher the
+better."
+  (/ (build-machine-speed m)
+     (+ 1 (machine-load m))))
 
 (define (machine-less-loaded-or-faster? m1 m2)
-  "Return #t if M1 is either less loaded or faster than M2."
-  (or (machine-less-loaded? m1 m2)
-      (machine-faster? m1 m2)))
+  "Return #t if M1 is either less loaded or faster than M2.  (This relation
+defines a total order on machines.)"
+  (> (machine-power-factor m1) (machine-power-factor m2)))
 
 (define (machine-lock-file machine hint)
   "Return the name of MACHINE's lock file for HINT."
