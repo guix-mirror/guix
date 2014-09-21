@@ -404,7 +404,13 @@ application suites.")
       ("pkg-config" ,pkg-config)
       ("gobject-introspection" ,gobject-introspection)
       ("python-wrapper" ,python-wrapper)
-      ("xorg-server" ,xorg-server)))
+
+      ;; FIXME: The Xorg server is needed to run the tests, but it currently
+      ;; fails to build on mips64el, so remove it in the meantime.
+      ,@(if (string=? (or (%current-target-system) (%current-system))
+                      "mips64el-linux")
+            '()
+            `(("xorg-server" ,xorg-server)))))
    (arguments
     `(#:phases
       (alist-replace
