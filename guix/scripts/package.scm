@@ -716,12 +716,9 @@ more information.~%"))
                      (leave (_ "profile '~a' does not exist~%")
                             profile))
                     ((string-null? pattern)
-                     (let ((numbers (generation-numbers profile)))
-                       (if (equal? numbers '(0))
-                           (exit 0)
-                           (for-each display-and-delete
-                                     (delete current-generation-number
-                                             numbers)))))
+                     (for-each display-and-delete
+                               (delete current-generation-number
+                                       (profile-generations profile))))
                     ;; Do not delete the zeroth generation.
                     ((equal? 0 (string->number pattern))
                      (exit 0))
@@ -828,11 +825,7 @@ more information.~%"))
                 (leave (_ "profile '~a' does not exist~%")
                        profile))
                ((string-null? pattern)
-                (let ((numbers (generation-numbers profile)))
-                  (leave-on-EPIPE
-                   (if (equal? numbers '(0))
-                       (exit 0)
-                       (for-each list-generation numbers)))))
+                (for-each list-generation (profile-generations profile)))
                ((matching-generations pattern profile)
                 =>
                 (lambda (numbers)
