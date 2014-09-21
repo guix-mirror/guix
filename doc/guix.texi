@@ -33,6 +33,12 @@ Documentation License''.
                       Managing the operating system configuration.
 @end direntry
 
+@dircategory Software development
+@direntry
+* guix environment: (guix)Invoking guix environment
+                      Building development environments with Guix.
+@end direntry
+
 @titlepage
 @title GNU Guix Reference Manual
 @subtitle Using the GNU Guix Functional Package Manager
@@ -2431,6 +2437,7 @@ programming interface of Guix in a convenient way.
 * Invoking guix hash::          Computing the cryptographic hash of a file.
 * Invoking guix refresh::       Updating package definitions.
 * Invoking guix lint::          Finding errors in package definitions.
+* Invoking guix environment::   Setting up development environments.
 @end menu
 
 @node Invoking guix build
@@ -2839,6 +2846,81 @@ List and describe all the available checkers that will be run on packages
 and exit.
 
 @end table
+
+@node Invoking guix environment
+@section Invoking @command{guix environment}
+
+The purpose of @command{guix environment} is to assist hackers in
+creating reproducible development environments without polluting their
+package profile.  The @command{guix environment} tool takes one or more
+packages, builds all of the necessary inputs, and creates a shell
+environment to use them.
+
+The general syntax is:
+
+@example
+guix environment @var{options} @var{package}@dots{}
+@end example
+
+The following examples spawns a new shell that is capable of building
+the GNU Guile source code:
+
+@example
+guix environment guile
+@end example
+
+If the specified packages are not built yet, @command{guix environment}
+automatically builds them.  The new shell's environment is an augmented
+version of the environment that @command{guix environment} was run in.
+It contains the necessary search paths for building the given package
+added to the existing environment variables.  To create a ``pure''
+environment in which the original environment variables have been unset,
+use the @code{--pure} option.
+
+Additionally, more than one package may be specified, in which case the
+union of the inputs for the given packages are used.  For example, the
+command below spawns a shell where all of the dependencies of both Guile
+and Emacs are available:
+
+@example
+guix environment guile emacs
+@end example
+
+Sometimes an interactive shell session is not desired.  The
+@code{--exec} option can be used to specify the command to run instead.
+
+@example
+guix environment guile --exec=make
+@end example
+
+The following options are available:
+
+@table @code
+@item --expression=@var{expr}
+@itemx -e @var{expr}
+Create an environment for the package that @var{expr} evaluates to.
+
+@item --load=@var{file}
+@itemx -l @var{file}
+Create an environment for the package that the code within @var{file}
+evaluates to.
+
+@item --exec=@var{command}
+@item -E @var{command}
+Execute @var{command} in the new environment.
+
+@item --pure
+Unset existing environment variables when building the new environment.
+This has the effect of creating an environment in which search paths
+only contain package inputs.
+
+@item --search-paths
+Display the environment variable definitions that make up the
+environment.
+@end table
+
+It also supports all of the common build options that @command{guix
+build} supports (@pxref{Invoking guix build, common build options}).
 
 @c *********************************************************************
 @node GNU Distribution

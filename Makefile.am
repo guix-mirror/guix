@@ -94,6 +94,7 @@ MODULES =					\
   guix/scripts/system.scm			\
   guix/scripts/lint.scm				\
   guix/scripts/import/nix.scm			\
+  guix/scripts/environment.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
