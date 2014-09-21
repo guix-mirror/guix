@@ -70,6 +70,7 @@
             profile-derivation
             generation-number
             generation-numbers
+            profile-generations
             previous-generation-number
             generation-time
             generation-file-name))
@@ -560,6 +561,13 @@ former profiles were found."
                          (cute regexp-exec (profile-regexp profile) <>))
                 profiles)
            <))))
+
+(define (profile-generations profile)
+  "Return a list of PROFILE's generations."
+  (let ((generations (generation-numbers profile)))
+    (if (equal? generations '(0))
+        '()
+        generations)))
 
 (define (previous-generation-number profile number)
   "Return the number of the generation before generation NUMBER of
