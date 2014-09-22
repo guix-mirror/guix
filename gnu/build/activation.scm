@@ -88,6 +88,33 @@ properties.  Return #t on success."
                     ,name)))
         (zero? (apply system* "useradd" args)))))
 
+(define* (modify-user name group
+                      #:key uid comment home shell password system?
+                      (supplementary-groups '())
+                      (log-port (current-error-port)))
+  "Modify user account NAME to have all the given settings."
+  ;; Use 'usermod' from the Shadow package.
+  (let ((args `(,@(if uid `("-u" ,(number->string uid)) '())
+                "-g" ,(if (number? group) (number->string group) group)
+                ,@(if (pair? supplementary-groups)
+                      `("-G" ,(string-join supplementary-groups ","))
+                      '())
+                ,@(if comment `("-c" ,comment) '())
+                ;; Don't use '--move-home', so ignore HOME.
+                ,@(if shell `("-s" ,shell) '())
+                ,name)))
+    (zero? (apply system* "usermod" args))))
+
+(define* (ensure-user name group
+                      #:key uid comment home shell password system?
+                      (supplementary-groups '())
+                      (log-port (current-error-port))
+                      #:rest rest)
+  "Make sure user NAME exists and has the relevant settings."
+  (if (false-if-exception (getpwnam name))
+      (apply modify-user name group rest)
+      (apply add-user name group rest)))
+
 (define (activate-users+groups users groups)
   "Make sure the accounts listed in USERS and the user groups listed in GROUPS
 are all available.
@@ -101,23 +128,22 @@ numeric gid or #f."
   (define activate-user
     (match-lambda
      ((name uid group supplementary-groups comment home shell password system?)
-      (unless (false-if-exception (getpwnam name))
-        (let ((profile-dir (string-append "/var/guix/profiles/per-user/"
-                                          name)))
-          (add-user name group
-                    #:uid uid
-                    #:system? system?
-                    #:supplementary-groups supplementary-groups
-                    #:comment comment
-                    #:home home
-                    #:shell shell
-                    #:password password)
+      (let ((profile-dir (string-append "/var/guix/profiles/per-user/"
+                                        name)))
+        (ensure-user name group
+                     #:uid uid
+                     #:system? system?
+                     #:supplementary-groups supplementary-groups
+                     #:comment comment
+                     #:home home
+                     #:shell shell
+                     #:password password)
 
-          (unless system?
-            ;; Create the profile directory for the new account.
-            (let ((pw (getpwnam name)))
-              (mkdir-p profile-dir)
-              (chown profile-dir (passwd:uid pw) (passwd:gid pw)))))))))
+        (unless system?
+          ;; Create the profile directory for the new account.
+          (let ((pw (getpwnam name)))
+            (mkdir-p profile-dir)
+            (chown profile-dir (passwd:uid pw) (passwd:gid pw))))))))
 
   ;; 'groupadd' aborts if the file doesn't already exist.
   (touch "/etc/group")
