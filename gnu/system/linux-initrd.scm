@@ -126,14 +126,16 @@ initrd code."
 
 (define* (base-initrd file-systems
                       #:key
+                      (mapped-devices '())
                       qemu-networking?
                       virtio?
                       volatile-root?
                       (extra-modules '()))
-  ;; TODO: Support boot-time device mappings.
   "Return a monadic derivation that builds a generic initrd.  FILE-SYSTEMS is
 a list of file-systems to be mounted by the initrd, possibly in addition to
 the root file system specified on the kernel command line via '--root'.
+MAPPED-DEVICES is a list of device mappings to realize before FILE-SYSTEMS are
+mounted.
 
 When QEMU-NETWORKING? is true, set up networking with the standard QEMU
 parameters.  When VIRTIO? is true, load additional modules so the initrd can
@@ -191,6 +193,16 @@ loaded at boot time in the order in which they appear."
             (list unionfs-fuse/static)
             '())))
 
+  (define device-mapping-commands
+    ;; List of gexps to open the mapped devices.
+    (map (lambda (md)
+           (let* ((source (mapped-device-source md))
+                  (target (mapped-device-target md))
+                  (type   (mapped-device-type md))
+                  (open   (mapped-device-kind-open type)))
+             (open source target)))
+         mapped-devices))
+
   (mlet %store-monad ((kodir (flat-linux-module-directory linux-libre
                                                           linux-modules)))
     (expression->initrd
@@ -205,6 +217,8 @@ loaded at boot time in the order in which they appear."
                                             '#$helper-packages)))
 
          (boot-system #:mounts '#$(map file-system->spec file-systems)
+                      #:pre-mount (lambda ()
+                                    (and #$@device-mapping-commands))
                       #:linux-modules (map (lambda (file)
                                              (string-append #$kodir "/" file))
                                            '#$linux-modules)

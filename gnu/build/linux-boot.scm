@@ -340,13 +340,14 @@ bailing out.~%root contents: ~s~%" (scandir "/"))
                       (linux-modules '())
                       qemu-guest-networking?
                       volatile-root?
+                      pre-mount
                       (mounts '()))
   "This procedure is meant to be called from an initrd.  Boot a system by
 first loading LINUX-MODULES (a list of absolute file names of '.ko' files),
 then setting up QEMU guest networking if QEMU-GUEST-NETWORKING? is true,
-mounting the file systems specified in MOUNTS, and finally booting into the
-new root if any.  The initrd supports kernel command-line options '--load',
-'--root', and '--repl'.
+calling PRE-MOUNT, mounting the file systems specified in MOUNTS, and finally
+booting into the new root if any.  The initrd supports kernel command-line
+options '--load', '--root', and '--repl'.
 
 Mount the root file system, specified by the '--root' command-line argument,
 if any.
@@ -402,6 +403,11 @@ to it are lost."
        (unless (file-exists? "/root/dev")
          (mkdir "/root/dev")
          (make-essential-device-nodes #:root "/root"))
+
+       (when (procedure? pre-mount)
+         ;; Do whatever actions are needed before mounting--e.g., installing
+         ;; device mappings.
+         (pre-mount))
 
        ;; Mount the specified file systems.
        (for-each mount-file-system

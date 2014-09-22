@@ -216,6 +216,34 @@ as 'needed-for-boot'."
                                            #:flags flags))))
                  file-systems)))
 
+(define (mapped-device-user device file-systems)
+  "Return a file system among FILE-SYSTEMS that uses DEVICE, or #f."
+  (let ((target (string-append "/dev/mapper/" (mapped-device-target device))))
+    (find (lambda (fs)
+            (string=? (file-system-device fs) target))
+          file-systems)))
+
+(define (operating-system-user-mapped-devices os)
+  "Return the subset of mapped devices that can be installed in
+user-land--i.e., those not needed during boot."
+  (let ((devices      (operating-system-mapped-devices os))
+        (file-systems (operating-system-file-systems os)))
+   (filter (lambda (md)
+             (let ((user (mapped-device-user md file-systems)))
+               (or (not user)
+                   (not (file-system-needed-for-boot? user)))))
+           devices)))
+
+(define (operating-system-boot-mapped-devices os)
+  "Return the subset of mapped devices that must be installed during boot,
+from the initrd."
+  (let ((devices      (operating-system-mapped-devices os))
+        (file-systems (operating-system-file-systems os)))
+   (filter (lambda (md)
+             (let ((user (mapped-device-user md file-systems)))
+               (and user (file-system-needed-for-boot? user))))
+           devices)))
+
 (define (device-mapping-services os)
   "Return the list of device-mapping services for OS as a monadic list."
   (sequence %store-monad
@@ -228,7 +256,7 @@ as 'needed-for-boot'."
                      (device-mapping-service target
                                              (open source target)
                                              (close source target))))
-                 (operating-system-mapped-devices os))))
+                 (operating-system-user-mapped-devices os))))
 
 (define (swap-services os)
   "Return the list of swap services for OS as a monadic list."
@@ -561,10 +589,14 @@ we're running in the final root."
               boot?))
             (operating-system-file-systems os)))
 
-  ;; TODO: Pass the mapped devices required by boot-time file systems to the
-  ;; initrd.
-  (mlet %store-monad
-      ((initrd ((operating-system-initrd os) boot-file-systems)))
+  (define mapped-devices
+    (operating-system-boot-mapped-devices os))
+
+  (define make-initrd
+    (operating-system-initrd os))
+
+  (mlet %store-monad ((initrd (make-initrd boot-file-systems
+                                           #:mapped-devices mapped-devices)))
     (return #~(string-append #$initrd "/initrd"))))
 
 (define (kernel->grub-label kernel)
