@@ -3649,23 +3649,24 @@ at boot time, you can define the @code{initrd} field of the operating
 system declaration like this:
 
 @example
-(initrd (cut base-initrd <>
-             #:extra-modules '("my.ko" "modules.ko")))
+(initrd (lambda (file-systems . rest)
+          (apply base-initrd file-systems
+                 #:extra-modules '("my.ko" "modules.ko")
+                 rest)))
 @end example
 
-@noindent
-Note that for the example above, the SRFI-26 module needs to be imported
-(@pxref{SRFI-26,,, guile, GNU Guile Reference Manual}).
-
-It also handles common use cases that involves using the system as a
-QEMU guest, or as a ``live'' system whose root file system is volatile.
+The @code{base-initrd} procedure also handles common use cases that
+involves using the system as a QEMU guest, or as a ``live'' system whose
+root file system is volatile.
 
 @deffn {Monadic Procedure} base-initrd @var{file-systems} @
        [#:qemu-networking? #f] [#:virtio? #f] [#:volatile-root? #f] @
-       [#:extra-modules '()]
+       [#:extra-modules '()] [#:mapped-devices '()]
 Return a monadic derivation that builds a generic initrd.  @var{file-systems} is
 a list of file-systems to be mounted by the initrd, possibly in addition to
 the root file system specified on the kernel command line via @code{--root}.
+@var{mapped-devices} is a list of device mappings to realize before
+@var{file-systems} are mounted (@pxref{Mapped Devices}).
 
 When @var{qemu-networking?} is true, set up networking with the standard QEMU
 parameters.  When @var{virtio?} is true, load additional modules so the initrd can

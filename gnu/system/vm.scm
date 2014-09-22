@@ -289,9 +289,11 @@ to USB sticks meant to be read-only."
               ;; Since this is meant to be used on real hardware, don't
               ;; install QEMU networking or anything like that, but make sure
               ;; USB mass storage devices are available.
-              (initrd (cut base-initrd <>
-                           #:volatile-root? #t
-                           #:extra-modules '("usb-storage.ko")))
+              (initrd (lambda (file-systems . rest)
+                        (apply base-initrd file-systems
+                               #:volatile-root? #t
+                               #:extra-modules '("usb-storage.ko")
+                               rest)))
 
               ;; Force our own root file system.
               (file-systems (cons (file-system
@@ -333,9 +335,11 @@ of the GNU system as described by OS."
 
   (let ((os (operating-system (inherit os)
               ;; Use an initrd with the whole QEMU shebang.
-              (initrd (cut base-initrd <>
-                           #:virtio? #t
-                           #:qemu-networking? #t))
+              (initrd (lambda (file-systems . rest)
+                        (apply base-initrd file-systems
+                               #:virtio? #t
+                               #:qemu-networking? #t
+                               rest)))
 
               ;; Force our own root file system.
               (file-systems (cons (file-system
@@ -358,10 +362,12 @@ of the GNU system as described by OS."
   "Return an operating system based on OS suitable for use in a virtualized
 environment with the store shared with the host."
   (operating-system (inherit os)
-    (initrd (cut base-initrd <>
-                 #:volatile-root? #t
-                 #:virtio? #t
-                 #:qemu-networking? #t))
+    (initrd (lambda (file-systems . rest)
+              (apply base-initrd file-systems
+                     #:volatile-root? #t
+                     #:virtio? #t
+                     #:qemu-networking? #t
+                     rest)))
     (file-systems (cons* (file-system
                            (mount-point "/")
                            (device "/dev/vda1")
