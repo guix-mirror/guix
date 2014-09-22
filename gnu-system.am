@@ -407,7 +407,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/texi2html-i18n.patch			\
   gnu/packages/patches/udev-gir-libtool.patch			\
   gnu/packages/patches/util-linux-perl.patch			\
-  gnu/packages/patches/valgrind-glibc.patch			\
   gnu/packages/patches/vpnc-script.patch			\
   gnu/packages/patches/w3m-fix-compile.patch			\
   gnu/packages/patches/xmodmap-asprintf.patch			\
