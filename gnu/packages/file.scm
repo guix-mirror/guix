@@ -27,17 +27,15 @@
 (define-public file
   (package
    (name "file")
-   (version "5.18")
+   (version "5.19")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.astron.com/pub/file/file-"
                    version ".tar.gz"))
             (sha256 (base32
-                     "01xz106biz6x4h5ilymg5v3367djvgnfp4lm87132cjqdmqgn6b5"))))
+                     "0z1sgrcfy6d285kj5izy1yypf371bjl3247plh9ppk0svaxv714l"))
+            (patches (list (search-patch "file-CVE-2014-3587.patch")))))
    (build-system gnu-build-system)
-   (native-inputs
-    ;; This package depends upon a native install of itself.
-     (if (%current-target-system) `(("file" ,file)) '() ))
    (synopsis "file, a file type guesser")
    (description
     "The file command is a file type guesser, a command-line tool that tells

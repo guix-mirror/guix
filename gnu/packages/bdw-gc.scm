@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -64,15 +65,15 @@ C or C++ programs, though that is not its primary goal.")
 (define-public libatomic-ops
   (package
     (name "libatomic-ops")
-    (version "7.4.0")
+    (version "7.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.hboehm.info/gc/gc_source/libatomic_ops-"
+                    "http://www.ivmaisoft.com/_bin/atomic_ops/libatomic_ops-"
                     version ".tar.gz"))
               (sha256
                (base32
-                "0njv3n63zw6v45k68z6dz14g2hpk5p230ncwmdfkglsljb1cqx98"))))
+                "1pdm0h1y7bgkczr8byg20r6bq15m5072cqm5pny4f9crc9gn3yh4"))))
     (build-system gnu-build-system)
     (outputs '("out" "debug"))
     (synopsis "Accessing hardware atomic memory update operations")
@@ -88,14 +89,14 @@ lock-free code, experiment with thread programming paradigms, etc.")
 
 (define-public libgc
   (package (inherit libgc-7.2)
-    (version "7.4.0")
+    (version "7.4.2")
     (source (origin
               (method url-fetch)
               (uri (string-append "http://www.hboehm.info/gc/gc_source/gc-"
                                   version ".tar.gz"))
               (sha256
                (base32
-                "10z2nph62ilab063wygg2lv0jxlsbcf2az9w1lx01jzqj5lzry31"))))
+                "18mg28rr6kwr5clc65k4l4hkyy4kd16amx831sjf8q2lqkbhlck3"))))
 
     ;; New dependencies.
     (native-inputs `(("pkg-config" ,pkg-config)))

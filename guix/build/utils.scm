@@ -25,6 +25,7 @@
   #:use-module (ice-9 match)
   #:use-module (ice-9 regex)
   #:use-module (ice-9 rdelim)
+  #:use-module (ice-9 format)
   #:use-module (rnrs bytevectors)
   #:use-module (rnrs io ports)
   #:re-export (alist-cons
@@ -582,14 +583,15 @@ When KEEP-MTIME? is true, the atime/mtime of FILE are kept unchanged."
 
   (let ((st (stat file)))
    (substitute* file
-     (("^ *SHELL[[:blank:]]*=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)[[:blank:]]*" _ dir shell)
+     (("^ *SHELL[[:blank:]]*=[[:blank:]]*([[:graph:]]*/)([[:graph:]]+)(.*)$"
+       _ dir shell args)
       (let* ((old (string-append dir shell))
              (new (or (find-shell shell) old)))
         (unless (string=? new old)
           (format (current-error-port)
                   "patch-makefile-SHELL: ~a: changing `SHELL' from `~a' to `~a'~%"
                   file old new))
-        (string-append "SHELL = " new "\n"))))
+        (string-append "SHELL = " new args))))
 
    (when keep-mtime?
      (set-file-time file st))))
@@ -686,8 +688,7 @@ known as `nuke-refs' in Nixpkgs."
                              result))))))
 
 (define* (wrap-program prog #:rest vars)
-  "Rename PROG to .PROG-real and make PROG a wrapper.  VARS should look like
-this:
+  "Make a wrapper for PROG.  VARS should look like this:
 
   '(VARIABLE DELIMITER POSITION LIST-OF-DIRECTORIES)
 
@@ -696,23 +697,44 @@ where DELIMITER is optional.  ':' will be used if DELIMITER is not given.
 For example, this command:
 
   (wrap-program \"foo\"
-                '(\"PATH\" \":\" = (\"/nix/.../bar/bin\"))
-                '(\"CERT_PATH\" suffix (\"/nix/.../baz/certs\"
+                '(\"PATH\" \":\" = (\"/gnu/.../bar/bin\"))
+                '(\"CERT_PATH\" suffix (\"/gnu/.../baz/certs\"
                                         \"/qux/certs\")))
 
 will copy 'foo' to '.foo-real' and create the file 'foo' with the following
 contents:
 
   #!location/of/bin/bash
-  export PATH=\"/nix/.../bar/bin\"
-  export CERT_PATH=\"$CERT_PATH${CERT_PATH:+:}/nix/.../baz/certs:/qux/certs\"
+  export PATH=\"/gnu/.../bar/bin\"
+  export CERT_PATH=\"$CERT_PATH${CERT_PATH:+:}/gnu/.../baz/certs:/qux/certs\"
   exec location/of/.foo-real
 
 This is useful for scripts that expect particular programs to be in $PATH, for
 programs that expect particular shared libraries to be in $LD_LIBRARY_PATH, or
-modules in $GUILE_LOAD_PATH, etc."
-  (let ((prog-real (string-append (dirname prog) "/." (basename prog) "-real"))
-        (prog-tmp  (string-append (dirname prog) "/." (basename prog) "-tmp")))
+modules in $GUILE_LOAD_PATH, etc.
+
+If PROG has previously been wrapped by wrap-program the wrapper will point to
+the previous wrapper."
+  (define (wrapper-file-name number)
+    (format #f "~a/.~a-wrap-~2'0d" (dirname prog) (basename prog) number))
+  (define (next-wrapper-number)
+    (let ((wrappers
+           (find-files (dirname prog)
+                       (string-append "\\." (basename prog) "-wrap-.*"))))
+      (if (null? wrappers)
+          0
+          (string->number (string-take-right (last wrappers) 2)))))
+  (define (wrapper-target number)
+    (if (zero? number)
+        (let ((prog-real (string-append (dirname prog) "/."
+                                        (basename prog) "-real")))
+          (copy-file prog prog-real)
+          prog-real)
+        (wrapper-file-name number)))
+  (let* ((number   (next-wrapper-number))
+         (target   (wrapper-target number))
+         (wrapper  (wrapper-file-name (1+ number)))
+         (prog-tmp (string-append target "-tmp")))
     (define (export-variable lst)
       ;; Return a string that exports an environment variable.
       (match lst
@@ -735,8 +757,6 @@ modules in $GUILE_LOAD_PATH, etc."
          (format #f "export ~a=\"$~a${~a:+:}~a\""
                  var var var (string-join rest ":")))))
 
-    (copy-file prog prog-real)
-
     (with-output-to-file prog-tmp
       (lambda ()
         (format #t
@@ -744,9 +764,11 @@ modules in $GUILE_LOAD_PATH, etc."
                 (which "bash")
                 (string-join (map export-variable vars)
                              "\n")
-                (canonicalize-path prog-real))))
+                (canonicalize-path target))))
 
     (chmod prog-tmp #o755)
+    (rename-file prog-tmp wrapper)
+    (symlink wrapper prog-tmp)
     (rename-file prog-tmp prog)))
 
 ;;; Local Variables:

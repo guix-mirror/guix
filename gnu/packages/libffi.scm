@@ -29,11 +29,11 @@
          ;; available in $includedir where some users expect them.
          '(lambda* (#:key outputs #:allow-other-keys)
             (define out (assoc-ref outputs "out"))
-            (symlink (string-append out "/lib/libffi-3.0.13/include")
+            (symlink (string-append out "/lib/libffi-3.1/include")
                      (string-append out "/include")))))
    (package
     (name "libffi")
-    (version "3.0.13")
+    (version "3.1")
     (source (origin
              (method url-fetch)
              (uri
@@ -41,8 +41,7 @@
                              name "-" version ".tar.gz"))
              (sha256
               (base32
-               "077ibkf84bvcd6rw1m6jb107br63i2pp301rkmsbgg6300adxp8x"))
-             (patches (list (search-patch "libffi-mips-n32-fix.patch")))))
+               "1sznmrhcswwbyqla9y2ximlkzbxks59wjfs3lh7qf8ayranyxzlp"))))
     (build-system gnu-build-system)
     (arguments `(#:phases (alist-cons-after 'install 'post-install
                                             ,post-install-phase

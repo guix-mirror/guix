@@ -268,7 +268,8 @@ Go.  It also includes runtime support libraries for these languages.")
                                  version "/gcc-" version ".tar.bz2"))
              (sha256
               (base32
-               "07hg10zs7gnqz58my10ch0zygizqh0z0bz6pv4pgxx45n48lz3ka"))))))
+               "07hg10zs7gnqz58my10ch0zygizqh0z0bz6pv4pgxx45n48lz3ka"))
+             (patches (list (search-patch "gcc-fix-pr61801.patch")))))))
 
 (define-public gcc-4.9
   (package (inherit gcc-4.7)

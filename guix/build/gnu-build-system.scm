@@ -106,6 +106,35 @@ working directory."
       (and (zero? (system* "tar" "xvf" source))
            (chdir (first-subdirectory ".")))))
 
+;; See <http://bugs.gnu.org/17840>.
+(define* (patch-usr-bin-file #:key native-inputs inputs
+                             (patch-/usr/bin/file? #t)
+                             #:allow-other-keys)
+  "Patch occurrences of /usr/bin/file in configure, if present."
+  (when patch-/usr/bin/file?
+    (let ((file "configure")
+          (file-command (or (and=> (assoc-ref (or native-inputs inputs) "file")
+                                   (cut string-append <> "/bin/file"))
+                            (which "file"))))
+      (cond ((not (file-exists? file))
+             (format (current-error-port)
+                     "patch-usr-bin-file: warning: `~a' not found~%"
+                     file))
+            ((not file-command)
+             (format (current-error-port)
+                     "patch-usr-bin-file: warning: `file' not found in PATH~%"))
+            (else
+             (let ((st (stat file)))
+               (substitute* file
+                 (("/usr/bin/file")
+                  (begin
+                    (format (current-error-port)
+                            "patch-usr-bin-file: ~a: changing `~a' to `~a'~%"
+                            file "/usr/bin/file" file-command)
+                    file-command)))
+               (set-file-time file st))))))
+  #t)
+
 (define* (patch-source-shebangs #:key source #:allow-other-keys)
   "Patch shebangs in all source files; this includes non-executable
 files such as `.in' templates.  Most scripts honor $SHELL and
@@ -353,6 +382,7 @@ makefiles."
   (let-syntax ((phases (syntax-rules ()
                          ((_ p ...) `((p . ,p) ...)))))
     (phases set-paths unpack
+            patch-usr-bin-file
             patch-source-shebangs configure patch-generated-file-shebangs
             build check install
             patch-shebangs strip)))

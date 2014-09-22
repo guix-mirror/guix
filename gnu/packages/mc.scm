@@ -28,7 +28,6 @@
   #:use-module (gnu packages ssh)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages check)
-  #:use-module (gnu packages file)
   #:use-module (gnu packages perl))
 
 (define-public mc
@@ -46,7 +45,6 @@
       (patches (list (search-patch "mc-fix-ncurses-build.patch")))))
     (build-system gnu-build-system)
     (native-inputs `(("pkg-config" ,pkg-config)
-                     ("file" ,file)
                      ("perl" ,perl)))
     (inputs `(("aspell" ,aspell)
               ("ncurses" ,ncurses)
@@ -55,14 +53,7 @@
               ("check" ,check)))
     (arguments
      `(#:configure-flags
-       '("--with-screen=ncurses" "--enable-aspell")
-       #:phases
-       (alist-cons-before
-        'configure 'patch-configure
-        (lambda _
-          (substitute* "configure"
-            (("/usr/bin/file") (which "file"))))
-        %standard-phases)))
+       '("--with-screen=ncurses" "--enable-aspell")))
     (home-page "http://www.midnight-commander.org")
     (synopsis "Graphical file manager")
     (description

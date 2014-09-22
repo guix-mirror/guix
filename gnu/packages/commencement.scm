@@ -26,6 +26,8 @@
   #:use-module (gnu packages base)
   #:use-module (gnu packages bash)
   #:use-module (gnu packages gcc)
+  #:use-module (gnu packages ed)
+  #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages multiprecision)
@@ -106,11 +108,20 @@
                                  (current-source-location)
                                  #:guile %bootstrap-guile)))
 
+(define file-boot0
+  (package-with-bootstrap-guile
+   (package-with-explicit-inputs file
+                                 `(("make" ,gnu-make-boot0)
+                                   ,@%bootstrap-inputs)
+                                 (current-source-location)
+                                 #:guile %bootstrap-guile)))
+
 
 (define %boot0-inputs
   `(("make" ,gnu-make-boot0)
     ("diffutils" ,diffutils-boot0)
     ("findutils" ,findutils-boot0)
+    ("file" ,file-boot0)
     ,@%bootstrap-inputs))
 
 (define* (nix-system->gnu-triplet
@@ -663,6 +674,7 @@ store.")
                ("gzip" ,gzip)
                ("bzip2" ,bzip2)
                ("xz" ,xz)
+               ("file" ,file)
                ("diffutils" ,diffutils)
                ("patch" ,patch)
                ("sed" ,sed)

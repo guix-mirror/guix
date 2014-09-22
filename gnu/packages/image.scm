@@ -19,7 +19,6 @@
 (define-module (gnu packages image)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages file)
   #:use-module (gnu packages fontutils)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
@@ -102,20 +101,11 @@ image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
    (inputs `(("zlib" ,zlib)
              ("libjpeg-8" ,libjpeg-8)))
              ;; currently does not compile with libjpeg version 9
-   (native-inputs `(("file" ,file)))
    (arguments
     `(#:configure-flags
       (list (string-append "--with-jpeg-include-dir="
                            (assoc-ref %build-inputs "libjpeg-8")
-                           "/include"))
-      #:phases
-      (alist-cons-before
-       'configure 'patch-configure
-       (lambda _
-         (substitute* "configure"
-           (("`/usr/bin/file")
-            (string-append "`" (which "file")))))
-      %standard-phases)))
+                           "/include"))))
    (synopsis "Libtiff, a library for handling TIFF files")
    (description
     "Libtiff provides support for the Tag Image File Format (TIFF), a format

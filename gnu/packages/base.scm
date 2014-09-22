@@ -25,6 +25,7 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages acl)
   #:use-module (gnu packages bash)
+  #:use-module (gnu packages ed)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages perl)
@@ -122,14 +123,14 @@ implementation offers several extensions over the standard utility.")
 (define-public tar
   (package
    (name "tar")
-   (version "1.27.1")
+   (version "1.28")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/tar/tar-"
-                                version ".tar.bz2"))
+                                version ".tar.xz"))
             (sha256
              (base32
-              "1iip0fk0wqhxb0jcwphz43r4fxkx1y7mznnhmlvr618jhp7b63wv"))))
+              "1wi2zwm4c9r3h3b8y4w0nm0qq897kn8kyj9k22ba0iqvxj48vvk4"))))
    (build-system gnu-build-system)
    (synopsis "Managing tar archives")
    (description
@@ -154,12 +155,9 @@ standard utility.")
              (base32
               "1sqckf560pzwgniy00vcpdv2c9c11s4cmhlm14yqgg8avd3bl94i"))))
    (build-system gnu-build-system)
-   (native-inputs '())                      ; FIXME: needs `ed' for the tests
-   (arguments
-    '(#:tests? #f)
+   (native-inputs `(("ed", ed)))
     ;; TODO: When cross-compiling, add this:
     ;;  '(#:configure-flags '("ac_cv_func_strnlen_working=yes"))
-    )
    (synopsis "Apply differences to originals, with optional backups")
    (description
     "Patch is a program that applies changes to files based on differences
@@ -225,17 +223,15 @@ used to apply commands with arbitrarily long arguments.")
 (define-public coreutils
   (package
    (name "coreutils")
-   (version "8.22")
+   (version "8.23")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/coreutils/coreutils-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "04hjzzv434fb8ak3hh3dyhdvg3hqjjwvjmjxqzk1gh2jh6cr8gjv"))
-            (patches (list (search-patch "coreutils-dummy-man.patch")
-                           ;; TODO: remove this patch for >= 8.23
-                           (search-patch "coreutils-skip-nohup.patch")))))
+              "0bdq6yggyl7nkc2pbl6pxhhyx15nyqhz3ds6rfn448n6rxdwlhzc"))
+            (patches (list (search-patch "coreutils-dummy-man.patch")))))
    (build-system gnu-build-system)
    (inputs `(("acl"  ,acl)                        ; TODO: add SELinux
              ("gmp"  ,gmp)))
@@ -362,14 +358,14 @@ included.")
 (define-public glibc
   (package
    (name "glibc")
-   (version "2.19")
+   (version "2.20")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/glibc/glibc-"
                                 version ".tar.xz"))
             (sha256
              (base32
-              "18m2dssd6ja5arxmdxinc90xvpqcsnqjfwmjl2as07j0i3srff9d"))
+              "19bbyfc2gcxr9rihrkkbd3p362i608yhlyrr7icqsa6cmr16sjzq"))
             (snippet
              ;; Disable 'ldconfig' and /etc/ld.so.cache.  The latter is
              ;; required on LFS distros to avoid loading the distro's libc.so
@@ -409,10 +405,10 @@ included.")
                            (assoc-ref %build-inputs "linux-headers")
                            "/include")
 
-            ;; The default is to assume a 2.4 Linux interface, but we'll
-            ;; always use something newer.  See "kernel-features.h" in the
-            ;; GNU libc for details.
-            "--enable-kernel=2.6.30"
+            ;; This is the default for most architectures as of GNU libc 2.20,
+            ;; but we specify it explicitly for clarity and consistency.  See
+            ;; "kernel-features.h" in the GNU libc for details.
+            "--enable-kernel=2.6.32"
 
             ;; Use our Bash instead of /bin/sh.
             (string-append "BASH_SHELL="

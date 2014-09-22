@@ -647,18 +647,7 @@ system administrator.")
                       "")
                      (("^install: (.*)install-sudoers(.*)" _ before after)
                       ;; Don't try to create /etc/sudoers.
-                      (string-append "install: " before after "\n")))
-
-                   ;; XXX FIXME sudo 1.8.10p3 was bootstrapped with a
-                   ;; prerelease libtool, which fails on MIPS in the absence
-                   ;; of /usr/bin/file.  As a temporary workaround, we patch
-                   ;; the configure script to hardcode use of the little
-                   ;; endian N32 ABI on MIPS.
-                   ,@(if (equal? "mips64el-linux" (or (%current-target-system)
-                                                      (%current-system)))
-                         '((substitute* "configure"
-                             (("\\$emul") "elf32ltsmipn32")))
-                         '()))
+                      (string-append "install: " before after "\n"))))
                  %standard-phases)
 
        ;; XXX: The 'testsudoers' test series expects user 'root' to exist, but

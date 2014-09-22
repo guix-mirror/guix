@@ -30,8 +30,7 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages gperf)
-  #:use-module (gnu packages perl)
-  #:use-module (gnu packages file))
+  #:use-module (gnu packages perl))
 
 (define-public a2ps
   (package
@@ -53,45 +52,39 @@
        ("imagemagick" ,imagemagick)))
     (native-inputs
      `(("gperf" ,gperf)
-       ("perl" ,perl)
-       ("file" ,file)))
+       ("perl" ,perl)))
     (arguments
      '(#:phases (alist-cons-before
-                 'configure 'patch-configure
+                 'build 'patch-scripts
                  (lambda _
-                   (substitute* "configure"
-                     (("/usr/bin/file") (which "file"))))
+                   (substitute*
+                       '("afm/make_fonts_map.sh"
+                         "tests/defs"
+                         "tests/backup.tst"
+                         "tests/styles.tst")
+                     (("/bin/rm") (which "rm"))))
                  (alist-cons-before
-                  'build 'patch-scripts
-                  (lambda _
-                    (substitute*
-                        '("afm/make_fonts_map.sh"
-                          "tests/defs"
-                          "tests/backup.tst"
-                          "tests/styles.tst")
-                      (("/bin/rm") (which "rm"))))
-                  (alist-cons-before
-                   'check 'patch-test-files
-                   ;; Alternatively, we could unpatch the shebangs in tstfiles
-                   (lambda* (#:key inputs #:allow-other-keys)
-                     (let ((perl (assoc-ref inputs "perl")))
-                       (substitute* '("tests/ps-ref/includeres.ps"
-                                      "tests/gps-ref/includeres.ps")
-                         (("/usr/local/bin/perl")
-                          (string-append perl "/bin/perl"))))
-                     ;; Some of the reference postscript contain a 'version 3'
-                     ;; string that in inconsistent with the source text in the
-                     ;; tstfiles directory.  Erroneous search-and-replace?
-                     (substitute* '("tests/ps-ref/InsertBlock.ps"
-                                    "tests/gps-ref/InsertBlock.ps"
-                                    "tests/ps-ref/bookie.ps"
-                                    "tests/gps-ref/bookie.ps")
-                       (("version 3") "version 2"))
-                     (substitute* '("tests/ps-ref/psmandup.ps"
-                                    "tests/gps-ref/psmandup.ps")
-                       (("#! */bin/sh") (string-append
-                                         "#!" (which "sh")))))
-                   %standard-phases)))))
+                  'check 'patch-test-files
+                  ;; Alternatively, we could unpatch the shebangs in tstfiles
+                  (lambda* (#:key inputs #:allow-other-keys)
+                    (let ((perl (assoc-ref inputs "perl")))
+                      (substitute* '("tests/ps-ref/includeres.ps"
+                                     "tests/gps-ref/includeres.ps")
+                        (("/usr/local/bin/perl")
+                         (string-append perl "/bin/perl"))))
+                    ;; Some of the reference postscript contain a 'version 3'
+                    ;; string that in inconsistent with the source text in the
+                    ;; tstfiles directory.  Erroneous search-and-replace?
+                    (substitute* '("tests/ps-ref/InsertBlock.ps"
+                                   "tests/gps-ref/InsertBlock.ps"
+                                   "tests/ps-ref/bookie.ps"
+                                   "tests/gps-ref/bookie.ps")
+                      (("version 3") "version 2"))
+                    (substitute* '("tests/ps-ref/psmandup.ps"
+                                   "tests/gps-ref/psmandup.ps")
+                      (("#! */bin/sh") (string-append
+                                        "#!" (which "sh")))))
+                  %standard-phases))))
     (home-page "http://www.gnu.org/software/a2ps")
     (synopsis "Any file to PostScript, including pretty-printing")
     (description
@@ -115,16 +108,9 @@ special cases, such as pretty-printing \"--help\" output.")
        (base32
         "13rkc0fga10xyf56yy9dnq95zndnfadkhxflnp24skszj21y8jqh"))))
     (build-system gnu-build-system)
-    (native-inputs `(("file" ,file)))
     (arguments
      ;; Must define DIFF_CMD for tests to pass
-     '(#:configure-flags '("CPPFLAGS=-DDIFF_CMD=\\\"diff\\\"")
-       #:phases (alist-cons-before
-                 'configure 'patch-configure
-                 (lambda _
-                   (substitute* "configure"
-                     (("/usr/bin/file") (which "file"))))
-                 %standard-phases)))
+     '(#:configure-flags '("CPPFLAGS=-DDIFF_CMD=\\\"diff\\\"")))
     (home-page "http://www.gnu.org/software/trueprint")
     (synopsis "Pretty-print C sources and other plain text to PostScript")
     (description
@@ -178,34 +164,28 @@ different programming languages.")
      `(("boost" ,boost)))
     (native-inputs
      `(("bison" ,bison)
-       ("flex" ,flex)
-       ("file" ,file)))
+       ("flex" ,flex)))
     (arguments
      `(#:configure-flags
        (list (string-append "--with-boost="
                             (assoc-ref %build-inputs "boost")))
        #:parallel-tests? #f             ;There appear to be race conditions
        #:phases (alist-cons-before
-                 'configure 'patch-configure
+                 'check 'patch-test-files
                  (lambda _
-                   (substitute* "configure"
-                     (("/usr/bin/file") (which "file"))))
-                 (alist-cons-before
-                  'check 'patch-test-files
-                  (lambda _
-                    ;; Unpatch shebangs in test input so that source-highlight
-                    ;; is still able to infer input language
-                    (substitute* '("tests/test.sh"
-                                   "tests/test2.sh"
-                                   "tests/test.tcl")
-                      (((string-append "#! *" (which "sh"))) "#!/bin/sh"))
-                    ;; Initial patching unrecoverably removes whitespace, so
-                    ;; remove it also in the comparison output.
-                    (substitute* '("tests/test.sh.html"
-                                   "tests/test2.sh.html"
-                                   "tests/test.tcl.html")
-                      (("#! */bin/sh") "#!/bin/sh")))
-                  %standard-phases))))
+                   ;; Unpatch shebangs in test input so that source-highlight
+                   ;; is still able to infer input language
+                   (substitute* '("tests/test.sh"
+                                  "tests/test2.sh"
+                                  "tests/test.tcl")
+                     (((string-append "#! *" (which "sh"))) "#!/bin/sh"))
+                   ;; Initial patching unrecoverably removes whitespace, so
+                   ;; remove it also in the comparison output.
+                   (substitute* '("tests/test.sh.html"
+                                  "tests/test2.sh.html"
+                                  "tests/test.tcl.html")
+                     (("#! */bin/sh") "#!/bin/sh")))
+                 %standard-phases)))
     (home-page "http://www.gnu.org/software/src-highlite")
     (synopsis "Produce a document with syntax highlighting from a source file")
     (description
