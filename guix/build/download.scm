@@ -112,13 +112,25 @@ abbreviation of URI showing the scheme, host, and basename of the file."
       "Hold a weak reference from FROM to TO."
       (hashq-set! table from to))))
 
-(define (tls-wrap port)
-  "Return PORT wrapped in a TLS connection."
+(define (tls-wrap port server)
+  "Return PORT wrapped in a TLS connection to SERVER.  SERVER must be a DNS
+host name without trailing dot."
   (define (log level str)
     (format (current-error-port)
             "gnutls: [~a|~a] ~a" (getpid) level str))
 
   (let ((session (make-session connection-end/client)))
+
+    ;; Some servers such as 'cloud.github.com' require the client to support
+    ;; the 'SERVER NAME' extension.  However, 'set-session-server-name!' is
+    ;; not available in older GnuTLS releases.  See
+    ;; <http://bugs.gnu.org/18526> for details.
+    (if (module-defined? (resolve-interface '(gnutls))
+                         'set-session-server-name!)
+        (set-session-server-name! session server-name-type/dns server)
+        (format (current-error-port)
+                "warning: TLS 'SERVER NAME' extension not supported~%"))
+
     (set-session-transport-fd! session (fileno port))
     (set-session-default-priority! session)
     (set-session-credentials! session (make-certificate-credentials))
@@ -169,7 +181,7 @@ which is not available during bootstrap."
           (setvbuf s _IOFBF)
 
           (if (eq? 'https (uri-scheme uri))
-              (tls-wrap s)
+              (tls-wrap s (uri-host uri))
               s))
         (lambda args
           ;; Connection failed, so try one of the other addresses.
