@@ -295,7 +295,7 @@ to interfaces that are currently up."
 
 (define %interface-line
   ;; Regexp matching an interface line in Linux's /proc/net/dev.
-  (make-regexp "^[[:blank:]]*([[:alnum:]]+): .*$"))
+  (make-regexp "^[[:blank:]]*([[:alnum:]]+):.*$"))
 
 (define (all-network-interfaces)
   "Return all the registered network interfaces, including those that are not
