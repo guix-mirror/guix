@@ -311,7 +311,7 @@ explicitly appear in OS."
          ;; there to avoid duplication.
          (map canonical-package
               (list guile-2.0 bash coreutils findutils grep sed
-                    diffutils gawk tar gzip bzip2 xz lzip))))
+                    diffutils patch gawk tar gzip bzip2 xz lzip))))
 
 (define %default-issue
   ;; Default contents for /etc/issue.
