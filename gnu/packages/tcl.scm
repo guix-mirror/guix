@@ -161,8 +161,8 @@ X11 GUIs.")
     (home-page "http://www.tcl.tk/")
     (synopsis "Graphical user interface toolkit for Tcl")
     (description
-     "Tk is a graphical toolkit for building graphical user interfaces
-(GUIs) in the Tcl language.")
+     "Tk is a graphical toolkit for building graphical user
+interfaces (GUIs) in the Tcl language.")
     (license (package-license tcl))))
 
 (define-public perl-tk
@@ -185,7 +185,10 @@ X11 GUIs.")
               ("libjpeg" ,libjpeg)))
     (arguments
      `(#:make-maker-flags `(,(string-append
-                              "X11=" (assoc-ref %build-inputs "libx11")))))
+                              "X11=" (assoc-ref %build-inputs "libx11")))
+
+       ;; Fails to build in parallel: <http://bugs.gnu.org/18262>.
+       #:parallel-build? #f))
     (synopsis "Graphical user interface toolkit for Perl")
     (description
      "Tk is a Graphical User Interface ToolKit.")
