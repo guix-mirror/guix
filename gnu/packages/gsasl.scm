@@ -18,8 +18,7 @@
 
 (define-module (gnu packages gsasl)
   #:use-module (gnu packages)
-  #:use-module ((gnu packages compression)
-                #:renamer (symbol-prefix-proc 'guix:))
+  #:use-module ((gnu packages compression) #:prefix guix:)
   #:use-module (gnu packages gnutls)
   #:use-module (gnu packages libidn)
   #:use-module (gnu packages nettle)

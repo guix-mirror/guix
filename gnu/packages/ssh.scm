@@ -18,8 +18,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages ssh)
-  #:use-module ((guix licenses)
-                #:renamer (symbol-prefix-proc 'license:))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages groff)

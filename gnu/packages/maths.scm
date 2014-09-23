@@ -21,8 +21,7 @@
 
 (define-module (gnu packages maths)
   #:use-module (gnu packages)
-  #:use-module ((guix licenses)
-                #:renamer (symbol-prefix-proc 'license:))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)

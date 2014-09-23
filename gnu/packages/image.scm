@@ -23,7 +23,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages ghostscript)         ;lcms
-  #:use-module ((guix licenses) #:renamer (symbol-prefix-proc 'license:))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)

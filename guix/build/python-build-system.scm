@@ -19,8 +19,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix build python-build-system)
-  #:use-module ((guix build gnu-build-system)
-                #:renamer (symbol-prefix-proc 'gnu:))
+  #:use-module ((guix build gnu-build-system) #:prefix gnu:)
   #:use-module (guix build utils)
   #:use-module (ice-9 match)
   #:use-module (ice-9 ftw)

@@ -22,7 +22,7 @@
   #:use-module (guix derivations)
   #:use-module (guix packages)
   #:use-module ((guix store) #:select (derivation-path? add-to-store))
-  #:use-module ((guix build download) #:renamer (symbol-prefix-proc 'build:))
+  #:use-module ((guix build download) #:prefix build:)
   #:use-module (guix monads)
   #:use-module (guix gexp)
   #:use-module (guix utils)

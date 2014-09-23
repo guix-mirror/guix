@@ -17,8 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages mp3)
-  #:use-module ((guix licenses)
-                #:renamer (symbol-prefix-proc 'license:))
+  #:use-module ((guix licenses) #:prefix license:)
   #:use-module (gnu packages)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages cdrom)
