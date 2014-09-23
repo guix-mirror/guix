@@ -2344,34 +2344,6 @@ tracking.")
     (license license:x11)))
 
 
-(define-public xf86-input-vmmouse
-  (package
-    (name "xf86-input-vmmouse")
-    (version "12.8.0")
-    (source
-      (origin
-        (method url-fetch)
-        (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-input-vmmouse-"
-               version
-               ".tar.bz2"))
-        (sha256
-          (base32
-            "16l65mnjb1xxav6c5q0xhhqih81bzify2c5qrhqc2j3waq5yr9m8"))))
-    (build-system gnu-build-system)
-    (inputs `(("xorg-server" ,xorg-server)))
-    (native-inputs `(("pkg-config" ,pkg-config)))
-    (arguments
-     `(#:configure-flags
-       (list(string-append "--with-xorg-conf-dir="
-                            (assoc-ref %outputs "out")
-                            "/share/X11/xorg.conf.d"))))
-    (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
-    (license license:x11)))
-
-
 (define-public xf86-input-void
   (package
     (name "xf86-input-void")
