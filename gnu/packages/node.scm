@@ -24,6 +24,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages which)
   #:use-module (guix packages)
   #:use-module (guix derivations)
   #:use-module (guix download)
@@ -44,7 +45,8 @@
     (native-inputs `(("python" ,python-2)
                      ("perl" ,perl)
                      ("gcc" ,gcc-4.9)
-                     ("util-linux" ,util-linux)))
+                     ("util-linux" ,util-linux)
+                     ("which" ,which)))
     (build-system gnu-build-system)
     (arguments
      `(#:phases
