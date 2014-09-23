@@ -24,6 +24,7 @@
                 #:hide (zlib))
   #:use-module (gnu packages)
   #:use-module ((gnu packages compression) #:prefix guix:)
+  #:use-module (gnu packages gcc)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages gperf)
@@ -275,6 +276,11 @@ for SYSTEM, or #f if there is no configuration for SYSTEM."
                          (if conf
                              `(("kconfig" ,conf))
                              '()))))
+
+    ;; XXX: Work around an ICE with our patched GCC 4.8.3 while compiling
+    ;; 'drivers/staging/vt6656/michael.o': <http://hydra.gnu.org/build/96389/>.
+    (inputs `(("gcc" ,gcc-4.9)))
+
     (arguments
      `(#:modules ((guix build gnu-build-system)
                   (guix build utils)
