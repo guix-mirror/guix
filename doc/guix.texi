@@ -3532,7 +3532,22 @@ The daemon runs with the default settings (in particular the default exit
 policy) as the @code{tor} unprivileged user.
 @end deffn
 
-In addition, @code{(gnu system ssh)} provides the following service.
+@deffn {Monadic Procedure} bitlbee-service [#:bitlbee bitlbee] @
+         [#:interface "127.0.0.1"] [#:port 6667] @
+         [#:extra-settings ""]
+Return a service that runs @url{http://bitlbee.org,BitlBee}, a daemon that
+acts as a gateway between IRC and chat networks.
+
+The daemon will listen to the interface corresponding to the IP address
+specified in @var{interface}, on @var{port}.  @code{127.0.0.1} means that only
+local clients can connect, whereas @code{0.0.0.0} means that connections can
+come from any networking interface.
+
+In addition, @var{extra-settings} specifies a string to append to the
+configuration file.
+@end deffn
+
+Furthermore, @code{(gnu system ssh)} provides the following service.
 
 @deffn {Monadic Procedure} lsh-service [#:host-key "/etc/lsh/host-key"] @
        [#:interfaces '()] [#:port-number 22] @

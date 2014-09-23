@@ -22,11 +22,13 @@
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages tor)
+  #:use-module (gnu packages messaging)
   #:use-module (guix gexp)
   #:use-module (guix monads)
   #:export (static-networking-service
             dhcp-client-service
-            tor-service))
+            tor-service
+            bitlbee-service))
 
 ;;; Commentary:
 ;;;
@@ -165,5 +167,44 @@ policy) as the @code{tor} unprivileged user."
                              "/run/current-system/profile/sbin/nologin"))))
 
       (documentation "Run the Tor anonymous network overlay.")))))
+
+(define* (bitlbee-service #:key (bitlbee bitlbee)
+                          (interface "127.0.0.1") (port 6667)
+                          (extra-settings ""))
+  "Return a service that runs @url{http://bitlbee.org,BitlBee}, a daemon that
+acts as a gateway between IRC and chat networks.
+
+The daemon will listen to the interface corresponding to the IP address
+specified in @var{interface}, on @var{port}.  @code{127.0.0.1} means that only
+local clients can connect, whereas @code{0.0.0.0} means that connections can
+come from any networking interface.
+
+In addition, @var{extra-settings} specifies a string to append to the
+configuration file."
+  (mlet %store-monad ((conf (text-file "bitlbee.conf"
+                                       (string-append "
+  [settings]
+  User = bitlbee
+  ConfigDir = /var/lib/bitlbee
+  DaemonInterface = " interface "
+  DaemonPort = " (number->string port) "
+" extra-settings))))
+    (return
+     (service
+      (provision '(bitlbee))
+      (requirement '(user-processes loopback))
+      (start #~(make-forkexec-constructor
+                (list (string-append #$bitlbee "/sbin/bitlbee")
+                      "-n" "-F" "-u" "bitlbee" "-c" #$conf)))
+      (stop  #~(make-kill-destructor))
+      (user-groups   (list (user-group (name "bitlbee") (system? #t))))
+      (user-accounts (list (user-account
+                            (name "bitlbee")
+                            (group "bitlbee")
+                            (system? #t)
+                            (comment "BitlBee daemon user")
+                            (home-directory "/var/empty")
+                            (shell #~(string-append #$shadow
+                                                    "/sbin/nologin")))))))))
 
 ;;; networking.scm ends here
