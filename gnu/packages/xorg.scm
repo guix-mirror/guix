@@ -2323,7 +2323,9 @@ tracking.")
                ".tar.bz2"))
         (sha256
           (base32
-            "0g5b1s6q1dg38l8y47cwg7cs5nivwj0agmp71g273ws0lfg4bc8s"))))
+            "0g5b1s6q1dg38l8y47cwg7cs5nivwj0agmp71g273ws0lfg4bc8s"))
+        (patches
+         (list (search-patch "xf86-input-synaptics-glibc-2.20.patch")))))
     (build-system gnu-build-system)
     (inputs `(("libx11" ,libx11)
               ("libxi" ,libxi)
@@ -2339,8 +2341,9 @@ tracking.")
                             (assoc-ref %outputs "out")
                             "/share/X11/xorg.conf.d"))))
     (home-page "http://www.x.org/wiki/")
-    (synopsis "xorg implementation of the X Window System")
-    (description "X.org provides an implementation of the X Window System")
+    (synopsis "Synaptics touchpad driver for X.Org")
+    (description
+     "This package provides a touchpad driver for the X.Org window system.")
     (license license:x11)))
 
 
