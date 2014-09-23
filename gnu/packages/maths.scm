@@ -3,6 +3,7 @@
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -57,6 +58,7 @@
   #:use-module (gnu packages python)
   #:use-module (gnu packages readline)
   #:use-module (gnu packages tcsh)
+  #:use-module (gnu packages tcl)
   #:use-module (gnu packages texinfo)
   #:use-module (gnu packages texlive)
   #:use-module (gnu packages xml))
@@ -835,7 +837,7 @@ to BMP, JPEG or PNG image formats.")
 (define-public maxima
   (package
     (name "maxima")
-    (version "5.33.0")
+    (version "5.34.1")
     (source
      (origin
        (method url-fetch)
@@ -843,19 +845,39 @@ to BMP, JPEG or PNG image formats.")
                            version "-source/" name "-" version ".tar.gz"))
        (sha256
         (base32
-         "13axm11xw0f3frx5b0qdidi7igkn1524fzz77s9rbpl2yy2nrbz2"))))
+         "1dw9vfzldpj7lv303xbw0wpyn6ra6i2yzwlrjbcx7j0jm5n43ji0"))))
     (build-system gnu-build-system)
-    (arguments
-     `(#:phases (alist-cons-before
-                 'check 'pre-check
-                 (lambda _ 
-                   (chmod "src/maxima" #o555))
-                 %standard-phases)))
-    (inputs 
-     `(("gcl" ,gcl)))
-    (native-inputs 
+    (inputs
+     `(("gcl" ,gcl)
+       ("gnuplot" ,gnuplot)                       ;for plots
+       ("tcl" ,tcl)                               ;Tcl/Tk is used by 'xmaxima'
+       ("tk" ,tk)))
+    (native-inputs
      `(("texinfo" ,texinfo)
        ("perl" ,perl)))
+    (arguments
+     `(#:configure-flags
+       (list "--enable-gcl"
+             (string-append "--with-posix-shell="
+                            (assoc-ref %build-inputs "bash")
+                            "/bin/sh")
+             (string-append "--with-wish="
+                            (assoc-ref %build-inputs "tk")
+                            "/bin/wish"
+                            (let ((v ,(package-version tk)))
+                              (string-take v (string-index-right v #\.)))))
+
+       ;; By default Maxima attempts to write temporary files to
+       ;; '/tmp/nix-build-maxima-5.34.1', which doesn't exist.  Work around
+       ;; that.
+       #:make-flags (list "TMPDIR=/tmp")
+
+       #:phases (alist-cons-before
+                 'check 'pre-check
+                 (lambda _
+                   (chmod "src/maxima" #o555))
+                 %standard-phases)))
+
     (home-page "http://maxima.sourceforge.net")
     (synopsis "Numeric and symbolic expression manipulation")
     (description "Maxima is a system for the manipulation of symbolic and
