@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -412,7 +413,10 @@ application suites.")
             '()
             `(("xorg-server" ,xorg-server)))))
    (arguments
-    `(#:phases
+    `(;; FIXME: See above.
+      #:tests? ,(not (string=? (or (%current-target-system) (%current-system))
+                               "mips64el-linux"))
+      #:phases
       (alist-replace
        'configure
        (lambda* (#:key inputs #:allow-other-keys #:rest args)
