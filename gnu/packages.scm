@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
@@ -82,21 +82,16 @@
   (search-path (%bootstrap-binaries-path)
                (string-append system "/" file-name)))
 
-(define %distro-module-directory
-  ;; Absolute path of the (gnu packages ...) module root.
-  (string-append (dirname (search-path %load-path "gnu/packages.scm"))
-                 "/packages"))
+(define %distro-root-directory
+  ;; Absolute file name of the module hierarchy.
+  (dirname (search-path %load-path "guix.scm")))
 
-(define (package-files)
-  "Return the list of files that implement distro modules."
-  (define prefix-len
-    (string-length
-     (dirname (dirname (search-path %load-path "gnu/packages.scm")))))
-
+(define* (scheme-files directory)
+  "Return the list of Scheme files found under DIRECTORY."
   (file-system-fold (const #t)                    ; enter?
                     (lambda (path stat result)    ; leaf
                       (if (string-suffix? ".scm" path)
-                          (cons (substring path prefix-len) result)
+                          (cons path result)
                           result))
                     (lambda (path stat result)    ; down
                       result)
@@ -108,20 +103,30 @@
                                path (strerror errno))
                       result)
                     '()
-                    %distro-module-directory
+                    directory
                     stat))
 
-(define (package-modules)
-  "Return the list of modules that provide packages for the distribution."
+(define (file-name->module-name file)
+  "Return the module name (a list of symbols) corresponding to FILE."
   (define not-slash
     (char-set-complement (char-set #\/)))
 
-  (filter-map (lambda (path)
-                (let ((name (map string->symbol
-                                 (string-tokenize (string-drop-right path 4)
-                                                  not-slash))))
-                  (false-if-exception (resolve-interface name))))
-              (package-files)))
+  (map string->symbol
+       (string-tokenize (string-drop-right file 4) not-slash)))
+
+(define* (package-modules directory #:optional sub-directory)
+  "Return the list of modules that provide packages for the distribution.
+Optionally, narrow the search to SUB-DIRECTORY."
+  (define prefix-len
+    (string-length directory))
+
+  (filter-map (lambda (file)
+                (let ((file (substring file prefix-len)))
+                  (false-if-exception
+                   (resolve-interface (file-name->module-name file)))))
+              (scheme-files (if sub-directory
+                                (string-append directory "/" sub-directory)
+                                directory))))
 
 (define (fold-packages proc init)
   "Call (PROC PACKAGE RESULT) for each available package, using INIT as
@@ -142,7 +147,7 @@ same package twice."
                                module)))
           init
           vlist-null
-          (package-modules))))
+          (package-modules %distro-root-directory "gnu/packages"))))
 
 (define* (find-packages-by-name name #:optional version)
   "Return the list of packages with the given NAME.  If VERSION is not #f,
