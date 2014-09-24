@@ -274,3 +274,9 @@ EOF
 
 guix package -A emacs-foo-bar -L "$module_dir" | grep 42
 guix package -i emacs-foo-bar-42 -n -L "$module_dir"
+
+# Same thing using the 'GUIX_PACKAGE_PATH' environment variable.
+GUIX_PACKAGE_PATH="$module_dir"
+export GUIX_PACKAGE_PATH
+guix package -A emacs-foo-bar | grep 42
+guix package -i emacs-foo-bar-42 -n

@@ -3967,14 +3967,23 @@ object whose name is @code{emacs} is found.  This package search
 facility is implemented in the @code{(gnu packages)} module.
 
 @cindex customization, of packages
+@cindex package module search path
 Users can store package definitions in modules with different
 names---e.g., @code{(my-packages emacs)}.  These package definitions
 will not be visible by default.  Thus, users can invoke commands such as
 @command{guix package} and @command{guix build} have to be used with the
 @code{-e} option so that they know where to find the package, or use the
 @code{-L} option of these commands to make those modules visible
-(@pxref{Invoking guix build, @code{--load-path}}).  The latter makes it
-easy to customize the distribution.
+(@pxref{Invoking guix build, @code{--load-path}}), or define the
+@code{GUIX_PACKAGE_PATH} environment variable.  This environment
+variable makes it easy to extend or customize the distribution and is
+honored by all the user interfaces.
+
+@defvr {Environment Variable} GUIX_PACKAGE_PATH
+This is a colon-separated list of directories to search for package
+modules.  Directories listed in this variable take precedence over the
+distribution's own modules.
+@end defvr
 
 The distribution is fully @dfn{bootstrapped} and @dfn{self-contained}:
 each package is built based solely on other packages in the

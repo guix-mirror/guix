@@ -93,6 +93,9 @@ unset LANGUAGE
 LC_MESSAGES=C
 export LC_MESSAGES
 
+# Ignore user modules.
+unset GUIX_PACKAGE_PATH
+
 storedir="@storedir@"
 prefix="@prefix@"
 datarootdir="@datarootdir@"

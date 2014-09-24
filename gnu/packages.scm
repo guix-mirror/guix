@@ -91,7 +91,18 @@
   ;; Search path for package modules.  Each item must be either a directory
   ;; name or a pair whose car is a directory and whose cdr is a sub-directory
   ;; to narrow the search.
-  (list (cons %distro-root-directory "gnu/packages")))
+  (let* ((not-colon   (char-set-complement (char-set #\:)))
+         (environment (string-tokenize (or (getenv "GUIX_PACKAGE_PATH") "")
+                                       not-colon)))
+    ;; Automatically add items from $GUIX_PACKAGE_PATH to Guile's search path.
+    (for-each (lambda (directory)
+                (set! %load-path (cons directory %load-path))
+                (set! %load-compiled-path
+                      (cons directory %load-compiled-path)))
+              environment)
+
+    (make-parameter
+     (append environment `((,%distro-root-directory . "gnu/packages"))))))
 
 (define* (scheme-files directory)
   "Return the list of Scheme files found under DIRECTORY."
