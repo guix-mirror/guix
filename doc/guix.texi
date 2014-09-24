@@ -2492,6 +2492,14 @@ following:
 
 @table @code
 
+@item --load-path=@var{directory}
+@itemx -L @var{directory}
+Add @var{directory} to the front of the package module search path
+(@pxref{Package Modules}).
+
+This allows users to define their own packages and make them visible to
+the command-line tools.
+
 @item --keep-failed
 @itemx -K
 Keep the build tree of failed builds.  Thus, if a build fail, its build
@@ -3951,17 +3959,22 @@ Reference Manual}).  For instance, the @code{(gnu packages emacs)}
 module exports a variable named @code{emacs}, which is bound to a
 @code{<package>} object (@pxref{Defining Packages}).
 
-The @code{(gnu packages @dots{})} module name space is special: it is
+The @code{(gnu packages @dots{})} module name space is
 automatically scanned for packages by the command-line tools.  For
 instance, when running @code{guix package -i emacs}, all the @code{(gnu
 packages @dots{})} modules are scanned until one that exports a package
 object whose name is @code{emacs} is found.  This package search
 facility is implemented in the @code{(gnu packages)} module.
 
+@cindex customization, of packages
 Users can store package definitions in modules with different
-names---e.g., @code{(my-packages emacs)}.  In that case, commands such
-as @command{guix package} and @command{guix build} have to be used with
-the @code{-e} option so that they know where to find the package.
+names---e.g., @code{(my-packages emacs)}.  These package definitions
+will not be visible by default.  Thus, users can invoke commands such as
+@command{guix package} and @command{guix build} have to be used with the
+@code{-e} option so that they know where to find the package, or use the
+@code{-L} option of these commands to make those modules visible
+(@pxref{Invoking guix build, @code{--load-path}}).  The latter makes it
+easy to customize the distribution.
 
 The distribution is fully @dfn{bootstrapped} and @dfn{self-contained}:
 each package is built based solely on other packages in the

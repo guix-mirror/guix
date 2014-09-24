@@ -33,7 +33,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-37)
-  #:autoload   (gnu packages) (specification->package)
+  #:autoload   (gnu packages) (specification->package %package-module-path)
   #:autoload   (guix download) (download-to-store)
   #:export (%standard-build-options
             set-build-options-from-command-line
@@ -100,6 +100,8 @@ the new package's version number from URI."
 options handled by 'set-build-options-from-command-line', and listed in
 '%standard-build-options'."
   (display (_ "
+  -L, --load-path=DIR    prepend DIR to the package module search path"))
+  (display (_ "
   -K, --keep-failed      keep build tree of failed builds"))
   (display (_ "
   -n, --dry-run          do not build the derivations"))
@@ -136,7 +138,15 @@ options handled by 'set-build-options-from-command-line', and listed in
 
 (define %standard-build-options
   ;; List of standard command-line options for tools that build something.
-  (list (option '(#\K "keep-failed") #f #f
+  (list (option '(#\L "load-path") #t #f
+                (lambda (opt name arg result . rest)
+                  ;; XXX: Imperatively modify the search paths.
+                  (%package-module-path (cons arg (%package-module-path)))
+                  (set! %load-path (cons arg %load-path))
+                  (set! %load-compiled-path (cons arg %load-compiled-path))
+
+                  (apply values (cons result rest))))
+        (option '(#\K "keep-failed") #f #f
                 (lambda (opt name arg result . rest)
                   (apply values
                          (alist-cons 'keep-failed? #t result)

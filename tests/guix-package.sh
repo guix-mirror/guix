@@ -255,3 +255,22 @@ set -o pipefail || true
 guix package -A g | head -1 2> "$HOME/err1"
 guix package -I | head -1 2> "$HOME/err2"
 test "`cat "$HOME/err1" "$HOME/err2"`" = ""
+
+# Make sure '-L' extends the package module search path.
+module_dir="t-guix-package-$$"
+mkdir "$module_dir"
+trap "rm -rf $module_dir" EXIT
+
+cat > "$module_dir/foo.scm"<<EOF
+(define-module (foo)
+  #:use-module (guix packages)
+  #:use-module (gnu packages emacs))
+
+(define-public x
+  (package (inherit emacs)
+    (name "emacs-foo-bar")
+    (version "42")))
+EOF
+
+guix package -A emacs-foo-bar -L "$module_dir" | grep 42
+guix package -i emacs-foo-bar-42 -n -L "$module_dir"
