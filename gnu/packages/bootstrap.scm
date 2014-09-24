@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -78,7 +78,14 @@
                      (boot url-fetch))
                     (else orig-method)))
       (patch-guile %bootstrap-guile)
-      (patch-inputs %bootstrap-patch-inputs))))
+      (patch-inputs %bootstrap-patch-inputs)
+
+      ;; Patches can be origins as well, so process them.
+      (patches (map (match-lambda
+                     ((? origin? patch)
+                      (bootstrap-origin patch))
+                     (patch patch))
+                    (origin-patches source))))))
 
 (define (package-from-tarball name source program-to-test description)
   "Return a package that correspond to the extraction of SOURCE.
