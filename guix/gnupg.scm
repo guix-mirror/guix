@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -54,7 +54,7 @@
     ;; See file `doc/DETAILS' in GnuPG.
     (define sigid-rx
       (make-regexp
-       "^\\[GNUPG:\\] SIG_ID ([A-Za-z0-9/]+) ([[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}) ([[:digit:]]+)"))
+       "^\\[GNUPG:\\] SIG_ID ([A-Za-z0-9+/]+) ([[:digit:]]{4}-[[:digit:]]{2}-[[:digit:]]{2}) ([[:digit:]]+)"))
     (define goodsig-rx
       (make-regexp "^\\[GNUPG:\\] GOODSIG ([[:xdigit:]]+) (.+)$"))
     (define validsig-rx
