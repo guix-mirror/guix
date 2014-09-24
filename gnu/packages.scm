@@ -35,6 +35,7 @@
             search-bootstrap-binary
             %patch-directory
             %bootstrap-binaries-path
+            %package-module-path
 
             fold-packages
 
@@ -86,6 +87,12 @@
   ;; Absolute file name of the module hierarchy.
   (dirname (search-path %load-path "guix.scm")))
 
+(define %package-module-path
+  ;; Search path for package modules.  Each item must be either a directory
+  ;; name or a pair whose car is a directory and whose cdr is a sub-directory
+  ;; to narrow the search.
+  (list (cons %distro-root-directory "gnu/packages")))
+
 (define* (scheme-files directory)
   "Return the list of Scheme files found under DIRECTORY."
   (file-system-fold (const #t)                    ; enter?
@@ -106,13 +113,12 @@
                     directory
                     stat))
 
-(define (file-name->module-name file)
-  "Return the module name (a list of symbols) corresponding to FILE."
-  (define not-slash
-    (char-set-complement (char-set #\/)))
-
-  (map string->symbol
-       (string-tokenize (string-drop-right file 4) not-slash)))
+(define file-name->module-name
+  (let ((not-slash (char-set-complement (char-set #\/))))
+    (lambda (file)
+      "Return the module name (a list of symbols) corresponding to FILE."
+      (map string->symbol
+           (string-tokenize (string-drop-right file 4) not-slash)))))
 
 (define* (package-modules directory #:optional sub-directory)
   "Return the list of modules that provide packages for the distribution.
@@ -127,6 +133,19 @@ Optionally, narrow the search to SUB-DIRECTORY."
               (scheme-files (if sub-directory
                                 (string-append directory "/" sub-directory)
                                 directory))))
+
+(define* (all-package-modules #:optional (path (%package-module-path)))
+  "Return the list of package modules found in PATH, a list of directories to
+search."
+  (fold-right (lambda (spec result)
+                (match spec
+                  ((? string? directory)
+                   (append (package-modules directory) result))
+                  ((directory . sub-directory)
+                   (append (package-modules directory sub-directory)
+                           result))))
+              '()
+              path))
 
 (define (fold-packages proc init)
   "Call (PROC PACKAGE RESULT) for each available package, using INIT as
@@ -147,7 +166,7 @@ same package twice."
                                module)))
           init
           vlist-null
-          (package-modules %distro-root-directory "gnu/packages"))))
+          (all-package-modules))))
 
 (define* (find-packages-by-name name #:optional version)
   "Return the list of packages with the given NAME.  If VERSION is not #f,
