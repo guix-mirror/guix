@@ -26,7 +26,7 @@
 (define-public libsodium
   (package
     (name "libsodium")
-    (version "0.5.0")
+    (version "1.0.0")
     (source (origin
             (method url-fetch)
             (uri (string-append
@@ -34,11 +34,11 @@
                   version ".tar.gz"))
             (sha256
              (base32
-              "1w7rrnsvhhzhywrr3nhlhppv4kqzdszz3dwy8jrsv8lrj5hs181w"))))
+              "19f9vf0shfp4rc4l791r6xjg06z4i8psj1zkjkm3z5b640yzxlff"))))
     (build-system gnu-build-system)
     (synopsis "Portable NaCl-based crypto library")
     (description
      "libsodium is a new easy-to-use high-speed software library for network
 communication, encryption, decryption, signatures, etc.")
     (license isc)
-    (home-page "https://github.com/jedisct1/libsodium"))) ; No real homepage
+    (home-page "http://libsodium.org")))
