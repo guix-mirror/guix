@@ -265,3 +265,30 @@ more modular, simple, and flexible.")
     ;; This license adds several sentences to the original X11 license.
     (license (license:x11-style "file://COPYING"
                                 "See 'COPYING' in the distribution."))))
+
+(define-public giblib
+  (package
+    (name "giblib")
+    (version "1.2.4")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://linuxbrit.co.uk/downloads/giblib-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "1b4bmbmj52glq0s898lppkpzxlprq9aav49r06j2wx4dv3212rhp"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libx11" ,libx11)
+       ("imlib2" ,imlib2)))
+    (home-page "http://linuxbrit.co.uk/software/") ; no real home-page
+    (synopsis "Wrapper library for imlib2")
+    (description
+     "giblib is a simple library which wraps imlib2's context API, avoiding
+all the context_get/set calls, adds fontstyles to the truetype renderer and
+supplies a generic doubly-linked list and some string functions.")
+    ;; This license removes a clause about X Consortium from the original
+    ;; X11 license.
+    (license (license:x11-style "file://COPYING"
+                                "See 'COPYING' in the distribution."))))
