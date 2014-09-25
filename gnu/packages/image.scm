@@ -23,6 +23,8 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages ghostscript)         ;lcms
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages giflib)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -213,3 +215,53 @@ an indexing tool useful for the JPIP protocol, JPWL-tools for
 error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "http://jbig2dec.sourceforge.net/")
     (license license:bsd-2)))
+
+(define-public imlib2
+  (package
+    (name "imlib2")
+    (version "1.4.6")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://sourceforge/enlightenment/imlib2-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "0kjggg4gfn6chi8v1xddd5qwk1fbnl7rvd93qiclv5v11s615k0p"))))
+    (build-system gnu-build-system)
+    (arguments
+     '(;; Will be fixed in the next release:
+       ;; <http://git.enlightenment.org/legacy/imlib2.git/commit/?id=5dde234b2d3caf067ea827858c53adc5d4c56c13>.
+       #:phases (alist-cons-before
+                 'configure 'patch-config
+                 (lambda _
+                   (substitute* "imlib2-config.in"
+                     (("@my_libs@") "")))
+                 %standard-phases)))
+    (native-inputs
+     `(("pkgconfig" ,pkg-config)))
+    (inputs
+     `(("libx11" ,libx11)
+       ("libxext" ,libxext)
+       ("freetype" ,freetype)
+       ("libjpeg" ,libjpeg)
+       ("libpng" ,libpng)
+       ("libtiff" ,libtiff)
+       ("giflib" ,giflib)
+       ("bzip2" ,bzip2)))
+    (home-page "http://sourceforge.net/projects/enlightenment/")
+    (synopsis
+     "Loading, saving, rendering and manipulating image files")
+    (description
+     "Imlib2 is a library that does image file loading and saving as well as
+rendering, manipulation, arbitrary polygon support, etc.
+
+It does ALL of these operations FAST.  Imlib2 also tries to be highly
+intelligent about doing them, so writing naive programs can be done easily,
+without sacrificing speed.
+
+This is a complete rewrite over the Imlib 1.x series.  The architecture is
+more modular, simple, and flexible.")
+    ;; This license adds several sentences to the original X11 license.
+    (license (license:x11-style "file://COPYING"
+                                "See 'COPYING' in the distribution."))))
