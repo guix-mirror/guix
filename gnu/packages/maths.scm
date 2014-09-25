@@ -850,8 +850,7 @@ to BMP, JPEG or PNG image formats.")
     (inputs
      `(("gcl" ,gcl)
        ("gnuplot" ,gnuplot)                       ;for plots
-       ("tcl" ,tcl)                               ;Tcl/Tk is used by 'xmaxima'
-       ("tk" ,tk)))
+       ("tk" ,tk)))                               ;Tcl/Tk is used by 'xmaxima'
     (native-inputs
      `(("texinfo" ,texinfo)
        ("perl" ,perl)))
@@ -866,18 +865,40 @@ to BMP, JPEG or PNG image formats.")
                             "/bin/wish"
                             (let ((v ,(package-version tk)))
                               (string-take v (string-index-right v #\.)))))
-
        ;; By default Maxima attempts to write temporary files to
        ;; '/tmp/nix-build-maxima-5.34.1', which doesn't exist.  Work around
        ;; that.
        #:make-flags (list "TMPDIR=/tmp")
-
        #:phases (alist-cons-before
                  'check 'pre-check
                  (lambda _
                    (chmod "src/maxima" #o555))
-                 %standard-phases)))
-
+                 ;; Make sure the doc and emacs files are found in the
+                 ;; standard location.  Also configure maxima to find gnuplot
+                 ;; without having it on the PATH.
+                 (alist-cons-after
+                  'install 'post-install
+                  (lambda* (#:key outputs inputs #:allow-other-keys)
+                    (let* ((gnuplot (assoc-ref inputs "gnuplot"))
+                          (out (assoc-ref outputs "out"))
+                          (datadir (string-append out "/share/maxima/" ,version)))
+                      (with-directory-excursion out
+                        (mkdir-p "share/emacs")
+                        (mkdir-p "share/doc")
+                        (symlink
+                         (string-append datadir "/emacs/")
+                         (string-append out "/share/emacs/site-lisp"))
+                        (symlink
+                         (string-append datadir "/doc/")
+                         (string-append out "/share/doc/maxima"))
+                        (with-atomic-file-replacement
+                         (string-append datadir "/share/maxima-init.lisp")
+                         (lambda (in out)
+                           (format out "~a ~s~a~%"
+                                   "(setf $gnuplot_command "
+                                   (string-append gnuplot "/bin/gnuplot") ")")
+                           (dump-port in out))))))
+                  %standard-phases))))
     (home-page "http://maxima.sourceforge.net")
     (synopsis "Numeric and symbolic expression manipulation")
     (description "Maxima is a system for the manipulation of symbolic and
@@ -889,4 +910,4 @@ point numbers")
     ;; version (which implicitly means gpl1+).
     ;; At least one file (src/maxima.asd) says "version 2."
     ;; GPLv2 only is therefore the smallest subset.
-    (license license:gpl2))) 
+    (license license:gpl2)))
