@@ -345,8 +345,12 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
   (define patch-inputs
     (map (lambda (number patch)
            (list (string-append "patch" (number->string number))
-                 (add-to-store store (basename patch) #t
-                               "sha256" patch)))
+                 (match patch
+                   ((? string?)
+                    (add-to-store store (basename patch) #t
+                                  "sha256" patch))
+                   ((? origin?)
+                    (package-source-derivation store patch)))))
          (iota (length patches))
 
          patches))
