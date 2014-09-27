@@ -37,6 +37,14 @@
   #:use-module (gnu packages image)
   #:use-module (ice-9 match))
 
+(define (source-directory system version)
+  (string-append "mit-scheme-"
+                 (if (or (string-prefix? "x86_64" system)
+                          (string-prefix? "i686" system))
+                     ""
+                     "c-")
+                 version))
+
 (define-public mit-scheme
   (package
     (name "mit-scheme")
@@ -51,7 +59,7 @@
         (lambda* (#:key inputs #:allow-other-keys)
           (and (zero? (system* "tar" "xzvf"
                                (assoc-ref inputs "source")))
-               (chdir ,(string-append name "-" version))
+               (chdir ,(source-directory (%current-system) version))
                (begin
                  ;; Delete these dangling symlinks since they break
                  ;; `patch-shebangs'.
@@ -88,11 +96,13 @@
           (method url-fetch)
           (uri (string-append "mirror://gnu/mit-scheme/stable.pkg/"
                               version "/mit-scheme-"
-                              version "-"
                               (match (%current-system)
-                                ("x86_64-linux" "x86-64")
-                                ("i686-linux" "i386")
-                                (_ "c"))
+                                ("x86_64-linux"
+                                 (string-append version "-x86-64"))
+                                ("i686-linux"
+                                 (string-append version "-i386"))
+                                (_
+                                 (string-append "c-" version)))
                               ".tar.gz"))
           (sha256
            (match (%current-system)
