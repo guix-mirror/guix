@@ -478,7 +478,8 @@ ENTRIES is a list of installed manifest entries."
                    '()
                    (list (obsolete-package-sexp
                           name version entries))))
-             (map sexp-by-package packages))))))
+             (map sexp-by-package packages))))
+      (_ '())))
 
   ->sexps)
 
@@ -563,7 +564,8 @@ ENTRIES is a list of installed manifest entries."
                (append-map (cut sexps-by-manifest-entry <>)
                            entries))
              (append-map (cut sexps-by-package <> output)
-                         packages))))))
+                         packages))))
+      (_ '())))
 
   ->sexps)
 
@@ -661,7 +663,7 @@ If NUMBER is 0 or less, return all generations."
   "Find PROFILE's generations matching SEARCH-TYPE and SEARCH-VALS."
   (case search-type
     ((id)
-     (matching-generations profile (cut memq <> (car search-vals))))
+     (matching-generations profile (cut memq <> search-vals)))
     ((last)
      (last-generations profile (car search-vals)))
     ((all)
