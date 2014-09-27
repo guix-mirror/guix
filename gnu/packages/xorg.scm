@@ -1425,8 +1425,9 @@ tracking.")
     (build-system gnu-build-system)
     (inputs
       `(("libxext" ,libxext)
-        ("libx11" ,libx11)
-        ("scrnsaverproto" ,scrnsaverproto)))
+        ("libx11" ,libx11)))
+    (propagated-inputs
+      `(("scrnsaverproto" ,scrnsaverproto)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
     (home-page "http://www.x.org/wiki/")
