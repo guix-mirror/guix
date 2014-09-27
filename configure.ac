@@ -176,6 +176,8 @@ AC_CONFIG_FILES([test-env],     [chmod +x test-env])
 
 dnl Emacs interface.
 AM_PATH_LISPDIR
+AM_CONDITIONAL([HAVE_EMACS], [test "x$EMACS" != "xno"])
+
 emacsuidir="${guilemoduledir}/guix/emacs"
 AC_SUBST([emacsuidir])
 AC_CONFIG_FILES([emacs/guix-init.el

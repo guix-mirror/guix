@@ -34,6 +34,8 @@ dist_lisp_DATA =				\
 nodist_lisp_DATA =				\
   emacs/guix-init.el
 
+if HAVE_EMACS
+
 $(AUTOLOADS): $(ELFILES)
 	$(EMACS) --batch --eval						\
 	  "(let ((backup-inhibited t)					\
@@ -41,3 +43,5 @@ $(AUTOLOADS): $(ELFILES)
 	          (expand-file-name \"$(AUTOLOADS)\" \"$(srcdir)\")))	\
 	     (update-directory-autoloads				\
 	      (expand-file-name \"emacs\" \"$(srcdir)\")))"
+
+endif HAVE_EMACS
