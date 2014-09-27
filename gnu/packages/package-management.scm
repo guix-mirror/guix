@@ -22,7 +22,7 @@
   #:use-module (guix git-download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
-  #:use-module ((guix licenses) #:select (gpl3+))
+  #:use-module ((guix licenses) #:select (gpl3+ lgpl2.1+))
   #:use-module (gnu packages)
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages compression) #:select (bzip2 gzip))
@@ -32,7 +32,12 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
   #:use-module (gnu packages gettext)
-  #:use-module (gnu packages texinfo))
+  #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages perl)
+  #:use-module (gnu packages curl)
+  #:use-module (gnu packages web)
+  #:use-module (gnu packages openssl)
+  #:use-module (gnu packages bdw-gc))
 
 (define guix-0.7
   (package
@@ -163,3 +168,39 @@ the Nix package manager.")
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
          ,@(package-native-inputs guix-0.7))))))
+
+(define-public nix
+  (package
+    (name "nix")
+    (version "1.7")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://nixos.org/releases/nix/nix-"
+                                 version "/nix-" version ".tar.xz"))
+             (sha256
+              (base32
+               "14nc7mnma5sffqk9mglbf99w3jm4ck8pxnmkgyhy3qra9xjn749l"))))
+    (build-system gnu-build-system)
+    ;; XXX: Should we pass '--with-store-dir=/gnu/store'?  But then we'd also
+    ;; need '--localstatedir=/var'.  But then!  The thing would use /var/nix
+    ;; instead of /var/guix.  So in the end, we do nothing special.
+    (native-inputs `(("perl" ,perl)
+                     ("pkg-config" ,pkg-config)))
+    (inputs `(("curl" ,curl)
+              ("openssl" ,openssl)
+              ("libgc" ,libgc)
+              ("sqlite" ,sqlite)
+              ("bzip2" ,bzip2)
+              ("perl-www-curl" ,perl-www-curl)
+              ("perl-dbi" ,perl-dbi)
+              ("perl-dbd-sqlite" ,perl-dbd-sqlite)))
+    (home-page "http://nixos.org/nix/")
+    (synopsis "The Nix package manager")
+    (description
+     "Nix is a purely functional package manager.  This means that it treats
+packages like values in purely functional programming languages such as
+Haskell—they are built by functions that don't have side-effects, and they
+never change after they have been built.  Nix stores packages in the Nix
+store, usually the directory /nix/store, where each package has its own unique
+sub-directory.")
+    (license lgpl2.1+)))
