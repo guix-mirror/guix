@@ -1371,7 +1371,7 @@ package looks like this:
   #:use-module (guix build-system gnu)
   #:use-module (guix licenses))
 
-(define hello
+(define-public hello
   (package
     (name "hello")
     (version "2.8")
