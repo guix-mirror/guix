@@ -152,10 +152,15 @@ Run a set of checkers on the specified package; if none is specified, run the ch
         (name      (package-name package))
         (full-name (package-full-name package)))
     (if (and patches
-             (any (lambda (patch)
+             (any (match-lambda
+                   ((? string? patch)
                     (let ((filename (basename patch)))
                       (not (or (eq? (string-contains filename name) 0)
-                               (eq? (string-contains filename full-name) 0)))))
+                               (eq? (string-contains filename full-name)
+                                    0)))))
+                   (_
+                    ;; This must be an <origin> or something like that.
+                    #f))
                   patches))
         (emit-warning package
           "file names of patches should start with the package name"
