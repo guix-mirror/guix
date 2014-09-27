@@ -40,6 +40,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl)
   #:use-module (srfi srfi-26)
   #:use-module (ice-9 match))
 
@@ -281,3 +282,44 @@ and BSD's DB except that it allows multiple simultaneous writers and uses
 locking internally to keep writers from trampling on each other.  TDB is also
 extremely small.")
     (license lgpl3+)))
+
+(define-public perl-dbi
+  (package
+    (name "perl-dbi")
+    (version "1.631")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/T/TI/TIMB/DBI-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "04fmrnchhwi7jx4niaiv93vmi343hdm3xj04w9zr2m9hhqh782np"))))
+    (build-system perl-build-system)
+    (synopsis "Database independent interface for Perl")
+    (description "This package provides an database interface for Perl.")
+    (home-page "http://search.cpan.org/~timb/DBI-1.631/DBI.pm")
+    (license (package-license perl))))
+
+(define-public perl-dbd-sqlite
+  (package
+    (name "perl-dbd-sqlite")
+    (version "1.42")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/I/IS/ISHIGAKI/DBD-SQLite-"
+                    version ".tar.gz"))
+              (sha256
+               (base32
+                "14x9cjsc8dz8ad1nad0bqiq9cbk1rjfb8h5y0rpk3pdl38y6afxb"))))
+    (build-system perl-build-system)
+    (inputs `(("sqlite" ,sqlite)))
+    (propagated-inputs `(("perl-dbi" ,perl-dbi)))
+    (synopsis "SQlite interface for Perl")
+    (description "DBD::SQLite is a Perl DBI driver for SQLite, that includes
+the entire thing in the distribution.  So in order to get a fast transaction
+capable RDBMS working for your Perl project you simply have to install this
+module, and nothing else.")
+    (license (package-license perl))
+    (home-page "http://search.cpan.org/~ishigaki/DBD-SQLite/lib/DBD/SQLite.pm")))
