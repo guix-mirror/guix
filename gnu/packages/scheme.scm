@@ -64,8 +64,10 @@
                  ;; Delete these dangling symlinks since they break
                  ;; `patch-shebangs'.
                  (for-each delete-file
-                           (cons "src/lib/shim-config.scm"
-                                 (find-files "src/lib/lib" "\\.so$")))
+                           (append '("src/lib/shim-config.scm")
+                                   (find-files "src/lib/lib" "\\.so$")
+                                   (find-files "src/lib" "^liarc-")
+                                   (find-files "src/compiler" "^make\\.")))
                  (chdir "src")
                  #t)))
         (alist-replace
