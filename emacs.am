@@ -27,14 +27,14 @@ ELFILES =					\
   emacs/guix-utils.el				\
   emacs/guix.el
 
+if HAVE_EMACS
+
 dist_lisp_DATA =				\
   $(ELFILES)					\
   $(AUTOLOADS)
 
 nodist_lisp_DATA =				\
   emacs/guix-init.el
-
-if HAVE_EMACS
 
 $(AUTOLOADS): $(ELFILES)
 	$(EMACS) --batch --eval						\
