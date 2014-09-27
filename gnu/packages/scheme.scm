@@ -37,10 +37,10 @@
   #:use-module (gnu packages image)
   #:use-module (ice-9 match))
 
-(define (source-directory system version)
+(define (mit-scheme-source-directory system version)
   (string-append "mit-scheme-"
                  (if (or (string-prefix? "x86_64" system)
-                          (string-prefix? "i686" system))
+                         (string-prefix? "i686" system))
                      ""
                      "c-")
                  version))
@@ -59,7 +59,8 @@
         (lambda* (#:key inputs #:allow-other-keys)
           (and (zero? (system* "tar" "xzvf"
                                (assoc-ref inputs "source")))
-               (chdir ,(source-directory (%current-system) version))
+               (chdir ,(mit-scheme-source-directory (%current-system)
+                                                    version))
                (begin
                  ;; Delete these dangling symlinks since they break
                  ;; `patch-shebangs'.
