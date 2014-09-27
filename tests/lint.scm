@@ -79,6 +79,15 @@
                         (check-synopsis-style pkg))))
                     "no article allowed at the beginning of the synopsis")))
 
+(test-assert "synopsis: too long"
+  (->bool
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (synopsis (make-string 80 #\x)))))
+                          (check-synopsis-style pkg))))
+                    "synopsis should be less than 80 characters long")))
+
 (test-assert "inputs: pkg-config is probably a native input"
   (->bool
    (string-contains

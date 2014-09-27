@@ -140,11 +140,18 @@ Run a set of checkers on the specified package; if none is specified, run the ch
                      "no article allowed at the beginning of the synopsis"
                      'synopsis)))
 
+  (define (check-synopsis-length synopsis)
+   (if (>= (string-length synopsis) 80)
+       (emit-warning package
+                     "synopsis should be less than 80 characters long"
+                     'synopsis)))
+
  (let ((synopsis (package-synopsis package)))
    (if (string? synopsis)
        (begin
         (check-final-period synopsis)
-        (check-start-article synopsis)))))
+        (check-start-article synopsis)
+        (check-synopsis-length synopsis)))))
 
 (define (check-patches package)
   ;; Emit a warning if the patches requires by PACKAGE are badly named.
