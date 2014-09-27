@@ -4,6 +4,7 @@
 ;;; Copyright © 2014 John Darrington <jmd@gnu.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
+;;; Copyright © 2014 Mathieu Lirzin <mathieu.lirzin@openmailbox.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -83,6 +84,29 @@ Fahrenheit to Celsius.  Its interpreter is powerful enough to be used
 effectively as a scientific calculator.")
    (license license:gpl3+)
    (home-page "http://www.gnu.org/software/units/")))
+
+(define-public dionysus
+  (package
+    (name "dionysus")
+    (version "1.3.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnu/dionysus/dionysus-" version
+                                  ".tar.gz"))
+              (sha256
+               (base32
+                "1aqnvw6z33bzqgd1ga571pnx6vq2zrkckm1cz91grv45h4jr9vgs"))))
+    (build-system gnu-build-system)
+    (inputs `(("tcl" ,tcl)))                      ;for 'tclsh'
+    (synopsis "Local search for universal constants and scientific values")
+    (description
+     "GNU Dionysus is a convenient system for quickly retrieving the values of
+mathematical constants used in science and engineering.  Values can be
+searched using a simple command-line tool, choosing from three databases:
+universal constants, atomic numbers, and constants related to
+semiconductors.")
+    (license license:gpl3+)
+    (home-page "http://www.gnu.org/software/dionysus/")))
 
 (define-public gsl
   (package
