@@ -61,6 +61,10 @@ if test "x$GUILD" = "x"; then
    AC_MSG_ERROR(['guild' binary not found; please check your guile-2.x installation.])
 fi
 
+dnl guile-json is used for the PyPI package importer
+GUILE_MODULE_AVAILABLE([have_guile_json], [(json)])
+AM_CONDITIONAL([HAVE_GUILE_JSON], [test "x$have_guile_json" = "xyes"])
+
 dnl Make sure we have a full-fledged Guile.
 GUIX_ASSERT_GUILE_FEATURES([regex posix socket net-db threads])
 

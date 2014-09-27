@@ -17,14 +17,14 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (test-snix)
-  #:use-module (guix snix)
+  #:use-module (guix import snix)
   #:use-module ((guix utils) #:select (%nixpkgs-directory))
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-64)
   #:use-module (ice-9 match))
 
 (define factorize-uri
-  (@@ (guix snix) factorize-uri))
+  (@@ (guix import snix) factorize-uri))
 
 (define-syntax-rule (every? proc lists ...)
   (not (not (every proc lists ...))))

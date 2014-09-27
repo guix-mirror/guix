@@ -16,7 +16,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (guix snix)
+(define-module (guix import snix)
   #:use-module (sxml ssax)
   #:use-module (ice-9 popen)
   #:use-module (ice-9 match)
@@ -32,6 +32,7 @@
   #:use-module (system foreign)
   #:use-module (rnrs bytevectors)
   #:use-module (guix utils)
+  #:use-module (guix import utils)
   #:use-module (guix base32)
   #:use-module (guix config)
   #:use-module (guix gnu-maintenance)
@@ -317,34 +318,6 @@ attributes, or #f if NAME cannot be found."
 ;;;
 ;;; Conversion of "Nix expressions" to "Guix expressions".
 ;;;
-
-(define (factorize-uri uri version)
-  "Factorize URI, a package tarball URI as a string, such that any occurrences
-of the string VERSION is replaced by the symbol 'version."
-  (let ((version-rx (make-regexp (regexp-quote version))))
-    (match (regexp-exec version-rx uri)
-      (#f
-       uri)
-      (_
-       (let ((indices (fold-matches version-rx uri
-                                    '((0))
-                                    (lambda (m result)
-                                      (match result
-                                        (((start) rest ...)
-                                         `((,(match:end m))
-                                           (,start . ,(match:start m))
-                                           ,@rest)))))))
-         (fold (lambda (index result)
-                 (match index
-                   ((start)
-                    (cons (substring uri start)
-                          result))
-                   ((start . end)
-                    (cons* (substring uri start end)
-                           'version
-                           result))))
-               '()
-               indices))))))
 
 (define (snix-derivation->guix-package derivation)
   "Return the `package' s-expression corresponding to SNix DERIVATION, a

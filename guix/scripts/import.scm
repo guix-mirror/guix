@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,15 +19,16 @@
 
 (define-module (guix scripts import)
   #:use-module (guix ui)
-  #:use-module (guix snix)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-37)
+  #:use-module (ice-9 format)
   #:use-module (ice-9 match)
   #:use-module (ice-9 pretty-print)
-  #:export (guix-import))
+  #:export (%standard-import-options
+            guix-import))
 
 
 ;;;
@@ -61,15 +63,30 @@ rather than \\n."
 
 
 ;;;
-;;; Command-line options.
+;;; Command line options.
 ;;;
 
-(define %default-options
-  '())
+(define %standard-import-options '())
+
+
+;;;
+;;; Entry point.
+;;;
+
+(define importers '("nix" "pypi"))
+
+(define (resolve-importer name)
+  (let ((module (resolve-interface
+                 `(guix scripts import ,(string->symbol name))))
+        (proc (string->symbol (string-append "guix-import-" name))))
+    (module-ref module proc)))
 
 (define (show-help)
-  (display (_ "Usage: guix import NIXPKGS ATTRIBUTE
-Import and convert the Nix expression ATTRIBUTE of NIXPKGS.\n"))
+  (display (_ "Usage: guix import IMPORTER ARGS ...
+Run IMPORTER with ARGS.\n"))
+  (newline)
+  (display (_ "IMPORTER must be one of the importers listed below:\n"))
+  (format #t "~{   ~a~%~}" importers)
   (display (_ "
   -h, --help             display this help and exit"))
   (display (_ "
@@ -77,43 +94,19 @@ Import and convert the Nix expression ATTRIBUTE of NIXPKGS.\n"))
   (newline)
   (show-bug-report-information))
 
-(define %options
-  ;; Specification of the command-line options.
-  (list (option '(#\h "help") #f #f
-                (lambda args
-                  (show-help)
-                  (exit 0)))
-        (option '(#\V "version") #f #f
-                (lambda args
-                  (show-version-and-exit "guix import")))))
-
-
-;;;
-;;; Entry point.
-;;;
-
 (define (guix-import . args)
-  (define (parse-options)
-    ;; Return the alist of option values.
-    (args-fold* args %options
-                (lambda (opt name arg result)
-                  (leave (_ "~A: unrecognized option~%") name))
-                (lambda (arg result)
-                  (alist-cons 'argument arg result))
-                %default-options))
-
-  (let* ((opts (parse-options))
-         (args (filter-map (match-lambda
-                            (('argument . value)
-                             value)
-                            (_ #f))
-                           (reverse opts))))
-    (match args
-      ((nixpkgs attribute)
-       (let-values (((expr loc)
-                     (nixpkgs->guix-package nixpkgs attribute)))
-         (format #t ";; converted from ~a:~a~%~%"
-                 (location-file loc) (location-line loc))
-         (pretty-print expr (newline-rewriting-port (current-output-port)))))
-      (_
-       (leave (_ "wrong number of arguments~%"))))))
+  (match args
+    (()
+     (format (current-error-port)
+             (_ "guix import: missing importer name~%")))
+    ((or ("-h") ("--help"))
+     (show-help)
+     (exit 0))
+    (("--version")
+     (show-version-and-exit "guix import"))
+    ((importer args ...)
+     (if (member importer importers)
+         (let ((expr (apply (resolve-importer importer) args)))
+           (pretty-print expr (newline-rewriting-port (current-output-port))))
+         (format (current-error-port)
+                 (_ "guix import: invalid importer~%"))))))

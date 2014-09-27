@@ -75,7 +75,9 @@ MODULES =					\
   guix/build/syscalls.scm			\
   guix/build/emacs-utils.scm			\
   guix/packages.scm				\
-  guix/snix.scm					\
+  guix/import/utils.scm				\
+  guix/import/snix.scm				\
+  guix/import/pypi.scm				\
   guix/scripts/download.scm			\
   guix/scripts/build.scm			\
   guix/scripts/archive.scm			\
@@ -89,6 +91,8 @@ MODULES =					\
   guix/scripts/refresh.scm			\
   guix/scripts/system.scm			\
   guix/scripts/lint.scm				\
+  guix/scripts/import/nix.scm			\
+  guix/scripts/import/pypi.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
@@ -161,6 +165,12 @@ SCM_TESTS =					\
   tests/profiles.scm				\
   tests/syscalls.scm				\
   tests/lint.scm
+
+if HAVE_GUILE_JSON
+
+SCM_TESTS += tests/pypi.scm
+
+endif
 
 SH_TESTS =					\
   tests/guix-build.sh				\
