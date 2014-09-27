@@ -4,6 +4,7 @@
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2014, 2015 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
+;;; Copyright © 2014, 2015 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -33,11 +34,13 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages texinfo)
+  #:use-module (gnu packages hurd)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages gettext)
   #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial))
 
@@ -705,6 +708,113 @@ test environments.")
 variety of options.  It is an alternative to the shell \"type\" built-in
 command.")
     (license gpl3+))) ; some files are under GPLv2+
+
+(define-public glibc/hurd
+  ;; The Hurd's libc variant.
+  (package (inherit glibc)
+    (name "glibc-hurd")
+    (version "2.18")
+    (source (origin
+              (method git-fetch)
+              (uri (git-reference
+                    (url "git://git.sv.gnu.org/hurd/glibc")
+                    (commit "cc94b3cfe65523f980359e5f0e93a26196bda1d3")))
+              (sha256
+               (base32
+                "17gsh0kaz0zyvghjmx861mi2p65m9901lngi179x61zm6v2v3xc4"))
+              (file-name (string-append name "-" version))
+              (patches (map search-patch
+                            '("glibc-hurd-extern-inline.patch")))))
+
+    ;; Libc provides <hurd.h>, which includes a bunch of Hurd and Mach headers,
+    ;; so both should be propagated.
+    (propagated-inputs `(("gnumach-headers" ,gnumach-headers)
+                         ("hurd-headers" ,hurd-headers)
+                         ("hurd-minimal" ,hurd-minimal)))
+    (native-inputs
+     `(,@(package-native-inputs glibc)
+       ("patch/libpthread-patch" ,(search-patch "libpthread-glibc-preparation.patch"))
+       ("mig" ,mig)
+       ("perl" ,perl)
+       ("libpthread" ,(origin
+                        (method git-fetch)
+                        (uri (git-reference
+                              (url "git://git.sv.gnu.org/hurd/libpthread")
+                              (commit "0ef7b75c4ba91b6660f0d3d8b51d14d25e3d5bfb")))
+                        (sha256
+                         (base32
+                          "031py18fls15z0wprni33mf762kg6fx8xqijppimhp83yp6ky3l3"))
+                        (file-name "libpthread")))))
+
+    (arguments
+     (substitute-keyword-arguments (package-arguments glibc)
+       ((#:configure-flags original-configure-flags)
+        `(append (list "--host=i686-pc-gnu"
+
+                       ;; nscd fails to build for GNU/Hurd:
+                       ;; <https://lists.gnu.org/archive/html/bug-hurd/2014-07/msg00006.html>.
+                       ;; Disable it.
+                       "--disable-nscd")
+                 (filter (lambda (flag)
+                           (not (or (string-prefix? "--with-headers=" flag)
+                                    (string-prefix? "--enable-kernel=" flag))))
+                         ;; Evaluate 'original-configure-flags' in a
+                         ;; lexical environment that has a dummy
+                         ;; "linux-headers" input, to prevent errors.
+                         (let ((%build-inputs `(("linux-headers" . "@DUMMY@")
+                                                ,@%build-inputs)))
+                           ,original-configure-flags))))
+       ((#:phases phases)
+        `(alist-cons-after
+          'unpack 'prepare-libpthread
+          (lambda* (#:key inputs #:allow-other-keys)
+            (copy-recursively (assoc-ref inputs "libpthread") "libpthread")
+
+            (system* "patch" "--force" "-p1" "-i"
+                     (assoc-ref inputs "patch/libpthread-patch"))
+            #t)
+          ,phases))))
+    (synopsis "The GNU C Library (GNU Hurd variant)")
+    (supported-systems %hurd-systems)))
+
+(define-public glibc/hurd-headers
+  (package (inherit glibc/hurd)
+    (name "glibc-hurd-headers")
+    (outputs '("out"))
+    (propagated-inputs `(("gnumach-headers" ,gnumach-headers)
+                         ("hurd-headers" ,hurd-headers)))
+    (arguments
+     (substitute-keyword-arguments (package-arguments glibc/hurd)
+       ;; We just pass the flags really needed to build the headers.
+       ((#:configure-flags _)
+        `(list "--enable-add-ons"
+               "--host=i686-pc-gnu"
+               "--enable-obsolete-rpc"))
+       ((#:phases _)
+        '(alist-replace
+          'install
+          (lambda* (#:key outputs #:allow-other-keys)
+            (and (zero? (system* "make" "install-headers"))
+
+                 ;; Make an empty stubs.h to work around not being able to
+                 ;; produce a valid stubs.h and causing the build to fail. See
+                 ;; <http://lists.gnu.org/archive/html/guix-devel/2014-04/msg00233.html>.
+                 (let ((out (assoc-ref outputs "out")))
+                   (close-port
+                    (open-output-file
+                     (string-append out "/include/gnu/stubs.h"))))))
+
+          ;; Nothing to build.
+          (alist-delete
+           'build
+
+           (alist-cons-before
+            'configure 'pre-configure
+            (lambda _
+              ;; Use the right 'pwd'.
+              (substitute* "configure"
+                (("/bin/pwd") "pwd")))
+            %standard-phases))))))))
 
 (define-public tzdata
   (package

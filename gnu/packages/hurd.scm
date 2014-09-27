@@ -20,11 +20,14 @@
   #:use-module (guix licenses)
   #:use-module (guix download)
   #:use-module (guix packages)
+  #:use-module (gnu packages)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages bison)
   #:use-module (gnu packages perl)
-  #:use-module (gnu packages autotools))
+  #:use-module (gnu packages autotools)
+  #:use-module (gnu packages base)
+  #:use-module (guix git-download))
 
 (define-public gnumach-headers
   (package
@@ -129,4 +132,56 @@ communication.")
     (description
      "This package provides C headers of the GNU Hurd, used to build the GNU C
 Library and other user programs.")
+    (license gpl2+)))
+
+(define-public hurd-minimal
+  (package (inherit hurd-headers)
+    (name "hurd-minimal")
+    (inputs `(("glibc-hurd-headers" ,glibc/hurd-headers)))
+    (native-inputs
+     `(("autoconf" ,(autoconf-wrapper))
+       ("mig" ,mig)))
+
+    (arguments
+     `(#:phases (alist-replace
+                 'install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   (let ((out (assoc-ref outputs "out")))
+                     ;; We need to copy libihash.a to the output directory manually,
+                     ;; since there is no target for that in the makefile.
+                     (mkdir-p (string-append out "/include"))
+                     (copy-file "libihash/ihash.h"
+                                (string-append out "/include/ihash.h"))
+                     (mkdir-p (string-append out "/lib"))
+                     (copy-file "libihash/libihash.a"
+                                (string-append out "/lib/libihash.a"))
+                     #t))
+                 (alist-replace
+                  'build
+                  (lambda _
+                    (zero? (system* "make" "-Clibihash" "libihash.a")))
+                  (alist-cons-before
+                   'configure 'bootstrap
+                   (lambda _
+                     (zero? (system* "autoreconf" "-vfi")))
+                   %standard-phases)))
+       #:configure-flags '(;; Pretend we're on GNU/Hurd; 'configure' wants
+                           ;; that.
+                           "--host=i686-pc-gnu"
+
+                           ;; Reduce set of dependencies.
+                           "--disable-ncursesw"
+                           "--disable-test"
+                           "--without-libbz2"
+                           "--without-libz"
+                           "--without-parted"
+                           ;; Skip the clnt_create check because it expects
+                           ;; a working glibc causing a circular dependency.
+                           "ac_cv_search_clnt_create=no")
+       #:tests? #f))
+    (home-page "http://www.gnu.org/software/hurd/hurd.html")
+    (synopsis "GNU Hurd libraries")
+    (description
+     "This package provides libihash, needed to build the GNU C 
+Library for GNU/Hurd.")
     (license gpl2+)))
