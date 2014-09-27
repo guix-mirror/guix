@@ -40,7 +40,7 @@
 (define-public mit-scheme
   (package
     (name "mit-scheme")
-    (version "9.1.1")
+    (version "9.2")
     (source #f)                                   ; see below
     (build-system gnu-build-system)
     (arguments
@@ -56,8 +56,8 @@
                  ;; Delete these dangling symlinks since they break
                  ;; `patch-shebangs'.
                  (for-each delete-file
-                           (append (find-files "src/lib/lib" "\\.so$")
-                                   (find-files "src/lib" "^ffi-test")))
+                           (cons "src/lib/shim-config.scm"
+                                 (find-files "src/lib/lib" "\\.so$")))
                  (chdir "src")
                  #t)))
         (alist-replace
@@ -98,13 +98,13 @@
            (match (%current-system)
              ("x86_64-linux"
               (base32
-               "1wcxm9hyfc53myvlcn93fyqrnnn4scwkknl9hkbp1cphc6mp291x"))
+               "1skzxxhr0iq96bf0j5m7mvf3i4sppfyfa6gpqn34mwgkw1fx8274"))
              ("i686-linux"
               (base32
-               "0vi760fy550d9db538m0vzbq1mpdncvw9g8bk4lswk0kcdira55z"))
+               "1fmlpnhf5a75db93phajh4ysbdgrgl72v45lk3kznriprl0a7jc6"))
              (_
               (base32
-               "0pclakzwxbqgy6wqwvs6ml62wgby8ba8xzmwzdwhx1v8wv05yw1j"))))))))
+               "0w5ib5vsidihb4hb6fma3sp596ykr8izagm57axvgd6lqzwicsjg"))))))))
     (home-page "http://www.gnu.org/software/mit-scheme/")
     (synopsis "Scheme implementation with integrated editor and debugger")
     (description
