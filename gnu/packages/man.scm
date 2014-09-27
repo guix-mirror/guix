@@ -145,7 +145,7 @@ Linux kernel and C library interfaces employed by user-space programs.")
 (define-public help2man
   (package
     (name "help2man")
-    (version "1.46.1")
+    (version "1.46.3")
     (source
      (origin
       (method url-fetch)
@@ -153,7 +153,7 @@ Linux kernel and C library interfaces employed by user-space programs.")
                           version ".tar.xz"))
       (sha256
        (base32
-        "0iqwb3qirl7rp1wwpbh01q89qxvi4h3bc73wi03av6hl4sh05z9x"))))
+        "0hi94a6ai96yw0v8xgjzpp5c6jr33ifmbn2mkp7wz7rgmwxxqsd6"))))
     (build-system gnu-build-system)
     (arguments `(;; There's no `check' target.
                  #:tests? #f))
