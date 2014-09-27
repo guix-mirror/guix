@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,11 +20,14 @@
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages ghostscript)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix build-system cmake)
   #:use-module (guix build-system gnu))
 
 (define-public freetype
@@ -167,3 +170,30 @@ been designed, tested, and debugged to the extent that general-purpose
 applications should be.")
    (license license:lgpl2.1+)
    (home-page "http://scripts.sil.org/cms/scripts/page.php?cat_id=teckit")))
+
+(define-public graphite2
+  (package
+   (name "graphite2")
+   (version "1.2.4")
+   (source
+     (origin
+       (method url-fetch)
+       (uri (string-append
+              "mirror://sourceforge/silgraphite/graphite2/graphite2-"
+              version ".tgz"))
+       (sha256
+         (base32
+           "00xhv1mp640fr3wmdzwn4yz0g56jd4r9fb7b02mc1g19h0bdbhsb"))))
+   (build-system cmake-build-system)
+   (inputs
+    `(("freetype" ,freetype)
+      ("perl" ,perl)
+      ("python" ,python-2))) ; because of "import imap" in tests
+   (synopsis "reimplementation of the SIL Graphite text processing engine")
+   (description
+    "Graphite2 is a reimplementation of the SIL Graphite text processing
+engine.  Graphite is a smart font technology designed to facilitate the
+process known as shaping.  This process takes an input Unicode text string
+and returns a sequence of positioned glyphids from the font.")
+   (license license:lgpl2.1+)
+   (home-page "http://projects.palaso.org/projects/graphitedev")))
