@@ -116,7 +116,7 @@ communication.")
 
        #:configure-flags '(;; Pretend we're on GNU/Hurd; 'configure' wants
                            ;; that.
-                           "--host=i686-pc-gnu"
+                           "--build=i686-pc-gnu"
 
                            ;; Reduce set of dependencies.
                            "--without-parted")
