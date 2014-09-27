@@ -29,6 +29,7 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-37)
   #:export (guix-lint
+            check-description-style
             check-inputs-should-be-native
             check-patches
             check-synopsis-style))
@@ -110,6 +111,19 @@ Run a set of checkers on the specified package; if none is specified, run the ch
             %checkers)
   (exit 0))
 
+(define (start-with-capital-letter? s)
+  (char-set-contains? char-set:upper-case (string-ref s 0)))
+
+(define (check-description-style package)
+  ;; Emit a warning if stylistic issues are found in the description of PACKAGE.
+ (let ((description (package-description package)))
+   (when (and (string? description)
+              (not (string-null? description))
+              (not (start-with-capital-letter? description)))
+     (emit-warning package
+                   "description should start with an upper-case letter"
+                   'description))))
+
 (define (check-inputs-should-be-native package)
   ;; Emit a warning if some inputs of PACKAGE are likely to belong to its
   ;; native inputs.
@@ -146,9 +160,17 @@ Run a set of checkers on the specified package; if none is specified, run the ch
                      "synopsis should be less than 80 characters long"
                      'synopsis)))
 
+  (define (check-synopsis-start-upper-case synopsis)
+   (when (and (not (string-null? synopsis))
+              (not (start-with-capital-letter? synopsis)))
+     (emit-warning package
+                   "synopsis should start with an upper-case letter"
+                   'synopsis)))
+
  (let ((synopsis (package-synopsis package)))
    (if (string? synopsis)
        (begin
+        (check-synopsis-start-upper-case synopsis)
         (check-final-period synopsis)
         (check-start-article synopsis)
         (check-synopsis-length synopsis)))))
@@ -175,6 +197,10 @@ Run a set of checkers on the specified package; if none is specified, run the ch
 
 (define %checkers
   (list
+   (lint-checker
+     (name        "description")
+     (description "Validate package descriptions")
+     (check       check-description-style))
    (lint-checker
      (name        "inputs-should-be-native")
      (description "Identify inputs that should be native inputs")

@@ -44,6 +44,24 @@
       (thunk))
     (get-output-string port)))
 
+(test-assert "description: does not start with an upper-case letter"
+  (->bool
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (description "bad description."))))
+                          (check-description-style pkg))))
+                    "description should start with an upper-case letter")))
+
+(test-assert "synopsis: does not start with an upper-case letter"
+  (->bool
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (synopsis "bad synopsis."))))
+                          (check-synopsis-style pkg))))
+                    "synopsis should start with an upper-case letter")))
+
 (test-assert "synopsis: ends with a period"
   (->bool
    (string-contains (call-with-warnings
