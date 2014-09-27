@@ -167,12 +167,21 @@ Run a set of checkers on the specified package; if none is specified, run the ch
                    "synopsis should start with an upper-case letter"
                    'synopsis)))
 
+  (define (check-start-with-package-name synopsis)
+   (let ((idx (string-contains-ci synopsis (package-name package))))
+     (when (and idx
+                (= idx 0))
+       (emit-warning package
+                     "synopsis should not start with the package name")
+                     'synopsis)))
+
  (let ((synopsis (package-synopsis package)))
    (if (string? synopsis)
        (begin
         (check-synopsis-start-upper-case synopsis)
         (check-final-period synopsis)
         (check-start-article synopsis)
+        (check-start-with-package-name synopsis)
         (check-synopsis-length synopsis)))))
 
 (define (check-patches package)

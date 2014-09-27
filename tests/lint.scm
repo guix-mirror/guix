@@ -124,6 +124,16 @@
                           (check-synopsis-style pkg))))
                     "synopsis should be less than 80 characters long")))
 
+(test-assert "synopsis: start with package name"
+  (->bool
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (name "foo")
+                                     (synopsis "foo, a nice package"))))
+                          (check-synopsis-style pkg))))
+                    "synopsis should not start with the package name")))
+
 (test-assert "inputs: pkg-config is probably a native input"
   (->bool
    (string-contains
