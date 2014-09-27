@@ -34,6 +34,7 @@
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages xml)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages perl))
 
 (define-public httpd
@@ -547,3 +548,26 @@ solution for use cases such as embedded deployments where a full featured HTTP
 proxy is required, but the system resources for a larger proxy are
 unavailable.") 
     (license l:gpl2+)))
+
+(define-public perl-www-curl
+  (package
+    (name "perl-www-curl")
+    (version "4.17")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "mirror://cpan/authors/id/S/SZ/SZBALINT/WWW-Curl-"
+                    version".tar.gz"))
+              (sha256
+               (base32
+                "1fmp9aib1kaps9vhs4dwxn7b15kgnlz9f714bxvqsd1j1q8spzsj"))))
+    (build-system perl-build-system)
+    (arguments
+     '(#:tests? #f))                        ;XXX: tests require network access
+    (inputs `(("curl" ,curl)))
+    (synopsis "Perl extension interface for libcurl")
+    (description
+     "This is a Perl extension interface for the libcurl file downloading
+library.")
+    (license (package-license perl))
+    (home-page "http://search.cpan.org/~szbalint/WWW-Curl-4.17/lib/WWW/Curl.pm")))
