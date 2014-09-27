@@ -148,8 +148,8 @@ Run a set of checkers on the specified package; if none is specified, run the ch
                       'synopsis)))
 
   (define (check-start-article synopsis)
-   (if (or (string=? (string-take synopsis 2) "A ")
-           (string=? (string-take synopsis 3) "An "))
+   (if (or (string-ci=? (string-take synopsis 2) "A ")
+           (string-ci=? (string-take synopsis 3) "An "))
        (emit-warning package
                      "no article allowed at the beginning of the synopsis"
                      'synopsis)))

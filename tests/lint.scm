@@ -97,6 +97,24 @@
                         (check-synopsis-style pkg))))
                     "no article allowed at the beginning of the synopsis")))
 
+(test-assert "synopsis: starts with 'a'"
+  (->bool
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (synopsis "a bad synopsis"))))
+                        (check-synopsis-style pkg))))
+                    "no article allowed at the beginning of the synopsis")))
+
+(test-assert "synopsis: starts with 'an'"
+  (->bool
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (synopsis "an awful synopsis"))))
+                        (check-synopsis-style pkg))))
+                    "no article allowed at the beginning of the synopsis")))
+
 (test-assert "synopsis: too long"
   (->bool
    (string-contains (call-with-warnings
