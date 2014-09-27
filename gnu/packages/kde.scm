@@ -60,7 +60,7 @@
 (define-public phonon
   (package
     (name "phonon")
-    (version "4.7.0")
+    (version "4.8.0")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.kde.org/stable/" name
@@ -68,7 +68,7 @@
                                 name "-" version ".tar.xz"))
              (sha256
               (base32
-               "1sxrnwm16dxy32xmrqf26762wmbqing1zx8i4vlvzgzvd9xy39ac"))))
+               "096m3v4i7gmn0870l1bifna5bwbii6xrdk29i98s9i9zr1k2mjrv"))))
     (build-system cmake-build-system)
     ;; FIXME: Add interpreter ruby once available.
     ;; Add optional input libqtzeitgeist.
