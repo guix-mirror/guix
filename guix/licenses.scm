@@ -42,6 +42,7 @@
             openldap2.8 openssl
             psfl public-domain
             qpl
+            ruby
             vim
             x11 x11-style
             zlib
@@ -254,6 +255,11 @@ which may be a file:// URI pointing the package's tree."
   (license "QPL"
            "http://directory.fsf.org/wiki/License:QPLv1.0"
            "http://www.gnu.org/licenses/license-list.html#QPL"))
+
+(define ruby
+  (license "Ruby License"
+           "http://directory.fsf.org/wiki/License:Ruby"
+           "https://www.ruby-lang.org/en/about/license.txt"))
 
 (define vim
   (license "Vim"
