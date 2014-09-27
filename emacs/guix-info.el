@@ -291,34 +291,71 @@ VAL is a list, call the function on each element of this list."
         (guix-split-insert val face-or-fun
                            guix-info-fill-column prefix)))))
 
-(defun guix-info-insert-action-button (label action &optional message
-                                             &rest properties)
-  "Make action button with LABEL and insert it at point.
-For the meaning of ACTION, MESSAGE and PROPERTIES, see
-`guix-insert-button'."
-  (apply #'guix-insert-button
-         label 'guix-info-action-button action message
-         'mouse-face 'guix-info-action-button-mouse
-         properties))
-
-(defun guix-info-insert-file-path (path &optional _)
-  "Make button from file PATH and insert it at point."
-  (guix-insert-button
-   path 'guix-info-file-path
-   (lambda (btn) (find-file (button-label btn)))
-   "Find file"))
-
-(defun guix-info-insert-url (url &optional _)
-  "Make button from URL and insert it at point."
-  (guix-insert-button
-   url 'guix-info-url
-   (lambda (btn) (browse-url (button-label btn)))
-   "Browse URL"))
-
 (defun guix-info-insert-time (seconds &optional _)
   "Insert formatted time string using SECONDS at point."
   (guix-info-insert-val-default (guix-get-time-string seconds)
                                 'guix-info-time))
+
+
+;;; Buttons
+
+(define-button-type 'guix
+  'follow-link t)
+
+(define-button-type 'guix-action
+  :supertype 'guix
+  'face 'guix-info-action-button
+  'mouse-face 'guix-info-action-button-mouse)
+
+(define-button-type 'guix-file
+  :supertype 'guix
+  'face 'guix-info-file-path
+  'help-echo "Find file"
+  'action (lambda (btn)
+            (find-file (button-label btn))))
+
+(define-button-type 'guix-url
+  :supertype 'guix
+  'face 'guix-info-url
+  'help-echo "Browse URL"
+  'action (lambda (btn)
+            (browse-url (button-label btn))))
+
+(define-button-type 'guix-package-location
+  :supertype 'guix
+  'face 'guix-package-info-location
+  'help-echo "Find location of this package"
+  'action (lambda (btn)
+            (guix-find-location (button-label btn))))
+
+(define-button-type 'guix-package-name
+  :supertype 'guix
+  'face 'guix-package-info-name-button
+  'help-echo "Describe this package"
+  'action (lambda (btn)
+            (guix-get-show-entries 'info guix-package-info-type 'name
+                                   (button-label btn))))
+
+(defun guix-info-insert-action-button (label action &optional message
+                                             &rest properties)
+  "Make action button with LABEL and insert it at point.
+ACTION is a function called when the button is pressed.  It
+should accept button as the argument.
+MESSAGE is a button message.
+See `insert-text-button' for the meaning of PROPERTIES."
+  (apply #'guix-insert-button
+         label 'guix-action
+         'action action
+         'help-echo message
+         properties))
+
+(defun guix-info-insert-file-path (path &optional _)
+  "Make button from file PATH and insert it at point."
+  (guix-insert-button path 'guix-file))
+
+(defun guix-info-insert-url (url &optional _)
+  "Make button from URL and insert it at point."
+  (guix-insert-button url 'guix-url))
 
 
 (defvar guix-info-mode-map
@@ -341,6 +378,11 @@ For the meaning of ACTION, MESSAGE and PROPERTIES, see
 (defface guix-package-info-name
   '((t :inherit font-lock-keyword-face))
   "Face used for a name of a package."
+  :group 'guix-package-info)
+
+(defface guix-package-info-name-button
+  '((t :inherit button))
+  "Face used for a full name that can be used to describe a package."
   :group 'guix-package-info)
 
 (defface guix-package-info-version
@@ -396,10 +438,7 @@ For the meaning of ACTION, MESSAGE and PROPERTIES, see
 
 (defun guix-package-info-insert-location (location &optional _)
   "Make button from file LOCATION and insert it at point."
-  (guix-insert-button
-   location 'guix-package-info-location
-   (lambda (btn) (guix-find-location (button-label btn)))
-   "Find location of this package"))
+  (guix-insert-button location 'guix-package-location))
 
 (defmacro guix-package-info-define-insert-inputs (&optional type)
   "Define a face and a function for inserting package inputs.
@@ -410,45 +449,38 @@ Face name is `guix-package-info-TYPE-inputs'."
          (type-name (and type (concat type-str "-")))
          (type-desc (and type (concat type-str " ")))
          (face (intern (concat "guix-package-info-" type-name "inputs")))
+         (btn  (intern (concat "guix-package-" type-name "input")))
          (fun  (intern (concat "guix-package-info-insert-" type-name "inputs"))))
     `(progn
        (defface ,face
-         '((t :inherit button))
+         '((t :inherit guix-package-info-name-button))
          ,(concat "Face used for " type-desc "inputs of a package.")
          :group 'guix-package-info)
 
+       (define-button-type ',btn
+         :supertype 'guix-package-name
+         'face ',face)
+
        (defun ,fun (inputs &optional _)
          ,(concat "Make buttons from " type-desc "INPUTS and insert them at point.")
-         (guix-package-info-insert-full-names inputs ',face)))))
+         (guix-package-info-insert-full-names inputs ',btn)))))
 
 (guix-package-info-define-insert-inputs)
 (guix-package-info-define-insert-inputs native)
 (guix-package-info-define-insert-inputs propagated)
 
-(defun guix-package-info-insert-full-names (names face)
-  "Make buttons from package NAMES and insert them at point.
-NAMES is a list of strings.
-Propertize buttons with FACE."
+(defun guix-package-info-insert-full-names (names button-type)
+  "Make BUTTON-TYPE buttons from package NAMES and insert them at point.
+NAMES is a list of strings."
   (if names
       (guix-info-insert-val-default
        (with-temp-buffer
          (guix-mapinsert (lambda (name)
-                           (guix-package-info-insert-full-name
-                            name face))
+                           (guix-insert-button name button-type))
                          names
                          guix-list-separator)
          (buffer-substring (point-min) (point-max))))
     (guix-format-insert nil)))
-
-(defun guix-package-info-insert-full-name (name face)
-  "Make button and insert package NAME at point.
-Propertize package button with FACE."
-  (guix-insert-button
-   name face
-   (lambda (btn)
-     (guix-get-show-entries 'info 'package 'name
-                            (button-label btn)))
-   "Describe this package"))
 
 
 ;;; Inserting outputs and installed parameters
@@ -485,8 +517,7 @@ formatted with this string, an action button is inserted.")
   (insert "\n")
   (guix-info-insert-indent)
   (insert "Installed outputs are displayed for a non-unique ")
-  (guix-package-info-insert-full-name full-name
-                                      'guix-package-info-inputs)
+  (guix-insert-button full-name 'guix-package-name)
   (insert " package."))
 
 (defun guix-package-info-insert-output (output entry)

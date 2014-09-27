@@ -673,7 +673,7 @@ ENTRIES is a list of package entries to get info about packages."
 (defun guix-insert-package-strings (strings action)
   "Insert information STRINGS at point for performing package ACTION."
   (when strings
-    (insert "Package(s) to " (guix-get-string action 'bold) ":\n")
+    (insert "Package(s) to " (propertize action 'face 'bold) ":\n")
     (mapc (lambda (str)
             (insert "  " str "\n"))
           strings)

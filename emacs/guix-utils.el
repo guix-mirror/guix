@@ -23,7 +23,7 @@
 
 ;;; Code:
 
-;; (require 'cl-lib)
+(require 'cl-lib)
 
 (defvar guix-true-string "Yes")
 (defvar guix-false-string "–")
@@ -52,7 +52,7 @@ If FACE is non-nil, propertize returned string with this FACE."
                                       val guix-list-separator))
               (t (prin1-to-string val)))))
     (if (and val face)
-        (propertize str 'face face)
+        (propertize str 'font-lock-face face)
       str)))
 
 (defun guix-get-time-string (seconds)
@@ -84,22 +84,13 @@ at point between each FUNCTION call."
             (funcall function obj))
           (cdr sequence))))
 
-(defun guix-insert-button (label face action &optional message
-                                 &rest properties)
-  "Make button with LABEL and insert it at point.
-Propertize button with FACE.
-ACTION is a function called when the button is pressed.  It
-should accept button as the argument.
-MESSAGE is a button message.
+(defun guix-insert-button (label &optional type &rest properties)
+  "Make button of TYPE with LABEL and insert it at point.
 See `insert-text-button' for the meaning of PROPERTIES."
   (if (null label)
       (guix-format-insert nil)
-    (apply #'insert-text-button
-           label
-           'face face
-           'action action
-           'follow-link t
-           'help-echo message
+    (apply #'insert-text-button label
+           :type (or type 'button)
            properties)))
 
 (defun guix-split-insert (val &optional face col separator)
