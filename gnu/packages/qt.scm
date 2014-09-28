@@ -172,6 +172,12 @@ developers using C++ or QML, a CSS & JavaScript like language.")
             (let ((out (assoc-ref outputs "out")))
               (substitute* '("configure")
                            (("/bin/pwd") (which "pwd")))
+              ;; Explicitly link with icui18n, which is dlopened by
+              ;; QtCore.so. The LDFLAGS are in fact added to other flags
+              ;; determined by the configure phase.
+              ;; According to the nix recipe, this may be necessary for
+              ;; further libraries (cups, gtk-x11-2.0, libgdk-x11-2.0).
+              (setenv "LDFLAGS" "-licui18n")
               ;; do not pass "--enable-fast-install", which makes the
               ;; configure process fail
               (zero? (system*
