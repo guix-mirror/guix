@@ -27,8 +27,10 @@
   #:use-module (gnu packages bash)
   #:use-module (gnu packages gcc)
   #:use-module (gnu packages ed)
+  #:use-module (gnu packages m4)
   #:use-module (gnu packages file)
   #:use-module (gnu packages gawk)
+  #:use-module (gnu packages bison)
   #:use-module (gnu packages guile)
   #:use-module (gnu packages multiprecision)
   #:use-module (gnu packages compression)
@@ -396,6 +398,23 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
        ("bash" ,bash)))
     (inputs '())))
 
+(define bison-boot1
+  ;; XXX: This Bison is needed to rebuild Bash's parser, which is modified by
+  ;; its CVE patches.  Remove it when it's no longer needed.
+  (let* ((m4    (package-with-bootstrap-guile
+                 (package-with-explicit-inputs m4 %boot0-inputs
+                                               (current-source-location)
+                                               #:guile %bootstrap-guile)))
+         (bison (package (inherit bison)
+                  (native-inputs `(("perl" ,perl-boot0)))
+                  (propagated-inputs `(("m4" ,m4)))
+                  (inputs '())                    ;remove Flex...
+                  (arguments '(#:tests? #f)))))   ;... and thus disable tests
+   (package-with-bootstrap-guile
+    (package-with-explicit-inputs bison %boot0-inputs
+                                  (current-source-location)
+                                  #:guile %bootstrap-guile))))
+
 (define static-bash-for-glibc
   ;; A statically-linked Bash to be embedded in GLIBC-FINAL, for use by
   ;; system(3) & co.
@@ -403,6 +422,7 @@ exec ~a/bin/~a-~a -B~a/lib -Wl,-dynamic-linker -Wl,~a/~a \"$@\"~%"
                                   glibc-final-with-bootstrap-bash
                                   (car (assoc-ref %boot1-inputs "bash"))))
          (bash (package (inherit bash-light)
+                 (native-inputs `(("bison" ,bison-boot1)))
                  (arguments
                   `(#:guile ,%bootstrap-guile
                     ,@(package-arguments bash-light))))))

@@ -20,6 +20,7 @@
   #:use-module (guix licenses)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages readline)
+  #:use-module (gnu packages bison)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
@@ -74,7 +75,9 @@
    (22 "120s0s4qcqd0q12j1iv0hkpf9fp3w5jnqw646kv66n66jnxlfkgx")
    (23 "1m00sfi88p2akgiyrg4hw0gvz3s1586pkzjdr3dm73vs773m1hls")
    (24 "0v0gjqzjsqjfgj5x17fq7g649k94jn8zq92qsxkhc2d6l215hl1v")
-   (25 "0lcj96i659q35f1jcmwwbnw3p7w7vvlxjxqi989vn6d6qksqcl8y"))) ;CVE-2014-6271
+   (25 "0lcj96i659q35f1jcmwwbnw3p7w7vvlxjxqi989vn6d6qksqcl8y") ;CVE-2014-6271
+   (26 "0k919ir0inwn4wai2vdzpbwqq5h54fnrlkmgccxjg91v3ch15k1f") ;CVE-2014-7169
+   (27 "1gnsfvq6bhb3srlbh0cannj2hackdsipcg7z0ds7zlk1hp96mdqy")))
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
@@ -129,12 +132,29 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                (base32
                 "1m14s1f61mf6bijfibcjm9y6pkyvz6gibyl8p4hxq90fisi8gimg"))
               (patch-flags '("-p0"))
-              (patches %patch-series-4.3)))
+              (patches
+               (append
+                %patch-series-4.3
+                (list
+                 ;; Fix out-of-bound memory accesses.
+                 ;; See <http://seclists.org/oss-sec/2014/q3/712>.
+                 (origin
+                   (method url-fetch)
+                   (uri "http://seclists.org/oss-sec/2014/q3/att-712/parser-oob-4_2.patch")
+                   (sha256
+                    (base32
+                     "1zc26qv76ch2l7pxyzcw0b0bpdsr65g9hrrl2gpw6k9kq2sjvc36"))))))
+
+              ;; The patches above modify 'parse.y', so force a rebuild of the
+              ;; parser.
+              (snippet '(for-each delete-file
+                                  '("y.tab.c" "y.tab.h" "parser-built")))))
      (version (string-append version "."
                              (number->string (length %patch-series-4.3))))
      (build-system gnu-build-system)
+     (native-inputs `(("bison" ,bison)))          ;to rebuild the parser
      (inputs `(("readline" ,readline)
-               ("ncurses" ,ncurses)))             ; TODO: add texinfo
+               ("ncurses" ,ncurses)))             ;TODO: add texinfo
      (arguments
       `(;; When cross-compiling, `configure' incorrectly guesses that job
         ;; control is missing.
