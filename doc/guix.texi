@@ -1648,6 +1648,14 @@ the @code{#:make-maker-flags} parameter.
 Which Perl package is used can be specified with @code{#:perl}.
 @end defvr
 
+@defvr {Scheme Variable} ruby-build-system
+This variable is exported by @code{(guix build-system ruby)}.  It
+implements the RubyGems build procedure used by Ruby packages, which
+involves running @code{gem build} followed by @code{gem install}.
+
+Which Ruby package is used can be specified with the @code{#:ruby}
+parameter.
+@end defvr
 
 Lastly, for packages that do not need anything as sophisticated, a
 ``trivial'' build system is provided.  It is trivial in the sense that
