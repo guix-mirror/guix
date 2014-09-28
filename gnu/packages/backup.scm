@@ -29,6 +29,7 @@
   #:use-module (gnu packages dejagnu)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
+  #:use-module (gnu packages linux)
   #:use-module (gnu packages mcrypt)
   #:use-module (gnu packages nettle)
   #:use-module (gnu packages pcre)
@@ -53,7 +54,9 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0l14nrhbgkyjgvh339bbhnm6hrdwrjadphq1jmpi0mcgcdbdfh8x"))))
+        "0l14nrhbgkyjgvh339bbhnm6hrdwrjadphq1jmpi0mcgcdbdfh8x"))
+      (patches (list (search-patch "duplicity-piped-password.patch")
+                     (search-patch "duplicity-test_selection-tmp.patch")))))
     (build-system python-build-system)
     (native-inputs
      `(("python2-setuptools" ,python2-setuptools)
@@ -63,15 +66,21 @@
        ("librsync" ,librsync)
        ("mock" ,python2-mock)           ;for testing
        ("lockfile" ,python2-lockfile)
-       ("gnupg" ,gnupg-1)))             ;gpg executable needed
+       ("gnupg" ,gnupg-1)               ;gpg executable needed
+       ("util-linux" ,util-linux)       ;for setsid
+       ("tzdata" ,tzdata)))
     (arguments
      `(#:python ,python-2               ;setup assumes Python 2
        #:test-target "test"
        #:phases (alist-cons-before
-                 'check 'patch-tests
-                 (lambda _
+                 'check 'check-setup
+                 (lambda* (#:key inputs #:allow-other-keys)
                    (substitute* "testing/functional/__init__.py"
-                     (("/bin/sh") (which "sh"))))
+                     (("/bin/sh") (which "sh")))
+                   (setenv "HOME" (getcwd)) ;gpg needs to write to $HOME
+                   (setenv "TZDIR"          ;some timestamp checks need TZDIR
+                           (string-append (assoc-ref inputs "tzdata")
+                                          "/share/zoneinfo")))
                  %standard-phases)))
     (home-page "http://duplicity.nongnu.org/index.html")
     (synopsis "Encrypted backup using rsync algorithm")
