@@ -342,7 +342,25 @@ following keywords are available:
 (put 'guix-define-buffer-type 'lisp-indent-function 'defun)
 
 
-;;; Getting info about packages and generations
+;;; Getting and displaying info about packages and generations
+
+(defcustom guix-package-list-type 'output
+  "Define how to display packages in a list buffer.
+May be a symbol `package' or `output' (if `output', display each
+output on a separate line; if `package', display each package on
+a separate line)."
+  :type '(choice (const :tag "List of packages" package)
+                 (const :tag "List of outputs" output))
+  :group 'guix)
+
+(defcustom guix-package-info-type 'package
+  "Define how to display packages in an info buffer.
+May be a symbol `package' or `output' (if `output', display each
+output separately; if `package', display outputs inside a package
+information)."
+  :type '(choice (const :tag "Display packages" package)
+                 (const :tag "Display outputs" output))
+  :group 'guix)
 
 (defun guix-get-entries (entry-type search-type search-vals
                          &optional params)

@@ -469,15 +469,6 @@ With prefix (if ARG is non-nil), describe entries marked with any mark."
   "Face used if a package is obsolete."
   :group 'guix-package-list)
 
-(defcustom guix-package-list-type 'output
-  "Define how to display packages in a list buffer.
-May be a symbol `package' or `output' (if `output', display each
-output on a separate line; if `package', display each package on
-a separate line)."
-  :type '(choice (const :tag "List of packages" package)
-                 (const :tag "List of outputs" output))
-  :group 'guix-package-list)
-
 (defcustom guix-package-list-generation-marking-enabled nil
   "If non-nil, allow putting marks in a list with 'generation packages'.
 
@@ -648,15 +639,6 @@ The specification is suitable for `guix-process-package-actions'."
           (upgrade . ?U)
           (delete  . ?D)))
 
-(defcustom guix-output-list-describe-type 'package
-  "Define how to describe outputs in a list buffer.
-May be a symbol `package' or `output' (if `output', describe only
-marked outputs; if `package', describe all outputs of the marked
-packages)."
-  :type '(choice (const :tag "Describe packages" package)
-                 (const :tag "Describe outputs" output))
-  :group 'guix-output-list)
-
 (let ((map guix-output-list-mode-map))
   (define-key map (kbd "RET") 'guix-output-list-describe)
   (define-key map (kbd "x")   'guix-output-list-execute)
@@ -721,9 +703,9 @@ The specification is suitable for `guix-process-output-actions'."
   "Describe outputs or packages marked with a general mark.
 If no entries are marked, describe the current output or package.
 With prefix (if ARG is non-nil), describe entries marked with any mark.
-Also see `guix-output-list-describe-type'."
+Also see `guix-package-info-type'."
   (interactive "P")
-  (if (eq guix-output-list-describe-type 'output)
+  (if (eq guix-package-info-type 'output)
       (guix-list-describe arg)
     (let* ((oids (or (apply #'guix-list-get-marked-id-list
                             (unless arg '(general)))

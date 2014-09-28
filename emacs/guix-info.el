@@ -620,7 +620,7 @@ ENTRY is an alist with package info."
   (guix-info-insert-action-button
    "Packages"
    (lambda (btn)
-     (guix-get-show-entries 'list 'package 'generation
+     (guix-get-show-entries 'list guix-package-list-type 'generation
                             (button-get btn 'number)))
    "Show installed packages for this generation"
    'number number)
