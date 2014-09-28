@@ -29,7 +29,8 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix utils)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system ruby))
 
 (define-public ruby
   (package
@@ -88,3 +89,26 @@ a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
 
+(define-public ruby-i18n
+  (package
+    (name "ruby-i18n")
+    (version "0.6.11")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/svenfuchs/i18n/archive/v"
+                                  version ".tar.gz"))
+              (sha256
+               (base32
+                "1fdhnhh1p5g8vibv44d770z8nq208zrms3m2nswdvr54072y1m6k"))))
+    (build-system ruby-build-system)
+    (arguments
+     '(#:tests? #f)) ; requires bundler
+    (synopsis "Internationalization library for Ruby")
+    (description "Ruby i18n is an internationalization and localization
+solution for Ruby programs.  It features translation and localization,
+interpolation of values to translations, pluralization, customizable
+transliteration to ASCII, flexible defaults, bulk lookup, lambdas as
+translation data, custom key/scope separator, custom exception handlers, and
+an extensible architecture with a swappable backend.")
+    (home-page "http://github.com/svenfuchs/i18n")
+    (license license:expat)))
