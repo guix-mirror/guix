@@ -1,5 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -24,12 +26,13 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages ghostscript)         ;lcms
   #:use-module (gnu packages xorg)
-  #:use-module (gnu packages giflib)
+  #:use-module (gnu packages perl)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system cmake))
+  #:use-module (guix build-system cmake)
+  #:use-module (srfi srfi-1))
 
 (define-public libpng
   (package
@@ -215,6 +218,54 @@ an indexing tool useful for the JPIP protocol, JPWL-tools for
 error-resilience, a Java-viewer for j2k-images, ...")
     (home-page "http://jbig2dec.sourceforge.net/")
     (license license:bsd-2)))
+
+(define-public giflib
+  (package
+    (name "giflib")
+    (version "4.2.3")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/giflib/giflib-"
+                                  (first (string-split version #\.))
+                                  ".x/giflib-" version ".tar.bz2"))
+              (sha256
+               (base32 "0rmp7ipzk42r841bggd7bfqk4p8qsssbp4wcck4qnz7p4rkxbj0a"))))
+    (build-system gnu-build-system)
+    (outputs '("bin"                    ; utility programs
+               "out"))                  ; library
+    (inputs `(("libx11" ,libx11)
+              ("libice" ,libice)
+              ("libsm" ,libsm)
+              ("perl" ,perl)))
+    (arguments
+     `(#:phases (alist-cons-after
+                 'unpack 'disable-html-doc-gen
+                 (lambda _
+                   (substitute* "doc/Makefile.in"
+                     (("^all: allhtml manpages") "")))
+                 (alist-cons-after
+                  'install 'install-manpages
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    (let* ((bin (assoc-ref outputs "bin"))
+                           (man1dir (string-append bin "/share/man/man1")))
+                      (mkdir-p man1dir)
+                      (for-each (lambda (file)
+                                  (let ((base (basename file)))
+                                    (format #t "installing `~a' to `~a'~%"
+                                            base man1dir)
+                                    (copy-file file
+                                               (string-append
+                                                man1dir "/" base))))
+                                (find-files "doc" "\\.1"))))
+                  %standard-phases))))
+    (synopsis "Tools and library for working with GIF images")
+    (description
+     "giflib is a library for reading and writing GIF images.  It is API and
+ABI compatible with libungif which was in wide use while the LZW compression
+algorithm was patented.  Tools are also included to convert, manipulate,
+compose, and analyze GIF images.")
+    (home-page "http://giflib.sourceforge.net/")
+    (license license:x11)))
 
 (define-public imlib2
   (package

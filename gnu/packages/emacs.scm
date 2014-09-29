@@ -34,7 +34,6 @@
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages lesstif)
   #:use-module (gnu packages image)
-  #:use-module (gnu packages giflib)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages version-control)
   #:use-module (gnu packages imagemagick)
