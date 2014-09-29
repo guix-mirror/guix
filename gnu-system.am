@@ -319,6 +319,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/cursynth-wave-rand.patch			\
   gnu/packages/patches/dbus-localstatedir.patch			\
   gnu/packages/patches/diffutils-gets-undeclared.patch		\
+  gnu/packages/patches/dfu-programmer-fix-libusb.patch		\
   gnu/packages/patches/doxygen-test.patch			\
   gnu/packages/patches/doxygen-tmake.patch			\
   gnu/packages/patches/duplicity-piped-password.patch		\

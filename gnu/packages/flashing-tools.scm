@@ -104,3 +104,26 @@ programmer devices.")
 EEPROM contents of AVR microcontrollers using the in-system programming
 technique (ISP).")
     (license gpl2+)))
+
+(define-public dfu-programmer
+  (package
+    (name "dfu-programmer")
+    (version "0.7.0")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/dfu-programmer/dfu-programmer-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "17lglglk5xrqd2n0impg5bkq4j96qc51cw3kzcghzmzmn6fvg3gf"))
+      (patches (list (search-patch "dfu-programmer-fix-libusb.patch")))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("libusb" ,libusb)))
+    (home-page "http://dfu-programmer.github.io/")
+    (synopsis "Device firmware update programmer for Atmel chips")
+    (description
+     "Dfu-programmer is a multi-platform command-line programmer for Atmel
+(8051, AVR, XMEGA & AVR32) chips with a USB bootloader supporting ISP")
+    (license gpl2+)))
