@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,11 +20,17 @@
 (define-module (gnu packages docbook)
   #:use-module (gnu packages)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages imagemagick)
+  #:use-module (gnu packages inkscape)
+  #:use-module (gnu packages texlive)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages xml)
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system trivial)
+  #:use-module (guix build-system python)
   #:autoload   (gnu packages zip) (unzip))
 
 (define-public docbook-xml
@@ -126,3 +133,50 @@ by no means limited to these applications.)  This package provides XML DTDs.")
     (description
      "This package provides XSL style sheets for DocBook.")
     (license (x11-style "" "See 'COPYING' file."))))
+
+(define-public dblatex
+  (package
+    (name "dblatex")
+    (version "0.3.5")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/dblatex/dblatex-"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0h3472n33pabrn8qwggsahkrjx8lybpwlc3zprby3w3w3x5i830f"))))
+    (build-system python-build-system)
+    ;; TODO: Add xfig/transfig for fig2dev utility
+    (inputs
+     `(("python-setuptools" ,python-setuptools)
+       ("texlive" ,texlive)
+       ("imagemagick" ,imagemagick)     ;for convert
+       ("inkscape" ,inkscape)           ;for svg conversion
+       ("docbook" ,docbook-xml)
+       ("libxslt" ,libxslt)))           ;for xsltproc
+    (arguments
+     `(#:python ,python-2               ;'print' syntax
+       #:tests? #f                      ;no 'test' command
+       #:phases
+       (alist-cons-after
+        'wrap 'set-path
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out")))
+            ;; dblatex executes helper programs at runtime.
+            (wrap-program (string-append out "/bin/dblatex")
+                          `("PATH" ":" prefix
+                            ,(map (lambda (input)
+                                    (string-append (assoc-ref inputs input)
+                                                   "/bin"))
+                                  '("libxslt" "texlive"
+                                    "imagemagick" "inkscape"))))))
+        %standard-phases)))
+    (home-page "http://dblatex.sourceforge.net")
+    (synopsis "DocBook to LaTeX Publishing")
+    (description
+     "DocBook to LaTeX Publishing transforms your SGML/XML DocBook documents
+to DVI, PostScript or PDF by translating them in pure LaTeX as a first
+process.  MathML 2.0 markups are supported too.  It started as a clone of
+DB2LaTeX.")
+    ;; lib/contrib/which is under an X11 license
+    (license gpl2+)))
