@@ -9,7 +9,7 @@ top_builddir = ../..
 # gettext uses, and SRFI-35 error condition messages.
 XGETTEXT_OPTIONS =				\
   --language=Scheme --from-code=UTF-8		\
-  --keyword=_ --keyword=N_			\
+  --keyword=_ --keyword=N_:1,2			\
   --keyword=message				\
   --keyword=description
 
