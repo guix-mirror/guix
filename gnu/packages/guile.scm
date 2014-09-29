@@ -232,15 +232,14 @@ many readers as needed).")
 (define-public guile-ncurses
   (package
     (name "guile-ncurses")
-    (version "1.4")
+    (version "1.5")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/guile-ncurses/guile-ncurses-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "070wl664lsm14hb6y9ch97x9q6cns4k6nxgdzbdzi5byixn74899"))
-             (patches (list (search-patch "guile-ncurses-tests.patch")))))
+               "0g51c72frk36wik4g8l8f5p274alr19aq500hgznl27r195rjx1r"))))
     (build-system gnu-build-system)
     (inputs `(("ncurses" ,ncurses)
               ("guile" ,guile-2.0)))
