@@ -38,7 +38,6 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/autogen.scm			\
   gnu/packages/autotools.scm			\
   gnu/packages/avahi.scm			\
-  gnu/packages/avrdude.scm			\
   gnu/packages/backup.scm			\
   gnu/packages/base.scm				\
   gnu/packages/bash.scm				\
@@ -82,6 +81,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/enchant.scm			\
   gnu/packages/file.scm				\
   gnu/packages/fish.scm				\
+  gnu/packages/flashing-tools.scm		\
   gnu/packages/flex.scm				\
   gnu/packages/fltk.scm				\
   gnu/packages/fonts.scm			\

@@ -1,4 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Manolis Fragkiskos Ragkousis <manolis837@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -16,7 +17,7 @@
 ;;; You should have received a copy of the GNU General Public License
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
-(define-module (gnu packages avrdude)
+(define-module (gnu packages flashing-tools)
   #:use-module (guix licenses)
   #:use-module (guix download)
   #:use-module (guix packages)
@@ -25,8 +26,55 @@
   #:use-module (gnu packages bison)
   #:use-module (gnu packages flex)
   #:use-module (gnu packages elf)
+  #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages libusb)
-  #:use-module (gnu packages libftdi))
+  #:use-module (gnu packages libftdi)
+  #:use-module (gnu packages pciutils)
+  #:use-module (gnu packages admin))
+
+(define-public flashrom
+  (package
+    (name "flashrom")
+    (version "0.9.7")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append
+                    "http://download.flashrom.org/releases/flashrom-"
+                    version ".tar.bz2"))
+              (sha256
+               (base32
+                "1s9pc4yls2s1gcg2ar4q75nym2z5v6lxq36bl6lq26br00nj2mas"))
+              (patches (list (search-patch "flashrom-use-libftdi1.patch")))))
+    (build-system gnu-build-system)
+    (inputs `(("dmidecode" ,dmidecode)
+              ("pciutils" ,pciutils)
+              ("libusb" ,libusb)
+              ("libftdi" ,libftdi)))
+    (native-inputs `(("pkg-config" ,pkg-config)))
+    (arguments
+     '(#:make-flags (list "CC=gcc" (string-append "PREFIX=" %output))
+       #:tests? #f   ; no 'check' target
+       #:phases
+       (alist-delete
+        'configure
+        (alist-cons-before
+         'build 'patch-exec-paths
+         (lambda* (#:key inputs #:allow-other-keys)
+           (substitute* "dmi.c"
+             (("\"dmidecode\"")
+              (format #f "~S"
+                      (string-append (assoc-ref inputs "dmidecode")
+                                     "/sbin/dmidecode")))))
+         %standard-phases))))
+    (home-page "http://flashrom.org/")
+    (synopsis "Identify, read, write, erase, and verify ROM/flash chips")
+    (description
+     "flashrom is a utility for identifying, reading, writing,
+verifying and erasing flash chips.  It is designed to flash
+BIOS/EFI/coreboot/firmware/optionROM images on mainboards,
+network/graphics/storage controller cards, and various other
+programmer devices.")
+    (license gpl2)))
 
 (define-public avrdude
   (package
