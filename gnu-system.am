@@ -230,6 +230,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ssh.scm				\
   gnu/packages/stalonetray.scm			\
   gnu/packages/swig.scm				\
+  gnu/packages/synergy.scm			\
   gnu/packages/tcl.scm				\
   gnu/packages/tcsh.scm				\
   gnu/packages/telephony.scm			\
