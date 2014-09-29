@@ -179,22 +179,20 @@ same package twice."
           vlist-null
           (all-package-modules))))
 
-(define* (find-packages-by-name name #:optional version)
-  "Return the list of packages with the given NAME.  If VERSION is not #f,
+(define find-packages-by-name
+  (let ((packages (delay
+                    (fold-packages (lambda (p r)
+                                     (vhash-cons (package-name p) p r))
+                                   vlist-null))))
+    (lambda* (name #:optional version)
+      "Return the list of packages with the given NAME.  If VERSION is not #f,
 then only return packages whose version is equal to VERSION."
-  (define right-package?
-    (if version
-        (lambda (p)
-          (and (string=? (package-name p) name)
-               (string=? (package-version p) version)))
-        (lambda (p)
-          (string=? (package-name p) name))))
-
-  (fold-packages (lambda (package result)
-                   (if (right-package? package)
-                       (cons package result)
-                       result))
-                 '()))
+      (let ((matching (vhash-fold* cons '() name (force packages))))
+        (if version
+            (filter (lambda (package)
+                      (string=? (package-version package) version))
+                    matching)
+            matching)))))
 
 (define find-newest-available-packages
   (memoize
