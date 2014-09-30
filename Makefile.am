@@ -77,7 +77,6 @@ MODULES =					\
   guix/packages.scm				\
   guix/import/utils.scm				\
   guix/import/snix.scm				\
-  guix/import/pypi.scm				\
   guix/scripts/download.scm			\
   guix/scripts/build.scm			\
   guix/scripts/archive.scm			\
@@ -92,7 +91,6 @@ MODULES =					\
   guix/scripts/system.scm			\
   guix/scripts/lint.scm				\
   guix/scripts/import/nix.scm			\
-  guix/scripts/import/pypi.scm			\
   guix.scm					\
   $(GNU_SYSTEM_MODULES)
 
@@ -167,6 +165,10 @@ SCM_TESTS =					\
   tests/lint.scm
 
 if HAVE_GUILE_JSON
+
+MODULES +=					\
+  guix/import/pypi.scm				\
+  guix/scripts/import/pypi.scm
 
 SCM_TESTS += tests/pypi.scm
 
