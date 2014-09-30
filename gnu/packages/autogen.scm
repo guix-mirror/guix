@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2013,2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,13 +22,14 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages perl)
   #:use-module (gnu packages which)
   #:use-module (gnu packages guile))
 
 (define-public autogen
   (package
     (name "autogen")
-    (version "5.18.2")
+    (version "5.18.4")
     (source
      (origin
       (method url-fetch)
@@ -37,8 +38,9 @@
                           version ".tar.gz"))
       (sha256
        (base32
-        "0s2021bwpq6h199cbbranz96hhm5s7v66lc68h8v198vqbg049yc"))))
+        "0pbjzwgvmjvi6nl1bcyhfc9kl93s6321dgmvp5dqdip7i8dgin9w"))))
     (build-system gnu-build-system)
+    (native-inputs `(("perl" ,perl)))   ;for doc generator mdoc
     (inputs `(("which" ,which)
               ("guile" ,guile-2.0)))
     (arguments
