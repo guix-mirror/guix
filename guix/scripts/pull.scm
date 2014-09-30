@@ -47,6 +47,10 @@ files."
     #~(begin
         (use-modules (guix build pull))
 
+        (let ((json (string-append #$guile-json "/share/guile/site/2.0")))
+          (set! %load-path (cons json %load-path))
+          (set! %load-compiled-path (cons json %load-compiled-path)))
+
         (build-guix #$output #$tarball
 
                     ;; XXX: This is not perfect, enabling VERBOSE? means
