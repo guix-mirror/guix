@@ -47,6 +47,7 @@
   #:use-module (gnu packages maths)
   #:use-module (gnu packages which)
   #:use-module (gnu packages rrdtool)
+  #:use-module (gnu packages elf)
   #:use-module (gnu packages gtk)
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -1600,3 +1601,50 @@ It works with most newer systems.")
 health such as temperature, voltage and fan speed and displays the information
 in a digital read-out.")
     (license gpl2+)))
+
+(define-public perf
+  (package
+    (name "perf")
+    (version (package-version linux-libre))
+    (source (package-source linux-libre))
+    (build-system gnu-build-system)
+    (arguments
+     '(#:phases (alist-replace
+                 'configure
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (setenv "SHELL_PATH" (which "bash"))
+                   (chdir "tools/perf"))
+                 %standard-phases)
+       #:make-flags (list (string-append "DESTDIR="
+                                         (assoc-ref %outputs "out"))
+                          "WERROR=0")
+       #:tests? #f))                              ;no tests
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ("bison" ,bison)
+       ("flex" ,flex)
+
+       ;; There are build scripts written in these languages.
+       ("perl" ,perl)
+       ("python" ,python-2)))
+    (inputs
+     `(;; ("slang" ,slang)
+       ;; ("newt" ,newt)
+       ("elfutils" ,elfutils)
+
+       ;; FIXME: Documentation.
+       ;; ("libxslt" ,libxslt)
+       ;; ("docbook-xml" ,docbook-xml)
+       ;; ("docbook-xsl" ,docbook-xsl)
+       ;; ("xmlto" ,xmlto)
+       ;; ("asciidoc" ,asciidoc)
+       ))
+    (home-page "https://perf.wiki.kernel.org/")
+    (synopsis "Linux profiling with performance counters")
+    (description
+     "perf is a tool suite for profiling using hardware performance counters,
+with support in the Linux kernel.  perf can instrument CPU performance
+counters, tracepoints, kprobes, and uprobes (dynamic tracing).  It is capable
+of lightweight profiling.  This package contains the user-land tools and in
+particular the 'perf' command.")
+    (license (package-license linux-libre))))
