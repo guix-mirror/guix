@@ -48,6 +48,7 @@
             compile-time-value
             fcntl-flock
             memoize
+            strip-keyword-arguments
             default-keyword-arguments
             substitute-keyword-arguments
 
@@ -423,6 +424,21 @@ exception if it's already taken."
                              list)))
               (hash-set! cache args results)
               (apply values results)))))))
+
+(define (strip-keyword-arguments keywords args)
+  "Remove all of the keyword arguments listed in KEYWORDS from ARGS."
+  (let loop ((args   args)
+             (result '()))
+    (match args
+      (()
+       (reverse result))
+      (((? keyword? kw) arg . rest)
+       (loop rest
+             (if (memq kw keywords)
+                 result
+                 (cons* arg kw result))))
+      ((head . tail)
+       (loop tail (cons head result))))))
 
 (define (default-keyword-arguments args defaults)
   "Return ARGS augmented with any keyword/value from DEFAULTS for

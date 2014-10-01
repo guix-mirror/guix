@@ -120,6 +120,12 @@
                '(0 1 2 3)))
     list))
 
+(test-equal "strip-keyword-arguments"
+  '(a #:b b #:c c)
+  (strip-keyword-arguments '(#:foo #:bar #:baz)
+                           '(a #:foo 42 #:b b #:baz 3
+                               #:c c #:bar 4)))
+
 (let* ((tree (alist->vhash
               '((0 2 3) (1 3 4) (2) (3 5 6) (4 6) (5) (6))
               hashq))
