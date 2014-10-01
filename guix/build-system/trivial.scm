@@ -29,8 +29,6 @@
   (match guile
     ((? package?)
      (package-derivation store guile system))
-    ((and (? string?) (? derivation-path?))
-     guile)
     (#f                                         ; the default
      (let* ((distro (resolve-interface '(gnu packages commencement)))
             (guile  (module-ref distro 'guile-final)))

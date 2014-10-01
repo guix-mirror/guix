@@ -77,8 +77,6 @@
     (match guile
       ((? package?)
        (package-derivation store guile system))
-      ((and (? string?) (? derivation-path?))
-       guile)
       (#f
        (let* ((distro (resolve-interface '(gnu packages commencement)))
               (guile  (module-ref distro 'guile-final)))
