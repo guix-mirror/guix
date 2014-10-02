@@ -591,6 +591,11 @@ This function will not update the information, use
 
 ;;; Actions on packages and generations
 
+(defface guix-operation-option-key
+  '((t :inherit font-lock-warning-face))
+  "Face used for the keys of operation options."
+  :group 'guix)
+
 (defcustom guix-operation-confirm t
   "If nil, do not prompt to confirm an operation."
   :type 'boolean
@@ -606,6 +611,54 @@ This function will not update the information, use
 
 (defvar guix-temp-buffer-name " *Guix temp*"
   "Name of a buffer used for displaying info before executing operation.")
+
+(defvar guix-operation-option-true-string "yes"
+  "String displayed in the mode-line when operation option is t.")
+
+(defvar guix-operation-option-false-string "no "
+  "String displayed in the mode-line when operation option is nil.")
+
+(defvar guix-operation-option-separator "  |  "
+  "String used in the mode-line to separate operation options.")
+
+(defvar guix-operation-options
+  '((?s "substitutes" guix-use-substitutes)
+    (?d "dry-run"     guix-dry-run))
+  "List of available operation options.
+Each element of the list has a form:
+
+  (KEY NAME VARIABLE)
+
+KEY is a character that may be pressed during confirmation to
+toggle the option.
+NAME is a string displayed in the mode-line.
+VARIABLE is a name of an option variable.")
+
+(defun guix-operation-option-by-key (key)
+  "Return operation option by KEY (character)."
+  (assq key guix-operation-options))
+
+(defun guix-operation-option-key (option)
+  "Return key (character) of the operation OPTION."
+  (car option))
+
+(defun guix-operation-option-name (option)
+  "Return name of the operation OPTION."
+  (nth 1 option))
+
+(defun guix-operation-option-variable (option)
+  "Return name of the variable of the operation OPTION."
+  (nth 2 option))
+
+(defun guix-operation-option-value (option)
+  "Return boolean value of the operation OPTION."
+  (symbol-value (guix-operation-option-variable option)))
+
+(defun guix-operation-option-string-value (option)
+  "Convert boolean value of the operation OPTION to string and return it."
+  (if (guix-operation-option-value option)
+      guix-operation-option-true-string
+    guix-operation-option-false-string))
 
 (defun guix-process-package-actions (&rest actions)
   "Process package ACTIONS.
@@ -663,7 +716,7 @@ See `guix-process-package-actions' for details."
                             '((display-buffer-reuse-window
                                display-buffer-at-bottom)
                               (window-height . fit-window-to-buffer)))))
-                  (prog1 (y-or-n-p "Continue operation? ")
+                  (prog1 (guix-operation-prompt)
                     (quit-window nil win)))))
           (message "Nothing to be done.  If the REPL was restarted, information is not up-to-date.")
           nil))))
@@ -696,6 +749,57 @@ ENTRIES is a list of package entries to get info about packages."
             (insert "  " str "\n"))
           strings)
     (insert "\n")))
+
+(defun guix-operation-prompt ()
+  "Prompt a user for continuing the current package operation.
+Return non-nil, if the operation should be continued; nil otherwise."
+  (let* ((option-keys (mapcar #'guix-operation-option-key
+                              guix-operation-options))
+         (keys (append '(?y ?n) option-keys))
+         (prompt (concat (propertize "Continue operation?"
+                                     'face 'minibuffer-prompt)
+                         " ("
+                         (mapconcat
+                          (lambda (key)
+                            (propertize (string key)
+                                        'face 'guix-operation-option-key))
+                          keys
+                          ", ")
+                         ") ")))
+    (prog1 (guix-operation-prompt-1 prompt keys)
+      ;; Clear the minibuffer after prompting.
+      (message ""))))
+
+(defun guix-operation-prompt-1 (prompt keys)
+  "This function is internal for `guix-operation-prompt'."
+  (guix-operation-set-mode-line)
+  (let ((key (read-char-choice prompt (cons ?\C-g keys) t)))
+    (cl-case key
+      (?y t)
+      ((?n ?\C-g) nil)
+      (t (let* ((option (guix-operation-option-by-key key))
+                (var (guix-operation-option-variable option)))
+           (set var (not (symbol-value var)))
+           (guix-operation-prompt-1 prompt keys))))))
+
+(defun guix-operation-set-mode-line ()
+  "Display operation options in the mode-line of the current buffer."
+  (setq mode-line-format
+        (concat (propertize " Options:   "
+                            'face 'mode-line-buffer-id)
+                (mapconcat
+                 (lambda (option)
+                   (let ((key  (guix-operation-option-key option))
+                         (name (guix-operation-option-name option))
+                         (val  (guix-operation-option-string-value option)))
+                     (concat name
+                             " ("
+                             (propertize (string key)
+                                         'face 'guix-operation-option-key)
+                             "): " val)))
+                 guix-operation-options
+                 guix-operation-option-separator)))
+  (force-mode-line-update))
 
 (provide 'guix-base)
 
