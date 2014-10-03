@@ -42,44 +42,71 @@
   (let ((module (resolve-interface '(gnu packages cmake))))
     (module-ref module 'cmake)))
 
-(define* (cmake-build store name source inputs
-                     #:key (guile #f)
-                     (outputs '("out")) (configure-flags ''())
-                     (search-paths '())
-                     (make-flags ''())
-                     (cmake (default-cmake))
-                     (out-of-source? #t)
-                     (build-type "RelWithDebInfo")
-                     (tests? #t)
-                     (test-target "test")
-                     (parallel-build? #t) (parallel-tests? #f)
-                     (patch-shebangs? #t)
-                     (strip-binaries? #t)
-                     (strip-flags ''("--strip-debug"))
-                     (strip-directories ''("lib" "lib64" "libexec"
-                                           "bin" "sbin"))
-                     (phases '(@ (guix build cmake-build-system)
-                                 %standard-phases))
-                     (system (%current-system))
-                     (imported-modules '((guix build cmake-build-system)
-                                         (guix build gnu-build-system)
-                                         (guix build utils)))
-                     (modules '((guix build cmake-build-system)
-                                (guix build utils))))
+(define* (lower name
+                #:key source inputs native-inputs outputs target
+                (cmake (default-cmake))
+                #:allow-other-keys
+                #:rest arguments)
+  "Return a bag for NAME."
+  (define private-keywords
+    '(#:source #:target #:cmake #:inputs #:native-inputs))
+
+  (and (not target)                               ;XXX: no cross-compilation
+       (bag
+         (name name)
+         (host-inputs `(,@(if source
+                              `(("source" ,source))
+                              '())
+                        ,@inputs
+
+                        ;; Keep the standard inputs of 'gnu-build-system'.
+                        ,@(standard-packages)))
+         (build-inputs `(("cmake" ,cmake)
+                         ,@native-inputs))
+         (outputs outputs)
+         (build cmake-build)
+         (arguments (strip-keyword-arguments private-keywords arguments)))))
+
+(define* (cmake-build store name inputs
+                      #:key (guile #f)
+                      (outputs '("out")) (configure-flags ''())
+                      (search-paths '())
+                      (make-flags ''())
+                      (out-of-source? #t)
+                      (build-type "RelWithDebInfo")
+                      (tests? #t)
+                      (test-target "test")
+                      (parallel-build? #t) (parallel-tests? #f)
+                      (patch-shebangs? #t)
+                      (strip-binaries? #t)
+                      (strip-flags ''("--strip-debug"))
+                      (strip-directories ''("lib" "lib64" "libexec"
+                                            "bin" "sbin"))
+                      (phases '(@ (guix build cmake-build-system)
+                                  %standard-phases))
+                      (system (%current-system))
+                      (imported-modules '((guix build cmake-build-system)
+                                          (guix build gnu-build-system)
+                                          (guix build utils)))
+                      (modules '((guix build cmake-build-system)
+                                 (guix build utils))))
   "Build SOURCE using CMAKE, and with INPUTS. This assumes that SOURCE
 provides a 'CMakeLists.txt' file as its build system."
   (define builder
     `(begin
        (use-modules ,@modules)
-       (cmake-build #:source ,(if (derivation? source)
-                                  (derivation->output-path source)
-                                  source)
+       (cmake-build #:source ,(match (assoc-ref inputs "source")
+                                (((? derivation? source))
+                                 (derivation->output-path source))
+                                ((source)
+                                 source)
+                                (source
+                                 source))
                     #:system ,system
                     #:outputs %outputs
                     #:inputs %build-inputs
                     #:search-paths ',(map search-path-specification->sexp
-                                          (append search-paths
-                                                  (standard-search-paths)))
+                                          search-paths)
                     #:phases ,phases
                     #:configure-flags ,configure-flags
                     #:make-flags ,make-flags
@@ -103,27 +130,17 @@ provides a 'CMakeLists.txt' file as its build system."
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 
-  (let ((cmake (package-derivation store cmake system)))
-    (build-expression->derivation store name builder
-                                  #:system system
-                                  #:inputs
-                                  `(,@(if source
-                                          `(("source" ,source))
-                                          '())
-                                    ("cmake" ,cmake)
-                                    ,@inputs
-
-                                    ;; Keep the standard inputs of
-                                    ;; `gnu-build-system'.
-                                    ,@(standard-inputs system))
-
-                                  #:modules imported-modules
-                                  #:outputs outputs
-                                  #:guile-for-build guile-for-build)))
+  (build-expression->derivation store name builder
+                                #:system system
+                                #:inputs inputs
+                                #:modules imported-modules
+                                #:outputs outputs
+                                #:guile-for-build guile-for-build))
 
 (define cmake-build-system
-  (build-system (name 'cmake)
-                (description "The standard CMake build system")
-                (build cmake-build)))
+  (build-system
+    (name 'cmake)
+    (description "The standard CMake build system")
+    (lower lower)))
 
 ;;; cmake.scm ends here

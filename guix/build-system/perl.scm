@@ -42,9 +42,33 @@
   (let ((module (resolve-interface '(gnu packages perl))))
     (module-ref module 'perl)))
 
-(define* (perl-build store name source inputs
+(define* (lower name
+                #:key source inputs native-inputs outputs target
+                (perl (default-perl))
+                #:allow-other-keys
+                #:rest arguments)
+  "Return a bag for NAME."
+  (define private-keywords
+    '(#:source #:target #:perl #:inputs #:native-inputs))
+
+  (and (not target)                               ;XXX: no cross-compilation
+       (bag
+         (name name)
+         (host-inputs `(,@(if source
+                              `(("source" ,source))
+                              '())
+                        ,@inputs
+
+                        ;; Keep the standard inputs of 'gnu-build-system'.
+                        ,@(standard-packages)))
+         (build-inputs `(("perl" ,perl)
+                         ,@native-inputs))
+         (outputs outputs)
+         (build perl-build)
+         (arguments (strip-keyword-arguments private-keywords arguments)))))
+
+(define* (perl-build store name inputs
                      #:key
-                     (perl (default-perl))
                      (search-paths '())
                      (tests? #t)
                      (parallel-build? #t)
@@ -62,20 +86,19 @@
                                 (guix build utils))))
   "Build SOURCE using PERL, and with INPUTS.  This assumes that SOURCE
 provides a `Makefile.PL' file as its build system."
-  (define perl-search-paths
-    (append (package-native-search-paths perl)
-            (standard-search-paths)))
-
   (define builder
     `(begin
        (use-modules ,@modules)
        (perl-build #:name ,name
-                   #:source ,(if (derivation? source)
-                                 (derivation->output-path source)
-                                 source)
+                   #:source ,(match (assoc-ref inputs "source")
+                               (((? derivation? source))
+                                (derivation->output-path source))
+                               ((source)
+                                source)
+                               (source
+                                source))
                    #:search-paths ',(map search-path-specification->sexp
-                                         (append perl-search-paths
-                                                 search-paths))
+                                         search-paths)
                    #:make-maker-flags ,make-maker-flags
                    #:phases ,phases
                    #:system ,system
@@ -95,27 +118,17 @@ provides a `Makefile.PL' file as its build system."
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 
-  (let ((perl (package-derivation store perl system)))
-    (build-expression->derivation store name builder
-                                  #:system system
-                                  #:inputs
-                                  `(,@(if source
-                                          `(("source" ,source))
-                                          '())
-                                    ("perl" ,perl)
-                                    ,@inputs
-
-                                    ;; Keep the standard inputs of
-                                    ;; `gnu-build-system'.
-                                    ,@(standard-inputs system))
-
-                                  #:modules imported-modules
-                                  #:outputs outputs
-                                  #:guile-for-build guile-for-build)))
+  (build-expression->derivation store name builder
+                                #:system system
+                                #:inputs inputs
+                                #:modules imported-modules
+                                #:outputs outputs
+                                #:guile-for-build guile-for-build))
 
 (define perl-build-system
-  (build-system (name 'perl)
-                (description "The standard Perl build system")
-                (build perl-build)))
+  (build-system
+    (name 'perl)
+    (description "The standard Perl build system")
+    (lower lower)))
 
 ;;; perl.scm ends here

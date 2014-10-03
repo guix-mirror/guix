@@ -92,9 +92,33 @@ prepended to the name."
 (define package-with-python2
   (cut package-with-explicit-python <> (default-python2) "python-" "python2-"))
 
-(define* (python-build store name source inputs
+(define* (lower name
+                #:key source inputs native-inputs outputs target
+                (python (default-python))
+                #:allow-other-keys
+                #:rest arguments)
+  "Return a bag for NAME."
+  (define private-keywords
+    '(#:source #:target #:python #:inputs #:native-inputs))
+
+  (and (not target)                               ;XXX: no cross-compilation
+       (bag
+         (name name)
+         (host-inputs `(,@(if source
+                              `(("source" ,source))
+                              '())
+                        ,@inputs
+
+                        ;; Keep the standard inputs of 'gnu-build-system'.
+                        ,@(standard-packages)))
+         (build-inputs `(("python" ,python)
+                         ,@native-inputs))
+         (outputs outputs)
+         (build python-build)
+         (arguments (strip-keyword-arguments private-keywords arguments)))))
+
+(define* (python-build store name inputs
                        #:key
-                       (python (default-python))
                        (tests? #t)
                        (test-target "test")
                        (configure-flags ''())
@@ -111,18 +135,17 @@ prepended to the name."
                                   (guix build utils))))
   "Build SOURCE using PYTHON, and with INPUTS.  This assumes that SOURCE
 provides a 'setup.py' file as its build system."
-
-  (define python-search-paths
-    (append (package-native-search-paths python)
-            (standard-search-paths)))
-
   (define builder
     `(begin
        (use-modules ,@modules)
        (python-build #:name ,name
-                     #:source ,(if (derivation? source)
-                                   (derivation->output-path source)
-                                   source)
+                     #:source ,(match (assoc-ref inputs "source")
+                                 (((? derivation? source))
+                                  (derivation->output-path source))
+                                 ((source)
+                                  source)
+                                 (source
+                                  source))
                      #:configure-flags ,configure-flags
                      #:system ,system
                      #:test-target ,test-target
@@ -130,8 +153,7 @@ provides a 'setup.py' file as its build system."
                      #:phases ,phases
                      #:outputs %outputs
                      #:search-paths ',(map search-path-specification->sexp
-                                           (append python-search-paths
-                                                   search-paths))
+                                           search-paths)
                      #:inputs %build-inputs)))
 
   (define guile-for-build
@@ -143,27 +165,17 @@ provides a 'setup.py' file as its build system."
               (guile  (module-ref distro 'guile-final)))
          (package-derivation store guile system)))))
 
-  (let ((python (package-derivation store python system)))
-    (build-expression->derivation store name builder
-                                  #:inputs
-                                  `(,@(if source
-                                          `(("source" ,source))
-                                          '())
-                                    ("python" ,python)
-                                    ,@inputs
-
-                                    ;; Keep the standard inputs of
-                                    ;; 'gnu-build-system'.
-                                    ,@(standard-inputs system))
-
-                                  #:system system
-                                  #:modules imported-modules
-                                  #:outputs outputs
-                                  #:guile-for-build guile-for-build)))
+  (build-expression->derivation store name builder
+                                #:inputs inputs
+                                #:system system
+                                #:modules imported-modules
+                                #:outputs outputs
+                                #:guile-for-build guile-for-build))
 
 (define python-build-system
-  (build-system (name 'python)
-                (description "The standard Python build system")
-                (build python-build)))
+  (build-system
+    (name 'python)
+    (description "The standard Python build system")
+    (lower lower)))
 
 ;;; python.scm ends here

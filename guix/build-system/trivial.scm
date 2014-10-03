@@ -34,42 +34,55 @@
             (guile  (module-ref distro 'guile-final)))
        (package-derivation store guile system)))))
 
-(define* (trivial-build store name source inputs
+(define* (lower name
+                #:key source inputs native-inputs outputs target
+                guile builder modules)
+  "Return a bag for NAME."
+  (bag
+    (name name)
+    (host-inputs `(,@(if source
+                         `(("source" ,source))
+                         '())
+                   ,@inputs))
+    (build-inputs native-inputs)
+    (outputs outputs)
+    (build (if target trivial-cross-build trivial-build))
+    (arguments `(#:guile ,guile
+                 #:builder ,builder
+                 #:modules ,modules))))
+
+(define* (trivial-build store name inputs
                         #:key
                         outputs guile system builder (modules '())
                         search-paths)
   "Run build expression BUILDER, an expression, for SYSTEM.  SOURCE is
 ignored."
   (build-expression->derivation store name builder
-                                #:inputs (if source
-                                             `(("source" ,source) ,@inputs)
-                                             inputs)
+                                #:inputs inputs
                                 #:system system
                                 #:outputs outputs
                                 #:modules modules
                                 #:guile-for-build
                                 (guile-for-build store guile system)))
 
-(define* (trivial-cross-build store name target source inputs native-inputs
+(define* (trivial-cross-build store name
                               #:key
+                              target native-drvs target-drvs
                               outputs guile system builder (modules '())
                               search-paths native-search-paths)
-  "Like `trivial-build', but in a cross-compilation context."
+  "Run build expression BUILDER, an expression, for SYSTEM.  SOURCE is
+ignored."
   (build-expression->derivation store name builder
+                                #:inputs (append native-drvs target-drvs)
                                 #:system system
-                                #:inputs
-                                (let ((inputs (append native-inputs inputs)))
-                                  (if source
-                                      `(("source" ,source) ,@inputs)
-                                      inputs))
                                 #:outputs outputs
                                 #:modules modules
                                 #:guile-for-build
                                 (guile-for-build store guile system)))
 
 (define trivial-build-system
-  (build-system (name 'trivial)
-                (description
-                 "Trivial build system, to run arbitrary Scheme build expressions")
-                (build trivial-build)
-                (cross-build trivial-cross-build)))
+  (build-system
+    (name 'trivial)
+    (description
+     "Trivial build system, to run arbitrary Scheme build expressions")
+    (lower lower)))

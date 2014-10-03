@@ -1519,6 +1519,13 @@ Build systems are @code{<build-system>} objects.  The interface to
 create and manipulate them is provided by the @code{(guix build-system)}
 module, and actual build systems are exported by specific modules.
 
+Under the hood, build systems first compile package objects to
+@dfn{bags}.  A @dfn{bag} is like a package, but with less
+ornamentation---in other words, a bag is a lower-level representation of
+a package, which includes all the inputs of that package, including some
+that were implicitly added by the build system.  This intermediate
+representation is then compiled to a derivation (@pxref{Derivations}).
+
 Build systems accept an optional list of @dfn{arguments}.  In package
 definitions, these are passed @i{via} the @code{arguments} field
 (@pxref{Defining Packages}).  They are typically keyword arguments

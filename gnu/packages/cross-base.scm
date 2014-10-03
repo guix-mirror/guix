@@ -154,7 +154,7 @@ GCC that does not target a libc; otherwise, target that libc."
                      ;; them from CPATH.
                      (let ((libc  (assoc-ref inputs "libc"))
                            (linux (assoc-ref inputs
-                                             "libc/cross-linux-headers")))
+                                             "libc/linux-headers")))
                        (define (cross? x)
                          ;; Return #t if X is a cross-libc or cross Linux.
                          (or (string-prefix? libc x)
@@ -224,7 +224,9 @@ XBINUTILS and the cross tool chain."
       (name (string-append (package-name linux-libre-headers)
                            "-cross-" target))
       (arguments
-       (substitute-keyword-arguments (package-arguments linux-libre-headers)
+       (substitute-keyword-arguments
+           `(#:implicit-cross-inputs? #f
+             ,@(package-arguments linux-libre-headers))
          ((#:phases phases)
           `(alist-replace
             'build
@@ -243,7 +245,14 @@ XBINUTILS and the cross tool chain."
     (name (string-append "glibc-cross-" target))
     (arguments
      (substitute-keyword-arguments
-         `(#:strip-binaries? #f                ; disable stripping (see above)
+         `(;; Disable stripping (see above.)
+           #:strip-binaries? #f
+
+           ;; This package is used as a target input, but it should not have
+           ;; the usual cross-compilation inputs since that would include
+           ;; itself.
+           #:implicit-cross-inputs? #f
+
            ,@(package-arguments glibc))
        ((#:configure-flags flags)
         `(cons ,(string-append "--host=" target)
@@ -252,13 +261,16 @@ XBINUTILS and the cross tool chain."
         `(alist-cons-before
           'configure 'set-cross-linux-headers-path
           (lambda* (#:key inputs #:allow-other-keys)
-            (let ((linux (assoc-ref inputs "cross-linux-headers")))
+            (let ((linux (assoc-ref inputs "linux-headers")))
               (setenv "CROSS_CPATH"
                       (string-append linux "/include"))
               #t))
           ,phases))))
 
-    (propagated-inputs `(("cross-linux-headers" ,xlinux-headers)))
+    ;; Shadow the native "linux-headers" because glibc's recipe expect the
+    ;; "linux-headers" input to point to the right thing.
+    (propagated-inputs `(("linux-headers" ,xlinux-headers)))
+
     (native-inputs `(("cross-gcc" ,xgcc)
                      ("cross-binutils" ,xbinutils)
                      ,@(package-native-inputs glibc)))))

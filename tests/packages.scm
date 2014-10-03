@@ -279,11 +279,16 @@
 (test-assert "search paths"
   (let* ((p (make-prompt-tag "return-search-paths"))
          (s (build-system
-             (name "raw")
+             (name 'raw)
              (description "Raw build system with direct store access")
-             (build (lambda* (store name source inputs
-                                    #:key outputs system search-paths)
-                      search-paths))))
+             (lower (lambda* (name #:key source inputs #:allow-other-keys)
+                      (bag
+                        (name name)
+                        (build-inputs inputs)
+                        (build
+                         (lambda* (store name inputs
+                                         #:key outputs system search-paths)
+                           search-paths)))))))
          (x (list (search-path-specification
                    (variable "GUILE_LOAD_PATH")
                    (directories '("share/guile/site/2.0")))
@@ -326,7 +331,7 @@
 
 (test-assert "package-cross-derivation, no cross builder"
   (let* ((b (build-system (inherit trivial-build-system)
-              (cross-build #f)))
+              (lower (const #f))))
          (p (package (inherit (dummy-package "p"))
               (build-system b))))
     (guard (c ((package-cross-build-system-error? c)

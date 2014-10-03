@@ -92,8 +92,7 @@
          (valid-path? %store out))))
 
 (test-assert "gnu-build-system"
-  (and (build-system? gnu-build-system)
-       (eq? gnu-build (build-system-builder gnu-build-system))))
+  (build-system? gnu-build-system))
 
 (unless network-reachable? (test-skip 1))
 (test-assert "gnu-build"
@@ -102,9 +101,9 @@
                     "0wqd8sjmxfskrflaxywc7gqw7sfawrfvdxd9skxawzfgyy0pzdz6"))
          (tarball  (url-fetch %store url 'sha256 hash
                               #:guile %bootstrap-guile))
-         (build    (gnu-build %store "hello-2.8" tarball
-                              %bootstrap-inputs
-                              #:implicit-inputs? #f
+         (build    (gnu-build %store "hello-2.8"
+                              `(("source" ,tarball)
+                                ,@%bootstrap-inputs)
                               #:guile %bootstrap-guile
                               #:search-paths %bootstrap-search-paths))
          (out      (derivation->output-path build)))

@@ -23,12 +23,10 @@
   #:use-module (guix build-system)
   #:use-module (guix packages)
   #:use-module (srfi srfi-1)
-  #:use-module (srfi srfi-39)
   #:use-module (ice-9 match)
   #:export (gnu-build
             gnu-build-system
-            standard-search-paths
-            standard-inputs
+            standard-packages
             package-with-explicit-inputs
             package-with-extra-configure-variable
             static-libgcc-package
@@ -201,10 +199,6 @@ listed in REFS."
       p))
 
 
-(define %store
-  ;; Store passed to STANDARD-INPUTS.
-  (make-parameter #f))
-
 (define (standard-packages)
   "Return the list of (NAME PACKAGE OUTPUT) or (NAME PACKAGE) tuples of
 standard packages used as implicit inputs of the GNU build system."
@@ -213,53 +207,47 @@ standard packages used as implicit inputs of the GNU build system."
   (let ((distro (resolve-module '(gnu packages commencement))))
     (module-ref distro '%final-inputs)))
 
-(define* (inputs-search-paths inputs
-                              #:optional (package->search-paths
-                                          package-native-search-paths))
-  "Return the <search-path-specification> objects for INPUTS, using
-PACKAGE->SEARCH-PATHS to extract the search path specifications of a package."
-  (append-map (match-lambda
-               ((_ (? package? p) _ ...)
-                (package->search-paths p))
-               (_
-                '()))
-              inputs))
+(define* (lower name
+                #:key source inputs native-inputs outputs target
+                (implicit-inputs? #t) (implicit-cross-inputs? #t)
+                (strip-binaries? #t)
+                #:allow-other-keys
+                #:rest arguments)
+  "Return a bag for NAME from the given arguments."
+  (define private-keywords
+    `(#:source #:inputs #:native-inputs #:outputs
+      #:implicit-inputs? #:implicit-cross-inputs?
+      ,@(if target '() '(#:target))))
 
-(define (standard-search-paths)
-  "Return the list of <search-path-specification> for the standard (implicit)
-inputs when doing a native build."
-  (inputs-search-paths (standard-packages)))
+  (bag
+    (name name)
+    (build-inputs `(,@(if source
+                          `(("source" ,source))
+                          '())
+                    ,@native-inputs
+                    ,@(if (and target implicit-cross-inputs?)
+                          (standard-cross-packages target 'host)
+                          '())
+                    ,@(if implicit-inputs?
+                          (standard-packages)
+                          '())))
+    (host-inputs inputs)
 
-(define (expand-inputs inputs system)
-  "Expand INPUTS, which contains <package> objects, so that it contains only
-derivations for SYSTEM.  Include propagated inputs in the result."
-  (define input-package->derivation
-    (match-lambda
-     ((name pkg sub-drv ...)
-      (cons* name (package-derivation (%store) pkg system) sub-drv))
-     ((name (? derivation-path? path) sub-drv ...)
-      (cons* name path sub-drv))
-     (z
-      (error "invalid standard input" z))))
+    ;; The cross-libc is really a target package, but for bootstrapping
+    ;; reasons, we can't put it in 'host-inputs'.  Namely, 'cross-gcc' is a
+    ;; native package, so it would end up using a "native" variant of
+    ;; 'cross-libc' (built with 'gnu-build'), whereas all the other packages
+    ;; would use a target variant (built with 'gnu-cross-build'.)
+    (target-inputs (if (and target implicit-cross-inputs?)
+                       (standard-cross-packages target 'target)
+                       '()))
+    (outputs (if strip-binaries?
+                 outputs
+                 (delete "debug" outputs)))
+    (build (if target gnu-cross-build gnu-build))
+    (arguments (strip-keyword-arguments private-keywords arguments))))
 
-  (map input-package->derivation
-       (append inputs
-               (append-map (match-lambda
-                            ((name package _ ...)
-                             (package-transitive-propagated-inputs package)))
-                           inputs))))
-
-(define standard-inputs
-  ;; FIXME: Memoization should be associated with the open store (as for
-  ;; 'add-text-to-store'), otherwise we get .drv that may not be valid when
-  ;; switching to another store.
-  (memoize
-   (lambda (system)
-     "Return the list of implicit standard inputs used with the GNU Build
-System: GCC, GNU Make, Bash, Coreutils, etc."
-     (expand-inputs (standard-packages) system))))
-
-(define* (gnu-build store name source inputs
+(define* (gnu-build store name input-drvs
                     #:key (guile #f)
                     (outputs '("out"))
                     (search-paths '())
@@ -277,7 +265,6 @@ System: GCC, GNU Make, Bash, Coreutils, etc."
                                           "bin" "sbin"))
                     (phases '%standard-phases)
                     (system (%current-system))
-                    (implicit-inputs? #t)    ; useful when bootstrapping
                     (imported-modules %default-modules)
                     (modules %default-modules)
                     allowed-references)
@@ -295,16 +282,6 @@ which could lead to gratuitous input divergence.
 
 ALLOWED-REFERENCES can be either #f, or a list of packages that the outputs
 are allowed to refer to."
-  (define implicit-inputs
-    (and implicit-inputs?
-         (parameterize ((%store store))
-           (standard-inputs system))))
-
-  (define implicit-search-paths
-    (if implicit-inputs?
-        (standard-search-paths)
-        '()))
-
   (define canonicalize-reference
     (match-lambda
      ((? package? p)
@@ -318,15 +295,18 @@ are allowed to refer to."
   (define builder
     `(begin
        (use-modules ,@modules)
-       (gnu-build #:source ,(if (derivation? source)
-                                (derivation->output-path source)
-                                source)
+       (gnu-build #:source ,(match (assoc-ref input-drvs "source")
+                              (((? derivation? source))
+                               (derivation->output-path source))
+                              ((source)
+                               source)
+                              (source
+                               source))
                   #:system ,system
                   #:outputs %outputs
                   #:inputs %build-inputs
                   #:search-paths ',(map search-path-specification->sexp
-                                        (append implicit-search-paths
-                                                search-paths))
+                                        search-paths)
                   #:phases ,phases
                   #:configure-flags ,configure-flags
                   #:make-flags ,make-flags
@@ -351,17 +331,8 @@ are allowed to refer to."
 
   (build-expression->derivation store name builder
                                 #:system system
-                                #:inputs
-                                `(,@(if source
-                                        `(("source" ,source))
-                                        '())
-                                  ,@inputs
-                                  ,@(if implicit-inputs?
-                                        implicit-inputs
-                                        '()))
-                                #:outputs (if strip-binaries?
-                                              outputs
-                                              (delete "debug" outputs))
+                                #:inputs input-drvs
+                                #:outputs outputs
                                 #:modules imported-modules
                                 #:allowed-references
                                 (and allowed-references
@@ -388,30 +359,15 @@ is one of `host' or `target'."
           `(("cross-gcc" ,(gcc target
                                (binutils target)
                                (libc target)))
-            ("cross-binutils" ,(binutils target))
-            ,@(standard-packages)))
+            ("cross-binutils" ,(binutils target))))
          ((target)
           `(("cross-libc" ,(libc target)))))))))
 
-(define standard-cross-inputs
-  (memoize
-   (lambda (system target kind)
-     "Return the list of implicit standard inputs used with the GNU Build
-System when cross-compiling for TARGET: GCC, GNU Make, Bash, Coreutils, etc."
-     (expand-inputs (standard-cross-packages target kind) system))))
-
-(define (standard-cross-search-paths target kind)
-  "Return the list of <search-path-specification> for the standard (implicit)
-inputs."
-  (inputs-search-paths (append (standard-cross-packages target 'target)
-                               (standard-cross-packages target 'host))
-                       (case kind
-                         ((host)   package-native-search-paths)
-                         ((target) package-search-paths))))
-
-(define* (gnu-cross-build store name target source inputs native-inputs
+(define* (gnu-cross-build store name
                           #:key
+                          target native-drvs target-drvs
                           (guile #f)
+                          source
                           (outputs '("out"))
                           (search-paths '())
                           (native-search-paths '())
@@ -429,7 +385,6 @@ inputs."
                                                 "bin" "sbin"))
                           (phases '%standard-phases)
                           (system (%current-system))
-                          (implicit-inputs? #t)
                           (imported-modules '((guix build gnu-build-system)
                                               (guix build utils)))
                           (modules '((guix build gnu-build-system)
@@ -438,27 +393,6 @@ inputs."
   "Cross-build NAME for TARGET, where TARGET is a GNU triplet.  INPUTS are
 cross-built inputs, and NATIVE-INPUTS are inputs that run on the build
 platform."
-
-  (define implicit-host-inputs
-    (and implicit-inputs?
-         (parameterize ((%store store))
-           (standard-cross-inputs system target 'host))))
-
-  (define implicit-target-inputs
-    (and implicit-inputs?
-         (parameterize ((%store store))
-           (standard-cross-inputs system target 'target))))
-
-  (define implicit-host-search-paths
-    (if implicit-inputs?
-        (standard-cross-search-paths target 'host)
-        '()))
-
-  (define implicit-target-search-paths
-    (if implicit-inputs?
-        (standard-cross-search-paths target 'target)
-        '()))
-
   (define canonicalize-reference
     (match-lambda
      ((? package? p)
@@ -478,39 +412,39 @@ platform."
            ',(map (match-lambda
                    ((name (? derivation? drv) sub ...)
                     `(,name . ,(apply derivation->output-path drv sub)))
-                   ((name (? derivation-path? drv-path) sub ...)
-                    `(,name . ,(apply derivation-path->output-path
-                                      drv-path sub)))
                    ((name path)
                     `(,name . ,path)))
-                  (append (or implicit-host-inputs '()) native-inputs)))
+                  native-drvs))
 
          (define %build-target-inputs
            ',(map (match-lambda
                    ((name (? derivation? drv) sub ...)
                     `(,name . ,(apply derivation->output-path drv sub)))
-                   ((name (? derivation-path? drv-path) sub ...)
-                    `(,name . ,(apply derivation-path->output-path
-                                      drv-path sub)))
+                   ((name (? package? pkg) sub ...)
+                    (let ((drv (package-cross-derivation store pkg
+                                                         target system)))
+                      `(,name . ,(apply derivation->output-path drv sub))))
                    ((name path)
                     `(,name . ,path)))
-                  (append (or implicit-target-inputs '()) inputs)))
+                  target-drvs))
 
-         (gnu-build #:source ,(if (derivation? source)
-                                  (derivation->output-path source)
-                                  source)
+         (gnu-build #:source ,(match (assoc-ref native-drvs "source")
+                                (((? derivation? source))
+                                 (derivation->output-path source))
+                                ((source)
+                                 source)
+                                (source
+                                 source))
                     #:system ,system
                     #:target ,target
                     #:outputs %outputs
                     #:inputs %build-target-inputs
                     #:native-inputs %build-host-inputs
                     #:search-paths ',(map search-path-specification->sexp
-                                          (append implicit-target-search-paths
-                                                  search-paths))
+                                          search-paths)
                     #:native-search-paths ',(map
                                              search-path-specification->sexp
-                                             (append implicit-host-search-paths
-                                                     native-search-paths))
+                                             native-search-paths)
                     #:phases ,phases
                     #:configure-flags ,configure-flags
                     #:make-flags ,make-flags
@@ -535,21 +469,8 @@ platform."
 
   (build-expression->derivation store name builder
                                 #:system system
-                                #:inputs
-                                `(,@(if source
-                                        `(("source" ,source))
-                                        '())
-                                  ,@inputs
-                                  ,@(if implicit-inputs?
-                                        implicit-target-inputs
-                                        '())
-                                  ,@native-inputs
-                                  ,@(if implicit-inputs?
-                                        implicit-host-inputs
-                                        '()))
-                                #:outputs (if strip-binaries?
-                                              outputs
-                                              (delete "debug" outputs))
+                                #:inputs (append native-drvs target-drvs)
+                                #:outputs outputs
                                 #:modules imported-modules
                                 #:allowed-references
                                 (and allowed-references
@@ -558,8 +479,8 @@ platform."
                                 #:guile-for-build guile-for-build))
 
 (define gnu-build-system
-  (build-system (name 'gnu)
-                (description
-                 "The GNU Build System—i.e., ./configure && make && make install")
-                (build gnu-build)
-                (cross-build gnu-cross-build)))
+  (build-system
+    (name 'gnu)
+    (description
+     "The GNU Build System—i.e., ./configure && make && make install")
+    (lower lower)))

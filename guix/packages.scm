@@ -92,7 +92,13 @@
             package-input-error?
             package-error-invalid-input
             &package-cross-build-system-error
-            package-cross-build-system-error?))
+            package-cross-build-system-error?
+
+            package->bag
+            bag-transitive-inputs
+            bag-transitive-host-inputs
+            bag-transitive-build-inputs
+            bag-transitive-target-inputs))
 
 ;;; Commentary:
 ;;;
@@ -519,6 +525,24 @@ for the host system (\"native inputs\"), and not target inputs."
 recursively."
   (transitive-inputs (package-propagated-inputs package)))
 
+(define (bag-transitive-inputs bag)
+  "Same as 'package-transitive-inputs', but applied to a bag."
+  (transitive-inputs (append (bag-build-inputs bag)
+                             (bag-host-inputs bag)
+                             (bag-target-inputs bag))))
+
+(define (bag-transitive-build-inputs bag)
+  "Same as 'package-transitive-native-inputs', but applied to a bag."
+  (transitive-inputs (bag-build-inputs bag)))
+
+(define (bag-transitive-host-inputs bag)
+  "Same as 'package-transitive-target-inputs', but applied to a bag."
+  (transitive-inputs (bag-host-inputs bag)))
+
+(define (bag-transitive-target-inputs bag)
+  "Return the \"target inputs\" of BAG, recursively."
+  (transitive-inputs (bag-target-inputs bag)))
+
 
 ;;;
 ;;; Package derivations.
@@ -591,6 +615,38 @@ information in exceptions."
                         (package package)
                         (input   x)))))))
 
+(define* (package->bag package #:optional
+                       (system (%current-system))
+                       (target (%current-target-system)))
+  "Compile PACKAGE into a bag for SYSTEM, possibly cross-compiled to TARGET,
+and return it."
+  ;; Bind %CURRENT-SYSTEM and %CURRENT-TARGET-SYSTEM so that thunked field
+  ;; values can refer to it.
+  (parameterize ((%current-system system)
+                 (%current-target-system target))
+    (match package
+      (($ <package> name version source build-system
+                    args inputs propagated-inputs native-inputs self-native-input?
+                    outputs)
+       (or (make-bag build-system (package-full-name package)
+                     #:target target
+                     #:source source
+                     #:inputs (append (inputs)
+                                      (propagated-inputs))
+                     #:outputs outputs
+                     #:native-inputs `(,@(if (and target self-native-input?)
+                                             `(("self" ,package))
+                                             '())
+                                       ,@(native-inputs))
+                     #:arguments (args))
+           (raise (if target
+                      (condition
+                       (&package-cross-build-system-error
+                        (package package)))
+                      (condition
+                       (&package-error
+                        (package package))))))))))
+
 (define* (package-derivation store package
                              #:optional (system (%current-system)))
   "Return the <derivation> object of PACKAGE for SYSTEM."
@@ -599,92 +655,69 @@ information in exceptions."
   ;; because some derivations, such as the implicit inputs of the GNU build
   ;; system, will be queried many, many times in a row.
   (cached package system
+          (let* ((bag        (package->bag package system #f))
+                 (inputs     (bag-transitive-inputs bag))
+                 (input-drvs (map (cut expand-input
+                                       store package <> system)
+                                  inputs))
+                 (paths      (delete-duplicates
+                              (append-map (match-lambda
+                                           ((_ (? package? p) _ ...)
+                                            (package-native-search-paths
+                                             p))
+                                           (_ '()))
+                                          inputs))))
 
-          ;; Bind %CURRENT-SYSTEM so that thunked field values can refer
-          ;; to it.
-          (parameterize ((%current-system system)
-                         (%current-target-system #f))
-            (match package
-              (($ <package> name version source (= build-system-builder builder)
-                  args inputs propagated-inputs native-inputs self-native-input?
-                  outputs)
-               (let* ((inputs     (package-transitive-inputs package))
-                      (input-drvs (map (cut expand-input
-                                            store package <> system)
-                                       inputs))
-                      (paths      (delete-duplicates
-                                   (append-map (match-lambda
-                                                ((_ (? package? p) _ ...)
-                                                 (package-native-search-paths
-                                                  p))
-                                                (_ '()))
-                                               inputs))))
-
-                 (apply builder
-                        store (package-full-name package)
-                        (and source
-                             (package-source-derivation store source system))
-                        input-drvs
-                        #:search-paths paths
-                        #:outputs outputs #:system system
-                        (args))))))))
+            (apply (bag-build bag)
+                   store (bag-name bag)
+                   input-drvs
+                   #:search-paths paths
+                   #:outputs (bag-outputs bag) #:system system
+                   (bag-arguments bag)))))
 
 (define* (package-cross-derivation store package target
                                    #:optional (system (%current-system)))
   "Cross-build PACKAGE for TARGET (a GNU triplet) from host SYSTEM (a Guix
 system identifying string)."
   (cached package (cons system target)
+          (let* ((bag         (package->bag package system target))
+                 (host        (bag-transitive-host-inputs bag))
+                 (host-drvs   (map (cut expand-input
+                                        store package <>
+                                        system target)
+                                   host))
+                 (target*     (bag-transitive-target-inputs bag))
+                 (target-drvs (map (cut expand-input
+                                        store package <> system)
+                                   target*))
+                 (build       (bag-transitive-build-inputs bag))
+                 (build-drvs  (map (cut expand-input
+                                        store package <> system)
+                                   build))
+                 (all         (append build target* host))
+                 (paths       (delete-duplicates
+                               (append-map (match-lambda
+                                            ((_ (? package? p) _ ...)
+                                             (package-search-paths p))
+                                            (_ '()))
+                                           all)))
+                 (npaths      (delete-duplicates
+                               (append-map (match-lambda
+                                            ((_ (? package? p) _ ...)
+                                             (package-native-search-paths
+                                              p))
+                                            (_ '()))
+                                           all))))
 
-          ;; Bind %CURRENT-SYSTEM so that thunked field values can refer
-          ;; to it.
-          (parameterize ((%current-system system)
-                         (%current-target-system target))
-            (match package
-              (($ <package> name version source
-                  (= build-system-cross-builder builder)
-                  args inputs propagated-inputs native-inputs self-native-input?
-                  outputs)
-               (unless builder
-                 (raise (condition
-                         (&package-cross-build-system-error
-                          (package package)))))
-
-               (let* ((inputs     (package-transitive-target-inputs package))
-                      (input-drvs (map (cut expand-input
-                                            store package <>
-                                            system target)
-                                       inputs))
-                      (host       (append (if self-native-input?
-                                              `(("self" ,package))
-                                              '())
-                                          (package-transitive-native-inputs package)))
-                      (host-drvs  (map (cut expand-input
-                                            store package <> system)
-                                       host))
-                      (all        (append host inputs))
-                      (paths      (delete-duplicates
-                                   (append-map (match-lambda
-                                                ((_ (? package? p) _ ...)
-                                                 (package-search-paths p))
-                                                (_ '()))
-                                               all)))
-                      (npaths     (delete-duplicates
-                                   (append-map (match-lambda
-                                                ((_ (? package? p) _ ...)
-                                                 (package-native-search-paths
-                                                  p))
-                                                (_ '()))
-                                               all))))
-
-                 (apply builder
-                        store (package-full-name package) target
-                        (and source
-                             (package-source-derivation store source system))
-                        input-drvs host-drvs
-                        #:search-paths paths
-                        #:native-search-paths npaths
-                        #:outputs outputs #:system system
-                        (args))))))))
+            (apply (bag-build bag)
+                   store (bag-name bag)
+                   #:native-drvs build-drvs
+                   #:target-drvs (append host-drvs target-drvs)
+                   #:search-paths paths
+                   #:native-search-paths npaths
+                   #:outputs (bag-outputs bag)
+                   #:system system #:target target
+                   (bag-arguments bag)))))
 
 (define* (package-output store package
                          #:optional (output "out") (system (%current-system)))

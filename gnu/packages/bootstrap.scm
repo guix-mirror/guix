@@ -164,6 +164,46 @@ check whether everything is alright."
 ;;; Bootstrap packages.
 ;;;
 
+(define* (raw-build store name inputs
+                    #:key outputs system search-paths
+                    #:allow-other-keys)
+  (define (->store file)
+    (add-to-store store file #t "sha256"
+                  (or (search-bootstrap-binary file
+                                               system)
+                      (error "bootstrap binary not found"
+                             file system))))
+
+  (let* ((tar   (->store "tar"))
+         (xz    (->store "xz"))
+         (mkdir (->store "mkdir"))
+         (bash  (->store "bash"))
+         (guile (->store "guile-2.0.9.tar.xz"))
+         (builder
+          (add-text-to-store store
+                             "build-bootstrap-guile.sh"
+                             (format #f "
+echo \"unpacking bootstrap Guile to '$out'...\"
+~a $out
+cd $out
+~a -dc < ~a | ~a xv
+
+# Sanity check.
+$out/bin/guile --version~%"
+                                     mkdir xz guile tar)
+                             (list mkdir xz guile tar))))
+    (derivation store name
+                bash `(,builder)
+                #:system system
+                #:inputs `((,bash) (,builder)))))
+
+(define* (make-raw-bag name
+                       #:key source inputs native-inputs outputs target)
+  (bag
+    (name name)
+    (build-inputs inputs)
+    (build raw-build)))
+
 (define %bootstrap-guile
   ;; The Guile used to run the build scripts of the initial derivations.
   ;; It is just unpacked from a tarball containing a pre-built binary.
@@ -172,39 +212,9 @@ check whether everything is alright."
   ;; XXX: Would need libc's `libnss_files2.so' for proper `getaddrinfo'
   ;; support (for /etc/services).
   (let ((raw (build-system
-              (name "raw")
-              (description "Raw build system with direct store access")
-              (build (lambda* (store name source inputs
-                                     #:key outputs system search-paths)
-                       (define (->store file)
-                         (add-to-store store file #t "sha256"
-                                       (or (search-bootstrap-binary file
-                                                                    system)
-                                           (error "bootstrap binary not found"
-                                                  file system))))
-
-                       (let* ((tar   (->store "tar"))
-                              (xz    (->store "xz"))
-                              (mkdir (->store "mkdir"))
-                              (bash  (->store "bash"))
-                              (guile (->store "guile-2.0.9.tar.xz"))
-                              (builder
-                               (add-text-to-store store
-                                                  "build-bootstrap-guile.sh"
-                                                  (format #f "
-echo \"unpacking bootstrap Guile to '$out'...\"
-~a $out
-cd $out
-~a -dc < ~a | ~a xv
-
-# Sanity check.
-$out/bin/guile --version~%"
-                                                          mkdir xz guile tar)
-                                                  (list mkdir xz guile tar))))
-                         (derivation store name
-                                     bash `(,builder)
-                                     #:system system
-                                     #:inputs `((,bash) (,builder)))))))))
+               (name 'raw)
+               (description "Raw build system with direct store access")
+               (lower make-raw-bag))))
    (package
      (name "guile-bootstrap")
      (version "2.0")

@@ -21,7 +21,7 @@
   #:use-module (guix monads)
   #:use-module (guix records)
   #:use-module (guix packages)
-  #:autoload   (guix build-system gnu) (standard-inputs)
+  #:autoload   (guix build-system gnu) (standard-packages)
   #:use-module (ice-9 match)
   #:export (git-reference
             git-reference?
@@ -73,7 +73,7 @@ type HASH-ALGO (a symbol).  Use NAME as the file name, or a generic name if
     ;; When doing 'git clone --recursive', we need sed, grep, etc. to be
     ;; available so that 'git submodule' works.
     (if (git-reference-recursive? ref)
-        (standard-inputs (%current-system))
+        (standard-packages)
         '()))
 
   (define build
