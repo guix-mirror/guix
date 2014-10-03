@@ -25,6 +25,7 @@
   #:use-module (guix utils)
   #:use-module (guix base32)
   #:use-module (guix derivations)
+  #:use-module (guix hash)
   #:use-module (guix tests)
   #:use-module ((guix packages)
                 #:select (package-derivation package-native-search-paths))
@@ -73,6 +74,22 @@
     (and (build-derivations %store (list drv))
          (file-exists? out-path)
          (valid-path? %store out-path))))
+
+(test-assert "url-fetch, file"
+  (let* ((file (search-path %load-path "guix.scm"))
+         (hash (call-with-input-file file port-sha256))
+         (out  (url-fetch %store file 'sha256 hash)))
+    (and (file-exists? out)
+         (valid-path? %store out))))
+
+(test-assert "url-fetch, file URI"
+  (let* ((file (search-path %load-path "guix.scm"))
+         (hash (call-with-input-file file port-sha256))
+         (out  (url-fetch %store
+                          (string-append "file://" (canonicalize-path file))
+                          'sha256 hash)))
+    (and (file-exists? out)
+         (valid-path? %store out))))
 
 (test-assert "gnu-build-system"
   (and (build-system? gnu-build-system)

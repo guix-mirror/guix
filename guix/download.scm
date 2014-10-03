@@ -242,20 +242,25 @@ must be a list of symbol/URL-list pairs."
         (url-fetch '#$url #$output
                    #:mirrors '#$mirrors)))
 
-  (run-with-store store
-    (gexp->derivation (or name file-name) builder
-                      #:system system
-                      #:hash-algo hash-algo
-                      #:hash hash
-                      #:modules '((guix build download)
-                                  (guix build utils)
-                                  (guix ftp-client))
-                      #:guile-for-build guile-for-build
+  (let ((uri (and (string? url) (string->uri url))))
+    (if (or (and (string? url) (not uri))
+            (and uri (memq (uri-scheme uri) '(#f file))))
+        (add-to-store store (or name file-name)
+                      #f "sha256" (if uri (uri-path uri) url))
+        (run-with-store store
+          (gexp->derivation (or name file-name) builder
+                            #:system system
+                            #:hash-algo hash-algo
+                            #:hash hash
+                            #:modules '((guix build download)
+                                        (guix build utils)
+                                        (guix ftp-client))
+                            #:guile-for-build guile-for-build
 
-                      ;; In general, offloading downloads is not a good idea.
-                      #:local-build? #t)
-    #:guile-for-build guile-for-build
-    #:system system))
+                            ;; In general, offloading downloads is not a good idea.
+                            #:local-build? #t)
+          #:guile-for-build guile-for-build
+          #:system system))))
 
 (define* (download-to-store store url #:optional (name (basename url))
                             #:key (log (current-error-port)))
