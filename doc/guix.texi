@@ -1142,7 +1142,8 @@ specified.
 
 When @var{min} is given, stop once @var{min} bytes have been collected.
 @var{min} may be a number of bytes, or it may include a unit as a
-suffix, such as @code{MiB} for mebibytes and @code{GB} for gigabytes.
+suffix, such as @code{MiB} for mebibytes and @code{GB} for gigabytes
+(@pxref{Block size, size specifications,, coreutils, GNU Coreutils}).
 
 When @var{min} is omitted, collect all the garbage.
 
@@ -3822,8 +3823,8 @@ This works as per @command{guix build} (@pxref{Invoking guix build}).
 @item --image-size=@var{size}
 For the @code{vm-image} and @code{disk-image} actions, create an image
 of the given @var{size}.  @var{size} may be a number of bytes, or it may
-include a unit as a suffix, such as @code{MiB} for mebibytes and
-@code{GB} for gigabytes.
+include a unit as a suffix (@pxref{Block size, size specifications,,
+coreutils, GNU Coreutils}).
 @end table
 
 Note that all the actions above, except @code{build} and @code{init},

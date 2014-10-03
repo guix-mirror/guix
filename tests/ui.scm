@@ -189,6 +189,10 @@ Second line" 24))
   (inexact->exact (round (* 1.2 (expt 2 30))))
   (size->number "1.2GiB"))
 
+(test-equal "size->number, 1T"
+  (expt 2 40)
+  (size->number "1T"))
+
 (test-assert "size->number, invalid unit"
   (catch 'quit
     (lambda ()
