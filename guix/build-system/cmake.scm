@@ -49,6 +49,7 @@
                      (make-flags ''())
                      (cmake (default-cmake))
                      (out-of-source? #t)
+                     (build-type "RelWithDebInfo")
                      (tests? #t)
                      (test-target "test")
                      (parallel-build? #t) (parallel-tests? #f)
@@ -83,6 +84,7 @@ provides a 'CMakeLists.txt' file as its build system."
                     #:configure-flags ,configure-flags
                     #:make-flags ,make-flags
                     #:out-of-source? ,out-of-source?
+                    #:build-type ,build-type
                     #:tests? ,tests?
                     #:test-target ,test-target
                     #:parallel-build? ,parallel-build?

@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;;
@@ -32,6 +32,7 @@
 ;; Code:
 
 (define* (configure #:key outputs (configure-flags '()) (out-of-source? #t)
+                    build-type
                     #:allow-other-keys)
   "Configure the given package."
   (let* ((out        (assoc-ref outputs "out"))
@@ -47,6 +48,10 @@
     (format #t "build directory: ~s~%" (getcwd))
 
     (let ((args `(,srcdir
+                  ,@(if build-type
+                        (list (string-append "-DCMAKE_BUILD_TYPE="
+                                             build-type))
+                        '())
                   ,(string-append "-DCMAKE_INSTALL_PREFIX=" out)
                   ;; add input libraries to rpath
                   "-DCMAKE_INSTALL_RPATH_USE_LINK_PATH=TRUE"

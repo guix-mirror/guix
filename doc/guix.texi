@@ -1621,6 +1621,13 @@ implements the build procedure for packages using the
 It automatically adds the @code{cmake} package to the set of inputs.
 Which package is used can be specified with the @code{#:cmake}
 parameter.
+
+The @code{#:configure-flags} parameter is taken as a list of flags
+passed to the @command{cmake} command.  The @code{#:build-type}
+parameter specifies in abstract terms the flags passed to the compiler;
+it defaults to @code{"RelWithDebInfo"} (short for ``release mode with
+debugging information''), which roughly means that code is compiled with
+@code{-O2 -g}, as is the case for Autoconf-based packages by default.
 @end defvr
 
 @defvr {Scheme Variable} python-build-system
