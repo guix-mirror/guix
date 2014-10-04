@@ -91,14 +91,14 @@ as well as the classic centralized workflow.")
 (define-public git
   (package
    (name "git")
-   (version "1.8.4")
+   (version "2.1.2")
    (source (origin
             (method url-fetch)
             (uri (string-append "http://git-core.googlecode.com/files/git-"
-                                version ".tar.gz"))
+                                version ".tar.xz"))
             (sha256
              (base32
-              "156bwqqgaw65rsvbb4wih5jfg94bxyf6p16mdwf0ky3f4ln55s2i"))))
+              "12x1qycc0rii6fqpiizp9v9ysdmj6lpi9imqqbrkdx6cifbwh9vv"))))
    (build-system gnu-build-system)
    (native-inputs
     `(("native-perl" ,perl)
