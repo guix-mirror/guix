@@ -56,15 +56,15 @@
 (define-public bazaar
   (package
     (name "bazaar")
-    (version "2.5.1")
+    (version "2.6.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "https://launchpad.net/bzr/2.5/" version
+      (uri (string-append "https://launchpad.net/bzr/2.6/" version
                           "/+download/bzr-" version ".tar.gz"))
       (sha256
        (base32
-        "10krjbzia2avn09p0cdlbx2wya0r5v11w5ymvyl72af5dkx4cwwn"))))
+        "1c6sj77h5f97qimjc14kr532kgc0jk3wq778xrkqi0pbh9qpk509"))))
     (build-system python-build-system)
     (inputs
      ;; Note: 'tools/packaging/lp-upload-release' and 'tools/weavemerge.sh'
