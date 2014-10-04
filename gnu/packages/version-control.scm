@@ -94,7 +94,7 @@ as well as the classic centralized workflow.")
    (version "2.1.2")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://git-core.googlecode.com/files/git-"
+            (uri (string-append "mirror://kernel.org/software/scm/git/git-"
                                 version ".tar.xz"))
             (sha256
              (base32
