@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -43,6 +44,9 @@
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
   #:export (specification->package+output
+            roll-back
+            delete-generation
+            delete-generations
             guix-package))
 
 (define %store
@@ -80,12 +84,12 @@ return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
       %current-profile
       profile))
 
-(define (link-to-empty-profile generation)
+(define (link-to-empty-profile store generation)
   "Link GENERATION, a string, to the empty profile."
-  (let* ((drv  (run-with-store (%store)
+  (let* ((drv  (run-with-store store
                  (profile-derivation (manifest '()))))
          (prof (derivation->output-path drv "out")))
-    (when (not (build-derivations (%store) (list drv)))
+    (when (not (build-derivations store (list drv)))
           (leave (_ "failed to build the empty profile~%")))
 
     (switch-symlinks generation prof)))
@@ -99,7 +103,7 @@ return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
             number previous-number)
     (switch-symlinks profile previous-generation)))
 
-(define (roll-back profile)
+(define (roll-back store profile)
   "Roll back to the previous generation of PROFILE."
   (let* ((number              (generation-number profile))
          (previous-number     (previous-generation-number profile number))
@@ -112,10 +116,38 @@ return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
                    (_ "nothing to do: already at the empty profile~%")))
           ((or (zero? previous-number)                  ; going to emptiness
                (not (file-exists? previous-generation)))
-           (link-to-empty-profile previous-generation)
+           (link-to-empty-profile store previous-generation)
            (switch-to-previous-generation profile))
           (else
            (switch-to-previous-generation profile)))))  ; anything else
+
+(define (delete-generation store profile number)
+  "Delete generation with NUMBER from PROFILE."
+  (define (display-and-delete)
+    (let ((generation (generation-file-name profile number)))
+      (format #t (_ "deleting ~a~%") generation)
+      (delete-file generation)))
+
+  (let* ((current-number      (generation-number profile))
+         (previous-number     (previous-generation-number profile number))
+         (previous-generation (generation-file-name profile previous-number)))
+    (cond ((zero? number))              ; do not delete generation 0
+          ((and (= number current-number)
+                (not (file-exists? previous-generation)))
+           (link-to-empty-profile store previous-generation)
+           (switch-to-previous-generation profile)
+           (display-and-delete))
+          ((= number current-number)
+           (roll-back store profile)
+           (display-and-delete))
+          (else
+           (display-and-delete)))))
+
+(define (delete-generations store profile generations)
+  "Delete GENERATIONS from PROFILE.
+GENERATIONS is a list of generation numbers."
+  (for-each (cut delete-generation store profile <>)
+            generations))
 
 (define* (matching-generations str #:optional (profile %current-profile)
                                #:key (duration-relation <=))
@@ -680,32 +712,10 @@ more information.~%"))
     (define current-generation-number
       (generation-number profile))
 
-    (define (display-and-delete number)
-      (let ((generation (generation-file-name profile number)))
-        (unless (zero? number)
-          (format #t (_ "deleting ~a~%") generation)
-          (delete-file generation))))
-
-    (define (delete-generation number)
-      (let* ((previous-number (previous-generation-number profile number))
-             (previous-generation
-              (generation-file-name profile previous-number)))
-        (cond ((zero? number))  ; do not delete generation 0
-              ((and (= number current-generation-number)
-                    (not (file-exists? previous-generation)))
-               (link-to-empty-profile previous-generation)
-               (switch-to-previous-generation profile)
-               (display-and-delete number))
-              ((= number current-generation-number)
-               (roll-back profile)
-               (display-and-delete number))
-              (else
-               (display-and-delete number)))))
-
     ;; First roll back if asked to.
     (cond ((and (assoc-ref opts 'roll-back?) (not dry-run?))
            (begin
-             (roll-back profile)
+             (roll-back (%store) profile)
              (process-actions (alist-delete 'roll-back? opts))))
           ((and (assoc-ref opts 'delete-generations)
                 (not dry-run?))
@@ -716,9 +726,10 @@ more information.~%"))
                      (leave (_ "profile '~a' does not exist~%")
                             profile))
                     ((string-null? pattern)
-                     (for-each display-and-delete
-                               (delete current-generation-number
-                                       (profile-generations profile))))
+                     (delete-generations
+                      (%store) profile
+                      (delete current-generation-number
+                              (profile-generations profile))))
                     ;; Do not delete the zeroth generation.
                     ((equal? 0 (string->number pattern))
                      (exit 0))
@@ -731,7 +742,7 @@ more information.~%"))
                      (lambda (numbers)
                        (if (null-list? numbers)
                            (exit 1)
-                           (for-each delete-generation numbers))))
+                           (delete-generations (%store) profile numbers))))
                     (else
                      (leave (_ "invalid syntax: ~a~%")
                             pattern)))
