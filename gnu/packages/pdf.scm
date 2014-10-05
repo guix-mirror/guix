@@ -85,14 +85,13 @@
 (define-public xpdf
   (package
    (name "xpdf")
-   (version "3.03")
+   (version "3.04")
    (source (origin
             (method url-fetch)
             (uri (string-append "ftp://ftp.foolabs.com/pub/xpdf/xpdf-"
                                 version ".tar.gz"))
             (sha256 (base32
-                     "1jnfzdqc54wa73lw28kjv0m7120mksb0zkcn81jdlvijyvc67kq2"))
-            (patches (list (search-patch "xpdf-constchar.patch")))))
+                     "1rbp54mr3z2x3a3a1qmz8byzygzi223vckfam9ib5g1sfds0qf8i"))))
    (build-system gnu-build-system)
    (inputs `(("freetype" ,freetype)
              ("gs-fonts" ,gs-fonts)
@@ -103,6 +102,7 @@
              ("libxp" ,libxp)
              ("libxpm" ,libxpm)
              ("libxt" ,libxt)
+             ("libpng" ,libpng)
              ("zlib" ,zlib)))
    (arguments
     `(#:tests? #f ; there is no check target
