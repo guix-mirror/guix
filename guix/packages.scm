@@ -95,6 +95,7 @@
             package-cross-build-system-error?
 
             package->bag
+            bag->derivation
             bag-transitive-inputs
             bag-transitive-host-inputs
             bag-transitive-build-inputs
@@ -629,6 +630,7 @@ and return it."
                     args inputs propagated-inputs native-inputs self-native-input?
                     outputs)
        (or (make-bag build-system (package-full-name package)
+                     #:system system
                      #:target target
                      #:source source
                      #:inputs (append (inputs)
@@ -647,6 +649,72 @@ and return it."
                        (&package-error
                         (package package))))))))))
 
+(define* (bag->derivation store bag
+                          #:optional context)
+  "Return the derivation to build BAG for SYSTEM.  Optionally, CONTEXT can be
+a package object describing the context in which the call occurs, for improved
+error reporting."
+  (if (bag-target bag)
+      (bag->cross-derivation store bag)
+      (let* ((system     (bag-system bag))
+             (inputs     (bag-transitive-inputs bag))
+             (input-drvs (map (cut expand-input store context <> system)
+                              inputs))
+             (paths      (delete-duplicates
+                          (append-map (match-lambda
+                                       ((_ (? package? p) _ ...)
+                                        (package-native-search-paths
+                                         p))
+                                       (_ '()))
+                                      inputs))))
+
+        (apply (bag-build bag)
+               store (bag-name bag) input-drvs
+               #:search-paths paths
+               #:outputs (bag-outputs bag) #:system system
+               (bag-arguments bag)))))
+
+(define* (bag->cross-derivation store bag
+                                #:optional context)
+  "Return the derivation to build BAG, which is actually a cross build.
+Optionally, CONTEXT can be a package object denoting the context of the call.
+This is an internal procedure."
+  (let* ((system      (bag-system bag))
+         (target      (bag-target bag))
+         (host        (bag-transitive-host-inputs bag))
+         (host-drvs   (map (cut expand-input store context <> system target)
+                           host))
+         (target*     (bag-transitive-target-inputs bag))
+         (target-drvs (map (cut expand-input store context <> system)
+                           target*))
+         (build       (bag-transitive-build-inputs bag))
+         (build-drvs  (map (cut expand-input store context <> system)
+                           build))
+         (all         (append build target* host))
+         (paths       (delete-duplicates
+                       (append-map (match-lambda
+                                    ((_ (? package? p) _ ...)
+                                     (package-search-paths p))
+                                    (_ '()))
+                                   all)))
+         (npaths      (delete-duplicates
+                       (append-map (match-lambda
+                                    ((_ (? package? p) _ ...)
+                                     (package-native-search-paths
+                                      p))
+                                    (_ '()))
+                                   all))))
+
+    (apply (bag-build bag)
+           store (bag-name bag)
+           #:native-drvs build-drvs
+           #:target-drvs (append host-drvs target-drvs)
+           #:search-paths paths
+           #:native-search-paths npaths
+           #:outputs (bag-outputs bag)
+           #:system system #:target target
+           (bag-arguments bag))))
+
 (define* (package-derivation store package
                              #:optional (system (%current-system)))
   "Return the <derivation> object of PACKAGE for SYSTEM."
@@ -655,69 +723,16 @@ and return it."
   ;; because some derivations, such as the implicit inputs of the GNU build
   ;; system, will be queried many, many times in a row.
   (cached package system
-          (let* ((bag        (package->bag package system #f))
-                 (inputs     (bag-transitive-inputs bag))
-                 (input-drvs (map (cut expand-input
-                                       store package <> system)
-                                  inputs))
-                 (paths      (delete-duplicates
-                              (append-map (match-lambda
-                                           ((_ (? package? p) _ ...)
-                                            (package-native-search-paths
-                                             p))
-                                           (_ '()))
-                                          inputs))))
-
-            (apply (bag-build bag)
-                   store (bag-name bag)
-                   input-drvs
-                   #:search-paths paths
-                   #:outputs (bag-outputs bag) #:system system
-                   (bag-arguments bag)))))
+          (bag->derivation store (package->bag package system #f)
+                           package)))
 
 (define* (package-cross-derivation store package target
                                    #:optional (system (%current-system)))
   "Cross-build PACKAGE for TARGET (a GNU triplet) from host SYSTEM (a Guix
 system identifying string)."
   (cached package (cons system target)
-          (let* ((bag         (package->bag package system target))
-                 (host        (bag-transitive-host-inputs bag))
-                 (host-drvs   (map (cut expand-input
-                                        store package <>
-                                        system target)
-                                   host))
-                 (target*     (bag-transitive-target-inputs bag))
-                 (target-drvs (map (cut expand-input
-                                        store package <> system)
-                                   target*))
-                 (build       (bag-transitive-build-inputs bag))
-                 (build-drvs  (map (cut expand-input
-                                        store package <> system)
-                                   build))
-                 (all         (append build target* host))
-                 (paths       (delete-duplicates
-                               (append-map (match-lambda
-                                            ((_ (? package? p) _ ...)
-                                             (package-search-paths p))
-                                            (_ '()))
-                                           all)))
-                 (npaths      (delete-duplicates
-                               (append-map (match-lambda
-                                            ((_ (? package? p) _ ...)
-                                             (package-native-search-paths
-                                              p))
-                                            (_ '()))
-                                           all))))
-
-            (apply (bag-build bag)
-                   store (bag-name bag)
-                   #:native-drvs build-drvs
-                   #:target-drvs (append host-drvs target-drvs)
-                   #:search-paths paths
-                   #:native-search-paths npaths
-                   #:outputs (bag-outputs bag)
-                   #:system system #:target target
-                   (bag-arguments bag)))))
+          (bag->derivation store (package->bag package system target)
+                           package)))
 
 (define* (package-output store package
                          #:optional (output "out") (system (%current-system)))

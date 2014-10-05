@@ -210,7 +210,7 @@ standard packages used as implicit inputs of the GNU build system."
 (define* (lower name
                 #:key source inputs native-inputs outputs target
                 (implicit-inputs? #t) (implicit-cross-inputs? #t)
-                (strip-binaries? #t)
+                (strip-binaries? #t) system
                 #:allow-other-keys
                 #:rest arguments)
   "Return a bag for NAME from the given arguments."
@@ -221,6 +221,7 @@ standard packages used as implicit inputs of the GNU build system."
 
   (bag
     (name name)
+    (system system) (target target)
     (build-inputs `(,@(if source
                           `(("source" ,source))
                           '())

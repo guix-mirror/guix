@@ -28,6 +28,8 @@
             bag
             bag?
             bag-name
+            bag-system
+            bag-target
             bag-build-inputs
             bag-host-inputs
             bag-target-inputs
@@ -43,12 +45,19 @@
   (description build-system-description)  ; short description
   (lower       build-system-lower))       ; args ... -> bags
 
-;; "Bags" are low-level representations of "packages".  Here we use
-;; build/host/target in the sense of the GNU tool chain (info "(autoconf)
-;; Specifying Target Triplets").
+;; "Bags" are low-level representations of "packages".  The system and target
+;; of a bag is fixed when it's created.  This is because build systems may
+;; choose inputs as a function of the system and target.
 (define-record-type* <bag> bag %make-bag
   bag?
   (name          bag-name)               ;string
+
+  (system        bag-system)             ;string
+  (target        bag-target              ;string | #f
+                 (default #f))
+
+  ;; Here we use build/host/target in the sense of the GNU tool chain (info
+  ;; "(autoconf) Specifying Target Triplets").
   (build-inputs  bag-build-inputs        ;list of packages
                  (default '()))
   (host-inputs   bag-host-inputs         ;list of packages
@@ -72,7 +81,7 @@
 (define* (make-bag build-system name
                    #:key source (inputs '()) (native-inputs '())
                    (outputs '()) (arguments '())
-                   target)
+                   system target)
   "Ask BUILD-SYSTEM to return a 'bag' for NAME, with the given SOURCE,
 INPUTS, NATIVE-INPUTS, OUTPUTS, and additional ARGUMENTS.  If TARGET is not
 #f, it must be a string with the GNU triplet of a cross-compilation target.
@@ -82,6 +91,7 @@ intermediate representation just above derivations."
   (match build-system
     (($ <build-system> _ description lower)
      (apply lower name
+            #:system system
             #:source source
             #:inputs inputs
             #:native-inputs native-inputs

@@ -93,7 +93,7 @@ prepended to the name."
   (cut package-with-explicit-python <> (default-python2) "python-" "python2-"))
 
 (define* (lower name
-                #:key source inputs native-inputs outputs target
+                #:key source inputs native-inputs outputs system target
                 (python (default-python))
                 #:allow-other-keys
                 #:rest arguments)
@@ -104,6 +104,7 @@ prepended to the name."
   (and (not target)                               ;XXX: no cross-compilation
        (bag
          (name name)
+         (system system)
          (host-inputs `(,@(if source
                               `(("source" ,source))
                               '())

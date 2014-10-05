@@ -35,7 +35,7 @@
     (module-ref ruby 'ruby)))
 
 (define* (lower name
-                #:key source inputs native-inputs outputs target
+                #:key source inputs native-inputs outputs system target
                 (ruby (default-ruby))
                 #:allow-other-keys
                 #:rest arguments)
@@ -46,6 +46,7 @@
   (and (not target)                               ;XXX: no cross-compilation
        (bag
          (name name)
+         (system system)
          (host-inputs `(,@(if source
                               `(("source" ,source))
                               '())

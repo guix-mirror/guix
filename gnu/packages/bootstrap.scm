@@ -198,9 +198,11 @@ $out/bin/guile --version~%"
                 #:inputs `((,bash) (,builder)))))
 
 (define* (make-raw-bag name
-                       #:key source inputs native-inputs outputs target)
+                       #:key source inputs native-inputs outputs
+                       system target)
   (bag
     (name name)
+    (system system)
     (build-inputs inputs)
     (build raw-build)))
 

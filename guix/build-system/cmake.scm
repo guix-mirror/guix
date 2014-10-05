@@ -43,7 +43,7 @@
     (module-ref module 'cmake)))
 
 (define* (lower name
-                #:key source inputs native-inputs outputs target
+                #:key source inputs native-inputs outputs system target
                 (cmake (default-cmake))
                 #:allow-other-keys
                 #:rest arguments)
@@ -54,6 +54,7 @@
   (and (not target)                               ;XXX: no cross-compilation
        (bag
          (name name)
+         (system system)
          (host-inputs `(,@(if source
                               `(("source" ,source))
                               '())

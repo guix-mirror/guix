@@ -35,11 +35,12 @@
        (package-derivation store guile system)))))
 
 (define* (lower name
-                #:key source inputs native-inputs outputs target
+                #:key source inputs native-inputs outputs system target
                 guile builder modules)
   "Return a bag for NAME."
   (bag
     (name name)
+    (system system)
     (host-inputs `(,@(if source
                          `(("source" ,source))
                          '())

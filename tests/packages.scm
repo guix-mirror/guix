@@ -281,9 +281,11 @@
          (s (build-system
              (name 'raw)
              (description "Raw build system with direct store access")
-             (lower (lambda* (name #:key source inputs #:allow-other-keys)
+             (lower (lambda* (name #:key source inputs system target
+                                   #:allow-other-keys)
                       (bag
                         (name name)
+                        (system system) (target target)
                         (build-inputs inputs)
                         (build
                          (lambda* (store name inputs
@@ -338,6 +340,38 @@
                (eq? (package-error-package c) p)))
       (package-cross-derivation %store p "mips64el-linux-gnu")
       #f)))
+
+(test-equal "package->bag"
+  `("foo86-hurd" #f (,(package-source gnu-make))
+    (,(canonical-package glibc)) (,(canonical-package coreutils)))
+  (let ((bag (package->bag gnu-make "foo86-hurd")))
+    (list (bag-system bag) (bag-target bag)
+          (assoc-ref (bag-build-inputs bag) "source")
+          (assoc-ref (bag-build-inputs bag) "libc")
+          (assoc-ref (bag-build-inputs bag) "coreutils"))))
+
+(test-equal "package->bag, cross-compilation"
+  `(,(%current-system) "foo86-hurd"
+    (,(package-source gnu-make))
+    (,(canonical-package glibc)) (,(canonical-package coreutils)))
+  (let ((bag (package->bag gnu-make (%current-system) "foo86-hurd")))
+    (list (bag-system bag) (bag-target bag)
+          (assoc-ref (bag-build-inputs bag) "source")
+          (assoc-ref (bag-build-inputs bag) "libc")
+          (assoc-ref (bag-build-inputs bag) "coreutils"))))
+
+(test-assert "bag->derivation"
+  (let ((bag (package->bag gnu-make))
+        (drv (package-derivation %store gnu-make)))
+    (parameterize ((%current-system "foox86-hurd")) ;should have no effect
+      (equal? drv (bag->derivation %store bag)))))
+
+(test-assert "bag->derivation, cross-compilation"
+  (let ((bag (package->bag gnu-make (%current-system) "mips64el-linux-gnu"))
+        (drv (package-cross-derivation %store gnu-make "mips64el-linux-gnu")))
+    (parameterize ((%current-system "foox86-hurd") ;should have no effect
+                   (%current-target-system "foo64-linux-gnu"))
+      (equal? drv (bag->derivation %store bag)))))
 
 (unless (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV))
   (test-skip 1))
