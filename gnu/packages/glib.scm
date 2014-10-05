@@ -73,7 +73,17 @@
                                ;; config.
                                ;; "--sysconfdir=/etc"
 
-                               "--with-session-socket-dir=/tmp")))
+                               "--with-session-socket-dir=/tmp")
+       #:phases (alist-cons-after
+                 'install 'post-install
+                 (lambda* (#:key outputs #:allow-other-keys)
+                   ;; 'dbus-launch' bails out if the 'session.d' directory
+                   ;; below is missing, so create it along with its companion.
+                   (let ((out (assoc-ref outputs "out")))
+                     (mkdir (string-append out "/etc/dbus-1/session.d"))
+                     (mkdir (string-append out "/etc/dbus-1/system.d"))
+                     #t))
+                 %standard-phases)))
     (inputs
      `(("expat" ,expat)
        ("pkg-config" ,pkg-config)
