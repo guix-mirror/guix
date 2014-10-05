@@ -790,31 +790,31 @@ OUTPUTS is a list of package outputs (may be an empty list)."
          (new-manifest (manifest-perform-transaction
                         manifest transaction)))
     (unless (and (null? install) (null? remove))
-      (let* ((store (open-connection))
-             (derivation (run-with-store
-                          store (profile-derivation new-manifest)))
-             (derivations (list derivation))
-             (new-profile (derivation->output-path derivation)))
-        (set-build-options store
-                           #:use-substitutes? use-substitutes?)
-        (manifest-show-transaction store manifest transaction
-                                   #:dry-run? dry-run?)
-        (show-what-to-build store derivations
-                            #:use-substitutes? use-substitutes?
-                            #:dry-run? dry-run?)
-        (unless dry-run?
-          (let ((name (generation-file-name
-                       profile
-                       (+ 1 (generation-number profile)))))
-            (and (build-derivations store derivations)
-                 (let* ((entries (manifest-entries new-manifest))
-                        (count   (length entries)))
-                   (switch-symlinks name new-profile)
-                   (switch-symlinks profile name)
-                   (format #t (N_ "~a package in profile~%"
-                                  "~a packages in profile~%"
-                                  count)
-                           count)))))))))
+      (with-store store
+        (let* ((derivation (run-with-store store
+                             (profile-derivation new-manifest)))
+               (derivations (list derivation))
+               (new-profile (derivation->output-path derivation)))
+          (set-build-options store
+                             #:use-substitutes? use-substitutes?)
+          (manifest-show-transaction store manifest transaction
+                                     #:dry-run? dry-run?)
+          (show-what-to-build store derivations
+                              #:use-substitutes? use-substitutes?
+                              #:dry-run? dry-run?)
+          (unless dry-run?
+            (let ((name (generation-file-name
+                         profile
+                         (+ 1 (generation-number profile)))))
+              (and (build-derivations store derivations)
+                   (let* ((entries (manifest-entries new-manifest))
+                          (count   (length entries)))
+                     (switch-symlinks name new-profile)
+                     (switch-symlinks profile name)
+                     (format #t (N_ "~a package in profile~%"
+                                    "~a packages in profile~%"
+                                    count)
+                             count))))))))))
 
 (define (delete-generations* profile generations)
   "Delete GENERATIONS from PROFILE.
