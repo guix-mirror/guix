@@ -123,10 +123,10 @@
 
 (test-assert "package-file + package->cross-derivation"
   (run-with-store %store
-    (mlet* %store-monad ((file (package-file coreutils "bin/ls"
-                                             #:target "foo64-gnu"))
-                         (xcu  (package->cross-derivation coreutils
-                                                          "foo64-gnu")))
+    (mlet* %store-monad ((target -> "mips64el-linux-gnu")
+                         (file (package-file coreutils "bin/ls"
+                                             #:target target))
+                         (xcu  (package->cross-derivation coreutils target)))
       (let ((output (derivation->output-path xcu)))
         (return (string=? file (string-append output "/bin/ls")))))
     #:guile-for-build (package-derivation %store %bootstrap-guile)))
