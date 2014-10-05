@@ -41,6 +41,7 @@
   (bag
     (name name)
     (system system)
+    (target target)
     (host-inputs `(,@(if source
                          `(("source" ,source))
                          '())
