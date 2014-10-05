@@ -84,9 +84,10 @@
                      (mkdir (string-append out "/etc/dbus-1/system.d"))
                      #t))
                  %standard-phases)))
+    (native-inputs
+     `(("pkg-config" ,pkg-config)))
     (inputs
      `(("expat" ,expat)
-       ("pkg-config" ,pkg-config)
 
        ;; Add a dependency on libx11 so that 'dbus-launch' has support for
        ;; '--autolaunch'.
