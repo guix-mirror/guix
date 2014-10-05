@@ -815,3 +815,9 @@ OUTPUTS is a list of package outputs (may be an empty list)."
                                   "~a packages in profile~%"
                                   count)
                            count)))))))))
+
+(define (delete-generations* profile generations)
+  "Delete GENERATIONS from PROFILE.
+GENERATIONS is a list of generation numbers."
+  (with-store store
+    (delete-generations store profile generations)))

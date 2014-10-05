@@ -728,14 +728,31 @@ Also see `guix-package-info-type'."
 
 (let ((map guix-generation-list-mode-map))
   (define-key map (kbd "RET") 'guix-generation-list-show-packages)
+  (define-key map (kbd "x")   'guix-generation-list-execute)
   (define-key map (kbd "i")   'guix-list-describe)
-  (define-key map (kbd "d")   'guix-generation-list-mark-delete-simple))
+  (define-key map (kbd "d")   'guix-generation-list-mark-delete))
 
 (defun guix-generation-list-show-packages ()
   "List installed packages for the generation at point."
   (interactive)
   (guix-get-show-entries 'list guix-package-list-type 'generation
                          (guix-list-current-id)))
+
+(defun guix-generation-list-mark-delete (&optional arg)
+  "Mark the current generation for deletion and move to the next line.
+With ARG, mark all generations for deletion."
+  (interactive "P")
+  (if arg
+      (guix-list-mark-all 'delete)
+    (guix-list-mark 'delete t)))
+
+(defun guix-generation-list-execute ()
+  "Delete marked generations."
+  (interactive)
+  (let ((marked (guix-list-get-marked-id-list 'delete)))
+    (or marked
+        (user-error "No generations marked for deletion"))
+    (apply #'guix-delete-generations marked)))
 
 (provide 'guix-list)
 

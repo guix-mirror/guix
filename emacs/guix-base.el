@@ -801,6 +801,20 @@ Return non-nil, if the operation should be continued; nil otherwise."
                  guix-operation-option-separator)))
   (force-mode-line-update))
 
+(defun guix-delete-generations (&rest generations)
+  "Delete GENERATIONS.
+Each element from GENERATIONS is a generation number."
+  (when (or (not guix-operation-confirm)
+              (y-or-n-p
+               (let ((count (length generations)))
+                 (if (> count 1)
+                     (format "Delete %d generations? " count)
+                   (format "Delete generation number %d? "
+                           (car generations))))))
+    (guix-eval-in-repl
+     (guix-make-guile-expression
+      'delete-generations* guix-current-profile generations))))
+
 (provide 'guix-base)
 
 ;;; guix-base.el ends here

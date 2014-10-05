@@ -105,8 +105,8 @@ many last generations.
 @end table
 
 By default commands for displaying packages display each output on a
-separate line.  If you prefer to see a list of packages (i.e.@: a list
-with a package per line), use the following setting:
+separate line.  If you prefer to see a list of packages---i.e., a list
+with a package per line, use the following setting:
 
 @example
 (setq guix-package-list-type 'package)
@@ -205,6 +205,11 @@ List packages installed in the current generation.
 @item i
 Describe marked generations (display available information in a
 ``generation-info'' buffer).
+@item d
+Mark the current generation for deletion (with prefix, mark all
+generations).
+@item x
+Execute actions on the marked generations---i.e., delete generations.
 @end table
 
 @node emacs Info buffer

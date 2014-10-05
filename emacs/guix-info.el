@@ -627,8 +627,10 @@ ENTRY is an alist with package info."
   (guix-info-insert-indent)
   (guix-info-insert-action-button
    "Delete"
-   (lambda (btn) (error "Sorry, not implemented yet"))
-   "Delete this generation"))
+   (lambda (btn)
+     (guix-delete-generations (button-get btn 'number)))
+   "Delete this generation"
+   'number number))
 
 (provide 'guix-info)
 
