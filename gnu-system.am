@@ -79,6 +79,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/elf.scm				\
   gnu/packages/emacs.scm			\
   gnu/packages/enchant.scm			\
+  gnu/packages/feh.scm                          \
   gnu/packages/file.scm				\
   gnu/packages/fish.scm				\
   gnu/packages/flashing-tools.scm		\
