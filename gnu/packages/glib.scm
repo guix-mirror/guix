@@ -54,7 +54,7 @@
 (define dbus
   (package
     (name "dbus")
-    (version "1.6.4")
+    (version "1.8.8")
     (source (origin
              (method url-fetch)
              (uri
@@ -62,7 +62,7 @@
                              version ".tar.gz"))
              (sha256
               (base32
-               "1wacqyfkcpayg7f8rvx9awqg275n5pksxq5q7y21lxjx85x6pfjz"))
+               "1zfi5grrlryppgrl23im82cqw6l9fk1wlc2ayvzx0yd994v2dayz"))
              (patches (list (search-patch "dbus-localstatedir.patch")))))
     (build-system gnu-build-system)
     (arguments
