@@ -3860,11 +3860,11 @@ tracking.")
           (base32
             "1a678bwap74sqczbr2z4y4fvbr35km3inkm8bi1igjyk4v46jqdw"))))
     (build-system gnu-build-system)
-    (propagated-inputs
-      `(("damageproto" ,damageproto)))
-    (inputs
-      `(("xproto" ,xproto)
+    (propagated-inputs  
+      ;; These are all in the Requires or Requires.private field of xdamage.pc
+      `(("damageproto" ,damageproto)
         ("libxfixes" ,libxfixes)
+        ("xproto" ,xproto)
         ("libx11" ,libx11)))
     (native-inputs
       `(("pkg-config" ,pkg-config)))
