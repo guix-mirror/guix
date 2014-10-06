@@ -1387,7 +1387,7 @@ time.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package (inherit udev)
     (name "eudev")
-    (version "1.9")
+    (version "1.`0")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1395,7 +1395,7 @@ time.")
                     version ".tar.gz"))
               (sha256
                (base32
-                "1w6f8h7fhjz3prs630f8gawv7jx74zi600z0pm997kkp24pyj5wg"))
+                "1l907bvz6dcykvaq8d4iklvfpb9fyrnh1a29g3c28gkx2hlyn7j0"))
               (patches (list (search-patch "eudev-rules-directory.patch")))))
     (arguments
      (substitute-keyword-arguments (package-arguments udev)
