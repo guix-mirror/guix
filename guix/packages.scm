@@ -69,7 +69,7 @@
             package-description
             package-license
             package-home-page
-            package-platforms
+            package-supported-systems
             package-maintainers
             package-properties
             package-location
@@ -84,6 +84,8 @@
             package-derivation
             package-cross-derivation
             package-output
+
+            %supported-systems
 
             &package-error
             package-error?
@@ -173,6 +175,11 @@ corresponds to the arguments expected by `set-path-environment-variable'."
     (($ <search-path-specification> variable directories separator)
      `(,variable ,directories ,separator))))
 
+(define %supported-systems
+  ;; This is the list of system types that are supported.  By default, we
+  ;; expect all packages to build successfully here.
+  '("x86_64-linux" "i686-linux" "mips64el-linux"))
+
 ;; A package.
 (define-record-type* <package>
   package make-package
@@ -208,7 +215,8 @@ corresponds to the arguments expected by `set-path-environment-variable'."
   (description package-description)              ; one or two paragraphs
   (license package-license)
   (home-page package-home-page)
-  (platforms package-platforms (default '()))
+  (supported-systems package-supported-systems    ; list of strings
+                     (default %supported-systems))
   (maintainers package-maintainers (default '()))
 
   (properties package-properties (default '()))   ; alist for anything else

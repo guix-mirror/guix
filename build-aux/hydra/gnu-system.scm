@@ -154,20 +154,40 @@ system.")
                                         (* 630 MiB)))))
       '()))
 
+(define job-name
+  ;; Return the name of a package's job.
+  (compose string->symbol package-full-name))
+
+(define package->job
+  (let ((base-packages
+         (delete-duplicates
+          (append-map (match-lambda
+                       ((_ package _ ...)
+                        (match (package-transitive-inputs package)
+                          (((_ inputs _ ...) ...)
+                           inputs))))
+                      %final-inputs))))
+    (lambda (store package system)
+      "Return a job for PACKAGE on SYSTEM, or #f if this combination is not
+valid."
+      (cond ((member package base-packages)
+             #f)
+            ((member system (package-supported-systems package))
+             (package-job store (job-name package) package system))
+            (else
+             #f)))))
+
+
+;;;
+;;; Hydra entry point.
+;;;
+
 (define (hydra-jobs store arguments)
   "Return Hydra jobs."
-  (define systems
-    ;; Systems we want to build for.
-    '("x86_64-linux" "i686-linux"
-      "mips64el-linux"))
-
   (define subset
     (match (assoc-ref arguments 'subset)
       ("core" 'core)                              ; only build core packages
       (_ 'all)))                                  ; build everything
-
-  (define job-name
-    (compose string->symbol package-full-name))
 
   (define (cross-jobs system)
     (define (from-32-to-64? target)
@@ -195,33 +215,25 @@ system.")
                 (remove (either from-32-to-64? same?) %cross-targets)))
 
   ;; Return one job for each package, except bootstrap packages.
-  (let ((base-packages (delete-duplicates
-                        (append-map (match-lambda
-                                     ((_ package _ ...)
-                                      (match (package-transitive-inputs
-                                              package)
-                                        (((_ inputs _ ...) ...)
-                                         inputs))))
-                                    %final-inputs))))
-    (append-map (lambda (system)
-                  (case subset
-                    ((all)
-                     ;; Build everything.
-                     (fold-packages (lambda (package result)
-                                      (if (member package base-packages)
-                                          result
-                                          (cons (package-job store (job-name package)
-                                                             package system)
-                                                result)))
-                                    (append (qemu-jobs store system)
-                                            (cross-jobs system))))
-                    ((core)
-                     ;; Build core packages only.
-                     (append (map (lambda (package)
-                                    (package-job store (job-name package)
-                                                 package system))
-                                  %core-packages)
-                             (cross-jobs system)))
-                    (else
-                     (error "unknown subset" subset))))
-                systems)))
+  (append-map (lambda (system)
+                (case subset
+                  ((all)
+                   ;; Build everything.
+                   (fold-packages (lambda (package result)
+                                    (let ((job (package->job store package
+                                                             system)))
+                                      (if job
+                                          (cons job result)
+                                          result)))
+                                  (append (qemu-jobs store system)
+                                          (cross-jobs system))))
+                  ((core)
+                   ;; Build core packages only.
+                   (append (map (lambda (package)
+                                  (package-job store (job-name package)
+                                               package system))
+                                %core-packages)
+                           (cross-jobs system)))
+                  (else
+                   (error "unknown subset" subset))))
+              %supported-systems))
