@@ -81,13 +81,16 @@ HTML and JSON.")
              (sha256
               (base32
                "1arffdwivig88kkx685pldr784njm0249k0rb1f1plwavlrw9zfx"))
-             (patches (list (search-patch "clucene-pkgconfig.patch")))))
+             (patches (list 
+                       (search-patch "clucene-pkgconfig.patch")
+                       (search-patch "clucene-contribs-lib.patch")))))
     (build-system cmake-build-system)
     (inputs
      `(("boost" ,boost) ; could also use bundled copy
        ("zlib" ,zlib)))
     (arguments
      `(#:test-target "cl_test"
+       #:configure-flags '("-DBUILD_CONTRIBS_LIB=ON")
        #:tests? #f)) ; Tests do not compile, as TestIndexSearcher.cpp uses
                      ; undeclared usleep. After fixing this, one needs to run
                      ; "make test" in addition to "make cl_test", then
