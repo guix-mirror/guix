@@ -150,7 +150,12 @@ GNU Guix depends on the following packages:
 
 @itemize
 @item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.5 or later;
-@item @url{http://gnupg.org/, GNU libgcrypt}
+@item @url{http://gnupg.org/, GNU libgcrypt};
+@item
+optionally, installing
+@url{http://savannah.nongnu.org/projects/guile-json/, Guile-JSON} will
+allow you to use the @command{guix import pypi} command; it is of
+interest primarily for developers and not for casual users.
 @end itemize
 
 Unless @code{--disable-daemon} was passed to @command{configure}, the
