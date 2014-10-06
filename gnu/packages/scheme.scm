@@ -118,6 +118,10 @@
              (_
               (base32
                "0w5ib5vsidihb4hb6fma3sp596ykr8izagm57axvgd6lqzwicsjg"))))))))
+
+    ;; Fails to build on MIPS, see <http://bugs.gnu.org/18221>.
+    (supported-systems (delete "mipsel64-linux" %supported-systems))
+
     (home-page "http://www.gnu.org/software/mit-scheme/")
     (synopsis "Scheme implementation with integrated editor and debugger")
     (description
