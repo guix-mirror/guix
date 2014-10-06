@@ -47,6 +47,7 @@ MODULES =					\
   guix/licenses.scm				\
   guix/build-system.scm				\
   guix/build-system/cmake.scm			\
+  guix/build-system/glib-or-gtk.scm		\
   guix/build-system/gnu.scm			\
   guix/build-system/perl.scm			\
   guix/build-system/python.scm			\
@@ -61,6 +62,7 @@ MODULES =					\
   guix/build/download.scm			\
   guix/build/cmake-build-system.scm		\
   guix/build/git.scm				\
+  guix/build/glib-or-gtk-build-system.scm	\
   guix/build/gnu-build-system.scm		\
   guix/build/gnu-dist.scm			\
   guix/build/perl-build-system.scm		\
