@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -28,15 +28,27 @@
     (version "0.14")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "http://0pointer.de/lennart/projects/libdaemon/libdaemon-"
-                   version
-                   ".tar.gz"))
+             (uri (list
+                   (string-append
+                    "mirror://debian/pool/main/libd/libdaemon/libdaemon_"
+                    version ".orig.tar.gz")
+                   "http://pkgs.fedoraproject.org/repo/pkgs/libdaemon/libdaemon-0.14.tar.gz/509dc27107c21bcd9fbf2f95f5669563/libdaemon-0.14.tar.gz"
+
+                   ;; This used to be the canonical URL but it vanished.
+                   ;; See <http://bugs.gnu.org/18639>.
+                   ;; (string-append
+                   ;;  "http://0pointer.de/lennart/projects/libdaemon/libdaemon-"
+                   ;;  version ".tar.gz")
+                   ))
              (sha256
               (base32
-               "0d5qlq5ab95wh1xc87rqrh1vx6i8lddka1w3f1zcqvcqdxgyn8zx"))))
+               "0d5qlq5ab95wh1xc87rqrh1vx6i8lddka1w3f1zcqvcqdxgyn8zx"))
+             (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
+
+    ;; XXX: Stale URL, missing replacement.  See <http://bugs.gnu.org/18639>.
     (home-page "http://0pointer.de/lennart/projects/libdaemon/")
+
     (synopsis "Lightweight C library that eases the writing of UNIX daemons")
     (description
      "libdaemon is a lightweight C library that eases the writing of UNIX
