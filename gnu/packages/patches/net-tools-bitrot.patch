@@ -1,0 +1,108 @@
+Starting with libc 2.20, this file would fail to build with "NULL undeclared".
+Include the fine header to solve that.
+
+--- net-tools-1.60/lib/ec_hw.c	1999-11-20 22:02:53.000000000 +0100
++++ net-tools-1.60/lib/ec_hw.c	2014-10-06 22:48:43.811027768 +0200
+@@ -16,6 +16,7 @@
+ 
+ #if HAVE_HWEC
+ 
++#include <stddef.h>
+ #include <net/if_arp.h>
+ #include "net-support.h"
+
+
+Avoid "label at end of compound statement" errors.
+
+--- net-tools-1.60/lib/inet_sr.c	2000-02-20 22:46:45.000000000 +0100
++++ net-tools-1.60/lib/inet_sr.c	2014-10-06 22:51:22.575023126 +0200
+@@ -104,7 +104,6 @@ static int INET_setroute(int action, int
+        isnet = 1; break;
+     case 2:
+        isnet = 0; break;
+-    default:
+     }
+ 
+     /* Fill in the other fields. */
+
+--- net-tools-1.60/hostname.c	2001-04-08 19:04:23.000000000 +0200
++++ net-tools-1.60/hostname.c	2014-10-06 23:01:04.235006119 +0200
+@@ -77,7 +77,6 @@ static void setnname(char *nname)
+         case EINVAL:
+             fprintf(stderr, _("%s: name too long\n"), program_name);
+             break;
+-        default:
+         }
+ 	exit(1);
+     }
+@@ -97,7 +96,6 @@ static void sethname(char *hname)
+ 	case EINVAL:
+ 	    fprintf(stderr, _("%s: name too long\n"), program_name);
+ 	    break;
+-	default:
+ 	}
+ 	exit(1);
+     };
+@@ -116,7 +114,6 @@ static void setdname(char *dname)
+ 	case EINVAL:
+ 	    fprintf(stderr, _("%s: name too long\n"), program_name);
+ 	    break;
+-	default:
+ 	}
+ 	exit(1);
+     };
+@@ -173,7 +170,6 @@ static void showhname(char *hname, int c
+ 	    *p = '\0';
+ 	printf("%s\n", hp->h_name);
+ 	break;
+-    default:
+     }
+ }
+
+
+Work around the assumption that an 'x25_address' typedef exists.
+
+--- net-tools-1.60/lib/x25_sr.c	2000-05-20 15:38:10.000000000 +0200
++++ net-tools-1.60/lib/x25_sr.c	2014-10-06 22:59:35.787008705 +0200
+@@ -77,7 +77,7 @@ static int X25_setroute(int action, int
+   rt.sigdigits=sigdigits;
+ 
+   /* x25_route_struct.address isn't type struct sockaddr_x25, Why? */
+-  memcpy(&rt.address, &sx25.sx25_addr, sizeof(x25_address));
++  memcpy(&rt.address, &sx25.sx25_addr, sizeof(struct x25_address));
+ 
+   while (*args) {
+ 	if (!strcmp(*args,"device") || !strcmp(*args,"dev")) {
+
+
+Fix the multi-line string literal syntax.
+
+--- net-tools-1.60/mii-tool.c	2000-05-21 16:31:17.000000000 +0200
++++ net-tools-1.60/mii-tool.c	2014-10-06 23:07:42.002994489 +0200
+@@ -379,16 +379,16 @@ static void watch_one_xcvr(int skfd, cha
+ /*--------------------------------------------------------------------*/
+ 
+ const char *usage =
+-"usage: %s [-VvRrwl] [-A media,... | -F media] [interface ...]
+-       -V, --version               display version information
+-       -v, --verbose               more verbose output
+-       -R, --reset                 reset MII to poweron state
+-       -r, --restart               restart autonegotiation
+-       -w, --watch                 monitor for link status changes
+-       -l, --log                   with -w, write events to syslog
+-       -A, --advertise=media,...   advertise only specified media
+-       -F, --force=media           force specified media technology
+-media: 100baseT4, 100baseTx-FD, 100baseTx-HD, 10baseT-FD, 10baseT-HD,
++"usage: %s [-VvRrwl] [-A media,... | -F media] [interface ...]\n\
++       -V, --version               display version information\n\
++       -v, --verbose               more verbose output\n\
++       -R, --reset                 reset MII to poweron state\n\
++       -r, --restart               restart autonegotiation\n\
++       -w, --watch                 monitor for link status changes\n\
++       -l, --log                   with -w, write events to syslog\n\
++       -A, --advertise=media,...   advertise only specified media\n\
++       -F, --force=media           force specified media technology\n\
++media: 100baseT4, 100baseTx-FD, 100baseTx-HD, 10baseT-FD, 10baseT-HD,\n\
+        (to advertise both HD and FD) 100baseTx, 10baseT\n";
+ 
+ int main(int argc, char **argv)

@@ -765,7 +765,9 @@ manpages.")
                                  version ".tar.bz2"))
              (sha256
               (base32
-               "0yvxrzk0mzmspr7sa34hm1anw6sif39gyn85w4c5ywfn8inxvr3s"))))
+               "0yvxrzk0mzmspr7sa34hm1anw6sif39gyn85w4c5ywfn8inxvr3s"))
+             (patches
+              (list (search-patch "net-tools-bitrot.patch")))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-after
