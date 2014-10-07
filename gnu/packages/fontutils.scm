@@ -225,3 +225,24 @@ not \"jaggy\" like a bitmap, but smooth.  It can then be rendered at any
 resolution.")
     (license license:gpl2+)
     (home-page "http://potrace.sourceforge.net/")))
+
+(define-public libspiro
+  (package
+    (name "libspiro")
+    (version "20071029")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/libspiro/libspiro/"
+                          version "/libspiro_src-" version ".tar.bz2"))
+      (sha256
+       (base32
+        "1kylz8pvwnb85yya150r9i6mhbpzx38f32qy523qg3ylgd9b3zhy"))))
+    (build-system gnu-build-system)
+    (arguments `(#:tests? #f))          ;no tests
+    (synopsis "Clothoid to bezier conversion library")
+    (description
+     "Raph Levien's Spiro package as a library.  A mechanism for drawing
+smooth contours with constant curvature at the spline joins.")
+    (license license:gpl2+)
+    (home-page "http://libspiro.sourceforge.net/")))
