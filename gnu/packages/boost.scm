@@ -23,6 +23,7 @@
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages compression)
   #:use-module (gnu packages python)
   #:use-module (gnu packages tcsh)
   #:use-module (gnu packages perl))
@@ -41,6 +42,7 @@
                (base32
                 "0lkv5dzssbl5fmh2nkaszi8x9qbj80pr4acf9i26sj3rvlih1w7z"))))
     (build-system gnu-build-system)
+    (inputs `(("zlib" ,zlib)))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python-2)
