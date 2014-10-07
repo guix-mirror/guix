@@ -24,7 +24,12 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages autotools)
+  #:use-module (gnu packages gettext)
   #:use-module (gnu packages python)
+  #:use-module (gnu packages image)
+  #:use-module (gnu packages glib)
+  #:use-module (gnu packages xorg)
+  #:use-module (gnu packages gtk)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -278,3 +283,79 @@ useful for programs that need Unicode \"Names\", \"Annotations\", and block
 definitions.")
     (license license:gpl2)
     (home-page "https://github.com/fontforge/libuninameslist")))
+
+(define-public fontforge
+  (package
+   (name "fontforge")
+   (version "20120731-b")               ;aka 1.0
+   (source (origin
+            (method url-fetch)
+            (uri (string-append "mirror://sourceforge/fontforge/fontforge_full-"
+                                version ".tar.bz2"))
+            (sha256 (base32
+                     "1dhg0i2pf76j40cb9g1wzpag21fgarpjaad0hdbk27i1zz588q8v"))))
+   (build-system gnu-build-system)
+   ;; TODO: Add python for scripting support.
+   (inputs `(("gettext"         ,gnu-gettext)
+             ("libtiff"         ,libtiff)
+             ("libjpeg"         ,libjpeg)
+             ("libpng"          ,libpng)
+             ("giflib"          ,giflib) ;needs giflib 4.*
+             ("libxml2"         ,libxml2)
+             ("libX11"          ,libx11)
+             ("libXi"           ,libxi)
+             ("libICE"          ,libice)
+             ("libSM"           ,libsm)
+             ("freetype"        ,freetype)
+             ("potrace"         ,potrace)
+             ("libspiro"        ,libspiro)
+             ("zlib"            ,zlib)
+             ("cairo"           ,cairo)
+             ("fontconfig"      ,fontconfig) ;dlopen'd
+             ("libuninameslist" ,libuninameslist)
+             ("pango"           ,pango)
+             ("glib"            ,glib))) ;needed for pango detection
+   (arguments
+    '(#:configure-flags `("--enable-double")
+      #:tests? #f
+      #:phases
+      (alist-cons-before
+       'configure 'patch-configure
+       (lambda* (#:key inputs #:allow-other-keys)
+         (let ((libxml2 (assoc-ref inputs "libxml2"))
+               (cairo   (assoc-ref inputs "cairo"))
+               (pango   (assoc-ref inputs "pango")))
+           (substitute* "configure"
+             ;; configure looks for a directory to be present to determine
+             ;; whether libxml2 is available, rather than checking for the
+             ;; library or headers.  Point it to the correct directory.
+             (("/usr/include/libxml2")
+              (string-append libxml2 "/include/libxml2"))
+             ;; Similary, the search directories for cairo and pango are
+             ;; hard-coded.
+             (("gww_prefix in.*") (string-append "gww_prefix in "
+                                                 cairo " " pango "\n")))))
+       (alist-cons-after
+        'install 'set-library-path
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let ((out (assoc-ref outputs "out"))
+                (potrace (string-append (assoc-ref inputs "potrace") "/bin")))
+            (wrap-program (string-append out "/bin/fontforge")
+                          ;; Fontforge dynamically opens libraries.
+                          `("LD_LIBRARY_PATH" ":" prefix
+                            ,(map (lambda (input)
+                                    (string-append (assoc-ref inputs input)
+                                                   "/lib"))
+                                  '("libtiff" "libjpeg" "libpng" "giflib"
+                                    "libxml2" "zlib" "libspiro" "freetype"
+                                    "pango" "cairo" "fontconfig")))
+                          ;; Checks for potrace program at runtime
+                          `("PATH" ":" prefix (,potrace)))))
+        %standard-phases))))
+   (synopsis "Outline font editor")
+   (description
+    "FontForge allows you to create and modify postscript, truetype and
+opentype fonts.  You can save fonts in many different outline formats, and
+generate bitmaps.")
+   (license license:bsd-3)
+   (home-page "http://fontforge.org/")))
