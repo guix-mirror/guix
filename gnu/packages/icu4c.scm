@@ -68,10 +68,12 @@
         (lambda* (#:key outputs #:allow-other-keys)
           (let* ((out (assoc-ref outputs "out"))
                  (lib (string-append out "/lib")))
-            ;; Add LIB to the RUNPATH of all the libraries.
+            ;; Add LIB to the RUNPATH of all the binaries.
             (with-directory-excursion out
               (for-each (cut augment-rpath <> lib)
-                        (find-files "lib" ".*")))))
+                        (append
+                         (find-files "bin" ".*") 
+                         (find-files "sbin" ".*"))))))
         %standard-phases)))))
    (synopsis "ICU, International Components for Unicode")
    (description
