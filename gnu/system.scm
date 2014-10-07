@@ -75,6 +75,7 @@
             operating-system-profile
             operating-system-grub.cfg
 
+            local-host-aliases
             %setuid-programs
             %base-packages
 
@@ -318,11 +319,14 @@ explicitly appear in OS."
   "
 This is the GNU system.  Welcome.\n")
 
+(define (local-host-aliases host-name)
+  "Return aliases for HOST-NAME, to be used in /etc/hosts."
+  (string-append "127.0.0.1 localhost " host-name "\n"
+                 "::1       localhost " host-name "\n"))
+
 (define (default-/etc/hosts host-name)
   "Return the default /etc/hosts file."
-  (text-file "hosts"
-             (string-append "127.0.0.1 localhost " host-name "\n"
-                            "::1       localhost " host-name "\n")))
+  (text-file "hosts" (local-host-aliases host-name)))
 
 (define* (etc-directory #:key
                         (locale "C") (timezone "Europe/Paris")
