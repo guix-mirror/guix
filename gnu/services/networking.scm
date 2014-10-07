@@ -25,7 +25,8 @@
   #:use-module (gnu packages messaging)
   #:use-module (guix gexp)
   #:use-module (guix monads)
-  #:export (static-networking-service
+  #:export (%facebook-host-aliases
+            static-networking-service
             dhcp-client-service
             tor-service
             bitlbee-service))
@@ -35,6 +36,40 @@
 ;;; Networking services.
 ;;;
 ;;; Code:
+
+(define %facebook-host-aliases
+  ;; This is the list of known Facebook hosts to be added to /etc/hosts if you
+  ;; are to block it.
+  "\
+# Block Facebook IPv4.
+127.0.0.1   www.facebook.com
+127.0.0.1   facebook.com
+127.0.0.1   login.facebook.com
+127.0.0.1   www.login.facebook.com
+127.0.0.1   fbcdn.net
+127.0.0.1   www.fbcdn.net
+127.0.0.1   fbcdn.com
+127.0.0.1   www.fbcdn.com
+127.0.0.1   static.ak.fbcdn.net
+127.0.0.1   static.ak.connect.facebook.com
+127.0.0.1   connect.facebook.net
+127.0.0.1   www.connect.facebook.net
+127.0.0.1   apps.facebook.com
+
+# Block Facebook IPv6.
+fe80::1%lo0 facebook.com
+fe80::1%lo0 login.facebook.com
+fe80::1%lo0 www.login.facebook.com
+fe80::1%lo0 fbcdn.net
+fe80::1%lo0 www.fbcdn.net
+fe80::1%lo0 fbcdn.com
+fe80::1%lo0 www.fbcdn.com
+fe80::1%lo0 static.ak.fbcdn.net
+fe80::1%lo0 static.ak.connect.facebook.com
+fe80::1%lo0 connect.facebook.net
+fe80::1%lo0 www.connect.facebook.net
+fe80::1%lo0 apps.facebook.com\n")
+
 
 (define* (static-networking-service interface ip
                                     #:key

@@ -3610,6 +3610,35 @@ root.
 The other options should be self-descriptive.
 @end deffn
 
+@defvr {Scheme Variable} %facebook-host-aliases
+This variable contains a string for use in @file{/etc/hosts}
+(@pxref{Host Names,,, libc, The GNU C Library Reference Manual}).  Each
+line contains a entry that maps a known server name of the Facebook
+on-line service---e.g., @code{www.facebook.com}---to the local
+host---@code{127.0.0.1} or its IPv6 equivalent, @code{::1}.
+
+This variable is typically used in the @code{hosts-file} field of an
+@code{operating-system} declaration (@pxref{Using the Configuration
+System}):
+
+@example
+(use-modules (gnu) (guix))
+
+(operating-system
+  (host-name "mymachine")
+  ;; ...
+  (hosts-file
+    ;; Create a /etc/hosts file with aliases for "localhost"
+    ;; and "mymachine", as well as for Facebook servers.
+    (text-file "hosts"
+               (string-append (local-host-aliases host-name)
+                              %facebook-host-aliases))))
+@end example
+
+This mechanism can prevent programs running locally, such as Web
+browsers, from accessing Facebook.
+@end defvr
+
 @node X Window
 @subsubsection X Window
 
