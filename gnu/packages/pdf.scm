@@ -167,8 +167,8 @@ extracting content or merging files.")
     (source
       (origin
         (method url-fetch)
-        (uri (string-append "http://mupdf.com/downloads/" name "-" version
-                            "-source.tar.gz"))
+        (uri (string-append "http://mupdf.com/downloads/archive/"
+                            name "-" version "-source.tar.gz"))
         (sha256
           (base32 "0sl47zqf4c9fhs4h5zg046vixjmwgy4vhljhr5g4md733nash7z4"))
         (patches
