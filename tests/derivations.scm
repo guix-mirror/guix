@@ -813,6 +813,35 @@ Deriver: ~a~%"
                                      (string<? p1 p2)))))))))))))
 
 
+(test-assert "graft-derivation"
+  (let* ((build `(begin
+                   (mkdir %output)
+                   (chdir %output)
+                   (symlink %output "self")
+                   (call-with-output-file "text"
+                     (lambda (output)
+                       (format output "foo/~a/bar" ,%mkdir)))
+                   (symlink ,%bash "sh")))
+         (orig  (build-expression->derivation %store "graft" build
+                                              #:inputs `(("a" ,%bash)
+                                                         ("b" ,%mkdir))))
+         (one   (add-text-to-store %store "bash" "fake bash"))
+         (two   (build-expression->derivation %store "mkdir"
+                                              '(call-with-output-file %output
+                                                 (lambda (port)
+                                                   (display "fake mkdir" port)))))
+         (graft (graft-derivation %store "graft" orig
+                                  `(((,%bash) . (,one))
+                                    ((,%mkdir) . (,two))))))
+    (and (build-derivations %store (list graft))
+         (let ((two   (derivation->output-path two))
+               (graft (derivation->output-path graft)))
+           (and (string=? (format #f "foo/~a/bar" two)
+                          (call-with-input-file (string-append graft "/text")
+                            get-string-all))
+                (string=? (readlink (string-append graft "/sh")) one)
+                (string=? (readlink (string-append graft "/self")) graft))))))
+
 (test-equal "map-derivation"
   "hello"
   (let* ((joke (package-derivation %store guile-1.8))

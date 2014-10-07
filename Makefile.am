@@ -74,6 +74,7 @@ MODULES =					\
   guix/build/svn.scm				\
   guix/build/syscalls.scm			\
   guix/build/emacs-utils.scm			\
+  guix/build/graft.scm				\
   guix/packages.scm				\
   guix/import/utils.scm				\
   guix/import/snix.scm				\

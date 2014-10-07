@@ -65,6 +65,7 @@
             derivation-path->output-path
             derivation-path->output-paths
             derivation
+            graft-derivation
             map-derivation
 
             %guile-for-build
@@ -951,6 +952,64 @@ they can refer to each other."
                                   #:system system
                                   #:guile-for-build guile
                                   #:local-build? #t)))
+
+(define (graft-derivation store name drv replacements)
+  "Return a derivation called NAME, based on DRV but with all the first
+elements of REPLACEMENTS replaced by the corresponding second element.
+REPLACEMENTS must be a list of ((DRV OUTPUT) . (DRV2 OUTPUT)) pairs."
+  ;; XXX: Someday rewrite using gexps.
+  (define mapping
+    ;; List of store item pairs.
+    (map (match-lambda
+          (((source source-outputs ...) . (target target-outputs ...))
+           (cons (if (derivation? source)
+                     (apply derivation->output-path source source-outputs)
+                     source)
+                 (if (derivation? target)
+                     (apply derivation->output-path target target-outputs)
+                     target))))
+         replacements))
+
+  (define outputs
+    (match (derivation-outputs drv)
+      (((names . outputs) ...)
+       (map derivation-output-path outputs))))
+
+  (define output-names
+    (match (derivation-outputs drv)
+      (((names . outputs) ...)
+       names)))
+
+  (define build
+    `(begin
+       (use-modules (guix build graft)
+                    (guix build utils)
+                    (ice-9 match))
+
+       (let ((mapping ',mapping))
+         (for-each (lambda (input output)
+                     (format #t "rewriting '~a' to '~a'...~%" input output)
+                     (rewrite-directory input output
+                                        `((,input . ,output)
+                                          ,@mapping)))
+                   ',outputs
+                   (match %outputs
+                     (((names . files) ...)
+                      files))))))
+
+  (define add-label
+    (cut cons "x" <>))
+
+  (match replacements
+    (((sources . targets) ...)
+     (build-expression->derivation store name build
+                                   #:modules '((guix build graft)
+                                               (guix build utils))
+                                   #:inputs `(("original" ,drv)
+                                              ,@(append (map add-label sources)
+                                                        (map add-label targets)))
+                                   #:outputs output-names
+                                   #:local-build? #t))))
 
 (define* (build-expression->derivation store name exp
                                        #:key
