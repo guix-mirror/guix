@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,13 +21,9 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system trivial)
+  #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
-  #:use-module (gnu packages gnuzilla)
-  #:use-module (gnu packages base)
-  #:use-module (gnu packages bash)
-  #:use-module (gnu packages compression)
-  #:use-module (ice-9 format))
+  #:use-module (gnu packages gnuzilla))
 
 (define-public conkeror
   (package
@@ -41,52 +38,46 @@
               (sha256
                (base32
                 "1cgjzi7g3g22zcx6bpfnid4i12sb45w6icmxdzjn8d3c0m8qsyp1"))))
-    (build-system trivial-build-system)
-    (inputs `(("icecat" ,icecat)
-              ("bash" ,bash)))
-    (native-inputs `(("tar" ,tar)
-                     ("gzip" ,gzip)))
+    (build-system gnu-build-system)
+    (inputs `(("icecat" ,icecat)))
     (arguments
-     `(#:modules ((guix build utils))
-       #:builder (begin
-                   (use-modules (ice-9 ftw)
-                                (guix build utils))
-                   (let ((select? 
-                          (lambda (name)
-                           (not (equal? (car (string->list name)) #\.))))
-                         (datadir (string-append %output "/share/conkeror"))
-                         (launcher "bin/conkeror"))
-                     (setenv "PATH" (string-append
-                                     (assoc-ref %build-inputs "tar") "/bin:"
-                                     (assoc-ref %build-inputs "gzip") "/bin"))
-                     (system* "tar" "xvf" (assoc-ref %build-inputs "source"))
-                     (copy-recursively (string-append
-                                        (getcwd) "/"
-                                        (car (scandir (getcwd) select?)))
-                                       datadir)
-                     (chdir %output)
-                     (mkdir "bin")
-                     (call-with-output-file launcher
-                       (lambda (p)
-                         (format p "#!~a/bin/bash
+     `(#:tests? #f                      ;no tests
+       #:make-flags '("CC=gcc")
+       #:phases
+       (alist-delete
+        'configure
+        (alist-replace
+         'install
+         (lambda _
+           (begin
+             (use-modules (guix build utils))
+             (let* ((datadir  (string-append %output "/share/conkeror"))
+                    (bindir   (string-append %output "/bin"))
+                    (launcher (string-append bindir  "/conkeror"))
+                    (spawn    (string-append bindir  "/conkeror-spawn-helper")))
+               (copy-recursively "." datadir)
+               (mkdir-p bindir)
+               (copy-file "conkeror-spawn-helper" spawn)
+               (call-with-output-file launcher
+                 (lambda (p)
+                   (format p "#!~a/bin/bash
 exec ~a/bin/icecat --app ~a \"$@\"~%"
-                                 (assoc-ref %build-inputs "bash")
-                                 (assoc-ref %build-inputs "icecat")
-                                 (string-append datadir
-                                                "/application.ini"))))
-                     (chmod launcher #o555)))))
+                           (assoc-ref %build-inputs "bash") ;implicit input
+                           (assoc-ref %build-inputs "icecat")
+                           (string-append datadir
+                                          "/application.ini"))))
+               (chmod launcher #o555))))
+         %standard-phases))))
     (synopsis "Keyboard focused web browser with Emacs look and feel")
     (description "Conkeror is a highly-programmable web browser based on
-Mozilla XULRunner which is the base of all Mozilla products including
-Firefox. Conkeror has a sophisticated keyboard system for running commands and
-interacting with web page content, modelled after Emacs and Lynx. It is
+Mozilla XULRunner which is the base of all Mozilla products including Firefox.
+Conkeror has a sophisticated keyboard system for running commands and
+interacting with web page content, modelled after Emacs and Lynx.  It is
 self-documenting and extensible with JavaScript.
 
 It comes with builtin support for several Web 2.0 sites like several Google
 services (Search, Gmail, Maps, Reader, etc.), Del.icio.us, Reddit, Last.fm and
-YouTube. For easier editing of form fields, it can spawn external editors. For
-this feature the recommended conkeror-spawn-process-helper package needs to be
-installed.")
+YouTube.  For easier editing of form fields, it can spawn external editors.")
     (home-page "http://conkeror.org")
     ;; Conkeror is triple licensed.
     (license (list license:gpl2
