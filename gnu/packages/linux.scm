@@ -1387,7 +1387,7 @@ time.")
   ;; The post-systemd fork, maintained by Gentoo.
   (package (inherit udev)
     (name "eudev")
-    (version "1.`0")
+    (version "1.10")
     (source (origin
               (method url-fetch)
               (uri (string-append
@@ -1396,7 +1396,16 @@ time.")
               (sha256
                (base32
                 "1l907bvz6dcykvaq8d4iklvfpb9fyrnh1a29g3c28gkx2hlyn7j0"))
-              (patches (list (search-patch "eudev-rules-directory.patch")))))
+              (patches (list (search-patch "eudev-rules-directory.patch")))
+              (modules '((guix build utils)))
+              (snippet
+               ;; 'configure' checks uses <linux/btrfs.h> as an indication of
+               ;; whether Linux headers are available, but it doesn't actually
+               ;; use it, and our 'linux-libre-headers' package doesn't
+               ;; provide it.  So just remove that.
+               '(substitute* "configure"
+                  (("linux/btrfs\\.h")
+                   "")))))
     (arguments
      (substitute-keyword-arguments (package-arguments udev)
        ((#:configure-flags flags)
