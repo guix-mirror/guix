@@ -23,6 +23,7 @@
   #:use-module (gnu packages ghostscript)
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
+  #:use-module (gnu packages autotools)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xml)
   #:use-module ((guix licenses) #:prefix license:)
@@ -246,3 +247,34 @@ resolution.")
 smooth contours with constant curvature at the spline joins.")
     (license license:gpl2+)
     (home-page "http://libspiro.sourceforge.net/")))
+
+(define-public libuninameslist
+  (package
+    (name "libuninameslist")
+    (version "0.4.20140731")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "https://github.com/fontforge/libuninameslist/"
+                           "archive/" version ".tar.gz"))
+       (sha256
+        (base32
+         "016zxffpc8iwpxxmnjkdirn6dsbcvdb2wjdrp123sf79f4nsynyj"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("libtool"  ,libtool)
+                     ("libtool-bin" ,libtool "bin")))
+    (arguments
+     `(#:phases (alist-cons-before
+                 'configure 'bootstrap
+                 (lambda _
+                   (zero? (system* "autoreconf" "-vi")))
+                 %standard-phases)))
+    (synopsis "Unicode names and annotation list")
+    (description
+     "LibUniNamesList holds www.unicode.org Nameslist.txt data which can be
+useful for programs that need Unicode \"Names\", \"Annotations\", and block
+definitions.")
+    (license license:gpl2)
+    (home-page "https://github.com/fontforge/libuninameslist")))
