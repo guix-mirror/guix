@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -197,3 +198,30 @@ process known as shaping.  This process takes an input Unicode text string
 and returns a sequence of positioned glyphids from the font.")
    (license license:lgpl2.1+)
    (home-page "http://projects.palaso.org/projects/graphitedev")))
+
+(define-public potrace
+  (package
+    (name "potrace")
+    (version "1.11")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/potrace/potrace-"
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "1bbyl7jgigawmwc8r14znv8lb6lrcxh8zpvynrl6s800dr4yp9as"))))
+    (build-system gnu-build-system)
+    (native-inputs `(("ghostscript" ,ghostscript))) ;for tests
+    (inputs `(("zlib" ,zlib)))
+    (synopsis "Transform bitmaps into vector graphics")
+    (description
+     "Potrace is a tool for tracing a bitmap, which means, transforming a
+bitmap into a smooth, scalable image.  The input is a bitmap (PBM, PGM, PPM,
+or BMP format), and the default output is an encapsulated PostScript
+file (EPS).  A typical use is to create EPS files from scanned data, such as
+company or university logos, handwritten notes, etc.  The resulting image is
+not \"jaggy\" like a bitmap, but smooth.  It can then be rendered at any
+resolution.")
+    (license license:gpl2+)
+    (home-page "http://potrace.sourceforge.net/")))
