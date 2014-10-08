@@ -78,15 +78,16 @@
                            "-DUSE_CONSOLEKIT=no")
        #:tests? #f))
     (home-page "http://slim.berlios.de/")
-    (synopsis "Desktop-independent graphcal login manager for X11")
+    (synopsis "Desktop-independent graphical login manager for X11")
     (description
      "SLiM is a Desktop-independent graphical login manager for X11, derived
-from Login.app. It aims to be light and simple, although completely configurable
-through themes and an option file; is suitable for machines on which remote login
-functionalities are not needed.
+from Login.app.  It aims to be light and simple, although completely
+configurable through themes and an option file; is suitable for machines on
+which remote login functionalities are not needed.
 
-Features included: PNG and XFT support for alpha transparency and antialiased fonts,
-External themes support, Configurable runtime options: X server -- login / shutdown / reboot
-commands, Single (GDM-like) or double (XDM-like) input control, Can load predefined user at
-startup, Configurable welcome / shutdown messages, Random theme selection")
+Features included: PNG and XFT support for alpha transparency and antialiased
+fonts, External themes support, Configurable runtime options: X server --
+login / shutdown / reboot commands, Single (GDM-like) or double (XDM-like)
+input control, Can load predefined user at startup, Configurable welcome /
+shutdown messages, Random theme selection")
     (license l:gpl2)))
