@@ -38,6 +38,7 @@
             with-monad
             mlet
             mlet*
+            mbegin
             lift1 lift2 lift3 lift4 lift5 lift6 lift7 lift
             listm
             foldm
@@ -170,6 +171,19 @@ form is (VAR -> VAL), bind VAR to the non-monadic value VAL in the same way as
          #'(mlet* monad ((temp mval ...) ...)
              (let ((var temp) ...)
                body ...)))))))
+
+(define-syntax mbegin
+  (syntax-rules ()
+    "Bind the given monadic expressions in sequence, returning the result of
+the last one."
+    ((_ monad mexp)
+     (with-monad monad
+       mexp))
+    ((_ monad mexp rest ...)
+     (with-monad monad
+       (>>= mexp
+            (lambda (unused-value)
+              (mbegin monad rest ...)))))))
 
 (define-syntax define-lift
   (syntax-rules ()

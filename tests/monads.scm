@@ -32,7 +32,7 @@
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-64))
 
-;; Test the (guix store) module.
+;; Test the (guix monads) module.
 
 (define %store
   (open-connection-for-tests))
@@ -96,6 +96,21 @@
                (let ((number (random 777)))
                  (= (run (>>= (return number) f))
                     (1+ number))))))
+         %monads
+         %monad-run))
+
+(test-assert "mbegin"
+  (every (lambda (monad run)
+           (with-monad monad
+             (let* ((been-there? #f)
+                    (number (mbegin monad
+                              (return 1)
+                              (begin
+                                (set! been-there? #t)
+                                (return 2))
+                              (return 3))))
+               (and (= (run number) 3)
+                    been-there?))))
          %monads
          %monad-run))
 

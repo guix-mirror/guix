@@ -2061,6 +2061,15 @@ Bind the variables @var{var} to the monadic values @var{mval} in
 (@pxref{Local Bindings,,, guile, GNU Guile Reference Manual}).
 @end deffn
 
+@deffn {Scheme System} mbegin @var{monad} @var{mexp} ...
+Bind @var{mexp} and the following monadic expressions in sequence,
+returning the result of the last expression.
+
+This is akin to @code{mlet}, except that the return values of the
+monadic expressions are ignored.  In that sense, it is analogous to
+@code{begin}, but applied to monadic expressions.
+@end deffn
+
 The interface to the store monad provided by @code{(guix monads)} is as
 follows.
 
