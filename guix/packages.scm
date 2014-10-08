@@ -229,11 +229,14 @@ corresponds to the arguments expected by `set-path-environment-variable'."
                           (lambda (package port)
                             (let ((loc    (package-location package))
                                   (format simple-format))
-                              (format port "#<package ~a-~a ~a:~a ~a>"
+                              (format port "#<package ~a-~a ~a~a>"
                                       (package-name package)
                                       (package-version package)
-                                      (location-file loc)
-                                      (location-line loc)
+                                      (if loc
+                                          (format #f "~a:~a "
+                                                  (location-file loc)
+                                                  (location-line loc))
+                                          "")
                                       (number->string (object-address
                                                        package)
                                                       16)))))

@@ -19,7 +19,12 @@
 (define-module (test-packages)
   #:use-module (guix tests)
   #:use-module (guix store)
-  #:use-module (guix utils)
+  #:use-module ((guix utils)
+                ;; Rename the 'location' binding to allow proper syntax
+                ;; matching when setting the 'location' field of a package.
+                #:renamer (lambda (name)
+                            (cond ((eq? name 'location) 'make-location)
+                                  (else name))))
   #:use-module (guix hash)
   #:use-module (guix derivations)
   #:use-module (guix packages)
@@ -34,6 +39,7 @@
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
   #:use-module (rnrs io ports)
+  #:use-module (ice-9 regex)
   #:use-module (ice-9 match))
 
 ;; Test the high-level packaging layer.
@@ -51,6 +57,21 @@
            (synopsis #f) (description #f)
            (home-page #f) (license #f)
            extra-fields ...))
+
+(test-assert "printer with location"
+  (string-match "^#<package foo-0 foo.scm:42 [[:xdigit:]]+>$"
+                (with-output-to-string
+                  (lambda ()
+                    (write
+                     (dummy-package "foo"
+                       (location (make-location "foo.scm" 42 7))))))))
+
+(test-assert "printer without location"
+  (string-match "^#<package foo-0 [[:xdigit:]]+>$"
+                (with-output-to-string
+                  (lambda ()
+                    (write
+                     (dummy-package "foo" (location #f)))))))
 
 (test-assert "package-field-location"
   (let ()
