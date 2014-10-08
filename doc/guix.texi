@@ -1642,6 +1642,35 @@ debugging information''), which roughly means that code is compiled with
 @code{-O2 -g}, as is the case for Autoconf-based packages by default.
 @end defvr
 
+@defvr {Scheme Variable} glib-or-gtk-build-system
+This variable is exported by @code{(guix build-system glib-or-gtk)}.  It
+is intended for use with packages making use of GLib or GTK+.
+
+This build system adds the following two phases to the ones defined by
+@var{gnu-build-system}:
+
+@table @code
+@item glib-or-gtk-wrap
+The phase @code{glib-or-gtk-wrap} ensures that programs found under
+@file{bin/} are able to find GLib's ``schemas'' and
+@uref{https://developer.gnome.org/gtk3/stable/gtk-running.html, GTK+
+modules}.  This is achieved by wrapping the programs in launch scripts
+that appropriately set the @code{XDG_DATA_DIRS} and @code{GTK_PATH}
+environment variables.
+
+@item glib-or-gtk-compile-schemas
+The phase @code{glib-or-gtk-compile-schemas} makes sure that all GLib's
+@uref{https://developer.gnome.org/gio/stable/glib-compile-schemas.html,
+GSettings schemas} are compiled.  Compilation is performed by the
+@command{glib-compile-schemas} program.  It is provided by the package
+@code{glib:bin} which is automatically imported by the build system.
+The @code{glib} package providing @command{glib-compile-schemas} can be
+specified with the @code{#:glib} parameter.
+@end table
+
+Both phases are executed after the @code{install} phase.
+@end defvr
+
 @defvr {Scheme Variable} python-build-system
 This variable is exported by @code{(guix build-system python)}.  It
 implements the more or less standard build procedure used by Python
