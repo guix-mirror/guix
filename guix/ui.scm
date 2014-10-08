@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2013 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Alex Kost <alezost@gmail.com>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -231,6 +232,13 @@ interpreted."
                       (location->string loc)
                       (package-full-name package)
                       (build-system-name system))))
+            ((profile-not-found-error? c)
+             (leave (_ "profile '~a' does not exist~%")
+                    (profile-error-profile c)))
+            ((missing-generation-error? c)
+             (leave (_ "generation ~a of profile '~a' does not exist~%")
+                    (missing-generation-error-generation c)
+                    (profile-error-profile c)))
             ((nix-connection-error? c)
              (leave (_ "failed to connect to `~a': ~a~%")
                     (nix-connection-error-file c)

@@ -38,6 +38,8 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
   #:use-module (srfi srfi-37)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
@@ -109,8 +111,8 @@ return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
          (previous-number     (previous-generation-number profile number))
          (previous-generation (generation-file-name profile previous-number)))
     (cond ((not (file-exists? profile))                 ; invalid profile
-           (leave (_ "profile '~a' does not exist~%")
-                  profile))
+           (raise (condition (&profile-not-found-error
+                              (profile profile)))))
           ((zero? number)                               ; empty profile
            (format (current-error-port)
                    (_ "nothing to do: already at the empty profile~%")))
@@ -723,8 +725,8 @@ more information.~%"))
             (match-lambda
              (('delete-generations . pattern)
               (cond ((not (file-exists? profile)) ; XXX: race condition
-                     (leave (_ "profile '~a' does not exist~%")
-                            profile))
+                     (raise (condition (&profile-not-found-error
+                                        (profile profile)))))
                     ((string-null? pattern)
                      (delete-generations
                       (%store) profile
@@ -833,8 +835,8 @@ more information.~%"))
              (newline)))
 
          (cond ((not (file-exists? profile)) ; XXX: race condition
-                (leave (_ "profile '~a' does not exist~%")
-                       profile))
+                (raise (condition (&profile-not-found-error
+                                   (profile profile)))))
                ((string-null? pattern)
                 (for-each list-generation (profile-generations profile)))
                ((matching-generations pattern profile)
@@ -915,8 +917,8 @@ more information.~%"))
         (_ #f))))
 
   (let ((opts (parse-options)))
-    (or (process-query opts)
-        (with-error-handling
+    (with-error-handling
+      (or (process-query opts)
           (parameterize ((%store (open-connection)))
             (set-build-options-from-command-line (%store) opts)
 

@@ -34,7 +34,18 @@
   #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
   #:use-module (srfi srfi-26)
-  #:export (manifest make-manifest
+  #:use-module (srfi srfi-34)
+  #:use-module (srfi srfi-35)
+  #:export (&profile-error
+            profile-error?
+            profile-error-profile
+            &profile-not-found-error
+            profile-not-found-error?
+            &missing-generation-error
+            missing-generation-error?
+            missing-generation-error-generation
+
+            manifest make-manifest
             manifest?
             manifest-entries
 
@@ -79,6 +90,22 @@
 ;;; set of installed packages.
 ;;;
 ;;; Code:
+
+
+;;;
+;;; Condition types.
+;;;
+
+(define-condition-type &profile-error &error
+  profile-error?
+  (profile profile-error-profile))
+
+(define-condition-type &profile-not-found-error &profile-error
+  profile-not-found-error?)
+
+(define-condition-type &missing-generation-error &profile-error
+  missing-generation-error?
+  (generation missing-generation-error-generation))
 
 
 ;;;
