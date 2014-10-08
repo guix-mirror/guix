@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -18,12 +19,16 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages cmake)
-  #:use-module (guix licenses)
+  #:use-module ((guix licenses) #:select (bsd-3))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
+  #:use-module (gnu packages backup)
+  #:use-module (gnu packages compression)
+  #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
+  #:use-module (gnu packages xml)
   #:use-module (srfi srfi-1))
 
 (define-public cmake
@@ -43,13 +48,12 @@
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
-       #:phases (alist-replace
-                 'configure
-                 (lambda* (#:key outputs #:allow-other-keys)
-                   (let ((out (assoc-ref outputs "out")))
-                     ;; Replace "/bin/sh" by the right path in... a lot of
-                     ;; files.
-                     (substitute*
+       #:phases (alist-cons-before
+                 'configure 'patch-bin-sh
+                 (lambda _
+                   ;; Replace "/bin/sh" by the right path in... a lot of
+                   ;; files.
+                   (substitute*
                        '("Modules/CompilerId/Xcode-3.pbxproj.in"
                          "Modules/CompilerId/Xcode-1.pbxproj.in"
                          "Modules/CompilerId/Xcode-2.pbxproj.in"
@@ -62,29 +66,46 @@
                          "Utilities/Release/release_cmake.cmake"
                          "Utilities/cmlibarchive/libarchive/archive_write_set_format_shar.c"
                          "Tests/CMakeLists.txt")
-                       (("/bin/sh") (which "sh")))
-                     (zero? (system*
-                             "./configure"
-                             (string-append "--prefix=" out)
-                             ;; By default, the man pages and other docs land
-                             ;; in PREFIX/man and PREFIX/doc, but we want them
-                             ;; in share/{man,doc}.  Note that unlike
-                             ;; autoconf-generated configure scripts, cmake's
-                             ;; configure prepends "PREFIX/" to what we pass
-                             ;; to --mandir and --docdir.
-                             "--mandir=share/man"
-                             ,(string-append
-                               "--docdir=share/doc/cmake-"
-                               (string-join (take (string-split version #\.) 2)
-                                            "."))))))
-                 %standard-phases)))
+                     (("/bin/sh") (which "sh"))))
+                 (alist-cons-before
+                  'configure 'set-paths
+                  (lambda _
+                    ;; Help cmake's bootstrap process to find system libraries
+                    (begin
+                      (setenv "CMAKE_LIBRARY_PATH" (getenv "LIBRARY_PATH"))
+                      (setenv "CMAKE_INCLUDE_PATH" (getenv "CPATH"))))
+                  (alist-replace
+                   'configure
+                   (lambda* (#:key outputs #:allow-other-keys)
+                     (let ((out (assoc-ref outputs "out")))
+                       (zero? (system*
+                               "./configure"
+                               (string-append "--prefix=" out)
+                               "--system-libs"
+                               ;; By default, the man pages and other docs land
+                               ;; in PREFIX/man and PREFIX/doc, but we want them
+                               ;; in share/{man,doc}.  Note that unlike
+                               ;; autoconf-generated configure scripts, cmake's
+                               ;; configure prepends "PREFIX/" to what we pass
+                               ;; to --mandir and --docdir.
+                               "--mandir=share/man"
+                               ,(string-append
+                                 "--docdir=share/doc/cmake-"
+                                 (string-join (take (string-split version #\.) 2)
+                                              "."))))))
+                   %standard-phases)))))
     (inputs
-     `(("file" ,file)))
+     `(("file"       ,file)
+       ("curl"       ,curl)
+       ("zlib"       ,zlib)
+       ("expat"      ,expat)
+       ("bzip2"      ,bzip2)
+       ("libarchive" ,libarchive)))
     (home-page "http://www.cmake.org/")
     (synopsis "Cross-platform build system")
     (description
      "CMake is a family of tools designed to build, test and package software.
 CMake is used to control the software compilation process using simple platform
-and compiler independent configuration files. CMake generates native makefiles
+and compiler independent configuration files.  CMake generates native makefiles
 and workspaces that can be used in the compiler environment of your choice.")
     (license bsd-3)))
