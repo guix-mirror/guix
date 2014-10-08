@@ -797,7 +797,7 @@ OUTPUTS is a list of package outputs (may be an empty list)."
                (new-profile (derivation->output-path derivation)))
           (set-build-options store
                              #:use-substitutes? use-substitutes?)
-          (manifest-show-transaction store manifest transaction
+          (show-manifest-transaction store manifest transaction
                                      #:dry-run? dry-run?)
           (show-what-to-build store derivations
                               #:use-substitutes? use-substitutes?

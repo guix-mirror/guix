@@ -156,23 +156,6 @@
            (equal? (list glibc) install)
            (equal? (list (cons guile-1.8.8 guile-2.0.9)) upgrade)))))
 
-(test-assert "manifest-show-transaction"
-  (let* ((m (manifest (list guile-1.8.8)))
-         (t (manifest-transaction (install (list guile-2.0.9)))))
-    (let-values (((remove install upgrade)
-                  (manifest-transaction-effects m t)))
-      (with-store store
-        (and (string-match "guile\t1.8.8 → 2.0.9"
-                           (with-fluids ((%default-port-encoding "UTF-8"))
-                             (with-error-to-string
-                              (lambda ()
-                                (manifest-show-transaction store m t)))))
-             (string-match "guile\t1.8.8 -> 2.0.9"
-                           (with-fluids ((%default-port-encoding "ISO-8859-1"))
-                             (with-error-to-string
-                              (lambda ()
-                                (manifest-show-transaction store m t))))))))))
-
 (test-assert "profile-derivation"
   (run-with-store %store
     (mlet* %store-monad

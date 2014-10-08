@@ -770,7 +770,7 @@ more information.~%"))
                                    new
                                    #:info-dir? (not bootstrap?))))
                       (prof     (derivation->output-path prof-drv)))
-                 (manifest-show-transaction (%store) manifest transaction
+                 (show-manifest-transaction (%store) manifest transaction
                                             #:dry-run? dry-run?)
                  (show-what-to-build (%store) (list prof-drv)
                                      #:use-substitutes?

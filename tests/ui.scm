@@ -19,11 +19,14 @@
 
 (define-module (test-ui)
   #:use-module (guix ui)
+  #:use-module (guix profiles)
   #:use-module (guix store)
   #:use-module (guix derivations)
   #:use-module (srfi srfi-1)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-19)
-  #:use-module (srfi srfi-64))
+  #:use-module (srfi srfi-64)
+  #:use-module (ice-9 regex))
 
 ;; Test the (guix ui) module.
 
@@ -34,6 +37,20 @@ In addition to implementing the R5RS Scheme standard and a large subset of
 R6RS, Guile includes a module system, full access to POSIX system calls,
 networking support, multiple threads, dynamic linking, a foreign function call
 interface, and powerful string processing.")
+
+(define guile-1.8.8
+  (manifest-entry
+    (name "guile")
+    (version "1.8.8")
+    (item "/gnu/store/...")
+    (output "out")))
+
+(define guile-2.0.9
+  (manifest-entry
+    (name "guile")
+    (version "2.0.9")
+    (item "/gnu/store/...")
+    (output "out")))
 
 
 (test-begin "ui")
@@ -209,6 +226,23 @@ Second line" 24))
        (lambda ()
          ;; This should print nothing.
          (show-what-to-build store (list drv)))))))
+
+(test-assert "show-manifest-transaction"
+  (let* ((m (manifest (list guile-1.8.8)))
+         (t (manifest-transaction (install (list guile-2.0.9)))))
+    (let-values (((remove install upgrade)
+                  (manifest-transaction-effects m t)))
+      (with-store store
+        (and (string-match "guile\t1.8.8 → 2.0.9"
+                           (with-fluids ((%default-port-encoding "UTF-8"))
+                             (with-error-to-string
+                              (lambda ()
+                                (show-manifest-transaction store m t)))))
+             (string-match "guile\t1.8.8 -> 2.0.9"
+                           (with-fluids ((%default-port-encoding "ISO-8859-1"))
+                             (with-error-to-string
+                              (lambda ()
+                                (show-manifest-transaction store m t))))))))))
 
 (test-end "ui")
 

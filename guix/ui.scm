@@ -23,6 +23,7 @@
   #:use-module (guix store)
   #:use-module (guix config)
   #:use-module (guix packages)
+  #:use-module (guix profiles)
   #:use-module (guix build-system)
   #:use-module (guix derivations)
   #:use-module ((guix build utils) #:select (mkdir-p))
@@ -47,6 +48,7 @@
             string->number*
             size->number
             show-what-to-build
+            show-manifest-transaction
             call-with-error-handling
             with-error-handling
             read/eval
@@ -347,6 +349,97 @@ available for download."
                       (length download))
                   (null? download) download)))
     (pair? build)))
+
+(define (right-arrow port)
+  "Return either a string containing the 'RIGHT ARROW' character, or an ASCII
+replacement if PORT is not Unicode-capable."
+  (with-fluids ((%default-port-encoding (port-encoding port)))
+    (let ((arrow "→"))
+      (catch 'encoding-error
+        (lambda ()
+          (call-with-output-string
+            (lambda (port)
+              (set-port-conversion-strategy! port 'error)
+              (display arrow port))))
+        (lambda (key . args)
+          "->")))))
+
+(define* (show-manifest-transaction store manifest transaction
+                                    #:key dry-run?)
+  "Display what will/would be installed/removed from MANIFEST by TRANSACTION."
+  (define (package-strings name version output item)
+    (map (lambda (name version output item)
+           (format #f "   ~a~:[:~a~;~*~]\t~a\t~a"
+                   name
+                   (equal? output "out") output version
+                   (if (package? item)
+                       (package-output store item output)
+                       item)))
+         name version output item))
+
+  (define →                        ;an arrow that can be represented on stderr
+    (right-arrow (current-error-port)))
+
+  (define (upgrade-string name old-version new-version output item)
+    (format #f "   ~a~:[:~a~;~*~]\t~a ~a ~a\t~a"
+            name (equal? output "out") output
+            old-version → new-version
+            (if (package? item)
+                (package-output store item output)
+                item)))
+
+  (let-values (((remove install upgrade)
+                (manifest-transaction-effects manifest transaction)))
+    (match remove
+      ((($ <manifest-entry> name version output item) ..1)
+       (let ((len    (length name))
+             (remove (package-strings name version output item)))
+         (if dry-run?
+             (format (current-error-port)
+                     (N_ "The following package would be removed:~%~{~a~%~}~%"
+                         "The following packages would be removed:~%~{~a~%~}~%"
+                         len)
+                     remove)
+             (format (current-error-port)
+                     (N_ "The following package will be removed:~%~{~a~%~}~%"
+                         "The following packages will be removed:~%~{~a~%~}~%"
+                         len)
+                     remove))))
+      (_ #f))
+    (match upgrade
+      (((($ <manifest-entry> name old-version)
+         . ($ <manifest-entry> _ new-version output item)) ..1)
+       (let ((len     (length name))
+             (upgrade (map upgrade-string
+                           name old-version new-version output item)))
+         (if dry-run?
+             (format (current-error-port)
+                     (N_ "The following package would be upgraded:~%~{~a~%~}~%"
+                         "The following packages would be upgraded:~%~{~a~%~}~%"
+                         len)
+                     upgrade)
+             (format (current-error-port)
+                     (N_ "The following package will be upgraded:~%~{~a~%~}~%"
+                         "The following packages will be upgraded:~%~{~a~%~}~%"
+                         len)
+                     upgrade))))
+      (_ #f))
+    (match install
+      ((($ <manifest-entry> name version output item _) ..1)
+       (let ((len     (length name))
+             (install (package-strings name version output item)))
+         (if dry-run?
+             (format (current-error-port)
+                     (N_ "The following package would be installed:~%~{~a~%~}~%"
+                         "The following packages would be installed:~%~{~a~%~}~%"
+                         len)
+                     install)
+             (format (current-error-port)
+                     (N_ "The following package will be installed:~%~{~a~%~}~%"
+                         "The following packages will be installed:~%~{~a~%~}~%"
+                         len)
+                     install))))
+      (_ #f))))
 
 (define-syntax with-error-handling
   (syntax-rules ()
