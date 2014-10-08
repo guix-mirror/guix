@@ -327,7 +327,6 @@ dist_patch_DATA =						\
   gnu/packages/patches/doxygen-tmake.patch			\
   gnu/packages/patches/duplicity-piped-password.patch		\
   gnu/packages/patches/duplicity-test_selection-tmp.patch	\
-  gnu/packages/patches/emacs-configure-sh.patch			\
   gnu/packages/patches/eudev-rules-directory.patch		\
   gnu/packages/patches/file-CVE-2014-3587.patch			\
   gnu/packages/patches/findutils-absolute-paths.patch		\

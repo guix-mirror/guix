@@ -43,27 +43,24 @@
   #:use-module ((gnu packages compression) #:prefix compression:)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages glib)
+  #:use-module (gnu packages acl)
   #:use-module (guix utils)
   #:use-module (srfi srfi-1))
 
 (define-public emacs
   (package
     (name "emacs")
-    (version "24.3")
+    (version "24.4")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/emacs/emacs-"
                                  version ".tar.xz"))
              (sha256
               (base32
-               "1385qzs3bsa52s5rcncbrkxlydkw0ajzrvfxgv8rws5fx512kakh"))
-             (patches (list (search-patch "emacs-configure-sh.patch")))))
+               "1zflm6ac34s6v166p58ilxrxbxjm0q2wfc25f8y0mjml1lbr3qs7"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags
-       (list (string-append "--with-crt-dir=" (assoc-ref %build-inputs "libc")
-                            "/lib"))
-       #:phases (alist-cons-before
+     '(#:phases (alist-cons-before
                  'configure 'fix-/bin/pwd
                  (lambda _
                    ;; Use `pwd', not `/bin/pwd'.
@@ -82,6 +79,7 @@
        ("libtiff" ,libtiff)
        ("giflib" ,giflib)
        ("libjpeg" ,libjpeg-8)
+       ("acl" ,acl)
 
        ;; When looking for libpng `configure' links with `-lpng -lz', so we
        ;; must also provide zlib as an input.
@@ -116,11 +114,10 @@ languages.")
     (name "emacs-no-x-toolkit")
     (synopsis "The extensible, customizable, self-documenting text
 editor (without an X toolkit)" )
-    (inputs (alist-delete "gtk+" (package-inputs emacs)))
-    (arguments
-     (substitute-keyword-arguments (package-arguments emacs)
-       ((#:configure-flags flags)
-        `(cons "--with-x-toolkit=no" ,flags))))))
+    (inputs (append `(("inotify-tools" ,inotify-tools))
+                    (alist-delete "gtk+" (package-inputs emacs))))
+    (arguments (append '(#:configure-flags '("--with-x-toolkit=no"))
+                       (package-arguments emacs)))))
 
 
 ;;;
