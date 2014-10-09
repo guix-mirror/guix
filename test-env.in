@@ -81,7 +81,8 @@ then
     # Launch the daemon without chroot support because is may be
     # unavailable, for instance if we're not running as root.
     "@abs_top_builddir@/pre-inst-env"				\
-	"@abs_top_builddir@/guix-daemon" --disable-chroot &
+	"@abs_top_builddir@/guix-daemon" --disable-chroot	\
+	--substitute-urls="$GUIX_BINARY_SUBSTITUTE_URL" &
 
     daemon_pid=$!
     trap "kill $daemon_pid ; rm -rf $NIX_STATE_DIR" EXIT

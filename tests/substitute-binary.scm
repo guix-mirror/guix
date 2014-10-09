@@ -166,6 +166,9 @@ a file for NARINFO."
 (define-syntax-rule (with-narinfo narinfo body ...)
   (call-with-narinfo narinfo (lambda () body ...)))
 
+;; Transmit these options to 'guix substitute-binary'.
+(set! (@@ (guix scripts substitute-binary) %cache-url)
+      (getenv "GUIX_BINARY_SUBSTITUTE_URL"))
 
 (test-equal "query narinfo without signature"
   ""                                              ; not substitutable

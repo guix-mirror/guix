@@ -625,20 +625,19 @@ found."
   (assoc-ref (daemon-options) option))
 
 (define %cache-url
-  (or (getenv "GUIX_BINARY_SUBSTITUTE_URL")
-      (match (and=> (find-daemon-option "substitute-urls")
-                    string-tokenize)
-        ((url)
-         url)
-        ((head tail ..1)
-         ;; Currently we don't handle multiple substitute URLs.
-         (warning (_ "these substitute URLs will not be used:~{ ~a~}~%")
-                  tail)
-         head)
-        (#f
-         ;; This can only happen when this script is not invoked by the
-         ;; daemon.
-         "http://hydra.gnu.org"))))
+  (match (and=> (find-daemon-option "substitute-urls")
+                string-tokenize)
+    ((url)
+     url)
+    ((head tail ..1)
+     ;; Currently we don't handle multiple substitute URLs.
+     (warning (_ "these substitute URLs will not be used:~{ ~a~}~%")
+              tail)
+     head)
+    (#f
+     ;; This can only happen when this script is not invoked by the
+     ;; daemon.
+     "http://hydra.gnu.org")))
 
 (define (guix-substitute-binary . args)
   "Implement the build daemon's substituter protocol."
