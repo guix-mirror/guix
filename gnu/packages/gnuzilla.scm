@@ -30,9 +30,11 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages compression)
+  #:use-module (gnu packages fontutils)
   #:use-module (gnu packages libevent)
   #:use-module (gnu packages image)
   #:use-module (gnu packages libffi)
+  #:use-module (gnu packages pulseaudio)
   #:use-module (gnu packages python)
   #:use-module (gnu packages xorg)
   #:use-module (gnu packages gl)
@@ -42,16 +44,15 @@
 (define-public icecat
   (package
     (name "icecat")
-    (version "24.0")
+    (version "31.1.1")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnu/gnuzilla/"
-                          (substring version 0 (string-index version #\.))
-                          "/icecat-" version ".tar.gz"))
+      (uri (string-append "http://gnuzilla.gnu.org/releases/"
+                          version "/" name "-" version ".tar.xz"))
       (sha256
        (base32
-        "1vxzjwmhad6yxx4sk9zvapjgv5salcv10id061q0991ii3dycy9a"))))
+        "033p5b6akjbg33prqg57mhp5zx3svryqzbjb3k58ql6939bfmad8"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
@@ -62,9 +63,13 @@
        ("gstreamer" ,gstreamer-0.10)
        ("gst-plugins-base" ,gst-plugins-base-0.10)
        ("gtk+" ,gtk+-2)
+       ("pango" ,pango)
+       ("freetype" ,freetype)
+       ("libxft" ,libxft)
        ("libevent" ,libevent)
        ("libxt" ,libxt)
        ("libffi" ,libffi)
+       ("pulseaudio" ,pulseaudio)
        ("mesa" ,mesa)
        ("unzip" ,unzip)
        ("yasm" ,yasm)
@@ -76,7 +81,8 @@
        ("python2-pysqlite" ,python2-pysqlite)
        ("pkg-config" ,pkg-config)))
     (arguments
-     `(#:tests? #f ; no check target
+     `(#:tests? #f          ; no check target
+       #:out-of-source? #t  ; must be built outside of the source directory
 
        #:configure-flags '(;; Building with debugging symbols takes ~5GiB, so
                            ;; disable it.
@@ -112,26 +118,29 @@
                            "--enable-system-ffi")
 
        #:phases
-         (alist-cons-before
-          'patch-source-shebangs 'sanitise
-          (lambda _
-            ;; delete dangling symlinks
-            (delete-file "browser/base/content/.#aboutDialog.xul")
-            (delete-file "browser/base/content/abouthome/.#aboutHome.xhtml")
-            (delete-file "browser/branding/unofficial/content/.#aboutHome.xhtml")
-            (delete-file "toolkit/crashreporter/google-breakpad/autotools/compile"))
-         (alist-replace
-          'configure
-          ;; configure does not work followed by both "SHELL=..." and
-          ;; "CONFIG_SHELL=..."; set environment variables instead
-          (lambda* (#:key outputs configure-flags #:allow-other-keys)
-            (let ((out (assoc-ref outputs "out")))
-              (setenv "SHELL" (which "bash"))
-              (setenv "CONFIG_SHELL" (which "bash"))
-              (zero? (apply system* "./configure"
-                            (string-append "--prefix=" out)
-                            configure-flags))))
-          %standard-phases))))
+       (alist-replace
+        'configure
+        ;; configure does not work followed by both "SHELL=..." and
+        ;; "CONFIG_SHELL=..."; set environment variables instead
+        (lambda* (#:key outputs configure-flags #:allow-other-keys)
+          (let* ((out (assoc-ref outputs "out"))
+                 (bash (which "bash"))
+                 (abs-srcdir (getcwd))
+                 (srcdir (string-append "../" (basename abs-srcdir)))
+                 (flags `(,(string-append "--prefix=" out)
+                          ,(string-append "--with-l10n-base="
+                                          abs-srcdir "/l10n")
+                          ,@configure-flags)))
+            (setenv "SHELL" bash)
+            (setenv "CONFIG_SHELL" bash)
+            (mkdir "../build")
+            (chdir "../build")
+            (format #t "build directory: ~s~%" (getcwd))
+            (format #t "configure flags: ~s~%" flags)
+            (zero? (apply system* bash
+                          (string-append srcdir "/configure")
+                          flags))))
+        %standard-phases)))
     (home-page "http://www.gnu.org/software/gnuzilla/")
     (synopsis "Entirely free browser derived from Mozilla Firefox")
     (description
