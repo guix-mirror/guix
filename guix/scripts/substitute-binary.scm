@@ -23,7 +23,7 @@
   #:use-module (guix utils)
   #:use-module (guix config)
   #:use-module (guix records)
-  #:use-module (guix nar)
+  #:use-module (guix serialization)
   #:use-module (guix hash)
   #:use-module (guix base64)
   #:use-module (guix pk-crypto)

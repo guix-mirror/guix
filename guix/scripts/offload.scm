@@ -21,6 +21,7 @@
   #:use-module (guix records)
   #:use-module (guix store)
   #:use-module (guix derivations)
+  #:use-module (guix serialization)
   #:use-module (guix nar)
   #:use-module (guix utils)
   #:use-module ((guix build utils) #:select (which mkdir-p))

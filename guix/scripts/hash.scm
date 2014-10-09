@@ -20,7 +20,7 @@
 (define-module (guix scripts hash)
   #:use-module (guix base32)
   #:use-module (guix hash)
-  #:use-module (guix nar)
+  #:use-module (guix serialization)
   #:use-module (guix ui)
   #:use-module (guix utils)
   #:use-module (rnrs io ports)

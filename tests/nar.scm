@@ -19,6 +19,7 @@
 (define-module (test-nar)
   #:use-module (guix tests)
   #:use-module (guix nar)
+  #:use-module (guix serialization)
   #:use-module (guix store)
   #:use-module ((guix hash)
                 #:select (open-sha256-port open-sha256-input-port))

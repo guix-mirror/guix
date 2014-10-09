@@ -21,7 +21,7 @@
   #:use-module (guix scripts substitute-binary)
   #:use-module (guix base64)
   #:use-module (guix hash)
-  #:use-module (guix nar)
+  #:use-module (guix serialization)
   #:use-module (guix pk-crypto)
   #:use-module (guix pki)
   #:use-module (guix config)

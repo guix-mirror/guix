@@ -17,7 +17,6 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (guix store)
-  #:use-module (guix nar)
   #:use-module (guix utils)
   #:use-module (guix config)
   #:use-module (guix serialization)

@@ -24,7 +24,7 @@
   #:use-module (guix base32)
   #:use-module (guix packages)
   #:use-module (guix derivations)
-  #:use-module (guix nar)
+  #:use-module (guix serialization)
   #:use-module (gnu packages)
   #:use-module (gnu packages bootstrap)
   #:use-module (ice-9 match)
