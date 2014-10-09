@@ -239,7 +239,8 @@ interpreted."
                     (nix-protocol-error-message c)))
             ((message-condition? c)
              ;; Normally '&message' error conditions have an i18n'd message.
-             (leave (_ "~a~%") (gettext (condition-message c)))))
+             (leave (_ "~a~%")
+                    (gettext (condition-message c) %gettext-domain))))
     ;; Catch EPIPE and the likes.
     (catch 'system-error
       thunk
