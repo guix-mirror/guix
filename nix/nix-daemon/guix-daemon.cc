@@ -68,9 +68,10 @@ builds derivations on behalf of its clients.";
 #define GUIX_OPT_CHROOT_DIR 10
 #define GUIX_OPT_LISTEN 11
 #define GUIX_OPT_NO_SUBSTITUTES 12
-#define GUIX_OPT_NO_BUILD_HOOK 13
-#define GUIX_OPT_GC_KEEP_OUTPUTS 14
-#define GUIX_OPT_GC_KEEP_DERIVATIONS 15
+#define GUIX_OPT_SUBSTITUTE_URLS 13
+#define GUIX_OPT_NO_BUILD_HOOK 14
+#define GUIX_OPT_GC_KEEP_OUTPUTS 15
+#define GUIX_OPT_GC_KEEP_DERIVATIONS 16
 
 static const struct argp_option options[] =
   {
@@ -98,6 +99,8 @@ static const struct argp_option options[] =
       "Perform builds as a user of GROUP" },
     { "no-substitutes", GUIX_OPT_NO_SUBSTITUTES, 0, 0,
       "Do not use substitutes" },
+    { "substitute-urls", GUIX_OPT_SUBSTITUTE_URLS, "URLS", 0,
+      "Use URLS as the default list of substitute providers" },
     { "no-build-hook", GUIX_OPT_NO_BUILD_HOOK, 0, 0,
       "Do not use the 'build hook'" },
     { "cache-failures", GUIX_OPT_CACHE_FAILURES, 0, 0,
@@ -192,6 +195,9 @@ parse_opt (int key, char *arg, struct argp_state *state)
 	  exit (EXIT_FAILURE);
 	}
       break;
+    case GUIX_OPT_SUBSTITUTE_URLS:
+      settings.set ("substitute-urls", arg);
+      break;
     case GUIX_OPT_NO_SUBSTITUTES:
       settings.set ("build-use-substitutes", "false");
       break;
@@ -279,6 +285,9 @@ main (int argc, char *argv[])
       /* Use our substituter by default.  */
       settings.substituters.clear ();
       settings.set ("build-use-substitutes", "true");
+
+      /* Use our substitute server by default.  */
+      settings.set ("substitute-urls", "http://hydra.gnu.org");
 
 #ifdef HAVE_DAEMON_OFFLOAD_HOOK
       /* Use our build hook for distributed builds by default.  */

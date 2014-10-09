@@ -528,10 +528,6 @@ PORT.  REPORT-PROGRESS is a two-argument procedure such as that returned by
                 (_ "(Please consider upgrading Guile to get proper progress report.)~%"))
         port)))
 
-(define %cache-url
-  (or (getenv "GUIX_BINARY_SUBSTITUTE_URL")
-      "http://hydra.gnu.org"))
-
 (define-syntax with-networking
   (syntax-rules ()
     "Catch DNS lookup errors and gracefully exit."
@@ -603,6 +599,46 @@ Internal tool to substitute a pre-built binary to a local build.\n"))
     (when (or (null? acl) (singleton? acl))
       (warning (_ "ACL for archive imports seems to be uninitialized, \
 substitutes may be unavailable\n")))))
+
+(define (daemon-options)
+  "Return a list of name/value pairs denoting build daemon options."
+  (define %not-newline
+    (char-set-complement (char-set #\newline)))
+
+  (match (getenv "_NIX_OPTIONS")
+    (#f                           ;should not happen when called by the daemon
+     '())
+    (newline-separated
+     ;; Here we get something of the form "OPTION1=VALUE1\nOPTION2=VALUE2\n".
+     (filter-map (lambda (option=value)
+                   (match (string-index option=value #\=)
+                     (#f                          ;invalid option setting
+                      #f)
+                     (equal-sign
+                      (cons (string-take option=value equal-sign)
+                            (string-drop option=value (+ 1 equal-sign))))))
+                 (string-tokenize newline-separated %not-newline)))))
+
+(define (find-daemon-option option)
+  "Return the value of build daemon option OPTION, or #f if it could not be
+found."
+  (assoc-ref (daemon-options) option))
+
+(define %cache-url
+  (or (getenv "GUIX_BINARY_SUBSTITUTE_URL")
+      (match (and=> (find-daemon-option "substitute-urls")
+                    string-tokenize)
+        ((url)
+         url)
+        ((head tail ..1)
+         ;; Currently we don't handle multiple substitute URLs.
+         (warning (_ "these substitute URLs will not be used:~{ ~a~}~%")
+                  tail)
+         head)
+        (#f
+         ;; This can only happen when this script is not invoked by the
+         ;; daemon.
+         "http://hydra.gnu.org"))))
 
 (define (guix-substitute-binary . args)
   "Implement the build daemon's substituter protocol."

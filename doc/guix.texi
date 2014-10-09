@@ -453,6 +453,14 @@ When the daemon runs with @code{--no-substitutes}, clients can still
 explicitly enable substitution @i{via} the @code{set-build-options}
 remote procedure call (@pxref{The Store}).
 
+@item --substitute-urls=@var{urls}
+Consider @var{urls} the default whitespace-separated list of substitute
+source URLs.  When this option is omitted, @code{http://hydra.gnu.org}
+is used.
+
+This means that substitutes may be downloaded from @var{urls}, as long
+as they are signed by a trusted signature (@pxref{Substitutes}).
+
 @cindex build hook
 @item --no-build-hook
 Do not use the @dfn{build hook}.
@@ -981,7 +989,10 @@ also result from derivation builds, can be available as substitutes.
 
 The @code{hydra.gnu.org} server is a front-end to a build farm that
 builds packages from the GNU distribution continuously for some
-architectures, and makes them available as substitutes.
+architectures, and makes them available as substitutes.  This is the
+default source of substitutes; it can be overridden by passing
+@command{guix-daemon} the @code{--substitute-urls} option
+(@pxref{Invoking guix-daemon}).
 
 @cindex security
 @cindex digital signatures
