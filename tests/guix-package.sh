@@ -28,10 +28,11 @@ readlink_base ()
     basename `readlink "$1"`
 }
 
+module_dir="t-guix-package-$$"
 profile="t-profile-$$"
 rm -f "$profile"
 
-trap 'rm "$profile" "$profile-"[0-9]* ; rm -rf t-home-'"$$" EXIT
+trap 'rm "$profile" "$profile-"[0-9]* ; rm -rf "$module_dir" t-home-'"$$" EXIT
 
 # Use `-e' with a non-package expression.
 if guix package --bootstrap -e +;
@@ -257,9 +258,7 @@ guix package -I | head -1 2> "$HOME/err2"
 test "`cat "$HOME/err1" "$HOME/err2"`" = ""
 
 # Make sure '-L' extends the package module search path.
-module_dir="t-guix-package-$$"
 mkdir "$module_dir"
-trap "rm -rf $module_dir" EXIT
 
 cat > "$module_dir/foo.scm"<<EOF
 (define-module (foo)
