@@ -80,6 +80,7 @@
             generation-number
             generation-numbers
             profile-generations
+            relative-generation
             previous-generation-number
             generation-time
             generation-file-name))
@@ -503,16 +504,28 @@ former profiles were found."
         '()
         generations)))
 
-(define (previous-generation-number profile number)
+(define* (relative-generation profile shift #:optional
+                              (current (generation-number profile)))
+  "Return PROFILE's generation shifted from the CURRENT generation by SHIFT.
+SHIFT is a positive or negative number.
+Return #f if there is no such generation."
+  (let* ((abs-shift (abs shift))
+         (numbers (profile-generations profile))
+         (from-current (memq current
+                             (if (negative? shift)
+                                 (reverse numbers)
+                                 numbers))))
+    (and from-current
+         (< abs-shift (length from-current))
+         (list-ref from-current abs-shift))))
+
+(define* (previous-generation-number profile #:optional
+                                     (number (generation-number profile)))
   "Return the number of the generation before generation NUMBER of
 PROFILE, or 0 if none exists.  It could be NUMBER - 1, but it's not the
 case when generations have been deleted (there are \"holes\")."
-  (fold (lambda (candidate highest)
-          (if (and (< candidate number) (> candidate highest))
-              candidate
-              highest))
-        0
-        (generation-numbers profile)))
+  (or (relative-generation profile -1 number)
+      0))
 
 (define (generation-file-name profile generation)
   "Return the file name for PROFILE's GENERATION."
