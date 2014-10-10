@@ -335,9 +335,12 @@ must be a list of @code{build-machine} objects.  While this example
 shows a fixed list of build machines, one could imagine, say, using
 DNS-SD to return a list of potential build machines discovered in the
 local network (@pxref{Introduction, Guile-Avahi,, guile-avahi, Using
-Avahi in Guile Scheme Programs}).
+Avahi in Guile Scheme Programs}).  The @code{build-machine} data type is
+detailed below.
 
-The compulsory fields for a @code{build-machine} declaration are:
+@deftp {Data Type} build-machine
+This data type represents build machines the daemon may offload builds
+to.  The important fields are:
 
 @table @code
 
@@ -345,7 +348,7 @@ The compulsory fields for a @code{build-machine} declaration are:
 The remote machine's host name.
 
 @item system
-The remote machine's system type.
+The remote machine's system type---e.g., @code{"x86_64-linux"}.
 
 @item user
 The user account to use when connecting to the remote machine over SSH.
@@ -354,7 +357,6 @@ allow non-interactive logins.
 
 @end table
 
-@noindent
 A number of optional fields may be specified:
 
 @table @code
@@ -380,6 +382,7 @@ and corresponding hardware support.  Derivations can request features by
 name, and they will be scheduled on matching build machines.
 
 @end table
+@end deftp
 
 The @code{guix} command must be in the search path on the build
 machines, since offloading works by invoking the @code{guix archive} and
