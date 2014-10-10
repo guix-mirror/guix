@@ -806,6 +806,21 @@ Installing, removing, or upgrading packages from a generation that has
 been rolled back to overwrites previous future generations.  Thus, the
 history of a profile's generations is always linear.
 
+@item --switch-generation=@var{pattern}
+@itemx -S @var{pattern}
+Switch to a particular generation defined by @var{pattern}.
+
+@var{pattern} may be either a generation number or a number prefixed
+with ``+'' or ``-''.  The latter means: move forward/backward by a
+specified number of generations.  For example, if you want to return to
+the latest generation after @code{--roll-back}, use
+@code{--switch-generation=+1}.
+
+The difference between @code{--roll-back} and
+@code{--switch-generation=-1} is that @code{--switch-generation} will
+not make a zeroth generation, so if a specified generation does not
+exist, the current generation will not be changed.
+
 @item --search-paths
 @cindex search paths
 Report environment variable definitions, in Bash syntax, that may be

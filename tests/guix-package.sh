@@ -87,6 +87,8 @@ then
     # Exit with 1 when a generation does not exist.
     if guix package -p "$profile" --list-generations=42;
     then false; else true; fi
+    if guix package -p "$profile" --switch-generation=99;
+    then false; else true; fi
 
     # Remove a package.
     guix package --bootstrap -p "$profile" -r "guile-bootstrap"
@@ -100,6 +102,12 @@ then
     guix package --roll-back -p "$profile"
     test "`readlink_base "$profile"`" = "$profile-1-link"
     test -x "$profile/bin/guile" && ! test -x "$profile/bin/make"
+
+    # Switch to the rolled generation and switch back.
+    guix package -p "$profile" --switch-generation=2
+    test "`readlink_base "$profile"`" = "$profile-2-link"
+    guix package -p "$profile" --switch-generation=-1
+    test "`readlink_base "$profile"`" = "$profile-1-link"
 
     # Move to the empty profile.
     for i in `seq 1 3`
@@ -133,10 +141,12 @@ then
     grep "`guix build -e "$boot_make"`" "$profile/manifest"
 
     # Make a "hole" in the list of generations, and make sure we can
-    # roll back "over" it.
+    # roll back and switch "over" it.
     rm "$profile-1-link"
     guix package --bootstrap -p "$profile" --roll-back
     test "`readlink_base "$profile"`" = "$profile-0-link"
+    guix package -p "$profile" --switch-generation=+1
+    test "`readlink_base "$profile"`" = "$profile-2-link"
 
     # Make sure LIBRARY_PATH gets listed by `--search-paths'.
     guix package --bootstrap -p "$profile" -i guile-bootstrap -i gcc-bootstrap

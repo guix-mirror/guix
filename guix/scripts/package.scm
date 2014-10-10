@@ -46,6 +46,8 @@
   #:use-module (gnu packages guile)
   #:use-module ((gnu packages bootstrap) #:select (%bootstrap-guile))
   #:export (specification->package+output
+            switch-to-generation
+            switch-to-previous-generation
             roll-back
             delete-generation
             delete-generations
@@ -96,14 +98,26 @@ return PROFILE unchanged.  The goal is to treat '-p ~/.guix-profile' as if
 
     (switch-symlinks generation prof)))
 
+(define (switch-to-generation profile number)
+  "Atomically switch PROFILE to the generation NUMBER."
+  (let ((current    (generation-number profile))
+        (generation (generation-file-name profile number)))
+    (cond ((not (file-exists? profile))
+           (raise (condition (&profile-not-found-error
+                              (profile profile)))))
+          ((not (file-exists? generation))
+           (raise (condition (&missing-generation-error
+                              (profile profile)
+                              (generation number)))))
+          (else
+           (format #t (_ "switching from generation ~a to ~a~%")
+                   current number)
+           (switch-symlinks profile generation)))))
+
 (define (switch-to-previous-generation profile)
   "Atomically switch PROFILE to the previous generation."
-  (let* ((number              (generation-number profile))
-         (previous-number     (previous-generation-number profile number))
-         (previous-generation (generation-file-name profile previous-number)))
-    (format #t (_ "switching from generation ~a to ~a~%")
-            number previous-number)
-    (switch-symlinks profile previous-generation)))
+  (switch-to-generation profile
+                        (previous-generation-number profile)))
 
 (define (roll-back store profile)
   "Roll back to the previous generation of PROFILE."
@@ -411,6 +425,9 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
   -d, --delete-generations[=PATTERN]
                          delete generations matching PATTERN"))
   (display (_ "
+  -S, --switch-generation=PATTERN
+                         switch to a generation matching PATTERN"))
+  (display (_ "
   -p, --profile=PROFILE  use PROFILE instead of the user's default profile"))
   (newline)
   (display (_ "
@@ -489,6 +506,10 @@ Install, remove, or upgrade PACKAGES in a single transaction.\n"))
                  (lambda (opt name arg result arg-handler)
                    (values (alist-cons 'delete-generations (or arg "")
                                        result)
+                           #f)))
+         (option '(#\S "switch-generation") #t #f
+                 (lambda (opt name arg result arg-handler)
+                   (values (alist-cons 'switch-generation arg result)
                            #f)))
          (option '("search-paths") #f #f
                  (lambda (opt name arg result arg-handler)
@@ -715,13 +736,31 @@ more information.~%"))
       (generation-number profile))
 
     ;; First roll back if asked to.
-    (cond ((and (assoc-ref opts 'roll-back?) (not dry-run?))
-           (begin
-             (roll-back (%store) profile)
-             (process-actions (alist-delete 'roll-back? opts))))
+    (cond ((and (assoc-ref opts 'roll-back?)
+                (not dry-run?))
+           (roll-back (%store) profile)
+           (process-actions (alist-delete 'roll-back? opts)))
+          ((and (assoc-ref opts 'switch-generation)
+                (not dry-run?))
+           (for-each
+            (match-lambda
+              (('switch-generation . pattern)
+               (let* ((number (string->number pattern))
+                      (number (and number
+                                   (case (string-ref pattern 0)
+                                     ((#\+ #\-)
+                                      (relative-generation profile number))
+                                     (else number)))))
+                 (if number
+                     (switch-to-generation profile number)
+                     (leave (_ "cannot switch to generation '~a'~%")
+                            pattern)))
+               (process-actions (alist-delete 'switch-generation opts)))
+              (_ #f))
+            opts))
           ((and (assoc-ref opts 'delete-generations)
                 (not dry-run?))
-           (filter-map
+           (for-each
             (match-lambda
              (('delete-generations . pattern)
               (cond ((not (file-exists? profile)) ; XXX: race condition
