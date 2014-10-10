@@ -3126,6 +3126,7 @@ instance to support new system services.
 
 @menu
 * Using the Configuration System::  Customizing your GNU system.
+* operating-system Reference::  Detail of operating-system declarations.
 * File Systems::                Configuring file system mounts.
 * Mapped Devices::              Block device extra processing.
 * User Accounts::               Specifying user accounts.
@@ -3199,7 +3200,9 @@ daemon listening on port 2222, and allowing remote @code{root} logins
 (@pxref{Invoking lshd,,, lsh, GNU lsh Manual}).  Under the hood,
 @code{lsh-service} arranges so that @code{lshd} is started with the
 right command-line options, possibly with supporting configuration files
-generated as needed (@pxref{Defining Services}).
+generated as needed (@pxref{Defining Services}).  @xref{operating-system
+Reference}, for details about the available @code{operating-system}
+fields.
 
 Assuming the above snippet is stored in the @file{my-system-config.scm}
 file, the @command{guix system reconfigure my-system-config.scm} command
@@ -3220,6 +3223,114 @@ The output of the derivation is a single directory that refers to all
 the packages, configuration files, and other supporting files needed to
 instantiate @var{os}.
 @end deffn
+
+@node operating-system Reference
+@subsection @code{operating-system} Reference
+
+This section summarizes all the options available in
+@code{operating-system} declarations (@pxref{Using the Configuration
+System}).
+
+@deftp {Data Type} operating-system
+This is the data type representing an operating system configuration.
+By that, we mean all the global system configuration, not per-user
+configuration (@pxref{Using the Configuration System}).
+
+@table @asis
+@item @code{kernel} (default: @var{linux-libre})
+The package object of the operating system to use@footnote{Currently
+only the Linux-libre kernel is supported.  In the future, it will be
+possible to use the GNU@tie{}Hurd.}.
+
+@item @code{bootloader}
+The system bootloader configuration object.
+@c FIXME: Add xref to bootloader section.
+
+@item @code{initrd} (default: @code{base-initrd})
+A two-argument monadic procedure that returns an initial RAM disk for
+the Linux kernel.  @xref{Initial RAM Disk}.
+
+@item @code{host-name}
+The host name.
+
+@item @code{hosts-file}
+@cindex hosts file
+A zero-argument monadic procedure that returns a text file for use as
+@file{/etc/hosts} (@pxref{Host Names,,, libc, The GNU C Library
+Reference Manual}).  The default is to produce a file with entries for
+@code{localhost} and @var{host-name}.
+
+@item @code{mapped-devices} (default: @code{'()})
+A list of mapped devices.  @xref{Mapped Devices}.
+
+@item @code{file-systems}
+A list of file systems.  @xref{File Systems}.
+
+@item @code{swap-devices} (default: @code{'()})
+@cindex swap devices
+A list of strings identifying devices to be used for ``swap space''
+(@pxref{Memory Concepts,,, libc, The GNU C Library Reference Manual}).
+For example, @code{'("/dev/sda3")}.
+
+@item @code{users} (default: @code{'()})
+@itemx @code{groups} (default: @var{%base-groups})
+List of user accounts and groups.  @xref{User Accounts}.
+
+@item @code{skeletons} (default: @code{(default-skeletons)})
+A monadic list of pairs of target file name and files.  These are the
+files that will be used as skeletons as new accounts are created.
+
+For instance, a valid value may look like this:
+
+@example
+(mlet %store-monad ((bashrc (text-file "bashrc" "\
+     export PATH=$HOME/.guix-profile/bin")))
+  (return `((".bashrc" ,bashrc))))
+@end example
+
+@item @code{issue} (default: @var{%default-issue})
+A string denoting the contents of the @file{/etc/issue} file, which is
+what displayed when users log in on a text console.
+
+@item @code{packages} (default: @var{%base-packages})
+The set of packages installed in the global profile, which is accessible
+at @file{/run/current-system/profile}.
+
+The default set includes core utilities, but it is good practice to
+install non-core utilities in user profiles (@pxref{Invoking guix
+package}).
+
+@item @code{timezone}
+A timezone identifying string---e.g., @code{"Europe/Paris"}.
+
+@item @code{locale} (default: @code{"en_US.UTF-8"})
+The name of the default locale (@pxref{Locales,,, libc, The GNU C
+Library Reference Manual}).
+
+@item @code{services} (default: @var{%base-services})
+A list of monadic values denoting system services.  @xref{Services}.
+
+@item @code{pam-services} (default: @code{(base-pam-services)})
+@cindex PAM
+@cindex pluggable authentication modules
+Linux @dfn{pluggable authentication module} (PAM) services.
+@c FIXME: Add xref to PAM services section.
+
+@item @code{setuid-programs} (default: @var{%setuid-programs})
+List of string-valued G-expressions denoting setuid programs.
+@xref{Setuid Programs}.
+
+@item @code{sudoers} (default: @var{%sudoers-specification})
+@cindex sudoers
+The contents of the @file{/etc/sudoers} file as a string.
+
+This file specifies which users can use the @command{sudo} command, what
+they are allowed to do, and what privileges they may gain.  The default
+is that only @code{root} and members of the @code{wheel} group may use
+@code{sudo}.
+
+@end table
+@end deftp
 
 @node File Systems
 @subsection File Systems
@@ -3670,8 +3781,8 @@ on-line service---e.g., @code{www.facebook.com}---to the local
 host---@code{127.0.0.1} or its IPv6 equivalent, @code{::1}.
 
 This variable is typically used in the @code{hosts-file} field of an
-@code{operating-system} declaration (@pxref{Using the Configuration
-System}):
+@code{operating-system} declaration (@pxref{operating-system Reference,
+@file{/etc/hosts}}):
 
 @example
 (use-modules (gnu) (guix))
