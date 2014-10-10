@@ -816,6 +816,15 @@ Each element from GENERATIONS is a generation number."
      (guix-make-guile-expression
       'delete-generations* guix-current-profile generations))))
 
+(defun guix-switch-to-generation (generation)
+  "Switch `guix-current-profile' to GENERATION number."
+  (when (or (not guix-operation-confirm)
+            (y-or-n-p (format "Switch current profile to generation %d? "
+                              generation)))
+    (guix-eval-in-repl
+     (guix-make-guile-expression
+      'switch-to-generation guix-current-profile generation))))
+
 (provide 'guix-base)
 
 ;;; guix-base.el ends here

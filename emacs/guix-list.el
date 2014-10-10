@@ -735,12 +735,23 @@ Also see `guix-package-info-type'."
   (define-key map (kbd "RET") 'guix-generation-list-show-packages)
   (define-key map (kbd "x")   'guix-generation-list-execute)
   (define-key map (kbd "i")   'guix-list-describe)
+  (define-key map (kbd "s")   'guix-generation-list-switch)
   (define-key map (kbd "d")   'guix-generation-list-mark-delete))
 
 (defun guix-generation-list-get-current (val &optional _)
   "Return string from VAL showing whether this generation is current.
 VAL is a boolean value."
   (if val "(current)" ""))
+
+(defun guix-generation-list-switch ()
+  "Switch current profile to the generation at point."
+  (interactive)
+  (let* ((entry   (guix-list-current-entry))
+         (current (guix-get-key-val entry 'current))
+         (number  (guix-get-key-val entry 'number)))
+    (if current
+        (user-error "This generation is already the current one")
+      (guix-switch-to-generation number))))
 
 (defun guix-generation-list-show-packages ()
   "List installed packages for the generation at point."

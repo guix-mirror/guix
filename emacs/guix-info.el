@@ -647,7 +647,14 @@ ENTRY is an alist with package info."
   "Insert boolean value VAL showing whether this generation is current."
   (if val
       (guix-info-insert-val-default "Yes" 'guix-generation-info-current)
-    (guix-info-insert-val-default "No" 'guix-generation-info-not-current)))
+    (guix-info-insert-val-default "No" 'guix-generation-info-not-current)
+    (guix-info-insert-indent)
+    (guix-info-insert-action-button
+     "Switch"
+     (lambda (btn)
+       (guix-switch-to-generation (button-get btn 'number)))
+     "Switch to this generation (make it the current one)"
+     'number (guix-get-key-val entry 'number))))
 
 (provide 'guix-info)
 

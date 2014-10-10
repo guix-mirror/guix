@@ -205,6 +205,8 @@ List packages installed in the current generation.
 @item i
 Describe marked generations (display available information in a
 ``generation-info'' buffer).
+@item s
+Switch profile to the current generation.
 @item d
 Mark the current generation for deletion (with prefix, mark all
 generations).
@@ -236,6 +238,7 @@ emacs, The Emacs Editor}) which can be used to:
 
 @itemize @minus
 @item remove a generation;
+@item switch to a generation;
 @item list packages installed in a generation;
 @item jump to a generation directory.
 @end itemize
