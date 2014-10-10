@@ -182,13 +182,16 @@ Parameters are taken from ENTRY of ENTRY-TYPE."
      (let ((val (guix-get-key-val entry param))
            (fun (guix-get-key-val guix-list-column-value-methods
                                   entry-type param)))
-       (if (and val fun)
+       (if fun
            (funcall fun val entry)
          (guix-get-string val))))))
 
-(defun guix-list-get-one-line (str &optional _)
-  "Return one-line string from a multi-line STR."
-  (guix-get-one-line str))
+(defun guix-list-get-one-line (val &optional _)
+  "Return one-line string from a multi-line string VAL.
+VAL may be nil."
+  (if val
+      (guix-get-one-line val)
+    (guix-get-string nil)))
 
 (defun guix-list-get-time (seconds &optional _)
   "Return formatted time string from SECONDS."
