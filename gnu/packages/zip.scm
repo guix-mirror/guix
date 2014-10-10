@@ -24,6 +24,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages perl)
+  #:use-module (guix build-system perl)
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages python))
 
@@ -134,3 +135,24 @@ UnZip recreates the stored directory structure by default.")
     (description
      "zziplib is a library based on zlib for accessing zip files.")
     (license license:lgpl2.0+)))
+
+
+(define-public perl-zip
+  (package
+    (name "perl-zip")
+    (version "1.30")
+    (source 
+     (origin
+       (method url-fetch)
+       (uri (string-append
+             "mirror://cpan/authors/id/A/AD/ADAMK/Archive-Zip-" 
+             version ".tar.gz"))
+       (sha256
+        (base32
+         "0633zah5z9njiqnvy3vh42fjymncmil1jdfb7d18w8xpfzzp5d7q"))))
+    (build-system perl-build-system)
+    (synopsis  "Provides an interface to ZIP archive files")
+    (description "The Archive::Zip module allows a Perl program to create,
+manipulate, read, and write Zip archive files.")
+    (home-page "http://search.cpan.org/~adamk/Archive-Zip-1.30/")
+    (license (package-license perl))))
