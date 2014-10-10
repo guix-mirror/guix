@@ -191,8 +191,74 @@ tracking.")
 
 ;; compiles only on macos
 ;; (define-public applewmproto
-  
-  
+
+
+(define xorg-cf-files
+  ;; The xorg-cf-files package contains the data files for the imake utility,
+  ;; defining the known settings for a wide variety of platforms (many of which
+  ;; have not been verified or tested in over a decade), and for many of the
+  ;; libraries formerly delivered in the X.Org monolithic releases.
+  ;;
+  ;; License: x11, see COPYING
+  (origin
+    (method url-fetch)
+    (uri "mirror://xorg/individual/util/xorg-cf-files-1.0.5.tar.bz2")
+    (sha256
+     (base32
+      "1m3ypq0xcy46ghxc0svl1rbhpy3zvgmy0aa2mn7w7v7d8d8bh8zd"))))
+
+(define-public imake
+  (package
+    (name "imake")
+    (version "1.0.7")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://xorg/individual/util/imake-"
+                          version ".tar.bz2"))
+      (sha256
+       (base32
+        "0zpk8p044jh14bis838shbf4100bjg7mccd7bq54glpsq552q339"))))
+    (build-system gnu-build-system)
+    (native-inputs
+      `(("pkg-config" ,pkg-config)))
+    (inputs
+      `(("xorg-cf-files" ,xorg-cf-files)
+        ("xproto" ,xproto)))
+    (arguments
+     `(#:phases
+       (alist-cons-after
+        'install 'install-data
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let ((cf-files (assoc-ref inputs "xorg-cf-files"))
+                (out (assoc-ref outputs "out"))
+                (unpack (assoc-ref %standard-phases 'unpack))
+                (patch-source-shebangs
+                 (assoc-ref %standard-phases 'patch-source-shebangs)))
+            (mkdir "xorg-cf-files")
+            (with-directory-excursion "xorg-cf-files"
+              (apply unpack (list #:source cf-files))
+              (apply patch-source-shebangs (list #:source cf-files))
+              (substitute* '("mingw.cf" "Imake.tmpl" "nto.cf" "os2.cf"
+                             "linux.cf" "Amoeba.cf" "cygwin.cf")
+                (("/bin/sh") (which "bash")))
+              (and (zero? (system* "./configure"
+                                   (string-append "SHELL=" (which "bash"))
+                                   (string-append "--prefix=" out)))
+                   (zero? (system* "make" "install"))))))
+        %standard-phases)))
+    (home-page "http://www.x.org")
+    (synopsis "Source code configuration and build system")
+    (description
+     "Imake is a deprecated source code configuration and build system which
+has traditionally been supplied by and used to build the X Window System in
+X11R6 and previous releases.  As of the X Window System X11R7 release, the X
+Window system has switched to using GNU autotools as the primary build system,
+and the Imake system is now deprecated, and should not be used by new software
+projects.  Software developers are encouraged to migrate software to the GNU
+autotools system.")
+    (license license:x11)))
+
 (define-public bdftopcf
   (package
     (name "bdftopcf")
