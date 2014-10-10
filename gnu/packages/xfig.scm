@@ -129,3 +129,77 @@ such as GIF, JPEG, EPSF (PostScript), etc.  Those objects can be created,
 deleted, moved or modified.  Attributes such as colors or line styles can be
 selected in various ways.  For text, 35 fonts are available.")
     (license bsd-2)))
+
+(define-public transfig
+  (package
+    (name "transfig")
+    (version "3.2.5e")
+    (source
+     (origin
+      (method url-fetch)
+      (uri (string-append "mirror://sourceforge/mcj/mcj-source/transfig."
+                          version ".tar.gz"))
+      (sha256
+       (base32
+        "0i3p7qmg2w8qrad3pn42b0miwarql7yy0gpd49b1bpal6bqsiicf"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("imake" ,imake)
+       ("makedepend" ,makedepend)))
+    (inputs
+     `(("xfig"    ,xfig)
+       ("libjpeg" ,libjpeg)
+       ("libpng"  ,libpng)
+       ("libxpm"  ,libxpm)
+       ("libx11"  ,libx11)
+       ("zlib"    ,zlib)))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (alist-replace
+        'configure
+        (lambda* (#:key inputs outputs #:allow-other-keys)
+          (let ((imake (assoc-ref inputs "imake"))
+                (out   (assoc-ref outputs "out")))
+            (substitute* '("fig2dev/Imakefile"
+                           "transfig/Imakefile")
+              (("XCOMM (BINDIR = )[[:graph:]]*" _ front)
+               (string-append front out "/bin"))
+              (("XCOMM USEINLINE") "USEINLINE")
+              ;; The variable name is deceptive.  The directory is used as an
+              ;; installation path for bitmaps.
+              (("(XFIGLIBDIR =[[:blank:]]*)[[:graph:]]*" _ front)
+               (string-append front out "/lib"))
+              (("(XPMLIBDIR = )[[:graph:]]*" _ front)
+               (string-append front (assoc-ref inputs "libxpm") "/lib"))
+              (("(XPMINC = -I)[[:graph:]]*" _ front)
+               (string-append front (assoc-ref inputs "libxpm") "/include/X11"))
+              (("/usr/local/lib/fig2dev") (string-append out "/lib")))
+           ;; The -a argument is required in order to pick up the correct paths
+           ;; to several X header files.
+           (zero? (system* "xmkmf" "-a"))
+           (substitute* '("Makefile"
+                          "fig2dev/Makefile"
+                          "transfig/Makefile")
+             ;; This imake variable somehow remains undefined
+             (("DefaultGcc2AMD64Opt") "-O2")
+             ;; Reset a few variable defaults that are set in imake templates
+             ((imake) out)
+             (("(MANPATH = )[[:graph:]]*" _ front)
+              (string-append front out "/share/man"))
+             (("(CONFDIR = )([[:graph:]]*)" _ front default)
+              (string-append front out default)))))
+        (alist-cons-after
+         'install 'install/doc
+         (lambda _
+           (zero? (system* "make" "install.man")))
+         %standard-phases))))
+    (home-page "http://www.xfig.org/")
+    (synopsis "Create portable LaTeX figures")
+    (description
+     "Transfig creates a makefile to translate figures described in Fig code
+or PIC into a specified LaTeX graphics language.  PIC files are identified by
+the suffix \".pic\"; Fig files can be specified either with or without the
+suffix \".fig\".  Transfig also creates a TeX macro file appropriate to the
+target language.")
+    (license bsd-2)))
