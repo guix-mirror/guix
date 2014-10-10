@@ -638,13 +638,14 @@ See 'entry-sexps' for details."
 
 (define (generation-param-alist profile)
   "Return an alist of generation parameters and procedures for PROFILE."
-  (list
-   (cons 'id          identity)
-   (cons 'number      identity)
-   (cons 'prev-number (cut previous-generation-number profile <>))
-   (cons 'path        (cut generation-file-name profile <>))
-   (cons 'time        (lambda (gen)
-                        (time-second (generation-time profile gen))))))
+  (let ((current (generation-number profile)))
+    `((id          . ,identity)
+      (number      . ,identity)
+      (prev-number . ,(cut previous-generation-number profile <>))
+      (current     . ,(cut = current <>))
+      (path        . ,(cut generation-file-name profile <>))
+      (time        . ,(lambda (gen)
+                        (time-second (generation-time profile gen)))))))
 
 (define (matching-generations profile predicate)
   "Return a list of PROFILE generations matching PREDICATE."

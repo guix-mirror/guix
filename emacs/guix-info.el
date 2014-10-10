@@ -136,6 +136,7 @@ number of characters, it will be split into several lines.")
      (location          guix-package-info-insert-location))
     (generation
      (number            guix-generation-info-insert-number)
+     (current           guix-generation-info-insert-current)
      (path              guix-info-insert-file-path)
      (time              guix-info-insert-time)))
   "Methods for inserting parameter values.
@@ -161,7 +162,7 @@ argument.")
     (output name version output synopsis path dependencies location home-url
             license inputs native-inputs propagated-inputs description)
     (installed path dependencies)
-    (generation number prev-number time path))
+    (generation number prev-number current time path))
   "List of displayed entry parameters.
 Each element of the list should have a form:
 
@@ -613,6 +614,16 @@ ENTRY is an alist with package info."
   "Face used for a number of a generation."
   :group 'guix-generation-info)
 
+(defface guix-generation-info-current
+  '((t :inherit guix-package-info-installed-outputs))
+  "Face used if a generation is the current one."
+  :group 'guix-generation-info)
+
+(defface guix-generation-info-not-current
+  '((t nil))
+  "Face used if a generation is not the current one."
+  :group 'guix-generation-info)
+
 (defun guix-generation-info-insert-number (number &optional _)
   "Insert generation NUMBER and action buttons."
   (guix-info-insert-val-default number 'guix-generation-info-number)
@@ -631,6 +642,12 @@ ENTRY is an alist with package info."
      (guix-delete-generations (button-get btn 'number)))
    "Delete this generation"
    'number number))
+
+(defun guix-generation-info-insert-current (val entry)
+  "Insert boolean value VAL showing whether this generation is current."
+  (if val
+      (guix-info-insert-val-default "Yes" 'guix-generation-info-current)
+    (guix-info-insert-val-default "No" 'guix-generation-info-not-current)))
 
 (provide 'guix-info)
 

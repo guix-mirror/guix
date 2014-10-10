@@ -65,6 +65,7 @@ entries, he will be prompted for confirmation."
      (number 5
              ,(lambda (a b) (guix-list-sort-numerically 0 a b))
              :right-align t)
+     (current 10 t)
      (time 20 t)
      (path 30 t)))
   "Columns displayed in list buffers.
@@ -93,8 +94,9 @@ this list have a priority.")
      (synopsis    . guix-list-get-one-line)
      (description . guix-list-get-one-line))
     (generation
-     (time . guix-list-get-time)
-     (path . guix-list-get-file-path)))
+     (current     . guix-generation-list-get-current)
+     (time        . guix-list-get-time)
+     (path        . guix-list-get-file-path)))
   "Methods for inserting parameter values in columns.
 Each element of the list has a form:
 
@@ -734,6 +736,11 @@ Also see `guix-package-info-type'."
   (define-key map (kbd "x")   'guix-generation-list-execute)
   (define-key map (kbd "i")   'guix-list-describe)
   (define-key map (kbd "d")   'guix-generation-list-mark-delete))
+
+(defun guix-generation-list-get-current (val &optional _)
+  "Return string from VAL showing whether this generation is current.
+VAL is a boolean value."
+  (if val "(current)" ""))
 
 (defun guix-generation-list-show-packages ()
   "List installed packages for the generation at point."

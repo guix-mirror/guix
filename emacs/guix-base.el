@@ -107,6 +107,7 @@ Interactively, prompt for PATH.  With prefix, use
      (id                . "ID")
      (number            . "Number")
      (prev-number       . "Previous number")
+     (current           . "Current")
      (path              . "Path")
      (time              . "Time")))
   "List for defining titles of entry parameters.
