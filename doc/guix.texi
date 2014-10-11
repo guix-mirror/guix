@@ -2855,6 +2855,11 @@ The @var{options} may be zero or more of the following:
 
 @table @code
 
+@item --checkers
+@itemx -c
+Only enable the checkers specified in a comma-separated list using the
+names returned by @code{--list-checkers}.
+
 @item --list-checkers
 @itemx -l
 List and describe all the available checkers that will be run on packages

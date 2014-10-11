@@ -186,7 +186,8 @@ SH_TESTS =					\
   tests/guix-package.sh				\
   tests/guix-system.sh				\
   tests/guix-archive.sh				\
-  tests/guix-authenticate.sh
+  tests/guix-authenticate.sh			\
+  tests/guix-lint.sh
 
 if BUILD_DAEMON
 

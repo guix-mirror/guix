@@ -36,44 +36,6 @@
 
 
 ;;;
-;;; Command-line options.
-;;;
-
-(define %default-options
-  ;; Alist of default option values.
-  '())
-
-(define (show-help)
-  (display (_ "Usage: guix lint [OPTION]... [PACKAGE]...
-Run a set of checkers on the specified package; if none is specified, run the checkers on all packages.\n"))
-  (display (_ "
-  -h, --help             display this help and exit"))
-  (display (_ "
-  -l, --list-checkers    display the list of available lint checkers"))
-  (display (_ "
-  -V, --version          display version information and exit"))
-  (newline)
-  (show-bug-report-information))
-
-(define %options
-  ;; Specification of the command-line options.
-  ;; TODO: add some options:
-  ;; * --checkers=checker1,checker2...: only run the specified checkers
-  ;; * --certainty=[low,medium,high]: only run checkers that have at least this
-  ;;                                  'certainty'.
-  (list (option '(#\h "help") #f #f
-                (lambda args
-                  (show-help)
-                  (exit 0)))
-        (option '(#\l "list-checkers") #f #f
-                (lambda args
-                   (list-checkers-and-exit)))
-        (option '(#\V "version") #f #f
-                (lambda args
-                  (show-version-and-exit "guix lint")))))
-
-
-;;;
 ;;; Helpers
 ;;;
 (define* (emit-warning package message #:optional field)
@@ -223,11 +185,67 @@ Run a set of checkers on the specified package; if none is specified, run the ch
      (description "Validate package synopsis")
      (check       check-synopsis-style))))
 
-(define (run-checkers package)
-  ;; Run all the checkers on PACKAGE.
+(define (run-checkers package checkers)
+  ;; Run the given CHECKERS on PACKAGE.
   (for-each (lambda (checker)
               ((lint-checker-check checker) package))
-            %checkers))
+            checkers))
+
+
+;;;
+;;; Command-line options.
+;;;
+
+(define %default-options
+  ;; Alist of default option values.
+  '())
+
+(define (show-help)
+  (display (_ "Usage: guix lint [OPTION]... [PACKAGE]...
+Run a set of checkers on the specified package; if none is specified, run the checkers on all packages.\n"))
+  (display (_ "
+  -c, --checkers=CHECKER1,CHECKER2...
+                         only run the specificed checkers"))
+  (display (_ "
+  -h, --help             display this help and exit"))
+  (display (_ "
+  -l, --list-checkers    display the list of available lint checkers"))
+  (display (_ "
+  -V, --version          display version information and exit"))
+  (newline)
+  (show-bug-report-information))
+
+
+(define %options
+  ;; Specification of the command-line options.
+  ;; TODO: add some options:
+  ;; * --certainty=[low,medium,high]: only run checkers that have at least this
+  ;;                                  'certainty'.
+  (list (option '(#\c "checkers") #t #f
+                (lambda (opt name arg result arg-handler)
+                  (let ((names (string-split arg #\,)))
+                    (for-each (lambda (c)
+                                (when (not (member c (map lint-checker-name
+                                                          %checkers)))
+                                  (leave (_ "~a: invalid checker") c)))
+                              names)
+                    (values (alist-cons 'checkers
+                             (filter (lambda (checker)
+                                       (member (lint-checker-name checker)
+                                               names))
+                                     %checkers)
+                             result)
+                            #f))))
+        (option '(#\h "help") #f #f
+                (lambda args
+                  (show-help)
+                  (exit 0)))
+        (option '(#\l "list-checkers") #f #f
+                (lambda args
+                   (list-checkers-and-exit)))
+        (option '(#\V "version") #f #f
+                (lambda args
+                  (show-version-and-exit "guix lint")))))
 
 
 ;;;
@@ -238,23 +256,21 @@ Run a set of checkers on the specified package; if none is specified, run the ch
   (define (parse-options)
     ;; Return the alist of option values.
     (args-fold* args %options
-                (lambda (opt name arg result)
+                (lambda (opt name arg result arg-handler)
                   (leave (_ "~A: unrecognized option~%") name))
-                (lambda (arg result)
+                (lambda (arg result arg-handler)
                   (alist-cons 'argument arg result))
-                %default-options))
+                %default-options #f))
 
   (let* ((opts (parse-options))
          (args (filter-map (match-lambda
                             (('argument . value)
                              value)
                             (_ #f))
-                           (reverse opts))))
-
-
-   (if (null? args)
-        (fold-packages (lambda (p r) (run-checkers p)) '())
-        (for-each
-          (lambda (spec)
-            (run-checkers spec))
-          (map specification->package args)))))
+                           (reverse opts)))
+         (checkers (or (assoc-ref opts 'checkers) %checkers)))
+     (if (null? args)
+          (fold-packages (lambda (p r) (run-checkers p checkers)) '())
+          (for-each (lambda (spec)
+                      (run-checkers (specification->package spec) checkers))
+                    args))))
