@@ -52,13 +52,13 @@
     (lambda args
       (memv (system-error-errno args) (list EPERM ENOENT)))))
 
-(test-assert "swapoff, EINVAL/EPERM"
+(test-assert "swapoff, ENOENT/EINVAL/EPERM"
   (catch 'system-error
     (lambda ()
       (swapoff "/does-not-exist")
       #f)
     (lambda args
-      (memv (system-error-errno args) (list EPERM EINVAL)))))
+      (memv (system-error-errno args) (list EPERM EINVAL ENOENT)))))
 
 (test-assert "all-network-interfaces"
   (match (all-network-interfaces)
