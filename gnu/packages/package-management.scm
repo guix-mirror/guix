@@ -39,7 +39,7 @@
   #:use-module (gnu packages openssl)
   #:use-module (gnu packages bdw-gc))
 
-(define guix-0.7
+(define-public guix-0.7
   (package
     (name "guix")
     (version "0.7")
@@ -114,13 +114,11 @@ upgrades and roll-backs, per-user profiles, and much more.  It is based on
 the Nix package manager.")
     (license gpl3+)))
 
-(define-public guix guix-0.7)
-
-(define-public guix-devel
+(define guix-devel
   ;; Development version of Guix.
-  (let ((commit "0ae8c15"))
+  (let ((commit "14e84b2"))
     (package (inherit guix-0.7)
-      (version (string-append "0.6." commit))
+      (version (string-append "0.7." commit))
       (source (origin
                 (method git-fetch)
                 (uri (git-reference
@@ -129,7 +127,7 @@ the Nix package manager.")
                       (recursive? #t)))
                 (sha256
                  (base32
-                  "1y6mwzwsjdxbfibqypb55dix371rifhfz0bygfr8k868lcdsawic"))))
+                  "00rmdxhrhf2yklvqc740dmwl7j67i0h3svjc9cwjdam94sys0m4n"))))
       (arguments
        (substitute-keyword-arguments (package-arguments guix-0.7)
          ((#:phases phases)
@@ -167,7 +165,12 @@ the Nix package manager.")
          ("gettext" ,gnu-gettext)
          ("texinfo" ,texinfo)
          ("graphviz" ,graphviz)
-         ,@(package-native-inputs guix-0.7))))))
+         ,@(package-native-inputs guix-0.7)))
+      (propagated-inputs
+       `(("guile-json" ,guile-json)
+         ,@(package-propagated-inputs guix-0.7))))))
+
+(define-public guix guix-devel)
 
 (define-public nix
   (package
