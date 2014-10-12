@@ -36,6 +36,7 @@
   #:use-module (gnu packages)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix git-download)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system cmake))
 
@@ -185,25 +186,21 @@ Additionally, various channel-specific options can be negotiated.")
 (define-public guile-ssh
   (package
     (name "guile-ssh")
-    (version "0.6.0")
+    (version "0.7.1")
     (source (origin
-              (method url-fetch)
-              (uri (string-append
-                    "https://github.com/artyom-poptsov/libguile-ssh/archive/v"
-                    version ".tar.gz"))
+              (method git-fetch)
+              (uri (git-reference
+                    (url "https://github.com/artyom-poptsov/libguile-ssh.git")
+                    (commit "e216e1d78bf93a9753ea813f930cac5e68e52180")))
               (sha256
                (base32
-                "1v4y5vrwg0g6804pzbr160zahlqvj7k7iwys2bdpfzp7m2i47siq"))))
+                "1sbxhmynmpwfjwb3dp6lrc3cxi5kffqmb6klhx7wnkgqxvs61lsw"))))
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-cons-before
                  'configure 'autoreconf
                  (lambda* (#:key inputs #:allow-other-keys)
-                   (substitute* "ssh/Makefile.am"
-                     (("-lssh_threads" match)
-                      (string-append "-L" (assoc-ref inputs "libssh")
-                                     "/lib " match)))
-
+                   (chmod "doc/version.texi" #o777) ;make it writable
                    (zero? (system* "autoreconf" "-vfi")))
                  (alist-cons-after
                   'install 'fix-libguile-ssh-file-name
@@ -225,9 +222,6 @@ Additionally, various channel-specific options can be negotiated.")
                                               (assoc-ref %outputs "out")
                                               "/share/guile/site/2.0"))
 
-       ;; Building the .go requires building libguile-ssh.so first.
-       #:parallel-build? #f
-
        ;; Tests are not parallel-safe.
        #:parallel-tests? #f))
     (native-inputs `(("autoconf" ,autoconf)
@@ -237,7 +231,8 @@ Additionally, various channel-specific options can be negotiated.")
                      ("pkg-config" ,pkg-config)
                      ("which" ,which)))
     (inputs `(("guile" ,guile-2.0)
-              ("libssh" ,libssh-0.5)))
+              ("libssh" ,libssh)
+              ("libgcrypt" ,libgcrypt-1.5)))
     (synopsis "Guile bindings to libssh")
     (description
      "Guile-SSH is a library that provides access to the SSH protocol for
