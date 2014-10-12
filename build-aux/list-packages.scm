@@ -100,10 +100,25 @@ decreasing, is 1."
     (->sxml (package-license package)))
 
   (define (patches package)
-    (define (patch-url patch)
-      (string-append
-       "http://git.savannah.gnu.org/cgit/guix.git/tree/gnu/packages/patches/"
-       (basename patch)))
+    (define patch-url
+      (match-lambda
+       ((? string? patch)
+        (string-append
+         "http://git.savannah.gnu.org/cgit/guix.git/tree/gnu/packages/patches/"
+         (basename patch)))
+       ((? origin? patch)
+        (match (origin-uri patch)
+          ((? string? uri) uri)
+          ((head . tail) head)))))
+
+    (define patch-name
+      (match-lambda
+       ((? string? patch)
+        (basename patch))
+       ((? origin? patch)
+        (match (origin-uri patch)
+          ((? string? uri) (basename uri))
+          ((head . tail) (basename head))))))
 
     (define (snippet-link snippet)
       (let ((loc (or (package-field-location package 'source)
@@ -134,7 +149,7 @@ decreasing, is 1."
                                   (cons `(a (@ (href ,(patch-url patch))
                                                (title ,(string-append
                                                         "Link to "
-                                                        (basename patch))))
+                                                        (patch-name patch))))
                                             ,(number->string number))
                                         links))))))))))
 
