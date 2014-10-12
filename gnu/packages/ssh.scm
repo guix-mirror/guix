@@ -49,7 +49,17 @@
                                   version ".tar.xz"))
               (sha256
                (base32
-                "1jyaj9h1iglvn02hrvcchbx8ycjpj8b91h8mi459k7q5jp2xgd9b"))))
+                "1jyaj9h1iglvn02hrvcchbx8ycjpj8b91h8mi459k7q5jp2xgd9b"))
+              (patches
+               ;; Apply the patch as discussed at
+               ;; <http://lists.gnu.org/archive/html/guix-devel/2014-10/msg00180.html>.
+               (list (origin
+                       (uri
+                        "http://git.libssh.org/projects/libssh.git/patch/?id=a033b93c616f4a81afc3fc6a017396d507d96c19")
+                       (method url-fetch)
+                       (sha256
+                        (base32
+                         "16fdkjcnhc6j7qxz9575fzr9044927ws5259yh0xb9yv1q14j0vh")))))))
     (build-system cmake-build-system)
     (arguments
      '(#:configure-flags '("-DWITH_GCRYPT=ON")
