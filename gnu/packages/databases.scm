@@ -35,7 +35,7 @@
   #:use-module (gnu packages gnupg)
   #:use-module (gnu packages python)
   #:use-module ((guix licenses)
-                #:select (gpl2 gpl3+ lgpl3+ x11-style bsd-style
+                #:select (gpl2 gpl3+ lgpl2.1+ lgpl3+ x11-style bsd-style
                           public-domain))
   #:use-module (guix packages)
   #:use-module (guix download)
@@ -323,3 +323,24 @@ capable RDBMS working for your Perl project you simply have to install this
 module, and nothing else.")
     (license (package-license perl))
     (home-page "http://search.cpan.org/~ishigaki/DBD-SQLite/lib/DBD/SQLite.pm")))
+
+
+(define-public unixodbc
+  (package
+   (name "unixodbc")
+   (version "2.3.2")
+   (source (origin
+            (method url-fetch)
+            (uri 
+             (string-append
+              "ftp://ftp.unixodbc.org/pub/unixODBC/unixODBC-" version ".tar.gz"))
+            (sha256
+             (base32 "16jw5fq7wgfky6ak1h2j2pqx99jivsdl4q8aq6immpr55xs5jd4w"))))
+   (build-system gnu-build-system)
+   (synopsis "Data source abstraction library")
+   (description "Unixodbc is a library providing an API with which to access
+data sources.  Data sources include SQL Servers and any software with an ODBC
+Driver.")
+   (license lgpl2.1+) 
+   ;; COPYING contains copy of lgpl2.1 - but copyright notices just say "LGPL"
+   (home-page "http://www.unixodbc.org")))
