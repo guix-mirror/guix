@@ -138,7 +138,11 @@ backups (called chunks) to allow easy burning to CD/DVD.")
                            version ".tar.gz"))
        (sha256
         (base32
-         "0pixqnrcf35dnqgv0lp7qlcw7k13620qkhgxr288v7p4iz6ym1zb"))))
+         "0pixqnrcf35dnqgv0lp7qlcw7k13620qkhgxr288v7p4iz6ym1zb"))
+       (patches
+        (list (search-patch "libarchive-mtree-filename-length-fix.patch")
+              (search-patch "libarchive-fix-lzo-test-case.patch")
+              (search-patch "libarchive-CVE-2013-0211.patch")))))
     (build-system gnu-build-system)
     (inputs
      `(("zlib" ,zlib)
