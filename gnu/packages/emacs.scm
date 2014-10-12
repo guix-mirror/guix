@@ -206,13 +206,14 @@ when typing parentheses directly or commenting out code line by line.")
 (define-public magit
   (package
     (name "magit")
-    (version "1.2.0")
+    (version "1.2.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "https://github.com/downloads/magit/magit/magit-"
-                                 version ".tar.gz"))
+             (uri (string-append
+                   "https://github.com/magit/magit/releases/download/"
+                   version "/" name "-" version ".tar.gz"))
              (sha256
-              (base32 "1a8vvilhd5y5vmlpsh194qpl4qlg0a1brylfscxcacpfp0cmhlzg"))))
+              (base32 "1in48g5l5xdc9cf2apnpgx73mqlz2njrpi1w52dgql4qxv3kg6gr"))))
     (build-system gnu-build-system)
     (native-inputs `(("texinfo" ,texinfo)))
     (inputs `(("emacs" ,emacs)
