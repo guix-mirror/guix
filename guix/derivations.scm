@@ -953,7 +953,8 @@ they can refer to each other."
                                   #:guile-for-build guile
                                   #:local-build? #t)))
 
-(define (graft-derivation store name drv replacements)
+(define* (graft-derivation store name drv replacements
+                           #:key (guile (%guile-for-build)))
   "Return a derivation called NAME, based on DRV but with all the first
 elements of REPLACEMENTS replaced by the corresponding second element.
 REPLACEMENTS must be a list of ((DRV OUTPUT) . (DRV2 OUTPUT)) pairs."
@@ -1003,6 +1004,7 @@ REPLACEMENTS must be a list of ((DRV OUTPUT) . (DRV2 OUTPUT)) pairs."
   (match replacements
     (((sources . targets) ...)
      (build-expression->derivation store name build
+                                   #:guile-for-build guile
                                    #:modules '((guix build graft)
                                                (guix build utils))
                                    #:inputs `(("original" ,drv)
