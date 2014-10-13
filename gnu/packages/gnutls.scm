@@ -62,7 +62,7 @@ specifications.")
 (define-public gnutls
   (package
     (name "gnutls")
-    (version "3.2.16")
+    (version "3.2.19")
     (source (origin
              (method url-fetch)
              (uri
@@ -74,7 +74,7 @@ specifications.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "1bmwhg8y3mz5w2klclf5dz9502477kaj8r8db7k45fwb9ah3c63q"))))
+               "1krx33ab2ijwfz71f1ba8labxfsic7jhlhv6rvjsyw566jj9a3d2"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
