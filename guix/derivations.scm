@@ -893,6 +893,11 @@ system, imported, and appears under FINAL-PATH in the resulting store path."
                                   #:guile-for-build guile
                                   #:local-build? #t)))
 
+(define search-path*
+  ;; A memoizing version of 'search-path' so 'imported-modules' does not end
+  ;; up looking for the same files over and over again.
+  (memoize search-path))
+
 (define* (imported-modules store modules
                            #:key (name "module-import")
                            (system (%current-system))
@@ -907,7 +912,7 @@ search path."
                       (let ((f (string-append
                                 (string-join (map symbol->string m) "/")
                                 ".scm")))
-                        (cons f (search-path module-path f))))
+                        (cons f (search-path* module-path f))))
                     modules)))
     (imported-files store files #:name name #:system system
                     #:guile guile)))
