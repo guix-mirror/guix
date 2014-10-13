@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -75,14 +76,27 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
     (version "0.10")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "http://0pointer.de/lennart/projects/nss-mdns/nss-mdns-"
-                    version ".tar.gz"))
+              (uri (list
+                    (string-append
+                     "mirror://debian/pool/main/n/nss-mdns/nss-mdns_"
+                     version ".orig.tar.gz")
+                    "http://pkgs.fedoraproject.org/repo/pkgs/nss-mdns/nss-mdns-0.10.tar.gz/03938f17646efbb50aa70ba5f99f51d7/nss-mdns-0.10.tar.gz"
+
+                    ;; This used to be the canonical URL but it vanished.
+                    ;; See <http://bugs.gnu.org/18704>.
+                    ;; (string-append
+                    ;;  "http://0pointer.de/lennart/projects/nss-mdns/nss-mdns-"
+                    ;;  version ".tar.gz")
+                    ))
               (sha256
                (base32
-                "0vgs6j0qsl0mwzh5a0m0bykr7x6bx79vnbyn0r3q289rghp3qs0y"))))
+                "0vgs6j0qsl0mwzh5a0m0bykr7x6bx79vnbyn0r3q289rghp3qs0y"))
+              (file-name (string-append name "-" version ".tar.gz"))))
     (build-system gnu-build-system)
+
+    ;; XXX: Stale URL, missing replacement.  See <http://bugs.gnu.org/18704>.
     (home-page "http://0pointer.de/lennart/projects/nss-mdns/")
+
     (synopsis "The mDNS Name Service Switch (NSS) plug-in")
     (description
      "'nss-mdns' is a plug-in for the Name Service Switch (NSS) functionality
