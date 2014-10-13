@@ -90,8 +90,8 @@
            (zero? (system* "xmkmf" "-a"))
            ;; Reset some variables that are inherited from imake templates
            (substitute* "Makefile"
-             ;; This imake variable somehow remains undefined
-             (("DefaultGcc2AMD64Opt") "-O2")
+             ;; These imake variables somehow remain undefined
+             (("DefaultGcc2[[:graph:]]*Opt") "-O2")
              ;; Reset a few variable defaults that are set in imake templates
              ((imake) out)
              (("(MANPATH = )[[:graph:]]*" _ front)
@@ -181,8 +181,8 @@ selected in various ways.  For text, 35 fonts are available.")
            (substitute* '("Makefile"
                           "fig2dev/Makefile"
                           "transfig/Makefile")
-             ;; This imake variable somehow remains undefined
-             (("DefaultGcc2AMD64Opt") "-O2")
+             ;; These imake variables somehow remain undefined
+             (("DefaultGcc2[[:graph:]]*Opt") "-O2")
              ;; Reset a few variable defaults that are set in imake templates
              ((imake) out)
              (("(MANPATH = )[[:graph:]]*" _ front)
