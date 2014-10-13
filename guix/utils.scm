@@ -121,12 +121,13 @@ evaluate to a simple datum."
                                                     0))))
                                     v))))))
     (define chars base16-chars)
-    (let loop ((i 0)
+    (let loop ((i len)
                (r '()))
-      (if (= i len)
-          (string-concatenate-reverse r)
-          (loop (+ 1 i)
-                (cons (vector-ref chars (bytevector-u8-ref bv i)) r))))))
+      (if (zero? i)
+          (string-concatenate r)
+          (let ((i (- i 1)))
+            (loop i
+                  (cons (vector-ref chars (bytevector-u8-ref bv i)) r)))))))
 
 (define base16-string->bytevector
   (let ((chars->value (fold (lambda (i r)
