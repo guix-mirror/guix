@@ -489,6 +489,16 @@ in SIZE bytes."
                               (logxor o (bytevector-u8-ref bv i)))
           (loop (+ 1 i))))))
 
+(define derivation-path->base16-hash
+  (memoize
+   (lambda (file)
+     "Return a string containing the base16 representation of the hash of the
+derivation at FILE."
+     (call-with-input-file file
+       (compose bytevector->base16-string
+                derivation-hash
+                read-derivation)))))
+
 (define derivation-hash            ; `hashDerivationModulo' in derivations.cc
   (memoize
    (lambda (drv)
@@ -512,10 +522,7 @@ in SIZE bytes."
        ;; derivation.
        (let* ((inputs (map (match-lambda
                             (($ <derivation-input> path sub-drvs)
-                             (let ((hash (call-with-input-file path
-                                           (compose bytevector->base16-string
-                                                    derivation-hash
-                                                    read-derivation))))
+                             (let ((hash (derivation-path->base16-hash path)))
                                (make-derivation-input hash sub-drvs))))
                            inputs))
               (drv    (make-derivation outputs inputs sources
