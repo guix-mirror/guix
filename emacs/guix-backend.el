@@ -121,6 +121,22 @@ This REPL is used for receiving information only if
 (defvar guix-internal-repl-buffer-name "*Guix Internal REPL*"
   "Default name of an internal Guix REPL buffer.")
 
+(defvar guix-before-repl-operation-hook nil
+  "Hook run before executing an operation in Guix REPL.")
+
+(defvar guix-after-repl-operation-hook
+  '(guix-repl-operation-success-message)
+  "Hook run after executing successful operation in Guix REPL.")
+
+(defvar guix-repl-operation-p nil
+  "Non-nil, if current operation is performed by `guix-eval-in-repl'.
+This internal variable is used to distinguish Guix operations
+from operations performed in Guix REPL by a user.")
+
+(defun guix-repl-operation-success-message ()
+  "Message telling about successful Guix operation."
+  (message "Guix operation has been performed."))
+
 (defun guix-get-guile-program (&optional internal)
   "Return a value suitable for `geiser-guile-binary'."
   (if (or internal
@@ -184,12 +200,9 @@ this address (it should be defined by
       (geiser-impl--set-buffer-implementation impl)
       (geiser-repl--autodoc-mode -1)
       (goto-char (point-max))
-      (let* ((prompt-re (geiser-repl--prompt-regexp impl))
-             (deb-prompt-re (geiser-repl--debugger-prompt-regexp impl))
-             (prompt (geiser-con--combined-prompt prompt-re deb-prompt-re)))
-        (or prompt-re
-            (error "Oh no! Guix REPL in the buffer '%s' has not been started"
-                   (buffer-name buffer)))
+      (let ((prompt (geiser-con--combined-prompt
+                     geiser-guile--prompt-regexp
+                     geiser-guile--debugger-prompt-regexp)))
         (geiser-repl--save-remote-data address)
         (geiser-repl--start-scheme impl address prompt)
         (geiser-repl--quit-setup)
@@ -199,17 +212,31 @@ this address (it should be defined by
         (setq geiser-repl--connection
               (geiser-con--make-connection
                (get-buffer-process (current-buffer))
-               prompt-re
-               deb-prompt-re))
+               geiser-guile--prompt-regexp
+               geiser-guile--debugger-prompt-regexp))
         (geiser-repl--startup impl address)
         (geiser-repl--autodoc-mode 1)
         (geiser-company--setup geiser-repl-company-p)
         (add-hook 'comint-output-filter-functions
-                  'geiser-repl--output-filter
+                  'guix-repl-output-filter
                   nil t)
         (set-process-query-on-exit-flag
          (get-buffer-process (current-buffer))
          geiser-repl-query-on-kill-p)))))
+
+(defun guix-repl-output-filter (str)
+  "Filter function suitable for `comint-output-filter-functions'.
+This is a replacement for `geiser-repl--output-filter'."
+  (cond
+   ((string-match-p geiser-guile--prompt-regexp str)
+    (geiser-autodoc--disinhibit-autodoc)
+    (when guix-repl-operation-p
+      (setq guix-repl-operation-p nil)
+      (run-hooks 'guix-after-repl-operation-hook)))
+   ((string-match geiser-guile--debugger-prompt-regexp str)
+    (geiser-con--connection-set-debugging geiser-repl--connection
+                                          (match-beginning 0))
+    (geiser-autodoc--disinhibit-autodoc))))
 
 (defun guix-get-repl-buffer (&optional internal)
   "Return Guix REPL buffer; start REPL if needed.
@@ -288,6 +315,8 @@ Return elisp expression of the first result value of evaluation."
 
 (defun guix-eval-in-repl (str)
   "Switch to Guix REPL and evaluate STR with guile expression there."
+  (run-hooks 'guix-before-repl-operation-hook)
+  (setq guix-repl-operation-p t)
   (let ((repl (guix-get-repl-buffer)))
     (with-current-buffer repl
       (delete-region (geiser-repl--last-prompt-end) (point-max))
