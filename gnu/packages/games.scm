@@ -24,6 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (gnu packages)
+  #:use-module (gnu packages admin)
   #:use-module (gnu packages boost)
   #:use-module (gnu packages gettext)
   #:use-module (gnu packages gl)
@@ -321,3 +322,56 @@ and Makruk.  Several lesser-known variants are also supported.  It presents a
 fully interactive graphical interface and it can load and save games in the
 Portable Game Notation.")
     (license gpl3+)))
+
+
+(define-public xboing
+  (package
+    (name "xboing")
+    (version "2.4")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://www.techrescue.org/xboing/xboing"
+                           version ".tar.gz"))
+       (sha256
+        (base32 "16m2si8wmshxpifk861vhpqviqxgcg8bxj6wfw8hpnm4r2w9q0b7"))))
+    (arguments
+     `(#:tests? #f
+       #:phases
+       (alist-replace
+        'configure 
+        (lambda* (#:key outputs #:allow-other-keys)
+          
+          (substitute* "Imakefile" 
+            (("XPMINCLUDE[\t ]*= -I/usr/X11/include/X11")
+             (string-append "XPMINCLUDE = -I" (assoc-ref %build-inputs "libxpm")
+                            "/include/X11")))
+          
+          (substitute* "Imakefile" 
+            (("XBOING_DIR = \\.") "XBOING_DIR=$(PROJECTROOT)"))
+          
+          ;; FIXME: HIGH_SCORE_FILE should be set to somewhere writeable
+          
+          (zero? (system* "xmkmf" "-a" 
+                          (string-append "-DProjectRoot=" 
+                                         (assoc-ref outputs "out")))))
+        (alist-replace 'install
+                       (lambda* (#:key outputs #:allow-other-keys)
+                         (and
+                          (zero? (system* "make" "install.man"))
+                          (zero? (system* "make" "install"))))
+                       %standard-phases))))
+    (inputs `(("libx11" ,libx11)
+              ("libxext" ,libxext)
+              ("libxpm" ,libxpm)))
+    (native-inputs `(("imake" ,imake)
+                     ("inetutils" ,inetutils)
+                     ("makedepend" ,makedepend)))
+    (build-system gnu-build-system)
+    (home-page "http://www.techrescue.org/xboing")
+    (synopsis "Ball and paddle game")
+    (description "XBoing is a blockout type game where you have a paddle which
+you control to bounce a ball around the game zone destroying blocks with a
+proton ball. Each block carries a different point value. The more blocks you
+destroy, the better your score. The person with the highest score wins.")
+    (license (x11-style "file://COPYING" "Very similar to the X11 licence."))))
