@@ -74,7 +74,8 @@ specifications.")
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32
-               "1krx33ab2ijwfz71f1ba8labxfsic7jhlhv6rvjsyw566jj9a3d2"))))
+               "1krx33ab2ijwfz71f1ba8labxfsic7jhlhv6rvjsyw566jj9a3d2"))
+             (patches (list (search-patch "gnutls-server-name-fix.patch")))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
