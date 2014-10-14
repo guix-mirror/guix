@@ -46,7 +46,38 @@
   (lambda (s)
     "Define the given record type such that an additional \"syntactic
 constructor\" is defined, which allows instances to be constructed with named
-field initializers, à la SRFI-35, as well as default values."
+field initializers, à la SRFI-35, as well as default values.  An example use
+may look like this:
+
+  (define-record-type* <thing> thing make-thing
+    thing?
+    (name  thing-name (default \"chbouib\"))
+    (port  thing-port
+           (default (current-output-port)) (thunked)))
+
+This example defines a macro 'thing' that can be used to instantiate records
+of this type:
+
+  (thing
+    (name \"foo\")
+    (port (current-error-port)))
+
+The value of 'name' or 'port' could as well be omitted, in which case the
+default value specified in the 'define-record-type*' form is used:
+
+  (thing)
+
+The 'port' field is \"thunked\", meaning that calls like '(thing-port x)' will
+actually compute the field's value in the current dynamic extent, which is
+useful when referring to fluids in a field's value.
+
+It is possible to copy an object 'x' created with 'thing' like this:
+
+  (thing (inherit x) (name \"bar\"))
+
+This expression returns a new object equal to 'x' except for its 'name'
+field."
+
     (define (make-syntactic-constructor type name ctor fields thunked defaults)
       "Make the syntactic constructor NAME for TYPE, that calls CTOR, and
 expects all of FIELDS to be initialized.  DEFAULTS is the list of
