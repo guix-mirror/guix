@@ -617,7 +617,7 @@ FUN should accept action-type as argument."
   (let ((actions (delq nil
                        (mapcar fun '(install delete upgrade)))))
     (if actions
-        (apply #'guix-process-package-actions actions)
+        (guix-process-package-actions actions (current-buffer))
       (user-error "No operations specified"))))
 
 (defun guix-package-list-execute ()
@@ -751,7 +751,7 @@ VAL is a boolean value."
          (number  (guix-get-key-val entry 'number)))
     (if current
         (user-error "This generation is already the current one")
-      (guix-switch-to-generation number))))
+      (guix-switch-to-generation number (current-buffer)))))
 
 (defun guix-generation-list-show-packages ()
   "List installed packages for the generation at point."
@@ -773,7 +773,7 @@ With ARG, mark all generations for deletion."
   (let ((marked (guix-list-get-marked-id-list 'delete)))
     (or marked
         (user-error "No generations marked for deletion"))
-    (apply #'guix-delete-generations marked)))
+    (guix-delete-generations marked (current-buffer))))
 
 (provide 'guix-list)
 

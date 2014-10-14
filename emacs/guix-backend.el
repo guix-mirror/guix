@@ -234,6 +234,7 @@ This is a replacement for `geiser-repl--output-filter'."
       (setq guix-repl-operation-p nil)
       (run-hooks 'guix-after-repl-operation-hook)))
    ((string-match geiser-guile--debugger-prompt-regexp str)
+    (setq guix-repl-operation-p nil)
     (geiser-con--connection-set-debugging geiser-repl--connection
                                           (match-beginning 0))
     (geiser-autodoc--disinhibit-autodoc))))
@@ -271,6 +272,9 @@ additional internal REPL if it exists."
 
 
 ;;; Evaluating expressions
+
+(defvar guix-operation-buffer nil
+  "Buffer from which the latest Guix operation was performed.")
 
 (defun guix-make-guile-expression (fun &rest args)
   "Return string containing a guile expression for calling FUN with ARGS."
@@ -313,10 +317,13 @@ Return elisp expression of the first result value of evaluation."
          (replace-regexp-in-string
           "#t" "t" (car (guix-eval str wrap))))))
 
-(defun guix-eval-in-repl (str)
-  "Switch to Guix REPL and evaluate STR with guile expression there."
+(defun guix-eval-in-repl (str &optional operation-buffer)
+  "Switch to Guix REPL and evaluate STR with guile expression there.
+If OPERATION-BUFFER is non-nil, it should be a buffer from which
+the current operation was performed."
   (run-hooks 'guix-before-repl-operation-hook)
-  (setq guix-repl-operation-p t)
+  (setq guix-repl-operation-p t
+        guix-operation-buffer operation-buffer)
   (let ((repl (guix-get-repl-buffer)))
     (with-current-buffer repl
       (delete-region (geiser-repl--last-prompt-end) (point-max))

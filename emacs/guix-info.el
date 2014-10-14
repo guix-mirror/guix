@@ -558,9 +558,9 @@ ENTRY is an alist with package info."
      type-str
      (lambda (btn)
        (guix-process-package-actions
-        (list (button-get btn 'action-type)
-              (list (button-get btn 'id)
-                    (button-get btn 'output)))))
+        `((,(button-get btn 'action-type) (,(button-get btn 'id)
+                                           ,(button-get btn 'output))))
+        (current-buffer)))
      (concat type-str " '" full-name "'")
      'action-type type
      'id (or (guix-get-key-val entry 'package-id)
@@ -639,7 +639,8 @@ ENTRY is an alist with package info."
   (guix-info-insert-action-button
    "Delete"
    (lambda (btn)
-     (guix-delete-generations (button-get btn 'number)))
+     (guix-delete-generations (list (button-get btn 'number))
+                              (current-buffer)))
    "Delete this generation"
    'number number))
 
@@ -652,7 +653,8 @@ ENTRY is an alist with package info."
     (guix-info-insert-action-button
      "Switch"
      (lambda (btn)
-       (guix-switch-to-generation (button-get btn 'number)))
+       (guix-switch-to-generation (button-get btn 'number)
+                                  (current-buffer)))
      "Switch to this generation (make it the current one)"
      'number (guix-get-key-val entry 'number))))
 

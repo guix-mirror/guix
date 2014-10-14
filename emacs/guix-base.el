@@ -191,6 +191,59 @@ If PATH is relative, it is considered to be relative to
       (recenter 1))))
 
 
+;;; Buffers and auto updating.
+
+(defcustom guix-update-after-operation 'current
+  "Define what information to update after executing an operation.
+
+After successful executing an operation in the Guix REPL (for
+example after installing a package), information in Guix buffers
+will or will not be automatically updated depending on a value of
+this variable.
+
+If nil, update nothing (do not revert any buffer).
+If `current', update the buffer from which an operation was performed.
+If `all', update all Guix buffers (not recommended)."
+  :type '(choice (const :tag "Do nothing" nil)
+                 (const :tag "Update operation buffer" current)
+                 (const :tag "Update all Guix buffers" all))
+  :group 'guix)
+
+(defun guix-switch-to-buffer (buffer)
+  "Switch to a 'list' or 'info' BUFFER."
+  (pop-to-buffer buffer
+                 '((display-buffer-reuse-window
+                    display-buffer-same-window))))
+
+(defun guix-list-or-info-buffer-p (&optional buffer)
+  "Return non-nil if BUFFER is a Guix 'list' or 'info' buffer.
+If BUFFER is nil, check current buffer."
+  (with-current-buffer (or buffer (current-buffer))
+    (derived-mode-p 'guix-list-mode 'guix-info-mode)))
+
+(defun guix-buffers ()
+  "Return list of all Guix 'list' and 'info' buffers."
+  (cl-remove-if-not #'guix-list-or-info-buffer-p
+                    (buffer-list)))
+
+(defun guix-update-buffers-maybe ()
+  "Update buffers after Guix operation if needed.
+See `guix-update-after-operation' for details."
+  (let ((to-update (and guix-operation-buffer
+                        (cl-case guix-update-after-operation
+                          (current (list guix-operation-buffer))
+                          (all     (guix-buffers))))))
+    (setq guix-operation-buffer nil)
+    (mapc (lambda (buf)
+            (and (buffer-live-p buf)
+                 (guix-list-or-info-buffer-p buf)
+                 (with-current-buffer buf
+                   (guix-revert-buffer nil t))))
+          to-update)))
+
+(add-hook 'guix-after-repl-operation-hook 'guix-update-buffers-maybe)
+
+
 ;;; Common definitions for buffer types
 
 (defvar-local guix-entries nil
@@ -399,16 +452,18 @@ See `guix-get-entries' for the meaning of SEARCH-TYPE and SEARCH-VALS."
                      search-type search-vals)))
 
 (defun guix-set-buffer (entries buffer-type entry-type search-type
-                        search-vals &optional history-replace)
+                        search-vals &optional history-replace no-display)
   "Set up BUFFER-TYPE buffer for displaying ENTRY-TYPE ENTRIES.
 
-Display ENTRIES, set variables and make history item.
+Insert ENTRIES in buffer, set variables and make history item.
 ENTRIES should have a form of `guix-entries'.
 
 See `guix-get-entries' for the meaning of SEARCH-TYPE and SEARCH-VALS.
 
 If HISTORY-REPLACE is non-nil, replace current history item,
-otherwise add the new one."
+otherwise add the new one.
+
+If NO-DISPLAY is non-nil, do not switch to the buffer."
   (when entries
     (let ((buf (if (eq major-mode (guix-get-symbol
                                    "mode" buffer-type entry-type))
@@ -425,9 +480,8 @@ otherwise add the new one."
                      #'guix-history-replace
                    #'guix-history-add)
                  (guix-make-history-item)))
-      (pop-to-buffer buf
-                     '((display-buffer-reuse-window
-                        display-buffer-same-window)))))
+      (or no-display
+          (guix-switch-to-buffer buf))))
   (guix-result-message entries entry-type search-type search-vals))
 
 (defun guix-show-entries (entries buffer-type entry-type)
@@ -479,7 +533,7 @@ See `revert-buffer' for the meaning of NOCONFIRM."
                     (guix-get-params-for-receiving guix-buffer-type
                                                    guix-entry-type))))
       (guix-set-buffer entries guix-buffer-type guix-entry-type
-                       guix-search-type guix-search-vals t))))
+                       guix-search-type guix-search-vals t t))))
 
 (defun guix-redisplay-buffer ()
   "Redisplay current information.
@@ -661,7 +715,7 @@ VARIABLE is a name of an option variable.")
       guix-operation-option-true-string
     guix-operation-option-false-string))
 
-(defun guix-process-package-actions (&rest actions)
+(defun guix-process-package-actions (actions &optional operation-buffer)
   "Process package ACTIONS.
 Each action is a list of the form:
 
@@ -686,7 +740,8 @@ PACKAGE-SPEC should have the following form: (ID [OUTPUT] ...)."
         'process-package-actions guix-current-profile
         :install install :upgrade upgrade :remove remove
         :use-substitutes? (or guix-use-substitutes 'f)
-        :dry-run? (or guix-dry-run 'f))))))
+        :dry-run? (or guix-dry-run 'f))
+       (and (not guix-dry-run) operation-buffer)))))
 
 (cl-defun guix-continue-package-operation-p (&key install upgrade remove)
   "Return non-nil if a package operation should be continued.
@@ -802,7 +857,7 @@ Return non-nil, if the operation should be continued; nil otherwise."
                  guix-operation-option-separator)))
   (force-mode-line-update))
 
-(defun guix-delete-generations (&rest generations)
+(defun guix-delete-generations (generations &optional operation-buffer)
   "Delete GENERATIONS.
 Each element from GENERATIONS is a generation number."
   (when (or (not guix-operation-confirm)
@@ -814,16 +869,18 @@ Each element from GENERATIONS is a generation number."
                            (car generations))))))
     (guix-eval-in-repl
      (guix-make-guile-expression
-      'delete-generations* guix-current-profile generations))))
+      'delete-generations* guix-current-profile generations)
+     operation-buffer)))
 
-(defun guix-switch-to-generation (generation)
+(defun guix-switch-to-generation (generation &optional operation-buffer)
   "Switch `guix-current-profile' to GENERATION number."
   (when (or (not guix-operation-confirm)
             (y-or-n-p (format "Switch current profile to generation %d? "
                               generation)))
     (guix-eval-in-repl
      (guix-make-guile-expression
-      'switch-to-generation guix-current-profile generation))))
+      'switch-to-generation guix-current-profile generation)
+     operation-buffer)))
 
 (provide 'guix-base)
 
