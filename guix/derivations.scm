@@ -984,7 +984,8 @@ they can refer to each other."
                       (default "out")))
 
 (define* (graft-derivation store name drv grafts
-                           #:key (guile (%guile-for-build)))
+                           #:key (guile (%guile-for-build))
+                           (system (%current-system)))
   "Return a derivation called NAME, based on DRV but with all the GRAFTS
 applied."
   ;; XXX: Someday rewrite using gexps.
@@ -1035,6 +1036,7 @@ applied."
      (let ((sources (zip sources source-outputs))
            (targets (zip targets target-outputs)))
        (build-expression->derivation store name build
+                                     #:system system
                                      #:guile-for-build guile
                                      #:modules '((guix build graft)
                                                  (guix build utils))
