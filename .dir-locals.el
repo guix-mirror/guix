@@ -25,6 +25,7 @@
    (eval . (put 'origin 'scheme-indent-function 0))
    (eval . (put 'build-system 'scheme-indent-function 0))
    (eval . (put 'bag 'scheme-indent-function 0))
+   (eval . (put 'graft 'scheme-indent-function 0))
    (eval . (put 'operating-system 'scheme-indent-function 0))
    (eval . (put 'file-system 'scheme-indent-function 0))
    (eval . (put 'manifest-entry 'scheme-indent-function 0))

@@ -30,6 +30,7 @@
   #:use-module (guix utils)
   #:use-module (guix hash)
   #:use-module (guix base32)
+  #:use-module (guix records)
   #:export (<derivation>
             derivation?
             derivation-outputs
@@ -65,7 +66,15 @@
             derivation-path->output-path
             derivation-path->output-paths
             derivation
+
+            graft
+            graft?
+            graft-origin
+            graft-replacement
+            graft-origin-output
+            graft-replacement-output
             graft-derivation
+
             map-derivation
 
             %guile-for-build
@@ -965,23 +974,31 @@ they can refer to each other."
                                   #:guile-for-build guile
                                   #:local-build? #t)))
 
-(define* (graft-derivation store name drv replacements
+(define-record-type* <graft> graft make-graft
+  graft?
+  (origin             graft-origin)               ;derivation | store item
+  (origin-output      graft-origin-output         ;string | #f
+                      (default "out"))
+  (replacement        graft-replacement)          ;derivation | store item
+  (replacement-output graft-replacement-output    ;string | #f
+                      (default "out")))
+
+(define* (graft-derivation store name drv grafts
                            #:key (guile (%guile-for-build)))
-  "Return a derivation called NAME, based on DRV but with all the first
-elements of REPLACEMENTS replaced by the corresponding second element.
-REPLACEMENTS must be a list of ((DRV OUTPUT) . (DRV2 OUTPUT)) pairs."
+  "Return a derivation called NAME, based on DRV but with all the GRAFTS
+applied."
   ;; XXX: Someday rewrite using gexps.
   (define mapping
     ;; List of store item pairs.
     (map (match-lambda
-          (((source source-outputs ...) . (target target-outputs ...))
+          (($ <graft> source source-output target target-output)
            (cons (if (derivation? source)
-                     (apply derivation->output-path source source-outputs)
+                     (derivation->output-path source source-output)
                      source)
                  (if (derivation? target)
-                     (apply derivation->output-path target target-outputs)
+                     (derivation->output-path target target-output)
                      target))))
-         replacements))
+         grafts))
 
   (define outputs
     (match (derivation-outputs drv)
@@ -1013,17 +1030,19 @@ REPLACEMENTS must be a list of ((DRV OUTPUT) . (DRV2 OUTPUT)) pairs."
   (define add-label
     (cut cons "x" <>))
 
-  (match replacements
-    (((sources . targets) ...)
-     (build-expression->derivation store name build
-                                   #:guile-for-build guile
-                                   #:modules '((guix build graft)
-                                               (guix build utils))
-                                   #:inputs `(("original" ,drv)
-                                              ,@(append (map add-label sources)
-                                                        (map add-label targets)))
-                                   #:outputs output-names
-                                   #:local-build? #t))))
+  (match grafts
+    ((($ <graft> sources source-outputs targets target-outputs) ...)
+     (let ((sources (zip sources source-outputs))
+           (targets (zip targets target-outputs)))
+       (build-expression->derivation store name build
+                                     #:guile-for-build guile
+                                     #:modules '((guix build graft)
+                                                 (guix build utils))
+                                     #:inputs `(("original" ,drv)
+                                                ,@(append (map add-label sources)
+                                                          (map add-label targets)))
+                                     #:outputs output-names
+                                     #:local-build? #t)))))
 
 (define* (build-expression->derivation store name exp
                                        #:key

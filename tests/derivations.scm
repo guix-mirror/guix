@@ -831,8 +831,12 @@ Deriver: ~a~%"
                                                  (lambda (port)
                                                    (display "fake mkdir" port)))))
          (graft (graft-derivation %store "graft" orig
-                                  `(((,%bash) . (,one))
-                                    ((,%mkdir) . (,two))))))
+                                  (list (graft
+                                          (origin %bash)
+                                          (replacement one))
+                                        (graft
+                                          (origin %mkdir)
+                                          (replacement two))))))
     (and (build-derivations %store (list graft))
          (let ((two   (derivation->output-path two))
                (graft (derivation->output-path graft)))
