@@ -134,7 +134,9 @@ underscores."
   "Return the `package' s-expression for a python package with the given NAME,
 VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
   `(package
-     (name ,(string-append "python-" (snake-case name)))
+     (name ,(if (string-prefix? "python-" name)
+                (snake-case name)
+                (string-append "python-" (snake-case name))))
      (version ,version)
      (source (origin
                (method url-fetch)
