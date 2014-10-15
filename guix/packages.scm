@@ -573,22 +573,26 @@ SYSTEM."
     ;; Use `hashq-set!' instead of `hash-set!' because `hash' returns the
     ;; same value for all structs (as of Guile 2.0.6), and because pointer
     ;; equality is sufficient in practice.
-    (hashq-set! %derivation-cache package `((,system ,@vals)))
+    (hashq-set! %derivation-cache package
+                `((,system ,@vals)
+                  ,@(or (hashq-ref %derivation-cache package)
+                        '())))
     (apply values vals)))
 
 (define-syntax-rule (cached package system body ...)
   "Memoize the result of BODY for the arguments PACKAGE and SYSTEM.
 Return the cached result when available."
-  (let ((thunk (lambda () body ...)))
+  (let ((thunk (lambda () body ...))
+        (key   system))
     (match (hashq-ref %derivation-cache package)
       ((alist (... ...))
-       (match (assoc-ref alist system)
+       (match (assoc-ref alist key)
          ((vals (... ...))
           (apply values vals))
          (#f
-          (cache package system thunk))))
+          (cache package key thunk))))
       (#f
-       (cache package system thunk)))))
+       (cache package key thunk)))))
 
 (define* (expand-input store package input system #:optional cross-system)
   "Expand INPUT, an input tuple, such that it contains only references to
