@@ -117,8 +117,8 @@ recursively apply the procedure to the sub-list."
                (assoc-ref* pypi-package "info" "version")))))
 
 (define (snake-case str)
-  "Return a downcased version of the string STR where dashes are replaced with
-underscores."
+  "Return a downcased version of the string STR where underscores are replaced
+with dashes."
   (string-join (string-split (string-downcase str) #\_) "-"))
 
 (define (guix-hash-url url)
