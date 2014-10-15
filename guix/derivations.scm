@@ -1040,7 +1040,9 @@ applied."
                                      #:guile-for-build guile
                                      #:modules '((guix build graft)
                                                  (guix build utils))
-                                     #:inputs `(("original" ,drv)
+                                     #:inputs `(,@(map (lambda (out)
+                                                         `("x" ,drv ,out))
+                                                       output-names)
                                                 ,@(append (map add-label sources)
                                                           (map add-label targets)))
                                      #:outputs output-names
