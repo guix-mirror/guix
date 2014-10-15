@@ -85,6 +85,7 @@ recursively apply the procedure to the sub-list."
    ((or "BSD" "BSD License") bsd-3)
    ((or "MIT" "MIT license" "Expat license") expat)
    ("Public domain" public-domain)
+   ("Apache License, Version 2.0" asl2.0)
    (_ #f)))
 
 (define (url-fetch url file-name)
@@ -151,7 +152,8 @@ VERSION, SOURCE-URL, HOME-PAGE, SYNOPSIS, DESCRIPTION, and LICENSE."
                             (,gpl3 . gpl3)
                             (,bsd-3 . bsd-3)
                             (,expat . expat)
-                            (,public-domain . public-domain))
+                            (,public-domain . public-domain)
+                            (,asl2.0 . asl2.0))
                           license))))
 
 (define (pypi->guix-package package-name)
