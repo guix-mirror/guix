@@ -258,7 +258,11 @@ must be a list of symbol/URL-list pairs."
                             #:guile-for-build guile-for-build
 
                             ;; In general, offloading downloads is not a good idea.
-                            #:local-build? #t)
+                            ;;#:local-build? #t
+                            ;; FIXME: The above would also disable use of
+                            ;; substitutes, so comment it out; see
+                            ;; <https://bugs.gnu.org/18747>.
+                            )
           #:guile-for-build guile-for-build
           #:system system))))
 
