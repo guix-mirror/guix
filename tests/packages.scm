@@ -394,6 +394,17 @@
           (assoc-ref (bag-build-inputs bag) "libc")
           (assoc-ref (bag-build-inputs bag) "coreutils"))))
 
+(test-assert "package->bag, propagated inputs"
+  (let* ((dep    (dummy-package "dep"))
+         (prop   (dummy-package "prop"
+                   (propagated-inputs `(("dep" ,dep)))))
+         (dummy  (dummy-package "dummy"
+                   (inputs `(("prop" ,prop)))))
+         (inputs (bag-transitive-inputs (package->bag dummy #:graft? #f))))
+    (match (assoc "prop/dep" inputs)
+      (("prop/dep" package)
+       (eq? package dep)))))
+
 (test-assert "bag->derivation"
   (let ((bag (package->bag gnu-make))
         (drv (package-derivation %store gnu-make)))
