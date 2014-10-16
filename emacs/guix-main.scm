@@ -669,6 +669,15 @@ If NUMBER is 0 or less, return all generations."
      (last-generations profile (car search-vals)))
     ((all)
      (last-generations profile +inf.0))
+    ((time)
+     (match search-vals
+       ((from to)
+        (matching-generations
+         profile
+         (lambda (gen)
+           (let ((time (time-second (generation-time profile gen))))
+             (< from time to)))))
+       (_ '())))
     (else (search-type-error "generation" search-type))))
 
 (define (generation-sexps profile params search-type search-vals)
@@ -696,7 +705,7 @@ SEARCH-TYPE should be one of the following symbols:
   'installed', 'obsolete', 'generation'.
 
 - If ENTRY-TYPE is 'generation':
-  'id', 'last', 'all'.
+  'id', 'last', 'all', 'time'.
 
 PARAMS is a list of parameters for receiving.  If it is an empty list,
 get information with all available parameters, which are:

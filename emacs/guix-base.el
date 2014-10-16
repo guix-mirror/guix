@@ -626,7 +626,11 @@ This function will not update the information, use
      (all
       (0 "No available generations.")
       (1 "A single available generation.")
-      (many "%d available generations." count)))))
+      (many "%d available generations." count))
+     (time
+      (0 "Generations not found.")
+      (1 "A single generation matching time period.")
+      (many "%d generations matching time period." count)))))
 
 (defun guix-result-message (entries entry-type search-type search-vals)
   "Display an appropriate message after displaying ENTRIES."

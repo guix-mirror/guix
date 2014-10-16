@@ -138,6 +138,14 @@ split it into several short lines."
                              hist def inherit-input-method)
    :test #'string=))
 
+(declare-function org-read-date "org" t)
+
+(defun guix-read-date (prompt)
+  "Prompt for a date or time using `org-read-date'.
+Return time value."
+  (require 'org)
+  (org-read-date nil t nil prompt))
+
 (defun guix-get-key-val (alist &rest keys)
   "Return value from ALIST by KEYS.
 ALIST is alist of alists of alists ... which can be consecutively

@@ -102,6 +102,11 @@ can be changed by modifying @code{guix-search-params} variable.
 List generations for the current profile.  With numeric prefix, show so
 many last generations.
 
+@item M-x guix-generations-by-time
+List generations matching time period.  You'll be prompted for the
+period using Org mode time prompt based on Emacs calendar (@pxref{The
+date/time prompt,,, org, Org Mode Manual}).
+
 @end table
 
 By default commands for displaying packages display each output on a

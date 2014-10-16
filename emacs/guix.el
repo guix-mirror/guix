@@ -31,6 +31,7 @@
 (require 'guix-base)
 (require 'guix-list)
 (require 'guix-info)
+(require 'guix-utils)
 
 (defgroup guix nil
   "Interface for Guix package manager."
@@ -133,6 +134,17 @@ Interactively, NUMBER is defined by a numeric prefix."
   (if (numberp number)
       (guix-get-show-generations 'last number)
     (guix-get-show-generations 'all)))
+
+;;;###autoload
+(defun guix-generations-by-time (from to)
+  "Display information about generations created between FROM and TO.
+FROM and TO should be time values."
+  (interactive
+   (list (guix-read-date "Find generations (from): ")
+         (guix-read-date "Find generations (to): ")))
+  (guix-get-show-generations 'time
+                             (float-time from)
+                             (float-time to)))
 
 (provide 'guix)
 
