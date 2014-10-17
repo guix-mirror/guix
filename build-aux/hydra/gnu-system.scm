@@ -172,7 +172,8 @@ system.")
 valid."
       (cond ((member package base-packages)
              #f)
-            ((member system (package-supported-systems package))
+            ((member system
+                     (package-transitive-supported-systems package))
              (package-job store (job-name package) package system))
             (else
              #f)))))

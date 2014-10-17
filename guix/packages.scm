@@ -80,6 +80,7 @@
             package-transitive-target-inputs
             package-transitive-native-inputs
             package-transitive-propagated-inputs
+            package-transitive-supported-systems
             package-source-derivation
             package-derivation
             package-cross-derivation
@@ -536,6 +537,17 @@ for the host system (\"native inputs\"), and not target inputs."
   "Return the propagated inputs of PACKAGE, and their propagated inputs,
 recursively."
   (transitive-inputs (package-propagated-inputs package)))
+
+(define (package-transitive-supported-systems package)
+  "Return the intersection of the systems supported by PACKAGE and those
+supported by its dependencies."
+  (apply lset-intersection string=?
+         (package-supported-systems package)
+         (filter-map (match-lambda
+                      ((label (? package? p) . rest)
+                       (package-supported-systems p))
+                      (_ #f))
+                     (package-transitive-inputs package))))
 
 (define (bag-transitive-inputs bag)
   "Same as 'package-transitive-inputs', but applied to a bag."

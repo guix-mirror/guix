@@ -124,6 +124,19 @@
                    ("d" ,d) ("d/x" "something.drv"))
                  (pk 'x (package-transitive-inputs e))))))
 
+(test-equal "package-transitive-supported-systems"
+  '(("x" "y" "z")
+    ("x" "y")
+    ("y"))
+  (let* ((a (dummy-package "a" (supported-systems '("x" "y" "z"))))
+         (b (dummy-package "b" (supported-systems '("x" "y"))
+               (inputs `(("a" ,a)))))
+         (c (dummy-package "c" (supported-systems '("y" "z"))
+               (inputs `(("b" ,b))))))
+    (list (package-transitive-supported-systems a)
+          (package-transitive-supported-systems b)
+          (package-transitive-supported-systems c))))
+
 (test-skip (if (not %store) 8 0))
 
 (test-assert "package-source-derivation, file"
