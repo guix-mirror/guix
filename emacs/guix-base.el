@@ -48,6 +48,18 @@
 (defvar guix-current-profile guix-default-profile
   "Current profile.")
 
+(defun guix-profile-prompt (&optional default)
+  "Prompt for profile and return it.
+Use DEFAULT as a start directory.  If it is nil, use
+`guix-current-profile'."
+  (let* ((path (read-file-name "Profile: "
+                               (file-name-directory
+                                (or default guix-current-profile))))
+         (path (directory-file-name (expand-file-name path))))
+    (if (string= path guix-user-profile)
+        guix-default-profile
+      path)))
+
 (defun guix-set-current-profile (path)
   "Set `guix-current-profile' to PATH.
 Interactively, prompt for PATH.  With prefix, use
@@ -55,15 +67,10 @@ Interactively, prompt for PATH.  With prefix, use
   (interactive
    (list (if current-prefix-arg
              guix-default-profile
-           (read-file-name "Set profile: "
-                           (file-name-directory guix-current-profile)))))
-  (let ((path (directory-file-name (expand-file-name path))))
-    (setq guix-current-profile
-          (if (string= path guix-user-profile)
-              guix-default-profile
-            path))
-    (message "Current profile has been set to '%s'."
-             guix-current-profile)))
+           (guix-profile-prompt))))
+  (setq guix-current-profile path)
+  (message "Current profile has been set to '%s'."
+           guix-current-profile))
 
 
 ;;; Parameters of the entries
@@ -209,6 +216,56 @@ If `all', update all Guix buffers (not recommended)."
                  (const :tag "Update all Guix buffers" all))
   :group 'guix)
 
+(defcustom guix-buffer-name-function #'guix-buffer-name-default
+  "Function used to define name of a buffer for displaying information.
+The function is called with 4 arguments: PROFILE, BUFFER-TYPE,
+ENTRY-TYPE, SEARCH-TYPE.  See `guix-get-entries' for the meaning
+of the arguments."
+  :type '(choice (function-item guix-buffer-name-default)
+                 (function-item guix-buffer-name-simple)
+                 (function :tag "Other function"))
+  :group 'guix)
+
+(defun guix-buffer-name-simple (_profile buffer-type entry-type
+                                &optional _search-type)
+  "Return name of a buffer used for displaying information.
+The name is defined by `guix-ENTRY-TYPE-BUFFER-TYPE-buffer-name'
+variable."
+  (symbol-value
+   (guix-get-symbol "buffer-name" buffer-type entry-type)))
+
+(defun guix-buffer-name-default (profile buffer-type entry-type
+                                 &optional _search-type)
+  "Return name of a buffer used for displaying information.
+The name is almost the same as the one defined by
+`guix-buffer-name-simple' except the PROFILE name is added to it."
+  (let ((simple-name (guix-buffer-name-simple
+                      profile buffer-type entry-type))
+        (profile-name (file-name-base (directory-file-name profile)))
+        (re (rx string-start
+                (group (? "*"))
+                (group (*? any))
+                (group (? "*"))
+                string-end)))
+    (or (string-match re simple-name)
+        (error "Unexpected error in defining guix buffer name"))
+    (let ((first*    (match-string 1 simple-name))
+          (name-body (match-string 2 simple-name))
+          (last*     (match-string 3 simple-name)))
+      ;; Handle the case when buffer name is wrapped by '*'.
+      (if (and (string= "*" first*)
+               (string= "*" last*))
+          (concat "*" name-body ": " profile-name "*")
+        (concat simple-name ": " profile-name)))))
+
+(defun guix-buffer-name (profile buffer-type entry-type search-type)
+  "Return name of a buffer used for displaying information.
+See `guix-buffer-name-function' for details."
+  (let ((fun (if (functionp guix-buffer-name-function)
+                 guix-buffer-name-function
+               #'guix-buffer-name-default)))
+    (funcall fun profile buffer-type entry-type search-type)))
+
 (defun guix-switch-to-buffer (buffer)
   "Switch to a 'list' or 'info' BUFFER."
   (pop-to-buffer buffer
@@ -246,6 +303,10 @@ See `guix-update-after-operation' for details."
 
 ;;; Common definitions for buffer types
 
+(defvar-local guix-profile nil
+  "Profile used for the current buffer.")
+(put 'guix-profile 'permanent-local t)
+
 (defvar-local guix-entries nil
   "List of the currently displayed entries.
 Each element of the list is alist with entry info of the
@@ -273,13 +334,16 @@ VAL is a value of this parameter.")
   "Values of the current search.")
 (put 'guix-search-vals 'permanent-local t)
 
-(defsubst guix-set-vars (entries buffer-type entry-type
+(defsubst guix-set-vars (profile entries buffer-type entry-type
                          search-type search-vals)
-  (setq guix-entries     entries
-        guix-buffer-type buffer-type
-        guix-entry-type  entry-type
-        guix-search-type search-type
-        guix-search-vals search-vals))
+  "Set local variables for the current Guix buffer."
+  (setq default-directory profile
+        guix-profile      profile
+        guix-entries      entries
+        guix-buffer-type  buffer-type
+        guix-entry-type   entry-type
+        guix-search-type  search-type
+        guix-search-vals  search-vals))
 
 (defun guix-get-symbol (postfix buffer-type &optional entry-type)
   (intern (concat "guix-"
@@ -416,7 +480,7 @@ information)."
                  (const :tag "Display outputs" output))
   :group 'guix)
 
-(defun guix-get-entries (entry-type search-type search-vals
+(defun guix-get-entries (profile entry-type search-type search-vals
                          &optional params)
   "Search for entries of ENTRY-TYPE.
 
@@ -432,26 +496,25 @@ SEARCH-TYPE may be one of the following symbols:
   `all-available', `newest-available', `installed', `obsolete',
   `generation'.
 
-- If ENTRY-TYPE is `generation': `id', `last', `all'.
+- If ENTRY-TYPE is `generation': `id', `last', `all', `time'.
 
 PARAMS is a list of parameters for receiving.  If nil, get
 information with all available parameters."
   (guix-eval-read (guix-make-guile-expression
                    'entries
-                   guix-current-profile params
-                   entry-type search-type search-vals)))
+                   profile params entry-type search-type search-vals)))
 
-(defun guix-get-show-entries (buffer-type entry-type search-type
-                                          &rest search-vals)
+(defun guix-get-show-entries (profile buffer-type entry-type search-type
+                              &rest search-vals)
   "Search for ENTRY-TYPE entries and show results in BUFFER-TYPE buffer.
 See `guix-get-entries' for the meaning of SEARCH-TYPE and SEARCH-VALS."
-  (let ((entries (guix-get-entries entry-type search-type search-vals
+  (let ((entries (guix-get-entries profile entry-type search-type search-vals
                                    (guix-get-params-for-receiving
                                     buffer-type entry-type))))
-    (guix-set-buffer entries buffer-type entry-type
+    (guix-set-buffer profile entries buffer-type entry-type
                      search-type search-vals)))
 
-(defun guix-set-buffer (entries buffer-type entry-type search-type
+(defun guix-set-buffer (profile entries buffer-type entry-type search-type
                         search-vals &optional history-replace no-display)
   "Set up BUFFER-TYPE buffer for displaying ENTRY-TYPE ENTRIES.
 
@@ -465,16 +528,16 @@ otherwise add the new one.
 
 If NO-DISPLAY is non-nil, do not switch to the buffer."
   (when entries
-    (let ((buf (if (eq major-mode (guix-get-symbol
-                                   "mode" buffer-type entry-type))
+    (let ((buf (if (and (eq major-mode
+                            (guix-get-symbol "mode" buffer-type entry-type))
+                        (equal guix-profile profile))
                    (current-buffer)
                  (get-buffer-create
-                  (symbol-value
-                   (guix-get-symbol "buffer-name"
-                                    buffer-type entry-type))))))
+                  (guix-buffer-name profile buffer-type
+                                    entry-type search-type)))))
       (with-current-buffer buf
         (guix-show-entries entries buffer-type entry-type)
-        (guix-set-vars entries buffer-type entry-type
+        (guix-set-vars profile entries buffer-type entry-type
                        search-type search-vals)
         (funcall (if history-replace
                      #'guix-history-replace
@@ -494,18 +557,18 @@ If NO-DISPLAY is non-nil, do not switch to the buffer."
              entries entry-type)
     (goto-char (point-min))))
 
-(defun guix-history-call (entries buffer-type entry-type
+(defun guix-history-call (profile entries buffer-type entry-type
                           search-type search-vals)
   "Function called for moving by history."
   (guix-show-entries entries buffer-type entry-type)
-  (guix-set-vars entries buffer-type entry-type
+  (guix-set-vars profile entries buffer-type entry-type
                  search-type search-vals)
   (guix-result-message entries entry-type search-type search-vals))
 
 (defun guix-make-history-item ()
   "Make and return a history item for the current buffer."
   (list #'guix-history-call
-        guix-entries guix-buffer-type guix-entry-type
+        guix-profile guix-entries guix-buffer-type guix-entry-type
         guix-search-type guix-search-vals))
 
 (defun guix-get-params-for-receiving (buffer-type entry-type)
@@ -529,10 +592,11 @@ See `revert-buffer' for the meaning of NOCONFIRM."
                               guix-buffer-type guix-entry-type))
             (y-or-n-p "Update current information? "))
     (let ((entries (guix-get-entries
-                    guix-entry-type guix-search-type guix-search-vals
+                    guix-profile guix-entry-type
+                    guix-search-type guix-search-vals
                     (guix-get-params-for-receiving guix-buffer-type
                                                    guix-entry-type))))
-      (guix-set-buffer entries guix-buffer-type guix-entry-type
+      (guix-set-buffer guix-profile entries guix-buffer-type guix-entry-type
                        guix-search-type guix-search-vals t t))))
 
 (defun guix-redisplay-buffer ()
@@ -719,8 +783,9 @@ VARIABLE is a name of an option variable.")
       guix-operation-option-true-string
     guix-operation-option-false-string))
 
-(defun guix-process-package-actions (actions &optional operation-buffer)
-  "Process package ACTIONS.
+(defun guix-process-package-actions (profile actions
+                                     &optional operation-buffer)
+  "Process package ACTIONS on PROFILE.
 Each action is a list of the form:
 
   (ACTION-TYPE PACKAGE-SPEC ...)
@@ -738,23 +803,25 @@ PACKAGE-SPEC should have the following form: (ID [OUTPUT] ...)."
                 ((remove delete) (setq remove (append remove specs))))))
           actions)
     (when (guix-continue-package-operation-p
+           profile
            :install install :upgrade upgrade :remove remove)
       (guix-eval-in-repl
        (guix-make-guile-expression
-        'process-package-actions guix-current-profile
+        'process-package-actions profile
         :install install :upgrade upgrade :remove remove
         :use-substitutes? (or guix-use-substitutes 'f)
         :dry-run? (or guix-dry-run 'f))
        (and (not guix-dry-run) operation-buffer)))))
 
-(cl-defun guix-continue-package-operation-p (&key install upgrade remove)
+(cl-defun guix-continue-package-operation-p (profile
+                                             &key install upgrade remove)
   "Return non-nil if a package operation should be continued.
 Ask a user if needed (see `guix-operation-confirm').
 INSTALL, UPGRADE, REMOVE are 'package action specifications'.
 See `guix-process-package-actions' for details."
   (or (null guix-operation-confirm)
       (let* ((entries (guix-get-entries
-                       'package 'id
+                       profile 'package 'id
                        (append (mapcar #'car install)
                                (mapcar #'car upgrade)
                                (mapcar #'car remove))
@@ -768,6 +835,7 @@ See `guix-process-package-actions' for details."
                 (setq-local cursor-type nil)
                 (setq buffer-read-only nil)
                 (erase-buffer)
+                (insert "Profile: " profile "\n\n")
                 (guix-insert-package-strings install-strings "install")
                 (guix-insert-package-strings upgrade-strings "upgrade")
                 (guix-insert-package-strings remove-strings "remove")
@@ -861,29 +929,32 @@ Return non-nil, if the operation should be continued; nil otherwise."
                  guix-operation-option-separator)))
   (force-mode-line-update))
 
-(defun guix-delete-generations (generations &optional operation-buffer)
-  "Delete GENERATIONS.
+(defun guix-delete-generations (profile generations
+                                &optional operation-buffer)
+  "Delete GENERATIONS from PROFILE.
 Each element from GENERATIONS is a generation number."
   (when (or (not guix-operation-confirm)
-              (y-or-n-p
-               (let ((count (length generations)))
-                 (if (> count 1)
-                     (format "Delete %d generations? " count)
-                   (format "Delete generation number %d? "
-                           (car generations))))))
+            (y-or-n-p
+             (let ((count (length generations)))
+               (if (> count 1)
+                   (format "Delete %d generations from profile '%s'? "
+                           count profile)
+                 (format "Delete generation %d from profile '%s'? "
+                         (car generations) profile)))))
     (guix-eval-in-repl
      (guix-make-guile-expression
-      'delete-generations* guix-current-profile generations)
+      'delete-generations* profile generations)
      operation-buffer)))
 
-(defun guix-switch-to-generation (generation &optional operation-buffer)
-  "Switch `guix-current-profile' to GENERATION number."
+(defun guix-switch-to-generation (profile generation
+                                  &optional operation-buffer)
+  "Switch PROFILE to GENERATION."
   (when (or (not guix-operation-confirm)
-            (y-or-n-p (format "Switch current profile to generation %d? "
-                              generation)))
+            (y-or-n-p (format "Switch profile '%s' to generation %d? "
+                              profile generation)))
     (guix-eval-in-repl
      (guix-make-guile-expression
-      'switch-to-generation guix-current-profile generation)
+      'switch-to-generation profile generation)
      operation-buffer)))
 
 (provide 'guix-base)

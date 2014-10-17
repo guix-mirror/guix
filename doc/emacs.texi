@@ -76,19 +76,26 @@ can be displayed in a ``list'' or ``info'' buffer.
 @node Emacs Commands
 @subsubsection Commands
 
-You may use the following commands to display packages and generations:
+All commands for displaying packages and generations use the current
+profile, which can be changed with
+@kbd{M-x@tie{}guix-set-current-profile}.  Alternatively, if you call any
+of these commands with prefix argument (@kbd{C-u}), you will be prompted
+for a profile just for that command.
+
+Commands for displaying packages:
 
 @table @kbd
+
 @item M-x guix-all-available-packages
 @itemx M-x guix-newest-available-packages
 Display all/newest available packages.
 
 @item M-x guix-installed-packages
-Display all packages installed in the current profile.
+Display all installed packages.
 
 @item M-x guix-obsolete-packages
-Display obsolete packages (the packages that are installed in the
-current profile but cannot be found among available packages).
+Display obsolete packages (the packages that are installed in a profile
+but cannot be found among available packages).
 
 @item M-x guix-search-by-name
 Display package(s) with the specified name.
@@ -98,29 +105,33 @@ Search for packages by a specified regexp.  By default ``name'',
 ``synopsis'' and ``description'' of the packages will be searched.  This
 can be changed by modifying @code{guix-search-params} variable.
 
-@item M-x guix-generations
-List generations for the current profile.  With numeric prefix, show so
-many last generations.
-
-@item M-x guix-generations-by-time
-List generations matching time period.  You'll be prompted for the
-period using Org mode time prompt based on Emacs calendar (@pxref{The
-date/time prompt,,, org, Org Mode Manual}).
-
 @end table
 
-By default commands for displaying packages display each output on a
-separate line.  If you prefer to see a list of packages---i.e., a list
-with a package per line, use the following setting:
+By default, these commands display each output on a separate line.  If
+you prefer to see a list of packages---i.e., a list with a package per
+line, use the following setting:
 
 @example
 (setq guix-package-list-type 'package)
 @end example
 
-It is possible to change the currently used profile with
-@kbd{M-x@tie{}guix-set-current-profile}.  This has the same effect as
-specifying @code{--profile} option for @command{guix package}
-(@pxref{Invoking guix package}).
+Commands for displaying generations:
+
+@table @kbd
+
+@item M-x guix-generations
+List all the generations.
+
+@item M-x guix-last-generations
+List the @var{N} last generations.  You will be prompted for the number
+of generations.
+
+@item M-x guix-generations-by-time
+List generations matching time period.  You will be prompted for the
+period using Org mode time prompt based on Emacs calendar (@pxref{The
+date/time prompt,,, org, Org Mode Manual}).
+
+@end table
 
 @node Emacs General info
 @subsubsection General information
@@ -304,10 +315,13 @@ changed with the following variables:
 @item guix-generation-info-buffer-name
 @item guix-repl-buffer-name
 @item guix-internal-repl-buffer-name
-@item guix-temp-buffer-name
 @end table
 
-For example if you want to display all types of results in a single
+By default, the name of a profile is also displayed in a ``list'' or
+``info'' buffer name.  To change this behavior, use
+@code{guix-buffer-name-function} variable.
+
+For example, if you want to display all types of results in a single
 buffer (in such case you will probably use a history (@kbd{l}/@kbd{r})
 extensively), you may do it like this:
 
@@ -319,7 +333,8 @@ extensively), you may do it like this:
    guix-generation-list-buffer-name name
    guix-package-info-buffer-name    name
    guix-output-info-buffer-name     name
-   guix-generation-info-buffer-name name))
+   guix-generation-info-buffer-name name
+   guix-buffer-name-function        #'guix-buffer-name-simple))
 @end example
 
 @node Emacs Keymaps

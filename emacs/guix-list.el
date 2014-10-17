@@ -441,7 +441,8 @@ This macro defines the following functions:
     (when (or (<= count guix-list-describe-warning-count)
               (y-or-n-p (format "Do you really want to describe %d entries? "
                                 count)))
-      (apply #'guix-get-show-entries 'info entry-type 'id ids))))
+      (apply #'guix-get-show-entries
+             guix-profile 'info entry-type 'id ids))))
 
 (defun guix-list-describe (&optional arg)
   "Describe entries marked with a general mark.
@@ -617,7 +618,8 @@ FUN should accept action-type as argument."
   (let ((actions (delq nil
                        (mapcar fun '(install delete upgrade)))))
     (if actions
-        (guix-process-package-actions actions (current-buffer))
+        (guix-process-package-actions
+         guix-profile actions (current-buffer))
       (user-error "No operations specified"))))
 
 (defun guix-package-list-execute ()
@@ -751,13 +753,13 @@ VAL is a boolean value."
          (number  (guix-get-key-val entry 'number)))
     (if current
         (user-error "This generation is already the current one")
-      (guix-switch-to-generation number (current-buffer)))))
+      (guix-switch-to-generation guix-profile number (current-buffer)))))
 
 (defun guix-generation-list-show-packages ()
   "List installed packages for the generation at point."
   (interactive)
-  (guix-get-show-entries 'list guix-package-list-type 'generation
-                         (guix-list-current-id)))
+  (guix-get-show-entries guix-profile 'list guix-package-list-type
+                         'generation (guix-list-current-id)))
 
 (defun guix-generation-list-mark-delete (&optional arg)
   "Mark the current generation for deletion and move to the next line.
@@ -773,7 +775,7 @@ With ARG, mark all generations for deletion."
   (let ((marked (guix-list-get-marked-id-list 'delete)))
     (or marked
         (user-error "No generations marked for deletion"))
-    (guix-delete-generations marked (current-buffer))))
+    (guix-delete-generations guix-profile marked (current-buffer))))
 
 (provide 'guix-list)
 

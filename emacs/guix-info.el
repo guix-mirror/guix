@@ -334,8 +334,8 @@ VAL is a list, call the function on each element of this list."
   'face 'guix-package-info-name-button
   'help-echo "Describe this package"
   'action (lambda (btn)
-            (guix-get-show-entries 'info guix-package-info-type 'name
-                                   (button-label btn))))
+            (guix-get-show-entries guix-profile 'info guix-package-info-type
+                                   'name (button-label btn))))
 
 (defun guix-info-insert-action-button (label action &optional message
                                              &rest properties)
@@ -558,6 +558,7 @@ ENTRY is an alist with package info."
      type-str
      (lambda (btn)
        (guix-process-package-actions
+        guix-profile
         `((,(button-get btn 'action-type) (,(button-get btn 'id)
                                            ,(button-get btn 'output))))
         (current-buffer)))
@@ -631,15 +632,15 @@ ENTRY is an alist with package info."
   (guix-info-insert-action-button
    "Packages"
    (lambda (btn)
-     (guix-get-show-entries 'list guix-package-list-type 'generation
-                            (button-get btn 'number)))
+     (guix-get-show-entries guix-profile 'list guix-package-list-type
+                            'generation (button-get btn 'number)))
    "Show installed packages for this generation"
    'number number)
   (guix-info-insert-indent)
   (guix-info-insert-action-button
    "Delete"
    (lambda (btn)
-     (guix-delete-generations (list (button-get btn 'number))
+     (guix-delete-generations guix-profile (list (button-get btn 'number))
                               (current-buffer)))
    "Delete this generation"
    'number number))
@@ -653,7 +654,7 @@ ENTRY is an alist with package info."
     (guix-info-insert-action-button
      "Switch"
      (lambda (btn)
-       (guix-switch-to-generation (button-get btn 'number)
+       (guix-switch-to-generation guix-profile (button-get btn 'number)
                                   (current-buffer)))
      "Switch to this generation (make it the current one)"
      'number (guix-get-key-val entry 'number))))

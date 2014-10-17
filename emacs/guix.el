@@ -50,99 +50,146 @@ If nil, show a single package in the info buffer."
 (defvar guix-search-history nil
   "A history of minibuffer prompts.")
 
-(defun guix-get-show-packages (search-type &rest search-vals)
+(defun guix-get-show-packages (profile search-type &rest search-vals)
   "Search for packages and show results.
+
+If PROFILE is nil, use `guix-current-profile'.
 
 See `guix-get-entries' for the meaning of SEARCH-TYPE and
 SEARCH-VALS.
 
 Results are displayed in the list buffer, unless a single package
 is found and `guix-list-single-package' is nil."
-  (let ((packages (guix-get-entries guix-package-list-type
+  (or profile (setq profile guix-current-profile))
+  (let ((packages (guix-get-entries profile guix-package-list-type
                                     search-type search-vals
                                     (guix-get-params-for-receiving
                                      'list guix-package-list-type))))
     (if (or guix-list-single-package
             (cdr packages))
-        (guix-set-buffer packages 'list guix-package-list-type
+        (guix-set-buffer profile packages 'list guix-package-list-type
                          search-type search-vals)
-      (let ((packages (guix-get-entries guix-package-info-type
+      (let ((packages (guix-get-entries profile guix-package-info-type
                                         search-type search-vals
                                         (guix-get-params-for-receiving
                                          'info guix-package-info-type))))
-        (guix-set-buffer packages 'info guix-package-info-type
+        (guix-set-buffer profile packages 'info guix-package-info-type
                          search-type search-vals)))))
 
-(defun guix-get-show-generations (search-type &rest search-vals)
-  "Search for generations and show results."
+(defun guix-get-show-generations (profile search-type &rest search-vals)
+  "Search for generations and show results.
+
+If PROFILE is nil, use `guix-current-profile'.
+
+See `guix-get-entries' for the meaning of SEARCH-TYPE and
+SEARCH-VALS."
   (apply #'guix-get-show-entries
+         (or profile guix-current-profile)
          'list 'generation search-type search-vals))
 
 ;;;###autoload
-(defun guix-search-by-name (name)
+(defun guix-search-by-name (name &optional profile)
   "Search for Guix packages by NAME.
 NAME is a string with name specification.  It may optionally contain
-a version number.  Examples: \"guile\", \"guile-2.0.11\"."
+a version number.  Examples: \"guile\", \"guile-2.0.11\".
+
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
   (interactive
-   (list (read-string "Package name: " nil 'guix-search-history)))
-  (guix-get-show-packages 'name name))
+   (list (read-string "Package name: " nil 'guix-search-history)
+         (and current-prefix-arg
+              (guix-profile-prompt))))
+  (guix-get-show-packages profile 'name name))
 
 ;;;###autoload
-(defun guix-search-by-regexp (regexp &rest params)
+(defun guix-search-by-regexp (regexp &optional params profile)
   "Search for Guix packages by REGEXP.
 PARAMS are package parameters that should be searched.
-If PARAMS are not specified, use `guix-search-params'."
+If PARAMS are not specified, use `guix-search-params'.
+
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
   (interactive
-   (list (read-string "Regexp: " nil 'guix-search-history)))
-  (or params (setq params guix-search-params))
-  (guix-get-show-packages 'regexp regexp params))
+   (list (read-regexp "Regexp: " nil 'guix-search-history)
+         nil
+         (and current-prefix-arg
+              (guix-profile-prompt))))
+  (guix-get-show-packages profile 'regexp regexp
+                          (or params guix-search-params)))
 
 ;;;###autoload
-(defun guix-installed-packages ()
-  "Display information about installed Guix packages."
-  (interactive)
-  (guix-get-show-packages 'installed))
+(defun guix-installed-packages (&optional profile)
+  "Display information about installed Guix packages.
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
+  (interactive
+   (list (and current-prefix-arg
+              (guix-profile-prompt))))
+  (guix-get-show-packages profile 'installed))
 
 ;;;###autoload
-(defun guix-obsolete-packages ()
-  "Display information about obsolete Guix packages."
-  (interactive)
-  (guix-get-show-packages 'obsolete))
+(defun guix-obsolete-packages (&optional profile)
+  "Display information about obsolete Guix packages.
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
+  (interactive
+   (list (and current-prefix-arg
+              (guix-profile-prompt))))
+  (guix-get-show-packages profile 'obsolete))
 
 ;;;###autoload
-(defun guix-all-available-packages ()
-  "Display information about all available Guix packages."
-  (interactive)
-  (guix-get-show-packages 'all-available))
+(defun guix-all-available-packages (&optional profile)
+  "Display information about all available Guix packages.
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
+  (interactive
+   (list (and current-prefix-arg
+              (guix-profile-prompt))))
+  (guix-get-show-packages profile 'all-available))
 
 ;;;###autoload
-(defun guix-newest-available-packages ()
-  "Display information about the newest available Guix packages."
-  (interactive)
-  (guix-get-show-packages 'newest-available))
+(defun guix-newest-available-packages (&optional profile)
+  "Display information about the newest available Guix packages.
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
+  (interactive
+   (list (and current-prefix-arg
+              (guix-profile-prompt))))
+  (guix-get-show-packages profile 'newest-available))
 
 ;;;###autoload
-(defun guix-generations (&optional number)
+(defun guix-generations (&optional profile)
+  "Display information about all generations.
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
+  (interactive
+   (list (and current-prefix-arg
+              (guix-profile-prompt))))
+  (guix-get-show-generations profile 'all))
+
+;;;###autoload
+(defun guix-last-generations (number &optional profile)
   "Display information about last NUMBER generations.
-If NUMBER is nil, display all generations.
-
-Generations can be displayed in a list or info buffers depending
-on `guix-show-generations-function'.
-
-Interactively, NUMBER is defined by a numeric prefix."
-  (interactive "P")
-  (if (numberp number)
-      (guix-get-show-generations 'last number)
-    (guix-get-show-generations 'all)))
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
+  (interactive
+   (list (read-number "The number of last generations: ")
+         (and current-prefix-arg
+              (guix-profile-prompt))))
+  (guix-get-show-generations profile 'last number))
 
 ;;;###autoload
-(defun guix-generations-by-time (from to)
+(defun guix-generations-by-time (from to &optional profile)
   "Display information about generations created between FROM and TO.
-FROM and TO should be time values."
+FROM and TO should be time values.
+If PROFILE is nil, use `guix-current-profile'.
+Interactively with prefix, prompt for PROFILE."
   (interactive
    (list (guix-read-date "Find generations (from): ")
-         (guix-read-date "Find generations (to): ")))
-  (guix-get-show-generations 'time
+         (guix-read-date "Find generations (to): ")
+         (and current-prefix-arg
+              (guix-profile-prompt))))
+  (guix-get-show-generations profile 'time
                              (float-time from)
                              (float-time to)))
 
