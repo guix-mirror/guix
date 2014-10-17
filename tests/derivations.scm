@@ -173,6 +173,11 @@
                 (= (stat:ino (lstat file1))
                    (stat:ino (lstat file2))))))))
 
+(test-equal "derivation-name"
+  "foo-0.0"
+  (let ((drv (derivation %store "foo-0.0" %bash '())))
+    (derivation-name drv)))
+
 (test-assert "offloadable-derivation?"
   (and (offloadable-derivation? (derivation %store "foo" %bash '()))
        (not (offloadable-derivation?

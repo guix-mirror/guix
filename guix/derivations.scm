@@ -56,6 +56,7 @@
             derivation-input-sub-derivations
             derivation-input-output-paths
 
+            derivation-name
             fixed-output-derivation?
             offloadable-derivation?
             substitutable-derivation?
@@ -127,6 +128,11 @@
                                             (derivation-output-path output)))
                                           (derivation-outputs drv)))
                                     (number->string (object-address drv) 16))))
+
+(define (derivation-name drv)
+  "Return the base name of DRV."
+  (let ((base (store-path-package-name (derivation-file-name drv))))
+    (string-drop-right base 4)))
 
 (define (fixed-output-derivation? drv)
   "Return #t if DRV is a fixed-output derivation, such as the result of a
