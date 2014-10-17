@@ -1,7 +1,7 @@
 @node Emacs Interface
 @section Emacs Interface
 
-@cindex emacs
+@cindex Emacs
 GNU Guix comes with a visual user interface for GNU@tie{}Emacs, known
 as ``guix.el''.  It can be used for routine package management tasks,
 pretty much like the @command{guix package} command (@pxref{Invoking
@@ -15,12 +15,12 @@ guix package}).  Specifically, ``guix.el'' makes it easy to:
 @end itemize
 
 @menu
-* Initial Setup: emacs Initial Setup.	Preparing @file{~/.emacs}.
-* Usage: emacs Usage.			Using the interface.
-* Configuration: emacs Configuration.	Configuring the interface.
+* Initial Setup: Emacs Initial Setup.	Preparing @file{~/.emacs}.
+* Usage: Emacs Usage.			Using the interface.
+* Configuration: Emacs Configuration.	Configuring the interface.
 @end menu
 
-@node emacs Initial Setup
+@node Emacs Initial Setup
 @subsection Initial Setup
 
 To be able to use ``guix.el'', you need to install the following
@@ -59,7 +59,7 @@ not load the whole ``guix.el'' package, it will just autoload the main
 interactive commands (@pxref{Autoload,,, elisp, Emacs Lisp}).
 
 
-@node emacs Usage
+@node Emacs Usage
 @subsection Usage
 
 Once ``guix.el'' has been successfully configured, you should be able to
@@ -67,13 +67,13 @@ use commands for displaying packages and generations.  This information
 can be displayed in a ``list'' or ``info'' buffer.
 
 @menu
-* Commands: emacs Commands.			@kbd{M-x guix-@dots{}}
-* General information: emacs General info.	Common for both interfaces.
-* ``List'' buffer: emacs List buffer.		List-like interface.
-* ``Info'' buffer: emacs Info buffer.		Help-like interface.
+* Commands: Emacs Commands.			@kbd{M-x guix-@dots{}}
+* General information: Emacs General info.	Common for both interfaces.
+* ``List'' buffer: Emacs List buffer.		List-like interface.
+* ``Info'' buffer: Emacs Info buffer.		Help-like interface.
 @end menu
 
-@node emacs Commands
+@node Emacs Commands
 @subsubsection Commands
 
 You may use the following commands to display packages and generations:
@@ -122,7 +122,7 @@ It is possible to change the currently used profile with
 specifying @code{--profile} option for @command{guix package}
 (@pxref{Invoking guix package}).
 
-@node emacs General info
+@node Emacs General info
 @subsubsection General information
 
 The following keys are available for both ``list'' and ``info'' types of
@@ -161,7 +161,7 @@ identifiers that live only during a guile session, so if the Guix REPL
 was restarted, you may want to revert ``list'' buffer (by pressing
 @kbd{g}).
 
-@node emacs List buffer
+@node Emacs List buffer
 @subsubsection ``List'' buffer
 
 An interface of a ``list'' buffer is similar to the interface provided
@@ -219,7 +219,7 @@ generations).
 Execute actions on the marked generations---i.e., delete generations.
 @end table
 
-@node emacs Info buffer
+@node Emacs Info buffer
 @subsubsection ``Info'' buffer
 
 The interface of an ``info'' buffer is similar to the interface of
@@ -251,7 +251,7 @@ emacs, The Emacs Editor}) which can be used to:
 @end itemize
 
 
-@node emacs Configuration
+@node Emacs Configuration
 @subsection Configuration
 
 There are many variables you can modify to change the appearance or
@@ -261,13 +261,13 @@ Customization,,, emacs, The Emacs Editor}) to explore/set variables (not
 all) and faces.
 
 @menu
-* Guile and Build Options: emacs Build Options.	Specifying how packages are built.
-* Buffer Names: emacs Buffer Names.	Names of Guix buffers.
-* Keymaps: emacs Keymaps.		Configuring key bindings.
-* Appearance: emacs Appearance.		Settings for visual appearance.
+* Guile and Build Options: Emacs Build Options.	Specifying how packages are built.
+* Buffer Names: Emacs Buffer Names.	Names of Guix buffers.
+* Keymaps: Emacs Keymaps.		Configuring key bindings.
+* Appearance: Emacs Appearance.		Settings for visual appearance.
 @end menu
 
-@node emacs Build Options
+@node Emacs Build Options
 @subsubsection Guile and Build Options
 
 @table @code
@@ -289,7 +289,7 @@ build}).
 
 @end table
 
-@node emacs Buffer Names
+@node Emacs Buffer Names
 @subsubsection Buffer Names
 
 Default names of ``guix.el'' buffers (``*Guix@tie{}@dots{}*'') may be
@@ -322,7 +322,7 @@ extensively), you may do it like this:
    guix-generation-info-buffer-name name))
 @end example
 
-@node emacs Keymaps
+@node Emacs Keymaps
 @subsubsection Keymaps
 
 If you want to change default key bindings, use the following keymaps
@@ -355,7 +355,7 @@ Keymap with specific keys for ``generation-info'' buffers.
 
 @end table
 
-@node emacs Appearance
+@node Emacs Appearance
 @subsubsection Appearance
 
 You can change almost any aspect of ``list'' / ``info'' buffers using
