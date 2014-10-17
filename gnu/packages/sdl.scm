@@ -130,7 +130,11 @@ system, such as sound redirection over the network.")
     (description "SDL_gfx provides graphics drawing primitives, rotozoom and
 other supporting functions for SDL.")
     (home-page "http://www.ferzkopp.net/joomla/software-mainmenu-14/4-ferzkopps-linux-software/19-sdlgfx")
-    (license zlib)))
+    (license zlib)
+
+    ;; The code apparently includes Intel assembly, which fails to build on
+    ;; MIPS, at least.
+    (supported-systems '("i686-linux" "x86_64-linux"))))
 
 (define sdl-image
   (package
