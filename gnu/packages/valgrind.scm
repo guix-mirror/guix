@@ -60,4 +60,8 @@
 tools.  There are Valgrind tools that can automatically detect many memory
 management and threading bugs, and profile your programs in detail. You can
 also use Valgrind to build new tools.")
-    (license gpl2+)))
+    (license gpl2+)
+
+    ;; Building VEX on mips64el-linux fails with "opcode not supported on this
+    ;; processor: mips3".
+    (supported-systems (delete "mips64el-linux" %supported-systems))))
