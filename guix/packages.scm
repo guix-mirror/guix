@@ -727,8 +727,8 @@ dependencies are known to build on SYSTEM."
   ;; Package to derivation-path mapping.
   (make-weak-key-hash-table 100))
 
-(define (cache package system thunk)
-  "Memoize the return values of THUNK as the derivation of PACKAGE on
+(define (cache! cache package system thunk)
+  "Memoize in CACHE the return values of THUNK as the derivation of PACKAGE on
 SYSTEM."
   ;; FIXME: This memoization should be associated with the open store, because
   ;; otherwise it breaks when switching to a different store.
@@ -736,26 +736,29 @@ SYSTEM."
     ;; Use `hashq-set!' instead of `hash-set!' because `hash' returns the
     ;; same value for all structs (as of Guile 2.0.6), and because pointer
     ;; equality is sufficient in practice.
-    (hashq-set! %derivation-cache package
+    (hashq-set! cache package
                 `((,system ,@vals)
-                  ,@(or (hashq-ref %derivation-cache package)
-                        '())))
+                  ,@(or (hashq-ref cache package) '())))
     (apply values vals)))
 
-(define-syntax-rule (cached package system body ...)
-  "Memoize the result of BODY for the arguments PACKAGE and SYSTEM.
+(define-syntax cached
+  (syntax-rules (=>)
+    "Memoize the result of BODY for the arguments PACKAGE and SYSTEM.
 Return the cached result when available."
-  (let ((thunk (lambda () body ...))
-        (key   system))
-    (match (hashq-ref %derivation-cache package)
-      ((alist (... ...))
-       (match (assoc-ref alist key)
-         ((vals (... ...))
-          (apply values vals))
+    ((_ (=> cache) package system body ...)
+     (let ((thunk (lambda () body ...))
+           (key   system))
+       (match (hashq-ref cache package)
+         ((alist (... ...))
+          (match (assoc-ref alist key)
+            ((vals (... ...))
+             (apply values vals))
+            (#f
+             (cache! cache package key thunk))))
          (#f
-          (cache package key thunk))))
-      (#f
-       (cache package key thunk)))))
+          (cache! cache package key thunk)))))
+    ((_ package system body ...)
+     (cached (=> %derivation-cache) package system body ...))))
 
 (define* (expand-input store package input system #:optional cross-system)
   "Expand INPUT, an input tuple, such that it contains only references to
