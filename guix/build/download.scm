@@ -212,10 +212,14 @@ which is not available during bootstrap."
         (string>? (version) "2.0.7")))
 
   (define headers
-    ;; Some web sites, such as http://dist.schmorp.de, would block you if
-    ;; there's no 'User-Agent' header, presumably on the assumption that
-    ;; you're a spammer.  So work around that.
-    '((User-Agent . "GNU Guile")))
+    '(;; Some web sites, such as http://dist.schmorp.de, would block you if
+      ;; there's no 'User-Agent' header, presumably on the assumption that
+      ;; you're a spammer.  So work around that.
+      (User-Agent . "GNU Guile")
+
+      ;; Some servers, such as https://alioth.debian.org, return "406 Not
+      ;; Acceptable" when not explicitly told that everything is accepted.
+      (Accept . "*/*")))
 
   (let*-values (((connection)
                  (open-connection-for-uri uri))
@@ -246,7 +250,7 @@ which is not available during bootstrap."
              (if (port? bv-or-port)
                  (begin
                    (dump-port bv-or-port p
-                              #:buffer-size 65536  ; don't flood the log
+                              #:buffer-size 65536 ; don't flood the log
                               #:progress (progress-proc (uri-abbreviation uri)
                                                         size))
                    (newline))
