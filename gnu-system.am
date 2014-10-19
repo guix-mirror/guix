@@ -218,6 +218,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/ruby.scm				\
   gnu/packages/rush.scm				\
   gnu/packages/samba.scm			\
+  gnu/packages/scanner.scm			\
   gnu/packages/scheme.scm			\
   gnu/packages/screen.scm			\
   gnu/packages/scrot.scm			\
