@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,14 +23,14 @@
   #:use-module ((guix licenses) #:select (bsd-3))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages backup)
   #:use-module (gnu packages compression)
   #:use-module (gnu packages curl)
   #:use-module (gnu packages file)
-  #:use-module (gnu packages xml)
-  #:use-module (srfi srfi-1))
+  #:use-module (gnu packages xml))
 
 (define-public cmake
   (package
@@ -39,8 +40,7 @@
              (method url-fetch)
              (uri (string-append
                    "http://www.cmake.org/files/v"
-                   (string-join (take (string-split version #\.) 2)
-                                ".")
+                   (version-major+minor version)
                    "/cmake-" version ".tar.gz"))
              (sha256
               (base32 "11q21vyrr6c6smyjy81k2k07zmn96ggjia9im9cxwvj0n88bm1fq"))
@@ -91,8 +91,7 @@
                                "--mandir=share/man"
                                ,(string-append
                                  "--docdir=share/doc/cmake-"
-                                 (string-join (take (string-split version #\.) 2)
-                                              "."))))))
+                                 (version-major+minor version))))))
                    %standard-phases)))))
     (inputs
      `(("file"       ,file)

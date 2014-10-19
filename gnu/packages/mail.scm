@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -49,9 +50,9 @@
                 #:select (gpl2 gpl2+ gpl3+ lgpl2.1+ lgpl3+))
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
-  #:use-module (guix build-system python)
-  #:use-module (srfi srfi-1))
+  #:use-module (guix build-system python))
 
 (define-public mailutils
   (package
@@ -192,9 +193,7 @@ operating systems.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/gmime/"
-                                  (string-join (take (string-split version #\.)
-                                                     2)
-                                               ".")
+                                  (version-major+minor version)
                                   "/gmime-" version ".tar.xz"))
               (sha256
                (base32

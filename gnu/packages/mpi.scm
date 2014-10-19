@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -22,6 +23,7 @@
   #:use-module ((guix licenses)
                 #:hide (expat))
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages gcc)
@@ -32,8 +34,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages ncurses)
   #:use-module (gnu packages pkg-config)
-  #:use-module (gnu packages valgrind)
-  #:use-module (srfi srfi-1))
+  #:use-module (gnu packages valgrind))
 
 (define-public hwloc
   (package
@@ -88,8 +89,7 @@ bind processes, and much more.")
      (origin
       (method url-fetch)
       (uri (string-append "http://www.open-mpi.org/software/ompi/v"
-                          (string-join (take (string-split version #\.) 2)
-                                       ".")
+                          (version-major+minor version)
                           "/downloads/openmpi-" version ".tar.bz2"))
       (sha256
        (base32

@@ -2,6 +2,7 @@
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2013 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -65,6 +66,8 @@
             %current-target-system
             version-compare
             version>?
+            version-prefix
+            version-major+minor
             guile-version>?
             package-name->name+version
             string-tokenize*
@@ -517,6 +520,17 @@ or '= when they denote equal versions."
         (cond ((positive? result) '>)
               ((negative? result) '<)
               (else '=))))))
+
+(define (version-prefix version-string num-parts)
+  "Truncate version-string to the first num-parts components of the version.
+For example, (version-prefix \"2.1.47.4.23\" 3) returns \"2.1.47\""
+  (string-join (take (string-split version-string #\.) num-parts) "."))
+
+
+(define (version-major+minor version-string)
+  "Return \"<major>.<minor>\", where major and minor are the major and
+minor version numbers from version-string."
+  (version-prefix version-string 2))
 
 (define (version>? a b)
   "Return #t when A denotes a newer version than B."

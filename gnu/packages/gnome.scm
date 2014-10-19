@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
@@ -42,8 +44,7 @@
   #:use-module (gnu packages xml)
   #:use-module (gnu packages gl)
   #:use-module (gnu packages compression)
-  #:use-module (gnu packages xorg)
-  #:use-module (srfi srfi-1))
+  #:use-module (gnu packages xorg))
 
 (define-public brasero
   (package
@@ -706,8 +707,7 @@ featuring mature C, C++ and Python bindings.")
     (source (origin
               (method url-fetch)
               (uri (string-append "mirror://gnome/sources/" name "/"
-                                  (string-join (take (string-split version #\.) 2)
-                                               ".")
+                                  (version-major+minor version)
                                   "/" name "-" version ".tar.bz2"))
               (sha256
                (base32 "0swp4kk6x7hy1rvd1f9jba31lvfc6qvafkvbpg9h0r34fzrd8q4i"))
@@ -1077,7 +1077,7 @@ widgets built in the loading process.")
               (method url-fetch)
               (uri (string-append
                     "mirror://gnome/sources/" name "/"
-                    (string-join (take (string-split version #\.) 2) ".")
+                    (version-major+minor version)
                     "/" name "-" version ".tar.bz2"))
               (sha256
                (base32

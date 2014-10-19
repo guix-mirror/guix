@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
   #:use-module (guix packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build utils)
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system python)
@@ -38,8 +40,7 @@
   #:use-module (gnu packages pkg-config)
   #:use-module (gnu packages rsync)
   #:use-module (gnu packages ssh)
-  #:use-module (gnu packages xml)
-  #:use-module (srfi srfi-1))
+  #:use-module (gnu packages xml))
 
 (define-public duplicity
   (package
@@ -49,7 +50,7 @@
      (origin
       (method url-fetch)
       (uri (string-append "https://code.launchpad.net/duplicity/"
-                          (string-join (take (string-split version #\.) 2) ".")
+                          (version-major+minor version)
                           "-series/" version "/+download/duplicity-"
                           version ".tar.gz"))
       (sha256

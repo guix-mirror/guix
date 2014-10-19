@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -21,6 +22,7 @@
   #:use-module (guix licenses)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module ((gnu packages compression) #:prefix guix:)
   #:use-module (gnu packages)
@@ -29,8 +31,7 @@
   #:use-module (gnu packages perl)
   #:use-module (gnu packages which)
   #:use-module (gnu packages texinfo)
-  #:use-module (gnu packages pkg-config)
-  #:use-module (srfi srfi-1))
+  #:use-module (gnu packages pkg-config))
 
 (define-public libtasn1
   (package
@@ -69,8 +70,7 @@ specifications.")
               ;; Note: Releases are no longer on ftp.gnu.org since the
               ;; schism (after version 3.1.5).
               (string-append "mirror://gnupg/gnutls/v"
-                             (string-join (take (string-split version #\.) 2)
-                                          ".")
+                             (version-major+minor version)
                              "/gnutls-" version ".tar.xz"))
              (sha256
               (base32

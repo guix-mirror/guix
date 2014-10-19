@@ -2,6 +2,7 @@
 ;;; Copyright © 2014 David Thompson <dthompson2@worcester.edu>
 ;;; Copyright © 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Cyrill Schenkel <cyrill.schenkel@gmail.com>
+;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -19,11 +20,11 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages mpd)
-  #:use-module (srfi srfi-1)
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
+  #:use-module (guix utils)
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages avahi)
   #:use-module (gnu packages compression)
@@ -72,8 +73,7 @@ interfacing MPD in the C, C++ & Objective C languages.")
               (method url-fetch)
               (uri
                (string-append "http://musicpd.org/download/mpd/"
-                              (string-join (take (string-split
-                                                  version #\.) 2) ".")
+                              (version-major+minor version)
                               "/mpd-" version ".tar.gz"))
               (sha256
                (base32
