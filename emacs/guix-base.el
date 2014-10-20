@@ -142,6 +142,17 @@ Each element of the list has a form:
                       (guix-get-key-val entry 'version)
                       output))
 
+(defun guix-entry-to-specification (entry)
+  "Return name specification by the package or output ENTRY."
+  (guix-get-name-spec (guix-get-key-val entry 'name)
+                      (guix-get-key-val entry 'version)
+                      (guix-get-key-val entry 'output)))
+
+(defun guix-entries-to-specifications (entries)
+  "Return name specifications by the package or output ENTRIES."
+  (cl-remove-duplicates (mapcar #'guix-entry-to-specification entries)
+                        :test #'string=))
+
 (defun guix-get-installed-outputs (entry)
   "Return list of installed outputs for the package ENTRY."
   (mapcar (lambda (installed-entry)
@@ -591,13 +602,30 @@ See `revert-buffer' for the meaning of NOCONFIRM."
              (guix-get-symbol "revert-no-confirm"
                               guix-buffer-type guix-entry-type))
             (y-or-n-p "Update current information? "))
-    (let ((entries (guix-get-entries
-                    guix-profile guix-entry-type
-                    guix-search-type guix-search-vals
-                    (guix-get-params-for-receiving guix-buffer-type
-                                                   guix-entry-type))))
+    (let* ((search-type guix-search-type)
+           (search-vals guix-search-vals)
+           (params (guix-get-params-for-receiving guix-buffer-type
+                                                  guix-entry-type))
+           (entries (guix-get-entries
+                     guix-profile guix-entry-type
+                     guix-search-type guix-search-vals params))
+           ;; If a REPL was restarted, package/output IDs are not actual
+           ;; anymore, because 'object-address'-es died with the REPL, so if a
+           ;; search by ID didn't give results, search again by name.
+           (entries (if (and (null entries)
+                             (eq guix-search-type 'id)
+                             (or (eq guix-entry-type 'package)
+                                 (eq guix-entry-type 'output)))
+                        (progn
+                          (setq search-type 'name
+                                search-vals (guix-entries-to-specifications
+                                             guix-entries))
+                          (guix-get-entries
+                           guix-profile guix-entry-type
+                           search-type search-vals params))
+                      entries)))
       (guix-set-buffer guix-profile entries guix-buffer-type guix-entry-type
-                       guix-search-type guix-search-vals t t))))
+                       search-type search-vals t t))))
 
 (defun guix-redisplay-buffer ()
   "Redisplay current information.
