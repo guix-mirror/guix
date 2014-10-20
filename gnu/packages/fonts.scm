@@ -1,7 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2013 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
-;;; Copyright © 2014 Guy Grant <tadnimi@gnu.org>
+;;; Copyright © 2014 Joshua Grant <tadni@riseup.net>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
