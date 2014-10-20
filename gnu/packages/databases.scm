@@ -1,6 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
-;;; Copyright © 2012 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2012, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013 Cyril Roelandt <tipecaml@gmail.com>
 ;;; Copyright © 2014 David Thompson <davet@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
@@ -237,6 +237,8 @@ types are supported, as is encryption.")
             (patches
              (list (search-patch "sqlite-large-page-size-fix.patch")))))
    (build-system gnu-build-system)
+    (inputs
+     `(("readline" ,readline)))
    (home-page "http://www.sqlite.org/")
    (synopsis "The SQLite database management system")
    (description
