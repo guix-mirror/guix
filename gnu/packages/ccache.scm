@@ -28,7 +28,7 @@
 (define-public ccache
   (package
     (name "ccache")
-    (version "3.1.9")
+    (version "3.1.10")
     (source
      (origin
       (method url-fetch)
@@ -36,8 +36,7 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1i06015jjc0n55xgvhv2h37fjp0i7z8a10s0v40f87c5mprzv0a9"))
-      (patches (list (search-patch "ccache-stdc-predef-test.patch")))))
+        "0mr8n1nbykxw4rs55ad8wd6xmfhihn09mxpxb91sn9mlsd1ryhw8"))))
     (build-system gnu-build-system)
     (native-inputs `(("perl" ,perl)))   ;for test.sh
     (inputs `(("zlib" ,zlib)))
