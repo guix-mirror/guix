@@ -60,7 +60,7 @@
                      (alist-cons 'select (string->symbol arg)
                                  result))
                     (x
-                     (leave (_ "~a: invalid selection; expected `core' or `non-core'")
+                     (leave (_ "~a: invalid selection; expected `core' or `non-core'~%")
                             arg)))))
         (option '(#\l "list-dependent") #f #f
                 (lambda (opt name arg result)
