@@ -155,24 +155,31 @@ See `guix-eval-in-repl' for details.")
             (list (concat "--listen="
                           (number-to-string guix-default-port))))))
 
-(defun guix-start-process-maybe ()
-  "Start Geiser REPL configured for Guix if needed."
-  (guix-start-repl-maybe)
+(defun guix-start-process-maybe (&optional start-msg end-msg)
+  "Start Geiser REPL configured for Guix if needed.
+START-MSG and END-MSG are strings displayed in the minibuffer in
+the beginning and in the end of the starting process.  If nil,
+display default messages."
+  (guix-start-repl-maybe nil
+                         (or start-msg "Starting Guix REPL ...")
+                         (or end-msg "Guix REPL has been started."))
   (if guix-use-guile-server
       (guix-start-repl-maybe 'internal)
     (setq guix-internal-repl-buffer guix-repl-buffer)))
 
-(defun guix-start-repl-maybe (&optional internal)
+(defun guix-start-repl-maybe (&optional internal start-msg end-msg)
   "Start Guix REPL if needed.
-If INTERNAL is non-nil, start an internal REPL."
+If INTERNAL is non-nil, start an internal REPL.
+
+START-MSG and END-MSG are strings displayed in the minibuffer in
+the beginning and in the end of the process.  If nil, do not
+display messages."
   (let* ((repl-var (guix-get-repl-buffer-variable internal))
          (repl (symbol-value repl-var)))
     (unless (and (buffer-live-p repl)
                  (get-buffer-process repl))
-      ;; Kill REPL buffer with a dead process
-      (and (buffer-live-p repl) (kill-buffer repl))
-      (or internal
-          (message "Starting Geiser REPL for Guix ..."))
+      (and start-msg (message start-msg))
+      (setq guix-repl-operation-p nil)
       (let ((geiser-guile-binary (guix-get-guile-program internal))
             (geiser-guile-init-file (or internal guix-helper-file))
             (repl (get-buffer-create
@@ -187,8 +194,8 @@ If INTERNAL is non-nil, start an internal REPL."
                           "See buffer '%s' for details")
                   guix-default-port (buffer-name repl))))
         (set repl-var repl)
+        (and end-msg (message end-msg))
         (unless internal
-          (message "Guix REPL has been started.")
           (run-hooks 'guix-after-start-repl-hook))))))
 
 (defun guix-start-repl (buffer &optional address)
@@ -253,6 +260,20 @@ This is a replacement for `geiser-repl--output-filter'."
     (geiser-con--connection-set-debugging geiser-repl--connection
                                           (match-beginning 0))
     (geiser-autodoc--disinhibit-autodoc))))
+
+(defun guix-repl-exit (&optional internal no-wait)
+  "Exit the current Guix REPL.
+If INTERNAL is non-nil, exit the internal REPL.
+If NO-WAIT is non-nil, do not wait for the REPL process to exit:
+send a kill signal to it and return immediately."
+  (let ((repl (symbol-value (guix-get-repl-buffer-variable internal))))
+    (when (get-buffer-process repl)
+      (with-current-buffer repl
+        (geiser-con--connection-deactivate geiser-repl--connection t)
+        (comint-kill-subjob)
+        (unless no-wait
+          (while (get-buffer-process repl)
+            (sleep-for 0.1)))))))
 
 (defun guix-get-repl-buffer (&optional internal)
   "Return Guix REPL buffer; start REPL if needed.
@@ -346,10 +367,7 @@ successful executing of the current operation,
         guix-operation-buffer operation-buffer)
   (let ((repl (guix-get-repl-buffer)))
     (with-current-buffer repl
-      (delete-region (geiser-repl--last-prompt-end) (point-max))
-      (goto-char (point-max))
-      (insert str)
-      (geiser-repl--send-input))
+      (geiser-repl--send str))
     (geiser-repl--switch-to-buffer repl)))
 
 (provide 'guix-backend)
