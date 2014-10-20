@@ -46,3 +46,26 @@ catch both assertion failures and code errors that cause segmentation
 faults or other signals. The output from unit tests can be used within
 source code editors and IDEs.")
     (license lgpl2.1+)))
+
+
+(define-public cppunit
+  (package
+    (name "cppunit")
+    (version "1.12.1")
+    (source (origin
+             (method url-fetch)
+              (uri (string-append "mirror://sourceforge/cppunit/" name "/" 
+                                  name "-"
+                                  version ".tar.gz"))
+             (sha256
+              (base32
+               "0jm49v5rmc5qw34vqs56gy8xja1dhci73bmh23cig4kcir6a0a5c"))))
+    (build-system gnu-build-system)
+    (home-page "http://sourceforge.net/projects/cppunit/")
+    (synopsis "Unit testing framework for C++")
+    (description "CppUnit is the C++ port of the famous JUnit framework for
+unit testing. Test output is in XML for automatic testing and GUI based for
+supervised tests.")
+    (license lgpl2.1))) ; no copyright notices. LGPL2.1 is in the tarball
+
+
