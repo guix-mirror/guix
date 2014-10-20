@@ -133,6 +133,12 @@ This REPL is used for receiving information only if
 This internal variable is used to distinguish Guix operations
 from operations performed in Guix REPL by a user.")
 
+(defvar guix-repl-operation-type nil
+  "Type of the current operation performed by `guix-eval-in-repl'.
+This internal variable is used to define what actions should be
+executed after the current operation succeeds.
+See `guix-eval-in-repl' for details.")
+
 (defun guix-repl-operation-success-message ()
   "Message telling about successful Guix operation."
   (message "Guix operation has been performed."))
@@ -232,7 +238,16 @@ This is a replacement for `geiser-repl--output-filter'."
     (geiser-autodoc--disinhibit-autodoc)
     (when guix-repl-operation-p
       (setq guix-repl-operation-p nil)
-      (run-hooks 'guix-after-repl-operation-hook)))
+      (run-hooks 'guix-after-repl-operation-hook)
+      ;; Run hooks specific to the current operation type.
+      (when guix-repl-operation-type
+        (let ((type-hook (intern
+                          (concat "guix-after-"
+                                  (symbol-name guix-repl-operation-type)
+                                  "-hook"))))
+          (setq guix-repl-operation-type nil)
+          (and (boundp type-hook)
+               (run-hooks type-hook))))))
    ((string-match geiser-guile--debugger-prompt-regexp str)
     (setq guix-repl-operation-p nil)
     (geiser-con--connection-set-debugging geiser-repl--connection
@@ -317,12 +332,17 @@ Return elisp expression of the first result value of evaluation."
          (replace-regexp-in-string
           "#t" "t" (car (guix-eval str wrap))))))
 
-(defun guix-eval-in-repl (str &optional operation-buffer)
+(defun guix-eval-in-repl (str &optional operation-buffer operation-type)
   "Switch to Guix REPL and evaluate STR with guile expression there.
 If OPERATION-BUFFER is non-nil, it should be a buffer from which
-the current operation was performed."
+the current operation was performed.
+
+If OPERATION-TYPE is non-nil, it should be a symbol.  After
+successful executing of the current operation,
+`guix-after-OPERATION-TYPE-hook' is called."
   (run-hooks 'guix-before-repl-operation-hook)
   (setq guix-repl-operation-p t
+        guix-repl-operation-type operation-type
         guix-operation-buffer operation-buffer)
   (let ((repl (guix-get-repl-buffer)))
     (with-current-buffer repl
