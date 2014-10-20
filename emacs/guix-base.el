@@ -283,33 +283,42 @@ See `guix-buffer-name-function' for details."
                  '((display-buffer-reuse-window
                     display-buffer-same-window))))
 
-(defun guix-list-or-info-buffer-p (&optional buffer)
-  "Return non-nil if BUFFER is a Guix 'list' or 'info' buffer.
-If BUFFER is nil, check current buffer."
+(defun guix-buffer-p (&optional buffer modes)
+  "Return non-nil if BUFFER mode is derived from any of the MODES.
+If BUFFER is nil, check current buffer.
+If MODES is nil, use `guix-list-mode' and `guix-info-mode'."
   (with-current-buffer (or buffer (current-buffer))
-    (derived-mode-p 'guix-list-mode 'guix-info-mode)))
+    (apply #'derived-mode-p
+           (or modes
+               '(guix-list-mode guix-info-mode)))))
 
-(defun guix-buffers ()
-  "Return list of all Guix 'list' and 'info' buffers."
-  (cl-remove-if-not #'guix-list-or-info-buffer-p
+(defun guix-buffers (&optional modes)
+  "Return list of all buffers with major modes derived from MODES.
+If MODES is nil, return list of all Guix 'list' and 'info' buffers."
+  (cl-remove-if-not (lambda (buf)
+                      (guix-buffer-p buf modes))
                     (buffer-list)))
 
-(defun guix-update-buffers-maybe ()
+(defun guix-update-buffer (buffer)
+  "Update information in a 'list' or 'info' BUFFER."
+  (with-current-buffer buffer
+    (guix-revert-buffer nil t)))
+
+(defun guix-update-buffers-maybe-after-operation ()
   "Update buffers after Guix operation if needed.
 See `guix-update-after-operation' for details."
-  (let ((to-update (and guix-operation-buffer
-                        (cl-case guix-update-after-operation
-                          (current (list guix-operation-buffer))
-                          (all     (guix-buffers))))))
+  (let ((to-update
+         (and guix-operation-buffer
+              (cl-case guix-update-after-operation
+                (current (and (buffer-live-p guix-operation-buffer)
+                              (guix-buffer-p guix-operation-buffer)
+                              (list guix-operation-buffer)))
+                (all     (guix-buffers))))))
     (setq guix-operation-buffer nil)
-    (mapc (lambda (buf)
-            (and (buffer-live-p buf)
-                 (guix-list-or-info-buffer-p buf)
-                 (with-current-buffer buf
-                   (guix-revert-buffer nil t))))
-          to-update)))
+    (mapc #'guix-update-buffer to-update)))
 
-(add-hook 'guix-after-repl-operation-hook 'guix-update-buffers-maybe)
+(add-hook 'guix-after-repl-operation-hook
+          'guix-update-buffers-maybe-after-operation)
 
 
 ;;; Common definitions for buffer types
