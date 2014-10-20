@@ -4,6 +4,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
+;;; Copyright © 2014 Federico Beffa <beffa@fbengineering.ch>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -1832,3 +1833,43 @@ sources.")
 
 (define-public python2-sphinx
   (package-with-python2 python-sphinx))
+
+(define-public python-cython
+  (package
+    (name "python-cython")
+    (version "0.21.1")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cython.org/release/Cython-"
+                           version ".tar.gz"))
+       (sha256
+        (base32
+         "0ddz2l2dvcy5hdkxx4xlfiwpccvwia7ixgcy4h0pdv46a4i4vxj3"))))
+    (build-system python-build-system)
+    ;; we need the full python package and not just the python-wrapper
+    ;; because we need libpython3.3m.so
+    (inputs
+     `(("python" ,python)))
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'check 'set-HOME
+        ;; some tests require access to "$HOME/.cython"
+        (lambda* _ (setenv "HOME" "/tmp"))
+        (alist-replace
+         'check
+         (lambda _ (zero? (system* "python" "runtests.py" "-vv")))
+         %standard-phases))))
+    (home-page "http://cython.org/")
+    (synopsis "C extensions for Python")
+    (description "Cython is an optimising static compiler for both the Python
+programming language and the extended Cython programming language.  It makes
+writing C extensions for Python as easy as Python itself.")
+    (license asl2.0)))
+
+(define-public python2-cython
+  (package (inherit (package-with-python2 python-cython))
+    (name "python2-cython")
+    (inputs
+     `(("python-2" ,python-2))))) ; this is not automatically changed
