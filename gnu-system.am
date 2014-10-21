@@ -168,6 +168,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/mc.scm				\
   gnu/packages/mcrypt.scm			\
   gnu/packages/messaging.scm			\
+  gnu/packages/miscfiles.scm			\
   gnu/packages/mit-krb5.scm			\
   gnu/packages/moe.scm				\
   gnu/packages/mpd.scm				\
