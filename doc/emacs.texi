@@ -133,6 +133,17 @@ date/time prompt,,, org, Org Mode Manual}).
 
 @end table
 
+You can also invoke the @command{guix pull} command (@pxref{Invoking
+guix pull}) from Emacs using:
+
+@table @kbd
+@item M-x guix-pull
+With @kbd{C-u}, make it verbose.
+@end table
+
+Once @command{guix pull} has succeeded, the Guix REPL is restared.  This
+allows you to keep using the Emacs interface with the updated Guix.
+
 @node Emacs General info
 @subsubsection General information
 

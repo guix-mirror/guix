@@ -994,6 +994,45 @@ Each element from GENERATIONS is a generation number."
       'switch-to-generation profile generation)
      operation-buffer)))
 
+
+;;; Pull
+
+(defcustom guix-update-after-pull t
+  "If non-nil, update Guix buffers after performing \\[guix-pull]."
+  :type 'boolean
+  :group 'guix)
+
+(defvar guix-after-pull-hook
+  '(guix-restart-repl-after-pull guix-update-buffers-maybe-after-pull)
+  "Hook run after successful performing `guix-pull' operation.")
+
+(defun guix-restart-repl-after-pull ()
+  "Restart Guix REPL after `guix-pull' operation."
+  (guix-repl-exit)
+  (guix-start-process-maybe
+   "Restarting Guix REPL after pull operation ..."))
+
+(defun guix-update-buffers-maybe-after-pull ()
+  "Update buffers depending on `guix-update-after-pull'."
+  (when guix-update-after-pull
+    (mapc #'guix-update-buffer
+          ;; No need to update "generation" buffers.
+          (guix-buffers '(guix-package-list-mode
+                          guix-package-info-mode
+                          guix-output-list-mode
+                          guix-output-info-mode)))
+    (message "Guix buffers have been updated.")))
+
+;;;###autoload
+(defun guix-pull (&optional verbose)
+  "Run Guix pull operation.
+If VERBOSE is non-nil (with prefix argument), produce verbose output."
+  (interactive)
+  (let ((args (and verbose '("--verbose"))))
+    (guix-eval-in-repl
+     (apply #'guix-make-guile-expression 'guix-pull args)
+     nil 'pull)))
+
 (provide 'guix-base)
 
 ;;; guix-base.el ends here

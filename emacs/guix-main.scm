@@ -31,10 +31,6 @@
 ;; installed manifest but not in a package directory), ‘id’ parameter is
 ;; still "name-version" string.  So ‘id’ package parameter in the code
 ;; below is either an object-address number or a full-name string.
-;;
-;; Important: as object addresses live only during guile session, elisp
-;; part should take care about updating information after "Guix REPL" is
-;; restarted (TODO!)
 
 ;; To speed-up the process of getting information, the following
 ;; auxiliary variables are used:
@@ -60,6 +56,7 @@
  (guix utils)
  (guix ui)
  (guix scripts package)
+ (guix scripts pull)
  (gnu packages))
 
 (define-syntax-rule (first-or-false lst)
