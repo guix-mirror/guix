@@ -104,24 +104,24 @@
   ;; Emit a warning if stylistic issues are found in the synopsis of PACKAGE.
   (define (check-final-period synopsis)
     ;; Synopsis should not end with a period, except for some special cases.
-    (if (and (string-suffix? "." synopsis)
-             (not (string-suffix? "etc." synopsis)))
-        (emit-warning package
-                      "no period allowed at the end of the synopsis"
-                      'synopsis)))
+    (when (and (string-suffix? "." synopsis)
+               (not (string-suffix? "etc." synopsis)))
+      (emit-warning package
+                    "no period allowed at the end of the synopsis"
+                    'synopsis)))
 
   (define (check-start-article synopsis)
-    (if (or (string-prefix-ci? "A " synopsis)
-            (string-prefix-ci? "An " synopsis))
-       (emit-warning package
-                     "no article allowed at the beginning of the synopsis"
-                     'synopsis)))
+    (when (or (string-prefix-ci? "A " synopsis)
+              (string-prefix-ci? "An " synopsis))
+      (emit-warning package
+                    "no article allowed at the beginning of the synopsis"
+                    'synopsis)))
 
   (define (check-synopsis-length synopsis)
-   (if (>= (string-length synopsis) 80)
-       (emit-warning package
-                     "synopsis should be less than 80 characters long"
-                     'synopsis)))
+    (when (>= (string-length synopsis) 80)
+      (emit-warning package
+                    "synopsis should be less than 80 characters long"
+                    'synopsis)))
 
   (define (check-synopsis-start-upper-case synopsis)
    (when (and (not (string-null? synopsis))
@@ -137,33 +137,33 @@
                     'synopsis)))
 
  (let ((synopsis (package-synopsis package)))
-   (if (string? synopsis)
        (begin
         (check-synopsis-start-upper-case synopsis)
         (check-final-period synopsis)
         (check-start-article synopsis)
         (check-start-with-package-name synopsis)
         (check-synopsis-length synopsis)))))
+   (when (string? synopsis)
 
 (define (check-patches package)
   ;; Emit a warning if the patches requires by PACKAGE are badly named.
   (let ((patches   (and=> (package-source package) origin-patches))
         (name      (package-name package))
         (full-name (package-full-name package)))
-    (if (and patches
-             (any (match-lambda
-                   ((? string? patch)
-                    (let ((filename (basename patch)))
-                      (not (or (eq? (string-contains filename name) 0)
-                               (eq? (string-contains filename full-name)
-                                    0)))))
-                   (_
-                    ;; This must be an <origin> or something like that.
-                    #f))
-                  patches))
-        (emit-warning package
-          "file names of patches should start with the package name"
-          'patches))))
+    (when (and patches
+               (any (match-lambda
+                     ((? string? patch)
+                      (let ((filename (basename patch)))
+                        (not (or (eq? (string-contains filename name) 0)
+                                 (eq? (string-contains filename full-name)
+                                      0)))))
+                     (_
+                      ;; This must be an <origin> or something like that.
+                      #f))
+                    patches))
+      (emit-warning package
+                    "file names of patches should start with the package name"
+                    'patches))))
 
 (define %checkers
   (list
