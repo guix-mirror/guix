@@ -45,6 +45,15 @@
       (thunk))
     (get-output-string port)))
 
+(test-assert "description: not empty"
+  (->bool
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (description ""))))
+                          (check-description-style pkg))))
+                    "description should not be empty")))
+
 (test-assert "description: does not start with an upper-case letter"
   (->bool
    (string-contains (call-with-warnings

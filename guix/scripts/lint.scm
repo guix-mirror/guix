@@ -82,6 +82,12 @@
 
 (define (check-description-style package)
   ;; Emit a warning if stylistic issues are found in the description of PACKAGE.
+  (define (check-not-empty description)
+    (when (string-null? description)
+      (emit-warning package
+                    "description should not be empty"
+                    'description)))
+
   (define (check-starts-with-upper-case description)
     (unless (start-with-capital-letter? description)
       (emit-warning package
@@ -110,6 +116,7 @@ by two spaces; possible infraction~p at ~{~a~^, ~}"
   (let ((description (package-description package)))
     (when (string? description)
       (begin
+        (check-not-empty description)
         (check-starts-with-upper-case description)
         (check-end-of-sentence-space description)))))
 
@@ -128,6 +135,12 @@ by two spaces; possible infraction~p at ~{~a~^, ~}"
 
 (define (check-synopsis-style package)
   ;; Emit a warning if stylistic issues are found in the synopsis of PACKAGE.
+  (define (check-not-empty synopsis)
+    (when (string-null? synopsis)
+      (emit-warning package
+                    "synopsis should not be empty"
+                    'synopsis)))
+
   (define (check-final-period synopsis)
     ;; Synopsis should not end with a period, except for some special cases.
     (when (and (string-suffix? "." synopsis)
@@ -164,6 +177,7 @@ by two spaces; possible infraction~p at ~{~a~^, ~}"
 
  (let ((synopsis (package-synopsis package)))
        (begin
+        (check-not-empty synopsis)
         (check-synopsis-start-upper-case synopsis)
         (check-final-period synopsis)
         (check-start-article synopsis)
