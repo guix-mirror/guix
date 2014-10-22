@@ -25,6 +25,8 @@
   #:use-module (guix utils)
   #:use-module (gnu packages)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 regex)
+  #:use-module (ice-9 format)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9)
   #:use-module (srfi srfi-11)
@@ -75,17 +77,41 @@
   (exit 0))
 
 (define (start-with-capital-letter? s)
-  (char-set-contains? char-set:upper-case (string-ref s 0)))
+  (and (not (string-null? s))
+       (char-set-contains? char-set:upper-case (string-ref s 0))))
 
 (define (check-description-style package)
   ;; Emit a warning if stylistic issues are found in the description of PACKAGE.
- (let ((description (package-description package)))
-   (when (and (string? description)
-              (not (string-null? description))
-              (not (start-with-capital-letter? description)))
-     (emit-warning package
-                   "description should start with an upper-case letter"
-                   'description))))
+  (define (check-starts-with-upper-case description)
+    (unless (start-with-capital-letter? description)
+      (emit-warning package
+                    "description should start with an upper-case letter"
+                    'description)))
+
+  (define (check-end-of-sentence-space description)
+    "Check that an end-of-sentence period is followed by two spaces."
+    (let ((infractions
+           (reverse (fold-matches
+                     "\\. [A-Z]" description '()
+                     (lambda (m r)
+                       ;; Filter out matches of common abbreviations.
+                       (if (find (lambda (s)
+                                   (string-suffix-ci? s (match:prefix m)))
+                                 '("i.e" "e.g" "a.k.a" "resp"))
+                           r (cons (match:start m) r)))))))
+      (unless (null? infractions)
+        (emit-warning package
+                      (format #f "sentences in description should be followed ~
+by two spaces; possible infraction~p at ~{~a~^, ~}"
+                              (length infractions)
+                              infractions)
+                      'description))))
+
+  (let ((description (package-description package)))
+    (when (string? description)
+      (begin
+        (check-starts-with-upper-case description)
+        (check-end-of-sentence-space description)))))
 
 (define (check-inputs-should-be-native package)
   ;; Emit a warning if some inputs of PACKAGE are likely to belong to its

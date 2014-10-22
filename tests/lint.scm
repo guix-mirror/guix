@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -52,6 +53,34 @@
                                      (description "bad description."))))
                           (check-description-style pkg))))
                     "description should start with an upper-case letter")))
+
+(test-assert "description: two spaces after end of sentence"
+  (->bool
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (description "Bad. Quite bad."))))
+                          (check-description-style pkg))))
+                    "sentences in description should be followed by two spaces")))
+
+(test-assert "description: end-of-sentence detection with abbreviations"
+  (not
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (description
+                                      "E.g. Foo, i.e. Bar resp. Baz (a.k.a. DVD)."))))
+                          (check-description-style pkg))))
+                    "sentences in description should be followed by two spaces")))
+
+(test-assert "synopsis: not empty"
+  (->bool
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (synopsis ""))))
+                          (check-synopsis-style pkg))))
+                    "synopsis should not be empty")))
 
 (test-assert "synopsis: does not start with an upper-case letter"
   (->bool
