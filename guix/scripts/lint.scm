@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Cyril Roelandt <tipecaml@gmail.com>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -103,15 +104,15 @@
   ;; Emit a warning if stylistic issues are found in the synopsis of PACKAGE.
   (define (check-final-period synopsis)
     ;; Synopsis should not end with a period, except for some special cases.
-    (if (and (string=? (string-take-right synopsis 1) ".")
-             (not (string=? (string-take-right synopsis 4) "etc.")))
+    (if (and (string-suffix? "." synopsis)
+             (not (string-suffix? "etc." synopsis)))
         (emit-warning package
                       "no period allowed at the end of the synopsis"
                       'synopsis)))
 
   (define (check-start-article synopsis)
-   (if (or (string-ci=? (string-take synopsis 2) "A ")
-           (string-ci=? (string-take synopsis 3) "An "))
+    (if (or (string-prefix-ci? "A " synopsis)
+            (string-prefix-ci? "An " synopsis))
        (emit-warning package
                      "no article allowed at the beginning of the synopsis"
                      'synopsis)))
@@ -130,12 +131,10 @@
                    'synopsis)))
 
   (define (check-start-with-package-name synopsis)
-   (let ((idx (string-contains-ci synopsis (package-name package))))
-     (when (and idx
-                (= idx 0))
-       (emit-warning package
-                     "synopsis should not start with the package name")
-                     'synopsis)))
+    (when (string-prefix-ci? (package-name package) synopsis)
+      (emit-warning package
+                    "synopsis should not start with the package name"
+                    'synopsis)))
 
  (let ((synopsis (package-synopsis package)))
    (if (string? synopsis)
