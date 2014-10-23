@@ -45,15 +45,15 @@
 (define-public icecat
   (package
     (name "icecat")
-    (version "31.1.1")
+    (version "31.2.0")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://gnuzilla.gnu.org/releases/"
+      (uri (string-append "mirror://gnu/gnuzilla/"
                           version "/" name "-" version ".tar.xz"))
       (sha256
        (base32
-        "033p5b6akjbg33prqg57mhp5zx3svryqzbjb3k58ql6939bfmad8"))))
+        "02r9klfc0z26w270inq652249hq0wfzvwhzvwmk0n8v8nzkk5idh"))))
     (build-system gnu-build-system)
     (inputs
      `(("alsa-lib" ,alsa-lib)
