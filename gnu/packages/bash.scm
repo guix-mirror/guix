@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -77,7 +78,10 @@
    (24 "0v0gjqzjsqjfgj5x17fq7g649k94jn8zq92qsxkhc2d6l215hl1v")
    (25 "0lcj96i659q35f1jcmwwbnw3p7w7vvlxjxqi989vn6d6qksqcl8y") ;CVE-2014-6271
    (26 "0k919ir0inwn4wai2vdzpbwqq5h54fnrlkmgccxjg91v3ch15k1f") ;CVE-2014-7169
-   (27 "1gnsfvq6bhb3srlbh0cannj2hackdsipcg7z0ds7zlk1hp96mdqy")))
+   (27 "1gnsfvq6bhb3srlbh0cannj2hackdsipcg7z0ds7zlk1hp96mdqy")
+   (28 "17a65c4fn4c5rgsiw9gqqnzhznh3gwnd2xzzv2dppyi48znxpc78") ;CVE-2014-7186
+   (29 "14k27p28r5l2fz3r03kd0x72vvsq8bja8c6hjz5kxikbzsbs7i2c") ;CVE-2014-6277
+   (30 "0nrqb0m7s89qsrbfaffpilc5gcf82bx9yvgzld4hr79p5y54yhw5"))) ;CVE-2014-6278
 
 (define (download-patches store count)
   "Download COUNT Bash patches into store.  Return a list of
@@ -132,18 +136,7 @@ number/base32-hash tuples, directly usable in the 'patch-series' form."
                (base32
                 "1m14s1f61mf6bijfibcjm9y6pkyvz6gibyl8p4hxq90fisi8gimg"))
               (patch-flags '("-p0"))
-              (patches
-               (append
-                %patch-series-4.3
-                (list
-                 ;; Fix out-of-bound memory accesses.
-                 ;; See <http://seclists.org/oss-sec/2014/q3/712>.
-                 (origin
-                   (method url-fetch)
-                   (uri "http://seclists.org/oss-sec/2014/q3/att-712/parser-oob-4_2.patch")
-                   (sha256
-                    (base32
-                     "1zc26qv76ch2l7pxyzcw0b0bpdsr65g9hrrl2gpw6k9kq2sjvc36"))))))
+              (patches %patch-series-4.3)
 
               ;; The patches above modify 'parse.y', so force a rebuild of the
               ;; parser.
