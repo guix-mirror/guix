@@ -97,7 +97,7 @@
     (synopsis "Message bus for inter-process communication (IPC)")
     (description
      "D-Bus is a message bus system, a simple way for applications to
-talk to one another. In addition to interprocess communication, D-Bus
+talk to one another.  In addition to interprocess communication, D-Bus
 helps coordinate process lifecycle; it makes it simple and reliable to
 code a \"single instance\" application or daemon, and to launch
 applications and daemons on demand when their services are needed.
@@ -105,10 +105,10 @@ applications and daemons on demand when their services are needed.
 D-Bus supplies both a system daemon (for events such as \"new hardware
 device added\" or \"printer queue changed\") and a
 per-user-login-session daemon (for general IPC needs among user
-applications). Also, the message bus is built on top of a general
+applications).  Also, the message bus is built on top of a general
 one-to-one message passing framework, which can be used by any two apps
 to communicate directly (without going through the message bus
-daemon). Currently the communicating applications are on one computer,
+daemon).  Currently the communicating applications are on one computer,
 or through unencrypted TCP/IP suitable for use behind a firewall with
 shared NFS home directories.")
     (license license:gpl2+)))                     ; or Academic Free License 2.1
@@ -263,7 +263,7 @@ bindings to call into the C library.")
     (home-page "https://launchpad.net/intltool/+download")
     (synopsis "Tools to centralise translations of different file formats")
     (description
-     "intltool is a set of tools to centralise translations of many different
+     "Intltool is a set of tools to centralise translations of many different
 file formats using GNU gettext-compatible PO files.
 
 The intltool collection can be used to do these things:
@@ -275,7 +275,7 @@ The intltool collection can be used to do these things:
     source files (.c, .h) in po/$(PACKAGE).pot.
 
     Merge back the translations from .po files into .xml, .desktop and
-    oaf files. This merge step will happen at build resp. installation time.")
+    oaf files.  This merge step will happen at build resp. installation time.")
     (license license:gpl2+)))
 
 (define itstool
@@ -359,7 +359,7 @@ by GDBus included in Glib.")
     (home-page "http://libsigc.sourceforge.net/")
     (synopsis "Type-safe callback system for standard C++")
     (description
-     "libsigc++ implements a type-safe callback system for standard C++.  It
+     "Libsigc++ implements a type-safe callback system for standard C++.  It
 allows you to define signals and to connect those signals to any callback
 function, either global or a member function, regardless of whether it is
 static or virtual.
@@ -405,6 +405,6 @@ has an ease of use unmatched by other C++ callback libraries.")
     (home-page "http://gtkmm.org/")
     (synopsis "C++ interface to the GLib library")
     (description
-     "glibmm provides a C++ programming interface to the part of GLib that are
+     "Glibmm provides a C++ programming interface to the part of GLib that are
 useful for C++.")
     (license license:lgpl2.1+)))

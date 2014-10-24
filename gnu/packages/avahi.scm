@@ -63,7 +63,7 @@
      `(("intltool" ,intltool)
        ("glib" ,glib "bin")
        ("pkg-config" ,pkg-config)))
-    (synopsis "Avahi, an mDNS/DNS-SD implementation")
+    (synopsis "Implementation of mDNS/DNS-SD protocols")
     (description
      "Avahi is a system which facilitates service discovery on a local
 network.  It is an implementation of the mDNS (for \"Multicast DNS\") and
@@ -99,7 +99,7 @@ DNS-SD (for \"DNS-Based Service Discovery\") protocols.")
 
     (synopsis "The mDNS Name Service Switch (NSS) plug-in")
     (description
-     "'nss-mdns' is a plug-in for the Name Service Switch (NSS) functionality
+     "Nss-mdns is a plug-in for the Name Service Switch (NSS) functionality
 of the GNU C Library, providing host name resolution via Multicast DNS (mDNS).
 It allows for name resolution by programs in the ad-hoc mDNS domain
 '.local'.")

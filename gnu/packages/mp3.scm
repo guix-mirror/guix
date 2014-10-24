@@ -58,7 +58,7 @@
           ;; remove option that is not supported by gcc any more
           (substitute* "configure" ((" -fforce-mem") "")))
        %standard-phases)))
-   (synopsis "libmad, an MPEG audio decoder")
+   (synopsis "MPEG audio decoder")
    (description
     "MAD (MPEG Audio Decoder) supports MPEG-1 and the MPEG-2 extension to
 lower sampling frequencies, as well as the de facto MPEG 2.5 format.
@@ -83,9 +83,9 @@ This package contains the library.")
               "0lb1w883dc46dajbdvnia5870brl5lvnlk7g7y58y9wpg5p4znk3"))))
    (build-system gnu-build-system)
    (inputs `(("zlib" ,zlib)))
-   (synopsis "libid3tag, a library for reading ID3 tags")
+   (synopsis "Library for reading ID3 tags")
    (description
-    "libid3tag is a library for reading ID3 tags, both ID3v1 and the various
+    "Libid3tag is a library for reading ID3 tags, both ID3v1 and the various
 versions of ID3v2")
    (license license:gpl2+)
    (home-page "http://www.underbit.com/products/mad/")))
@@ -119,10 +119,10 @@ versions of ID3v2")
           (substitute* "examples/test_io.cpp"
             (("dami;") "dami;\nusing namespace std;")))
          %standard-phases)))
-   (synopsis "a library for reading, writing, and manipulating ID3v1 and ID3v2 tags")
+   (synopsis "Library for reading, writing, and manipulating ID3v1 and ID3v2 tags")
    (description
-    "id3lib is a cross-platform software development library for reading,
-writing, and manipulating ID3v1 and ID3v2 tags. It is an on-going project
+    "Id3lib is a cross-platform software development library for reading,
+writing, and manipulating ID3v1 and ID3v2 tags.  It is an on-going project
 whose primary goals are full compliance with the ID3v2 standard, portability
 across several platforms, and providing a powerful and feature-rich API with
 a highly stable and efficient implementation.")
@@ -150,12 +150,12 @@ a highly stable and efficient implementation.")
              ("pcre" ,pcre)))
    (native-inputs
      `(("pkg-config" ,pkg-config)))
-   (synopsis "libmp3splt, a library for splitting mp3 and ogg vorbis files")
+   (synopsis "Library for splitting mp3 and ogg vorbis files")
    (description
     "Mp3splt is a utility to split mp3 and ogg vorbis files selecting a begin
-and an end time position, without decoding. For splitting an album, one may
+and an end time position, without decoding.  For splitting an album, one may
 select split points and filenames manually or obtain them automatically from
-CDDB (internet or a local file) or from .cue files. The tool also supports
+CDDB (internet or a local file) or from .cue files.  The tool also supports
 automatic silence split, that can be used also to adjust cddb/cue splitpoints.
 
 This package contains the library.")
@@ -176,12 +176,12 @@ This package contains the library.")
               "106dnka56prlc9nsfh300f8841am2lmkwlzgl9lkr25mgnc35wwh"))))
    (build-system gnu-build-system)
    (inputs `(("libmp3splt" ,libmp3splt)))
-   (synopsis "mp3splt, a utiliy for splitting mp3 and ogg vorbis files")
+   (synopsis "Utiliy for splitting mp3 and ogg vorbis files")
    (description
     "Mp3splt is a utility to split mp3 and ogg vorbis files selecting a begin
-and an end time position, without decoding. For splitting an album, one may
+and an end time position, without decoding.  For splitting an album, one may
 select split points and filenames manually or obtain them automatically from
-CDDB (internet or a local file) or from .cue files. The tool also supports
+CDDB (internet or a local file) or from .cue files.  The tool also supports
 automatic silence split, that can be used also to adjust cddb/cue splitpoints.
 
 This package contains the binary.")
@@ -207,7 +207,7 @@ This package contains the binary.")
     (home-page "http://www.mpg123.org/")
     (synopsis "Console MP3 player and decoder library")
     (description
-     "mpg123 is a real time MPEG 1.0/2.0/2.5 audio player/decoder for layers
+     "Mpg123 is a real time MPEG 1.0/2.0/2.5 audio player/decoder for layers
 1,2 and 3 (MPEG 1.0 layer 3 aka MP3 most commonly tested).  It comes with a
 command-line tool as well as a C library, libmpg123.")
     (license license:lgpl2.1)))
@@ -232,7 +232,7 @@ command-line tool as well as a C library, libmpg123.")
        ("libao" ,ao)))
     (home-page "http://mpg321.sourceforge.net/")
     (synopsis "Command-line MP3 player")
-    (description "mpg321 is a command-line mp3 player.  mpg321 is used for
+    (description "Mpg321 is a command-line mp3 player.  mpg321 is used for
 frontends, as an mp3 player and as an mp3 to wave file decoder (primarily for
 use with CD-recording software).")
     (license license:gpl2)))
@@ -285,8 +285,8 @@ use with CD-recording software).")
    (synopsis "GTK program to rip and encode CD audio tracks")
    (description
     "RipperX is a GTK program to rip CD audio tracks and encode them to the
-Ogg, MP3, or FLAC formats. It's goal is to be easy to use, requiring only
-a few mouse clicks to convert an entire album. It supports CDDB lookups
+Ogg, MP3, or FLAC formats.  Its goal is to be easy to use, requiring only
+a few mouse clicks to convert an entire album.  It supports CDDB lookups
 for album and track information.")
    (license license:gpl2)
    (home-page "http://sourceforge.net/projects/ripperx/")))
@@ -349,6 +349,6 @@ format.")
     (home-page "http://mpc123.sourceforge.net/")
     (synopsis "Audio player for Musepack-formatted files")
     (description
-     "mpc123 is a command-line player for files in the Musepack audio
+     "Mpc123 is a command-line player for files in the Musepack audio
 compression format (.mpc files.)")
     (license license:gpl2+)))

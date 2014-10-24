@@ -59,8 +59,8 @@
      `(("pkg-config" ,pkg-config)
        ("perl" ,perl)))
     (home-page "http://www.irssi.org/")
-    (synopsis "Irssi, a terminal-based IRC client")
+    (synopsis "Terminal-based IRC client")
     (description
-     "Irssi is a terminal based IRC client for UNIX systems. It also supports
+     "Irssi is a terminal based IRC client for UNIX systems.  It also supports
 SILC and ICB protocols via plugins.")
     (license gpl2+)))

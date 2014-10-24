@@ -97,9 +97,9 @@ XTEA, 3WAY, TWOFISH, BLOWFISH, ARCFOUR, WAKE and more.")
     (home-page "http://mhash.sourceforge.net/")
     (synopsis "Thread-safe hash library")
     (description
-     "mhash is a thread-safe hash library, implemented in C, and provides a
-uniform interface to a large number of hash algorithms. These algorithms can
-be used to compute checksums, message digests, and other signatures. The HMAC
+     "Mhash is a thread-safe hash library, implemented in C, and provides a
+uniform interface to a large number of hash algorithms.  These algorithms can
+be used to compute checksums, message digests, and other signatures.  The HMAC
 support implements the basics for message authentication, following RFC 2104.
 
 Algorithms currently supplied are:

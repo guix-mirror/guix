@@ -48,8 +48,8 @@
     (home-page "http://www.lysator.liu.se/liboop/")
     (synopsis "Event loop library")
     (description "Liboop is a low-level event loop management library for
-POSIX-based operating systems. It supports the development of modular,
-multiplexed applications which may respond to events from several sources. It
+POSIX-based operating systems.  It supports the development of modular,
+multiplexed applications which may respond to events from several sources.  It
 replaces the \"select() loop\" and allows the registration of event handlers
 for file and network I/O, timers and signals.  Since processes use these
 mechanisms for almost all external communication, liboop can be used as the

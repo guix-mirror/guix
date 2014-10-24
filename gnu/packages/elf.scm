@@ -81,7 +81,7 @@ addr2line, and more.")
                            %standard-phases)))
     (home-page "http://www.mr511.de/software/english.html")
     (synopsis "ELF object file access library")
-    (description "libelf is a C library to access ELF object files.")
+    (description "Libelf is a C library to access ELF object files.")
     (license lgpl2.0+)))
 
 (define-public patchelf

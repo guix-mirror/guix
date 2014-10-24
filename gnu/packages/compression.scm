@@ -57,12 +57,12 @@
                                (string-append "--prefix=" out)))))
                  %standard-phases)))
     (home-page "http://zlib.net/")
-    (synopsis "The zlib compression library")
+    (synopsis "Compression library")
     (description
      "zlib is designed to be a free, general-purpose, legally unencumbered --
 that is, not covered by any patents -- lossless data-compression library for
 use on virtually any computer hardware and operating system.  The zlib data
-format is itself portable across platforms. Unlike the LZW compression method
+format is itself portable across platforms.  Unlike the LZW compression method
 used in Unix compress(1) and in the GIF image format, the compression method
 currently used in zlib essentially never expands the data. (LZW can double or
 triple the file size in extreme cases.)  zlib's memory footprint is also
@@ -173,7 +173,7 @@ file; as a result, it is often used in conjunction with \"tar\", resulting in
          ,@(if (%current-target-system)
                '(#:tests? #f)
                '())))
-      (synopsis "high-quality data compression program")
+      (synopsis "High-quality data compression program")
       (description
        "bzip2 is a freely available, patent free (see below), high-quality data
 compressor.  It typically compresses files to within 10% to 15% of the best
@@ -196,8 +196,7 @@ decompression.")
              (base32
               "1dl35ca8fdss9z2d6y234gxh24ixq904xksizrjmjr5dimwhax6n"))))
    (build-system gnu-build-system)
-   (synopsis
-    "XZ, general-purpose data compression software, successor of LZMA")
+   (synopsis "General-purpose data compression")
    (description
     "XZ Utils is free general-purpose data compression software with high
 compression ratio.  XZ Utils were written for POSIX-like systems, but also

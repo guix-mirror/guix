@@ -62,12 +62,12 @@
            (symlink (string-append include "/freetype2/freetype")
                     (string-append include "/freetype"))))
        %standard-phases)))
-   (synopsis "Freetype, a library to render fonts")
+   (synopsis "Font rendering library")
    (description
     "Freetype is a library that can be used by applications to access the
-contents of font files. It provides a uniform interface to access font files.
+contents of font files.  It provides a uniform interface to access font files.
 It supports both bitmap and scalable formats, including TrueType, OpenType,
-Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others. It supports high-speed
+Type1, CID, CFF, Windows FON/FNT, X11 PCF, and others.  It supports high-speed
 anti-aliased glyph bitmap generation with 256 gray levels.")
    (license license:freetype)           ; some files have other licenses
    (home-page "http://www.freetype.org/")))
@@ -134,10 +134,10 @@ high quality, anti-aliased and subpixel rendered text on a display.")
 It is based on the code of the X11 rasteriser of the X11 project.
 
 The bitmaps created by t1lib are returned in a data structure with type
-GLYPH. This special GLYPH-type is also used in the X11 window system to
-describe character bitmaps. It contains the bitmap data as well as some
-metric information. But t1lib is in itself entirely independent of the
-X11-system or any other graphical user interface. ")
+GLYPH.  This special GLYPH-type is also used in the X11 window system to
+describe character bitmaps.  It contains the bitmap data as well as some
+metric information.  But t1lib is in itself entirely independent of the
+X11-system or any other graphical user interface.")
    (license license:gpl2)
    (home-page "http://www.t1lib.org/")))
 
@@ -156,13 +156,13 @@ X11-system or any other graphical user interface. ")
             (patches (list (search-patch "teckit-cstdio.patch")))))
    (build-system gnu-build-system)
    (inputs `(("zlib" ,zlib)))
-   (synopsis "TECkit, a toolkit for encoding conversions")
+   (synopsis "Toolkit for encoding conversions")
    (description
     "TECkit is a low-level toolkit intended to be used by other applications
 that need to perform encoding conversions (e.g., when importing legacy data
-into a Unicode-based application). The primary component of the TECkit
+into a Unicode-based application).  The primary component of the TECkit
 package is therefore a library that performs conversions; this is the
-\"TECkit engine\". The engine relies on mapping tables in a specific binary
+\"TECkit engine\".  The engine relies on mapping tables in a specific binary
 format (for which documentation is available); there is a compiler that
 creates such tables from a human-readable mapping description (a simple
 text file).
@@ -171,7 +171,7 @@ To facilitate the development and testing of mapping tables for TECkit,
 several applications are also included in the current package; these
 include simple tools for applying conversions to plain-text and Standard
 Format files, as well as both command-line and simple GUI versions of the
-TECkit compiler. However, it is not intended that these tools will be the
+TECkit compiler.  However, it is not intended that these tools will be the
 primary means by which end users perform conversions, and they have not
 been designed, tested, and debugged to the extent that general-purpose
 applications should be.")
@@ -196,7 +196,7 @@ applications should be.")
     `(("freetype" ,freetype)
       ("perl" ,perl)
       ("python" ,python-2))) ; because of "import imap" in tests
-   (synopsis "reimplementation of the SIL Graphite text processing engine")
+   (synopsis "Reimplementation of the SIL Graphite text processing engine")
    (description
     "Graphite2 is a reimplementation of the SIL Graphite text processing
 engine.  Graphite is a smart font technology designed to facilitate the

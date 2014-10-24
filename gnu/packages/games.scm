@@ -372,6 +372,6 @@ Portable Game Notation.")
     (synopsis "Ball and paddle game")
     (description "XBoing is a blockout type game where you have a paddle which
 you control to bounce a ball around the game zone destroying blocks with a
-proton ball. Each block carries a different point value. The more blocks you
-destroy, the better your score. The person with the highest score wins.")
+proton ball.  Each block carries a different point value.  The more blocks you
+destroy, the better your score.  The person with the highest score wins.")
     (license (x11-style "file://COPYING" "Very similar to the X11 licence."))))

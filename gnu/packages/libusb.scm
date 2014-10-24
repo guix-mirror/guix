@@ -37,7 +37,7 @@
         "16sz34ix6hw2wwl3kqx6rf26fg210iryr68wc439dc065pffw879"))))
     (build-system gnu-build-system)
     (home-page "http://www.libusb.org")
-    (synopsis "Libusb, a user-space USB library")
+    (synopsis "User-space USB library")
     (description
      "Libusb is a library that gives applications easy access to USB
 devices on various operating systems.")

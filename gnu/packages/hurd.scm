@@ -84,7 +84,7 @@
      "GNU MIG is the GNU distribution of the Mach 3.0 interface generator
 MIG, as maintained by the GNU Hurd developers for the GNU project.
 You need this tool to compile the GNU Mach and GNU Hurd distributions,
-and to compile the GNU C library for the Hurd. Also,you will need it
+and to compile the GNU C library for the Hurd.  Also, you will need it
 for other software in the GNU system that uses Mach-based inter-process
 communication.")
     (license gpl2+)))

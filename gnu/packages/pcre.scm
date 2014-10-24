@@ -44,10 +44,10 @@
                           "--enable-pcregrep-libz"
                           "--enable-pcregrep-libbz2"
                           "--enable-pcretest-libreadline")))
-   (synopsis "PCRE, Perl Compatible Regular Expressions")
+   (synopsis "Perl Compatible Regular Expressions")
    (description
     "The PCRE library is a set of functions that implement regular expression
-pattern matching using the same syntax and semantics as Perl 5. PCRE has its
+pattern matching using the same syntax and semantics as Perl 5.  PCRE has its
 own native API, as well as a set of wrapper functions that correspond to the
 POSIX regular expression API.")
    (license license:bsd-3)

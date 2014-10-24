@@ -48,14 +48,13 @@
    (inputs `(("gmp" ,gmp)
              ("mpfr" ,mpfr)
              ("mpc"  ,mpc)))
-   (synopsis "mpfrcx, a library for the arithmetic of univariate polynomials
-over arbitrary precision real or complex numbers")
+   (synopsis "Arithmetic of polynomials over arbitrary precision numbers")
    (description
-    "mpfrcx is a library for the arithmetic of univariate polynomials over
+    "Mpfrcx is a library for the arithmetic of univariate polynomials over
 arbitrary precision real (mpfr) or complex (mpc) numbers, without control
-on the rounding. For the time being, only the few functions needed to
+on the rounding.  For the time being, only the few functions needed to
 implement the floating point approach to complex multiplication are
-implemented. On the other hand, these comprise asymptotically fast
+implemented.  On the other hand, these comprise asymptotically fast
 multiplication routines such as Toom–Cook and the FFT. ")
    (license lgpl2.1+)
    (home-page "http://mpfrcx.multiprecision.org/")))
@@ -74,9 +73,9 @@ multiplication routines such as Toom–Cook and the FFT. ")
    (build-system gnu-build-system)
    (inputs `(("gmp" ,gmp)
              ("mpfr" ,mpfr)))
-   (synopsis "fplll, a library for LLL-reduction of euclidean lattices")
+   (synopsis "Library for LLL-reduction of euclidean lattices")
    (description
-    "fplll LLL-reduces euclidean lattices. Since version 3, it can also
+    "fplll LLL-reduces euclidean lattices.  Since version 3, it can also
 solve the shortest vector problem.")
    (license lgpl2.1+)
    (home-page "http://perso.ens-lyon.fr/damien.stehle/fplll/")))

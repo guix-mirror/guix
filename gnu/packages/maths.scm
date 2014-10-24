@@ -267,9 +267,9 @@ problems in numerical linear algebra.")
     (home-page "http://www.gnuplot.info")
     (synopsis "Command-line driven graphing utility")
     (description "Gnuplot is a portable command-line driven graphing
-utility. It was originally created to allow scientists and students to
+utility.  It was originally created to allow scientists and students to
 visualize mathematical functions and data interactively, but has grown to
-support many non-interactive uses such as web scripting. It is also used as a
+support many non-interactive uses such as web scripting.  It is also used as a
 plotting engine by third-party applications like Octave.")
     ;;  X11 Style with the additional restriction that derived works may only be
     ;;  distributed as patches to the original.

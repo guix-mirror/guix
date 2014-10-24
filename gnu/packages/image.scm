@@ -57,7 +57,7 @@
    (synopsis "Library for handling PNG files")
    (description
     "Libpng is the official PNG (Portable Network Graphics) reference
-library. It supports almost all PNG features and is extensible.")
+library.  It supports almost all PNG features and is extensible.")
    (license license:zlib)
    (home-page "http://www.libpng.org/pub/png/libpng.html")))
 
@@ -72,7 +72,7 @@ library. It supports almost all PNG features and is extensible.")
             (sha256 (base32
                      "19q5zr4n60sjcvfbyv06n4pcl1mai3ipvnd2akflayciinj3wx9s"))))
    (build-system gnu-build-system)
-   (synopsis "Libjpeg, a library for handling JPEG files")
+   (synopsis "Library for handling JPEG files")
    (description
     "Libjpeg implements JPEG image encoding, decoding, and transcoding.
 JPEG is a standardized compression method for full-color and gray-scale
@@ -111,7 +111,7 @@ image files in PBMPLUS PPM/PGM, GIF, BMP, and Targa file formats.")
       (list (string-append "--with-jpeg-include-dir="
                            (assoc-ref %build-inputs "libjpeg-8")
                            "/include"))))
-   (synopsis "Libtiff, a library for handling TIFF files")
+   (synopsis "Library for handling TIFF files")
    (description
     "Libtiff provides support for the Tag Image File Format (TIFF), a format
 used for storing image data.
@@ -260,7 +260,7 @@ error-resilience, a Java-viewer for j2k-images, ...")
                   %standard-phases))))
     (synopsis "Tools and library for working with GIF images")
     (description
-     "giflib is a library for reading and writing GIF images.  It is API and
+     "GIFLIB is a library for reading and writing GIF images.  It is API and
 ABI compatible with libungif which was in wide use while the LZW compression
 algorithm was patented.  Tools are also included to convert, manipulate,
 compose, and analyze GIF images.")
@@ -336,7 +336,7 @@ more modular, simple, and flexible.")
     (home-page "http://linuxbrit.co.uk/software/") ; no real home-page
     (synopsis "Wrapper library for imlib2")
     (description
-     "giblib is a simple library which wraps imlib2's context API, avoiding
+     "Giblib is a simple library which wraps imlib2's context API, avoiding
 all the context_get/set calls, adds fontstyles to the truetype renderer and
 supplies a generic doubly-linked list and some string functions.")
     ;; This license removes a clause about X Consortium from the original

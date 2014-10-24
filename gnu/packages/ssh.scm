@@ -111,10 +111,10 @@ remote applications.")
    (propagated-inputs `(("libgcrypt" ,libgcrypt)
                         ("zlib" ,zlib)))
    (arguments '(#:configure-flags `("--with-libgcrypt")))
-   (synopsis "libssh2, a client-side C library implementing the SSH2 protocol")
+   (synopsis "Client-side C library implementing the SSH2 protocol")
    (description
     "libssh2 is a library intended to allow software developers access to
-the SSH-2 protocol in an easy-to-use self-contained package. It can be built
+the SSH-2 protocol in an easy-to-use self-contained package.  It can be built
 into an application to perform many different tasks when communicating with
 a server that supports the SSH-2 protocol.")
    (license license:bsd-3)
@@ -159,7 +159,7 @@ a server that supports the SSH-2 protocol.")
           ;; install without host keys and system configuration files
           (zero? (apply system* "make" "install-nosysconf" make-flags)))
        %standard-phases)))))
-   (synopsis "OpenSSH, a client and server for the secure shell (ssh) protocol")
+   (synopsis "Client and server for the secure shell (ssh) protocol")
    (description
     "The SSH2 protocol implemented in OpenSSH is standardised by the
 IETF secsh working group and is specified in several RFCs and drafts.
@@ -171,13 +171,13 @@ cryptographically secured connection: it provides integrity, confidentiality
 and optional compression.
 
 The user authentication layer uses the established connection and relies on
-the services provided by the transport layer. It provides several mechanisms
-for user authentication. These include traditional password authentication
+the services provided by the transport layer.  It provides several mechanisms
+for user authentication.  These include traditional password authentication
 as well as public-key or host-based authentication mechanisms.
 
 The connection layer multiplexes many different concurrent channels over the
 authenticated connection and allows tunneling of login sessions and
-TCP-forwarding. It provides a flow control service for these channels.
+TCP-forwarding.  It provides a flow control service for these channels.
 Additionally, various channel-specific options can be negotiated.")
    (license (license:bsd-style "file://LICENSE"
                                "See LICENSE in the distribution."))
@@ -341,7 +341,7 @@ especially over Wi-Fi, cellular, and long-distance links.")
     (inputs `(("zlib" ,zlib)))
     (synopsis "Small SSH server and client")
     (description "Dropbear is a relatively small SSH server and
-client. It runs on a variety of POSIX-based platforms. Dropbear is
-particularly useful for embedded systems, such as wireless routers.")   
+client.  It runs on a variety of POSIX-based platforms.  Dropbear is
+particularly useful for embedded systems, such as wireless routers.")
     (home-page "https://matt.ucc.asn.au/dropbear/dropbear.html")
     (license (license:x11-style "" "See file LICENSE."))))

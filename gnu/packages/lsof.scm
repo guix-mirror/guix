@@ -63,7 +63,7 @@
            (copy-file "lsof.8" (string-append out "/share/man/man8/lsof.8"))
          ))
        %standard-phases)))))
-   (synopsis "lsof displays information about open files")
+   (synopsis "Display information about open files")
    (description
     "Lsof stands for LiSt Open Files, and it does just that.
 It lists information about files that are open by the processes running

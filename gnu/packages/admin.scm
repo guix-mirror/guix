@@ -340,7 +340,7 @@ ONC RPC numbers")
      "Netcat is a featured networking utility which reads and writes data
 across network connections, using the TCP/IP protocol.  It is designed to be a
 reliable \"back-end\" tool that can be used directly or easily driven by other
-programs and scripts. At the same time, it is a feature-rich network debugging
+programs and scripts.  At the same time, it is a feature-rich network debugging
 and exploration tool, since it can create almost any kind of connection you
 would need and has several interesting built-in capabilities.")
     (license gpl2+)))
@@ -816,7 +816,7 @@ module slots, and the list of I/O ports (e.g. serial, parallel, USB).")
        #:tests? #f  ; no 'check' target.
        #:phases (alist-delete 'configure %standard-phases)))
     (home-page "http://acpica.org/")
-    (synopsis "ACPICA tools for the development and debug of ACPI tables")
+    (synopsis "Tools for the development and debug of ACPI tables")
     (description
      "The ACPI Component Architecture (ACPICA) project provides an
 OS-independent reference implementation of the Advanced Configuration and
@@ -842,11 +842,11 @@ development, not the kernel implementation of ACPI.")
     (home-page "http://packages.debian.org/wheezy/stress")
     (synopsis "Impose load on and stress test a computer system")
     (description
-     "'stress' is a tool that imposes a configurable amount of CPU, memory, I/O,
+     "Stress is a tool that imposes a configurable amount of CPU, memory, I/O,
 or disk stress on a POSIX-compliant operating system and reports any errors it
 detects.
 
-'stress' is not a benchmark.  It is a tool used by system administrators to
+Stress is not a benchmark.  It is a tool used by system administrators to
 evaluate how well their systems will scale, by kernel programmers to evaluate
 perceived performance characteristics, and by systems programmers to expose
 the classes of bugs which only or more frequently manifest themselves when the
@@ -940,7 +940,7 @@ recover lost partitions and/or make non-booting disks bootable again.")
     (synopsis "Daemon to monitor directories for events such as file removal")
     (description
      "A daemon that monitors directories for events, such as creating,
-deleting or modifying files. It can monitor different sets of directories for
+deleting or modifying files.  It can monitor different sets of directories for
 different events.  When an event is detected, direvent calls a specified
 external program with information about the event, such as the location
 within the file system where it occurred.  Thus, \"direvent\" provides an

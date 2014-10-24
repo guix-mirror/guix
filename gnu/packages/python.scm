@@ -178,7 +178,7 @@
             (directories '("lib/python2.7/site-packages")))))
     (home-page "http://python.org")
     (synopsis
-     "Python, a high-level dynamically-typed programming language")
+     "High-level, dynamically-typed programming language")
     (description
      "Python is a remarkably powerful dynamic programming language that
 is used in a wide variety of application domains.  Some of its key
@@ -414,7 +414,7 @@ Python 3 support.")
     (description
      "Pycrypto is a collection of both secure hash functions (such as SHA256
 and RIPEMD160), and various encryption algorithms (AES, DES, RSA, ElGamal,
-etc.). The package is structured to make adding new modules easy.")
+etc.).  The package is structured to make adding new modules easy.")
     (license public-domain)))
 
 (define-public python-keyring
@@ -452,7 +452,7 @@ etc.). The package is structured to make adding new modules easy.")
     (synopsis "Store and access your passwords safely")
     (description
      "The Python keyring lib provides a easy way to access the system keyring
-service from python. It can be used in any application that needs safe
+service from python.  It can be used in any application that needs safe
 password storage.")
     ;; "MIT" and PSF dual license
     (license x11)))
@@ -475,10 +475,10 @@ password storage.")
     (home-page "http://pypi.python.org/pypi/six/")
     (synopsis "Python 2 and 3 compatibility utilities")
     (description
-     "Six is a Python 2 and 3 compatibility library. It provides utility
+     "Six is a Python 2 and 3 compatibility library.  It provides utility
 functions for smoothing over the differences between the Python versions with
 the goal of writing Python code that is compatible on both Python versions.
-Six supports every Python version since 2.5. It is contained in only one
+Six supports every Python version since 2.5.  It is contained in only one
 Python file, so it can be easily copied into your project.")
     (license x11)))
 
@@ -586,7 +586,7 @@ datetime module, available in Python 2.3+.")
         %standard-phases)))
     (home-page "https://github.com/regebro/tzlocal")
     (synopsis
-     "tzinfo object for the local timezone")
+     "Local timezone information for Python")
     (description
      "Tzlocal returns a tzinfo object with the local timezone information.
 This module attempts to fix a glaring hole in pytz, that there is no way to
@@ -738,7 +738,7 @@ Python 3.3+.")
     (home-page "https://fedorahosted.org/dogtail/")
     (synopsis "GUI test tool and automation framework written in ​Python")
     (description
-     "dogtail is a GUI test tool and automation framework written in Python.
+     "Dogtail is a GUI test tool and automation framework written in Python.
 It uses Accessibility (a11y) technologies to communicate with desktop
 applications. dogtail scripts are written in Python and executed like any
 other Python program.")

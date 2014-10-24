@@ -81,7 +81,7 @@ high-quality hard copies.
 
 The input document can use Skribilo's markup language to provide information
 about the document's structure, which is similar to HTML or LaTeX and does not
-require expertise. Alternatively, it can use a simpler, “markup-less” format
+require expertise.  Alternatively, it can use a simpler, “markup-less” format
 that borrows from Emacs' outline mode and from other conventions used in
 emails, Usenet and text.
 

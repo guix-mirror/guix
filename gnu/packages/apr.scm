@@ -54,7 +54,7 @@
     (description
      "The mission of the Apache Portable Runtime (APR) project is to create and
 maintain software libraries that provide a predictable and consistent interface
-to underlying platform-specific implementations. The primary goal is to provide
+to underlying platform-specific implementations.  The primary goal is to provide
 an API to which software developers may code and be assured of predictable if
 not identical behaviour regardless of the platform on which their software is
 built, relieving them of the need to code special-case conditions to work

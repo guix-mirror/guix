@@ -60,7 +60,7 @@
        ("help2man" ,help2man)
        ("pkg-config" ,pkg-config)))
     (home-page "http://www.gnu.org/software/zile/")
-    (synopsis "Zile is lossy Emacs, a lightweight Emacs clone")
+    (synopsis "Lightweight Emacs clone")
     (description
      "GNU Zile is a lightweight Emacs clone.  It usage is similar to the
 default Emacs configuration, but it carries a much lighter feature set.")

@@ -54,7 +54,7 @@
     (description
       "feh is an X11 image viewer aimed mostly at console users.
 Unlike most other viewers, it does not have a fancy GUI, but simply
-displays images. It can also be used to set the desktop wallpaper.
+displays images.  It can also be used to set the desktop wallpaper.
 It is controlled via commandline arguments and configurable key/mouse
 actions.")
 

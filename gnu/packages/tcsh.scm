@@ -71,8 +71,8 @@
     (synopsis "Unix shell based on csh")
     (description
      "Tcsh is an enhanced, but completely compatible version of the Berkeley
-UNIX C shell (csh). It is a command language interpreter usable both as an
-interactive login shell and a shell script command processor. It includes a
+UNIX C shell (csh).  It is a command language interpreter usable both as an
+interactive login shell and a shell script command processor.  It includes a
 command-line editor, programmable word completion, spelling correction, a
 history mechanism, job control and a C-like syntax.")
     (license bsd-4)))

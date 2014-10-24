@@ -49,7 +49,7 @@
     (synopsis "Mesa OpenGL Utility library")
     (description
      "GLU, or OpenGL Utility Library provides some higher-level functionality
-not provided by just OpenGL itself. Some of GLU's Features
+not provided by just OpenGL itself.  Some of GLU's Features
 include: Scaling of 2D images and creation of mipmap pyramids,
 Transformation of object coordinates into device coordinates and
 vice versa, Support for NURBS surfaces, Support for tessellation
@@ -83,15 +83,15 @@ as ASCII text.")
     (synopsis "Alternative to the OpenGL Utility Toolkit (GLUT)")
     (description
      "Freeglut is a completely Free/OpenSourced alternative to
-the OpenGL Utility Toolkit (GLUT) library. GLUT was originally
+the OpenGL Utility Toolkit (GLUT) library.  GLUT was originally
 written by Mark Kilgard to support the sample programs in the
-second edition OpenGL 'RedBook'. Since then, GLUT has been used
+second edition OpenGL 'RedBook'.  Since then, GLUT has been used
 in a wide variety of practical applications because it is simple,
 widely available and highly portable.
 
 GLUT (and hence freeglut) allows the user to create and manage windows
 containing OpenGL contexts on a wide range of platforms and also read
-the mouse, keyboard and joystick functions. freeglut is released under
+the mouse, keyboard and joystick functions.  Freeglut is released under
 the X-Consortium license.")
     (license l:x11)))
 
@@ -113,7 +113,7 @@ the X-Consortium license.")
     (home-page "http://ftgl.sourceforge.net")
     (synopsis "Font rendering library for OpenGL applications")
     (description
-     "FTGL is a font rendering library for OpenGL applications. Supported
+     "FTGL is a font rendering library for OpenGL applications.  Supported
 rendering modes are: Bitmaps, Anti-aliased pixmaps, Texture maps, Outlines,
 Polygon meshes, and Extruded polygon meshes")
     (license l:x11)))
@@ -165,9 +165,9 @@ Polygon meshes, and Extruded polygon meshes")
             (delete-file "src/gallium/state_trackers/d3d1x/w32api"))
          %standard-phases)))
     (home-page "http://mesa3d.org/")
-    (synopsis "Mesa, an OpenGL implementation")
+    (synopsis "OpenGL implementation")
     (description "Mesa is a free implementation of the OpenGL specification -
-a system for rendering interactive 3D graphics. A variety of device drivers
+a system for rendering interactive 3D graphics.  A variety of device drivers
 allows Mesa to be used in many different environments ranging from software
 emulation to complete hardware acceleration for modern GPUs.")
     (license l:x11)))

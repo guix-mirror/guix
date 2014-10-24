@@ -322,7 +322,7 @@ operations.")
     (home-page "http://emacs-w3m.namazu.org/")
     (synopsis "Simple Web browser for Emacs based on w3m")
     (description
-     "emacs-w3m is an emacs interface for the w3m web browser.")
+     "Emacs-w3m is an emacs interface for the w3m web browser.")
     (license gpl2+)))
 
 (define-public emacs-wget
@@ -363,5 +363,5 @@ operations.")
     (home-page "http://www.emacswiki.org/emacs/EmacsWget")
     (synopsis "Simple file downloader for Emacs based on wget")
     (description
-     "emacs-wget is an emacs interface for the wget file downloader.")
+     "Emacs-wget is an emacs interface for the wget file downloader.")
     (license gpl2+)))

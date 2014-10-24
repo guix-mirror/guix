@@ -69,7 +69,7 @@
        ("perl" ,perl)
        ("pkg-config" ,pkg-config)))
     (home-page "http://w3m.sourceforge.net/")
-    (synopsis "w3m, a text-mode web browser")
+    (synopsis "Text-mode web browser")
     (description
      "w3m is a text-based web browser as well as a pager like 'more' or
 'less'.  With w3m you can browse web pages through a terminal emulator

@@ -36,10 +36,10 @@
                      "0z1sgrcfy6d285kj5izy1yypf371bjl3247plh9ppk0svaxv714l"))
             (patches (list (search-patch "file-CVE-2014-3587.patch")))))
    (build-system gnu-build-system)
-   (synopsis "file, a file type guesser")
+   (synopsis "File type guesser")
    (description
     "The file command is a file type guesser, a command-line tool that tells
-you in words what kind of data a file contains. It does not rely on filename
+you in words what kind of data a file contains.  It does not rely on filename
 extentions to tell you the type of a file, but looks at the actual contents
 of the file.")
    (license bsd-2)

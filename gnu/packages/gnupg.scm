@@ -50,8 +50,7 @@
         "02lv5h865f8if391xjp3njg04k0l4x2pwjkcdbzcwilail1skazq"))))
     (build-system gnu-build-system)
     (home-page "http://gnupg.org")
-    (synopsis
-     "Libgpg-error, a small library that defines common error values for all GnuPG components")
+    (synopsis "Library of error values for GnuPG components")
     (description
      "Libgpg-error is a small library that defines common error values
 for all GnuPG components.  Among these are GPG, GPGSM, GPGME,
@@ -122,7 +121,7 @@ generation.")
      `(("libgpg-error" ,libgpg-error) ("pth" ,pth)))
     (home-page "http://gnupg.org")
     (synopsis
-     "Libassuan, the IPC library used by GnuPG and related software")
+     "IPC library used by GnuPG and related software")
     (description
      "Libassuan is a small library implementing the so-called Assuan
 protocol.  This protocol is used for IPC between most newer
@@ -156,8 +155,7 @@ provided.")
              (string-append "--with-gpg-error-prefix="
                             (assoc-ref %build-inputs "libgpg-error")))))
     (home-page "http://www.gnupg.org")
-    (synopsis
-     "Libksba is a CMS and X.509 access library under development")
+    (synopsis "CMS and X.509 access library")
     (description
      "KSBA (pronounced Kasbah) is a library to make X.509 certificates
 as well as the CMS easily accessible by other applications.  Both
@@ -251,7 +249,7 @@ libskba (working with X.509 certificates and CMS data).")
        ("libassuan" ,libassuan)))
     (arguments '(#:make-flags '("GPG=gpg2")))
     (home-page "http://www.gnupg.org/related_software/gpgme/")
-    (synopsis "library providing simplified access to GnuPG functionality")
+    (synopsis "Library providing simplified access to GnuPG functionality")
     (description
      "GnuPG Made Easy (GPGME) is a library designed to make access to GnuPG
 easier for applications.  It provides a High-Level Crypto API for encryption,
@@ -303,8 +301,8 @@ and every application benefits from this.")
    (synopsis "Programs to simplify GnuPG key signing")
    (description
     "Pius (PGP Individual UID Signer) helps attendees of PGP keysigning
-parties. It is the main utility and makes it possible to quickly and easily
-sign each UID on a set of PGP keys. It is designed to take the pain out of
+parties.  It is the main utility and makes it possible to quickly and easily
+sign each UID on a set of PGP keys.  It is designed to take the pain out of
 the sign-all-the-keys part of PGP Keysigning Party while adding security
 to the process.
 
@@ -375,9 +373,9 @@ PGP keysigning parties.")
                 "gpgparticipants.1" "gpgsigs.1" "gpgwrap.1"
                 "process_keys.1" "pgpring.1" "keyanalyze.1"))))
       %standard-phases)))))
-   (synopsis "collection of scripts for simplifying gnupg key signing")
+   (synopsis "Collection of scripts for simplifying gnupg key signing")
    (description
-    "signing-party is a collection for all kinds of PGP/GnuPG related things,
+    "Signing-party is a collection for all kinds of PGP/GnuPG related things,
 including tools for signing keys, keyring analysis, and party preparation.
 
  * caff: CA - Fire and Forget signs and mails a key

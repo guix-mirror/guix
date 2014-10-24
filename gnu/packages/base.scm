@@ -75,7 +75,7 @@ command-line arguments, multiple languages, and so on.")
    (build-system gnu-build-system)
    (synopsis "Print lines matching a pattern")
    (description
-    "grep is a tool for finding text inside files.  Text is found by
+    "Grep is a tool for finding text inside files.  Text is found by
 matching a pattern provided by the user in one or many files.  The pattern
 may be provided as a basic or extended regular expression, or as fixed
 strings.  By default, the matching text is simply printed to the screen,
@@ -562,7 +562,7 @@ with the Linux kernel.")
     (synopsis "Database of current and historical time zones")
     (description "The Time Zone Database (often called tz or zoneinfo)
 contains code and data that represent the history of local time for many
-representative locations around the globe. It is updated periodically to
+representative locations around the globe.  It is updated periodically to
 reflect changes made by political bodies to time zone boundaries, UTC offsets,
 and daylight-saving rules.")
     (license public-domain)))

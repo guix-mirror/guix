@@ -86,7 +86,7 @@
     (home-page "http://www.cs.tufts.edu/~nr/noweb/")
     (synopsis "Literate programming tool")
     (description
-     "noweb is designed to meet the needs of literate programmers while
+     "Noweb is designed to meet the needs of literate programmers while
 remaining as simple as possible.  Its primary advantages are simplicity,
 extensibility, and language-independence—especially noticeable when compared
 with other literate-programming tools.  noweb uses 5 control sequences to

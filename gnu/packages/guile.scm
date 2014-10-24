@@ -210,9 +210,9 @@ or 2.0."
 "Guile-Reader is a simple framework for building readers for GNU Guile.
 
 The idea is to make it easy to build procedures that extend Guile’s read
-procedure. Readers supporting various syntax variants can easily be written,
+procedure.  Readers supporting various syntax variants can easily be written,
 possibly by re-using existing “token readers” of a standard Scheme
-readers. For example, it is used to implement Skribilo’s R5RS-derived
+readers.  For example, it is used to implement Skribilo’s R5RS-derived
 document syntax.
 
 Guile-Reader’s approach is similar to Common Lisp’s “read table”, but
@@ -262,7 +262,7 @@ many readers as needed).")
     (home-page "http://www.gnu.org/software/guile-ncurses/")
     (synopsis "Guile bindings to ncurses")
     (description
-     "guile-ncurses provides Guile language bindings for the ncurses
+     "GNU Guile-Ncurses provides Guile language bindings for the ncurses
 library.")
     (license lgpl3+)))
 
@@ -314,7 +314,7 @@ format is also supported.")
     (home-page "http://www.nongnu.org/guile-lib/")
     (synopsis "Collection of useful Guile Scheme modules")
     (description
-     "guile-lib is intended as an accumulation place for pure-scheme Guile
+     "Guile-Lib is intended as an accumulation place for pure-scheme Guile
 modules, allowing for people to cooperate integrating their generic Guile
 modules into a coherent library.  Think \"a down-scaled, limited-scope CPAN
 for Guile\".")
@@ -348,7 +348,7 @@ for Guile\".")
     (synopsis "JSON module for Guile")
     (description
      "Guile-json supports parsing and building JSON documents according to the
-http:://json.org specification. These are the main features:
+http:://json.org specification.  These are the main features:
 - Strictly complies to http://json.org specification.
 - Build JSON documents programmatically via macros.
 - Unicode support for strings.

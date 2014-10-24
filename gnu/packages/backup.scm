@@ -182,7 +182,7 @@ archives in various formats such as tar and cpio.  Libarchive also supports
 reading and writing archives compressed using various compression filters such
 as gzip and bzip2.  The library is inherently stream-oriented; readers
 serially iterate through the archive, writers serially add things to the
-archive. In particular, note that there is currently no built-in support for
+archive.  In particular, note that there is currently no built-in support for
 random access nor for in-place modification.")
     (license license:bsd-2)))
 

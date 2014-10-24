@@ -31,7 +31,8 @@
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://fltk.org/pub/fltk/" version "/fltk-" version "-source.tar.gz"))
+      (uri (string-append "http://fltk.org/pub/fltk/" version
+                          "/fltk-" version "-source.tar.gz"))
       (sha256
        (base32
         "1974brlk723095vf8z72kazq1cbqr9a51kq6b0xda6zkjkgl8q0p"))))
@@ -51,9 +52,9 @@
         %standard-phases)))
     (home-page "https://www.fltk.org")
     (synopsis "3D C++ GUI library")
-    (description "FLTK is a C++ GUI toolkit providing modern GUI functionality without the
-bloat. It supports 3D graphics via OpenGL and its built-in GLUT emulation.
-FLTK is designed to be small and modular enough to be statically linked, but
-works fine as a shared library. FLTK also includes an excellent UI builder
-called FLUID that can be used to create applications in minutes.")
+    (description "FLTK is a C++ GUI toolkit providing modern GUI functionality
+without the bloat.  It supports 3D graphics via OpenGL and its built-in GLUT
+emulation.  FLTK is designed to be small and modular enough to be statically
+linked, but works fine as a shared library.  FLTK also includes an excellent
+UI builder called FLUID that can be used to create applications in minutes.")
     (license lgpl2.0))) ; plus certain additional permissions

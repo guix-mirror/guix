@@ -55,7 +55,7 @@
 network of relays run by volunteers all around the world: it prevents
 somebody watching your Internet connection from learning what sites you
 visit, and it prevents the sites you visit from learning your physical
-location. Tor works with many of your existing applications, including
+location.  Tor works with many of your existing applications, including
 web browsers, instant messaging clients, remote login, and other
 applications based on the TCP protocol.")
     (license bsd-3)))

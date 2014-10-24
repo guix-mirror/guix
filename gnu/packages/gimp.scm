@@ -51,7 +51,7 @@
     (home-page "http://gegl.org/babl/")
     (synopsis "Image pixel format conversion library")
     (description
-     "babl is a dynamic, any to any, pixel format translation library.
+     "Babl is a dynamic, any to any, pixel format translation library.
 It allows converting between different methods of storing pixels known as
 pixel formats that have with different bitdepths and other data
 representations, color models and component permutations.

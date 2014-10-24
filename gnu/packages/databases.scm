@@ -80,7 +80,7 @@
                                ;; notably iproute2.
                                "--enable-compat185"))))
                  %standard-phases)))
-    (synopsis "db, the Berkeley database")
+    (synopsis "Berkeley database")
     (description
      "Berkeley DB is an embeddable database allowing developers the choice of
 SQL, Key/Value, XML/XQuery or Java Object storage for their data model.")
@@ -243,9 +243,9 @@ types are supported, as is encryption.")
    (synopsis "The SQLite database management system")
    (description
     "SQLite is a software library that implements a self-contained, serverless,
-zero-configuration, transactional SQL database engine. SQLite is the most
-widely deployed SQL database engine in the world. The source code for SQLite is
-in the public domain.")
+zero-configuration, transactional SQL database engine.  SQLite is the most
+widely deployed SQL database engine in the world.  The source code for SQLite
+is in the public domain.")
    (license public-domain)))
 
 (define-public tdb
@@ -277,7 +277,7 @@ in the public domain.")
        ;; ("libxslt" ,libxslt)
        ("python" ,python-2)))                     ;for the Waf build system
     (home-page "http://tdb.samba.org/")
-    (synopsis "TDB, the trivial database")
+    (synopsis "Trivial database")
     (description
      "TDB is a Trivial Database.  In concept, it is very much like GDBM,
 and BSD's DB except that it allows multiple simultaneous writers and uses

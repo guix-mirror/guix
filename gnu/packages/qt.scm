@@ -54,7 +54,7 @@
     (native-inputs
      `(("bison" ,bison)))
     (home-page "http://xkbcommon.org/")
-    (synopsis "library to handle keyboard descriptions")
+    (synopsis "Library to handle keyboard descriptions")
     (description "Xkbcommon is a library to handle keyboard descriptions,
 including loading them from disk, parsing them and handling their
 state.  It is mainly meant for client toolkits, window systems, and other

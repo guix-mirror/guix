@@ -60,7 +60,7 @@
     (home-page "http://linuxbrit.co.uk/software/")
     (synopsis "Command-line screen capture utility for X Window System")
     (description
-     "scrot allows to save a screenshot of a full screen, a window or a part
+     "Scrot allows to save a screenshot of a full screen, a window or a part
 of the screen selected by mouse.")
     ;; This license removes a clause about X Consortium from the original
     ;; X11 license.

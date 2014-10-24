@@ -204,7 +204,7 @@ world.")
               ("python" ,python-2) ; incompatible with Python 3 (print syntax)
               ("which" ,which)))
     (home-page "https://launchpad.net/rubber")
-    (synopsis "Rubber, a wrapper for LaTeX and friends")
+    (synopsis "Wrapper for LaTeX and friends")
     (description
      "Rubber is a program whose purpose is to handle all tasks related to the
 compilation of LaTeX documents.  This includes compiling the document itself,

@@ -114,5 +114,5 @@ dependencies.")
 have total control of what it does by choosing which modules to include.
 Included with it are a few modules that provide basic TinyWM-like window
 management, some window record-keeping, multi-monitor support, and emacs-like
-keymaps and minibuffer. At this point, it's just enough to get you started.")
+keymaps and minibuffer.  At this point, it's just enough to get you started.")
     (license gpl3+)))

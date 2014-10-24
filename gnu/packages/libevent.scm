@@ -47,8 +47,7 @@
        ("which" ,which)
        ("python" ,python-wrapper)))
     (home-page "http://libevent.org/")
-    (synopsis
-     "libevent, an event notification library")
+    (synopsis "Event notification library")
     (description
      "The libevent API provides a mechanism to execute a callback
 function when a specific event occurs on a file descriptor or after a

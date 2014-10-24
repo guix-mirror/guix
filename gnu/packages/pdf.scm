@@ -76,7 +76,7 @@
       #:configure-flags
        '("--enable-xpdf-headers" ; to install header files
          "--enable-zlib")))
-   (synopsis "Poppler, a pdf rendering library")
+   (synopsis "PDF rendering library")
    (description
     "Poppler is a PDF rendering library based on the xpdf-3.0 code base.")
    (license license:gpl2+)

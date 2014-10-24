@@ -367,10 +367,10 @@ at login.  Local and dynamic reconfiguration are its key features")
     (inputs `(("ncurses" ,ncurses)))
     (home-page "http://psmisc.sourceforge.net/")
     (synopsis
-     "set of utilities that use the proc filesystem, such as fuser, killall, and pstree")
+     "Small utilities that use the proc filesystem")
     (description
      "This PSmisc package is a set of some small useful utilities that
-use the proc filesystem. We're not about changing the world, but
+use the proc filesystem.  We're not about changing the world, but
 providing the system administrator with some help in common tasks.")
     (license gpl2+)))
 
@@ -415,7 +415,7 @@ providing the system administrator with some help in common tasks.")
     (home-page "https://www.kernel.org/pub/linux/utils/util-linux/")
     (synopsis "Collection of utilities for the Linux kernel")
     (description
-     "util-linux is a random collection of utilities for the Linux kernel.")
+     "Util-linux is a random collection of utilities for the Linux kernel.")
 
     ;; Note that util-linux doesn't use the same license for all the
     ;; code.  GPLv2+ is the default license for a code without an
@@ -471,7 +471,7 @@ providing the system administrator with some help in common tasks.")
     (home-page "http://procps.sourceforge.net/")
     (synopsis "Utilities that give information about processes")
     (description
-     "procps is the package that has a bunch of small useful utilities
+     "Procps is the package that has a bunch of small useful utilities
 that give information about processes using the Linux /proc file system.
 The package includes the programs ps, top, vmstat, w, kill, free,
 slabtop, and skill.")
@@ -861,7 +861,7 @@ advanced aspects of IP configuration (iptunnel, ipmaddr).")
     (home-page "https://sites.google.com/site/fullycapable/")
     (synopsis "Library for working with POSIX capabilities")
     (description
-     "libcap2 provides a programming interface to POSIX capabilities on
+     "Libcap2 provides a programming interface to POSIX capabilities on
 Linux-based operating systems.")
 
     ;; License is BSD-3 or GPLv2, at the user's choice.
@@ -1328,7 +1328,7 @@ to use Linux' inotify mechanism, which allows file accesses to be monitored.")
                  %standard-phases)))
     (home-page "https://www.kernel.org/")
     (synopsis "Kernel module tools")
-    (description "kmod is a set of tools to handle common tasks with Linux
+    (description "Kmod is a set of tools to handle common tasks with Linux
 kernel modules like insert, remove, list, check properties, resolve
 dependencies and aliases.
 
@@ -1571,7 +1571,7 @@ Wireless LAN specific parameters and get the specific stats.")
     (home-page "http://www.lm-sensors.org/")
     (synopsis "Utilities to read temperature/voltage/fan sensors")
     (description
-     "lm-sensors is a hardware health monitoring package for Linux.  It allows
+     "Lm-sensors is a hardware health monitoring package for Linux.  It allows
 you to access information from temperature, voltage, and fan speed sensors.
 It works with most newer systems.")
     (license gpl2+)))
@@ -1608,7 +1608,7 @@ It works with most newer systems.")
     (home-page "http://www.linuxhardware.org/xsensors/")
     (synopsis "Hardware health information viewer")
     (description
-     "xsensors reads data from the libsensors library regarding hardware
+     "Xsensors reads data from the libsensors library regarding hardware
 health such as temperature, voltage and fan speed and displays the information
 in a digital read-out.")
     (license gpl2+)))

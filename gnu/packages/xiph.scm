@@ -57,11 +57,11 @@
              (base32
               "16z74q422jmprhyvy7c9x909li8cqzmvzyr8cgbm52xcsp6pqs1z"))))
    (build-system gnu-build-system)
-   (synopsis "libogg, a library for manipulating the ogg multimedia format")
+   (synopsis "Library for manipulating the ogg multimedia format")
    (description
     "The libogg library allows to manipulate the ogg multimedia container
 format, which encapsulates raw compressed data and allows the interleaving of
-audio and video data. In addition to encapsulation and interleaving of
+audio and video data.  In addition to encapsulation and interleaving of
 multiple data streams, ogg provides packet framing, error detection, and
 periodic timestamps for seeking.")
    (license (license:bsd-style "file://COPYING"
@@ -74,8 +74,8 @@ periodic timestamps for seeking.")
    (version "1.3.4")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://downloads.xiph.org/releases/vorbis/libvorbis-"
-                                version ".tar.xz"))
+            (uri (string-append "http://downloads.xiph.org/releases/vorbis/"
+                                "libvorbis-" version ".tar.xz"))
             (sha256
              (base32
               "0wpk87jnhngcl3nc5i39flkycx1sjzilx8jjx4zc4p8r55ylj19g"))))
@@ -83,7 +83,7 @@ periodic timestamps for seeking.")
    (propagated-inputs `(("libogg" ,libogg)))
    (arguments `(#:configure-flags '("LDFLAGS=-lm")
                 #:parallel-tests? #f))
-   (synopsis "libvorbis, a library implementing the vorbis audio format")
+   (synopsis "Library implementing the vorbis audio format")
    (description
     "The libvorbis library implements the ogg vorbis audio format,
 a fully open, non-proprietary, patent-and-royalty-free, general-purpose
@@ -100,8 +100,8 @@ polyphonic) audio and music at fixed and variable bitrates from 16 to
     (version "1.1.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://downloads.xiph.org/releases/theora/libtheora-"
-                                 version ".tar.xz"))
+             (uri (string-append "http://downloads.xiph.org/releases/theora/"
+                                 "libtheora-" version ".tar.xz"))
              (sha256
               (base32
                "0q8wark9ribij57dciym5vdikg2464p8q2mgqvfb78ksjh4s8vgk"))
@@ -209,7 +209,7 @@ OpenBSD's sndio.")
                                              "/share/man"))))
    ;; FIXME: configure also looks for xmms, input could be added once it exists
    (inputs `(("libogg" ,libogg)))
-   (synopsis "flac free lossless audio codec")
+   (synopsis "Free lossless audio codec")
    (description
 "FLAC stands for Free Lossless Audio Codec, an audio format that is lossless,
 meaning that audio is compressed in FLAC without any loss in quality.")
@@ -237,17 +237,17 @@ meaning that audio is compressed in FLAC without any loss in quality.")
              ("libpng" ,libpng)
 ("python" ,python-wrapper)
              ("zlib" ,zlib)))
-   (synopsis "kate, a karaoke and text codec for embedding in ogg")
+   (synopsis "Karaoke and text codec for embedding in ogg")
    (description
     "Kate is an overlay codec, originally designed for karaoke and text,
-that can be multiplixed in Ogg. Text and images can be carried by a Kate
-stream, and animated. Most of the time, this would be multiplexed with
+that can be multiplixed in Ogg.  Text and images can be carried by a Kate
+stream, and animated.  Most of the time, this would be multiplexed with
 audio/video to carry subtitles, song lyrics (with or without karaoke data),
 etc., but doesn't have to be.
 
 Series of curves (splines, segments, etc.) may be attached to various
 properties (text position, font size, etc.) to create animated overlays.
-This allows scrolling or fading text to be defined. This can even be used
+This allows scrolling or fading text to be defined.  This can even be used
 to draw arbitrary shapes, so hand drawing can also be represented by a
 Kate stream.")
    (license license:bsd-3)
@@ -259,8 +259,8 @@ Kate stream.")
    (version "1.4.0")
    (source (origin
             (method url-fetch)
-            (uri (string-append "http://downloads.xiph.org/releases/vorbis/vorbis-tools-"
-                                version ".tar.gz"))
+            (uri (string-append "http://downloads.xiph.org/releases/vorbis/"
+                                "vorbis-tools-" version ".tar.gz"))
             (sha256
              (base32
               "1g12bnh5ah08v529y72kfdz5lhvy75iaz7f9jskyby23m9dkk2d3"))))
@@ -273,7 +273,7 @@ Kate stream.")
              ("libvorbis" ,libvorbis)
              ("pkg-config" ,pkg-config)
              ("speex" ,speex)))
-   (synopsis "ogg vorbis tools")
+   (synopsis "Ogg vorbis tools")
    (description
     "Ogg vorbis is a non-proprietary, patent-and-royalty-free,
 general-purpose compressed audio format.
@@ -300,11 +300,11 @@ ogginfo, to obtain information (tags, bitrate, length, etc.) about
                (base32
                 "158xprn2086arvdib3vbbygz7z6jqkw2nci7nlywzzwallap0wmr"))))
     (build-system gnu-build-system)
-    (synopsis "highly versatile audio codec")
+    (synopsis "Versatile audio codec")
     (description
-     "Opus is a totally open, royalty-free, highly versatile audio codec. Opus
+     "Opus is a totally open, royalty-free, highly versatile audio codec.  Opus
 is unmatched for interactive speech and music transmission over the Internet,
-but is also intended for storage and streaming applications. It is
+but is also intended for storage and streaming applications.  It is
 standardized by the Internet Engineering Task Force (IETF) as RFC 6716 which
 incorporated technology from Skype's SILK codec and Xiph.Org's CELT codec.")
     (license license:bsd-3)

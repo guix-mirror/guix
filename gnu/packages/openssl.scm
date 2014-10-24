@@ -62,7 +62,7 @@
               (("/bin/rm")
                "rm"))))
         %standard-phases))))
-   (synopsis "OpenSSL, an SSL/TLS implementation")
+   (synopsis "SSL/TLS implementation")
    (description
     "OpenSSL is an implementation of SSL/TLS")
    (license license:openssl)

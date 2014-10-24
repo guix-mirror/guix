@@ -75,10 +75,10 @@
                                 (find-files "bin" ".*")
                                 (find-files "sbin" ".*"))))))
         %standard-phases)))))
-   (synopsis "ICU, International Components for Unicode")
+   (synopsis "International Components for Unicode")
    (description
     "ICU is a set of C/C++ and Java libraries providing Unicode and
-globalisation support for software applications. This package contains the
+globalisation support for software applications.  This package contains the
 C/C++ part.")
    (license x11)
    (home-page "http://site.icu-project.org/")))

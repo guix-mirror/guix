@@ -53,8 +53,8 @@
     (arguments
      `(#:tests? #f)) ; no check target
     (home-page "http://techbase.kde.org/Development/Tools/Automoc4")
-    (synopsis "build tool for KDE")
-    (description "KDE desktop environment")
+    (synopsis "Build tool for KDE")
+    (description "AutoMoc4 automatically generates moc-files for KDE.")
     (license bsd-2)))
 
 (define-public phonon

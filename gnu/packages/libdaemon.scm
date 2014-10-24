@@ -51,8 +51,8 @@
 
     (synopsis "Lightweight C library that eases the writing of UNIX daemons")
     (description
-     "libdaemon is a lightweight C library that eases the writing of UNIX
-daemons. It consists of the following parts:
+     "Libdaemon is a lightweight C library that eases the writing of UNIX
+daemons.  It consists of the following parts:
 
   • A wrapper around fork() which does the correct daemonization procedure of
     a process
@@ -68,6 +68,6 @@ daemons. It consists of the following parts:
   • An API for running subprocesses with STDOUT and STDERR redirected to
     syslog.
 
-APIs like these are used in most daemon software available. It is not that
+APIs like these are used in most daemon software available.  It is not that
 simple to get it done right and code duplication is not a goal.")
     (license lgpl2.1+)))

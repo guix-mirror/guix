@@ -46,12 +46,12 @@
       ("popt" ,popt)))
    (native-inputs
       `(("python" ,python-wrapper)))
-   (synopsis "hard disk encryption tool")
+   (synopsis "Hard disk encryption tool")
    (description
     "LUKS (Linux Unified Key Setup)/Cryptsetup provides a standard on-disk
 encryption format, which does not only facilitate compatibility among
 distributions, but which also provides secure management of multiple user
-passwords. In contrast to existing solutions, LUKS stores all setup necessary
+passwords.  In contrast to existing solutions, LUKS stores all setup necessary
 setup information in the partition header, enabling the users to transport
 or migrate their data seamlessly.")
    (license license:gpl2)

@@ -76,8 +76,8 @@
                      ("ed" ,ed)))
     (home-page "http://miller.emu.id.au/pmiller/software/cook")
     (synopsis "Tool for constructing files")
-    (description "Cook is a tool for constructing files. It is given a set of
-files to create, and recipes of how to create them. In any non-trivial program
+    (description "Cook is a tool for constructing files.  It is given a set of
+files to create, and recipes of how to create them.  In any non-trivial program
 there will be prerequisites to performing the actions necessary to creating
-any file, such as include files. Cook provides a mechanism to define these.")
+any file, such as include files.  Cook provides a mechanism to define these.")
     (license gpl3+)))

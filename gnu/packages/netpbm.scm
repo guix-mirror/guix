@@ -114,7 +114,7 @@
            (for-each delete-file
                      '("config_template" "pkginfo" "README" "VERSION")))))
       %standard-phases)))))
-   (synopsis "Netpbm, a toolkit for manipulation of images")
+   (synopsis "Toolkit for manipulation of images")
    (description
     "Netpbm is a toolkit for the manipulation of graphic images, including
 the conversion of images between a variety of different formats.

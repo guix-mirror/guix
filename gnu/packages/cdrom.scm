@@ -50,7 +50,7 @@
     (home-page "http://libcddb.sourceforge.net/")
     (synopsis "C library to access data on a CDDB server")
     (description
-     "Libcddb is a C library to access data on a CDDB server (freedb.org). It
+     "Libcddb is a C library to access data on a CDDB server (freedb.org).  It
 allows you to:
 
  1. search the database for possible CD matches;
@@ -60,8 +60,8 @@ allows you to:
  3. submit new CD entries to the database.
 
 Libcddb supports both the custom CDDB protocol and tunnelling the query and
-read operations over plain HTTP. It is also possible to use an HTTP proxy
-server. If you want to speed things up, you can make use of the built-in
+read operations over plain HTTP.  It is also possible to use an HTTP proxy
+server.  If you want to speed things up, you can make use of the built-in
 caching facility provided by the library.")
     (license lgpl2.1+)))
 
@@ -160,7 +160,7 @@ files.")
                          (find-files "bin" ".*")))))
          %standard-phases)))
     (home-page "http://www.xiph.org/paranoia/")
-    (synopsis "audio CD reading utility which includes extra data verification features")
+    (synopsis "Audio CD reading utility")
     (description "Cdparanoia retrieves audio tracks from CDDA capable CDROM
 drives.  The data can be saved to a file or directed to standard output
 in WAV, AIFF, AIFF-C or raw format.  Most ATAPI, SCSI and several
@@ -201,7 +201,7 @@ reconstruction capability.")
             (delete-file ".#GNUmakefile"))
           %standard-phases)))
     (home-page "http://dvdisaster.net/en/index.html")
-    (synopsis "error correcting codes for optical media images")
+    (synopsis "Error correcting codes for optical media images")
     (description "Optical media (CD,DVD,BD) keep their data only for a
 finite time (typically for many years).  After that time, data loss develops
 slowly with read errors growing from the outer media region towards the

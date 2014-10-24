@@ -44,7 +44,7 @@
             (("^// TODO sc.*") "#include <sys/types.h>\n#include <sys/stat.h>\n")))
         %standard-phases)))
    (build-system gnu-build-system)
-   (synopsis "(u)Common C++ framework for threaded applications")
+   (synopsis "Common C++ framework for threaded applications")
    (description "GNU Common C++ is an portable, optimized class framework for
 threaded applications, supporting concurrent synchronization, inter-process
 communications via sockets, and various methods for data handling, such as
@@ -64,12 +64,11 @@ reimplementation.")
             (sha256 (base32
                      "0hpwxiyd7c3qnzksk6vw94cdig1v8yy6khgcaa87a7hb3zbkv4zg"))))
    (build-system gnu-build-system)
-   (synopsis "(u)Common C++ framework for threaded applications")
-   (description "GNU Common C++ is an portable, optimized class framework for
-threaded applications, supporting concurrent synchronization, inter-process
-communications via sockets, and various methods for data handling, such as
-serialization and XML parsing.  It includes the uCommon C++ library, a smaller
-reimplementation.")
+   (synopsis "Common C++ framework for threaded applications")
+   (description "GNU uCommon C++ is meant as a very light-weight C++ library
+to facilitate using C++ design patterns even for very deeply embedded
+applications, such as for systems using uclibc along with posix threading
+support.")
    (license gpl2+) ; plus runtime exception
    (home-page "http://www.gnu.org/software/commoncpp")))
 
@@ -131,7 +130,7 @@ to initiate and control SIP sessions.")
    (inputs `(("osip" ,osip)))
    (synopsis "Sip abstraction library")
    (description "EXosip is a library that hides the complexity of using the
-SIP protocol for mutlimedia session establishement. This protocol is mainly to
+SIP protocol for mutlimedia session establishement.  This protocol is mainly to
 be used by VoIP telephony applications (endpoints or conference server) but
 might be also usefull for any application that wish to establish sessions like
 multiplayer games.")

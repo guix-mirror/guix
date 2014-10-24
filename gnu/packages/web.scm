@@ -67,10 +67,10 @@
     (description
      "The Apache HTTP Server Project is a collaborative software development
 effort aimed at creating a robust, commercial-grade, featureful, and
-freely-available source code implementation of an HTTP (Web) server. The project
-is jointly managed by a group of volunteers located around the world, using the
-Internet and the Web to communicate, plan, and develop the server and its
-related documentation.")
+freely-available source code implementation of an HTTP (Web) server.  The
+project is jointly managed by a group of volunteers located around the world,
+using the Internet and the Web to communicate, plan, and develop the server
+and its related documentation.")
     (license l:asl2.0)
     (home-page "https://httpd.apache.org/")))
 
@@ -136,7 +136,7 @@ parse JSON formatted strings back into the C representation of JSON objects.")
               ("openssl" ,openssl)))
     (synopsis "WebSockets library written in C")
     (description
-     "libwebsockets is a library that allows C programs to establish client
+     "Libwebsockets is a library that allows C programs to establish client
 and server WebSockets connections---a protocol layered above HTTP that allows
 for efficient socket-like bidirectional reliable communication channels.")
     (home-page "http://libwebsockets.org/")
@@ -493,8 +493,8 @@ Encode::decode(locale => $string).")
      "The libwww-perl collection is a set of Perl modules which provides a
 simple and consistent application programming interface to the
 World-Wide Web.  The main focus of the library is to provide classes
-and functions that allow you to write WWW clients. The library also
-contain modules that are of more general use and even classes that
+and functions that allow you to write WWW clients.  The library also
+contains modules that are of more general use and even classes that
 help you implement simple HTTP servers.")
     (home-page "http://search.cpan.org/~gaas/libwww-perl/")))
 
@@ -505,7 +505,8 @@ help you implement simple HTTP servers.")
     (source (origin
               (method url-fetch)
               (uri (string-append
-                    "http://www.samba.org/~obnox/" name "/download/" name "-" version ".tar.bz2"))
+                    "http://www.samba.org/~obnox/" name "/download/"
+                    name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "0vl9igw7vm924rs6d6bkib7zfclxnlf9s8rmml1sfwj7xda9nmdy"))))
@@ -543,10 +544,10 @@ help you implement simple HTTP servers.")
     (home-page "https://banu.com/tinyproxy/")
     (synopsis "Light-weight HTTP/HTTPS proxy daemon")
     (description "Tinyproxy is a light-weight HTTP/HTTPS proxy
-daemon. Designed from the ground up to be fast and yet small, it is an ideal
+daemon.  Designed from the ground up to be fast and yet small, it is an ideal
 solution for use cases such as embedded deployments where a full featured HTTP
 proxy is required, but the system resources for a larger proxy are
-unavailable.") 
+unavailable.")
     (license l:gpl2+)))
 
 (define-public perl-www-curl

@@ -41,9 +41,9 @@
    (build-system gnu-build-system)
    (inputs `(("perl" ,perl)
              ("acl" ,acl)))
-   (synopsis "rsync, a remote (and local) file copying tool")
+   (synopsis "Remote (and local) file copying tool")
    (description
-    "rsync is a fast and versatile file copying tool. It can copy locally,
+    "Rsync is a fast and versatile file copying tool.  It can copy locally,
 to/from another host over any remote shell, or to/from a remote rsync daemon.
 Its delta-transfer algorithm reduces the amount of data sent over the network
 by sending only the differences between the source files and the existing
@@ -73,6 +73,6 @@ files in the destination.")
     "Librsync is a free software library that implements the rsync
 remote-delta algorithm.  This algorithm allows efficient remote updates of a
 file, without requiring the old and new versions to both be present at the
-sending end. The library uses a \"streaming\" design similar to that of zlib
+sending end.  The library uses a \"streaming\" design similar to that of zlib
 with the aim of allowing it to be embedded into many different applications.")
    (license lgpl2.1+)))

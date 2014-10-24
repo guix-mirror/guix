@@ -59,7 +59,7 @@
    (synopsis "GNOME accessibility toolkit")
    (description
     "ATK provides the set of accessibility interfaces that are implemented
-by other toolkits and applications. Using the ATK interfaces, accessibility
+by other toolkits and applications.  Using the ATK interfaces, accessibility
 tools have full access to view and control running applications.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/atk/")))
@@ -101,16 +101,16 @@ tools have full access to view and control running applications.")
     "Cairo is a 2D graphics library with support for multiple output devices.
 Currently supported output targets include the X Window System (via both
 Xlib and XCB), Quartz, Win32, image buffers, PostScript, PDF, and SVG file
-output. Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.
+output.  Experimental backends include OpenGL, BeOS, OS/2, and DirectFB.
 
 Cairo is designed to produce consistent output on all output media while
 taking advantage of display hardware acceleration when available
 eg. through the X Render Extension).
 
 The cairo API provides operations similar to the drawing operators of
-PostScript and PDF. Operations in cairo including stroking and filling cubic
+PostScript and PDF.  Operations in cairo including stroking and filling cubic
 Bézier splines, transforming and compositing translucent images, and
-antialiased text rendering. All drawing operations can be transformed by any
+antialiased text rendering.  All drawing operations can be transformed by any
 affine transformation (scale, rotation, shear, etc.)")
    (license license:lgpl2.1) ; or Mozilla Public License 1.1
    (home-page "http://cairographics.org/")))
@@ -133,7 +133,7 @@ affine transformation (scale, rotation, shear, etc.)")
    (native-inputs
      `(("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)))
-   (synopsis "opentype text shaping engine")
+   (synopsis "OpenType text shaping engine")
    (description
     "HarfBuzz is an OpenType text shaping engine.")
    (license (license:x11-style "file://COPYING"
@@ -164,7 +164,7 @@ affine transformation (scale, rotation, shear, etc.)")
    (synopsis "GNOME text and font handling library")
    (description
     "Pango is the core text and font handling library used in GNOME
-applications. It has extensive support for the different writing systems
+applications.  It has extensive support for the different writing systems
 used throughout the world.")
    (license license:lgpl2.0+)
    (home-page "https://developer.gnome.org/pango/")))
@@ -190,7 +190,7 @@ used throughout the world.")
      `(("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/pango")
-    (synopsis "functions now obsolete in pango")
+    (synopsis "Obsolete pango functions")
     (description  "Pangox was a X backend to pango.  It is now obsolete and no
 longer provided by recent pango releases.  pangox-compat provides the
 functions which were removed.")
@@ -372,7 +372,7 @@ is part of the GNOME accessibility project.")
    (synopsis "Cross-platform toolkit for creating graphical user interfaces")
    (description
     "GTK+, or the GIMP Toolkit, is a multi-platform toolkit for creating
-graphical user interfaces. Offering a complete set of widgets, GTK+ is
+graphical user interfaces.  Offering a complete set of widgets, GTK+ is
 suitable for projects ranging from small one-off tools to complete
 application suites.")
    (license license:lgpl2.0+)

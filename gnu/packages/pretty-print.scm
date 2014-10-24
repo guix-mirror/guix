@@ -89,7 +89,7 @@
     (synopsis "Any file to PostScript, including pretty-printing")
     (description
      "GNU a2ps converts almost anything to a PostScript file, ready for
-printing. It accomplishes this by being able to delegate files to external
+printing.  It accomplishes this by being able to delegate files to external
 handlers, such as Groff and Gzip.  It handles as many steps as is necessary to
 produce a pretty-printed file.  It also includes some extra abilities for
 special cases, such as pretty-printing \"--help\" output.")

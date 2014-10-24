@@ -39,7 +39,7 @@
             (sha256 (base32
                      "101pr110ardcj2di940g6vaqifsaxc44h6hjn81l63dvmkj5a6ga"))))
    (build-system gnu-build-system)
-   (synopsis "Libntlm, a library that implements NTLM authentication")
+   (synopsis "Library that implements NTLM authentication")
    (description
     "Libntlm is a library that implements NTLM authentication")
    (license lgpl2.1+)
@@ -64,7 +64,7 @@
    (description
     "The GNU Generic Security Service provides a free implementation of the
 GSS-API specification.  It provides a generic application programming
-interface for programs to access security services. Security services present
+interface for programs to access security services.  Security services present
 a generic, GSS interface, with which the calling application interacts via
 this library, freeing the application developer from needing to know about
 the underlying security implementation.")

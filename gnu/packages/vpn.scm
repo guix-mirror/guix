@@ -84,9 +84,9 @@ endpoints.")
    (synopsis "Client for Cisco VPN concentrators")
    (description
     "vpnc is a VPN client compatible with Cisco's EasyVPN equipment.
-It supports IPSec (ESP) with Mode Configuration and Xauth. It supports only
+It supports IPSec (ESP) with Mode Configuration and Xauth.  It supports only
 shared-secret IPSec authentication with Xauth, AES (256, 192, 128), 3DES,
-1DES, MD5, SHA1, DH1/2/5 and IP tunneling. It runs entirely in userspace.
+1DES, MD5, SHA1, DH1/2/5 and IP tunneling.  It runs entirely in userspace.
 Only \"Universal TUN/TAP device driver support\" is needed in the kernel.")
    (license license:gpl2+) ; some file are bsd-2, see COPYING
    (home-page "http://www.unix-ag.uni-kl.de/~massar/vpnc/")))

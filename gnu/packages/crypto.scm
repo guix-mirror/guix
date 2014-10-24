@@ -38,7 +38,7 @@
     (build-system gnu-build-system)
     (synopsis "Portable NaCl-based crypto library")
     (description
-     "libsodium is a new easy-to-use high-speed software library for network
+     "Sodium is a new easy-to-use high-speed software library for network
 communication, encryption, decryption, signatures, etc.")
     (license isc)
     (home-page "http://libsodium.org")))

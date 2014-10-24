@@ -113,12 +113,12 @@ features to enable users to create their discs easily and quickly.")
        ("xkeyboard-config" ,xkeyboard-config)))
     (home-page "https://www.gnome.org/")
     (synopsis
-     "libgnome-desktop, gnome-about, and desktop-wide documents")
+     "Libgnome-desktop, gnome-about, and desktop-wide documents")
     (description
      "The libgnome-desktop library provides API shared by several applications
-on the desktop, but that cannot live in the platform for various reasons. There
-is no API or ABI guarantee, although we are doing our best to provide
-stability. Documentation for the API is available with gtk-doc.
+on the desktop, but that cannot live in the platform for various reasons.
+There is no API or ABI guarantee, although we are doing our best to provide
+stability.  Documentation for the API is available with gtk-doc.
 
 The gnome-about program helps find which version of GNOME is installed.")
     ; Some bits under the LGPL.
@@ -422,7 +422,7 @@ database is translated at Transifex.")
      "GNOME desktop notification library")
     (description
      "Libnotify is a library that sends desktop notifications to a
-notification daemon, as defined in the Desktop Notifications spec. These
+notification daemon, as defined in the Desktop Notifications spec.  These
 notifications can be used to inform the user about an event or display
 some form of information without getting in the user's way.")
     (license license:lgpl2.1+)))
@@ -455,7 +455,7 @@ some form of information without getting in the user's way.")
     (home-page "https://wiki.gnome.org/Libpeas")
     (synopsis "GObject plugin system")
     (description
-     "libpeas is a gobject-based plugins engine, and is targetted at giving
+     "Libpeas is a gobject-based plugins engine, and is targetted at giving
 every application the chance to assume its own extensibility.  It also has a
 set of features including, but not limited to: multiple extension points; on
 demand (lazy) programming language support for C, Python and JS; simplicity of
@@ -485,7 +485,7 @@ the API")
     (propagated-inputs `(("pangox-compat" ,pangox-compat)))
     (home-page "https://projects.gnome.org/gtkglext")
     (synopsis "OpenGL extension to GTK+")
-    (description "GtkGLExt is an OpenGL extension to GTK+. It provides
+    (description "GtkGLExt is an OpenGL extension to GTK+.  It provides
 additional GDK objects which support OpenGL rendering in GTK+ and GtkWidget
 API add-ons to make GTK+ widgets OpenGL-capable.")
     (license license:lgpl2.1+)))
@@ -627,7 +627,7 @@ dealing with different structured file formats.")
     (home-page "https://wiki.gnome.org/LibRsvg")
     (synopsis "Render SVG files using Cairo")
     (description
-     "librsvg is a C library to render SVG files using the Cairo 2D graphics
+     "Librsvg is a C library to render SVG files using the Cairo 2D graphics
 library.")
     (license license:lgpl2.0+)))
 
@@ -653,10 +653,10 @@ library.")
        ("bison" ,bison)))
     (home-page "http://freecode.com/projects/libidl")
     (synopsis "Create trees of CORBA Interface Definition Language files")
-    (description  "libidl is a library for creating trees of CORBA Interface
+    (description  "Libidl is a library for creating trees of CORBA Interface
 Definition Language (idl) files, which is a specification for defining
 portable interfaces. libidl was initially written for orbit (the orb from the
-GNOME project, and the primary means of libidl distribution). However, the
+GNOME project, and the primary means of libidl distribution).  However, the
 functionality was designed to be as reusable and portable as possible.") 
     (license license:lgpl2.0+)))
 
@@ -692,7 +692,7 @@ functionality was designed to be as reusable and portable as possible.")
      `(("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/orbit2/")
     (synopsis "CORBA 2.4-compliant Object Request Broker")
-    (description  "orbit2 is a CORBA 2.4-compliant Object Request Broker (orb)
+    (description  "ORBit2 is a CORBA 2.4-compliant Object Request Broker (orb)
 featuring mature C, C++ and Python bindings.") 
     ;; Licence notice is unclear.  The Web page simply say "GPL" without giving a version.
     ;; SOME of the code files have licence notices for GPLv2+
@@ -772,9 +772,9 @@ use in GNOME applications, built on top of CORBA.")
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/gconf/")
-    (synopsis "store application preferences")
-    (description  "gconf is a system for storing application preferences. It
-is intended for user preferences; not arbitrary data storage.") 
+    (synopsis "Store application preferences")
+    (description "Gconf is a system for storing application preferences.  It
+is intended for user preferences; not arbitrary data storage.")
     (license license:lgpl2.0+))) 
 
 
@@ -796,7 +796,7 @@ is intended for user preferences; not arbitrary data storage.")
      `(("perl" ,perl)
        ("intltool" ,intltool)))
     (home-page "http://www.gnome.org")
-    (synopsis "base MIME and Application database for GNOME")
+    (synopsis "Base MIME and Application database for GNOME")
     (description  "GNOME Mime Data is a module which contains the base MIME
 and Application database for GNOME.  The data stored by this module is
 designed to be accessed through the MIME functions in GnomeVFS.")
@@ -842,9 +842,9 @@ designed to be accessed through the MIME functions in GnomeVFS.")
        ("intltool" ,intltool)
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/gnome-vfs/")
-    (synopsis "access files and folders in GNOME applications")
+    (synopsis "Access files and folders in GNOME applications")
     (description  "GnomeVFS is the core library used to access files and
-folders in GNOME applications. It provides a file system abstraction which
+folders in GNOME applications.  It provides a file system abstraction which
 allows applications to access local and remote files with a single consistent API.")
     (license license:lgpl2.0+)))
 
@@ -979,8 +979,8 @@ creating interactive structured graphics.")
        ("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/libgnomeui/")
     (synopsis "Additional widgets for applications")
-    (description  "The libgnomeui library provides additional widgets for
-applications. Many of the widgets from libgnomeui have already been ported to GTK+.")
+    (description "The libgnomeui library provides additional widgets for
+applications.  Many of the widgets from libgnomeui have already been ported to GTK+.")
     (license license:lgpl2.0+)))
 
 (define-public libglade
@@ -1004,8 +1004,8 @@ applications. Many of the widgets from libgnomeui have already been ported to GT
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (home-page "https://developer.gnome.org/libglade")
-    (synopsis "load glade interfaces and access the glade built widgets")
-    (description  "libglade is a library that provides interfaces for loading
+    (synopsis "Load glade interfaces and access the glade built widgets")
+    (description "Libglade is a library that provides interfaces for loading
 graphical interfaces described in glade files and for accessing the
 widgets built in the loading process.")
     (license license:gpl2+))) ; This is correct.  GPL not LGPL
@@ -1034,8 +1034,8 @@ widgets built in the loading process.")
        ("glib" ,glib "bin")             ; for glib-genmarshal, etc.
        ("pkg-config" ,pkg-config)))
     (home-page "https://projects.gnome.org/gnome-print/home/faq.html")
-    (synopsis "printing framework for GNOME")
-    (description  "Gnome-print is a high-quality printing framework for GNOME.")
+    (synopsis "Printing framework for GNOME")
+    (description "Gnome-print is a high-quality printing framework for GNOME.")
     (license license:lgpl2.0+)))
 
 

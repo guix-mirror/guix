@@ -49,7 +49,7 @@
     (synopsis "Library and command-line utility to manage image metadata")
     (description
      "Exiv2 is a C++ library and a command line utility to manage image
-metadata. It provides fast and easy read and write access to the Exif, IPTC
+metadata.  It provides fast and easy read and write access to the Exif, IPTC
 and XMP metadata of images in various formats.")
 
     ;; Files under `xmpsdk' are a copy of Adobe's XMP SDK, licensed under the

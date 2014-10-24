@@ -48,7 +48,7 @@
    (synopsis "Little CMS, a small-footprint colour management engine")
    (description
     "Little CMS is a small-footprint colour management engine, with special
-focus on accuracy and performance. It uses the International Color
+focus on accuracy and performance.  It uses the International Color
 Consortium standard (ICC), approved as ISO 15076-1.")
    (license license:x11)
    (home-page "http://www.littlecms.com/")))
@@ -65,7 +65,7 @@ Consortium standard (ICC), approved as ISO 15076-1.")
             (sha256 (base32
                      "0zhcx67afb6b5r936w5jmaydj3ks8zh83n9rm5sv3m3k8q8jib1q"))))
    (build-system gnu-build-system)
-   (synopsis "libpaper, a library for handling paper sizes")
+   (synopsis "Library for handling paper sizes")
    (description
     "The paper library and accompanying files are intended to provide a simple
 way for applications to take actions based on a system- or user-specified
@@ -104,10 +104,10 @@ paper size.")
          (substitute* "Makefile"
            ((" install.include") ""))))
       %standard-phases)))
-   (synopsis "psutils, a collection of utilities for manipulating PostScript documents")
+   (synopsis "Collection of utilities for manipulating PostScript documents")
    (description
     "PSUtils is a collection of utilities for manipulating PostScript
-documents. Programs included are psnup, for placing out several logical pages
+documents.  Programs included are psnup, for placing out several logical pages
 on a single sheet of paper, psselect, for selecting pages from a document,
 pstops, for general imposition, psbook, for signature generation for booklet
 printing, and psresize, for adjusting page sizes.")
@@ -198,10 +198,10 @@ output file formats and printers.")
                 (copy-file file (string-append dir "/" file)))
               (find-files "." "pfb|afm"))))
        %standard-phases)))))
-   (synopsis "free replacements for the PostScript fonts")
+   (synopsis "Free replacements for the PostScript fonts")
    (description
-    "gs-fonts provides fonts and font metrics customarily distributed with
-Ghostscript. It currently includes the 35 standard PostScript fonts.")
+    "Ghostscript fonts provides fonts and font metrics customarily distributed with
+Ghostscript.  It currently includes the 35 standard PostScript fonts.")
    (license license:gpl2)
    (home-page "http://sourceforge.net/projects/gs-fonts/")))
 
@@ -218,7 +218,7 @@ Ghostscript. It currently includes the 35 standard PostScript fonts.")
    (build-system gnu-build-system)
    (inputs `(("ghostscript" ,ghostscript)))
    (native-inputs `(("pkg-config" ,pkg-config)))
-   (synopsis "postscript rendering library")
+   (synopsis "Postscript rendering library")
    (description
     "libspectre is a small library for rendering Postscript documents.
 It provides a convenient easy to use API for handling and rendering

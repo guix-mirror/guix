@@ -37,13 +37,13 @@
         "1jcahzrvxcnp5chdn2x46l0y4aba8d8yd70lljfin7h5knxrlyhs"))))
     (build-system gnu-build-system)
     (home-page "http://check.sourceforge.net/")
-    (synopsis "Check, a unit testing framework for C")
+    (synopsis "Unit test framework for C")
     (description
-     "Check is a unit testing framework for C. It features a simple
+     "Check is a unit testing framework for C.  It features a simple
 interface for defining unit tests, putting little in the way of the
 developer.  Tests are run in a separate address space, so Check can
 catch both assertion failures and code errors that cause segmentation
-faults or other signals. The output from unit tests can be used within
+faults or other signals.  The output from unit tests can be used within
 source code editors and IDEs.")
     (license lgpl2.1+)))
 

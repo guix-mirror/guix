@@ -53,18 +53,18 @@
                    (zero? (apply system* "make" "generic_gcc" make-flags)))
                  (alist-delete 'configure %standard-phases))))
     (home-page "http://www.info-zip.org/Zip.html")
-    (synopsis "Zip compression and file packing utility")
+    (synopsis "Compression and file packing utility")
     (description
-     "Zip is a compression and file packaging/archive utility. Zip is useful
+     "Zip is a compression and file packaging/archive utility.  Zip is useful
 for packaging a set of files for distribution, for archiving files, and for
 saving disk space by temporarily compressing unused files or directories.
 Zip puts one or more compressed files into a single ZIP archive, along with
 information about the files (name, path, date, time of last modification,
-protection, and check information to verify file integrity). An entire
+protection, and check information to verify file integrity).  An entire
 directory structure can be packed into a ZIP archive with a single command.
 
 Zip has one compression method (deflation) and can also store files without
-compression. Zip automatically chooses the better of the two for each file.
+compression.  Zip automatically chooses the better of the two for each file.
 Compression ratios of 2:1 to 3:1 are common for text files.")
   (license (license:bsd-style "file://LICENSE"
                                "See LICENSE in the distribution."))))
@@ -95,15 +95,15 @@ Compression ratios of 2:1 to 3:1 are common for text files.")
                (("/man/") "/share/man/"))))
         %standard-phases)))
     (home-page "http://www.info-zip.org/UnZip.html")
-    (synopsis "Unzip decompression and file extraction utility")
+    (synopsis "Decompression and file extraction utility")
     (description
-     "UnZip is an extraction utility for archives compressed in .zip format
-(also called \"zipfiles\").
+     "UnZip is an extraction utility for archives compressed in .zip format,
+also called \"zipfiles\".
 
-UnZip lists, tests, or extracts files from a .zip archive. The default
-behaviour (with no options) is to extract into the current directory
-(and subdirectories below it) all files from the specified zipfile.
-UnZip recreates the stored directory structure by default.")
+UnZip lists, tests, or extracts files from a .zip archive.  The default
+behaviour (with no options) is to extract into the current directory, and
+subdirectories below it, all files from the specified zipfile.  UnZip
+recreates the stored directory structure by default.")
   (license (license:bsd-style "file://LICENSE"
                                "See LICENSE in the distribution."))))
 
@@ -131,9 +131,9 @@ UnZip recreates the stored directory structure by default.")
     (arguments
      `(#:parallel-tests? #f)) ; since test files are created on the fly
     (home-page "http://zziplib.sourceforge.net/")
-    (synopsis "zziplib, a library for accessing zip files")
+    (synopsis "Library for accessing zip files")
     (description
-     "zziplib is a library based on zlib for accessing zip files.")
+     "ZZipLib is a library based on zlib for accessing zip files.")
     (license license:lgpl2.0+)))
 
 

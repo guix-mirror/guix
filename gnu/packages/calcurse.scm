@@ -41,9 +41,9 @@
     (home-page "http://www.calcurse.org")
     (synopsis "Text-based calendar and scheduling")
     (description
-     "Calcurse is a text-based calendar and scheduling application. It helps
-keep track of events, appointments and everyday tasks. A configurable
+     "Calcurse is a text-based calendar and scheduling application.  It helps
+keep track of events, appointments and everyday tasks.  A configurable
 notification system reminds user of upcoming deadlines, and the curses based
-interface can be customized to suit user needs. All of the commands are
+interface can be customized to suit user needs.  All of the commands are
 documented within an online help system.")
     (license bsd-2)))

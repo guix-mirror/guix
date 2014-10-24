@@ -42,7 +42,7 @@
     (synopsis "Standalone freedesktop.org and KDE systray implementation")
     (description
      "Stalonetray is a stand-alone freedesktop.org and KDE system
-tray (notification area) for X Window System/X11 (e.g. X.Org or XFree86). It
+tray (notification area) for X Window System/X11 (e.g. X.Org or XFree86).  It
 has full XEMBED support and minimal dependencies: an X11 lib only.  Stalonetray
 works with virtually any EWMH-compliant window manager.")
     (license gpl2+)))

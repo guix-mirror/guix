@@ -67,7 +67,7 @@
            (substitute* "tests/runtests.pl"
              (("/bin/sh") (which "sh"))))
        %standard-phases)))
-   (synopsis "curl, command line tool for transferring data with URL syntax")
+   (synopsis "Command line tool for transferring data with URL syntax")
    (description
     "curl is a command line tool for transferring data with URL syntax,
 supporting DICT, FILE, FTP, FTPS, Gopher, HTTP, HTTPS, IMAP, IMAPS, LDAP,

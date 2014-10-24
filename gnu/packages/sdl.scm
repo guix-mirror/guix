@@ -107,7 +107,7 @@ joystick, and graphics hardware.")
     (synopsis "Library for module sound formats")
     (description
      "MikMod is able to play a wide range of module formats, as well as
-digital sound files. It can take advantage of particular features of your
+digital sound files.  It can take advantage of particular features of your
 system, such as sound redirection over the network.")
     (license lgpl2.1)
     (home-page "http://mikmod.sourceforge.net/")))

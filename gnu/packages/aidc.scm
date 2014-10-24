@@ -62,7 +62,7 @@ formats.")
     (synopsis "Encode data into a QR Code symbol")
     (description "Libqrencode is a C library for encoding data in a QR Code
 symbol, a kind of 2D symbology that can be scanned by handy terminals such as
-a mobile phone with CCD. The capacity of QR Code is up to 7000 digits or 4000
+a mobile phone with CCD.  The capacity of QR Code is up to 7000 digits or 4000
 characters, and is highly robust.")
     (license license:lgpl2.1+)
     (home-page "http://fukuchi.org/works/qrencode")))

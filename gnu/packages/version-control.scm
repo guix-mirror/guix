@@ -84,7 +84,7 @@
     (synopsis "Version control system supporting both distributed and centralized workflows")
     (description
      "GNU Bazaar is a version control system that allows you to record
-changes to project files over time. It supports both a distributed workflow
+changes to project files over time.  It supports both a distributed workflow
 as well as the classic centralized workflow.")
     (license gpl2+)))
 
@@ -337,7 +337,7 @@ property manipulation.")
         ("sqlite" ,sqlite)
         ("zlib" ,zlib)))
     (home-page "http://subversion.apache.org/")
-    (synopsis "Subversion, a revision control system")
+    (synopsis "Revision control system")
     (description
      "Subversion exists to be universally recognized and adopted as a
 centralized version control system characterized by its
@@ -438,7 +438,7 @@ standards-compliant ChangeLog entries based on the changes that it detects.")
     (home-page "http://invisible-island.net/diffstat/")
     (synopsis "Make histograms from the output of 'diff'")
     (description
-     "diffstat reads the output of 'diff' and displays a histogram of the
+     "Diffstat reads the output of 'diff' and displays a histogram of the
 insertions, deletions, and modifications per-file.  It is useful for reviewing
 large, complex patch files.")
     (license (x11-style "file://COPYING"))))
@@ -563,10 +563,10 @@ accessed and migrated on modern systems.")
     (home-page "http://aegis.sourceforge.net")
     (synopsis "Project change supervisor")
     (description "Aegis is a project change supervisor, and performs some of
-the Software Configuration Management needed in a CASE environment. Aegis
+the Software Configuration Management needed in a CASE environment.  Aegis
 provides a framework within which a team of developers may work on many
 changes to a program independently, and Aegis coordinates integrating these
 changes back into the master source of the program, with as little disruption
-as possible. Resolution of contention for source files, a major headache for
+as possible.  Resolution of contention for source files, a major headache for
 any project with more than one developer, is one of Aegis's major functions.")
     (license gpl3+)))

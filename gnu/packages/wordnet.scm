@@ -76,8 +76,7 @@
     (inputs `(("tk" ,tk)
               ("tcl" ,tcl)))
     (home-page "http://wordnet.princeton.edu/")
-    (synopsis
-     "WordNet, a lexical database for the English language")
+    (synopsis "Lexical database for the English language")
     (description
      "WordNet® is a large lexical database of English.  Nouns, verbs,
 adjectives and adverbs are grouped into sets of cognitive synonyms

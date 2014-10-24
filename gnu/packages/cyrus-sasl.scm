@@ -55,10 +55,10 @@
       ;; ends up doing "ln -s plugin_common.lo plugin_common.o", which can
       ;; fail with EEXIST when building things in parallel.
       #:parallel-build? #f))
-   (synopsis "Cyrus SASL, an implementation of the Simple Authentication Security Layer framework")
+   (synopsis "Simple Authentication Security Layer implementation")
    (description
     "SASL (Simple Authentication Security Layer) is an Internet
-standards-track method for remote computers to authenticate. The Cyrus SASL
+standards-track method for remote computers to authenticate.  The Cyrus SASL
 library makes supporting various SASL mechanisms easy for both client and
 server writers.")
    (license (license:bsd-style "file://COPYING"

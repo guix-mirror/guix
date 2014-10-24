@@ -122,8 +122,8 @@
     (description
      "Expect is a tool for automating interactive applications such as
 telnet, ftp, passwd, fsck, rlogin, tip, etc.  Expect really makes this
-stuff trivial. Expect is also useful for testing these same
-applications. And by adding Tk, you can wrap interactive applications in
+stuff trivial.  Expect is also useful for testing these same
+applications.  And by adding Tk, you can wrap interactive applications in
 X11 GUIs.")
     (license public-domain)))            ; as written in `license.terms'
 
