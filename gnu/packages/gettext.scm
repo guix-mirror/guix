@@ -1,5 +1,6 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2012 Nikita Karetnikov <nikita@karetnikov.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -34,14 +35,14 @@
 (define-public gnu-gettext
   (package
     (name "gettext")
-    (version "0.19.2")
+    (version "0.19.3")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://gnu/gettext/gettext-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1fs9jbmcx26f2ghvnn92x1ks7qfhjg2wv7fbv5nczaz0yrpawj0c"))))
+               "1xmkxviqnq60h4wmh3bi6b1zkc9qsk3l1lv91k0iwfrxb982v5ck"))))
     (build-system gnu-build-system)
     (inputs
      `(("expat" ,expat)))
