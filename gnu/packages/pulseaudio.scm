@@ -127,7 +127,9 @@ rates. ")
               ;; anyway.
               '(substitute* "src/daemon/default.pa.in"
                  (("load-module module-console-kit" all)
-                  (string-append "#" all "\n"))))))
+                  (string-append "#" all "\n"))))
+             (patches (list (search-patch "pulseaudio-fix-mult-test.patch")
+                            (search-patch "pulseaudio-CVE-2014-3970.patch")))))
     (build-system gnu-build-system)
     (arguments
      `(#:configure-flags '("--localstatedir=/var" ;"--sysconfdir=/etc"

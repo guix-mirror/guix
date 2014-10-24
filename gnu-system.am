@@ -395,6 +395,8 @@ dist_patch_DATA =						\
   gnu/packages/patches/pingus-sdl-libs-config.patch		\
   gnu/packages/patches/plotutils-libpng-jmpbuf.patch		\
   gnu/packages/patches/procps-make-3.82.patch			\
+  gnu/packages/patches/pulseaudio-CVE-2014-3970.patch		\
+  gnu/packages/patches/pulseaudio-fix-mult-test.patch		\
   gnu/packages/patches/pybugz-encode-error.patch		\
   gnu/packages/patches/pybugz-stty.patch			\
   gnu/packages/patches/python-fix-tests.patch			\

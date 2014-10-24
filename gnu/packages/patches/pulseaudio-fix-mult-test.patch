@@ -1,0 +1,16 @@
+Avoid signed overflow during mult-s16-test which intermittently
+failed.
+
+Patch by Mark H Weaver <mhw@netris.org>.
+
+--- pulseaudio-5.0/src/tests/mult-s16-test.c.orig	2014-01-23 13:57:55.000000000 -0500
++++ pulseaudio-5.0/src/tests/mult-s16-test.c	2014-10-24 03:13:46.464661815 -0400
+@@ -55,7 +55,7 @@
+ START_TEST (mult_s16_test) {
+     int16_t samples[SAMPLES];
+     int32_t volumes[SAMPLES];
+-    int32_t sum1 = 0, sum2 = 0;
++    uint32_t sum1 = 0, sum2 = 0;
+     int i;
+ 
+     pa_random(samples, sizeof(samples));
