@@ -74,10 +74,6 @@
             ((#:phases phases)
              `(alist-replace
                'build (lambda _
-                        ;; Don't attempt to build 'guile.c' since we don't
-                        ;; have Guile here.
-                        (substitute* "build.sh"
-                          (("guile\\.\\$\\{OBJEXT\\}") ""))
                         (zero? (system* "./build.sh")))
                (alist-replace
                 'install (lambda* (#:key outputs #:allow-other-keys)

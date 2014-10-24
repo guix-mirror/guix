@@ -273,14 +273,14 @@ functionality beyond that which is outlined in the POSIX standard.")
 (define-public gnu-make
   (package
    (name "make")
-   (version "4.0")
+   (version "4.1")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnu/make/make-" version
                                 ".tar.bz2"))
             (sha256
              (base32
-              "1nyvn8mknw0mf7727lprva3lisl1y0n03lvar342rrpdmz3qc1p6"))
+              "19gwwhik3wdwn0r42b7xcihkbxvjl9r2bdal8nifc3k5i4rn3iqb"))
             (patches (list (search-patch "make-impure-dirs.patch")))))
    (build-system gnu-build-system)
    (native-inputs `(("pkg-config", pkg-config)))  ; to detect Guile
@@ -293,8 +293,8 @@ functionality beyond that which is outlined in the POSIX standard.")
                   ;; Change the default shell from /bin/sh.
                   (let ((bash (assoc-ref inputs "bash")))
                     (substitute* "job.c"
-                      (("default_shell\\[\\] =.*$")
-                       (format #f "default_shell[] = \"~a/bin/bash\";\n"
+                      (("default_shell =.*$")
+                       (format #f "default_shell = \"~a/bin/bash\";\n"
                                bash)))))
                 %standard-phases)))
    (synopsis "Remake files automatically")
