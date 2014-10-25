@@ -63,6 +63,15 @@
                           (check-description-style pkg))))
                     "description should start with an upper-case letter")))
 
+(test-assert "description: may start with a digit"
+  (not
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (description "2-component library."))))
+                          (check-description-style pkg))))
+                    "description should start with an upper-case letter")))
+
 (test-assert "description: two spaces after end of sentence"
   (->bool
    (string-contains (call-with-warnings
@@ -97,6 +106,15 @@
                       (lambda ()
                         (let ((pkg (dummy-package "x"
                                      (synopsis "bad synopsis."))))
+                          (check-synopsis-style pkg))))
+                    "synopsis should start with an upper-case letter")))
+
+(test-assert "synopsis: may start with a digit"
+  (not
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (synopsis "5-dimensional frobnicator"))))
                           (check-synopsis-style pkg))))
                     "synopsis should start with an upper-case letter")))
 

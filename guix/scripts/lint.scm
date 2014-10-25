@@ -76,9 +76,8 @@
             %checkers)
   (exit 0))
 
-(define (start-with-capital-letter? s)
-  (and (not (string-null? s))
-       (char-set-contains? char-set:upper-case (string-ref s 0))))
+(define (properly-starts-sentence? s)
+  (string-match "^[[:upper:][:digit:]]" s))
 
 (define (check-description-style package)
   ;; Emit a warning if stylistic issues are found in the description of PACKAGE.
@@ -88,10 +87,10 @@
                     "description should not be empty"
                     'description)))
 
-  (define (check-starts-with-upper-case description)
-    (unless (start-with-capital-letter? description)
+  (define (check-proper-start description)
+    (unless (properly-starts-sentence? description)
       (emit-warning package
-                    "description should start with an upper-case letter"
+                    "description should start with an upper-case letter or digit"
                     'description)))
 
   (define (check-end-of-sentence-space description)
@@ -115,10 +114,9 @@ by two spaces; possible infraction~p at ~{~a~^, ~}"
 
   (let ((description (package-description package)))
     (when (string? description)
-      (begin
-        (check-not-empty description)
-        (check-starts-with-upper-case description)
-        (check-end-of-sentence-space description)))))
+      (check-not-empty description)
+      (check-proper-start description)
+      (check-end-of-sentence-space description))))
 
 (define (check-inputs-should-be-native package)
   ;; Emit a warning if some inputs of PACKAGE are likely to belong to its
@@ -162,12 +160,11 @@ by two spaces; possible infraction~p at ~{~a~^, ~}"
                     "synopsis should be less than 80 characters long"
                     'synopsis)))
 
-  (define (check-synopsis-start-upper-case synopsis)
-   (when (and (not (string-null? synopsis))
-              (not (start-with-capital-letter? synopsis)))
-     (emit-warning package
-                   "synopsis should start with an upper-case letter"
-                   'synopsis)))
+  (define (check-proper-start synopsis)
+    (unless (properly-starts-sentence? synopsis)
+      (emit-warning package
+                    "synopsis should start with an upper-case letter or digit"
+                    'synopsis)))
 
   (define (check-start-with-package-name synopsis)
     (when (string-prefix-ci? (package-name package) synopsis)
@@ -176,14 +173,13 @@ by two spaces; possible infraction~p at ~{~a~^, ~}"
                     'synopsis)))
 
  (let ((synopsis (package-synopsis package)))
-       (begin
-        (check-not-empty synopsis)
-        (check-synopsis-start-upper-case synopsis)
-        (check-final-period synopsis)
-        (check-start-article synopsis)
-        (check-start-with-package-name synopsis)
-        (check-synopsis-length synopsis)))))
    (when (string? synopsis)
+     (check-not-empty synopsis)
+     (check-proper-start synopsis)
+     (check-final-period synopsis)
+     (check-start-article synopsis)
+     (check-start-with-package-name synopsis)
+     (check-synopsis-length synopsis))))
 
 (define (check-patches package)
   ;; Emit a warning if the patches requires by PACKAGE are badly named.
