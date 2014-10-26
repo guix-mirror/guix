@@ -196,6 +196,18 @@ convert and stream audio and video.  It includes the libavcodec
 audio/video codec library.")
     (license gpl2+)))
 
+;; We need this older ffmpeg because vlc-2.1.5 doesn't work with ffmpeg-2.4.
+(define-public ffmpeg-2.2
+  (package (inherit ffmpeg)
+    (version "2.2.9")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://www.ffmpeg.org/releases/ffmpeg-"
+                                 version ".tar.bz2"))
+             (sha256
+              (base32
+               "0fbjszysnab6yfrv4dpa8yqjin6hcy1zs4i1wa8782bq3pc1529y"))))))
+
 (define-public vlc
   (package
     (name "vlc")
@@ -218,7 +230,7 @@ audio/video codec library.")
        ("avahi" ,avahi)
        ("dbus" ,dbus)
        ("flac" ,flac)
-       ("ffmpeg" ,ffmpeg)
+       ("ffmpeg" ,ffmpeg-2.2)     ; FIXME: vlc-2.1.5 won't work with ffmpeg-2.4
        ("fontconfig" ,fontconfig)
        ("freetype" ,freetype)
        ("gnutls" ,gnutls)
