@@ -22,6 +22,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages maths)
+  #:use-module (ice-9 regex)
   #:use-module (gnu packages)
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
@@ -935,3 +936,121 @@ point numbers")
     ;; At least one file (src/maxima.asd) says "version 2."
     ;; GPLv2 only is therefore the smallest subset.
     (license license:gpl2)))
+
+(define-public atlas
+  (package
+    (name "atlas")
+    (version "3.10.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://sourceforge/math-atlas/atlas"
+                                  version ".tar.bz2"))
+              (sha256
+               (base32
+                "0bqh4bdnjdyww4mcpg6kn0x7338mfqbdgysn97dzrwwb26di7ars"))))
+    (build-system gnu-build-system)
+    (home-page "http://math-atlas.sourceforge.net/")
+    (inputs `(("gfortran" ,gfortran-4.8)
+              ("lapack-tar" ,(package-source lapack))))
+    (outputs '("out" "doc"))
+    (arguments
+     `(#:parallel-build? #f
+       #:parallel-tests? #f
+       #:modules ((srfi srfi-26)
+                  (srfi srfi-1)
+                  (guix build gnu-build-system)
+                  (guix build utils))
+       #:configure-flags 
+       `(;; Generate position independent code suitable for dynamic libraries
+         ;; and use WALL timer to get more accurate timing.
+         "-Fa" "alg" "-fPIC" "-D" "c" "-DWALL"
+         ;; Set word width.
+         "-b"
+         ,,(if (string-match "64" (%current-system))
+               "64"
+               "32")
+         ;; Disable parallel build as it gives errors: atlas_pthread.h is
+         ;; needed to compile C files before it is generated.
+         "-Ss" "pmake" "make -j 1"
+         ;; Generate shared libraries.
+         "--shared"
+         ;; Build a full LAPACK library.
+         ,(string-append "--with-netlib-lapack-tarfile="
+                         (assoc-ref %build-inputs "lapack-tar")))
+       #:phases
+        (alist-cons-after
+         'install 'install-doc
+         (lambda* (#:key outputs inputs #:allow-other-keys)
+           (let ((doc (string-append (assoc-ref outputs "doc") 
+                                     "/share/doc/atlas")))
+             (mkdir-p doc)
+             (fold (lambda (file previous) 
+                     (and previous (zero? (system* "cp" file doc))))
+                   #t (find-files "../ATLAS/doc" ".*"))))
+         (alist-cons-after
+          'check 'check-pt
+          (lambda _ (zero? (system* "make" "ptcheck")))
+          ;; Fix files required to run configure.
+          (alist-cons-before
+           'configure 'fix-/bin/sh
+           (lambda _
+             ;; Use `sh', not `/bin/sh'.
+             (substitute* (find-files "." "Makefile|configure|SpewMakeInc\\.c")
+               (("/bin/sh")
+                "sh")))
+           ;; Fix /bin/sh in generated make files.
+           (alist-cons-after
+            'configure 'fix-/bin/sh-in-generated-files
+            (lambda _
+              (substitute* (find-files "." "^[Mm]ake\\.inc.*")
+                (("/bin/sh")
+                 "sh")))
+            ;; ATLAS configure program does not accepts the default flags
+            ;; passed by the 'gnu-build-system'.
+            (alist-replace
+             'configure
+             (lambda* (#:key native-inputs inputs outputs
+                             (configure-flags '())
+                             #:allow-other-keys #:rest args)
+               (let* ((prefix     (assoc-ref outputs "out"))
+                      (bash       (or (and=> (assoc-ref
+                                              (or native-inputs inputs) "bash")
+                                             (cut string-append <> "/bin/bash"))
+                                      "/bin/sh"))
+                      (flags      `(,(string-append "--prefix=" prefix)
+                                    ,@configure-flags))
+                      (abs-srcdir (getcwd))
+                      (srcdir     (string-append "../" (basename abs-srcdir))))
+                 (format #t "source directory: ~s (relative from build: ~s)~%"
+                         abs-srcdir srcdir)
+                 (mkdir "../build")
+                 (chdir "../build")
+                 (format #t "build directory: ~s~%" (getcwd))
+                 (format #t "configure flags: ~s~%" flags)
+                 (zero? (apply system* bash
+                               (string-append srcdir "/configure")
+                               flags))))
+             %standard-phases)))))))
+    (synopsis "Automatically Tuned Linear Algebra Software")
+    (description
+     "ATLAS is an automatically tuned linear algebra software library
+providing C and Fortran77 interfaces to a portably efficient BLAS
+implementation, as well as a few routines from LAPACK.
+
+Optimization occurs at build time.  For this reason you should build the
+library on the maschine on which you will use it.  The package must therefore
+be installed without making use of substitutes.  This can be achieved with the
+following command:
+
+\"guix package --no-substitutes -i atlas\"
+
+In addition, before building the library, CPU throttling should be disabled.
+This can be done in the BIOS, or, on Linux, with the following commands:
+
+cpufreq-selector -g performance -c 0
+...
+cpufreq-selector -g performance -c N-1
+
+where N is the number of cores of your CPU.  Failure to do so will result in a
+library with poor performance.")
+    (license license:bsd-3)))
