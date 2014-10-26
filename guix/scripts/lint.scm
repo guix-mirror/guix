@@ -88,7 +88,8 @@
                     'description)))
 
   (define (check-proper-start description)
-    (unless (properly-starts-sentence? description)
+    (unless (or (properly-starts-sentence? description)
+                (string-prefix-ci? (package-name package) description))
       (emit-warning package
                     "description should start with an upper-case letter or digit"
                     'description)))

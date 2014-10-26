@@ -72,6 +72,15 @@
                           (check-description-style pkg))))
                     "description should start with an upper-case letter")))
 
+(test-assert "description: may start with lower-case package name"
+  (not
+   (string-contains (call-with-warnings
+                      (lambda ()
+                        (let ((pkg (dummy-package "x"
+                                     (description "x is a dummy package."))))
+                          (check-description-style pkg))))
+                    "description should start with an upper-case letter")))
+
 (test-assert "description: two spaces after end of sentence"
   (->bool
    (string-contains (call-with-warnings
