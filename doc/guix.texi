@@ -157,11 +157,23 @@ GNU Guix depends on the following packages:
 @itemize
 @item @url{http://gnu.org/software/guile/, GNU Guile}, version 2.0.5 or later;
 @item @url{http://gnupg.org/, GNU libgcrypt};
+@end itemize
+
+The following dependencies are optional:
+
+@itemize
 @item
-optionally, installing
+Installing
 @url{http://savannah.nongnu.org/projects/guile-json/, Guile-JSON} will
 allow you to use the @command{guix import pypi} command; it is of
 interest primarily for developers and not for casual users.
+@item
+Installing @uref{http://gnutls.org/, GnuTLS-Guile} will
+allow you to access @code{https} URLs with the @command{guix download}
+command (@pxref{Invoking guix download}) and the @command{guix import
+pypi} command.  This is primarily of interest to developers.
+@xref{Guile Preparations, how to install the GnuTLS bindings for Guile,,
+gnutls-guile, GnuTLS-Guile}.
 @end itemize
 
 Unless @code{--disable-daemon} was passed to @command{configure}, the

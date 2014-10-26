@@ -23,6 +23,9 @@ GNU Guix currently depends on the following packages:
   - [[http://gnu.org/software/guile/][GNU Guile 2.0.x]], version 2.0.5 or later
   - [[http://gnupg.org/][GNU libgcrypt]]
   - optionally [[http://savannah.nongnu.org/projects/guile-json/][Guile-JSON]], for the 'guix import pypi' command
+  - optionally [[http://www.gnutls.org][GnuTLS]] compiled with guile support enabled, for HTTPS support
+    in the 'guix download' command.  Note that 'guix import pypi' requires
+    this functionality.
 
 Unless `--disable-daemon' was passed, the following packages are needed:
 
