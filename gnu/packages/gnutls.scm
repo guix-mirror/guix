@@ -77,6 +77,11 @@ specifications.")
                "1krx33ab2ijwfz71f1ba8labxfsic7jhlhv6rvjsyw566jj9a3d2"))
              (patches (list (search-patch "gnutls-server-name-fix.patch")))))
     (build-system gnu-build-system)
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--with-guile-site-dir="
+                            (assoc-ref %outputs "out")
+                            "/share/guile/site/2.0"))))
     (native-inputs
      `(("pkg-config" ,pkg-config)))
     (inputs
