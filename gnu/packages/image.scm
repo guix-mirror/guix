@@ -313,9 +313,7 @@ without sacrificing speed.
 
 This is a complete rewrite over the Imlib 1.x series.  The architecture is
 more modular, simple, and flexible.")
-    ;; This license adds several sentences to the original X11 license.
-    (license (license:x11-style "file://COPYING"
-                                "See 'COPYING' in the distribution."))))
+    (license license:imlib2)))
 
 (define-public giblib
   (package

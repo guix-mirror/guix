@@ -37,6 +37,7 @@
             isc
             ijg
             ibmpl1.0
+            imlib2
             lgpl2.0 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3 lgpl3+
             mpl2.0
             openldap2.8 openssl
@@ -194,6 +195,11 @@ which may be a file:// URI pointing the package's tree."
   (license "IBMPL 1.0"
            "http://directory.fsf.org/wiki/License:IBMPLv1.0"
            "https://www.gnu.org/licenses/license-list#IBMPL"))
+
+(define imlib2
+  (license "Imlib2"
+           "http://directory.fsf.org/wiki/License:Imlib2"
+           "https://www.gnu.org/licenses/license-list#imlib"))
 
 (define lgpl2.0
   (license "LGPL 2.0"
