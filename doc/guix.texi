@@ -2675,7 +2675,9 @@ The @command{guix download} command supports the same URIs as used in
 package definitions.  In particular, it supports @code{mirror://} URIs.
 @code{https} URIs (HTTP over TLS) are supported @emph{provided} the
 Guile bindings for GnuTLS are available in the user's environment; when
-they are not available, an error is raised.
+they are not available, an error is raised.  @xref{Guile Preparations,
+how to install the GnuTLS bindings for Guile,, gnutls-guile,
+GnuTLS-Guile}, for more information.
 
 The following option is available:
 
