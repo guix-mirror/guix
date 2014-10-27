@@ -1,6 +1,7 @@
 ;;; GNU Guix --- Functional package management for GNU
 ;;; Copyright © 2014 Pjotr Prins <pjotr.guix@thebird.nl>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -39,11 +40,12 @@
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/2.1/ruby-"
-                           version ".tar.gz"))
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.bz2"))
        (sha256
         (base32
-         "00bz6jcbxgnllplk4b9lnyc3w8yd3pz5rn11rmca1s8cn6vvw608"))))
+         "1mkndw0by11n6lyvq7dzly702yyqg5x0fcvfqrn9y4p49bw75kin"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
@@ -74,7 +76,6 @@
          %standard-phases))))
     (inputs
      `(("readline" ,readline)
-       ("autoconf" ,autoconf)
        ("openssl" ,openssl)
        ("libffi" ,libffi)
        ("gdbm" ,gdbm)
@@ -82,8 +83,11 @@
     (native-search-paths
      (list (search-path-specification
             (variable "GEM_PATH")
-            (directories '("lib/ruby/gems/2.1.3")))))
-    (synopsis "Ruby programming language interpreter")
+            (directories
+             (list (string-append "lib/ruby/gems/"
+                                  (version-major+minor version)
+                                  ".0"))))))
+    (synopsis "Programming language interpreter")
     (description "Ruby is a dynamic object-oriented programming language with
 a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
@@ -91,13 +95,13 @@ a focus on simplicity and productivity.")
 
 (define-public ruby-1.8
   (package (inherit ruby)
-    (name "ruby")
     (version "1.8.7-p374")
     (source
      (origin
        (method url-fetch)
-       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/1.8/"
-                           name "-" version ".tar.bz2"))
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
+                           (version-major+minor version)
+                           "/ruby-" version ".tar.bz2"))
        (sha256
         (base32
          "1qq7khilwkayrhwmzlxk83scrmiqfi7lgsn4c63znyvz2c1lgqxl"))))
