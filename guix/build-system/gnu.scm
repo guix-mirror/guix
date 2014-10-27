@@ -91,6 +91,13 @@ builder, or the distro's final Guile when GUILE is #f."
          `(#:guile ,guile
            #:implicit-inputs? #f
            ,@args)))
+      (replacement
+       (let ((replacement (package-replacement p)))
+         (and replacement
+              (package-with-explicit-inputs replacement inputs loc
+                                            #:native-inputs
+                                            native-inputs
+                                            #:guile guile))))
       (native-inputs
        (let ((filtered (duplicate-filter native-inputs*)))
         `(,@(call native-inputs*)
@@ -132,6 +139,11 @@ flags for VARIABLE, the associated value is augmented."
                                  (substring flag ,len))
                                 flag))
                           ,flags)))))))
+      (replacement
+       (let ((replacement (package-replacement p)))
+         (and replacement
+              (package-with-extra-configure-variable replacement
+                                                     variable value))))
       (inputs (rewritten-inputs (package-inputs p)))
       (propagated-inputs (rewritten-inputs (package-propagated-inputs p))))))
 
@@ -155,7 +167,8 @@ use `--strip-all' as the arguments to `strip'."
          ((#:strip-flags flags)
           (if strip-all?
               ''("--strip-all")
-              flags)))))))
+              flags)))))
+    (replacement (and=> (package-replacement p) static-package))))
 
 (define* (dist-package p source)
   "Return a package that runs takes source files from the SOURCE directory,
@@ -290,9 +303,11 @@ are allowed to refer to."
   (define canonicalize-reference
     (match-lambda
      ((? package? p)
-      (derivation->output-path (package-derivation store p system)))
+      (derivation->output-path (package-derivation store p system
+                                                   #:graft? #f)))
      (((? package? p) output)
-      (derivation->output-path (package-derivation store p system)
+      (derivation->output-path (package-derivation store p system
+                                                   #:graft? #f)
                                output))
      ((? string? output)
       output)))
@@ -328,11 +343,12 @@ are allowed to refer to."
   (define guile-for-build
     (match guile
       ((? package?)
-       (package-derivation store guile system))
+       (package-derivation store guile system #:graft? #f))
       (#f                                         ; the default
        (let* ((distro (resolve-interface '(gnu packages commencement)))
               (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system)))))
+         (package-derivation store guile system
+                             #:graft? #f)))))
 
   (build-expression->derivation store name builder
                                 #:system system
@@ -472,11 +488,11 @@ platform."
   (define guile-for-build
     (match guile
       ((? package?)
-       (package-derivation store guile system))
+       (package-derivation store guile system #:graft? #f))
       (#f                                         ; the default
        (let* ((distro (resolve-interface '(gnu packages commencement)))
               (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system)))))
+         (package-derivation store guile system #:graft? #f)))))
 
   (build-expression->derivation store name builder
                                 #:system system

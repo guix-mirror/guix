@@ -168,11 +168,11 @@
   (define guile-for-build
     (match guile
       ((? package?)
-       (package-derivation store guile system))
+       (package-derivation store guile system #:graft? #f))
       (#f                                         ; the default
        (let* ((distro (resolve-interface '(gnu packages commencement)))
               (guile  (module-ref distro 'guile-final)))
-         (package-derivation store guile system)))))
+         (package-derivation store guile system #:graft? #f)))))
 
   (build-expression->derivation store name builder
                                 #:system system

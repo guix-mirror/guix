@@ -26,6 +26,7 @@
   #:use-module (ice-9 match)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
+  #:use-module (srfi srfi-11)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-35)
@@ -65,6 +66,7 @@
             package-outputs
             package-native-search-paths
             package-search-paths
+            package-replacement
             package-synopsis
             package-description
             package-license
@@ -85,6 +87,7 @@
             package-derivation
             package-cross-derivation
             package-output
+            package-grafts
 
             %supported-systems
 
@@ -97,6 +100,7 @@
             &package-cross-build-system-error
             package-cross-build-system-error?
 
+            %graft?
             package->bag
             bag->derivation
             bag-transitive-inputs
@@ -211,6 +215,8 @@ corresponds to the arguments expected by `set-path-environment-variable'."
                                                   ; inputs
   (native-search-paths package-native-search-paths (default '()))
   (search-paths package-search-paths (default '()))
+  (replacement package-replacement                ; package | #f
+               (default #f) (thunked))
 
   (synopsis package-synopsis)                    ; one-line description
   (description package-description)              ; one or two paragraphs
@@ -445,8 +451,8 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
                                (and (member name (cons decompression-type
                                                        '("tar" "xz" "patch")))
                                     (list name
-                                          (package-derivation store p
-                                                              system)))))
+                                          (package-derivation store p system
+                                                              #:graft? #f)))))
                              (or inputs (%standard-patch-inputs))))
         (modules (delete-duplicates (cons '(guix build utils) modules))))
 
@@ -472,12 +478,10 @@ IMPORTED-MODULES specify modules to use/import for use by SNIPPET."
      ;; Patches and/or a snippet.
      (let ((source (method store uri 'sha256 sha256 name
                            #:system system))
-           (guile  (match (or guile-for-build (%guile-for-build)
-                              (default-guile))
+           (guile  (match (or guile-for-build (default-guile))
                      ((? package? p)
-                      (package-derivation store p system))
-                     ((? derivation? drv)
-                      drv))))
+                      (package-derivation store p system
+                                          #:graft? #f)))))
        (patch-and-repack store source patches
                          #:inputs inputs
                          #:snippet snippet
@@ -617,8 +621,9 @@ information in exceptions."
 
   (define derivation
     (if cross-system
-        (cut package-cross-derivation store <> cross-system system)
-        (cut package-derivation store <> system)))
+        (cut package-cross-derivation store <> cross-system system
+             #:graft? #f)
+        (cut package-derivation store <> system #:graft? #f)))
 
   (match input
     (((? string? name) (? package? package))
@@ -643,20 +648,27 @@ information in exceptions."
                         (package package)
                         (input   x)))))))
 
+(define %graft?
+  ;; Whether to honor package grafts by default.
+  (make-parameter #t))
+
 (define* (package->bag package #:optional
                        (system (%current-system))
-                       (target (%current-target-system)))
+                       (target (%current-target-system))
+                       #:key (graft? (%graft?)))
   "Compile PACKAGE into a bag for SYSTEM, possibly cross-compiled to TARGET,
 and return it."
   ;; Bind %CURRENT-SYSTEM and %CURRENT-TARGET-SYSTEM so that thunked field
   ;; values can refer to it.
   (parameterize ((%current-system system)
                  (%current-target-system target))
-    (match package
+    (match (if graft?
+               (or (package-replacement package) package)
+               package)
       (($ <package> name version source build-system
                     args inputs propagated-inputs native-inputs self-native-input?
                     outputs)
-       (or (make-bag build-system (package-full-name package)
+       (or (make-bag build-system (string-append name "-" version)
                      #:system system
                      #:target target
                      #:source source
@@ -675,6 +687,77 @@ and return it."
                       (condition
                        (&package-error
                         (package package))))))))))
+
+(define (input-graft store system)
+  "Return a procedure that, given an input referring to a package with a
+graft, returns a pair with the original derivation and the graft's derivation,
+and returns #f for other inputs."
+  (match-lambda
+   ((label (? package? package) sub-drv ...)
+    (let ((replacement (package-replacement package)))
+      (and replacement
+           (let ((orig (package-derivation store package system
+                                           #:graft? #f))
+                 (new  (package-derivation store replacement system)))
+             (graft
+               (origin orig)
+               (replacement new)
+               (origin-output (match sub-drv
+                                (() "out")
+                                ((output) output)))
+               (replacement-output origin-output))))))
+   (x
+    #f)))
+
+(define (input-cross-graft store target system)
+  "Same as 'input-graft', but for cross-compilation inputs."
+  (match-lambda
+   ((label (? package? package) sub-drv ...)
+    (let ((replacement (package-replacement package)))
+      (and replacement
+           (let ((orig (package-cross-derivation store package target system
+                                                 #:graft? #f))
+                 (new  (package-cross-derivation store replacement
+                                                 target system)))
+             (graft
+               (origin orig)
+               (replacement new)
+               (origin-output (match sub-drv
+                                (() "out")
+                                ((output) output)))
+               (replacement-output origin-output))))))
+   (_
+    #f)))
+
+(define* (bag-grafts store bag)
+  "Return the list of grafts applicable to BAG.  Each graft is a <graft>
+record."
+  (let ((target (bag-target bag))
+        (system (bag-system bag)))
+    (define native-grafts
+      (filter-map (input-graft store system)
+                  (append (bag-transitive-build-inputs bag)
+                          (bag-transitive-target-inputs bag)
+                          (if target
+                              '()
+                              (bag-transitive-host-inputs bag)))))
+
+    (define target-grafts
+      (if target
+          (filter-map (input-cross-graft store target system)
+                      (bag-transitive-host-inputs bag))
+          '()))
+
+    (append native-grafts target-grafts)))
+
+(define* (package-grafts store package
+                         #:optional (system (%current-system))
+                         #:key target)
+  "Return the list of grafts applicable to PACKAGE as built for SYSTEM and
+TARGET."
+  (let* ((package (or (package-replacement package) package))
+         (bag     (package->bag package system target)))
+    (bag-grafts store bag)))
 
 (define* (bag->derivation store bag
                           #:optional context)
@@ -743,23 +826,47 @@ This is an internal procedure."
            (bag-arguments bag))))
 
 (define* (package-derivation store package
-                             #:optional (system (%current-system)))
+                             #:optional (system (%current-system))
+                             #:key (graft? (%graft?)))
   "Return the <derivation> object of PACKAGE for SYSTEM."
 
   ;; Compute the derivation and cache the result.  Caching is important
   ;; because some derivations, such as the implicit inputs of the GNU build
   ;; system, will be queried many, many times in a row.
-  (cached package system
-          (bag->derivation store (package->bag package system #f)
-                           package)))
+  (cached package (cons system graft?)
+          (let* ((bag (package->bag package system #f #:graft? graft?))
+                 (drv (bag->derivation store bag package)))
+            (if graft?
+                (match (bag-grafts store bag)
+                  (()
+                   drv)
+                  (grafts
+                   (let ((guile (package-derivation store (default-guile)
+                                                    system #:graft? #f)))
+                     (graft-derivation store (bag-name bag) drv grafts
+                                       #:system system
+                                       #:guile guile))))
+                drv))))
 
 (define* (package-cross-derivation store package target
-                                   #:optional (system (%current-system)))
+                                   #:optional (system (%current-system))
+                                   #:key (graft? (%graft?)))
   "Cross-build PACKAGE for TARGET (a GNU triplet) from host SYSTEM (a Guix
 system identifying string)."
-  (cached package (cons system target)
-          (bag->derivation store (package->bag package system target)
-                           package)))
+  (cached package (list system target graft?)
+          (let* ((bag (package->bag package system target #:graft? graft?))
+                 (drv (bag->derivation store bag package)))
+            (if graft?
+                (match (bag-grafts store bag)
+                  (()
+                   drv)
+                  (grafts
+                   (graft-derivation store (bag-name bag) drv grafts
+                                     #:system system
+                                     #:guile
+                                     (package-derivation store (default-guile)
+                                                         system #:graft? #f))))
+                drv))))
 
 (define* (package-output store package
                          #:optional (output "out") (system (%current-system)))

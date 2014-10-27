@@ -2569,6 +2569,10 @@ candidates:
 guix build guile --with-source=../guile-2.0.9.219-e1bb7.tar.xz
 @end example
 
+@item --no-grafts
+Do not ``graft'' packages.  In practice, this means that package updates
+available as grafts are not applied.  @xref{Security Updates}, for more
+information on grafts.
 
 @item --derivations
 @itemx -d
@@ -3003,6 +3007,7 @@ For information on porting to other architectures or kernels,
 * System Installation::         Installing the whole operating system.
 * System Configuration::        Configuring a GNU system.
 * Installing Debugging Files::  Feeding the debugger.
+* Security Updates::            Deploying security fixes quickly.
 * Package Modules::             Packages from the programmer's viewpoint.
 * Packaging Guidelines::        Growing the distribution.
 * Bootstrapping::               GNU/Linux built from scratch.
@@ -4278,6 +4283,64 @@ whose definition explicitly declares a @code{debug} output.  This may be
 changed to opt-out in the future, if our build farm servers can handle
 the load.  To check whether a package has a @code{debug} output, use
 @command{guix package --list-available} (@pxref{Invoking guix package}).
+
+
+@node Security Updates
+@section Security Updates
+
+@indentedblock
+Note: As of version @value{VERSION}, the feature described in this
+section is experimental.
+@end indentedblock
+
+@cindex security updates
+Occasionally, important security vulnerabilities are discovered in core
+software packages and must be patched.  Guix follows a functional
+package management discipline (@pxref{Introduction}), which implies
+that, when a package is changed, @emph{every package that depends on it}
+must be rebuilt.  This can significantly slow down the deployment of
+fixes in core packages such as libc or Bash, since basically the whole
+distribution would need to be rebuilt.  Using pre-built binaries helps
+(@pxref{Substitutes}), but deployment may still take more time than
+desired.
+
+@cindex grafts
+To address that, Guix implements @dfn{grafts}, a mechanism that allows
+for fast deployment of critical updates without the costs associated
+with a whole-distribution rebuild.  The idea is to rebuild only the
+package that needs to be patched, and then to ``graft'' it onto packages
+explicitly installed by the user and that were previously referring to
+the original package.  The cost of grafting is typically very low, and
+order of magnitudes lower than a full rebuild of the dependency chain.
+
+@cindex replacements of packages, for grafts
+For instance, suppose a security update needs to be applied to Bash.
+Guix developers will provide a package definition for the ``fixed''
+Bash, say @var{bash-fixed}, in the usual way (@pxref{Defining
+Packages}).  Then, the original package definition is augmented with a
+@code{replacement} field pointing to the package containing the bug fix:
+
+@example
+(define bash
+  (package
+    (name "bash")
+    ;; @dots{}
+    (replacement bash-fixed)))
+@end example
+
+From there on, any package depending directly or indirectly on Bash that
+is installed will automatically be ``rewritten'' to refer to
+@var{bash-fixed} instead of @var{bash}.  This grafting process takes
+time proportional to the size of the package, but expect less than a
+minute for an ``average'' package on a recent machine.
+
+Currently, the graft and the package it replaces (@var{bash-fixed} and
+@var{bash} in the example above) must have the exact same @code{name}
+and @code{version} fields.  This restriction mostly comes from the fact
+that grafting works by patching files, including binary files, directly.
+Other restrictions may apply: for instance, when adding a graft to a
+package providing a shared library, the original shared library and its
+replacement must have the same @code{SONAME} and be binary-compatible.
 
 
 @node Package Modules

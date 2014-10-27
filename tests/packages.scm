@@ -33,8 +33,9 @@
   #:use-module (guix build-system gnu)
   #:use-module (gnu packages)
   #:use-module (gnu packages base)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages bootstrap)
-  #:use-module (srfi srfi-11)
+  #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-26)
   #:use-module (srfi srfi-34)
   #:use-module (srfi srfi-64)
@@ -47,16 +48,15 @@
 (define %store
   (open-connection-for-tests))
 
-
-
-(test-begin "packages")
-
 (define-syntax-rule (dummy-package name* extra-fields ...)
   (package (name name*) (version "0") (source #f)
            (build-system gnu-build-system)
            (synopsis #f) (description #f)
            (home-page #f) (license #f)
            extra-fields ...))
+
+
+(test-begin "packages")
 
 (test-assert "printer with location"
   (string-match "^#<package foo-0 foo.scm:42 [[:xdigit:]]+>$"
@@ -375,6 +375,80 @@
       (package-cross-derivation %store p "mips64el-linux-gnu")
       #f)))
 
+(test-equal "package-derivation, direct graft"
+  (package-derivation %store gnu-make)
+  (let ((p (package (inherit coreutils)
+             (replacement gnu-make))))
+    (package-derivation %store p)))
+
+(test-equal "package-cross-derivation, direct graft"
+  (package-cross-derivation %store gnu-make "mips64el-linux-gnu")
+  (let ((p (package (inherit coreutils)
+             (replacement gnu-make))))
+    (package-cross-derivation %store p "mips64el-linux-gnu")))
+
+(test-assert "package-grafts, indirect grafts"
+  (let* ((new   (dummy-package "dep"
+                  (arguments '(#:implicit-inputs? #f))))
+         (dep   (package (inherit new) (version "0.0")))
+         (dep*  (package (inherit dep) (replacement new)))
+         (dummy (dummy-package "dummy"
+                  (arguments '(#:implicit-inputs? #f))
+                  (inputs `(("dep" ,dep*))))))
+    (equal? (package-grafts %store dummy)
+            (list (graft
+                    (origin (package-derivation %store dep))
+                    (replacement (package-derivation %store new)))))))
+
+(test-assert "package-grafts, indirect grafts, cross"
+  (let* ((new    (dummy-package "dep"
+                   (arguments '(#:implicit-inputs? #f))))
+         (dep    (package (inherit new) (version "0.0")))
+         (dep*   (package (inherit dep) (replacement new)))
+         (dummy  (dummy-package "dummy"
+                   (arguments '(#:implicit-inputs? #f))
+                   (inputs `(("dep" ,dep*)))))
+         (target "mips64el-linux-gnu"))
+    (equal? (package-grafts %store dummy #:target target)
+            (list (graft
+                    (origin (package-cross-derivation %store dep target))
+                    (replacement
+                     (package-cross-derivation %store new target)))))))
+
+(test-assert "package-grafts, indirect grafts, propagated inputs"
+  (let* ((new   (dummy-package "dep"
+                  (arguments '(#:implicit-inputs? #f))))
+         (dep   (package (inherit new) (version "0.0")))
+         (dep*  (package (inherit dep) (replacement new)))
+         (prop  (dummy-package "propagated"
+                  (propagated-inputs `(("dep" ,dep*)))
+                  (arguments '(#:implicit-inputs? #f))))
+         (dummy (dummy-package "dummy"
+                  (arguments '(#:implicit-inputs? #f))
+                  (inputs `(("prop" ,prop))))))
+    (equal? (package-grafts %store dummy)
+            (list (graft
+                    (origin (package-derivation %store dep))
+                    (replacement (package-derivation %store new)))))))
+
+(test-assert "package-derivation, indirect grafts"
+  (let* ((new   (dummy-package "dep"
+                  (arguments '(#:implicit-inputs? #f))))
+         (dep   (package (inherit new) (version "0.0")))
+         (dep*  (package (inherit dep) (replacement new)))
+         (dummy (dummy-package "dummy"
+                  (arguments '(#:implicit-inputs? #f))
+                  (inputs `(("dep" ,dep*)))))
+         (guile (package-derivation %store (canonical-package guile-2.0)
+                                    #:graft? #f)))
+    (equal? (package-derivation %store dummy)
+            (graft-derivation %store "dummy-0"
+                              (package-derivation %store dummy #:graft? #f)
+                              (package-grafts %store dummy)
+
+                              ;; Use the same Guile as 'package-derivation'.
+                              #:guile guile))))
+
 (test-equal "package->bag"
   `("foo86-hurd" #f (,(package-source gnu-make))
     (,(canonical-package glibc)) (,(canonical-package coreutils)))
@@ -406,17 +480,20 @@
        (eq? package dep)))))
 
 (test-assert "bag->derivation"
-  (let ((bag (package->bag gnu-make))
-        (drv (package-derivation %store gnu-make)))
-    (parameterize ((%current-system "foox86-hurd")) ;should have no effect
-      (equal? drv (bag->derivation %store bag)))))
+  (parameterize ((%graft? #f))
+    (let ((bag (package->bag gnu-make))
+          (drv (package-derivation %store gnu-make)))
+      (parameterize ((%current-system "foox86-hurd")) ;should have no effect
+        (equal? drv (bag->derivation %store bag))))))
 
 (test-assert "bag->derivation, cross-compilation"
-  (let ((bag (package->bag gnu-make (%current-system) "mips64el-linux-gnu"))
-        (drv (package-cross-derivation %store gnu-make "mips64el-linux-gnu")))
-    (parameterize ((%current-system "foox86-hurd") ;should have no effect
-                   (%current-target-system "foo64-linux-gnu"))
-      (equal? drv (bag->derivation %store bag)))))
+  (parameterize ((%graft? #f))
+    (let* ((target "mips64el-linux-gnu")
+           (bag    (package->bag gnu-make (%current-system) target))
+           (drv    (package-cross-derivation %store gnu-make target)))
+      (parameterize ((%current-system "foox86-hurd") ;should have no effect
+                     (%current-target-system "foo64-linux-gnu"))
+        (equal? drv (bag->derivation %store bag))))))
 
 (unless (false-if-exception (getaddrinfo "www.gnu.org" "80" AI_NUMERICSERV))
   (test-skip 1))

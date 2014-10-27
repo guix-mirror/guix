@@ -202,6 +202,7 @@ options handled by 'set-build-options-from-command-line', and listed in
 (define %default-options
   ;; Alist of default option values.
   `((system . ,(%current-system))
+    (graft? . #t)
     (substitutes? . #t)
     (build-hook? . #t)
     (print-build-trace? . #t)
@@ -222,6 +223,8 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
   (display (_ "
       --with-source=SOURCE
                          use SOURCE when building the corresponding package"))
+  (display (_ "
+      --no-grafts        do not graft packages"))
   (display (_ "
   -d, --derivations      return the derivation paths of the given packages"))
   (display (_ "
@@ -278,6 +281,10 @@ Build the given PACKAGE-OR-DERIVATION and return their output paths.\n"))
          (option '("with-source") #t #f
                  (lambda (opt name arg result)
                    (alist-cons 'with-source arg result)))
+         (option '("no-grafts") #f #f
+                 (lambda (opt name arg result)
+                   (alist-cons 'graft? #f
+                               (alist-delete 'graft? result eq?))))
 
          %standard-build-options))
 
@@ -290,26 +297,28 @@ build."
       (triplet
        (cut package-cross-derivation <> <> triplet <>))))
 
-  (define src? (assoc-ref opts 'source?))
-  (define sys  (assoc-ref opts 'system))
+  (define src?   (assoc-ref opts 'source?))
+  (define sys    (assoc-ref opts 'system))
+  (define graft? (assoc-ref opts 'graft?))
 
-  (let ((opts (options/with-source store
-                                   (options/resolve-packages store opts))))
-    (filter-map (match-lambda
-                 (('argument . (? package? p))
-                  (if src?
-                      (let ((s (package-source p)))
-                        (package-source-derivation store s))
-                      (package->derivation store p sys)))
-                 (('argument . (? derivation? drv))
-                  drv)
-                 (('argument . (? derivation-path? drv))
-                  (call-with-input-file drv read-derivation))
-                 (('argument . (? store-path?))
-                  ;; Nothing to do; maybe for --log-file.
-                  #f)
-                 (_ #f))
-                opts)))
+  (parameterize ((%graft? graft?))
+    (let ((opts (options/with-source store
+                                     (options/resolve-packages store opts))))
+      (filter-map (match-lambda
+                   (('argument . (? package? p))
+                    (if src?
+                        (let ((s (package-source p)))
+                          (package-source-derivation store s))
+                        (package->derivation store p sys)))
+                   (('argument . (? derivation? drv))
+                    drv)
+                   (('argument . (? derivation-path? drv))
+                    (call-with-input-file drv read-derivation))
+                   (('argument . (? store-path?))
+                    ;; Nothing to do; maybe for --log-file.
+                    #f)
+                   (_ #f))
+                  opts))))
 
 (define (options/resolve-packages store opts)
   "Return OPTS with package specification strings replaced by actual

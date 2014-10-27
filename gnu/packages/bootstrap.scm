@@ -146,7 +146,9 @@ check whether everything is alright."
       (native-inputs (map rewritten-input
                           (package-native-inputs p)))
       (propagated-inputs (map rewritten-input
-                              (package-propagated-inputs p)))))))
+                              (package-propagated-inputs p)))
+      (replacement (and=> (package-replacement p)
+                          package-with-bootstrap-guile))))))
 
 (define* (glibc-dynamic-linker
           #:optional (system (or (and=> (%current-target-system)
