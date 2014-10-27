@@ -24,7 +24,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
-  #:use-module (guix licenses))
+  #:use-module ((guix licenses) #:prefix license:))
 
 (define-public feh
   (package
@@ -61,5 +61,6 @@ actions.")
     ;; The license is really the Expat license, with additional wording in the
     ;; 2nd paragraph: "acknowledgment shall be given in the documentation and
     ;; software packages that this Software was used."
-    (license (x11-style "file://COPYING"
-                        "See 'COPYING' in the distribution."))))
+    (license (license:x11-style
+              "file://COPYING"
+              "See 'COPYING' in the distribution."))))
