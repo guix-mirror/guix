@@ -89,6 +89,34 @@ a focus on simplicity and productivity.")
     (home-page "https://ruby-lang.org")
     (license license:ruby)))
 
+(define-public ruby-1.8
+  (package (inherit ruby)
+    (name "ruby")
+    (version "1.8.7-p374")
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "http://cache.ruby-lang.org/pub/ruby/1.8/"
+                           name "-" version ".tar.bz2"))
+       (sha256
+        (base32
+         "1qq7khilwkayrhwmzlxk83scrmiqfi7lgsn4c63znyvz2c1lgqxl"))))
+    (native-search-paths '())
+    (arguments
+     `(#:test-target "test"
+       #:parallel-tests? #f
+       #:phases
+        (alist-cons-before
+         'configure 'replace-bin-sh
+         (lambda _
+           (substitute* '("Makefile.in"
+                          "ext/pty/pty.c"
+                          "io.c"
+                          "lib/mkmf.rb"
+                          "process.c")
+             (("/bin/sh") (which "sh"))))
+         %standard-phases)))))
+
 (define-public ruby-i18n
   (package
     (name "ruby-i18n")
