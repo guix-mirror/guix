@@ -956,6 +956,13 @@ point numbers")
     (arguments
      `(#:parallel-build? #f
        #:parallel-tests? #f
+
+       ;; ATLAS tunes itself for the machine it is built on, as explained at
+       ;; <http://lists.gnu.org/archive/html/guix-devel/2014-10/msg00305.html>.
+       ;; For this reason, we want users to build it locally instead of using
+       ;; substitutes.
+       #:substitutable? #f
+
        #:modules ((srfi srfi-26)
                   (srfi srfi-1)
                   (guix build gnu-build-system)
@@ -1037,15 +1044,11 @@ point numbers")
 providing C and Fortran77 interfaces to a portably efficient BLAS
 implementation, as well as a few routines from LAPACK.
 
-Optimization occurs at build time.  For this reason you should build the
-library on the maschine on which you will use it.  The package must therefore
-be installed without making use of substitutes.  This can be achieved with the
-following command:
+Optimization occurs at build time.  For this reason, the library is built on
+the machine where it is installed, without resorting to pre-built substitutes.
 
-\"guix package --no-substitutes -i atlas\"
-
-In addition, before building the library, CPU throttling should be disabled.
-This can be done in the BIOS, or, on Linux, with the following commands:
+Before building the library, CPU throttling should be disabled.  This can be
+done in the BIOS, or, on GNU/Linux, with the following commands:
 
 cpufreq-selector -g performance -c 0
 ...
