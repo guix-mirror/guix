@@ -37,7 +37,7 @@ cat > "$module_dir/foo.scm"<<EOF
     (name "dummy")
     (version "42")
     (synopsis "dummy package")
-    (description "dummy package only used for testing purposes.")))
+    (description "dummy package. Only used for testing purposes.")))
 EOF
 
 export GUIX_PACKAGE_PATH=$module_dir
@@ -52,7 +52,7 @@ grep_warning ()
 # Three issues with the dummy package:
 # 1) the synopsis starts with the package name;
 # 2) the synopsis starts with a lower-case letter;
-# 3) the description starts with a lower-case letter.
+# 3) the description has a single space following the end-of-sentence period.
 
 out=`guix lint dummy 2>&1`
 if [ `grep_warning "$out"` -ne 3 ]
