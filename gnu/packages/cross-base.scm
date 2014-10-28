@@ -293,6 +293,10 @@ XBINUTILS and the cross tool chain."
                (cross-binutils triplet)
                (cross-libc triplet))))
 
+(define-public xgcc-xtensa
+  ;; Bare-bones Xtensa cross-compiler, used to build the Atheros firmware.
+  (cross-gcc "xtensa-elf"))
+
 ;; (define-public xgcc-armel
 ;;   (let ((triplet "armel-linux-gnueabi"))
 ;;     (cross-gcc triplet

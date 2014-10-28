@@ -156,6 +156,11 @@ check whether everything is alright."
   (cond ((string=? system "x86_64-linux") "/lib/ld-linux-x86-64.so.2")
         ((string=? system "i686-linux") "/lib/ld-linux.so.2")
         ((string=? system "mips64el-linux") "/lib/ld.so.1")
+
+        ;; XXX: This one is used bare-bones, without a libc, so add a case
+        ;; here just so we can keep going.
+        ((string=? system "xtensa-elf") "no-ld.so")
+
         (else (error "dynamic linker name not known for this system"
                      system))))
 
