@@ -44,6 +44,7 @@
             psfl public-domain
             qpl
             ruby
+            silofl1.1
             vim
             x11 x11-style
             zlib
@@ -266,6 +267,11 @@ which may be a file:// URI pointing the package's tree."
   (license "Ruby License"
            "http://directory.fsf.org/wiki/License:Ruby"
            "https://www.ruby-lang.org/en/about/license.txt"))
+
+(define silofl1.1
+  (license "SIL OFL 1.1"
+           "http://scripts.sil.org/OFL_web"
+           "https://www.gnu.org/licenses/license-list#SILOFL"))
 
 (define vim
   (license "Vim"
