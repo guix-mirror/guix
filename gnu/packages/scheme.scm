@@ -422,4 +422,8 @@ implementation techniques and as an expository tool.")
 R6RS) and related languages, such as Typed Racket.  It features a compiler and
 a virtual machine with just-in-time native compilation, as well as a large set
 of libraries.")
-    (license lgpl2.0+)))
+    (license lgpl2.0+)
+
+    ;; Fails to build on MIPS with "address or size is not OS PAGE ALIGNED".
+    ;; See <http://hydra.gnu.org/build/121775>.
+    (supported-systems (delete "mips64el-linux" %supported-systems))))

@@ -52,4 +52,7 @@
 solving over finite domains.  It accepts Prolog+ constraint programs and
 produces a compiled, native binary which can function in a stand-alone
 manner.  It also features an interactive interpreter.")
-    (license (list gpl2+ lgpl3+))))
+    (license (list gpl2+ lgpl3+))
+
+    ;; See 'configure' for the list of supported architectures.
+    (supported-systems (delete "mips64el-linux" %supported-systems))))

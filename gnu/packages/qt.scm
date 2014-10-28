@@ -145,7 +145,12 @@ X11 (yet).")
     (synopsis "Cross-platform GUI library")
     (description "Qt is a cross-platform application and UI framework for
 developers using C++ or QML, a CSS & JavaScript like language.")
-    (license lgpl2.1)))
+    (license lgpl2.1)
+
+    ;; Qt 4: 'QBasicAtomicPointer' leads to build failures on MIPS;
+    ;; see <http://hydra.gnu.org/build/112828>.
+    ;; Qt 5: assembler error; see <http://hydra.gnu.org/build/112526>.
+    (supported-systems (delete "mips64el-linux" %supported-systems))))
 
 (define-public qt-4
   (package (inherit qt)

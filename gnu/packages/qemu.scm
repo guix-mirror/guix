@@ -125,7 +125,10 @@ the KVM kernel module in Linux.  When using KVM, QEMU can virtualize x86,
 server and embedded PowerPC, and S390 guests.")
 
     ;; Many files are GPLv2+, but some are GPLv2-only---e.g., `memory.c'.
-    (license gpl2)))
+    (license gpl2)
+
+    ;; Several tests fail on MIPS; see <http://hydra.gnu.org/build/117914>.
+    (supported-systems (delete "mips64el-linux" %supported-systems))))
 
 (define-public qemu
   ;; QEMU with GUI support.
