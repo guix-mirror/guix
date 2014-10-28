@@ -567,43 +567,21 @@
   (let* ((store  (open-connection))
          (drv    (build-expression->derivation store "prereq-subst"
                                                (random 1000)))
-         (output (derivation->output-path drv))
-         (dir    (and=> (getenv "GUIX_BINARY_SUBSTITUTE_URL")
-                        (compose uri-path string->uri))))
-    ;; Create fake substituter data, to be read by `substitute-binary'.
-    (call-with-output-file (string-append dir "/nix-cache-info")
-      (lambda (p)
-        (format p "StoreDir: ~a\nWantMassQuery: 0\n"
-                (%store-prefix))))
-    (call-with-output-file (string-append dir "/" (store-path-hash-part output)
-                                          ".narinfo")
-      (lambda (p)
-        (format p "StorePath: ~a
-URL: ~a
-Compression: none
-NarSize: 1234
-References: 
-System: ~a
-Deriver: ~a~%"
-                output                              ; StorePath
-                (string-append dir "/example.nar")  ; URL
-                (%current-system)                   ; System
-                (basename
-                 (derivation-file-name drv)))))     ; Deriver
+         (output (derivation->output-path drv)))
 
     ;; Make sure substitutes are usable.
     (set-build-options store #:use-substitutes? #t)
 
-    (let-values (((build download)
-                  (derivation-prerequisites-to-build store drv))
-                 ((build* download*)
-                  (derivation-prerequisites-to-build store drv
-                                                     #:use-substitutes? #f)))
-      (pk build download build* download*)
-      (and (null? build)
-           (equal? download (list output))
-           (null? download*)
-           (null? build*)))))
+    (with-derivation-narinfo drv
+      (let-values (((build download)
+                    (derivation-prerequisites-to-build store drv))
+                   ((build* download*)
+                    (derivation-prerequisites-to-build store drv
+                                                       #:use-substitutes? #f)))
+        (and (null? build)
+             (equal? download (list output))
+             (null? download*)
+             (null? build*))))))
 
 (test-assert "build-expression->derivation with expression returning #f"
   (let* ((builder  '(begin
@@ -901,3 +879,7 @@ Deriver: ~a~%"
 
 
 (exit (= (test-runner-fail-count (test-runner-current)) 0))
+
+;; Local Variables:
+;; eval: (put 'with-derivation-narinfo 'scheme-indent-function 1)
+;; End:

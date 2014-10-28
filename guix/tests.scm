@@ -23,9 +23,11 @@
   #:use-module (gnu packages bootstrap)
   #:use-module (srfi srfi-34)
   #:use-module (rnrs bytevectors)
+  #:use-module (web uri)
   #:export (open-connection-for-tests
             random-text
-            random-bytevector))
+            random-bytevector
+            with-derivation-narinfo))
 
 ;;; Commentary:
 ;;;
@@ -66,5 +68,60 @@
             (bytevector-u8-set! bv i (random 256 %seed))
             (loop (1+ i)))
           bv))))
+
+
+;;;
+;;; Narinfo files, as used by the substituter.
+;;;
+
+(define* (derivation-narinfo drv #:optional (nar "example.nar"))
+  "Return the contents of the narinfo corresponding to DRV; NAR should be the
+file name of the archive containing the substitute for DRV."
+  (format #f "StorePath: ~a
+URL: ~a
+Compression: none
+NarSize: 1234
+References: 
+System: ~a
+Deriver: ~a~%"
+          (derivation->output-path drv)       ; StorePath
+          nar                                 ; URL
+          (derivation-system drv)             ; System
+          (basename
+           (derivation-file-name drv))))      ; Deriver
+
+(define (call-with-derivation-narinfo drv thunk)
+  "Call THUNK in a context where fake substituter data, as read by 'guix
+substitute-binary', has been installed for DRV."
+  (let* ((output  (derivation->output-path drv))
+         (dir     (uri-path
+                   (string->uri (getenv "GUIX_BINARY_SUBSTITUTE_URL"))))
+         (info    (string-append dir "/nix-cache-info"))
+         (narinfo (string-append dir "/" (store-path-hash-part output)
+                                 ".narinfo")))
+    (dynamic-wind
+      (lambda ()
+        (call-with-output-file info
+          (lambda (p)
+            (format p "StoreDir: ~a\nWantMassQuery: 0\n"
+                    (%store-prefix))))
+        (call-with-output-file narinfo
+          (lambda (p)
+            (display (derivation-narinfo drv) p))))
+      thunk
+      (lambda ()
+        (delete-file narinfo)
+        (delete-file info)))))
+
+(define-syntax-rule (with-derivation-narinfo drv body ...)
+  "Evaluate BODY in a context where DRV looks substitutable from the
+substituter's viewpoint."
+  (call-with-derivation-narinfo drv
+    (lambda ()
+      body ...)))
+
+;; Local Variables:
+;; eval: (put 'call-with-derivation-narinfo 'scheme-indent-function 1)
+;; End:
 
 ;;; tests.scm ends here
