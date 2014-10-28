@@ -410,10 +410,7 @@ there, and write the build log to LOG-PORT.  Return the exit status."
   "Offload DRV to MACHINE.  Prior to the actual offloading, transfer all of
 INPUTS to MACHINE; if building DRV succeeds, retrieve all of OUTPUTS from
 MACHINE."
-  ;; Acquire MACHINE's upload or download lock to serialize file transfers in
-  ;; a given direction to/from MACHINE in the presence of several 'offload'
-  ;; hook instance.
-  (when (with-machine-lock machine 'upload
+  (when (begin
           (register-gc-root (derivation-file-name drv) machine)
           (send-files (cons (derivation-file-name drv) inputs)
                       machine))
@@ -423,9 +420,7 @@ MACHINE."
                            #:build-timeout build-timeout)))
       (if (zero? status)
           (begin
-            ;; Likewise (see above.)
-            (with-machine-lock machine 'download
-              (retrieve-files outputs machine))
+            (retrieve-files outputs machine)
             (remove-gc-roots machine)
             (format (current-error-port)
                     "done with offloaded '~a'~%"
