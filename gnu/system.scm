@@ -30,6 +30,7 @@
   #:use-module (gnu packages which)
   #:use-module (gnu packages admin)
   #:use-module (gnu packages linux)
+  #:use-module (gnu packages pciutils)
   #:use-module (gnu packages package-management)
   #:use-module (gnu packages which)
   #:use-module (gnu packages less)
@@ -299,6 +300,7 @@ explicitly appear in OS."
   (cons* procps psmisc which less zile nano
          (@ (gnu packages admin) dmd) guix
          lsof                                 ;for Guix's 'list-runtime-roots'
+         pciutils usbutils
          util-linux inetutils isc-dhcp wireless-tools
          net-tools                        ; XXX: remove when Inetutils suffices
 
