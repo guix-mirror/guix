@@ -162,9 +162,8 @@ decreasing, is 1."
           ,system))
 
     `(div "status: "
-          ,(url "x86_64-linux") " "
-          ,(url "i686-linux") " "
-          ,(url "mips64el-linux")))
+          ,(list-join (map url (package-transitive-supported-systems package))
+                      " ")))
 
   (define (package-logo name)
     (and=> (lookup-gnu-package name)
