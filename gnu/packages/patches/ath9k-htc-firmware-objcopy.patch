@@ -1,0 +1,14 @@
+The firmware is cross-compiled, but the build system ends up using
+'objcopy' instead of 'xtensa-elf-objcopy' by default.  Force it to
+use the right one.
+
+--- source/target_firmware/configure	2014-10-28 20:57:26.834436561 +0100
++++ source/target_firmware/configure	2014-10-28 20:57:29.666436530 +0100
+@@ -11,6 +11,7 @@ mkdir -p build
+ cat > "$TOOLCHAIN_FILE" <<EOF
+ INCLUDE(CMakeForceCompiler)
+ 
++SET(CMAKE_OBJCOPY xtensa-elf-objcopy)
+ SET(CMAKE_SYSTEM_PROCESSOR xtensa)
+ SET(CMAKE_FIND_ROOT_PATH ${TOOLCHAIN}/$TARGET)
+ SET(CMAKE_STRIP :)

@@ -81,6 +81,7 @@ GNU_SYSTEM_MODULES =				\
   gnu/packages/enchant.scm			\
   gnu/packages/feh.scm                          \
   gnu/packages/file.scm				\
+  gnu/packages/firmware.scm			\
   gnu/packages/fish.scm				\
   gnu/packages/flashing-tools.scm		\
   gnu/packages/flex.scm				\
@@ -307,6 +308,7 @@ dist_patch_DATA =						\
   gnu/packages/patches/abiword-wmf-version-lookup-fix.patch	\
   gnu/packages/patches/alsa-lib-mips-atomic-fix.patch		\
   gnu/packages/patches/apr-skip-getservbyname-test.patch	\
+  gnu/packages/patches/ath9k-htc-firmware-objcopy.patch		\
   gnu/packages/patches/automake-skip-amhello-tests.patch	\
   gnu/packages/patches/avahi-localstatedir.patch		\
   gnu/packages/patches/avrdude-fix-libusb.patch			\
