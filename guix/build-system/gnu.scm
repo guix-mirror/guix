@@ -268,6 +268,7 @@ standard packages used as implicit inputs of the GNU build system."
                     (system (%current-system))
                     (imported-modules %default-modules)
                     (modules %default-modules)
+                    (substitutable? #t)
                     allowed-references)
   "Return a derivation called NAME that builds from tarball SOURCE, with
 input derivation INPUTS, using the usual procedure of the GNU Build
@@ -280,6 +281,9 @@ the builder's environment, from the host.  Note that we distinguish
 between both, because for Guile's own modules like (ice-9 foo), we want
 to use GUILE's own version of it, rather than import the user's one,
 which could lead to gratuitous input divergence.
+
+SUBSTITUTABLE? determines whether users may be able to use substitutes of the
+returned derivations, or whether they should always build it locally.
 
 ALLOWED-REFERENCES can be either #f, or a list of packages that the outputs
 are allowed to refer to."
@@ -335,6 +339,11 @@ are allowed to refer to."
                                 #:inputs input-drvs
                                 #:outputs outputs
                                 #:modules imported-modules
+
+                                ;; XXX: Update when
+                                ;; <http://bugs.gnu.org/18747> is fixed.
+                                #:local-build? (not substitutable?)
+
                                 #:allowed-references
                                 (and allowed-references
                                      (map canonicalize-reference
@@ -390,6 +399,7 @@ is one of `host' or `target'."
                                               (guix build utils)))
                           (modules '((guix build gnu-build-system)
                                      (guix build utils)))
+                          (substitutable? #t)
                           allowed-references)
   "Cross-build NAME for TARGET, where TARGET is a GNU triplet.  INPUTS are
 cross-built inputs, and NATIVE-INPUTS are inputs that run on the build
@@ -473,6 +483,11 @@ platform."
                                 #:inputs (append native-drvs target-drvs)
                                 #:outputs outputs
                                 #:modules imported-modules
+
+                                ;; XXX: Update when
+                                ;; <http://bugs.gnu.org/18747> is fixed.
+                                #:local-build? (not substitutable?)
+
                                 #:allowed-references
                                 (and allowed-references
                                      (map canonicalize-reference
