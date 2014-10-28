@@ -57,6 +57,8 @@
             derivation-input-output-paths
 
             fixed-output-derivation?
+            offloadable-derivation?
+            substitutable-derivation?
             derivation-hash
 
             read-derivation
@@ -155,6 +157,18 @@ download with a fixed hash (aka. `fetchurl')."
                    (call-with-input-file (derivation-input-path i)
                      read-derivation))
                  inputs)))))
+
+(define (offloadable-derivation? drv)
+  "Return true if DRV can be offloaded, false otherwise."
+  (match (assoc "preferLocalBuild"
+                (derivation-builder-environment-vars drv))
+    (("preferLocalBuild" . "1") #f)
+    (_ #t)))
+
+(define substitutable-derivation?
+  ;; Return #t if the derivation can be substituted.  Currently the two are
+  ;; synonymous, see <http://bugs.gnu.org/18747>.
+  offloadable-derivation?)
 
 (define* (derivation-prerequisites-to-build store drv
                                             #:key

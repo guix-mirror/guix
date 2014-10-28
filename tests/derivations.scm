@@ -173,6 +173,12 @@
                 (= (stat:ino (lstat file1))
                    (stat:ino (lstat file2))))))))
 
+(test-assert "offloadable-derivation?"
+  (and (offloadable-derivation? (derivation %store "foo" %bash '()))
+       (not (offloadable-derivation?
+             (derivation %store "foo" %bash '()
+                         #:local-build? #t)))))
+
 (test-assert "fixed-output-derivation?"
   (let* ((builder    (add-text-to-store %store "my-fixed-builder.sh"
                                         "echo -n hello > $out" '()))
