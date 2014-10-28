@@ -217,7 +217,8 @@ that second value is the empty list."
     (every built? (derivation-output-paths drv sub-drvs)))
 
   (define (derivation-substitutable? drv sub-drvs)
-    (every substitutable? (derivation-output-paths drv sub-drvs)))
+    (and (substitutable-derivation? drv)
+         (every substitutable? (derivation-output-paths drv sub-drvs))))
 
   (let loop ((drv        drv)
              (sub-drvs   outputs)
@@ -230,7 +231,12 @@ that second value is the empty list."
                    (append (derivation-output-paths drv sub-drvs)
                            substitute)))
           (else
-           (let ((inputs (remove (lambda (i)
+           (let ((build  (if (substitutable-derivation? drv)
+                             build
+                             (cons (make-derivation-input
+                                    (derivation-file-name drv) sub-drvs)
+                                   build)))
+                 (inputs (remove (lambda (i)
                                    (or (member i build) ; XXX: quadratic
                                        (input-built? i)
                                        (input-substitutable? i)))

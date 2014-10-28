@@ -562,7 +562,6 @@
          ;; prerequisite to build because DRV itself is already built.
          (null? (derivation-prerequisites-to-build %store drv)))))
 
-(test-skip (if (getenv "GUIX_BINARY_SUBSTITUTE_URL") 0 1))
 (test-assert "derivation-prerequisites-to-build and substitutes"
   (let* ((store  (open-connection))
          (drv    (build-expression->derivation store "prereq-subst"
@@ -582,6 +581,30 @@
              (equal? download (list output))
              (null? download*)
              (null? build*))))))
+
+(test-assert "derivation-prerequisites-to-build and substitutes, local build"
+  (let* ((store  (open-connection))
+         (drv    (build-expression->derivation store "prereq-subst-local"
+                                               (random 1000)
+                                               ;; XXX: Adjust once
+                                               ;; <http://bugs.gnu.org/18747>
+                                               ;; is fixed.
+                                               #:local-build? #t))
+         (output (derivation->output-path drv)))
+
+    ;; Make sure substitutes are usable.
+    (set-build-options store #:use-substitutes? #t)
+
+    (with-derivation-narinfo drv
+      (let-values (((build download)
+                    (derivation-prerequisites-to-build store drv)))
+        ;; Despite being available as a substitute, DRV will be built locally
+        ;; due to #:local-build?.
+        (and (null? download)
+             (match build
+               (((? derivation-input? input))
+                (string=? (derivation-input-path input)
+                          (derivation-file-name drv)))))))))
 
 (test-assert "build-expression->derivation with expression returning #f"
   (let* ((builder  '(begin
