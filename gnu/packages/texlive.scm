@@ -83,7 +83,6 @@
              ;; FIXME: Add interpreters fontforge and ruby,
              ;; once they are available.
              ("teckit" ,teckit)
-             ("t1lib" ,t1lib)
              ("zlib" ,zlib)
              ("zziplib" ,zziplib)))
    (native-inputs
@@ -114,7 +113,6 @@
          "--with-system-pixman"
          "--with-system-poppler"
 ;;          "--with-system-potrace"
-         "--with-system-t1lib"
          "--with-system-teckit"
          "--with-system-xpdf"
          "--with-system-zlib"
