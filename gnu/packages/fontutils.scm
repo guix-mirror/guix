@@ -220,6 +220,9 @@ and returns a sequence of positioned glyphids from the font.")
     (build-system gnu-build-system)
     (native-inputs `(("ghostscript" ,ghostscript))) ;for tests
     (inputs `(("zlib" ,zlib)))
+    (arguments
+     `(#:configure-flags
+      `("--with-libpotrace"))) ; install library and headers
     (synopsis "Transform bitmaps into vector graphics")
     (description
      "Potrace is a tool for tracing a bitmap, which means, transforming a
