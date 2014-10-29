@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
+;;; Copyright © 2013, 2014 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
@@ -70,8 +70,9 @@
              ("fontconfig" ,fontconfig)
              ("freetype" ,freetype)
              ("gd" ,gd)
-             ("icu4c" ,icu4c)
              ("ghostscript" ,ghostscript)
+             ("graphite2" ,graphite2)
+             ("icu4c" ,icu4c)
              ("libpng" ,libpng)
              ("libxaw" ,libxaw)
              ("libxt" ,libxt)
@@ -102,7 +103,7 @@
          "--with-system-cairo"
          "--with-system-freetype2"
          "--with-system-gd"
-         ;; "--with-system-graphite2"  ; requires cmake build system
+         "--with-system-graphite2"
          ;; "--with-system-harfbuzz"   ; requires --with-system-graphite2
          "--with-system-icu"
          "--with-system-libgs"
