@@ -1,5 +1,5 @@
 ;;; GNU Guix --- Functional package management for GNU
-;;; Copyright © 2010, 2011, 2012, 2013 Ludovic Courtès <ludo@gnu.org>
+;;; Copyright © 2010, 2011, 2012, 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -310,6 +310,29 @@ attributes, or #f if NAME cannot be found."
           (_
            attributes))))
 
+(define (license-variable license)
+  "Return the name of the (guix licenses) variable for LICENSE."
+  (match license
+    ("GPLv2+"    'gpl2+)
+    ("GPLv3+"    'gpl3+)
+    ("LGPLv2+"   'lgpl2.1+)
+    ("LGPLv2.1+" 'lgpl2.1+)
+    ("LGPLv3+"   'lgpl3+)
+    (('attribute-set _ ...)
+     ;; At some point in 2013, Nixpkgs switched to attribute sets to represent
+     ;; licenses.  These are listed in lib/licenses.nix.
+     (match (and=> (find-attribute-by-name "shortName" license)
+                   attribute-value)
+       ("AGPL-3.0+"  'agpl3+)
+       ("GPL-2.0+"   'gpl2+)
+       ("GPL-3.0+"   'gpl3+)
+       ("LGPL-2.0+"  'lgpl2.0+)
+       ("LGPL-2.1+"  'lgpl2.1+)
+       ("LGPL-3.0+"  'lgpl3+)
+       ((? string? x) x)
+       (_             license)))
+    (_           license)))
+
 (define (package-source-output-path package)
   "Return the output path of the \"src\" derivation of PACKAGE."
   (derivation-source-output-path (attribute-value package)))
@@ -368,16 +391,6 @@ location of DERIVATION."
                 `(string-append ,@items))
                (x x))
              uri))
-
-       (define (license-variable license)
-         ;; Return the name of the (guix licenses) variable for LICENSE.
-         (match license
-           ("GPLv2+"    'gpl2+)
-           ("GPLv3+"    'gpl3+)
-           ("LGPLv2+"   'lgpl2.1+)
-           ("LGPLv2.1+" 'lgpl2.1+)
-           ("LGPLv3+"   'lgpl3+)
-           (_           license)))
 
        (let* ((source  (find-attribute-by-name "src" attributes))
               (urls    (source-urls source))
