@@ -129,10 +129,13 @@ affine transformation (scale, rotation, shear, etc.)")
    (build-system gnu-build-system)
    (inputs
     `(("cairo" ,cairo)
+      ("graphite2" ,graphite2)
       ("icu4c" ,icu4c)))
    (native-inputs
-     `(("pkg-config" ,pkg-config)
+    `(("pkg-config" ,pkg-config)
       ("python" ,python-wrapper)))
+   (arguments
+    `(#:configure-flags `("--with-graphite2=yes")))
    (synopsis "OpenType text shaping engine")
    (description
     "HarfBuzz is an OpenType text shaping engine.")
