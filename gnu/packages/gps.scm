@@ -47,13 +47,18 @@
                 "1pd01kra9l5ihy1by87qia0mpbpcif7g5yg7r9z2bnw7711jm3yb"))))
     (build-system gnu-build-system)
     (arguments
-     '(#:configure-flags '("--with-zlib=system")
+     `(#:configure-flags '("--with-zlib=system")
        #:phases (alist-cons-before
                  'configure 'pre-configure
                  (lambda _
                    (chdir "gpsbabel"))
                  ;; TODO: "make doc" requires Docbook & co.
-                 %standard-phases)))
+                 %standard-phases)
+
+       ;; On i686, 'raymarine.test' fails because of a rounding error:
+       ;; <http://hydra.gnu.org/build/133040>.  As a workaround, disable tests
+       ;; on these platforms.
+       #:tests? (not (string-prefix? "i686" (%current-system)))))
     (inputs
      `(("expat" ,expat)
        ("zlib" ,zlib)
