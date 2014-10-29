@@ -23,7 +23,8 @@
   #:use-module ((guix licenses) #:prefix license:)
   #:use-module (guix packages)
   #:use-module (guix download)
-  #:use-module (guix build-system gnu))
+  #:use-module (guix build-system gnu)
+  #:use-module (guix build-system perl))
 
 (define-public openssl
   (package
@@ -67,3 +68,34 @@
     "OpenSSL is an implementation of SSL/TLS")
    (license license:openssl)
    (home-page "http://www.openssl.org/")))
+
+(define-public perl-net-ssleay
+  (package
+    (name "perl-net-ssleay")
+    (version "1.66")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/M/MI/MIKEM/"
+                                  "Net-SSLeay-" version ".tar.gz"))
+              (sha256
+               (base32
+                "0mxfdhz2fyc40a4myi1yfalf875v5wq1fm4qib9sj3chdm9zvy2v"))))
+    (build-system perl-build-system)
+    (inputs `(("openssl" ,openssl)))
+    (arguments
+     `(#:phases (alist-cons-before
+                 'configure 'set-ssl-prefix
+                 (lambda* (#:key inputs #:allow-other-keys)
+                   (setenv "OPENSSL_PREFIX" (assoc-ref inputs "openssl")))
+                 %standard-phases)))
+    (synopsis "Perl extension for using OpenSSL")
+    (description
+     "This module offers some high level convenience functions for accessing
+web pages on SSL servers (for symmetry, the same API is offered for accessing
+http servers, too), an sslcat() function for writing your own clients, and
+finally access to the SSL api of the SSLeay/OpenSSL package so you can write
+servers or clients for more complicated applications.")
+    (license (package-license perl))
+    (home-page "http://search.cpan.org/~mikem/Net-SSLeay-1.66/")))
+
+
