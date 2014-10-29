@@ -80,18 +80,18 @@
              ("libpng" ,libpng)
              ("libxaw" ,libxaw)
              ("libxt" ,libxt)
+             ("perl" ,perl)
              ("pixman" ,pixman)
              ("poppler" ,poppler)
              ("potrace" ,potrace)
+             ("python" ,python-2) ; incompatible with Python 3 (print syntax)
              ("ruby" ,ruby)
+             ("tcsh" ,tcsh)
              ("teckit" ,teckit)
              ("zlib" ,zlib)
              ("zziplib" ,zziplib)))
    (native-inputs
-    `(("perl" ,perl)
-      ("pkg-config" ,pkg-config)
-      ("python" ,python-2) ; incompatible with Python 3 (print syntax)
-      ("tcsh" ,tcsh)))
+    `(("pkg-config" ,pkg-config)))
    (outputs '("out" "data"))
    (arguments
     `(#:out-of-source? #t
