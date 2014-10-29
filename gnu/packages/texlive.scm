@@ -72,6 +72,7 @@
              ("gd" ,gd)
              ("ghostscript" ,ghostscript)
              ("graphite2" ,graphite2)
+             ("harfbuzz" ,harfbuzz)
              ("icu4c" ,icu4c)
              ("libpng" ,libpng)
              ("libxaw" ,libxaw)
@@ -104,7 +105,7 @@
          "--with-system-freetype2"
          "--with-system-gd"
          "--with-system-graphite2"
-         ;; "--with-system-harfbuzz"   ; requires --with-system-graphite2
+         "--with-system-harfbuzz"
          "--with-system-icu"
          "--with-system-libgs"
          "--with-system-libpng"
