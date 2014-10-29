@@ -100,9 +100,9 @@ shell command in that environment.\n"))
   (display (_ "
   -E, --exec=COMMAND     execute COMMAND in new environment"))
   (display (_ "
-  --pure                 unset existing environment variables"))
+      --pure             unset existing environment variables"))
   (display (_ "
-  --search-paths         display needed environment variable definitions"))
+      --search-paths     display needed environment variable definitions"))
   (newline)
   (show-build-options-help)
   (newline)
@@ -110,6 +110,7 @@ shell command in that environment.\n"))
   -h, --help             display this help and exit"))
   (display (_ "
   -V, --version          display version information and exit"))
+  (newline)
   (show-bug-report-information))
 
 (define %default-options
