@@ -74,6 +74,7 @@
              ("graphite2" ,graphite2)
              ("harfbuzz" ,harfbuzz)
              ("icu4c" ,icu4c)
+             ("libpaper" ,libpaper)
              ("libpng" ,libpng)
              ("libxaw" ,libxaw)
              ("libxt" ,libxt)
@@ -108,9 +109,11 @@
          "--with-system-harfbuzz"
          "--with-system-icu"
          "--with-system-libgs"
+         "--with-system-libpaper"
          "--with-system-libpng"
          "--with-system-pixman"
          "--with-system-poppler"
+;;          "--with-system-potrace"
          "--with-system-t1lib"
          "--with-system-teckit"
          "--with-system-xpdf"
