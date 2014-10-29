@@ -572,3 +572,26 @@ unavailable.")
 library.")
     (license (package-license perl))
     (home-page "http://search.cpan.org/~szbalint/WWW-Curl-4.17/lib/WWW/Curl.pm")))
+
+(define-public perl-io-socket-ssl
+  (package
+    (name "perl-io-socket-ssl")
+    (version "2.002")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://cpan/authors/id/S/SU/SULLR/"
+                                  "IO-Socket-SSL-" version ".tar.gz"))
+              (sha256
+               (base32
+                "1mph52lw6x5v44wf8mw00llzi8pp6k5c4jnrnrvlacrlfv260jb8"))))
+    (build-system perl-build-system)
+    (propagated-inputs `(("perl-net-ssleay" ,perl-net-ssleay)))
+    (synopsis "Nearly transparent SSL encapsulation for IO::Socket::INET")
+    (description
+     "IO::Socket::SSL makes using SSL/TLS much easier by wrapping the
+necessary functionality into the familiar IO::Socket interface and providing
+secure defaults whenever possible.  This way existing applications can be made
+SSL-aware without much effort, at least if you do blocking I/O and don't use
+select or poll.")
+    (license (package-license perl))
+    (home-page "https://github.com/noxxi/p5-io-socket-ssl")))
