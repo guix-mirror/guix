@@ -80,6 +80,7 @@
              ("libxt" ,libxt)
              ("pixman" ,pixman)
              ("poppler" ,poppler)
+             ("potrace" ,potrace)
              ;; FIXME: Add interpreters fontforge and ruby,
              ;; once they are available.
              ("teckit" ,teckit)
@@ -112,7 +113,7 @@
          "--with-system-libpng"
          "--with-system-pixman"
          "--with-system-poppler"
-;;          "--with-system-potrace"
+         "--with-system-potrace"
          "--with-system-teckit"
          "--with-system-xpdf"
          "--with-system-zlib"
