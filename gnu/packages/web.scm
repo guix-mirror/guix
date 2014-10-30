@@ -32,6 +32,9 @@
   #:use-module (gnu packages autotools)
   #:use-module ((gnu packages compression) #:select (zlib))
   #:use-module (gnu packages openssl)
+  #:use-module (gnu packages gettext)
+  #:use-module (gnu packages icu4c)
+  #:use-module (gnu packages which)
   #:use-module (gnu packages pcre)
   #:use-module (gnu packages xml)
   #:use-module (gnu packages curl)
@@ -143,6 +146,58 @@ for efficient socket-like bidirectional reliable communication channels.")
 
     ;; This is LGPLv2.1-only with extra exceptions specified in 'LICENSE'.
     (license l:lgpl2.1)))
+
+(define-public libpsl
+  (package
+    (name "libpsl")
+    (version "0.6.0")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "https://github.com/rockdaboot/libpsl/"
+                                  "archive/" version ".tar.gz"))
+              (sha256
+               (base32
+                "10s7xxxx6pp4ydp3san69sa6q379ih3pv92fyi565ggmlw8igv7a"))))
+    (build-system gnu-build-system)
+    (inputs `(("icu4c" ,icu4c)))
+    ;; The release tarball lacks the generated files.
+    (native-inputs `(("autoconf" ,autoconf)
+                     ("automake" ,automake)
+                     ("gettext"  ,gnu-gettext)
+                     ("which"    ,which)
+                     ("libtool"  ,libtool)
+                     ("libtool"  ,libtool "bin")))
+    (arguments
+     `(#:phases (alist-cons-before
+                 'bootstrap 'fix-autogen-shebang
+                 (lambda _
+                   (substitute* "autogen.sh"
+                     ;; Removing -e as it causes the whole script to fail when
+                     ;; `which gtkdocize` fails.
+                     (("# !/bin/sh -e") (string-append "#!" (which "sh")))))
+                 (alist-cons-before
+                  'patch-usr-bin-file 'bootstrap
+                  (lambda _
+                    (zero? (system* "./autogen.sh")))
+                  %standard-phases))))
+    (home-page "https://github.com/rockdaboot/libpsl")
+    (synopsis "C library for the Publix Suffix List")
+    (description
+     "A \"public suffix\" is a domain name under which Internet users can
+directly register own names.
+
+Browsers and other web clients can use it to avoid privacy-leaking
+\"supercookies\", avoid privacy-leaking \"super domain\" certificates, domain
+highlighting parts of the domain in a user interface, and sorting domain lists
+by site.
+
+Libpsl has built-in PSL data for fast access, allows to load PSL data from
+files, checks if a given domain is a public suffix, provides immediate cookie
+domain verification, finds the longest public part of a given domain, finds
+the shortest private part of a given domain, works with international
+domains (UTF-8 and IDNA2008 Punycode), is thread-safe, and handles IDNA2008
+UTS#46")
+    (license l:x11)))
 
 (define-public perl-html-tagset
   (package
