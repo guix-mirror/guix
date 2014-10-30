@@ -41,10 +41,10 @@
        (base32
         "1rxhr3jmgbwryzl51di4avqxw9m9j1z2aak8q1npns0p184xsqcj"))))
     (build-system gnu-build-system)
-    ;; TODO: Add libpsl to inputs
     (inputs
      `(("gnutls" ,gnutls)
-       ("libidn" ,libidn)))
+       ("libidn" ,libidn)
+       ("libpsl" ,libpsl)))
     (native-inputs
      `(("perl" ,perl)
        ("python" ,python)               ;for testenv suite
