@@ -198,7 +198,8 @@ ENTRIES should have a form of `guix-entries'."
                   entries
                   guix-info-delimiter))
 
-(defun guix-info-insert-entry (entry entry-type &optional indent-level)
+(defun guix-info-insert-entry-default (entry entry-type
+                                       &optional indent-level)
   "Insert ENTRY of ENTRY-TYPE into the current info buffer.
 If INDENT-LEVEL is non-nil, indent displayed information by this
 number of `guix-info-indent' spaces."
@@ -209,6 +210,18 @@ number of `guix-info-indent' spaces."
     (when indent-level
       (indent-rigidly region-beg (point)
                       (* indent-level guix-info-indent)))))
+
+(defun guix-info-insert-entry (entry entry-type &optional indent-level)
+  "Insert ENTRY of ENTRY-TYPE into the current info buffer.
+Use `guix-info-insert-ENTRY-TYPE-function' or
+`guix-info-insert-entry-default' if it is nil."
+  (let* ((var (intern (concat "guix-info-insert-"
+                              (symbol-name entry-type)
+                              "-function")))
+         (fun (symbol-value var)))
+    (if (functionp fun)
+        (funcall fun entry)
+      (guix-info-insert-entry-default entry entry-type indent-level))))
 
 (defun guix-info-insert-param (param entry entry-type)
   "Insert title and value of a PARAM at point.
@@ -376,6 +389,12 @@ See `insert-text-button' for the meaning of PROPERTIES."
 (guix-define-buffer-type info package
   :required (id installed non-unique))
 
+(defface guix-package-info-heading
+  '((((type tty pc) (class color)) :weight bold)
+    (t :height 1.6 :weight bold :inherit variable-pitch))
+  "Face for package name and version headings."
+  :group 'guix-package-info)
+
 (defface guix-package-info-name
   '((t :inherit font-lock-keyword-face))
   "Face used for a name of a package."
@@ -392,7 +411,8 @@ See `insert-text-button' for the meaning of PROPERTIES."
   :group 'guix-package-info)
 
 (defface guix-package-info-synopsis
-  '((t :inherit font-lock-doc-face))
+  '((((type tty pc) (class color)) :weight bold)
+    (t :height 1.1 :weight bold :inherit variable-pitch))
   "Face used for a synopsis of a package."
   :group 'guix-package-info)
 
@@ -432,6 +452,40 @@ See `insert-text-button' for the meaning of PROPERTIES."
   '((t :inherit error))
   "Face used if a package is obsolete."
   :group 'guix-package-info)
+
+(defvar guix-info-insert-package-function
+  #'guix-package-info-insert-with-heading
+  "Function used to insert a package information.
+It is called with a single argument - alist of package parameters.
+If nil, insert package in a default way.")
+
+(defvar guix-package-info-heading-params '(synopsis description)
+  "List of parameters displayed in a heading along with name and version.")
+
+(defun guix-package-info-insert-heading (entry)
+  "Insert the heading for package ENTRY.
+Show package name, version, and `guix-package-info-heading-params'."
+  (guix-format-insert (concat (guix-get-key-val entry 'name) " "
+                              (guix-get-key-val entry 'version))
+                      'guix-package-info-heading)
+  (insert "\n\n")
+  (mapc (lambda (param)
+          (let ((val  (guix-get-key-val entry param))
+                (face (guix-get-symbol (symbol-name param)
+                                       'info 'package)))
+            (when val
+              (guix-format-insert val (and (facep face) face))
+              (insert "\n\n"))))
+        guix-package-info-heading-params))
+
+(defun guix-package-info-insert-with-heading (entry)
+  "Insert package ENTRY with its heading at point."
+  (guix-package-info-insert-heading entry)
+  (mapc (lambda (param)
+          (unless (or (memq param '(name version))
+                      (memq param guix-package-info-heading-params))
+            (guix-info-insert-param param entry 'package)))
+        (guix-info-get-displayed-params 'package)))
 
 (defun guix-package-info-insert-description (desc &optional _)
   "Insert description DESC at point."
@@ -493,6 +547,12 @@ formatted with this string, an action button is inserted.")
 
 (defvar guix-package-info-obsolete-string "(This package is obsolete)"
   "String used if a package is obsolete.")
+
+(defvar guix-info-insert-installed-function nil
+  "Function used to insert an installed information.
+It is called with a single argument - alist of installed
+parameters (`output', `path', `dependencies').
+If nil, insert installed info in a default way.")
 
 (defun guix-package-info-insert-outputs (outputs entry)
   "Insert OUTPUTS from package ENTRY at point."
@@ -582,6 +642,11 @@ ENTRY is an alist with package info."
   :buffer-name "*Guix Package Info*"
   :required (id package-id installed non-unique))
 
+(defvar guix-info-insert-output-function nil
+  "Function used to insert an output information.
+It is called with a single argument - alist of output parameters.
+If nil, insert output in a default way.")
+
 (defun guix-output-info-insert-version (version entry)
   "Insert output VERSION and obsolete text if needed at point."
   (guix-info-insert-val-default version
@@ -624,6 +689,11 @@ ENTRY is an alist with package info."
   '((t nil))
   "Face used if a generation is not the current one."
   :group 'guix-generation-info)
+
+(defvar guix-info-insert-generation-function nil
+  "Function used to insert a generation information.
+It is called with a single argument - alist of generation parameters.
+If nil, insert generation in a default way.")
 
 (defun guix-generation-info-insert-number (number &optional _)
   "Insert generation NUMBER and action buttons."
