@@ -58,7 +58,7 @@
        ;; On i686, 'raymarine.test' fails because of a rounding error:
        ;; <http://hydra.gnu.org/build/133040>.  As a workaround, disable tests
        ;; on these platforms.
-       #:tests? (not (string-prefix? "i686" (%current-system)))))
+       #:tests? ,(not (string-prefix? "i686" (%current-system)))))
     (inputs
      `(("expat" ,expat)
        ("zlib" ,zlib)
