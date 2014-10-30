@@ -234,7 +234,8 @@ must be a list of symbol/URL-list pairs."
               #~(eval-when (load expand eval)
                   (set! %load-path
                         (cons (string-append #$(gnutls-package)
-                                             "/share/guile/site")
+                                             "/share/guile/site/"
+                                             (effective-version))
                               %load-path)))
               #~#t)
 
