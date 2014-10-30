@@ -20,7 +20,10 @@
 (define-module (gnu packages wget)
   #:use-module (guix licenses)
   #:use-module (gnu packages gnutls)
+  #:use-module (gnu packages libidn)
+  #:use-module (gnu packages python)
   #:use-module (gnu packages perl)
+  #:use-module (gnu packages web)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu))
@@ -28,7 +31,7 @@
 (define-public wget
   (package
     (name "wget")
-    (version "1.15")
+    (version "1.16")
     (source
      (origin
       (method url-fetch)
@@ -36,12 +39,17 @@
                           version ".tar.xz"))
       (sha256
        (base32
-        "1yw0sk4mrs7bvga3c79rkbhxivmw8cs3b5wq3cglp1f9ai1mz2ni"))))
+        "1rxhr3jmgbwryzl51di4avqxw9m9j1z2aak8q1npns0p184xsqcj"))))
     (build-system gnu-build-system)
+    ;; TODO: Add libpsl to inputs
     (inputs
-     `(("gnutls" ,gnutls)))
+     `(("gnutls" ,gnutls)
+       ("libidn" ,libidn)))
     (native-inputs
-     `(("perl" ,perl)))
+     `(("perl" ,perl)
+       ("python" ,python)               ;for testenv suite
+       ("perl-http-daemon" ,perl-http-daemon)
+       ("perl-io-socket-ssl" ,perl-io-socket-ssl)))
     (home-page "http://www.gnu.org/software/wget/")
     (synopsis "Non-interactive command-line utility for downloading files")
     (description
