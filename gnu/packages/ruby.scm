@@ -36,44 +36,37 @@
 (define-public ruby
   (package
     (name "ruby")
-    (version "2.1.3")
+    (version "2.1.4")
     (source
      (origin
        (method url-fetch)
        (uri (string-append "http://cache.ruby-lang.org/pub/ruby/"
                            (version-major+minor version)
-                           "/ruby-" version ".tar.bz2"))
+                           "/ruby-" version ".tar.xz"))
        (sha256
         (base32
-         "1mkndw0by11n6lyvq7dzly702yyqg5x0fcvfqrn9y4p49bw75kin"))))
+         "1ksgx1rn4wp80290399q6d26zpbx0nb3sxh45wl4wr58raxmrk71"))))
     (build-system gnu-build-system)
     (arguments
      `(#:test-target "test"
        #:parallel-tests? #f
        #:phases
-       (alist-cons-after
-        ;; Minor patch:
-        ;; https://bugs.ruby-lang.org/projects/ruby-trunk/repository/revisions/45225/diff/
-        'unpack 'patch-readline
+       (alist-cons-before
+        'configure 'replace-bin-sh
         (lambda _
-          (substitute* '("ext/readline/readline.c")
-            (("Function ") "rl_hook_func_t ")))
-        (alist-cons-before
-         'configure 'replace-bin-sh
-         (lambda _
-           (substitute* '("Makefile.in"
-                          "ext/pty/pty.c"
-                          "io.c"
-                          "lib/mkmf.rb"
-                          "process.c"
-                          "test/rubygems/test_gem_ext_configure_builder.rb"
-                          "test/rdoc/test_rdoc_parser.rb"
-                          "test/ruby/test_rubyoptions.rb"
-                          "test/ruby/test_process.rb"
-                          "test/ruby/test_system.rb"
-                          "tool/rbinstall.rb")
-             (("/bin/sh") (which "sh"))))
-         %standard-phases))))
+          (substitute* '("Makefile.in"
+                         "ext/pty/pty.c"
+                         "io.c"
+                         "lib/mkmf.rb"
+                         "process.c"
+                         "test/rubygems/test_gem_ext_configure_builder.rb"
+                         "test/rdoc/test_rdoc_parser.rb"
+                         "test/ruby/test_rubyoptions.rb"
+                         "test/ruby/test_process.rb"
+                         "test/ruby/test_system.rb"
+                         "tool/rbinstall.rb")
+            (("/bin/sh") (which "sh"))))
+        %standard-phases)))
     (inputs
      `(("readline" ,readline)
        ("openssl" ,openssl)
