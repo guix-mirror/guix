@@ -24,6 +24,11 @@
 # `pre-inst-env'.  This is used to run unit tests with the just-built
 # daemon, unless `--disable-daemon' was passed at configure time.
 
+
+# Make sure 'cd' behaves deterministically and doesn't write anything to
+# stdout.
+unset CDPATH
+
 if [ -x "@abs_top_builddir@/guix-daemon" ]
 then
     NIX_SETUID_HELPER="@abs_top_builddir@/nix-setuid-helper" # normally unused
