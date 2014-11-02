@@ -239,6 +239,21 @@ Mark the current generation for deletion (with prefix, mark all
 generations).
 @item x
 Execute actions on the marked generations---i.e., delete generations.
+@item e
+Run Ediff (@pxref{Top,,, ediff, The Ediff Manual}) on package outputs
+installed in the 2 marked generations.  With prefix argument, run Ediff
+on manifests of the marked generations.
+@item D
+@itemx =
+Run Diff (@pxref{Diff Mode,,, emacs, The GNU Emacs Manual}) on package
+outputs installed in the 2 marked generations.  With prefix argument,
+run Diff on manifests of the marked generations.
+@item +
+List package outputs added to the latest marked generation comparing
+with another marked generation.
+@item -
+List package outputs removed from the latest marked generation comparing
+with another marked generation.
 @end table
 
 @node Emacs Info buffer

@@ -154,6 +154,16 @@ accessed with KEYS."
     (dolist (key keys val)
       (setq val (cdr (assq key val))))))
 
+
+;;; Diff
+
+(defvar guix-diff-switches "-u"
+  "A string or list of strings specifying switches to be passed to diff.")
+
+(defun guix-diff (old new &optional switches no-async)
+  "Same as `diff', but use `guix-diff-switches' as default."
+  (diff old new (or switches guix-diff-switches) no-async))
+
 (provide 'guix-utils)
 
 ;;; guix-utils.el ends here

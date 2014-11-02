@@ -106,6 +106,38 @@
    (manifest-entry-version entry)
    (manifest-entry-output  entry)))
 
+(define (manifest-entry->package-specification entry)
+  (call-with-values
+      (lambda () (manifest-entry->name+version+output entry))
+    make-package-specification))
+
+(define (manifest-entries->package-specifications entries)
+  (map manifest-entry->package-specification entries))
+
+(define (generation-package-specifications profile number)
+  "Return a list of package specifications for generation NUMBER."
+  (let ((manifest (profile-manifest
+                   (generation-file-name profile number))))
+    (manifest-entries->package-specifications
+     (manifest-entries manifest))))
+
+(define (generation-package-specifications+paths profile number)
+  "Return a list of package specifications and paths for generation NUMBER.
+Each element of the list is a list of the package specification and its path."
+  (let ((manifest (profile-manifest
+                   (generation-file-name profile number))))
+    (map (lambda (entry)
+           (list (manifest-entry->package-specification entry)
+                 (manifest-entry-item entry)))
+         (manifest-entries manifest))))
+
+(define (generation-difference profile number1 number2)
+  "Return a list of package specifications for outputs installed in generation
+NUMBER1 and not installed in generation NUMBER2."
+  (let ((specs1 (generation-package-specifications profile number1))
+        (specs2 (generation-package-specifications profile number2)))
+    (lset-difference string=? specs1 specs2)))
+
 (define (manifest-entries->hash-table entries)
   "Return a hash table of name keys and lists of matching manifest ENTRIES."
   (let ((table (make-hash-table (length entries))))
@@ -625,8 +657,15 @@ See 'entry-sexps' for details."
                       (generation-file-name profile (car search-vals))
                       profile))
          (manifest (profile-manifest profile))
-         (patterns (apply (patterns-maker entry-type search-type)
-                          manifest search-vals))
+         (patterns (if (and (eq? entry-type 'output)
+                            (eq? search-type 'generation-diff))
+                       (match search-vals
+                         ((g1 g2)
+                          (map specification->output-pattern
+                               (generation-difference profile g1 g2)))
+                         (_ '()))
+                       (apply (patterns-maker entry-type search-type)
+                              manifest search-vals)))
          (->sexps ((pattern-transformer entry-type) manifest params)))
     (append-map ->sexps patterns)))
 

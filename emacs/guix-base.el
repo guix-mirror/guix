@@ -650,6 +650,117 @@ This function will not update the information, use
                        guix-search-type guix-search-vals))
 
 
+;;; Generations
+
+(defcustom guix-generation-packages-buffer-name-function
+  #'guix-generation-packages-buffer-name-default
+  "Function used to define name of a buffer with generation packages.
+This function is called with 2 arguments: PROFILE (string) and
+GENERATION (number)."
+  :type '(choice (function-item guix-generation-packages-buffer-name-default)
+                 (function-item guix-generation-packages-buffer-name-long)
+                 (function :tag "Other function"))
+  :group 'guix)
+
+(defcustom guix-generation-packages-update-buffer t
+  "If non-nil, always update list of packages during comparing generations.
+If nil, generation packages are received only once.  So when you
+compare generation 1 and generation 2, the packages for both
+generations will be received.  Then if you compare generation 1
+and generation 3, only the packages for generation 3 will be
+received.  Thus if you use comparing of different generations a
+lot, you may set this variable to nil to improve the
+performance."
+  :type 'boolean
+  :group 'guix)
+
+(defvar guix-output-name-width 30
+  "Width of an output name \"column\".
+This variable is used in auxiliary buffers for comparing generations.")
+
+(defun guix-generation-file (profile generation)
+  "Return the file name of a PROFILE's GENERATION."
+  (format "%s-%s-link" profile generation))
+
+(defun guix-manifest-file (profile &optional generation)
+  "Return the file name of a PROFILE's manifest.
+If GENERATION number is specified, return manifest file name for
+this generation."
+  (expand-file-name "manifest"
+                    (if generation
+                        (guix-generation-file profile generation)
+                      profile)))
+
+(defun guix-generation-packages (profile generation)
+  "Return a list of sorted packages installed in PROFILE's GENERATION.
+Each element of the list is a list of the package specification and its path."
+  (let ((names+paths (guix-eval-read
+                      (guix-make-guile-expression
+                       'generation-package-specifications+paths
+                       profile generation))))
+    (sort names+paths
+          (lambda (a b)
+            (string< (car a) (car b))))))
+
+(defun guix-generation-packages-buffer-name-default (profile generation)
+  "Return name of a buffer for displaying GENERATION's package outputs.
+Use base name of PROFILE path."
+  (let ((profile-name (file-name-base (directory-file-name profile))))
+    (format "*Guix %s: generation %s*"
+            profile-name generation)))
+
+(defun guix-generation-packages-buffer-name-long (profile generation)
+  "Return name of a buffer for displaying GENERATION's package outputs.
+Use the full PROFILE path."
+  (format "*Guix generation %s (%s)*"
+          generation profile))
+
+(defun guix-generation-packages-buffer-name (profile generation)
+  "Return name of a buffer for displaying GENERATION's package outputs."
+  (let ((fun (if (functionp guix-generation-packages-buffer-name-function)
+                 guix-generation-packages-buffer-name-function
+               #'guix-generation-packages-buffer-name-default)))
+    (funcall fun profile generation)))
+
+(defun guix-generation-insert-package (name path)
+  "Insert package output NAME and PATH at point."
+  (insert name)
+  (indent-to guix-output-name-width 2)
+  (insert path "\n"))
+
+(defun guix-generation-insert-packages (buffer profile generation)
+  "Insert package outputs installed in PROFILE's GENERATION in BUFFER."
+  (with-current-buffer buffer
+    (setq buffer-read-only nil
+          indent-tabs-mode nil)
+    (erase-buffer)
+    (mapc (lambda (name+path)
+            (guix-generation-insert-package
+             (car name+path) (cadr name+path)))
+          (guix-generation-packages profile generation))))
+
+(defun guix-generation-packages-buffer (profile generation)
+  "Return buffer with package outputs installed in PROFILE's GENERATION.
+Create the buffer if needed."
+  (let ((buf-name (guix-generation-packages-buffer-name
+                   profile generation)))
+    (or (and (null guix-generation-packages-update-buffer)
+             (get-buffer buf-name))
+        (let ((buf (get-buffer-create buf-name)))
+          (guix-generation-insert-packages buf profile generation)
+          buf))))
+
+(defun guix-profile-generation-manifest-file (generation)
+  "Return the file name of a GENERATION's manifest.
+GENERATION is a generation number of `guix-profile' profile."
+  (guix-manifest-file guix-profile generation))
+
+(defun guix-profile-generation-packages-buffer (generation)
+  "Insert GENERATION's package outputs in a buffer and return it.
+GENERATION is a generation number of `guix-profile' profile."
+  (guix-generation-packages-buffer guix-profile generation))
+
+
 ;;; Actions on packages and generations
 
 (defface guix-operation-option-key

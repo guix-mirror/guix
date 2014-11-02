@@ -99,7 +99,9 @@
       (1 "A single package output installed in generation %d of profile '%s'."
          val profile)
       (many "%d package outputs installed in generation %d of profile '%s'."
-            count val profile)))
+            count val profile))
+     (generation-diff
+      guix-message-outputs-by-diff))
 
     (generation
      (id
@@ -166,6 +168,20 @@
     (message (concat "%s of profile '%s'\n"
                      "matching time period '%s' - '%s'.")
              str-beg profile time-beg time-end)))
+
+(defun guix-message-outputs-by-diff (profile entries generations)
+  "Display a message for outputs searched by GENERATIONS difference."
+  (let* ((count (length entries))
+         (str-beg (guix-message-string-entries count 'output))
+         (gen1 (car  generations))
+         (gen2 (cadr generations)))
+    (cl-multiple-value-bind (new old str-action)
+        (if (> gen1 gen2)
+            (list gen1 gen2 "added to")
+          (list gen2 gen1 "removed from"))
+      (message (concat "%s %s generation %d comparing with "
+                       "generation %d of profile '%s'.")
+               str-beg str-action new old profile))))
 
 (defun guix-result-message (profile entries entry-type
                             search-type search-vals)

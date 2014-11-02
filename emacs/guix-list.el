@@ -27,7 +27,6 @@
 (require 'cl-lib)
 (require 'tabulated-list)
 (require 'guix-info)
-(require 'guix-history)
 (require 'guix-base)
 (require 'guix-utils)
 
@@ -735,6 +734,11 @@ Also see `guix-package-info-type'."
 
 (let ((map guix-generation-list-mode-map))
   (define-key map (kbd "RET") 'guix-generation-list-show-packages)
+  (define-key map (kbd "+")   'guix-generation-list-show-added-packages)
+  (define-key map (kbd "-")   'guix-generation-list-show-removed-packages)
+  (define-key map (kbd "=")   'guix-generation-list-diff)
+  (define-key map (kbd "D")   'guix-generation-list-diff)
+  (define-key map (kbd "e")   'guix-generation-list-ediff)
   (define-key map (kbd "x")   'guix-generation-list-execute)
   (define-key map (kbd "i")   'guix-list-describe)
   (define-key map (kbd "s")   'guix-generation-list-switch)
@@ -760,6 +764,85 @@ VAL is a boolean value."
   (interactive)
   (guix-get-show-entries guix-profile 'list guix-package-list-type
                          'generation (guix-list-current-id)))
+
+(defun guix-generation-list-generations-to-compare ()
+  "Return a sorted list of 2 marked generations for comparing."
+  (let ((numbers (guix-list-get-marked-id-list 'general)))
+    (if (/= (length numbers) 2)
+        (user-error "2 generations should be marked for comparing")
+      (sort numbers #'<))))
+
+(defun guix-generation-list-show-added-packages ()
+  "List package outputs added to the latest marked generation.
+If 2 generations are marked with \\[guix-list-mark], display
+outputs installed in the latest marked generation that were not
+installed in the other one."
+  (interactive)
+  (apply #'guix-get-show-entries
+         guix-profile 'list 'output 'generation-diff
+         (reverse (guix-generation-list-generations-to-compare))))
+
+(defun guix-generation-list-show-removed-packages ()
+  "List package outputs removed from the latest marked generation.
+If 2 generations are marked with \\[guix-list-mark], display
+outputs not installed in the latest marked generation that were
+installed in the other one."
+  (interactive)
+  (apply #'guix-get-show-entries
+         guix-profile 'list 'output 'generation-diff
+         (guix-generation-list-generations-to-compare)))
+
+(defun guix-generation-list-compare (diff-fun gen-fun)
+  "Run GEN-FUN on the 2 marked generations and run DIFF-FUN on the results."
+  (cl-multiple-value-bind (gen1 gen2)
+      (guix-generation-list-generations-to-compare)
+    (funcall diff-fun
+             (funcall gen-fun gen1)
+             (funcall gen-fun gen2))))
+
+(defun guix-generation-list-ediff-manifests ()
+  "Run Ediff on manifests of the 2 marked generations."
+  (interactive)
+  (guix-generation-list-compare
+   #'ediff-files
+   #'guix-profile-generation-manifest-file))
+
+(defun guix-generation-list-diff-manifests ()
+  "Run Diff on manifests of the 2 marked generations."
+  (interactive)
+  (guix-generation-list-compare
+   #'guix-diff
+   #'guix-profile-generation-manifest-file))
+
+(defun guix-generation-list-ediff-packages ()
+  "Run Ediff on package outputs installed in the 2 marked generations."
+  (interactive)
+  (guix-generation-list-compare
+   #'ediff-buffers
+   #'guix-profile-generation-packages-buffer))
+
+(defun guix-generation-list-diff-packages ()
+  "Run Diff on package outputs installed in the 2 marked generations."
+  (interactive)
+  (guix-generation-list-compare
+   #'guix-diff
+   #'guix-profile-generation-packages-buffer))
+
+(defun guix-generation-list-ediff (arg)
+  "Run Ediff on package outputs installed in the 2 marked generations.
+With ARG, run Ediff on manifests of the marked generations."
+  (interactive "P")
+  (if arg
+      (guix-generation-list-ediff-manifests)
+    (guix-generation-list-ediff-packages)))
+
+(defun guix-generation-list-diff (arg)
+  "Run Diff on package outputs installed in the 2 marked generations.
+With ARG, run Diff on manifests of the marked generations."
+  (interactive "P")
+  (if arg
+      (guix-generation-list-diff-manifests)
+    (guix-generation-list-diff-packages)))
 
 (defun guix-generation-list-mark-delete (&optional arg)
   "Mark the current generation for deletion and move to the next line.
