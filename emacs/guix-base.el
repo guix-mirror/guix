@@ -30,6 +30,8 @@
 (require 'cl-lib)
 (require 'guix-backend)
 (require 'guix-utils)
+(require 'guix-history)
+(require 'guix-messages)
 
 
 ;;; Profiles
@@ -565,7 +567,8 @@ If NO-DISPLAY is non-nil, do not switch to the buffer."
                  (guix-make-history-item)))
       (or no-display
           (guix-switch-to-buffer buf))))
-  (guix-result-message entries entry-type search-type search-vals))
+  (guix-result-message profile entries entry-type
+                       search-type search-vals))
 
 (defun guix-show-entries (entries buffer-type entry-type)
   "Display ENTRY-TYPE ENTRIES in the current BUFFER-TYPE buffer."
@@ -583,7 +586,8 @@ If NO-DISPLAY is non-nil, do not switch to the buffer."
   (guix-show-entries entries buffer-type entry-type)
   (guix-set-vars profile entries buffer-type entry-type
                  search-type search-vals)
-  (guix-result-message entries entry-type search-type search-vals))
+  (guix-result-message profile entries entry-type
+                       search-type search-vals))
 
 (defun guix-make-history-item ()
   "Make and return a history item for the current buffer."
@@ -642,111 +646,8 @@ This function will not update the information, use
 \"\\[revert-buffer]\" if you want the full update."
   (interactive)
   (guix-show-entries guix-entries guix-buffer-type guix-entry-type)
-  (guix-result-message guix-entries guix-entry-type
+  (guix-result-message guix-profile guix-entries guix-entry-type
                        guix-search-type guix-search-vals))
-
-
-;;; Messages
-
-(defvar guix-messages
-  '((package
-     (id
-      (0 "Packages not found.")
-      (1 "")
-      (many "%d packages." count))
-     (name
-      (0 "The package '%s' not found." val)
-      (1 "A single package with name '%s'." val)
-      (many "%d packages with '%s' name." count val))
-     (regexp
-      (0 "No packages matching '%s'." val)
-      (1 "A single package matching '%s'." val)
-      (many "%d packages matching '%s'." count val))
-     (all-available
-      (0 "No packages are available for some reason.")
-      (1 "A single available package (that's strange).")
-      (many "%d available packages." count))
-     (newest-available
-      (0 "No packages are available for some reason.")
-      (1 "A single newest available package (that's strange).")
-      (many "%d newest available packages." count))
-     (installed
-      (0 "No installed packages.")
-      (1 "A single package installed.")
-      (many "%d packages installed." count))
-     (obsolete
-      (0 "No obsolete packages.")
-      (1 "A single obsolete package.")
-      (many "%d obsolete packages." count))
-     (generation
-      (0 "No packages installed in generation %d." val)
-      (1 "A single package installed in generation %d." val)
-      (many "%d packages installed in generation %d." count val)))
-    (output
-     (id
-      (0 "Package outputs not found.")
-      (1 "")
-      (many "%d package outputs." count))
-     (name
-      (0 "The package output '%s' not found." val)
-      (1 "A single package output with name '%s'." val)
-      (many "%d package outputs with '%s' name." count val))
-     (regexp
-      (0 "No package outputs matching '%s'." val)
-      (1 "A single package output matching '%s'." val)
-      (many "%d package outputs matching '%s'." count val))
-     (all-available
-      (0 "No package outputs are available for some reason.")
-      (1 "A single available package output (that's strange).")
-      (many "%d available package outputs." count))
-     (newest-available
-      (0 "No package outputs are available for some reason.")
-      (1 "A single newest available package output (that's strange).")
-      (many "%d newest available package outputs." count))
-     (installed
-      (0 "No installed package outputs.")
-      (1 "A single package output installed.")
-      (many "%d package outputs installed." count))
-     (obsolete
-      (0 "No obsolete package outputs.")
-      (1 "A single obsolete package output.")
-      (many "%d obsolete package outputs." count))
-     (generation
-      (0 "No package outputs installed in generation %d." val)
-      (1 "A single package output installed in generation %d." val)
-      (many "%d package outputs installed in generation %d." count val)))
-    (generation
-     (id
-      (0 "Generations not found.")
-      (1 "")
-      (many "%d generations." count))
-     (last
-      (0 "No available generations.")
-      (1 "The last generation.")
-      (many "%d last generations." count))
-     (all
-      (0 "No available generations.")
-      (1 "A single available generation.")
-      (many "%d available generations." count))
-     (time
-      (0 "Generations not found.")
-      (1 "A single generation matching time period.")
-      (many "%d generations matching time period." count)))))
-
-(defun guix-result-message (entries entry-type search-type search-vals)
-  "Display an appropriate message after displaying ENTRIES."
-  (let* ((val (car search-vals))
-         (count (length entries))
-         (count-key (if (> count 1) 'many count))
-         (msg-spec (guix-get-key-val guix-messages
-                                     entry-type search-type count-key))
-         (format (car msg-spec))
-         (args (cdr msg-spec)))
-    (mapc (lambda (subst)
-            (setq args (cl-substitute (car subst) (cdr subst) args)))
-          (list (cons count 'count)
-                (cons val 'val)))
-    (apply #'message format args)))
 
 
 ;;; Actions on packages and generations
