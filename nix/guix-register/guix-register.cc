@@ -224,15 +224,15 @@ main (int argc, char *argv[])
     {
       argp_parse (&argp, argc, argv, 0, 0, 0);
 
+      /* Instantiate the store.  This creates any missing directories among
+	 'settings.nixStore', 'settings.nixDBPath', etc.  */
+      LocalStore store;
+
       if (!prefix.empty ())
 	/* Under the --prefix tree, the final name of the store will be
 	   NIX_STORE_DIR.  Set it here so that the database uses file names
 	   prefixed by NIX_STORE_DIR and not PREFIX + NIX_STORE_DIR.  */
 	settings.nixStore = NIX_STORE_DIR;
-
-      /* Instantiate the store.  This creates any missing directories among
-	 'settings.nixStore', 'settings.nixDBPath', etc.  */
-      LocalStore store;
 
       register_validity (&store, *input, deduplication);
     }
