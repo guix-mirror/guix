@@ -17,7 +17,7 @@
 ;;; along with GNU Guix.  If not, see <http://www.gnu.org/licenses/>.
 
 (define-module (gnu packages kde)
-  #:use-module ((guix licenses) #:select (bsd-2 lgpl2.0+ lgpl2.1 lgpl2.1+))
+  #:use-module ((guix licenses) #:select (bsd-2 lgpl2.0+ lgpl2.1 lgpl2.1+ lgpl3+))
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system cmake)
@@ -205,3 +205,23 @@ simple interface for implementing plugins for extracting information;
 calculation of sha1 for every file crawled
 (allows fast finding of duplicates).")
     (license lgpl2.0+)))
+
+(define-public oxygen-icons
+  (package
+    (name "oxygen-icons")
+    (version "4.14.2")
+    (source (origin
+             (method url-fetch)
+             (uri (string-append "http://download.kde.org/stable/" version
+                                "/src/" name "-"
+                                 version ".tar.xz"))
+             (sha256
+              (base32
+               "1mz73f54qh2vd8ibp60f6fjflrprz0lvqfkgh805l7wfhrv4ckbz"))))
+    (build-system cmake-build-system)
+    (arguments
+     `(#:tests? #f)) ; no test target
+    (home-page "http://www.kde.org/")
+    (synopsis "oxygen icon theme for the KDE desktop")
+    (description "KDE desktop environment")
+    (license lgpl3+)))
