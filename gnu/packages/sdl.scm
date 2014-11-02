@@ -22,6 +22,7 @@
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system trivial)
   #:use-module ((gnu packages fontutils) #:prefix font:)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
@@ -240,3 +241,31 @@ SDL.")
     (description "SDL_ttf is a TrueType font rendering library for SDL.")
     (home-page "http://www.libsdl.org/projects/SDL_ttf/")
     (license zlib)))
+
+(define sdl-union
+  (package
+    (name "sdl-union")
+    (version (package-version sdl))
+    (source #f)
+    (build-system trivial-build-system)
+    (arguments
+     '(#:modules ((guix build union))
+       #:builder (begin
+                   (use-modules (ice-9 match)
+                                (guix build union))
+                   (match %build-inputs
+                     (((names . directories) ...)
+                      (union-build (assoc-ref %outputs "out")
+                                   directories))))))
+    (inputs `(("sdl" ,sdl)
+              ("sdl-gfx" ,sdl-gfx)
+              ("sdl-image" ,sdl-image)
+              ("sdl-mixer" ,sdl-mixer)
+              ("sdl-ttf" ,sdl-ttf)))
+    (synopsis "Union of all SDL libraries")
+    (description
+     "A union of SDL and its extension libraries.  A union is required because
+sdl-config assumes that all of the headers and libraries are in the same
+directory.")
+    (home-page (package-home-page sdl))
+    (license (package-license sdl))))
