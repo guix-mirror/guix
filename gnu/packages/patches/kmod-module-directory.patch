@@ -2,8 +2,9 @@ This patch changes libkmod so it honors the 'LINUX_MODULE_DIRECTORY'
 environment variable, rather than looking for modules exclusively in
 /lib/modules.
 
-Patch by Shea Levy, from Nixpkgs; adjusted to use 'LINUX_MODULE_DIRECTORY'
-rather than 'MODULE_DIR' as the variable name.
+Patch by Shea Levy and Eelco Dolstra, from Nixpkgs; adjusted to
+use 'LINUX_MODULE_DIRECTORY' rather than 'MODULE_DIR' as the variable
+name.
 
 
 --- kmod-7/libkmod/libkmod.c	2012-03-15 08:19:16.750010226 -0400
@@ -29,3 +30,39 @@ rather than 'MODULE_DIR' as the variable name.
  		return NULL;
  
  	return p;
+
+--- kmod-17/tools/static-nodes.c	2013-12-17 22:05:42.159047316 +0100
++++ kmod-17/tools/static-nodes.c	2014-04-17 13:51:17.945974320 +0200
+@@ -159,6 +159,7 @@
+ 	FILE *in = NULL, *out = NULL;
+ 	const struct static_nodes_format *format = &static_nodes_format_human;
+ 	int r, ret = EXIT_SUCCESS;
++	char *dirname_prefix;
+ 
+ 	for (;;) {
+ 		int c, idx = 0, valid;
+@@ -211,16 +212,19 @@
+ 		goto finish;
+ 	}
+ 
+-	snprintf(modules, sizeof(modules), "/lib/modules/%s/modules.devname", kernel.release);
++	if ((dirname_prefix = getenv("LINUX_MODULE_DIRECTORY")) == NULL)
++		dirname_prefix = "/lib/modules";
++
++	snprintf(modules, sizeof(modules), "%s/%s/modules.devname", dirname_prefix, kernel.release);
+ 	in = fopen(modules, "re");
+ 	if (in == NULL) {
+ 		if (errno == ENOENT) {
+-			fprintf(stderr, "Warning: /lib/modules/%s/modules.devname not found - ignoring\n",
+-				kernel.release);
++			fprintf(stderr, "Warning: %s/%s/modules.devname not found - ignoring\n",
++				dirname_prefix, kernel.release);
+ 			ret = EXIT_SUCCESS;
+ 		} else {
+-			fprintf(stderr, "Error: could not open /lib/modules/%s/modules.devname - %m\n",
+-				kernel.release);
++			fprintf(stderr, "Error: could not open %s/%s/modules.devname - %m\n",
++				dirname_prefix, kernel.release);
+ 			ret = EXIT_FAILURE;
+ 		}
+ 		goto finish;
