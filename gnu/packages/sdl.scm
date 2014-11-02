@@ -24,6 +24,7 @@
   #:use-module (guix build-system gnu)
   #:use-module (guix build-system trivial)
   #:use-module ((gnu packages fontutils) #:prefix font:)
+  #:use-module (gnu packages guile)
   #:use-module (gnu packages image)
   #:use-module (gnu packages linux)
   #:use-module (gnu packages mp3)
@@ -269,3 +270,55 @@ sdl-config assumes that all of the headers and libraries are in the same
 directory.")
     (home-page (package-home-page sdl))
     (license (package-license sdl))))
+
+(define-public guile-sdl
+  (package
+    (name "guile-sdl")
+    (version "0.5.1")
+    (source (origin
+              (method url-fetch)
+              (uri
+               (string-append "mirror://gnu/guile-sdl/guile-sdl-"
+                              version ".tar.xz"))
+              (sha256
+               (base32
+                "126n4rd0ydh6i2s11ari5k85iivradlf12zq13b34shf9k1wn5am"))))
+    (build-system gnu-build-system)
+    (native-inputs
+     `(("pkg-config" ,pkg-config)
+       ;; Required by test suite.
+       ("xorg-server" ,xorg-server)
+       ("libjpeg" ,libjpeg)))
+    (inputs
+     `(("guile" ,guile-2.0)
+       ("sdl-union" ,sdl-union)))
+    (arguments
+     '(#:configure-flags
+       (list (string-append "--with-sdl-prefix="
+                            (assoc-ref %build-inputs "sdl-union")))
+       #:parallel-build? #f ; parallel build fails
+       #:phases
+       (alist-cons-before
+        'configure 'fix-env-and-patch
+        (lambda* (#:key inputs #:allow-other-keys)
+          (setenv "GUILE_AUTO_COMPILE" "0")
+          ;; SDL_image needs to dlopen libjpeg in the test suite.
+          (setenv "LD_LIBRARY_PATH"
+                  (string-append (assoc-ref inputs "libjpeg") "/lib"))
+          ;; Change the site directory /site/2.0 like Guile expects.
+          (substitute* "build-aux/guile-baux/re-prefixed-site-dirs"
+            (("\"/site\"") "\"/site/2.0\"")))
+        (alist-cons-before
+         'check 'start-xorg-server
+         (lambda* (#:key inputs #:allow-other-keys)
+           ;; The test suite requires a running X server.
+           (system (format #f "~a/bin/Xvfb :1 &"
+                           (assoc-ref inputs "xorg-server")))
+           (setenv "DISPLAY" ":1"))
+         %standard-phases))))
+    (synopsis "Guile interface for SDL (Simple DirectMedia Layer)")
+    (description "Guile-SDL is a set of bindings to the Simple DirectMedia
+Layer (SDL).  With them, Guile programmers can have easy access to graphics,
+sound and device input (keyboards, joysticks, mice, etc.).")
+    (home-page "http://gnu.org/s/guile-sdl")
+    (license gpl3+)))
