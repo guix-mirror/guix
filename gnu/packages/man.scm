@@ -129,6 +129,12 @@ the traditional flat-text whatis databases.")
     (build-system gnu-build-system)
     (arguments
      '(#:phases (alist-delete 'configure %standard-phases)
+
+       ;; The 'all' target depends on three targets that directly populate
+       ;; $(MANDIR) based on its current contents.  Doing that in parallel
+       ;; leads to undefined behavior (see <http://bugs.gnu.org/18701>.)
+       #:parallel-build? #f
+
        #:tests? #f
        #:make-flags (list (string-append "MANDIR="
                                          (assoc-ref %outputs "out")
