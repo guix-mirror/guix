@@ -477,6 +477,20 @@ alias ll='ls -l'
       #$(user-account-password account)
       #$(user-account-system? account)))
 
+(define (modprobe-wrapper)
+  "Return a wrapper for the 'modprobe' command that knows where modules live.
+
+This wrapper is typically invoked by the Linux kernel ('call_modprobe', in
+kernel/kmod.c), a situation where the 'LINUX_MODULE_DIRECTORY' environment
+variable is not set---hence the need for this wrapper."
+  (let ((modprobe "/run/current-system/profile/bin/modprobe"))
+    (gexp->script "modprobe"
+                  #~(begin
+                      (setenv "LINUX_MODULE_DIRECTORY"
+                              "/run/booted-system/kernel/lib/modules")
+                      (apply execl #$modprobe
+                             (cons #$modprobe (cdr (command-line))))))))
+
 (define (operating-system-activation-script os)
   "Return the activation script for OS---i.e., the code that \"activates\" the
 stateful part of OS, including user accounts and groups, special directories,
@@ -498,6 +512,7 @@ etc."
                        (etc      (operating-system-etc-directory os))
                        (modules  (imported-modules %modules))
                        (compiled (compiled-modules %modules))
+                       (modprobe (modprobe-wrapper))
                        (accounts (operating-system-accounts os)))
     (define setuid-progs
       (operating-system-setuid-programs os))
@@ -539,6 +554,9 @@ etc."
 
                     ;; Activate setuid programs.
                     (activate-setuid-programs (list #$@setuid-progs))
+
+                    ;; Tell the kernel to use our 'modprobe' command.
+                    (activate-modprobe #$modprobe)
 
                     ;; Run the services' activation snippets.
                     ;; TODO: Use 'load-compiled'.

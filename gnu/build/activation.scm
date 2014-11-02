@@ -27,6 +27,7 @@
             activate-etc
             activate-setuid-programs
             activate-/bin/sh
+            activate-modprobe
             activate-current-system))
 
 ;;; Commentary:
@@ -251,6 +252,12 @@ copy SOURCE to TARGET."
   "Change /bin/sh to point to SHELL."
   (symlink shell "/bin/sh.new")
   (rename-file "/bin/sh.new" "/bin/sh"))
+
+(define (activate-modprobe modprobe)
+  "Tell the kernel to use MODPROBE to load modules."
+  (call-with-output-file "/proc/sys/kernel/modprobe"
+    (lambda (port)
+      (display modprobe port))))
 
 (define %current-system
   ;; The system that is current (a symlink.)  This is not necessarily the same
