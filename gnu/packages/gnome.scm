@@ -900,7 +900,7 @@ files and URIs, and displaying help.")
 (define-public libart-lgpl
   (package
     (name "libart-lgpl")
-    (version "2.3.9")
+    (version "2.3.21")
     (source (origin
               (method url-fetch)
               (uri (let ((upstream-name "libart_lgpl"))
@@ -910,7 +910,7 @@ files and URIs, and displaying help.")
                       ".tar.bz2")))
               (sha256
                (base32
-                "072r4svs4hjf2f4gxzx02n3f970kdv9fpx54r2m8bd42fjyyawrw"))))
+                "1yknfkyzgz9s616is0l9gp5aray0f2ry4dw533jgzj8gq5s1xhgx"))))
     (build-system gnu-build-system)
     (native-inputs
      `(("pkg-config" ,pkg-config)))
