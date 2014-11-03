@@ -31,14 +31,14 @@
 (define swig
   (package
     (name "swig")
-    (version "2.0.12")
+    (version "3.0.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "mirror://sourceforge/swig/swig-"
                                  version ".tar.gz"))
              (sha256
               (base32
-               "1xqp8dx82hd544l60p78g10f7zz1xgw2z22rkhkxgv0clqi3zqb5"))))
+               "04vqrij3k6pcq41y7rzl5rmhnghqg905f11wyrqw7vdwr9brcrm2"))))
     (build-system gnu-build-system)
     (native-inputs `(("boost" ,boost)))
     (inputs `(("pcre" ,pcre)
