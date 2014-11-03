@@ -24,6 +24,7 @@
   #:use-module (guix derivations)
   #:use-module (guix build-system)
   #:use-module (ice-9 match)
+  #:use-module (ice-9 vlist)
   #:use-module (srfi srfi-1)
   #:use-module (srfi srfi-9 gnu)
   #:use-module (srfi srfi-11)
@@ -542,16 +543,40 @@ for the host system (\"native inputs\"), and not target inputs."
 recursively."
   (transitive-inputs (package-propagated-inputs package)))
 
+(define-syntax-rule (first-value exp)
+  "Truncate all but the first value returned by EXP."
+  (call-with-values (lambda () exp)
+    (lambda (result . _)
+      result)))
+
 (define (package-transitive-supported-systems package)
   "Return the intersection of the systems supported by PACKAGE and those
 supported by its dependencies."
-  (apply lset-intersection string=?
-         (package-supported-systems package)
-         (filter-map (match-lambda
-                      ((label (? package? p) . rest)
-                       (package-supported-systems p))
-                      (_ #f))
-                     (package-transitive-inputs package))))
+  (first-value
+   (let loop ((package package)
+              (systems (package-supported-systems package))
+              (visited vlist-null))
+     (match (vhash-assq package visited)
+       ((_ . result)
+        (values (lset-intersection string=? systems result)
+                visited))
+       (#f
+        (call-with-values
+            (lambda ()
+              (fold2 (lambda (input systems visited)
+                       (match input
+                         ((label (? package? package) . _)
+                          (loop package systems visited))
+                         (_
+                          (values systems visited))))
+                     (lset-intersection string=?
+                                        systems
+                                        (package-supported-systems package))
+                     visited
+                     (package-direct-inputs package)))
+          (lambda (systems visited)
+            (values systems
+                    (vhash-consq package systems visited)))))))))
 
 (define (bag-transitive-inputs bag)
   "Same as 'package-transitive-inputs', but applied to a bag."

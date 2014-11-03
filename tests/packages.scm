@@ -125,17 +125,25 @@
                  (pk 'x (package-transitive-inputs e))))))
 
 (test-equal "package-transitive-supported-systems"
-  '(("x" "y" "z")
-    ("x" "y")
-    ("y"))
+  '(("x" "y" "z")                                 ;a
+    ("x" "y")                                     ;b
+    ("y")                                         ;c
+    ("y")                                         ;d
+    ("y"))                                        ;e
   (let* ((a (dummy-package "a" (supported-systems '("x" "y" "z"))))
          (b (dummy-package "b" (supported-systems '("x" "y"))
                (inputs `(("a" ,a)))))
          (c (dummy-package "c" (supported-systems '("y" "z"))
-               (inputs `(("b" ,b))))))
+               (inputs `(("b" ,b)))))
+         (d (dummy-package "d" (supported-systems '("x" "y" "z"))
+               (inputs `(("b" ,b) ("c" ,c)))))
+         (e (dummy-package "e" (supported-systems '("x" "y" "z"))
+               (inputs `(("d" ,d))))))
     (list (package-transitive-supported-systems a)
           (package-transitive-supported-systems b)
-          (package-transitive-supported-systems c))))
+          (package-transitive-supported-systems c)
+          (package-transitive-supported-systems d)
+          (package-transitive-supported-systems e))))
 
 (test-skip (if (not %store) 8 0))
 
