@@ -377,6 +377,8 @@ supplies a generic doubly-linked list and some string functions.")
       #:tests? #f)) ; no check target
    (native-inputs
     `(("unzip" ,unzip)))
+   ;; Fails to build on MIPS due to assembly code in the source.
+   (supported-systems (delete "mips64el-linux" %supported-systems))
    (synopsis "Library for handling popular graphics image formats")
    (description
     "FreeImage is a library for developers who would like to support popular
