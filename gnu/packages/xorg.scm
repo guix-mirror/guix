@@ -2485,17 +2485,18 @@ autotools system.")
 (define-public xf86-video-ati
   (package
     (name "xf86-video-ati")
-    (version "6.14.4")
+    (version "6.14.6")
     (source
       (origin
         (method url-fetch)
         (uri (string-append
-               "mirror://xorg/X11R7.7/src/everything/xf86-video-ati-"
+               ;; FIXME: When updating, switch back to release uri.
+               "mirror://xorg/individual/driver/xf86-video-ati-"
                version
                ".tar.bz2"))
         (sha256
           (base32
-            "11gg6xn65vym75769hzgzpkjsyhlkrw4zw3ncngriq7vz1g47zjg"))))
+            "0dpcdgw7vmx53l3byp900na5s980v1nw11a7y5yps67hwjrqclma"))))
     (build-system gnu-build-system)
     (inputs `(("mesa" ,mesa)
               ("xxf86driproto" ,xf86driproto)
