@@ -38,7 +38,7 @@ used for interacting with the Guile process.
 @end itemize
 
 When it is done, add the following into your init file (@pxref{Init
-File,,, emacs, The Emacs Editor}):
+File,,, emacs, The GNU Emacs Manual}):
 
 @example
 (require 'guix-init nil t)
@@ -47,7 +47,8 @@ File,,, emacs, The Emacs Editor}):
 However there is a chance that @code{load-path} of your Emacs does not
 contain a directory with ``guix.el'' (usually it is
 @file{/usr/share/emacs/site-lisp/}).  In that case you need to add it
-before requiring (@pxref{Lisp Libraries,,, emacs, The Emacs Editor}):
+before requiring (@pxref{Lisp Libraries,,, emacs, The GNU Emacs
+Manual}):
 
 @example
 (add-to-list 'load-path "/path/to/directory-with-guix.el")
@@ -56,7 +57,8 @@ before requiring (@pxref{Lisp Libraries,,, emacs, The Emacs Editor}):
 
 Do not worry about the efficiency of that @code{require} thing.  It will
 not load the whole ``guix.el'' package, it will just autoload the main
-interactive commands (@pxref{Autoload,,, elisp, Emacs Lisp}).
+interactive commands (@pxref{Autoload,,, elisp, The GNU Emacs Lisp
+Reference Manual}).
 
 
 @node Emacs Usage
@@ -129,7 +131,7 @@ of generations.
 @item M-x guix-generations-by-time
 List generations matching time period.  You will be prompted for the
 period using Org mode time prompt based on Emacs calendar (@pxref{The
-date/time prompt,,, org, Org Mode Manual}).
+date/time prompt,,, org, The Org Manual}).
 
 @end table
 
@@ -187,7 +189,7 @@ was restarted, you may want to revert ``list'' buffer (by pressing
 @subsubsection ``List'' buffer
 
 An interface of a ``list'' buffer is similar to the interface provided
-by ``package.el'' (@pxref{Package Menu,,, emacs, The Emacs Editor}).
+by ``package.el'' (@pxref{Package Menu,,, emacs, The GNU Emacs Manual}).
 
 Default key bindings available for both ``package-list'' and
 ``generation-list'' buffers:
@@ -260,11 +262,11 @@ with another marked generation.
 @subsubsection ``Info'' buffer
 
 The interface of an ``info'' buffer is similar to the interface of
-@code{help-mode} (@pxref{Help Mode,,, emacs, The Emacs Editor}).
+@code{help-mode} (@pxref{Help Mode,,, emacs, The GNU Emacs Manual}).
 
 ``Info'' buffer contains some buttons (as usual you may use @key{TAB} /
 @kbd{S-@key{TAB}} to move between buttons---@pxref{Mouse References,,,
-emacs, The Emacs Editor}) which can be used to:
+emacs, The GNU Emacs Manual}) which can be used to:
 
 @itemize @bullet
 @item (in a ``package-info'' buffer)
@@ -294,8 +296,8 @@ emacs, The Emacs Editor}) which can be used to:
 There are many variables you can modify to change the appearance or
 behavior of Emacs user interface.  Some of these variables are described
 in this section.  Also you can use Custom Interface (@pxref{Easy
-Customization,,, emacs, The Emacs Editor}) to explore/set variables (not
-all) and faces.
+Customization,,, emacs, The GNU Emacs Manual}) to explore/set variables
+(not all) and faces.
 
 @menu
 * Guile and Build Options: Emacs Build Options.	Specifying how packages are built.
@@ -367,7 +369,7 @@ extensively), you may do it like this:
 @subsubsection Keymaps
 
 If you want to change default key bindings, use the following keymaps
-(@pxref{Init Rebinding,,, emacs, The Emacs Editor}):
+(@pxref{Init Rebinding,,, emacs, The GNU Emacs Manual}):
 
 @table @code
 @item guix-list-mode-map
