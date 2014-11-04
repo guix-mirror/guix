@@ -164,7 +164,7 @@ other supporting functions for SDL.")
     (description "SDL_image is an image file loading library for SDL that
 supports the following formats: BMP, GIF, JPEG, LBM, PCX, PNG, PNM, TGA, TIFF,
 WEBP, XCF, XPM, and XV.")
-    (home-page "www.libsdl.org/projects/SDL_image/")
+    (home-page "http://www.libsdl.org/projects/SDL_image/")
     (license zlib)))
 
 (define sdl-mixer
@@ -195,7 +195,7 @@ WEBP, XCF, XPM, and XV.")
 It supports any number of simultaneously playing channels of 16 bit stereo
 audio, plus a single channel of music.  Supported format include FLAC, MOD,
 MIDI, Ogg Vorbis, and MP3.")
-    (home-page "www.libsdl.org/projects/SDL_mixer/")
+    (home-page "http://www.libsdl.org/projects/SDL_mixer/")
     (license zlib)))
 
 (define sdl-net
@@ -216,7 +216,7 @@ MIDI, Ogg Vorbis, and MP3.")
     (synopsis "SDL networking library")
     (description "SDL_net is a small, cross-platform networking library for
 SDL.")
-    (home-page "www.libsdl.org/projects/SDL_net/")
+    (home-page "http://www.libsdl.org/projects/SDL_net/")
     (license zlib)))
 
 (define sdl-ttf
@@ -238,5 +238,5 @@ SDL.")
               ("pkg-config" ,pkg-config)))
     (synopsis "SDL TrueType font library")
     (description "SDL_ttf is a TrueType font rendering library for SDL.")
-    (home-page "www.libsdl.org/projects/SDL_ttf/")
+    (home-page "http://www.libsdl.org/projects/SDL_ttf/")
     (license zlib)))
