@@ -124,6 +124,8 @@ X11 (yet).")
                       "-prefix" out
                       "-opensource"
                       "-confirm-license"
+                      ;; explicitly link with dbus instead of dlopening it
+                      "-dbus-linked"
                       ;; drop special machine instructions not supported
                       ;; on all instances of the target
                       ,@(if (string-prefix? "x86_64"
@@ -191,6 +193,8 @@ developers using C++ or QML, a CSS & JavaScript like language.")
                       "-prefix" out
                       "-opensource"
                       "-confirm-license"
+                      ;; explicitly link with dbus instead of dlopening it
+                      "-dbus-linked"
                       ;; drop special machine instructions not supported
                       ;; on all instances of the target
                       ,@(if (string-prefix? "x86_64"
