@@ -18,6 +18,7 @@ guix package}).  Specifically, ``guix.el'' makes it easy to:
 * Initial Setup: Emacs Initial Setup.	Preparing @file{~/.emacs}.
 * Usage: Emacs Usage.			Using the interface.
 * Configuration: Emacs Configuration.	Configuring the interface.
+* Prettify Mode: Emacs Prettify.	Abbreviating @file{/gnu/store/@dots{}} file names.
 @end menu
 
 @node Emacs Initial Setup
@@ -422,3 +423,44 @@ buffers.
 Various settings for ``info'' buffers.
 
 @end table
+
+
+@node Emacs Prettify
+@subsection Guix Prettify Mode
+
+Along with ``guix.el'', GNU@tie{}Guix comes with ``guix-prettify.el''.
+It provides a minor mode for abbreviating store file names by replacing
+hash sequences of symbols with ``@dots{}'':
+
+@example
+/gnu/store/72f54nfp6g1hz873w8z3gfcah0h4nl9p-foo-0.1
+@result{} /gnu/store/…-foo-0.1
+@end example
+
+Once you set up ``guix.el'' (@pxref{Emacs Initial Setup}), the following
+commands become available:
+
+@table @kbd
+
+@item M-x guix-prettify-mode
+Enable/disable prettifying for the current buffer.
+
+@item M-x global-guix-prettify-mode
+Enable/disable prettifying globally.
+
+@end table
+
+To automatically enable @code{guix-prettify-mode} globally on Emacs
+start, add the following line to your init file:
+
+@example
+(global-guix-prettify-mode)
+@end example
+
+If you want to enable it only for specific major modes, add it to the
+mode hooks (@pxref{Hooks,,, emacs, The GNU Emacs Manual}), for example:
+
+@example
+(add-hook 'shell-mode-hook 'guix-prettify-mode)
+(add-hook 'dired-mode-hook 'guix-prettify-mode)
+@end example

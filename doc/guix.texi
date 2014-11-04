@@ -628,7 +628,9 @@ management tools it provides.
 
 When using Guix, each package ends up in the @dfn{package store}, in its
 own directory---something that resembles
-@file{/gnu/store/xxx-package-1.2}, where @code{xxx} is a base32 string.
+@file{/gnu/store/xxx-package-1.2}, where @code{xxx} is a base32 string
+(note that Guix comes with an Emacs extension to shorten those file
+names, @ref{Emacs Prettify}.)
 
 Instead of referring to these directories, users have their own
 @dfn{profile}, which points to the packages that they actually want to
