@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2013, 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Mark H Weaver <mhw@netris.org>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -20,6 +21,7 @@
 
 (define-module (gnu packages gtk)
   #:use-module ((guix licenses) #:prefix license:)
+  #:use-module (guix utils)
   #:use-module (guix packages)
   #:use-module (guix download)
   #:use-module (guix build-system gnu)
@@ -45,8 +47,8 @@
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
-                                (string-take version 4) "/" name "-"
-                                version ".tar.xz"))
+                                (version-major+minor version)  "/"
+                                name "-" version ".tar.xz"))
             (sha256
              (base32
               "1c2hbg66wfvibsz2ia0ri48yr62751fn950i97c53j3b0fjifsb3"))))
@@ -178,10 +180,9 @@ used throughout the world.")
     (version "0.0.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
-                   version
-                   ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version)  "/"
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
                "0ip0ziys6mrqqmz4n71ays0kf5cs1xflj1gfpvs4fgy2nsrr482m"))))
@@ -206,9 +207,9 @@ functions which were removed.")
     (version "2.10.5") ; This is the last version which builds against gtk+2
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/gtksourceview/"
-                                  (string-take version 4) "/gtksourceview-"
-                                  version ".tar.bz2"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "07hrabhpl6n8ajz10s0d960jdwndxs87szxyn428mpxi8cvpg1f5"))))
@@ -260,8 +261,9 @@ printing and other features typical of a source code editor.")
    (version "2.28.2")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/gdk-pixbuf/2.28/gdk-pixbuf-"
-                                version ".tar.xz"))
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version)  "/"
+                                name "-" version ".tar.xz"))
             (sha256
              (base32
               "05s6ksvy1yan6h6zny9n3bmvygcnzma6ljl6i0z9cci2xg116c8q"))))
@@ -289,8 +291,8 @@ in the GNOME project.")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
-                                (string-take version 4) "/" name "-"
-                                version ".tar.xz"))
+                                (version-major+minor version)  "/"
+                                name "-" version ".tar.xz"))
             (sha256
              (base32
               "1ns44yibdgcwzwri7sr075hfs5rh5lgxkh71247a0822az3mahcn"))))
@@ -319,8 +321,8 @@ is part of the GNOME accessibility project.")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
-                                (string-take version 4) "/" name "-"
-                                version ".tar.xz"))
+                                (version-major+minor version)  "/"
+                                name "-" version ".tar.xz"))
             (sha256
              (base32
               "150sqc21difazqd53llwfdaqnwfy73bic9hia41xpfy9kcpzz9yy"))))
@@ -348,8 +350,8 @@ is part of the GNOME accessibility project.")
    (source (origin
             (method url-fetch)
             (uri (string-append "mirror://gnome/sources/" name "/"
-                                (string-take version 4) "/" name "-"
-                                version ".tar.xz"))
+                                (version-major+minor version)  "/"
+                                name "-" version ".tar.xz"))
             (sha256
              (base32
               "1qyw73pr9ryqhir2h1kbx3vm70km4dg2fxrgkrdlpv0rvlb94bih"))))
@@ -383,12 +385,13 @@ application suites.")
 
 (define-public gtk+
   (package (inherit gtk+-2)
+   (name "gtk+")
    (version "3.10.1")
    (source (origin
             (method url-fetch)
-            (uri (string-append "mirror://gnome/sources/gtk+/"
-                                (string-take version 4) "/gtk+-"
-                                version ".tar.xz"))
+            (uri (string-append "mirror://gnome/sources/" name "/"
+                                (version-major+minor version)  "/"
+                                name "-" version ".tar.xz"))
             (sha256
              (base32
               "1f3a7r3z7i9xh5imlfpfcgyydzkj2fnd0v6ylvqxij0yzfbnhbn1"))))
@@ -534,8 +537,9 @@ library.")
     (version "2.34.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/pangomm/2.34/pangomm-"
-                                 version ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version)  "/"
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
                "0hcyvv7c5zmivprdam6cp111i6hn2y5jsxzk00m6j9pncbzvp0hf"))))
@@ -559,8 +563,9 @@ library.")
     (version "2.22.7")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/atkmm/2.22/atkmm-"
-                                 version ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version)  "/"
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
                "06zrf2ymml2dzp53sss0d4ch4dk9v09jm8rglnrmwk4v81mq9gxz"))))
@@ -581,8 +586,9 @@ toolkit.")
     (version "3.9.16")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/gtkmm/3.9/gtkmm-"
-                                 version ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version)  "/"
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
                "0yf8wwv4w02p70nrxsbs0nhm0w4gkn2wggdjygd8vif062anf1rs"))))
@@ -608,12 +614,13 @@ extensive documentation, including API reference and a tutorial.")
 
 (define-public gtkmm-2
   (package (inherit gtkmm)
+    (name "gtkmm")
     (version "2.24.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/gtkmm/"
-                                 (string-take version 4) "/gtkmm-"
-                                 version ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version)  "/"
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
                "0gcm91sc1a05c56kzh74l370ggj0zz8nmmjvjaaxgmhdq8lpl369"))))

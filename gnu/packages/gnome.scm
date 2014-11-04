@@ -2,6 +2,7 @@
 ;;; Copyright © 2013 Andreas Enge <andreas@enge.fr>
 ;;; Copyright © 2014 Ludovic Courtès <ludo@gnu.org>
 ;;; Copyright © 2014 Ian Denhardt <ian@zenhack.net>
+;;; Copyright © 2014 Eric Bavier <bavier@member.fsf.org>
 ;;;
 ;;; This file is part of GNU Guix.
 ;;;
@@ -90,7 +91,8 @@ features to enable users to create their discs easily and quickly.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnome/sources/" name "/3.10/"
+      (uri (string-append "mirror://gnome/sources/" name "/"
+                          (version-major+minor version)  "/"
                           name "-" version ".tar.xz"))
       (sha256
        (base32
@@ -131,7 +133,8 @@ The gnome-about program helps find which version of GNOME is installed.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "mirror://gnome/sources/" name "/0.20/"
+      (uri (string-append "mirror://gnome/sources/" name "/"
+                          (version-major+minor version)  "/"
                           name "-" version ".tar.xz"))
       (sha256
        (base32
@@ -170,10 +173,9 @@ and keep up to date translations of documentation.")
     (version "3.6.0")
     (source (origin
              (method url-fetch)
-             (uri (string-append
-                   "mirror://gnome/sources/libgnome-keyring/3.6/libgnome-keyring-"
-                   version
-                   ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version)  "/"
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
                "0c4qrjpmv1hqga3xv6wsq2z10x2n78qgw7q3k3s01y1pggxkgjkd"))))
@@ -202,8 +204,9 @@ and keep up to date translations of documentation.")
     (version "3.6.1")
     (source (origin
              (method url-fetch)
-             (uri (string-append "mirror://gnome/sources/evince/3.6/evince-"
-                                 version ".tar.xz"))
+             (uri (string-append "mirror://gnome/sources/" name "/"
+                                 (version-major+minor version) "/"
+                                 name "-" version ".tar.xz"))
              (sha256
               (base32
                "1da1pij030dh8mb0pr0jnyszgsbjnh8lc17rj5ii52j3kmbv51qv"))))
@@ -270,7 +273,7 @@ on the GNOME Desktop with a single simple application.")
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnome/sources/" name "/"
-                          (string-copy version 0 (string-rindex version #\.)) "/"
+                          (version-major+minor version)  "/"
                           name "-" version ".tar.xz"))
       (sha256
        (base32
@@ -323,7 +326,7 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnome/sources/" name "/"
-                          (string-copy version 0 (string-rindex version #\.)) "/"
+                          (version-major+minor version)  "/"
                           name "-" version ".tar.xz"))
       (sha256
        (base32
@@ -348,8 +351,8 @@ GNOME and KDE desktops to the icon names proposed in the specification.")
     (version "1.2")
     (source (origin
              (method url-fetch)
-             (uri (string-append "http://freedesktop.org/~hadess/shared-mime-info-"
-                                 version ".tar.xz"))
+             (uri (string-append "http://freedesktop.org/~hadess/"
+                                 "shared-mime-info-" version ".tar.xz"))
              (sha256
               (base32
                "0y5vi0vr6rbhvfzcfg57cfskn362bpvcpca9cy598nmr87i6lld5"))))
@@ -380,8 +383,8 @@ database is translated at Transifex.")
     (source
      (origin
       (method url-fetch)
-      (uri (string-append "http://icon-theme.freedesktop.org/releases/hicolor-icon-theme-"
-                          version ".tar.gz"))
+      (uri (string-append "http://icon-theme.freedesktop.org/releases/"
+                          "hicolor-icon-theme-" version ".tar.gz"))
       (sha256
        (base32
         "0wzc7g4ldb2l8zc0x2785ck808c03i857jji942ikakyc68adp4y"))))
@@ -403,7 +406,7 @@ database is translated at Transifex.")
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnome/sources/" name "/"
-                          (string-copy version 0 (string-rindex version #\.)) "/"
+                          (version-major+minor version)  "/"
                           name "-" version ".tar.xz"))
       (sha256
        (base32
@@ -435,7 +438,7 @@ some form of information without getting in the user's way.")
      (origin
       (method url-fetch)
       (uri (string-append "mirror://gnome/sources/" name "/"
-                          (substring version 0 (string-rindex version #\.)) "/"
+                          (version-major+minor version)  "/"
                           name "-" version ".tar.xz"))
       (sha256
        (base32
@@ -494,12 +497,11 @@ API add-ons to make GTK+ widgets OpenGL-capable.")
   (package
     (name "glade")
     (version "3.8.4")
-    (source
-     (origin
-      (method url-fetch)
-      (uri (string-append "mirror://gnome/sources/" name "/"
-                          (substring version 0 (string-rindex version #\.)) "/"
-                          name "3-" version ".tar.xz"))
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "3-" version ".tar.xz"))
               (sha256
                (base32 "021xgq2l18w3rvwms9aq2idm0fk66vwb4f777gs0qh3ap5shgbn7"))))
     (build-system gnu-build-system)
@@ -523,10 +525,9 @@ the GNOME desktop environment.")
     (version "0.6.8")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/libcroco/0.6/libcroco-"
-                    version
-                    ".tar.xz"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
                 "0w453f3nnkbkrly7spx5lx5pf6mwynzmd5qhszprq8amij2invpa"))))
@@ -554,8 +555,9 @@ XML/CSS rendering engine.")
     (version "1.14.30")
     (source (origin
               (method url-fetch)
-              (uri (string-append "mirror://gnome/sources/libgsf/1.14/libgsf-"
-                                  version ".tar.xz"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
                 "0w2v1a9sxsymd1mcy4mwsz4r6za9iwq69rj86nb939p41d4c6j6b"))))
@@ -586,9 +588,9 @@ dealing with different structured file formats.")
     (version "2.40.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/librsvg/2.40/librsvg-"
-                    version ".tar.xz"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
                 "071959yjb2i1bja7ciy4bmpnd6fn2is9jjqsvvvnsqwl69j9n128"))))
@@ -638,10 +640,9 @@ library.")
     (source (origin
               (method url-fetch)
               (uri (let ((upstream-name "libIDL"))
-		     (string-append
-		      "mirror://gnome/sources/" upstream-name "/" (string-take version 3) "/" upstream-name "-"
-		      version
-		      ".tar.bz2")))
+		     (string-append "mirror://gnome/sources/" upstream-name "/"
+                                    (version-major+minor version) "/"
+                                    upstream-name "-" version ".tar.bz2")))
               (sha256
                (base32
                 "08129my8s9fbrk0vqvnmx6ph4nid744g5vbwphzkaik51664vln5"))))
@@ -668,10 +669,9 @@ functionality was designed to be as reusable and portable as possible.")
     (source (origin
               (method url-fetch)
               (uri (let ((upstream-name "ORBit2")) 
-		     (string-append
-		      "mirror://gnome/sources/" upstream-name "/" (string-take version 4) "/" upstream-name "-"
-		      version
-		      ".tar.bz2")))
+		     (string-append "mirror://gnome/sources/" upstream-name "/"
+                                    (version-major+minor version) "/"
+                                    upstream-name "-" version ".tar.bz2")))
               (sha256
                (base32 "0l3mhpyym9m5iz09fz0rgiqxl2ym6kpkwpsp1xrr4aa80nlh1jam"))))
     (build-system gnu-build-system)
@@ -755,10 +755,9 @@ use in GNOME applications, built on top of CORBA.")
               (method url-fetch)
 	      (uri 
 	       (let ((upstream-name "GConf"))
-		 (string-append
-		  "mirror://gnome/sources/" upstream-name "/" (string-take version 3)  "/" upstream-name "-"
-		  version
-		  ".tar.xz")))
+		 (string-append "mirror://gnome/sources/" upstream-name "/"
+                                (version-major+minor version) "/"
+                                upstream-name "-" version ".tar.xz")))
               (sha256
                (base32 "0k3q9nh53yhc9qxf1zaicz4sk8p3kzq4ndjdsgpaa2db0ccbj4hr"))))
     (build-system gnu-build-system)
@@ -784,10 +783,9 @@ is intended for user preferences; not arbitrary data storage.")
     (version "2.18.0")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 4)  "/" name "-"
-                    version
-                    ".tar.bz2"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "1mvg8glb2a40yilmyabmb7fkbzlqd3i3d31kbkabqnq86xdnn69p"))))
@@ -809,10 +807,9 @@ designed to be accessed through the MIME functions in GnomeVFS.")
     (version "2.24.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 4)  "/" name "-"
-                    version
-                    ".tar.bz2"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32 "1ajg8jb8k3snxc7rrgczlh8daxkjidmcv3zr9w809sq4p2sn9pk2"))))
     (build-system gnu-build-system)
@@ -856,11 +853,9 @@ allows applications to access local and remote files with a single consistent AP
     (version "2.32.1")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/"
-                    (string-take version 4)  "/" name "-"
-                    version
-                    ".tar.bz2"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "197pnq8y0knqjhm2fg4j6hbqqm3qfzfnd0irhwxpk1b4hqb3kimj"))))
@@ -904,10 +899,9 @@ files and URIs, and displaying help.")
     (source (origin
               (method url-fetch)
               (uri (let ((upstream-name "libart_lgpl"))
-                     (string-append
-                      "mirror://gnome/sources/" upstream-name "/" 
-                      (string-take version 3) "/" upstream-name "-" version
-                      ".tar.bz2")))
+                     (string-append "mirror://gnome/sources/" upstream-name "/"
+                                    (version-major+minor version) "/"
+                                    upstream-name "-" version ".tar.bz2")))
               (sha256
                (base32
                 "1yknfkyzgz9s616is0l9gp5aray0f2ry4dw533jgzj8gq5s1xhgx"))))
@@ -928,10 +922,9 @@ high-quality vector-based 2D library with antialiasing and alpha composition.")
     (version "2.30.3")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 4)  "/" name "-"
-                    version
-                    ".tar.gz"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.gz"))
               (sha256
                (base32
                 "1nhnq4lfkk8ljkdafscwaggx0h95mq0rxnd7zgqyq0xb6kkqbjm8"))))
@@ -955,10 +948,9 @@ creating interactive structured graphics.")
     (version "2.24.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 4)  "/" name "-"
-                    version
-                    ".tar.bz2"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "03rwbli76crkjl6gp422wrc9lqpl174k56cp9i96b7l8jlj2yddf"))))
@@ -989,10 +981,9 @@ applications.  Many of the widgets from libgnomeui have already been ported to G
     (version "2.6.4")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
-                    version
-                    ".tar.bz2"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "1v2x2s04jry4gpabws92i0wq2ghd47yr5n9nhgnkd7c38xv1wdk4"))))
@@ -1016,10 +1007,9 @@ widgets built in the loading process.")
     (version "2.8.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
-                    version
-                    ".tar.bz2"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "129ka3nn8gx9dlfry17ib79azxk45wzfv5rgqzw6dwx2b5ns8phm"))))
@@ -1045,10 +1035,9 @@ widgets built in the loading process.")
     (version "2.8.2")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/" (string-take version 3)  "/" name "-"
-                    version
-                    ".tar.bz2"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "1ivipk7r61rg90p9kp889j28xlyyj6466ypvwa4jvnrcllnaajsw"))))
@@ -1075,10 +1064,9 @@ widgets built in the loading process.")
     (version "2.24.5")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/"
-                    (version-major+minor version)
-                    "/" name "-" version ".tar.bz2"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.bz2"))
               (sha256
                (base32
                 "1kbgqh7bw0fdx4f1a1aqwpff7gp5mwhbaz60c6c98bc4djng5dgs"))))
@@ -1123,10 +1111,9 @@ controls using the Bonobo component framework.")
     (version "0.10.14")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/" 
-                    (string-take version 4) "/" name "-"
-                    version    ".tar.xz"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32 "0kj0iwng6w4axm7yv2zy7myn5dhw5ilrlq2pzrjlm9i852ikqy60"))))
     (build-system gnu-build-system)
@@ -1154,10 +1141,9 @@ controls using the Bonobo component framework.")
     (version "1.12.17")
     (source (origin
               (method url-fetch)
-              (uri (string-append
-                    "mirror://gnome/sources/" name "/" 
-                    (string-take version 4) "/" name "-" version
-                    ".tar.xz"))
+              (uri (string-append "mirror://gnome/sources/" name "/"
+                                  (version-major+minor version)  "/"
+                                  name "-" version ".tar.xz"))
               (sha256
                (base32
                 "18bvc3phghr4p5440fp8hm6gvp53d3mqs9cyc637zpmk0b6bcp7c"))))
