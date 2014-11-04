@@ -94,6 +94,17 @@ by no means limited to these applications.)  This package provides XML DTDs.")
                (base32
                 "0r1l2if1z4wm2v664sqdizm4gak6db1kx9y50jq89m3gxaa8l1i3"))))))
 
+(define-public docbook-xml-4.2
+  (package (inherit docbook-xml)
+   (version "4.2")
+    (source (origin
+              (method url-fetch)
+              (uri (string-append "http://www.docbook.org/xml/" version
+                                  "/docbook-xml-" version ".zip"))
+              (sha256
+               (base32
+                "18hgwvmywh6a5jh38szjmg3hg2r4v5lb6r3ydc3rd8cp9wg61i5c"))))))
+
 (define-public docbook-xsl
   (package
     (name "docbook-xsl")
