@@ -25,9 +25,10 @@
   #:use-module (guix download)
   #:use-module (guix utils)
   #:use-module (guix build-system gnu)
+  #:use-module (guix build-system glib-or-gtk)
   #:use-module (gnu packages)
   #:use-module (gnu packages bison)
-  #:use-module (gnu packages flex)  
+  #:use-module (gnu packages flex)
   #:use-module (gnu packages docbook)
   #:use-module (gnu packages glib)
   #:use-module (gnu packages gnupg)
@@ -210,7 +211,7 @@ and keep up to date translations of documentation.")
              (sha256
               (base32
                "1da1pij030dh8mb0pr0jnyszgsbjnh8lc17rj5ii52j3kmbv51qv"))))
-    (build-system gnu-build-system)
+    (build-system glib-or-gtk-build-system)
     (arguments
      `(#:configure-flags '("--disable-nautilus")
 
