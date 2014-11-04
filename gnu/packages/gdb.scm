@@ -51,7 +51,17 @@
                  (lambda _
                    (for-each patch-makefile-SHELL
                              (find-files "." "Makefile\\.in")))
-                 %standard-phases)))
+                 (alist-cons-after
+                  'install 'post-install
+                  (lambda* (#:key outputs #:allow-other-keys)
+                    ;; Like Binutils, GDB installs libbfd and libopcodes.
+                    ;; However, this leads to collisions when both are
+                    ;; installed, and really is none of its business,
+                    ;; conceptually.  So remove them.
+                    (for-each delete-file
+                              (find-files (assoc-ref outputs "out")
+                                          "^lib(opcodes|bfd)\\.")))
+                  %standard-phases))))
     (inputs
      `(("expat" ,expat)
        ("mpfr" ,mpfr)
