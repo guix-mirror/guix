@@ -610,7 +610,21 @@ dealing with different structured file formats.")
             ;; Likewise, create a separate 'loaders.cache' file.
             (("gdk_pixbuf_cache_file = .*$")
              "gdk_pixbuf_cache_file = $(gdk_pixbuf_moduledir).cache\n")))
-        %standard-phases)))
+        (alist-cons-after
+         'install 'generate-full-cache
+         (lambda* (#:key inputs outputs #:allow-other-keys)
+           (let ((loaders-directory 
+                  (string-append (assoc-ref outputs "out")
+                                 "/lib/gdk-pixbuf-2.0/2.0.10/loaders")))
+             (zero?
+              (system 
+               (string-append 
+                "gdk-pixbuf-query-loaders " 
+                loaders-directory "/libpixbufloader-svg.so "
+                (string-join (find-files (assoc-ref inputs "gdk-pixbuf") 
+                                         "libpixbufloader-.*\\.so") " ")
+                "> " loaders-directory ".cache")))))
+         %standard-phases))))
     (native-inputs
      `(("pkg-config" ,pkg-config)
        ("glib" ,glib "bin")                               ; glib-mkenums, etc.
