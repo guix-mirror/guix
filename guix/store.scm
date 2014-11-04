@@ -728,6 +728,13 @@ and the number of bytes freed."
     (let ((paths    (read-store-path-list s))
           (freed    (read-long-long s))
           (obsolete (read-long-long s)))
+      (unless (null? paths)
+        ;; To be on the safe side, completely invalidate both caches.
+        ;; Otherwise we could end up returning store paths that are no longer
+        ;; valid.
+        (hash-clear! (nix-server-add-to-store-cache server))
+        (hash-clear! (nix-server-add-text-to-store-cache server)))
+
      (values paths freed))))
 
 (define-syntax-rule (%long-long-max)

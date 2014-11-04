@@ -158,6 +158,31 @@
            (> freed 0)
            (not (file-exists? p))))))
 
+(test-assert "add-text-to-store vs. delete-paths"
+  ;; Before, 'add-text-to-store' would return PATH2 without noticing that it
+  ;; is no longer valid.
+  (with-store store
+    (let* ((text    (random-text))
+           (path    (add-text-to-store store "delete-me" text))
+           (deleted (delete-paths store (list path)))
+           (path2   (add-text-to-store store "delete-me" text)))
+      (and (string=? path path2)
+           (equal? deleted (list path))
+           (valid-path? store path)
+           (file-exists? path)))))
+
+(test-assert "add-to-store vs. delete-paths"
+  ;; Same as above.
+  (with-store store
+    (let* ((file    (search-path %load-path "guix.scm"))
+           (path    (add-to-store store "delete-me" #t "sha256" file))
+           (deleted (delete-paths store (list path)))
+           (path2   (add-to-store store "delete-me" #t "sha256" file)))
+      (and (string=? path path2)
+           (equal? deleted (list path))
+           (valid-path? store path)
+           (file-exists? path)))))
+
 (test-assert "references"
   (let* ((t1 (add-text-to-store %store "random1"
                                 (random-text)))
