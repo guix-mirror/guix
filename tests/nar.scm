@@ -277,7 +277,7 @@
 (test-assert "restore-file-set (missing signature)"
   (let/ec return
     (with-store store
-      (let* ((file  (add-text-to-store store "foo" "Hello, world!"))
+      (let* ((file  (add-text-to-store store "foo" (random-text)))
              (dump  (call-with-bytevector-output-port
                      (cute export-paths store (list file) <>
                            #:sign? #f))))
