@@ -67,7 +67,7 @@ X11 (yet).")
 (define-public qt
   (package
     (name "qt")
-    (version "5.2.1")
+    (version "5.3.2")
     (source (origin
              (method url-fetch)
              (uri (string-append "http://download.qt-project.org/official_releases/qt/"
@@ -77,7 +77,7 @@ X11 (yet).")
                                  version ".tar.xz"))
              (sha256
               (base32
-               "0kkqrxpd9gqb52a2zj09d7vhd4adczpjg32vjvll5wyzmh092m85"))))
+               "1w4v53889kqpwxw45wcqz5bi6zx8xp434jpafk1vlmyb8hrzjnvz"))))
     (build-system gnu-build-system)
     (propagated-inputs
      `(("mesa" ,mesa)))
@@ -139,7 +139,6 @@ X11 (yet).")
                       "-no-sse4.2"
                       "-no-avx"
                       "-no-avx2"
-                      "-no-neon"
                       "-no-mips_dsp"
                       "-no-mips_dspr2"))))
           %standard-phases)))
