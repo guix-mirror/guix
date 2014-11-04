@@ -1201,3 +1201,47 @@ engineering.")
     (license
     ;; Dual licensed under GPLv2 or GPLv3 (both without "or later")
      (list license:gpl2 license:gpl3))))
+
+(define-public gnome-themes-standard
+  (package
+    (name "gnome-themes-standard")
+    ;; The version of this package should be the same as the version of
+    ;; gnome-desktop.
+    (version (package-version gnome-desktop))
+    (source
+     (origin
+       (method url-fetch)
+       (uri (string-append "mirror://gnome/sources/" name "/" 
+                           (version-major+minor version) "/" name "-"
+                           version ".tar.xz"))
+       (sha256
+        (base32
+         "0f2b3ypkfvrdsxcvp14ja9wqj382f1p46yrjvhhxkkjgagy6qb41"))))
+    (build-system gnu-build-system)
+    (inputs
+     `(("gtk+" ,gtk+)
+       ("gtk+-2" ,gtk+-2)
+       ("librsvg" ,librsvg)
+       ("libxml2" ,libxml2)
+       ("glib" ,glib)))
+    (native-inputs
+     `(("intltool" ,intltool)
+       ("glib:bin" ,glib "bin")
+       ("pkg-config" ,pkg-config)))
+    (arguments
+     `(#:phases
+       (alist-cons-before
+        'build 'use-full-cache
+        ;; Use librsvg's loaders.cache instead of the one provided by
+        ;; gdk-pixbuf because the latter does not include support for SVG
+        ;; files.
+        (lambda* (#:key inputs #:allow-other-keys)
+          (setenv "GDK_PIXBUF_MODULE_FILE" 
+                  (car (find-files (assoc-ref inputs "librsvg") 
+                                   "loaders\\.cache"))))
+        %standard-phases)))
+    (home-page "https://launchpad.net/gnome-themes-standard")
+    (synopsis "Default GNOME 3 themes")
+    (description
+     "The default GNOME 3 themes (Adwaita and some accessibility themes).")
+    (license license:lgpl2.1+)))
